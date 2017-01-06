@@ -1,6 +1,6 @@
 package icbm.explosion.items;
 
-import icbm.core.prefab.item.ItemICBMElectrical;
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityBombCart;
 import icbm.explosion.entities.EntityExplosive;
@@ -28,7 +28,7 @@ public class ItemDefuser extends ItemICBMElectrical
 
     /** Called when the player Left Clicks (attacks) an entity. Processed before damage is done, if
      * return value is true further processing is canceled and the entity is not attacked.
-     * 
+     *
      * @param itemStack The Item being used
      * @param player The player that is attacking
      * @param entity The entity being attacked

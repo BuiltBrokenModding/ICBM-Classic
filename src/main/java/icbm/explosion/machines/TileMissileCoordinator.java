@@ -1,7 +1,7 @@
 package icbm.explosion.machines;
 
 import icbm.Reference;
-import icbm.core.prefab.TileICBM;
+import icbm.classic.prefab.TileICBM;
 import icbm.explosion.ICBMExplosion;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -18,7 +18,7 @@ import universalelectricity.api.energy.EnergyStorageHandler;
 import com.google.common.io.ByteArrayDataInput;
 
 /** Missile Coordinator
- * 
+ *
  * @author Calclavia */
 public class TileMissileCoordinator extends TileICBM implements IPacketReceiver, IRotatable, IInventory, IBlockActivate
 {

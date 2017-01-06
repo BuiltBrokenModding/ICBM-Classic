@@ -8,6 +8,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import universalelectricity.api.vector.Vector3;
 
+import static java.lang.Math.random;
+
 public class MissileNuclearCluster extends MissileCluster
 {
     public MissileNuclearCluster()
@@ -27,12 +29,12 @@ public class MissileNuclearCluster extends MissileCluster
             {
                 if (!missileObj.worldObj.isRemote)
                 {
-                    Vector3 position = new Vector3(missileObj);
-                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position, new Vector3(missileObj), Explosive.nuclear.getID());
+                    Pos position = new Pos(missileObj);
+                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position, new Pos(missileObj), Explosive.nuclear.getID());
                     missileObj.worldObj.spawnEntityInWorld(clusterMissile);
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20;
-                    clusterMissile.launch(Vector3.translate(missileObj.targetVector, new Vector3((missileObj.missileCount - MAX_CLUSTER / 2) * Math.random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * Math.random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * Math.random() * 30)));
+                    clusterMissile.launch(Pos.translate(missileObj.targetVector, new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
                 }
 
                 missileObj.protectionTime = 20;

@@ -1,6 +1,6 @@
 package icbm.explosion.explosive.blast;
 
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.ICBMExplosion;
 
 import java.util.List;
@@ -15,14 +15,14 @@ import universalelectricity.api.vector.Vector3;
 public class BlastEnderman extends Blast
 {
     public int duration = 20 * 8;
-    private Vector3 teleportTarget;
+    private Pos teleportTarget;
 
     public BlastEnderman(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
     }
 
-    public BlastEnderman(World world, Entity entity, double x, double y, double z, float size, Vector3 teleportTarget)
+    public BlastEnderman(World world, Entity entity, double x, double y, double z, float size, Pos teleportTarget)
     {
         super(world, entity, x, y, z, size);
         this.teleportTarget = teleportTarget;
@@ -41,7 +41,7 @@ public class BlastEnderman extends Blast
                 {
                     for (int y = -r; y < r; y++)
                     {
-                        Vector3 targetPosition = Vector3.translate(position, new Vector3(x, y, z));
+                        Pos targetPosition = Pos.translate(position, new Pos(x, y, z));
 
                         double distance = targetPosition.distance(position);
 
@@ -95,7 +95,7 @@ public class BlastEnderman extends Blast
 
                 entity.motionZ -= (r - zDifference) * Math.abs(zDifference) * 0.0006;
 
-                if (Vector3.distance(new Vector3(entity.posX, entity.posY, entity.posZ), position) < 4)
+                if (Pos.distance(new Pos(entity.posX, entity.posY, entity.posZ), position) < 4)
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {
@@ -118,7 +118,7 @@ public class BlastEnderman extends Blast
                                 ;
                             }
 
-                            this.teleportTarget = new Vector3(checkX, checkY, checkZ);
+                            this.teleportTarget = new Pos(checkX, checkY, checkZ);
                         }
 
                         this.world().playSoundAtEntity(entity, "mob.endermen.portal", 1.0F, 1.0F);
@@ -167,7 +167,7 @@ public class BlastEnderman extends Blast
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @return - Return -1 if this explosive does not need proceudral calls */
     @Override
     public int proceduralInterval()

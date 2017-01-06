@@ -1,91 +1,67 @@
 package icbm.explosion.explosive;
 
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.explosive.AbstractExplosiveHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.ModelICBM;
 import icbm.Settings;
 import icbm.explosion.ICBMExplosion;
-import icbm.explosion.ex.Explosion;
-import icbm.explosion.ex.ExAntiGravitational;
-import icbm.explosion.ex.ExAntimatter;
-import icbm.explosion.ex.ExBreaching;
-import icbm.explosion.ex.ExChemical;
-import icbm.explosion.ex.ExCondensed;
-import icbm.explosion.ex.ExDebilitation;
-import icbm.explosion.ex.ExEMP;
-import icbm.explosion.ex.ExEnder;
-import icbm.explosion.ex.ExEndothermic;
-import icbm.explosion.ex.ExExothermic;
-import icbm.explosion.ex.ExIncendiary;
-import icbm.explosion.ex.ExNuclear;
-import icbm.explosion.ex.ExRedMatter;
-import icbm.explosion.ex.ExRejuvenation;
-import icbm.explosion.ex.ExRepulsive;
-import icbm.explosion.ex.ExSMine;
-import icbm.explosion.ex.ExShrapnel;
-import icbm.explosion.ex.ExSonic;
-import icbm.explosion.ex.missiles.MissileAnti;
-import icbm.explosion.ex.missiles.MissileCluster;
-import icbm.explosion.ex.missiles.MissileHoming;
-import icbm.explosion.ex.missiles.MissileModule;
-import icbm.explosion.ex.missiles.MissileNuclearCluster;
+import icbm.explosion.ex.*;
+import icbm.explosion.ex.missiles.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModelCustom;
-import resonant.api.explosion.IExplosive;
 import resonant.lib.flag.FlagRegistry;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.vector.Vector3;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive implements IExplosive
+public abstract class Explosive extends AbstractExplosiveHandler
 {
     /** Explosives */
-    public static final Explosive condensed;
-    public static final Explosive shrapnel;
-    public static final Explosive incendiary;
-    public static final Explosive debilitation;
-    public static final Explosive chemical;
-    public static final Explosive anvil;
-    public static final Explosive replsive;
-    public static final Explosive attractive;
+    public static Explosive condensed;
+    public static Explosive shrapnel;
+    public static Explosive incendiary;
+    public static Explosive debilitation;
+    public static Explosive chemical;
+    public static Explosive anvil;
+    public static Explosive replsive;
+    public static Explosive attractive;
 
-    public static final Explosive fragmentation;
-    public static final Explosive contagious;
-    public static final Explosive sonic;
-    public static final Explosive breaching;
-    public static final Explosive rejuvenation;
-    public static final Explosive thermobaric;
-    public static final Explosive sMine;
+    public static Explosive fragmentation;
+    public static Explosive contagious;
+    public static Explosive sonic;
+    public static Explosive breaching;
+    public static Explosive rejuvenation;
+    public static Explosive thermobaric;
+    public static Explosive sMine;
 
-    public static final Explosive nuclear;
-    public static final Explosive emp;
-    public static final Explosive exothermic;
-    public static final Explosive endothermic;
-    public static final Explosive antiGrav;
-    public static final Explosive ender;
-    public static final Explosive hypersonic;
+    public static Explosive nuclear;
+    public static Explosive emp;
+    public static Explosive exothermic;
+    public static Explosive endothermic;
+    public static Explosive antiGrav;
+    public static Explosive ender;
+    public static Explosive hypersonic;
 
-    public static final Explosive antimatter;
-    public static final Explosive redMatter;
+    public static Explosive antimatter;
+    public static Explosive redMatter;
 
     /** Missiles */
-    public static final Explosion missileModule;
-    public static final Explosion homing;
-    public static final Explosion antiBallistic;
-    public static final Explosion cluster;
-    public static final Explosion nuclearCluster;
+    public static Explosion missileModule;
+    public static Explosion homing;
+    public static Explosion antiBallistic;
+    public static Explosion cluster;
+    public static Explosion nuclearCluster;
 
     public static boolean registered = false;
 
-    static
+    public static void registerExplosives()
     {
-        Settings.CONFIGURATION.load();
-
         condensed = ExplosiveRegistry.register(new ExCondensed("condensed", 1));
         shrapnel = ExplosiveRegistry.register(new ExShrapnel("shrapnel", 1));
         incendiary = ExplosiveRegistry.register(new ExIncendiary("incendiary", 1));
@@ -121,7 +97,6 @@ public abstract class Explosive implements IExplosive
         cluster = (Explosion) ExplosiveRegistry.register(new MissileCluster("cluster", 2));
         nuclearCluster = (Explosion) ExplosiveRegistry.register(new MissileNuclearCluster());
 
-        Settings.CONFIGURATION.save();
         registered = true;
     }
 
@@ -145,6 +120,7 @@ public abstract class Explosive implements IExplosive
 
     protected Explosive(String name, int tier)
     {
+        super(name);
         this.nameID = name;
         this.tier = tier;
         this.fuseTime = 100;
@@ -159,49 +135,49 @@ public abstract class Explosive implements IExplosive
 
     }
 
-    @Override
-    public final int getID()
-    {
-        return ExplosiveRegistry.getID(this.getUnlocalizedName());
-    }
+    //@Override
+    //public final int getID()
+    //{
+    //    return ExplosiveRegistry.getID(this.getUnlocalizedName());
+    //}
 
-    @Override
+
     public String getUnlocalizedName()
     {
         return this.nameID;
     }
 
-    @Override
+
     public String getExplosiveName()
     {
         return LanguageUtility.getLocal("icbm.explosive." + this.nameID + ".name");
     }
 
-    @Override
+
     public String getGrenadeName()
     {
         return LanguageUtility.getLocal("icbm.grenade." + this.nameID + ".name");
     }
 
-    @Override
+
     public String getMissileName()
     {
         return LanguageUtility.getLocal("icbm.missile." + this.nameID + ".name");
     }
 
-    @Override
+
     public String getMinecartName()
     {
         return LanguageUtility.getLocal("icbm.minecart." + this.nameID + ".name");
     }
 
-    @Override
+
     public int getTier()
     {
         return this.tier;
     }
 
-    @Override
+
     public void setTier(int tier)
     {
         this.tier = tier;
@@ -213,61 +189,66 @@ public abstract class Explosive implements IExplosive
         return this;
     }
 
-    /** The fuse of the explosion
-     * 
-     * @return The Fuse */
+    /**
+     * The fuse of the explosion
+     *
+     * @return The Fuse
+     */
     public int getYinXin()
     {
         return fuseTime;
     }
 
-    /** Called at the before the explosive detonated as a block.
-     * 
+    /**
+     * Called at the before the explosive detonated as a block.
+     *
      * @param world
-     * @param entity */
+     * @param entity
+     */
     public void yinZhaQian(World world, Entity entity)
     {
         world.playSoundAtEntity(entity, "random.fuse", 1.0F, 1.0F);
     }
 
-    /** Called while the explosive is being detonated (fuse ticks) in block form.
-     * 
-     * @param fuseTicks - The amount of ticks this explosive is on fuse */
-    public void onYinZha(World world, Vector3 position, int fuseTicks)
+    /**
+     * Called while the explosive is being detonated (fuse ticks) in block form.
+     *
+     * @param fuseTicks - The amount of ticks this explosive is on fuse
+     */
+    public void onYinZha(World world, Pos position, int fuseTicks)
     {
-        world.spawnParticle("smoke", position.x, position.y + 0.5D, position.z, 0.0D, 0.0D, 0.0D);
+        world.spawnParticle("smoke", position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
 
-    /** Called when the block for of this explosive is destroy by an explosion
-     * 
-     * @return - Fuse left */
+    /**
+     * Called when the block for of this explosive is destroy by an explosion
+     *
+     * @return - Fuse left
+     */
     public int onBeiZha()
     {
         return (int) (this.fuseTime / 2 + Math.random() * this.fuseTime / 4);
     }
 
-    @Override
+
     @SideOnly(Side.CLIENT)
     public ModelICBM getBlockModel()
     {
         return null;
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
     public ResourceLocation getBlockResource()
     {
         return null;
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
-    public Icon getIcon()
+    public IIcon getIcon()
     {
         return null;
     }
 
-    @Override
     @SideOnly(Side.CLIENT)
     public IModelCustom getMissileModel()
     {
@@ -315,7 +296,6 @@ public abstract class Explosive implements IExplosive
         return false;
     }
 
-    @Override
     public void createExplosion(World world, double x, double y, double z, Entity entity)
     {
         if (!this.isDisabled)
@@ -326,18 +306,21 @@ public abstract class Explosive implements IExplosive
 
     public abstract void doCreateExplosion(World world, double x, double y, double z, Entity entity);
 
-    /** Checks if the explosive is banned in an area
-     * 
+    /**
+     * Checks if the explosive is banned in an area
+     *
      * @param world - world to check in
-     * @param x - coord
-     * @param y - coord
-     * @param z- coord
-     * @return true if it is banned */
+     * @param x     - coord
+     * @param y     - coord
+     * @param z-    coord
+     * @return true if it is banned
+     */
     public boolean isBannedInRegion(World world, double x, double y, double z)
     {
-        boolean flag_all = FlagRegistry.getModFlag().getFlagWorld(world).containsValue("ban_ICBM", "true", new Vector3(x, y, z));
-        boolean flag_missile = FlagRegistry.getModFlag().getFlagWorld(world).containsValue(this.flagName, "true", new Vector3(x, y, z));
+        //boolean flag_all = FlagRegistry.getModFlag().getFlagWorld(world).containsValue("ban_ICBM", "true", new Pos(x, y, z));
+        //boolean flag_missile = FlagRegistry.getModFlag().getFlagWorld(world).containsValue(this.flagName, "true", new Pos(x, y, z));
 
-        return flag_all || flag_missile;
+        //return flag_all || flag_missile;
+        return false;
     }
 }

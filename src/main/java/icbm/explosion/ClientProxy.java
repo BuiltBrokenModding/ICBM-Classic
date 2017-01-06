@@ -1,7 +1,7 @@
 package icbm.explosion;
 
-import icbm.core.ICBMCore;
-import icbm.core.SoundHandler;
+import icbm.classic.ICBMCore;
+import icbm.classic.SoundHandler;
 import icbm.explosion.entities.EntityBombCart;
 import icbm.explosion.entities.EntityExplosion;
 import icbm.explosion.entities.EntityExplosive;
@@ -168,7 +168,7 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void spawnParticle(String name, World world, Vector3 position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
+    public void spawnParticle(String name, World world, Pos position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
     {
         EntityFX fx = null;
 
@@ -208,13 +208,13 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void spawnShock(World world, Vector3 startVec, Vector3 targetVec)
+    public void spawnShock(World world, Pos startVec, Pos targetVec)
     {
         FMLClientHandler.instance().getClient().effectRenderer.addEffect(new FXElectricBolt(world, startVec, targetVec, 0));
     }
 
     @Override
-    public void spawnShock(World world, Vector3 startVec, Vector3 targetVec, int duration)
+    public void spawnShock(World world, Pos startVec, Pos targetVec, int duration)
     {
         FMLClientHandler.instance().getClient().effectRenderer.addEffect(new FXElectricBoltSpawner(world, startVec, targetVec, 0, duration));
     }

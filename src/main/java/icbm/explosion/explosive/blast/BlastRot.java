@@ -1,6 +1,6 @@
 package icbm.explosion.explosive.blast;
 
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -9,7 +9,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import universalelectricity.api.vector.Vector3;
 
 /** Creates radiation spawning
- * 
+ *
  * @author Calclavia */
 public class BlastRot extends Blast
 {
@@ -44,7 +44,7 @@ public class BlastRot extends Blast
         {
             if (this.thread.isComplete)
             {
-                for (Vector3 targetPosition : this.thread.results)
+                for (Pos targetPosition : this.thread.results)
                 {
                     /** Decay the blocks. */
                     int blockID = targetPosition.getBlockID(this.world());

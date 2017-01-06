@@ -2,7 +2,7 @@ package icbm.explosion.explosive;
 
 import icbm.Reference;
 import icbm.TabICBM;
-import icbm.core.prefab.BlockICBM;
+import icbm.classic.prefab.BlockICBM;
 import icbm.explosion.entities.EntityExplosive;
 import icbm.explosion.render.tile.RenderBombBlock;
 
@@ -161,7 +161,7 @@ public class BlockExplosive extends BlockICBM implements ICamouflageMaterial
         // If so, then detonate.
         for (byte i = 0; i < 6; i++)
         {
-            Vector3 position = new Vector3(x, y, z);
+            Pos position = new Pos(x, y, z);
             position.translate(ForgeDirection.getOrientation(i));
 
             int blockId = position.getBlockID(world);
@@ -289,7 +289,7 @@ public class BlockExplosive extends BlockICBM implements ICamouflageMaterial
                     if (!evt.isCanceled())
                     {
                         ((TileExplosive) tileEntity).exploding = true;
-                        EntityExplosive eZhaDan = new EntityExplosive(world, new Vector3(x, y, z).add(0.5), ((TileExplosive) tileEntity).haoMa, (byte) world.getBlockMetadata(x, y, z), ((TileExplosive) tileEntity).nbtData);
+                        EntityExplosive eZhaDan = new EntityExplosive(world, new Pos(x, y, z).add(0.5), ((TileExplosive) tileEntity).haoMa, (byte) world.getBlockMetadata(x, y, z), ((TileExplosive) tileEntity).nbtData);
 
                         switch (causeOfExplosion)
                         {

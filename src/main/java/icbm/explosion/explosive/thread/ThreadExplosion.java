@@ -16,8 +16,8 @@ public abstract class ThreadExplosion extends Thread
 
     public boolean isComplete = false;
 
-    public final HashSet<Vector3> deltaSet = new HashSet<Vector3>();
-    public final HashSet<Vector3> results = new HashSet<Vector3>();
+    public final HashSet<Pos> deltaSet = new HashSet<Pos>();
+    public final HashSet<Pos> results = new HashSet<Pos>();
 
     public ThreadExplosion(VectorWorld position, int radius, float energy, Entity source)
     {

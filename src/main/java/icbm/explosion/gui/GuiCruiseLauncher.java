@@ -1,7 +1,7 @@
 package icbm.explosion.gui;
 
 import icbm.Reference;
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.container.ContainerCruiseLauncher;
 import icbm.explosion.machines.TileCruiseLauncher;
 import net.minecraft.client.gui.GuiTextField;
@@ -18,6 +18,8 @@ import universalelectricity.api.energy.UnitDisplay.Unit;
 import universalelectricity.api.vector.Vector3;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+
+import static java.lang.Integer.parseInt;
 
 public class GuiCruiseLauncher extends GuiContainer
 {
@@ -78,7 +80,7 @@ public class GuiCruiseLauncher extends GuiContainer
 
         try
         {
-            Vector3 newTarget = new Vector3(Integer.parseInt(this.textFieldX.getText()), Integer.parseInt(this.textFieldY.getText()), Integer.parseInt(this.textFieldZ.getText()));
+            Pos newTarget = new Pos(parseInt(this.textFieldX.getText()), parseInt(this.textFieldY.getText()), parseInt(this.textFieldZ.getText()));
             this.tileEntity.setTarget(newTarget);
             PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(tileEntity, 2, tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));
         }

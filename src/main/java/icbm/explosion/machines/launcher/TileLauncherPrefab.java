@@ -1,6 +1,6 @@
 package icbm.explosion.machines.launcher;
 
-import icbm.core.prefab.TileFrequency;
+import icbm.classic.prefab.TileFrequency;
 import net.minecraft.nbt.NBTTagCompound;
 import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.LauncherType;
@@ -12,7 +12,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 
 public abstract class TileLauncherPrefab extends TileFrequency implements ILauncherController, IPeripheral
 {
-    protected Vector3 targetPos = null;
+    protected Pos targetPos = null;
 
     @Override
     public void initiate()
@@ -29,17 +29,17 @@ public abstract class TileLauncherPrefab extends TileFrequency implements ILaunc
     }
 
     @Override
-    public Vector3 getTarget()
+    public Pos getTarget()
     {
         if (this.targetPos == null)
         {
             if (this.getLauncherType() == LauncherType.CRUISE)
             {
-                this.targetPos = new Vector3(this.xCoord, this.yCoord, this.zCoord);
+                this.targetPos = new Pos(this.xCoord, this.yCoord, this.zCoord);
             }
             else
             {
-                this.targetPos = new Vector3(this.xCoord, 0, this.zCoord);
+                this.targetPos = new Pos(this.xCoord, 0, this.zCoord);
             }
         }
 
@@ -47,7 +47,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements ILaunc
     }
 
     @Override
-    public void setTarget(Vector3 target)
+    public void setTarget(Pos target)
     {
         this.targetPos = target.floor();
     }
@@ -79,7 +79,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements ILaunc
                 {
                     try
                     {
-                        this.setTarget(new Vector3(((Double) arguments[0]).doubleValue(), ((Double) arguments[1]).doubleValue(), ((Double) arguments[2]).doubleValue()));
+                        this.setTarget(new Pos(((Double) arguments[0]).doubleValue(), ((Double) arguments[1]).doubleValue(), ((Double) arguments[2]).doubleValue()));
                     }
                     catch (Exception e)
                     {
@@ -138,7 +138,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements ILaunc
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.targetPos = new Vector3(nbt.getCompoundTag("target"));
+        this.targetPos = new Pos(nbt.getCompoundTag("target"));
     }
 
     @Override

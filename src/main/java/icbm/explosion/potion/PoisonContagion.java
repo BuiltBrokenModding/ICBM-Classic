@@ -76,7 +76,7 @@ public class PoisonContagion extends CustomPotion
                             entity.setDead();
                         }
 
-                        ICBMExplosion.contagios_potion.poisonEntity(new Vector3(entity), entity);
+                        ICBMExplosion.contagios_potion.poisonEntity(new Pos(entity), entity);
                     }
                 }
             }

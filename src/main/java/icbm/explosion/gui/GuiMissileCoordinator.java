@@ -1,6 +1,6 @@
 package icbm.explosion.gui;
 
-import icbm.core.gui.GuiICBMContainer;
+import icbm.classic.gui.GuiICBMContainer;
 import icbm.explosion.container.ContainerMissileCoordinator;
 import icbm.explosion.machines.TileMissileCoordinator;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -36,8 +36,8 @@ public class GuiMissileCoordinator extends GuiICBMContainer
         {
             if (this.tileEntity.getStackInSlot(0).getItem() instanceof ICoordLink && this.tileEntity.getStackInSlot(1).getItem() instanceof ICoordLink)
             {
-                Vector3 pos1 = ((ICoordLink) this.tileEntity.getStackInSlot(0).getItem()).getLink(this.tileEntity.getStackInSlot(0));
-                Vector3 pos2 = ((ICoordLink) this.tileEntity.getStackInSlot(1).getItem()).getLink(this.tileEntity.getStackInSlot(1));
+                Pos pos1 = ((ICoordLink) this.tileEntity.getStackInSlot(0).getItem()).getLink(this.tileEntity.getStackInSlot(0));
+                Pos pos2 = ((ICoordLink) this.tileEntity.getStackInSlot(1).getItem()).getLink(this.tileEntity.getStackInSlot(1));
 
                 double displacement = pos1.distance(pos2);
 
@@ -51,7 +51,7 @@ public class GuiMissileCoordinator extends GuiICBMContainer
                 this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.arc").replaceAll("%p", "" + UnitDisplay.roundDecimals(distance)), 13, 75, 4210752);
                 this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.time").replaceAll("%p", "" + UnitDisplay.roundDecimals(Math.max(100, 2 * displacement) / 20)), 13, 85, 4210752);
 
-                Vector3 delta = pos1.clone().subtract(pos2);
+                Pos delta = pos1.clone().subtract(pos2);
                 double rotation = MathHelper.wrapAngleTo180_double(Math.toDegrees(Math.atan2(delta.z, delta.x))) - 90;
                 int heading = MathHelper.floor_double(rotation * 4.0F / 360.0F + 0.5D) & 3;
 

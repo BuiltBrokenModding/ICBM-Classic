@@ -29,7 +29,7 @@ public class MissileCluster extends Missile
             {
                 if (!missileObj.worldObj.isRemote)
                 {
-                    Vector3 position = new Vector3(missileObj);
+                    Pos position = new Pos(missileObj);
                     EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position.clone(), position.clone(), 0);
 
                     double radius = spread;
@@ -42,10 +42,10 @@ public class MissileCluster extends Missile
                     if (missileObj.missileCount > 0)
                     {
                         theta = (missileObj.missileCount / 12.0) * Math.PI * 2;
-                        
+
                         x = radius * Math.cos(theta);
                         clusterMissile.posX += Math.cos(theta) * 5;
-                        
+
                         z = radius * Math.sin(theta);
                         clusterMissile.posZ += Math.sin(theta) * 5;
                     }
@@ -53,7 +53,7 @@ public class MissileCluster extends Missile
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20 + missileObj.targetHeight - 1;
 
-                    clusterMissile.launch(Vector3.translate(missileObj.targetVector, new Vector3(x, y, z)));
+                    clusterMissile.launch(Pos.translate(missileObj.targetVector, new Pos(x, y, z)));
                     missileObj.worldObj.spawnEntityInWorld(clusterMissile);
                 }
                 missileObj.protectionTime = 20;

@@ -1,8 +1,8 @@
 package icbm.explosion.machines;
 
-import icbm.core.ICBMCore;
-import icbm.core.implement.IChunkLoadHandler;
-import icbm.core.prefab.TileFrequency;
+import icbm.classic.ICBMCore;
+import icbm.classic.implement.IChunkLoadHandler;
+import icbm.classic.prefab.TileFrequency;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.machines.launcher.TileLauncherPrefab;
@@ -92,7 +92,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
             if (this.ticket == null && ticket != null)
             {
                 this.ticket = ticket;
-                new Vector3(this).writeToNBT(this.ticket.getModData());
+                new Pos(this).writeToNBT(this.ticket.getModData());
                 ForgeChunkManager.forceChunk(this.ticket, new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4));
             }
         }
@@ -108,7 +108,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
             //Update client every 2 seconds
             if (this.ticks % 40 == 0)
             {
-                PacketHandler.sendPacketToClients(this.getDescriptionPacket(), this.worldObj, new Vector3(this), 35);
+                PacketHandler.sendPacketToClients(this.getDescriptionPacket(), this.worldObj, new Pos(this), 35);
             }//Send packets to users with the gui open
             else if (this.ticks % 3 == 0)
             {
@@ -152,16 +152,16 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
                     {
                         TileLauncherPrefab launcher = (TileLauncherPrefab) blockFrequency;
 
-                        if (new Vector3(this).distance(new Vector3(launcher)) < this.alarmRange && launcher.getFrequency() == this.getFrequency())
+                        if (new Pos(this).distance(new Pos(launcher)) < this.alarmRange && launcher.getFrequency() == this.getFrequency())
                         {
                             if (launcher instanceof TileLauncherScreen)
                             {
                                 double height = launcher.getTarget() != null ? launcher.getTarget().y : 0;
-                                launcher.setTarget(new Vector3(this.incomingMissiles.get(0).posX, height, this.incomingMissiles.get(0).posZ));
+                                launcher.setTarget(new Pos(this.incomingMissiles.get(0).posX, height, this.incomingMissiles.get(0).posZ));
                             }
                             else
                             {
-                                launcher.setTarget(new Vector3(this.incomingMissiles.get(0)));
+                                launcher.setTarget(new Pos(this.incomingMissiles.get(0)));
                             }
                         }
                     }
@@ -192,7 +192,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
         this.detectedEntities.clear();
         this.detectedTiles.clear();
 
-        List<Entity> entities = RadarRegistry.getEntitiesWithinRadius(new Vector3(this).toVector2(), MAX_DETECTION_RANGE);
+        List<Entity> entities = RadarRegistry.getEntitiesWithinRadius(new Pos(this).toVector2(), MAX_DETECTION_RANGE);
 
         for (Entity entity : entities)
         {
@@ -210,13 +210,13 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
                         if (this.incomingMissiles.size() > 0)
                         {
                             /** Sort in order of distance */
-                            double dist = new Vector3(this).distance(new Vector3(entity));
+                            double dist = new Pos(this).distance(new Pos(entity));
 
                             for (int i = 0; i < this.incomingMissiles.size(); i++)
                             {
                                 EntityMissile daoDan = this.incomingMissiles.get(i);
 
-                                if (dist < new Vector3(this).distance(new Vector3(daoDan)))
+                                if (dist < new Pos(this).distance(new Pos(daoDan)))
                                 {
                                     this.incomingMissiles.add(i, (EntityMissile) entity);
                                     break;
@@ -297,7 +297,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
     }
 
     /** Checks to see if the missile will hit within the range of the radar station
-     * 
+     *
      * @param missile - missile being checked
      * @return true if it will */
     public boolean isMissileGoingToHit(EntityMissile missile)
@@ -306,7 +306,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
         {
             return false;
         }
-        return (Vector2.distance(new Vector3(missile).toVector2(), new Vector2(this.xCoord, this.zCoord)) < this.alarmRange && Vector2.distance(missile.targetVector.toVector2(), new Vector2(this.xCoord, this.zCoord)) < this.safetyRange);
+        return (Vector2.distance(new Pos(missile).toVector2(), new Vector2(this.xCoord, this.zCoord)) < this.alarmRange && Vector2.distance(missile.targetVector.toVector2(), new Vector2(this.xCoord, this.zCoord)) < this.safetyRange);
     }
 
     private Packet getDescriptionPacket2()
@@ -331,7 +331,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
             {
                 if (data.readBoolean())
                 {
-                    PacketHandler.sendPacketToClients(this.getDescriptionPacket2(), this.worldObj, new Vector3(this), 15);
+                    PacketHandler.sendPacketToClients(this.getDescriptionPacket2(), this.worldObj, new Pos(this), 15);
                     this.playersUsing.add(player);
                 }
                 else
@@ -387,7 +387,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
 
             for (EntityMissile incomingMissile : this.incomingMissiles)
             {
-                Vector2 position = new Vector3(incomingMissile).toVector2();
+                Vector2 position = new Pos(incomingMissile).toVector2();
                 ForgeDirection missileTravelDirection = ForgeDirection.UNKNOWN;
                 double closest = -1;
 
@@ -487,7 +487,7 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
         switch (method)
         {
             case 0:
-                List<Entity> entities = RadarRegistry.getEntitiesWithinRadius(new Vector3(this).toVector2(), this.alarmRange);
+                List<Entity> entities = RadarRegistry.getEntitiesWithinRadius(new Pos(this).toVector2(), this.alarmRange);
 
                 for (Entity entity : entities)
                 {

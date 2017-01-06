@@ -2,7 +2,7 @@ package icbm.explosion.explosive.blast;
 
 import icbm.Reference;
 import icbm.Settings;
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
@@ -81,7 +81,7 @@ public class BlastNuclear extends Blast
 
                         if (r > distance && r - 3 < distance)
                         {
-                            Vector3 spawnPosition = Vector3.translate(position, new Vector3(x * 2, (y - 2) * 2, z * 2));
+                            Pos spawnPosition = Pos.translate(position, new Pos(x * 2, (y - 2) * 2, z * 2));
                             float xDiff = (float) (spawnPosition.x - position.x);
                             float zDiff = (float) (spawnPosition.z - position.z);
                             ICBMExplosion.proxy.spawnParticle("smoke", world(), spawnPosition, xDiff * 0.3 * world().rand.nextFloat(), -world().rand.nextFloat(), zDiff * 0.3 * world().rand.nextFloat(), (float) (distance / this.getRadius()) * world().rand.nextFloat(), 0, 0, 8F, 1.2F);
@@ -113,7 +113,7 @@ public class BlastNuclear extends Blast
 
                         if (distance < r && distance > r - 1)
                         {
-                            Vector3 targetPosition = Vector3.translate(this.position, new Vector3(x, 0, z));
+                            Pos targetPosition = Pos.translate(this.position, new Pos(x, 0, z));
 
                             if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.05))
                             {
@@ -149,7 +149,7 @@ public class BlastNuclear extends Blast
         {
             if (!this.world().isRemote && this.thread.isComplete)
             {
-                for (Vector3 p : this.thread.results)
+                for (Pos p : this.thread.results)
                 {
                     Block block = Block.blocksList[this.world().getBlockId(p.intX(), p.intY(), p.intZ())];
                     if (block != null)
@@ -181,7 +181,7 @@ public class BlastNuclear extends Blast
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @param return - Return -1 if this explosive does not need procedural calls */
     @Override
     public int proceduralInterval()

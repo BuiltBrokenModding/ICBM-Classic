@@ -1,7 +1,7 @@
 package icbm.explosion.items;
 
 import icbm.Settings;
-import icbm.core.prefab.item.ItemICBMElectrical;
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.ex.Explosion;
 import icbm.explosion.explosive.Explosive;
@@ -22,7 +22,7 @@ import resonant.lib.utility.LanguageUtility;
 import universalelectricity.api.vector.Vector3;
 
 /** Rocket Launcher
- * 
+ *
  * @author Calclavia */
 
 public class ItemRocketLauncher extends ItemICBMElectrical
@@ -80,10 +80,10 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                     // Limit the missile to tier two.
                                     if (((Explosion) ex).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER && ((Explosion) ex).isCruise())
                                     {
-                                        Vector3 launcher = Vector3.translate(new Vector3(player), new Vector3(0, 0.5, 0));
-                                        Vector3 playerAim = new Vector3(player.getLook(1));
-                                        Vector3 start = Vector3.translate(launcher, Vector3.scale(playerAim, 1.1));
-                                        Vector3 target = Vector3.translate(launcher, Vector3.scale(playerAim, 100));
+                                        Pos launcher = Pos.translate(new Pos(player), new Pos(0, 0.5, 0));
+                                        Pos playerAim = new Pos(player.getLook(1));
+                                        Pos start = Pos.translate(launcher, Pos.scale(playerAim, 1.1));
+                                        Pos target = Pos.translate(launcher, Pos.scale(playerAim, 100));
 
                                         //TOD: Fix this rotation when we use the proper model loader.
                                         EntityMissile entityMissile = new EntityMissile(world, start, ((Explosion) ex).getID(), -player.rotationYaw, -player.rotationPitch);
@@ -103,10 +103,10 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                             player.inventory.setInventorySlotContents(slot, null);
                                             this.discharge(itemStack, ENERGY, true);
                                         }
-                                        
+
                                         //Store last time player launched a rocket
                                         clickTimePlayer.put(player.username, clickMs);
-                                        
+
                                         return itemStack;
                                     }
                                 }

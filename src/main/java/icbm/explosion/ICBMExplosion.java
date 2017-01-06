@@ -3,8 +3,8 @@ package icbm.explosion;
 import icbm.Reference;
 import icbm.Settings;
 import icbm.TabICBM;
-import icbm.core.ICBMCore;
-import icbm.core.implement.IChunkLoadHandler;
+import icbm.classic.ICBMCore;
+import icbm.classic.implement.IChunkLoadHandler;
 import icbm.explosion.entities.EntityBombCart;
 import icbm.explosion.entities.EntityExplosion;
 import icbm.explosion.entities.EntityExplosive;
@@ -43,21 +43,16 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -75,12 +70,7 @@ import universalelectricity.api.CompatibilityModule;
 import universalelectricity.api.vector.Vector3;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.Mod.Metadata;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -90,22 +80,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = ICBMExplosion.ID, name = ICBMExplosion.NAME, version = Reference.VERSION, dependencies = "required-after:ICBM;after:ICBM|Sentry")
-@NetworkMod(channels = ICBMExplosion.CHANNEL, clientSideRequired = true, serverSideRequired = false, packetHandler = PacketHandler.class)
 public class ICBMExplosion
 {
-    public static final String NAME = Reference.NAME + " Explosion";
-    public static final String ID = Reference.NAME + "|Explosion";
-    public static final String CHANNEL = Reference.NAME + "|E";
-
-    @Instance(ID)
-    public static ICBMExplosion instance;
-
-    @Metadata(ID)
-    public static ModMetadata metadata;
-
-    @SidedProxy(clientSide = "icbm.explosion.ClientProxy", serverSide = "icbm.explosion.CommonProxy")
-    public static CommonProxy proxy;
     public static Item Du;
     public static final int ENTITY_ID_PREFIX = 50;
 
@@ -114,7 +90,7 @@ public class ICBMExplosion
     public static Block blockExplosive;
     public static Block blockMachine;
     public static Block blockMissileAssembler;
-    
+
     // Items
     public static Item itemMissile;
 
@@ -130,13 +106,12 @@ public class ICBMExplosion
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 1, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
-    @Config(key = "Creepers Drop Sulfur", category = "Extras")
+    //@Config(key = "Creepers Drop Sulfur", category = "Extras")
     public static boolean CREEPER_DROP_SULFER = true;
-    @Config(key = "Creepers Blow up in Fire", category = "Extras")
+    //@Config(key = "Creepers Blow up in Fire", category = "Extras")
     public static boolean CREEPER_BLOW_UP_IN_FIRE = true;
 
-    @EventHandler
-    // @Optional.Method(modid = ID)
+
     public void preInit(FMLPreInitializationEvent event)
     {
         NetworkRegistry.instance().registerGuiHandler(this, proxy);
@@ -147,7 +122,7 @@ public class ICBMExplosion
         blockExplosive = ICBMCore.contentRegistry.createBlock(BlockExplosive.class, ItemBlockExplosive.class);
         blockMachine = ICBMCore.contentRegistry.createBlock(BlockICBMMachine.class, ItemBlockMachine.class);
         blockMissileAssembler = ICBMCore.contentRegistry.createBlock(BlockMissileAssembler.class, ItemBlockMissileAssembler.class);
-        
+
         // ITEMS
         itemMissile = ICBMCore.contentRegistry.createItem(ItemMissile.class);
 
@@ -182,7 +157,7 @@ public class ICBMExplosion
                     int z = blockSource.getZInt();
                     EnumFacing enumFacing = EnumFacing.getFront(blockSource.getBlockMetadata());
 
-                    EntityGrenade entity = new EntityGrenade(world, new Vector3(x, y, z), itemStack.getItemDamage());
+                    EntityGrenade entity = new EntityGrenade(world, new Pos(x, y, z), itemStack.getItemDamage());
                     entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
                     world.spawnEntityInWorld(entity);
                 }
@@ -258,7 +233,7 @@ public class ICBMExplosion
                     {
                         if (ticket.getModData() != null)
                         {
-                            Vector3 position = new Vector3(ticket.getModData());
+                            Pos position = new Pos(ticket.getModData());
 
                             TileEntity tileEntity = position.getTileEntity(ticket.world);
 
@@ -277,8 +252,6 @@ public class ICBMExplosion
         proxy.preInit();
     }
 
-    @EventHandler
-    // @Optional.Method(modid = ID)
     public void init(FMLInitializationEvent evt)
     {
         Settings.setModMetadata(ID, NAME, metadata, Reference.NAME);
@@ -300,8 +273,6 @@ public class ICBMExplosion
         proxy.init();
     }
 
-    @EventHandler
-    // @Optional.Method(modid = ID)
     public void postInit(FMLPostInitializationEvent event)
     {
         /** Add all Recipes */
@@ -368,92 +339,6 @@ public class ICBMExplosion
         }
     }
 
-    @ForgeSubscribe
-    public void enteringChunk(EnteringChunk evt)
-    {
-        if (evt.entity instanceof EntityMissile)
-        {
-            ((EntityMissile) evt.entity).updateLoadChunk(evt.newChunkX, evt.newChunkZ);
-        }
-    }
-
-    @ForgeSubscribe
-    public void creeperDeathEvent(LivingDeathEvent evt)
-    {
-        if (evt.entityLiving instanceof EntityCreeper)
-        {
-            if (CREEPER_BLOW_UP_IN_FIRE)
-            {
-                if (evt.source == DamageSource.onFire || evt.source == DamageSource.inFire)
-                {
-                    evt.setCanceled(true);
-                    boolean flag = evt.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-
-                    if (((EntityCreeper) evt.entityLiving).getPowered())
-                    {
-                        evt.entityLiving.worldObj.createExplosion(evt.entityLiving, evt.entityLiving.posX, evt.entityLiving.posY, evt.entityLiving.posZ, 6f, flag);
-                    }
-                    else
-                    {
-                        evt.entityLiving.worldObj.createExplosion(evt.entityLiving, evt.entityLiving.posX, evt.entityLiving.posY, evt.entityLiving.posZ, 3f, flag);
-                    }
-
-                }
-            }
-        }
-    }
-
-    @ForgeSubscribe
-    public void creeperDropEvent(LivingDropsEvent evt)
-    {
-        if (evt.entityLiving instanceof EntityCreeper)
-        {
-            if (CREEPER_DROP_SULFER)
-            {
-                evt.entityLiving.dropItem(ICBMCore.itemSulfurDust.itemID, 1 + evt.entityLiving.worldObj.rand.nextInt(6));
-            }
-        }
-    }
-
-    @ForgeSubscribe
-    public void preDetonationEvent(ExplosivePreDetonationEvent evt)
-    {
-        if (FlagRegistry.getModFlag() != null && evt.explosion instanceof Explosive)
-        {
-            if (((Explosive) evt.explosion).isBannedInRegion(evt.world, evt.x, evt.y, evt.z))
-            {
-                ICBMCore.LOGGER.fine("ICBM prevented explosive:" + evt.x + ", " + evt.y + "," + evt.z);
-                evt.setCanceled(true);
-            }
-        }
-    }
-
-    @ForgeSubscribe
-    public void preConstructionEvent(ExplosionConstructionEvent evt)
-    {
-        if (FlagRegistry.getModFlag() != null && evt.iExplosion instanceof Explosive)
-        {
-            if (((Explosive) evt.iExplosion).isBannedInRegion(evt.world, evt.x, evt.y, evt.z))
-            {
-                ICBMCore.LOGGER.fine("ICBM prevented explosive:" + evt.x + ", " + evt.y + "," + evt.z);
-                evt.setCanceled(true);
-            }
-        }
-    }
-
-    @ForgeSubscribe
-    public void preExplosionEvent(PreExplosionEvent evt)
-    {
-        if (FlagRegistry.getModFlag() != null && evt.iExplosion instanceof Explosive)
-        {
-            if (((Explosive) evt.iExplosion).isBannedInRegion(evt.world, evt.x, evt.y, evt.z))
-            {
-                ICBMCore.LOGGER.fine("ICBM prevented explosive:" + evt.x + ", " + evt.y + "," + evt.z);
-                evt.setCanceled(true);
-            }
-        }
-    }
-
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
@@ -461,7 +346,5 @@ public class ICBMExplosion
         ICommandManager commandManager = FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager();
         ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
         serverCommandManager.registerCommand(new CommandICBM());
-
     }
-
 }

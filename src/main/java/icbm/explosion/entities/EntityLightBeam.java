@@ -24,7 +24,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.renderDistanceWeight = 3;
     }
 
-    public EntityLightBeam(World world, Vector3 position, int life, float red, float green, float blue)
+    public EntityLightBeam(World world, Pos position, int life, float red, float green, float blue)
     {
         super(world);
         this.setPosition(position.x, position.y, position.z);

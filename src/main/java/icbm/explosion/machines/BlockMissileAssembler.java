@@ -1,7 +1,7 @@
 package icbm.explosion.machines;
 
 import icbm.Reference;
-import icbm.core.prefab.BlockICBM;
+import icbm.classic.prefab.BlockICBM;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.render.tile.BlockRenderHandler;
 
@@ -26,7 +26,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /** Multi-block table use to hold a missile prototype while the player is working on the design.
  * 3x1x1 in size
- * 
+ *
  * @author DarkGuardsman */
 public class BlockMissileAssembler extends BlockICBM
 {
@@ -81,7 +81,7 @@ public class BlockMissileAssembler extends BlockICBM
         if (entity instanceof TileMissileAssembler)
         {
             ForgeDirection s = ((TileMissileAssembler) entity).placedSide;
-            Vector3 vec = new Vector3(entity).translate(new Vector3(-s.offsetX, -s.offsetY, -s.offsetZ));
+            Pos vec = new Pos(entity).translate(new Pos(-s.offsetX, -s.offsetY, -s.offsetZ));
 
             return Block.blocksList[vec.getBlockID(world)] != null;
         }
@@ -91,17 +91,17 @@ public class BlockMissileAssembler extends BlockICBM
 
     /** Checks to see if its valid to put this block at the specified coordinates. Args: world, x, y,
      * z
-     * 
+     *
      * @param rot
      * @param placeSide */
     public static boolean canPlaceBlockAt(World world, int x, int y, int z, ForgeDirection placeSide, int rot)
     {
-        Vector3 pos = new Vector3(x, y, z);
+        Pos pos = new Pos(x, y, z);
         Block block = Block.blocksList[pos.getBlockID(world)];
         if (block == null || block.isBlockReplaceable(world, x, y, z))
         {
-            Vector3[] vecs = TileMissileAssembler.getMultiBlockVectors(placeSide, (byte) rot);
-            for (Vector3 vec : vecs)
+            Pos[] vecs = TileMissileAssembler.getMultiBlockVectors(placeSide, (byte) rot);
+            for (Pos vec : vecs)
             {
                 block = Block.blocksList[pos.clone().translate(vec).getBlockID(world)];
                 if (block != null && !block.isBlockReplaceable(world, x, y, z))
@@ -116,20 +116,20 @@ public class BlockMissileAssembler extends BlockICBM
 
     public static boolean canRotateBlockTo(World world, int x, int y, int z, ForgeDirection placeSide, int rot)
     {
-        Vector3 pos = new Vector3(x, y, z);
+        Pos pos = new Pos(x, y, z);
         Block block = Block.blocksList[pos.getBlockID(world)];
         if (block == null || block.isBlockReplaceable(world, x, y, z) || block.blockID == ICBMExplosion.blockMissileAssembler.blockID)
         {
-            Vector3[] vecs = TileMissileAssembler.getMultiBlockVectors(placeSide, (byte) rot);
+            Pos[] vecs = TileMissileAssembler.getMultiBlockVectors(placeSide, (byte) rot);
 
-            for (Vector3 vec : vecs)
+            for (Pos vec : vecs)
             {
                 block = Block.blocksList[pos.clone().translate(vec).getBlockID(world)];
                 boolean isNotSubBlock = true;
                 if (pos.clone().translate(vec).getTileEntity(world) instanceof TileMultiBlockPart)
                 {
-                    Vector3 main = ((TileMultiBlockPart) pos.clone().translate(vec).getTileEntity(world)).getMainBlock();
-                    isNotSubBlock = !main.equals(new Vector3(x, y, z));
+                    Pos main = ((TileMultiBlockPart) pos.clone().translate(vec).getTileEntity(world)).getMainBlock();
+                    isNotSubBlock = !main.equals(new Pos(x, y, z));
                 }
                 if (block != null && !block.isBlockReplaceable(world, x, y, z) && isNotSubBlock)
                 {
@@ -171,12 +171,12 @@ public class BlockMissileAssembler extends BlockICBM
                 NBTTagCompound tag = new NBTTagCompound();
                 ((TileMissileAssembler) entity).rotating = true;
 
-                Vector3[] positions = ((TileMissileAssembler) entity).getMultiBlockVectors();
+                Pos[] positions = ((TileMissileAssembler) entity).getMultiBlockVectors();
                 ((TileMissileAssembler) entity).setRotation(rotation);
                 ((TileMissileAssembler) entity).writeToNBT(tag);
-                for (Vector3 position : positions)
+                for (Pos position : positions)
                 {
-                    new Vector3(entity).translate(position).setBlock(entity.worldObj, 0);
+                    new Pos(entity).translate(position).setBlock(entity.worldObj, 0);
                 }
                 world.setBlock(x, y, z, this.blockID);
                 entity = world.getBlockTileEntity(x, y, z);
@@ -204,12 +204,12 @@ public class BlockMissileAssembler extends BlockICBM
                 NBTTagCompound tag = new NBTTagCompound();
                 ((TileMissileAssembler) entity).rotating = true;
 
-                Vector3[] positions = ((TileMissileAssembler) entity).getMultiBlockVectors();
+                Pos[] positions = ((TileMissileAssembler) entity).getMultiBlockVectors();
                 ((TileMissileAssembler) entity).setRotation(rotation);
                 ((TileMissileAssembler) entity).writeToNBT(tag);
-                for (Vector3 position : positions)
+                for (Pos position : positions)
                 {
-                    new Vector3(entity).translate(position).setBlock(entity.worldObj, 0);
+                    new Pos(entity).translate(position).setBlock(entity.worldObj, 0);
                 }
                 world.setBlock(x, y, z, this.blockID);
                 entity = world.getBlockTileEntity(x, y, z);

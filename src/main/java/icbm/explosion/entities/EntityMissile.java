@@ -2,9 +2,9 @@ package icbm.explosion.entities;
 
 import icbm.Reference;
 import icbm.Settings;
-import icbm.core.DamageUtility;
-import icbm.core.ICBMCore;
-import icbm.core.implement.IChunkLoadHandler;
+import icbm.classic.DamageUtility;
+import icbm.classic.ICBMCore;
+import icbm.classic.implement.IChunkLoadHandler;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.ex.Explosion;
 import icbm.explosion.explosive.ExplosiveRegistry;
@@ -62,9 +62,9 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
 
     public int explosiveID = 0;
     public int maxHeight = 200;
-    public Vector3 targetVector = null;
-    public Vector3 startPos = null;
-    public Vector3 launcherPos = null;
+    public Pos targetVector = null;
+    public Pos startPos = null;
+    public Pos launcherPos = null;
     public boolean isExpoding = false;
 
     public int targetHeight = 0;
@@ -104,7 +104,7 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     // Missile Type
     public MissileType missileType = MissileType.MISSILE;
 
-    public Vector3 xiaoDanMotion = new Vector3();
+    public Pos xiaoDanMotion = new Pos();
 
     private double qiFeiGaoDu = 3;
 
@@ -127,11 +127,11 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     }
 
     /** Spawns a traditional missile and cruise missiles
-     * 
+     *
      * @param explosiveId - Explosive ID
      * @param startPos - Starting Position
      * @param launcherPos - Missile Launcher Position */
-    public EntityMissile(World world, Vector3 startPos, Vector3 launcherPos, int explosiveId)
+    public EntityMissile(World world, Pos startPos, Pos launcherPos, int explosiveId)
     {
         this(world);
         this.explosiveID = explosiveId;
@@ -143,12 +143,12 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     }
 
     /** For rocket launchers
-     * 
+     *
      * @param explosiveId - Explosive ID
      * @param startPos - Starting Position
      * @param yaw - The yaw of the missle
      * @param pitch - the pitch of the missle */
-    public EntityMissile(World world, Vector3 startPos, int explosiveId, float yaw, float pitch)
+    public EntityMissile(World world, Pos startPos, int explosiveId, float yaw, float pitch)
     {
         this(world);
         this.explosiveID = explosiveId;
@@ -198,8 +198,8 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
         {
             this.explosiveID = data.readInt();
             this.missileType = MissileType.values()[data.readInt()];
-            this.startPos = new Vector3(data.readDouble(), data.readDouble(), data.readDouble());
-            this.launcherPos = new Vector3(data.readInt(), data.readInt(), data.readInt());
+            this.startPos = new Pos(data.readDouble(), data.readDouble(), data.readDouble());
+            this.launcherPos = new Pos(data.readInt(), data.readInt(), data.readInt());
 
             rotationYaw = data.readFloat();
             rotationPitch = data.readFloat();
@@ -211,9 +211,9 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     }
 
     @Override
-    public void launch(Vector3 target)
+    public void launch(Pos target)
     {
-        this.startPos = new Vector3(this);
+        this.startPos = new Pos(this);
         this.targetVector = target;
         this.targetHeight = this.targetVector.intY();
         ((Explosion) ExplosiveRegistry.get(this.explosiveID)).launch(this);
@@ -226,7 +226,7 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     }
 
     @Override
-    public void launch(Vector3 target, int height)
+    public void launch(Pos target, int height)
     {
         this.qiFeiGaoDu = height;
         this.launch(target);
@@ -395,7 +395,7 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
                 {
                     if (this.feiXingTick == 0 && this.xiaoDanMotion != null)
                     {
-                        this.xiaoDanMotion = new Vector3(this.deltaPathX / (missileFlightTime * 0.3), this.deltaPathY / (missileFlightTime * 0.3), this.deltaPathZ / (missileFlightTime * 0.3));
+                        this.xiaoDanMotion = new Pos(this.deltaPathX / (missileFlightTime * 0.3), this.deltaPathY / (missileFlightTime * 0.3), this.deltaPathZ / (missileFlightTime * 0.3));
                         this.motionX = this.xiaoDanMotion.x;
                         this.motionY = this.xiaoDanMotion.y;
                         this.motionZ = this.xiaoDanMotion.z;
@@ -576,11 +576,11 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     {
         if (this.worldObj.isRemote)
         {
-            Vector3 position = new Vector3(this);
+            Pos position = new Pos(this);
             // The distance of the smoke relative
             // to the missile.
             double distance = -this.daoDanGaoDu - 0.2f;
-            Vector3 delta = new Vector3();
+            Pos delta = new Pos();
             // The delta Y of the smoke.
             delta.y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
             // The horizontal distance of the
@@ -624,9 +624,9 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     }
 
     @Override
-    public Vector3 getPredictedPosition(int t)
+    public Pos getPredictedPosition(int t)
     {
-        Vector3 guJiDiDian = new Vector3(this);
+        Pos guJiDiDian = new Pos(this);
         double tempMotionY = this.motionY;
 
         if (this.feiXingTick > 20)
@@ -758,9 +758,9 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.startPos = new Vector3(nbt.getCompoundTag("kaiShi"));
-        this.targetVector = new Vector3(nbt.getCompoundTag("muBiao"));
-        this.launcherPos = new Vector3(nbt.getCompoundTag("faSheQi"));
+        this.startPos = new Pos(nbt.getCompoundTag("kaiShi"));
+        this.targetVector = new Pos(nbt.getCompoundTag("muBiao"));
+        this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi"));
         this.acceleration = nbt.getFloat("jiaSu");
         this.targetHeight = nbt.getInteger("baoZhaGaoDu");
         this.explosiveID = nbt.getInteger("haoMa");

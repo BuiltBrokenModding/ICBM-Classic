@@ -6,7 +6,7 @@ import universalelectricity.api.vector.Vector3;
 import universalelectricity.api.vector.VectorWorld;
 
 /** Used for small explosions.
- * 
+ *
  * @author Calclavia */
 public class ThreadSmallExplosion extends ThreadExplosion
 {
@@ -42,7 +42,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
 
                             for (float var21 = 0.3F; power > 0.0F; power -= var21 * 0.75F)
                             {
-                                Vector3 targetPosition = new Vector3(var15, var17, var19);
+                                Pos targetPosition = new Pos(var15, var17, var19);
                                 double distanceFromCenter = position.distance(targetPosition);
                                 int blockID = this.position.world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
 

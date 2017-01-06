@@ -29,7 +29,7 @@ public class BlastBreech extends BlastRepulsive
     {
         if (!this.world().isRemote)
         {
-            final Vector3 difference = new Vector3();
+            final Pos difference = new Pos();
 
             if (this.exploder instanceof IRotatable)
             {

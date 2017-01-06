@@ -8,14 +8,17 @@ import net.minecraftforge.fluids.IFluidBlock;
 import universalelectricity.api.vector.Vector3;
 import universalelectricity.api.vector.VectorWorld;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 /** Used for searching block spawn. Returns a block above this found block coordinate.
- * 
+ *
  * @author Calclavia */
 public class ThreadSky extends ThreadExplosion
 {
     public static interface IThreadCallBack
     {
-        public float getResistance(World world, Vector3 position, Vector3 targetPosition, Entity source, Block block);
+        public float getResistance(World world, Pos position, Pos targetPosition, Entity source, Block block);
     }
 
     public IThreadCallBack callBack;
@@ -32,7 +35,7 @@ public class ThreadSky extends ThreadExplosion
         {
 
             @Override
-            public float getResistance(World world, Vector3 explosionPosition, Vector3 targetPosition, Entity source, Block block)
+            public float getResistance(World world, Pos explosionPosition, Pos targetPosition, Entity source, Block block)
             {
                 float resistance = 0;
 
@@ -63,10 +66,10 @@ public class ThreadSky extends ThreadExplosion
                 double phi = Math.PI * 2 / steps * phi_n;
                 double theta = Math.PI / steps * theta_n;
 
-                Vector3 delta = new Vector3(Math.sin(theta) * Math.cos(phi), Math.cos(theta), Math.sin(theta) * Math.sin(phi));
+                Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
                 float power = this.energy - (this.energy * this.position.world().rand.nextFloat() / 2);
 
-                Vector3 targetPosition = this.position.clone();
+                Pos targetPosition = this.position.clone();
 
                 for (float var21 = 0.3F; power > 0f; power -= var21 * 0.75F * 10)
                 {
@@ -88,7 +91,7 @@ public class ThreadSky extends ThreadExplosion
 
                         if (power > 0f)
                         {
-                            this.results.add(targetPosition.clone().translate(new Vector3(0, 1, 0)));
+                            this.results.add(targetPosition.clone().translate(new Pos(0, 1, 0)));
                         }
                     }
 

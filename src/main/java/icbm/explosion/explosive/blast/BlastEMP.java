@@ -66,7 +66,7 @@ public class BlastEMP extends Blast
                     {
                         double dist = MathHelper.sqrt_double((x * x + y * y + z * z));
 
-                        Vector3 searchPosition = Vector3.translate(position, new Vector3(x, y, z));
+                        Pos searchPosition = Pos.translate(position, new Pos(x, y, z));
                         if (dist > this.getRadius())
                             continue;
 
@@ -140,7 +140,7 @@ public class BlastEMP extends Blast
                 {
                     if (this.world().isRemote && maxFx > 0)
                     {
-                        ICBMExplosion.proxy.spawnShock(this.world(), this.position, new Vector3(entity), 20);
+                        ICBMExplosion.proxy.spawnShock(this.world(), this.position, new Pos(entity), 20);
                         maxFx--;
                     }
 

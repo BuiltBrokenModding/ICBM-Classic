@@ -40,7 +40,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.yOffset = this.height / 2.0F;
     }
 
-    public EntityExplosive(World par1World, Vector3 position, byte orientation, int explosiveID)
+    public EntityExplosive(World par1World, Pos position, byte orientation, int explosiveID)
     {
         this(par1World);
         this.setPosition(position.x, position.y, position.z);
@@ -58,7 +58,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         ExplosiveRegistry.get(explosiveID).yinZhaQian(par1World, this);
     }
 
-    public EntityExplosive(World par1World, Vector3 position, int explosiveID, byte orientation, NBTTagCompound nbtData)
+    public EntityExplosive(World par1World, Pos position, int explosiveID, byte orientation, NBTTagCompound nbtData)
     {
         this(par1World, position, orientation, explosiveID);
         this.nbtData = nbtData;
@@ -103,7 +103,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         }
         else
         {
-            ExplosiveRegistry.get(this.explosiveID).onYinZha(this.worldObj, new Vector3(this.posX, this.posY, this.posZ), this.fuse);
+            ExplosiveRegistry.get(this.explosiveID).onYinZha(this.worldObj, new Pos(this.posX, this.posY, this.posZ), this.fuse);
         }
 
         this.fuse--;

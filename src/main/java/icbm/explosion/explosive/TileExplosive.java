@@ -1,6 +1,6 @@
 package icbm.explosion.explosive;
 
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.items.ItemRemoteDetonator;
 import net.minecraft.entity.player.EntityPlayer;

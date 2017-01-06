@@ -155,7 +155,7 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @param return - Return -1 if this explosive does not need procedural calls */
     public int proceduralInterval()
     {
@@ -171,9 +171,9 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
     {
         // Step 2: Damage all entities
         radius *= 2.0F;
-        Vector3 minCoord = position.clone();
+        Pos minCoord = position.clone();
         minCoord.add(-radius - 1);
-        Vector3 maxCoord = position.clone();
+        Pos maxCoord = position.clone();
         maxCoord.add(radius + 1);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.intX(), minCoord.intY(), minCoord.intZ(), maxCoord.intX(), maxCoord.intY(), maxCoord.intZ()));
         Vec3 var31 = Vec3.createVectorHelper(position.x, position.y, position.z);
@@ -224,7 +224,7 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
 
     /** Called by doDamageEntity on each entity being damaged. This function should be inherited if
      * something special is to happen to a specific entity.
-     * 
+     *
      * @return True if something special happens to this specific entity. */
     protected boolean onDamageEntity(Entity entity)
     {

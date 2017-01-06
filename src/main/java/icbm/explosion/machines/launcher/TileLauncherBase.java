@@ -1,7 +1,7 @@
 package icbm.explosion.machines.launcher;
 
 import icbm.Settings;
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.ex.Explosion;
 import icbm.explosion.explosive.ExplosiveRegistry;
@@ -34,7 +34,7 @@ import universalelectricity.api.vector.VectorHelper;
 import com.google.common.io.ByteArrayDataInput;
 
 /** This tile entity is for the base of the missile launcher
- * 
+ *
  * @author Calclavia */
 public class TileLauncherBase extends TileExternalInventory implements IPacketReceiver, ILauncherContainer, IRotatable, ITier, IMultiBlock, IBlockActivate
 {
@@ -69,7 +69,7 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
         {
             for (byte i = 2; i < 6; i++)
             {
-                Vector3 position = new Vector3(this.xCoord, this.yCoord, this.zCoord);
+                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord);
                 position.translate(ForgeDirection.getOrientation(i));
 
                 TileEntity tileEntity = this.worldObj.getBlockTileEntity(position.intX(), position.intY(), position.intZ());
@@ -147,8 +147,8 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
                         {
                             if (this.missile == null)
                             {
-                                Vector3 startingPosition = new Vector3((this.xCoord + 0.5f), (this.yCoord + 1.8f), (this.zCoord + 0.5f));
-                                this.missile = new EntityMissile(this.worldObj, startingPosition, new Vector3(this), explosiveID);
+                                Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1.8f), (this.zCoord + 0.5f));
+                                this.missile = new EntityMissile(this.worldObj, startingPosition, new Pos(this), explosiveID);
                                 this.worldObj.spawnEntityInWorld((Entity) this.missile);
                                 return;
                             }
@@ -174,9 +174,9 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     }
 
     /** Launches the missile
-     * 
+     *
      * @param target - The target in which the missile will land in */
-    public void launchMissile(Vector3 target, int gaoDu)
+    public void launchMissile(Pos target, int gaoDu)
     {
         // Apply inaccuracy
         float inaccuracy;
@@ -201,7 +201,7 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     }
 
     // Checks if the missile target is in range
-    public boolean isInRange(Vector3 target)
+    public boolean isInRange(Pos target)
     {
         if (target != null)
             return !shiTaiYuan(target) && !shiTaiJin(target);
@@ -210,13 +210,13 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     }
 
     /** Checks to see if the target is too close.
-     * 
+     *
      * @param target
      * @return */
-    public boolean shiTaiJin(Vector3 target)
+    public boolean shiTaiJin(Pos target)
     {
         // Check if it is greater than the minimum range
-        if (Vector3.distance(new Vector3(this.xCoord, 0, this.zCoord), new Vector3(target.x, 0, target.z)) < 10)
+        if (Pos.distance(new Pos(this.xCoord, 0, this.zCoord), new Pos(target.x, 0, target.z)) < 10)
         {
             return true;
         }
@@ -225,26 +225,26 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     }
 
     // Is the target too far?
-    public boolean shiTaiYuan(Vector3 target)
+    public boolean shiTaiYuan(Pos target)
     {
         // Checks if it is greater than the maximum range for the launcher base
         if (this.tier == 0)
         {
-            if (Vector3.distance(new Vector3(this.xCoord, 0, this.zCoord), new Vector3(target.x, 0, target.z)) < Settings.DAO_DAN_ZUI_YUAN / 10)
+            if (Pos.distance(new Pos(this.xCoord, 0, this.zCoord), new Pos(target.x, 0, target.z)) < Settings.DAO_DAN_ZUI_YUAN / 10)
             {
                 return false;
             }
         }
         else if (this.tier == 1)
         {
-            if (Vector3.distance(new Vector3(this.xCoord, 0, this.zCoord), new Vector3(target.x, 0, target.z)) < Settings.DAO_DAN_ZUI_YUAN / 5)
+            if (Pos.distance(new Pos(this.xCoord, 0, this.zCoord), new Pos(target.x, 0, target.z)) < Settings.DAO_DAN_ZUI_YUAN / 5)
             {
                 return false;
             }
         }
         else if (this.tier == 2)
         {
-            if (Vector3.distance(new Vector3(this.xCoord, 0, this.zCoord), new Vector3(target.x, 0, target.z)) < Settings.DAO_DAN_ZUI_YUAN)
+            if (Pos.distance(new Pos(this.xCoord, 0, this.zCoord), new Pos(target.x, 0, target.z)) < Settings.DAO_DAN_ZUI_YUAN)
             {
                 return false;
             }
@@ -330,15 +330,15 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     }
 
     @Override
-    public Vector3[] getMultiBlockVectors()
+    public Pos[] getMultiBlockVectors()
     {
         if (this.facingDirection == ForgeDirection.SOUTH || this.facingDirection == ForgeDirection.NORTH)
         {
-            return new Vector3[] { new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(1, 2, 0), new Vector3(-1, 0, 0), new Vector3(-1, 1, 0), new Vector3(-1, 2, 0) };
+            return new Pos[]{new Pos(1, 0, 0), new Pos(1, 1, 0), new Pos(1, 2, 0), new Pos(-1, 0, 0), new Pos(-1, 1, 0), new Pos(-1, 2, 0)};
         }
         else
         {
-            return new Vector3[] { new Vector3(0, 0, 1), new Vector3(0, 1, 1), new Vector3(0, 2, 1), new Vector3(0, 0, -1), new Vector3(0, 1, -1), new Vector3(0, 2, -1) };
+            return new Pos[]{new Pos(0, 0, 1), new Pos(0, 1, 1), new Pos(0, 2, 1), new Pos(0, 0, -1), new Pos(0, 1, -1), new Pos(0, 2, -1)};
         }
     }
 
@@ -383,7 +383,7 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     {
         for (byte i = 2; i < 6; i++)
         {
-            Vector3 position = new Vector3(this).translate(ForgeDirection.getOrientation(i));
+            Pos position = new Pos(this).translate(ForgeDirection.getOrientation(i));
 
             TileEntity tileEntity = position.getTileEntity(this.worldObj);
 

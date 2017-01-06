@@ -1,7 +1,7 @@
 package icbm.explosion.items;
 
-import icbm.core.ICBMCore;
-import icbm.core.prefab.item.ItemICBMElectrical;
+import icbm.classic.ICBMCore;
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.machines.TileCruiseLauncher;
 import icbm.explosion.machines.launcher.TileLauncherPrefab;
@@ -38,10 +38,10 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List par3List, boolean par4)
     {
-        Vector3 coord = getLink(itemStack);
+        Pos coord = getLink(itemStack);
         par3List.add("\uaa74" + LanguageUtility.getLocal("info.radarGun.savedCoords"));
         par3List.add(LanguageUtility.getLocal("gui.misc.x") + " " + (int) coord.x + ", " + LanguageUtility.getLocal("gui.misc.y") + " " + (int) coord.y + ", " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) coord.z);
-        par3List.add((int) new Vector3(entityPlayer).distance(coord) + " " + LanguageUtility.getLocal("info.radarGun.meters") + " (" + (int) (new Vector3(entityPlayer).x - coord.x) + ", " + (int) (new Vector3(entityPlayer).y - coord.y) + ", " + (int) (new Vector3(entityPlayer).z - coord.z) + ")");
+        par3List.add((int) new Pos(entityPlayer).distance(coord) + " " + LanguageUtility.getLocal("info.radarGun.meters") + " (" + (int) (new Pos(entityPlayer).x - coord.x) + ", " + (int) (new Pos(entityPlayer).y - coord.y) + ", " + (int) (new Pos(entityPlayer).z - coord.z) + ")");
 
 		super.addInformation(itemStack, entityPlayer, par3List, par4);
     }
@@ -68,7 +68,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
                     {
                         PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_ITEM.getPacket(entityPlayer, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
                         this.discharge(itemStack, YONG_DIAN_LIANG, true);
-                        entityPlayer.addChatMessage(LanguageUtility.getLocal("message.radarGun.scanned").replaceAll("%x", "" + objectMouseOver.blockX).replace("%y", "" + objectMouseOver.blockY).replaceAll("%z", "" + objectMouseOver.blockZ).replaceAll("%d", "" + Math.round(new Vector3(entityPlayer).distance(new Vector3(objectMouseOver)))));
+                        entityPlayer.addChatMessage(LanguageUtility.getLocal("message.radarGun.scanned").replaceAll("%x", "" + objectMouseOver.blockX).replace("%y", "" + objectMouseOver.blockY).replaceAll("%z", "" + objectMouseOver.blockZ).replaceAll("%d", "" + Math.round(new Pos(entityPlayer).distance(new Pos(objectMouseOver)))));
                     }
                     else
                     {
@@ -100,14 +100,14 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
                 {
                     TileLauncherScreen missileLauncher = (TileLauncherScreen) tileEntity;
 
-                    Vector3 savedCords = this.getLink(par1ItemStack);
+                    Pos savedCords = this.getLink(par1ItemStack);
 
                     // If the vector is NOT 0
-                    if (!savedCords.equals(new Vector3()))
+                    if (!savedCords.equals(new Pos()))
                     {
                         if (missileLauncher.getTarget() == null)
                         {
-                            missileLauncher.setTarget(new Vector3());
+                            missileLauncher.setTarget(new Pos());
                         }
 
                         missileLauncher.getTarget().x = (int) savedCords.x;
@@ -129,13 +129,13 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
                 {
                     TileCruiseLauncher missileLauncher = (TileCruiseLauncher) tileEntity;
 
-                    Vector3 savedCords = this.getLink(par1ItemStack);
+                    Pos savedCords = this.getLink(par1ItemStack);
 
-                    if (!savedCords.equals(new Vector3()))
+                    if (!savedCords.equals(new Pos()))
                     {
                         if (missileLauncher.getTarget() == null)
                         {
-                            missileLauncher.setTarget(new Vector3());
+                            missileLauncher.setTarget(new Pos());
                         }
 
                         missileLauncher.setTarget(savedCords.clone());
@@ -160,7 +160,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
         return false;
     }
 
-    public void setLink(ItemStack itemStack, Vector3 position)
+    public void setLink(ItemStack itemStack, Pos position)
     {
         // Saves the frequency in the ItemStack
         if (itemStack.getTagCompound() == null)
@@ -171,14 +171,14 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
         position.writeToNBT(itemStack.getTagCompound());
     }
 
-    public Vector3 getLink(ItemStack itemStack)
+    public Pos getLink(ItemStack itemStack)
     {
         if (itemStack.getTagCompound() == null)
         {
             itemStack.setTagCompound(new NBTTagCompound());
         }
 
-        return new Vector3(itemStack.getTagCompound());
+        return new Pos(itemStack.getTagCompound());
     }
 
     @Override
@@ -197,7 +197,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
     public void onReceivePacket(ByteArrayDataInput data, EntityPlayer player, Object... extra)
     {
         ItemStack itemStack = (ItemStack) extra[0];
-        this.setLink(itemStack, new Vector3(data.readInt(), data.readInt(), data.readInt()));
+        this.setLink(itemStack, new Pos(data.readInt(), data.readInt(), data.readInt()));
         if (ICBMExplosion.itemRadarGun instanceof ItemElectric)
             ((ItemElectric) ICBMExplosion.itemRadarGun).discharge(itemStack, ItemRadarGun.YONG_DIAN_LIANG, true);
     }

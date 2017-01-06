@@ -1,7 +1,7 @@
 package icbm.explosion.explosive.blast;
 
 import icbm.Reference;
-import icbm.core.entity.EntityFlyingBlock;
+import icbm.classic.entity.EntityFlyingBlock;
 import icbm.explosion.explosive.thread.ThreadSmallExplosion;
 
 import java.util.HashSet;
@@ -46,9 +46,9 @@ public class BlastAntiGravitational extends Blast
         {
             int blocksToTake = 20;
 
-            for (Vector3 targetPosition : this.thread.results)
+            for (Pos targetPosition : this.thread.results)
             {
-                double distance = Vector3.distance(targetPosition, position);
+                double distance = Pos.distance(targetPosition, position);
 
                 if (distance > r || distance < r - 2 || blocksToTake <= 0)
                     continue;
@@ -106,7 +106,7 @@ public class BlastAntiGravitational extends Blast
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @return - Return -1 if this explosive does not need proceudral calls */
     @Override
     public int proceduralInterval()

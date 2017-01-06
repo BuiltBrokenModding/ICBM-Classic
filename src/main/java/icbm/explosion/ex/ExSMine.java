@@ -26,7 +26,7 @@ public class ExSMine extends Explosive
     }
 
     @Override
-    public void onYinZha(World worldObj, Vector3 position, int fuseTicks)
+    public void onYinZha(World worldObj, Pos position, int fuseTicks)
     {
 
     }

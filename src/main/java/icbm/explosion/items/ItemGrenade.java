@@ -1,7 +1,7 @@
 package icbm.explosion.items;
 
 import icbm.Reference;
-import icbm.core.prefab.item.ItemICBMBase;
+import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.explosion.entities.EntityGrenade;
 import icbm.explosion.explosive.Explosive;
 import icbm.explosion.explosive.ExplosiveRegistry;

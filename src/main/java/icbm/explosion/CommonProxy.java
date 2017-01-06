@@ -27,7 +27,7 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 /** ICBM Explosion Module Common Proxy
- * 
+ *
  * @author Calclavia */
 public class CommonProxy implements IGuiHandler
 {
@@ -84,17 +84,17 @@ public class CommonProxy implements IGuiHandler
         return false;
     }
 
-    public void spawnParticle(String name, World world, Vector3 position, float scale, double distance)
+    public void spawnParticle(String name, World world, Pos position, float scale, double distance)
     {
         this.spawnParticle(name, world, position, 0, 0, 0, scale, distance);
     }
 
-    public void spawnParticle(String name, World world, Vector3 position, double motionX, double motionY, double motionZ, float scale, double distance)
+    public void spawnParticle(String name, World world, Pos position, double motionX, double motionY, double motionZ, float scale, double distance)
     {
         this.spawnParticle(name, world, position, motionX, motionY, motionZ, 1, 1, 1, scale, distance);
     }
 
-    public void spawnParticle(String name, World world, Vector3 position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
+    public void spawnParticle(String name, World world, Pos position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
     {
 
     }
@@ -114,12 +114,12 @@ public class CommonProxy implements IGuiHandler
         return null;
     }
 
-    public void spawnShock(World world, Vector3 position, Vector3 target)
+    public void spawnShock(World world, Pos position, Pos target)
     {
 
     }
 
-    public void spawnShock(World world, Vector3 startVec, Vector3 targetVec, int duration)
+    public void spawnShock(World world, Pos startVec, Pos targetVec, int duration)
     {
         // TODO Auto-generated method stub
 

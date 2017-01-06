@@ -1,7 +1,7 @@
 package icbm.explosion.explosive.blast;
 
 import icbm.Reference;
-import icbm.core.entity.EntityFlyingBlock;
+import icbm.classic.entity.EntityFlyingBlock;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityExplosion;
 import icbm.explosion.entities.EntityExplosive;
@@ -76,7 +76,7 @@ public class BlastRedmatter extends Blast
         // Try to find and grab some blocks to orbit
         if (!this.world().isRemote)
         {
-            Vector3 currentPos = new Vector3();
+            Pos currentPos = new Pos();
             int blockID = -1;
             int metadata = -1;
             double dist = -1;
@@ -171,7 +171,7 @@ public class BlastRedmatter extends Blast
     }
 
     /** Makes an entity get affected by Red Matter.
-     * 
+     *
      * @Return True if explosion happened */
     public boolean affectEntity(float radius, Entity entity, boolean doExplosion)
     {
@@ -206,12 +206,12 @@ public class BlastRedmatter extends Blast
         double xPercentage = 1 - (xDifference / radius);
         double yPercentage = 1 - (yDifference / radius);
         double zPercentage = 1 - (zDifference / radius);
-        double distancePercentage = (this.position.distance(new Vector3(entity)) / radius);
+        double distancePercentage = (this.position.distance(new Pos(entity)) / radius);
 
-        Vector3 entityPosition = new Vector3(entity);
-        Vector3 centeredPosition = entityPosition.clone().subtract(this.position);
+        Pos entityPosition = new Pos(entity);
+        Pos centeredPosition = entityPosition.clone().subtract(this.position);
         centeredPosition.rotate(1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random());
-        Vector3 newPosition = Vector3.translate(this.position, centeredPosition);
+        Pos newPosition = Pos.translate(this.position, centeredPosition);
         // Orbit Velocity
         entity.addVelocity(newPosition.x - entityPosition.x, 0, newPosition.z - entityPosition.z);
         // Gravity Velocity
@@ -225,19 +225,19 @@ public class BlastRedmatter extends Blast
                 {
                     if (this.world().rand.nextInt(5) == 0)
                     {
-                        ICBMExplosion.proxy.spawnParticle("digging", this.world(), new Vector3(entity), -xDifference, -yDifference + 10, -zDifference, ((EntityFlyingBlock) entity).blockID, 0, ((EntityFlyingBlock) entity).metadata, 2, 1);
+                        ICBMExplosion.proxy.spawnParticle("digging", this.world(), new Pos(entity), -xDifference, -yDifference + 10, -zDifference, ((EntityFlyingBlock) entity).blockID, 0, ((EntityFlyingBlock) entity).metadata, 2, 1);
 
                     }
                 }
             }
         }
 
-        if (Vector3.distance(new Vector3(entity.posX, entity.posY, entity.posZ), position) < 4)
+        if (Pos.distance(new Pos(entity.posX, entity.posY, entity.posZ), position) < 4)
         {
             if (doExplosion && !explosionCreated && callCount % 5 == 0)
             {
                 /** Inject velocities to prevent this explosion to move RedMatter. */
-                Vector3 tempMotion = new Vector3(this.controller.motionX, this.controller.motionY, this.controller.motionZ);
+                Pos tempMotion = new Pos(this.controller.motionX, this.controller.motionY, this.controller.motionZ);
                 this.world().createExplosion(this.exploder, entity.posX, entity.posY, entity.posZ, 3.0F, true);
                 this.controller.motionX = tempMotion.x;
                 this.controller.motionY = tempMotion.y;
@@ -279,7 +279,7 @@ public class BlastRedmatter extends Blast
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @return - Return -1 if this explosive does not need proceudral calls */
     @Override
     public int proceduralInterval()

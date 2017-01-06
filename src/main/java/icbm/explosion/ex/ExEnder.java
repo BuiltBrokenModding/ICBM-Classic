@@ -32,7 +32,7 @@ public class ExEnder extends Explosion
         {
             if (entityPlayer.inventory.getCurrentItem().getItem() instanceof ICoordLink)
             {
-                Vector3 link = ((ICoordLink) entityPlayer.inventory.getCurrentItem().getItem()).getLink(entityPlayer.inventory.getCurrentItem());
+                Pos link = ((ICoordLink) entityPlayer.inventory.getCurrentItem().getItem()).getLink(entityPlayer.inventory.getCurrentItem());
 
                 if (link != null)
                 {
@@ -63,7 +63,7 @@ public class ExEnder extends Explosion
         {
             if (entityPlayer.inventory.getCurrentItem().getItem() instanceof ICoordLink)
             {
-                Vector3 link = ((ICoordLink) entityPlayer.inventory.getCurrentItem().getItem()).getLink(entityPlayer.inventory.getCurrentItem());
+                Pos link = ((ICoordLink) entityPlayer.inventory.getCurrentItem().getItem()).getLink(entityPlayer.inventory.getCurrentItem());
 
                 if (link != null)
                 {
@@ -90,13 +90,13 @@ public class ExEnder extends Explosion
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
-        Vector3 teleportTarget = null;
+        Pos teleportTarget = null;
 
         if (entity instanceof IExplosiveContainer)
         {
             if (((IExplosiveContainer) entity).getTagCompound().hasKey("x") && ((IExplosiveContainer) entity).getTagCompound().hasKey("y") && ((IExplosiveContainer) entity).getTagCompound().hasKey("z"))
             {
-                teleportTarget = new Vector3(((IExplosiveContainer) entity).getTagCompound());
+                teleportTarget = new Pos(((IExplosiveContainer) entity).getTagCompound());
             }
         }
 

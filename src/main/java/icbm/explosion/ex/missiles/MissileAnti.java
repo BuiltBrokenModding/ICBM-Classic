@@ -11,7 +11,7 @@ import resonant.api.ai.ITarget.TargetType;
 import universalelectricity.api.vector.Vector3;
 
 /** Antiballistic missile.
- * 
+ *
  * @author Calclavia */
 public class MissileAnti extends Missile
 {
@@ -29,7 +29,7 @@ public class MissileAnti extends Missile
     {
         if (missileObj.lockedTarget != null)
         {
-            Vector3 target = new Vector3(missileObj.lockedTarget);
+            Pos target = new Pos(missileObj.lockedTarget);
 
             if (missileObj.lockedTarget.isDead)
             {

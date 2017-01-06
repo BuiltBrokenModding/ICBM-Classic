@@ -1,6 +1,6 @@
 package icbm.explosion.machines.launcher;
 
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.ICBMExplosion;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import universalelectricity.api.vector.Vector3;
 import com.google.common.io.ByteArrayDataInput;
 
 /** This tile entity is for the screen of the missile launcher
- * 
+ *
  * @author Calclavia */
 public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActivate, ITier, IRotatable, IPacketReceiver
 {
@@ -65,7 +65,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
         {
             for (byte i = 2; i < 6; i++)
             {
-                Vector3 position = new Vector3(this.xCoord, this.yCoord, this.zCoord);
+                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord);
                 position.translate(ForgeDirection.getOrientation(i));
 
                 TileEntity tileEntity = this.worldObj.getBlockTileEntity(position.intX(), position.intY(), position.intZ());
@@ -99,7 +99,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
             {
                 if (this.targetPos == null)
                 {
-                    this.targetPos = new Vector3(this.xCoord, 0, this.zCoord);
+                    this.targetPos = new Pos(this.xCoord, 0, this.zCoord);
                 }
             }
 
@@ -154,7 +154,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
             }
             case 2:
             {
-                this.targetPos = new Vector3(data.readInt(), data.readInt(), data.readInt());
+                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
 
                 if (this.getTier() < 2)
                 {
@@ -170,7 +170,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
             case 4:
             {
                 this.getEnergyHandler().setEnergy(data.readLong());
-                this.targetPos = new Vector3(data.readInt(), data.readInt(), data.readInt());
+                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
                 break;
             }
         }
@@ -204,7 +204,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
     }
 
     /** Gets the display status of the missile launcher
-     * 
+     *
      * @return The string to be displayed */
     @Override
     public String getStatus()

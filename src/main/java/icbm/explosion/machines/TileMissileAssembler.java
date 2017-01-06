@@ -1,7 +1,7 @@
 package icbm.explosion.machines;
 
-import icbm.core.ICBMCore;
-import icbm.core.prefab.TileICBM;
+import icbm.classic.ICBMCore;
+import icbm.classic.prefab.TileICBM;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.items.ItemMissile;
@@ -48,12 +48,12 @@ public class TileMissileAssembler extends TileICBM implements IMultiBlock, ITier
     }
 
     @Override
-    public Vector3[] getMultiBlockVectors()
+    public Pos[] getMultiBlockVectors()
     {
         return getMultiBlockVectors(placedSide, rotationSide);
     }
 
-    public static Vector3[] getMultiBlockVectors(ForgeDirection side, byte rot)
+    public static Pos[] getMultiBlockVectors(ForgeDirection side, byte rot)
     {
         // rotation doesn't really effect the multi block too much however placed side does
         if (side == ForgeDirection.UP || side == ForgeDirection.DOWN)
@@ -61,10 +61,10 @@ public class TileMissileAssembler extends TileICBM implements IMultiBlock, ITier
             // line up on the x
             if (rot == 0 || rot == 2)
             {
-                return new Vector3[] { new Vector3(1, 0, 0), new Vector3(-1, 0, 0) };
+                return new Pos[]{new Pos(1, 0, 0), new Pos(-1, 0, 0)};
             }
             // lined up on the z
-            return new Vector3[] { new Vector3(0, 0, 1), new Vector3(0, 0, -1) };
+            return new Pos[]{new Pos(0, 0, 1), new Pos(0, 0, -1)};
         }
         else
         {
@@ -73,15 +73,15 @@ public class TileMissileAssembler extends TileICBM implements IMultiBlock, ITier
             {
                 if (side == ForgeDirection.NORTH || side == ForgeDirection.SOUTH)
                 {
-                    return new Vector3[] { new Vector3(-1, 0, 0), new Vector3(1, 0, 0) };
+                    return new Pos[]{new Pos(-1, 0, 0), new Pos(1, 0, 0)};
                 }
                 else if (side == ForgeDirection.EAST || side == ForgeDirection.WEST)
                 {
-                    return new Vector3[] { new Vector3(0, 0, -1), new Vector3(0, 0, 1) };
+                    return new Pos[]{new Pos(0, 0, -1), new Pos(0, 0, 1)};
                 }
             }
             // Lined up with the Y
-            return new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, -1, 0) };
+            return new Pos[]{new Pos(0, 1, 0), new Pos(0, -1, 0)};
         }
     }
 

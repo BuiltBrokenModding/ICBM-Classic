@@ -1,6 +1,6 @@
 package icbm.explosion.machines.launcher;
 
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
@@ -16,7 +16,7 @@ import universalelectricity.api.vector.Vector3;
 import com.google.common.io.ByteArrayDataInput;
 
 /** This tile entity is for the screen of the missile launcher
- * 
+ *
  * @author Calclavia */
 public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, ITier, IMultiBlock, IRotatable
 {
@@ -59,7 +59,7 @@ public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, 
     }
 
     /** Determines if this TileEntity requires update calls.
-     * 
+     *
      * @return True if you want updateEntity() to be called, false if not */
     @Override
     public boolean canUpdate()
@@ -96,9 +96,9 @@ public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, 
     }
 
     @Override
-    public Vector3[] getMultiBlockVectors()
+    public Pos[] getMultiBlockVectors()
     {
-        return new Vector3[] { new Vector3(0, 1, 0), new Vector3(0, 2, 0) };
+        return new Pos[]{new Pos(0, 1, 0), new Pos(0, 2, 0)};
     }
 
     @Override

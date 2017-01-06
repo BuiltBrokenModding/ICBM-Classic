@@ -36,9 +36,9 @@ public class BlastExothermic extends BlastBeam
 
             if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
             {
-                for (Vector3 targetPosition : this.thread.results)
+                for (Pos targetPosition : this.thread.results)
                 {
-                    double distance = Vector3.distance(targetPosition, position);
+                    double distance = Pos.distance(targetPosition, position);
 
                     double distanceFromCenter = position.distance(targetPosition);
 
@@ -96,7 +96,7 @@ public class BlastExothermic extends BlastBeam
     }
 
     @Override
-    public boolean canFocusBeam(World worldObj, Vector3 position)
+    public boolean canFocusBeam(World worldObj, Pos position)
     {
         long worldTime = worldObj.getWorldTime();
 

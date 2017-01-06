@@ -2,8 +2,8 @@ package icbm.explosion.items;
 
 import icbm.Reference;
 import icbm.Settings;
-import icbm.core.ICBMCore;
-import icbm.core.prefab.item.ItemICBMElectrical;
+import icbm.classic.ICBMCore;
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityLightBeam;
 import icbm.explosion.machines.launcher.TileLauncherPrefab;
@@ -150,7 +150,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
 
             if (this.getLauncherCountDown(itemStack) > 0 || this.getLauncherCount(itemStack) > 0)
             {
-                Vector3 position = new Vector3(par3Entity.posX, par3Entity.posY, par3Entity.posZ);
+                Pos position = new Pos(par3Entity.posX, par3Entity.posY, par3Entity.posZ);
 
                 for (IBlockFrequency blockFrequency : FrequencyGrid.instance().get(world, position, ItemLaserDesignator.BAN_JING, this.getFrequency(itemStack)))
                 {
@@ -273,7 +273,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
                     {
                         if (this.getEnergy(par1ItemStack) >= YONG_DIAN_LIANG)
                         {
-                            Vector3 position = new Vector3(player.posX, player.posY, player.posZ);
+                            Pos position = new Pos(player.posX, player.posY, player.posZ);
 
                             boolean doAirStrike = false;
                             int errorCount = 0;
@@ -295,7 +295,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
                                             yHit = 0;
                                     }
 
-                                    missileLauncher.setTarget(new Vector3(objectMouseOver.blockX, yHit, objectMouseOver.blockZ));
+                                    missileLauncher.setTarget(new Pos(objectMouseOver.blockX, yHit, objectMouseOver.blockZ));
                                     PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(missileLauncher, 2, missileLauncher.getTarget().intX(), missileLauncher.getTarget().intY(), missileLauncher.getTarget().intZ()));
 
                                     if (missileLauncher.canLaunch())
@@ -348,7 +348,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
     public void onReceivePacket(ByteArrayDataInput data, EntityPlayer player, Object... extra)
     {
         ItemStack itemStack = (ItemStack) extra[0];
-        Vector3 position = new Vector3(data.readInt(), data.readInt(), data.readInt());
+        Pos position = new Pos(data.readInt(), data.readInt(), data.readInt());
 
         ((ItemLaserDesignator) ICBMExplosion.itemLaserDesignator).setLauncherCountDown(itemStack, 119);
 

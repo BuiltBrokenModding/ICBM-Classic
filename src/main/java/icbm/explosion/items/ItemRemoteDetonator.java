@@ -1,7 +1,7 @@
 package icbm.explosion.items;
 
-import icbm.core.ICBMCore;
-import icbm.core.prefab.item.ItemICBMElectrical;
+import icbm.classic.ICBMCore;
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.explosive.Explosive;
 import icbm.explosion.explosive.TileExplosive;
@@ -36,7 +36,7 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IPacketRe
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer player, List par3List, boolean par4)
     {
-        Vector3 coord = getSavedCoord(itemStack);
+        Pos coord = getSavedCoord(itemStack);
 
         if (this.nengZha(coord.getTileEntity(player.worldObj)))
         {
@@ -63,7 +63,7 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IPacketRe
                 // Check for electricity
                 if (this.getEnergy(itemStack) > ENERGY)
                 {
-                    this.setSavedCoords(itemStack, new Vector3(x, y, z));
+                    this.setSavedCoords(itemStack, new Pos(x, y, z));
                     this.discharge(itemStack, ENERGY, true);
                     if (world.isRemote)
                     {
@@ -162,7 +162,7 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IPacketRe
         return false;
     }
 
-    public void setSavedCoords(ItemStack itemStack, Vector3 position)
+    public void setSavedCoords(ItemStack itemStack, Pos position)
     {
         if (itemStack.stackTagCompound == null)
         {
@@ -174,14 +174,14 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IPacketRe
         itemStack.stackTagCompound.setInteger("z", position.intZ());
     }
 
-    public Vector3 getSavedCoord(ItemStack par1ItemStack)
+    public Pos getSavedCoord(ItemStack par1ItemStack)
     {
         if (par1ItemStack.stackTagCompound == null)
         {
-            return new Vector3();
+            return new Pos();
         }
 
-        return new Vector3(par1ItemStack.stackTagCompound.getInteger("x"), par1ItemStack.stackTagCompound.getInteger("y"), par1ItemStack.stackTagCompound.getInteger("z"));
+        return new Pos(par1ItemStack.stackTagCompound.getInteger("x"), par1ItemStack.stackTagCompound.getInteger("y"), par1ItemStack.stackTagCompound.getInteger("z"));
     }
 
     @Override

@@ -38,7 +38,7 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
         this.renderDistanceWeight = 8;
     }
 
-    public EntityGrenade(World par1World, Vector3 position, int explosiveID)
+    public EntityGrenade(World par1World, Pos position, int explosiveID)
     {
         this(par1World);
         this.setPosition(position.x, position.y, position.z);
@@ -230,7 +230,7 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
         }
         else
         {
-            ((Explosive) this.getExplosiveType()).onYinZha(this.worldObj, new Vector3(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
+            ((Explosive) this.getExplosiveType()).onYinZha(this.worldObj, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
         }
     }
 

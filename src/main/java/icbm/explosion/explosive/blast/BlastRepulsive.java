@@ -17,7 +17,7 @@ public class BlastRepulsive extends Blast
     private int checkBanJing = 16;
     protected float nengLiang = 10F;
 
-    private List<Vector3> blownBlocks = new ArrayList<Vector3>();
+    private List<Pos> blownBlocks = new ArrayList<Pos>();
 
     /** 0- No push, 1 - Attract, 2 - Repel */
     private int pushType = 0;
@@ -79,7 +79,7 @@ public class BlastRepulsive extends Blast
 
                                 if (var14 > 0.0F)
                                 {
-                                    blownBlocks.add(new Vector3(var22, var23, var24));
+                                    blownBlocks.add(new Pos(var22, var23, var24));
                                 }
 
                                 var15 += xStep * var21;
@@ -108,7 +108,7 @@ public class BlastRepulsive extends Blast
         if (!this.world().isRemote)
         {
             int var3;
-            Vector3 blownPosition;
+            Pos blownPosition;
             int var5;
             int var6;
             int var7;
@@ -167,9 +167,9 @@ public class BlastRepulsive extends Blast
     public void pushEntities(float radius, float force, int type)
     {
         // Step 2: Damage all entities
-        Vector3 minCoord = position.clone();
+        Pos minCoord = position.clone();
         minCoord.add(-radius - 1);
-        Vector3 maxCoord = position.clone();
+        Pos maxCoord = position.clone();
         maxCoord.add(radius + 1);
 
         Cuboid region = new Cuboid(minCoord, maxCoord);

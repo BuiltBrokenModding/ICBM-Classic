@@ -1,7 +1,7 @@
 package icbm.explosion.explosive.blast;
 
 import icbm.Reference;
-import icbm.core.entity.EntityFlyingBlock;
+import icbm.classic.entity.EntityFlyingBlock;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.explosive.BlockExplosive;
@@ -58,7 +58,7 @@ public class BlastSonic extends Blast
                     {
                         for (int z = (int) (-this.getRadius() * 2); z < this.getRadius() * 2; ++z)
                         {
-                            Vector3 targetPosition = Vector3.translate(position, new Vector3(x, y, z));
+                            Pos targetPosition = Pos.translate(position, new Pos(x, y, z));
                             int blockID = world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
 
                             if (blockID > 0)
@@ -78,7 +78,7 @@ public class BlastSonic extends Blast
             this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.nengLiang, this.exploder, new IThreadCallBack()
             {
                 @Override
-                public float getResistance(World world, Vector3 explosionPosition, Vector3 targetPosition, Entity source, Block block)
+                public float getResistance(World world, Pos explosionPosition, Pos targetPosition, Entity source, Block block)
                 {
                     float resistance = 0;
 
@@ -117,12 +117,12 @@ public class BlastSonic extends Blast
         {
             if (this.thread != null && this.thread.isComplete)
             {
-                Iterator<Vector3> it = this.thread.results.iterator();
+                Iterator<Pos> it = this.thread.results.iterator();
 
                 while (it.hasNext())
                 {
-                    Vector3 targetPosition = it.next();
-                    double distance = Vector3.distance(targetPosition, position);
+                    Pos targetPosition = it.next();
+                    double distance = Pos.distance(targetPosition, position);
 
                     if (distance > r || distance < r - 3)
                         continue;
@@ -208,7 +208,7 @@ public class BlastSonic extends Blast
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @return - Return -1 if this explosive does not need proceudral calls */
     @Override
     public int proceduralInterval()

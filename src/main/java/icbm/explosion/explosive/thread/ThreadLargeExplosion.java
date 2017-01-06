@@ -8,14 +8,17 @@ import net.minecraftforge.fluids.IFluidBlock;
 import universalelectricity.api.vector.Vector3;
 import universalelectricity.api.vector.VectorWorld;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 /** Used for large raycasting explosions.
- * 
+ *
  * @author Calclavia */
 public class ThreadLargeExplosion extends ThreadExplosion
 {
     public static interface IThreadCallBack
     {
-        public float getResistance(World world, Vector3 position, Vector3 targetPosition, Entity source, Block block);
+        public float getResistance(World world, Pos position, Pos targetPosition, Entity source, Block block);
     }
 
     public IThreadCallBack callBack;
@@ -32,7 +35,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
         {
 
             @Override
-            public float getResistance(World world, Vector3 pos, Vector3 targetPosition, Entity source, Block block)
+            public float getResistance(World world, Pos pos, Pos targetPosition, Entity source, Block block)
             {
                 float resistance = 0;
 
@@ -63,10 +66,10 @@ public class ThreadLargeExplosion extends ThreadExplosion
                 double phi = Math.PI * 2 / steps * phi_n;
                 double theta = Math.PI / steps * theta_n;
 
-                Vector3 delta = new Vector3(Math.sin(theta) * Math.cos(phi), Math.cos(theta), Math.sin(theta) * Math.sin(phi));
+                Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
                 float power = this.energy - (this.energy * this.position.world().rand.nextFloat() / 2);
 
-                Vector3 t = position.clone();
+                Pos t = position.clone();
 
                 for (float d = 0.3F; power > 0f; power -= d * 0.75F * 10)
                 {

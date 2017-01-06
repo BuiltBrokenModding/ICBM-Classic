@@ -1,6 +1,6 @@
 package icbm.explosion.explosive.blast;
 
-import icbm.core.entity.EntityFlyingBlock;
+import icbm.classic.entity.EntityFlyingBlock;
 import icbm.explosion.entities.EntityLightBeam;
 import icbm.explosion.explosive.thread.ThreadExplosion;
 import icbm.explosion.explosive.thread.ThreadSky;
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import universalelectricity.api.vector.Vector3;
 
 /** Used by Exothermic and Endothermic explosions.
- * 
+ *
  * @author Calclavia */
 public abstract class BlastBeam extends Blast
 {
@@ -59,7 +59,7 @@ public abstract class BlastBeam extends Blast
 
             if (this.canFocusBeam(this.world(), position))
             {
-                Vector3 currentPos;
+                Pos currentPos;
                 int blockID;
                 int metadata;
                 double dist;
@@ -78,7 +78,7 @@ public abstract class BlastBeam extends Blast
                             {
                                 continue;
                             }
-                            currentPos = new Vector3(position.x + x, position.y + y, position.z + z);
+                            currentPos = new Pos(position.x + x, position.y + y, position.z + z);
                             blockID = this.world().getBlockId(currentPos.intX(), currentPos.intY(), currentPos.intZ());
                             Block block = Block.blocksList[blockID];
                             if (block == null || block.isAirBlock(this.world(), x, y, z) || block.getBlockHardness(this.world(), x, y, x) < 0)
@@ -109,10 +109,10 @@ public abstract class BlastBeam extends Blast
 
             for (EntityFlyingBlock entity : this.feiBlocks)
             {
-                Vector3 entityPosition = new Vector3(entity);
-                Vector3 centeredPosition = entityPosition.clone().translate(this.position.invert());
+                Pos entityPosition = new Pos(entity);
+                Pos centeredPosition = entityPosition.clone().translate(this.position.invert());
                 centeredPosition.rotate(2);
-                Vector3 newPosition = this.position.clone().translate(centeredPosition);
+                Pos newPosition = this.position.clone().translate(centeredPosition);
                 entity.motionX /= 3;
                 entity.motionY /= 3;
                 entity.motionZ /= 3;
@@ -135,13 +135,13 @@ public abstract class BlastBeam extends Blast
         }
     }
 
-    public boolean canFocusBeam(World worldObj, Vector3 position)
+    public boolean canFocusBeam(World worldObj, Pos position)
     {
         return worldObj.canBlockSeeTheSky(position.intX(), position.intY() + 1, position.intZ());
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @param return - Return -1 if this explosive does not need proceudral calls */
     @Override
     public int proceduralInterval()

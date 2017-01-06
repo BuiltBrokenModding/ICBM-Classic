@@ -17,7 +17,7 @@ public class ContagiousPoison extends Poison
     }
 
     @Override
-    protected void doPoisonEntity(Vector3 emitPosition, EntityLivingBase entity, int amplifier)
+    protected void doPoisonEntity(Pos emitPosition, EntityLivingBase entity, int amplifier)
     {
         if (this.isContagious)
         {

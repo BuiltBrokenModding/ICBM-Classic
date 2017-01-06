@@ -1,29 +1,26 @@
 package icbm.explosion.machines;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.tile.Tile;
+import com.builtbroken.mc.prefab.tile.TileEnt;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.Reference;
-import icbm.core.ICBMCore;
-import icbm.core.prefab.TileICBM;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.explosive.blast.BlastEMP;
-
-import java.io.IOException;
-
-import li.cil.oc.api.network.Callback;
-import li.cil.oc.api.network.SimpleComponent;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.util.AxisAlignedBB;
-import resonant.api.IRedstoneReceptor;
-import resonant.api.map.RadarRegistry;
-import resonant.lib.multiblock.IBlockActivate;
-import resonant.lib.multiblock.IMultiBlock;
-import universalelectricity.api.energy.EnergyStorageHandler;
-import universalelectricity.api.vector.Vector3;
 
-import com.google.common.io.ByteArrayDataInput;
+import java.io.IOException;
+import java.util.HashMap;
 
-public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneReceptor, IBlockActivate, SimpleComponent
+public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDReceiver
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
@@ -41,28 +38,25 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
 
     public TileEMPTower()
     {
-        RadarRegistry.register(this);
-        setEnergyHandler(new EnergyStorageHandler(0));
-        updateCapacity();
+        super("empTower", Material.iron);
     }
 
     @Override
-    public void invalidate()
+    public Tile newTile()
     {
-        RadarRegistry.unregister(this);
-        super.invalidate();
+        return new TileEMPTower();
     }
 
     @Override
-    public void initiate()
+    public void firstTick()
     {
         updateCapacity();
     }
 
     @Override
-    public void updateEntity()
+    public void update()
     {
-        super.updateEntity();
+        super.update();
 
         if (!isReady())
         {
@@ -70,12 +64,16 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
         }
 
         if (ticks % 20 == 0 && getEnergyHandler().getEnergy() > 0)
+        {
             worldObj.playSoundEffect(xCoord, yCoord, zCoord, Reference.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyHandler().getEnergy() / getEnergyHandler().getEnergyCapacity());
+        }
 
         rotationDelta = (float) (Math.pow(getEnergyHandler().getEnergy() / getEnergyHandler().getEnergyCapacity(), 2) * 0.5);
         rotation += rotationDelta;
         if (rotation > 360)
+        {
             rotation = 0;
+        }
 
         prevXuanZhuanLu = rotationDelta;
     }
@@ -108,24 +106,6 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
         super.onReceivePacket(id, data, player, extra);
     }
 
-    @Callback
-    public boolean isReady()
-    {
-        return getCooldown() <= 0;
-    }
-
-    @Callback
-    public int getCooldown()
-    {
-        return cooldownTicks;
-    }
-
-    @Callback
-    public int getMaxCooldown()
-    {
-        return 120;
-    }
-
     private void updateCapacity()
     {
         this.getEnergyHandler().setCapacity(Math.max(300000000 * (this.empRadius / MAX_RADIUS), 1000000000));
@@ -134,9 +114,9 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public PacketTile getDescPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, 0, this.getEnergyHandler().getEnergy(), this.empRadius, this.empMode);
+        return new PacketTile(this, 0, this.getEnergyHandler().getEnergy(), this.empRadius, this.empMode);
     }
 
     /** Reads a tile entity from NBT. */
@@ -159,7 +139,7 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
         par1NBTTagCompound.setByte("muoShi", this.empMode);
     }
 
-    @Callback(limit = 1)
+    //@Callback(limit = 1)
     public boolean fire()
     {
         if (this.getEnergyHandler().checkExtract())
@@ -186,13 +166,13 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
         return false;
     }
 
-    @Override
+    //@Override
     public void onPowerOn()
     {
         fire();
     }
 
-    @Override
+    //@Override
     public void onPowerOff()
     {
     }
@@ -205,79 +185,140 @@ public class TileEMPTower extends TileICBM implements IMultiBlock, IRedstoneRece
     }
 
     @Override
-    public Vector3[] getMultiBlockVectors()
-    {
-        return new Vector3[] { new Vector3(0, 1, 0) };
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
     }
 
-    @Override
+    //==========================================
+    //==== Open Computers code
+    //=========================================
+    //@Override
     public String getComponentName()
     {
         return "emptower";
     }
 
-    @Callback
+    //@Callback
     public byte getEmpMode()
     {
         return empMode;
     }
 
-    @Callback
+    //@Callback
     public void setEmpMode(byte empMode)
     {
         if (empMode >= 0 && empMode <= 2)
+        {
             this.empMode = empMode;
+        }
     }
 
-    @Callback
+    //@Callback
     public void empMissiles()
     {
         this.empMode = 1;
     }
 
-    @Callback
+    //@Callback
     public void empAll()
     {
         this.empMode = 0;
     }
 
-    @Callback
+    //@Callback
     public void empElectronics()
     {
         this.empMode = 2;
     }
 
-    @Callback
+    //@Callback
     public int getEmpRadius()
     {
         return empRadius;
     }
 
-    @Callback
+    //@Callback
     public int getMaxEmpRadius()
     {
         return MAX_RADIUS;
     }
 
-    @Callback
+    //@Callback
     public void setEmpRadius(int empRadius)
     {
         int prev = getEmpRadius();
         this.empRadius = Math.min(Math.max(empRadius, 0), MAX_RADIUS);
         if (prev != getEmpRadius())
+        {
             updateCapacity();
+        }
     }
 
-    @Callback
+    //@Callback
     public static int getMaxRadius()
     {
         return MAX_RADIUS;
     }
 
+    //@Callback
+    public boolean isReady()
+    {
+        return getCooldown() <= 0;
+    }
+
+    //@Callback
+    public int getCooldown()
+    {
+        return cooldownTicks;
+    }
+
+    //@Callback
+    public int getMaxCooldown()
+    {
+        return 120;
+    }
+
+    //==========================================
+    //==== Multi-Block code
+    //=========================================
+
+    @Override
+    public void onMultiTileAdded(IMultiTile tileMulti)
+    {
+
+    }
+
+    @Override
+    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
+    {
+        return false;
+    }
+
+    @Override
+    public void onTileInvalidate(IMultiTile tileMulti)
+    {
+
+    }
+
+    @Override
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
+    {
+        return false;
+    }
+
+    @Override
+    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
+    {
+
+    }
+
+    @Override
+    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    {
+        HashMap<IPos3D, String> map = new HashMap();
+        map.put(new Pos(0, 1, 0), "");
+        map.put(new Pos(0, 2, 0), "");
+        return map;
+    }
 }

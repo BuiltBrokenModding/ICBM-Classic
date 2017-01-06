@@ -1,6 +1,6 @@
 package icbm.explosion;
 
-import icbm.core.entity.EntityFlyingBlock;
+import icbm.classic.entity.EntityFlyingBlock;
 import icbm.explosion.entities.EntityExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.explosive.blast.BlastEMP;

@@ -1,8 +1,8 @@
 package icbm.explosion.gui;
 
 import icbm.Reference;
-import icbm.core.ICBMCore;
-import icbm.core.gui.GuiICBM;
+import icbm.classic.ICBMCore;
+import icbm.classic.gui.GuiICBM;
 import icbm.explosion.machines.TileEMPTower;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;

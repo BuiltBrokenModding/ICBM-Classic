@@ -58,9 +58,9 @@ public class BlastSky extends BlastBeam
                     entity.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 120 * 20, 4));
                 }
 
-                for (Vector3 targetPosition : this.thread.results)
+                for (Pos targetPosition : this.thread.results)
                 {
-                    double distance = Vector3.distance(targetPosition, position);
+                    double distance = Pos.distance(targetPosition, position);
 
                     double distanceFromCenter = position.distance(targetPosition);
 
@@ -98,7 +98,7 @@ public class BlastSky extends BlastBeam
     }
 
     @Override
-    public boolean canFocusBeam(World worldObj, Vector3 position)
+    public boolean canFocusBeam(World worldObj, Pos position)
     {
         long worldTime = worldObj.getWorldTime();
 

@@ -82,7 +82,7 @@ public class BlastChemical extends Blast
         {
             for (int i = 0; i < 200; i++)
             {
-                Vector3 diDian = new Vector3();
+                Pos diDian = new Pos();
 
                 diDian.x = Math.random() * radius / 2 - radius / 4;
                 diDian.y = Math.random() * radius / 2 - radius / 4;
@@ -143,7 +143,7 @@ public class BlastChemical extends Blast
     }
 
     /** The interval in ticks before the next procedural call of this explosive
-     * 
+     *
      * @return - Return -1 if this explosive does not need proceudral calls */
     @Override
     public int proceduralInterval()

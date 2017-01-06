@@ -1,8 +1,8 @@
 package icbm.explosion.gui;
 
 import icbm.Reference;
-import icbm.core.ICBMCore;
-import icbm.core.gui.GuiICBM;
+import icbm.classic.ICBMCore;
+import icbm.classic.gui.GuiICBM;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.machines.BlockICBMMachine;
 import icbm.explosion.machines.TileRadarStation;

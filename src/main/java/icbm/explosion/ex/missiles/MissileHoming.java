@@ -35,7 +35,7 @@ public class MissileHoming extends Missile
                     missileObj.setExplode();
                 }
 
-                missileObj.targetVector = new Vector3(trackingEntity);
+                missileObj.targetVector = new Pos(trackingEntity);
             }
         }
     }
@@ -55,7 +55,7 @@ public class MissileHoming extends Missile
                     missileObj.setExplode();
                 }
 
-                missileObj.targetVector = new Vector3(trackingEntity);
+                missileObj.targetVector = new Pos(trackingEntity);
 
                 missileObj.missileType = MissileType.CruiseMissile;
 
@@ -68,10 +68,10 @@ public class MissileHoming extends Missile
                 missileObj.missileFlightTime = (float) Math.max(100, 2.4 * missileObj.flatDistance);
                 missileObj.acceleration = (float) missileObj.maxHeight * 2 / (missileObj.missileFlightTime * missileObj.missileFlightTime);
 
-                if (missileObj.xiaoDanMotion.equals(new Vector3()) || missileObj.xiaoDanMotion == null)
+                if (missileObj.xiaoDanMotion.equals(new Pos()) || missileObj.xiaoDanMotion == null)
                 {
                     float suDu = 0.3f;
-                    missileObj.xiaoDanMotion = new Vector3();
+                    missileObj.xiaoDanMotion = new Pos();
                     missileObj.xiaoDanMotion.x = missileObj.deltaPathX / (missileObj.missileFlightTime * suDu);
                     missileObj.xiaoDanMotion.y = missileObj.deltaPathY / (missileObj.missileFlightTime * suDu);
                     missileObj.xiaoDanMotion.z = missileObj.deltaPathZ / (missileObj.missileFlightTime * suDu);
@@ -100,7 +100,7 @@ public class MissileHoming extends Missile
 
                             if (missileObj.getLauncher() != null && missileObj.getLauncher().getController() != null)
                             {
-                                Vector3 newTarget = new Vector3(trackingEntity);
+                                Pos newTarget = new Pos(trackingEntity);
                                 newTarget.y = 0;
                                 missileObj.getLauncher().getController().setTarget(newTarget);
                             }

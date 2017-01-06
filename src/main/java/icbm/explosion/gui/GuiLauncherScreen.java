@@ -1,8 +1,8 @@
 package icbm.explosion.gui;
 
 import icbm.Reference;
-import icbm.core.ICBMCore;
-import icbm.core.gui.GuiICBM;
+import icbm.classic.ICBMCore;
+import icbm.classic.gui.GuiICBM;
 import icbm.explosion.machines.launcher.TileLauncherScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
@@ -15,6 +15,9 @@ import universalelectricity.api.energy.UnitDisplay.Unit;
 import universalelectricity.api.vector.Vector3;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+
+import static java.lang.Integer.parseInt;
+import static java.lang.Math.max;
 
 public class GuiLauncherScreen extends GuiICBM
 {
@@ -92,7 +95,7 @@ public class GuiLauncherScreen extends GuiICBM
 
         try
         {
-            Vector3 newTarget = new Vector3(Integer.parseInt(this.target_xCoord_field.getText()), Math.max(Integer.parseInt(this.target_yCoord_field.getText()), 0), Integer.parseInt(this.target_zCoord_field.getText()));
+            Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
             PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, 2, this.tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));

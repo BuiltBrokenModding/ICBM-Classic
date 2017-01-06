@@ -1,6 +1,6 @@
 package icbm.explosion.machines;
 
-import icbm.core.ICBMCore;
+import icbm.classic.ICBMCore;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.ex.Explosion;
@@ -51,7 +51,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     public TileCruiseLauncher()
     {
         super();
-        this.targetPos = new Vector3();
+        this.targetPos = new Pos();
         setEnergyHandler(new EnergyStorageHandler(100000000));
     }
 
@@ -133,7 +133,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     }
 
     /** Gets the display status of the missile launcher
-     * 
+     *
      * @return The string to be displayed */
     @Override
     public String getStatus()
@@ -226,8 +226,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
 
                                 if (missile.isCruise() && missile.getTier() <= 3)
                                 {
-                                    Vector3 startingPosition = new Vector3((this.xCoord + 0.5f), (this.yCoord + 1f), (this.zCoord + 0.5f));
-                                    this.daoDan = new EntityMissile(this.worldObj, startingPosition, new Vector3(this), haoMa);
+                                    Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1f), (this.zCoord + 0.5f));
+                                    this.daoDan = new EntityMissile(this.worldObj, startingPosition, new Pos(this), haoMa);
                                     this.worldObj.spawnEntityInWorld((Entity) this.daoDan);
                                     return;
                                 }
@@ -273,7 +273,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
                 {
                     this.getEnergyHandler().setEnergy(data.readLong());
                     this.setFrequency(data.readInt());
-                    this.targetPos = new Vector3(data.readInt(), data.readInt(), data.readInt());
+                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
                     break;
                 }
                 case 1:
@@ -283,7 +283,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
                 }
                 case 2:
                 {
-                    this.targetPos = new Vector3(data.readInt(), data.readInt(), data.readInt());
+                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
                     break;
 
                 }
@@ -331,7 +331,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     }
 
     /** Launches the missile
-     * 
+     *
      * @param targetVector - The target in which the missile will land in */
     @Override
     public void launch()
@@ -346,9 +346,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     }
 
     // Is the target too close?
-    public boolean isTooClose(Vector3 target)
+    public boolean isTooClose(Pos target)
     {
-        return Vector3.distance(new Vector3(this.xCoord, 0, this.zCoord), new Vector3(target.x, 0, target.z)) < 8;
+        return Pos.distance(new Pos(this.xCoord, 0, this.zCoord), new Pos(target.x, 0, target.z)) < 8;
     }
 
     /** Reads a tile entity from NBT. */
