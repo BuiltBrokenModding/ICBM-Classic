@@ -1,18 +1,16 @@
 package icbm.explosion.fx;
 
+import com.builtbroken.mc.lib.render.RenderUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.Reference;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
 import org.lwjgl.opengl.GL11;
-
-import resonant.lib.render.RenderUtility;
-import universalelectricity.api.vector.Vector3;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class FXAntimatterPartical extends EntityFX
@@ -28,7 +26,7 @@ public class FXAntimatterPartical extends EntityFX
 
     public FXAntimatterPartical(World par1World, Pos position, double par8, double par10, double par12, float par14, double distance)
     {
-        super(par1World, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
+        super(par1World, position.x(), position.y(), position.z(), 0.0D, 0.0D, 0.0D);
         this.motionX *= 0.10000000149011612D;
         this.motionY *= 0.10000000149011612D;
         this.motionZ *= 0.10000000149011612D;

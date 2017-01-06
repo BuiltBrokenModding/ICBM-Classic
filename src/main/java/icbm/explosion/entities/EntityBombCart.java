@@ -1,49 +1,58 @@
 package icbm.explosion.entities;
 
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.api.explosive.IExplosiveContainer;
+import com.builtbroken.mc.api.explosive.IExplosiveHandler;
+import com.builtbroken.mc.api.items.explosives.IExplosiveItem;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.explosion.ICBMExplosion;
-import icbm.explosion.explosive.ExplosiveRegistry;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityMinecartTNT;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import resonant.api.explosion.IExplosive;
-import resonant.api.explosion.IExplosiveContainer;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-
-public class EntityBombCart extends EntityMinecartTNT implements IExplosiveContainer, IEntityAdditionalSpawnData
+public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData, IExplosiveContainer
 {
-    public int explosiveID = 0;
-    public NBTTagCompound nbtData = new NBTTagCompound();
+    public ItemStack explosiveStack;
 
     public EntityBombCart(World par1World)
     {
         super(par1World);
     }
 
-    public EntityBombCart(World par1World, double x, double y, double z, int explosiveID)
+    public EntityBombCart(World par1World, double x, double y, double z, ItemStack explosiveStack)
     {
         super(par1World, x, y, z);
-        this.explosiveID = explosiveID;
+        this.explosiveStack = explosiveStack;
     }
 
     @Override
-    public void writeSpawnData(ByteArrayDataOutput data)
+    public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.explosiveID);
+        data.writeBoolean(explosiveStack != null);
+        if (explosiveStack != null)
+        {
+            ByteBufUtils.writeItemStack(data, explosiveStack);
+        }
     }
 
     @Override
-    public void readSpawnData(ByteArrayDataInput data)
+    public void readSpawnData(ByteBuf data)
     {
-        this.explosiveID = data.readInt();
+        if (data.readBoolean())
+        {
+            explosiveStack = ByteBufUtils.readItemStack(data);
+        }
+        else
+        {
+            explosiveStack = null;
+        }
     }
 
     @Override
@@ -51,15 +60,19 @@ public class EntityBombCart extends EntityMinecartTNT implements IExplosiveConta
     {
         // TODO add event
         this.worldObj.spawnParticle("hugeexplosion", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        this.getExplosiveType().createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
-        this.setDead();
+        IExplosiveHandler handler = this.getExplosiveType();
+        if (handler != null)
+        {
+            handler.createBlastForTrigger(this.worldObj, this.posX, this.posY, this.posZ, new TriggerCause.TriggerCauseEntity(this), getSize(), getExplosiveNBT());
+            this.setDead();
+        }
     }
 
     public boolean interact(EntityPlayer player)
     {
         if (player.getCurrentEquippedItem() != null)
         {
-            if (player.getCurrentEquippedItem().itemID == Item.flintAndSteel.itemID)
+            if (player.getCurrentEquippedItem().getItem() == Items.flint_and_steel)
             {
                 this.ignite();
                 return true;
@@ -72,12 +85,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IExplosiveConta
     public void killMinecart(DamageSource par1DamageSource)
     {
         this.setDead();
-        ItemStack itemstack = new ItemStack(Item.minecartEmpty, 1);
-
-        if (this.entityName != null)
-        {
-            itemstack.setItemName(this.entityName);
-        }
+        ItemStack itemstack = new ItemStack(Items.minecart, 1);
 
         this.entityDropItem(itemstack, 0.0F);
 
@@ -85,7 +93,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IExplosiveConta
 
         if (!par1DamageSource.isExplosion())
         {
-            this.entityDropItem(new ItemStack(ICBMExplosion.blockExplosive, 1, this.explosiveID), 0.0F);
+            this.entityDropItem(getCartItem(), 0.0F);
         }
 
         if (par1DamageSource.isFireDamage() || par1DamageSource.isExplosion() || d0 >= 0.009999999776482582D)
@@ -97,49 +105,74 @@ public class EntityBombCart extends EntityMinecartTNT implements IExplosiveConta
     @Override
     public ItemStack getCartItem()
     {
-        return new ItemStack(ICBMExplosion.itemBombCart, 1, this.explosiveID);
+        ItemStack cartStack = new ItemStack(ICBMExplosion.itemBombCart);
+        cartStack.getTagCompound().setTag("explosive", explosiveStack.writeToNBT(new NBTTagCompound()));
+        return cartStack;
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        nbt.setInteger("haoMa", this.explosiveID);
-        this.nbtData = nbt.getCompoundTag("data");
-
+        if (explosiveStack != null)
+        {
+            nbt.setTag("explosive", explosiveStack.writeToNBT(new NBTTagCompound()));
+        }
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.explosiveID = nbt.getInteger("haoMa");
-        nbt.setTag("data", this.nbtData);
-
+        if (nbt.hasKey("explosive"))
+        {
+            explosiveStack = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("explosive"));
+        }
     }
 
-    @Override
-    public IExplosive getExplosiveType()
+    public IExplosiveHandler getExplosiveType()
     {
-        return ExplosiveRegistry.get(this.explosiveID);
+        if (explosiveStack != null && explosiveStack.getItem() instanceof IExplosiveItem)
+        {
+            return ((IExplosiveItem) explosiveStack.getItem()).getExplosive(explosiveStack);
+        }
+        return null;
+    }
+
+    public double getSize()
+    {
+        if (explosiveStack != null && explosiveStack.getItem() instanceof IExplosiveItem)
+        {
+            return ((IExplosiveItem) explosiveStack.getItem()).getExplosiveSize(explosiveStack);
+        }
+        return 1;
+    }
+
+    public NBTTagCompound getExplosiveNBT()
+    {
+        if (explosiveStack != null && explosiveStack.getItem() instanceof IExplosiveItem)
+        {
+            return ((IExplosiveItem) explosiveStack.getItem()).getAdditionalExplosiveData(explosiveStack);
+        }
+        return new NBTTagCompound();
     }
 
     @Override
-    public Block getDefaultDisplayTile()
+    public Block func_145817_o()
     {
         return ICBMExplosion.blockExplosive;
     }
 
     @Override
-    public int getDefaultDisplayTileData()
+    public ItemStack getExplosiveStack()
     {
-        return this.explosiveID;
+        return explosiveStack;
     }
 
     @Override
-    public NBTTagCompound getTagCompound()
+    public boolean setExplosiveStack(ItemStack stack)
     {
-        return this.nbtData;
+        explosiveStack = stack;
+        return true;
     }
-
 }

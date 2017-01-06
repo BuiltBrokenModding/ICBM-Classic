@@ -1,5 +1,10 @@
 package icbm.explosion.entities;
 
+import com.builtbroken.mc.api.explosive.IExplosiveContainer;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.explosive.Explosive;
 import icbm.explosion.explosive.ExplosiveRegistry;
@@ -12,16 +17,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.IExplosive;
-import resonant.api.explosion.IExplosiveContainer;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import universalelectricity.api.vector.Vector3;
-
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityGrenade extends Entity implements IExplosiveContainer, IEntityAdditionalSpawnData
 {

@@ -1,45 +1,30 @@
 package icbm.explosion.machines;
 
-import icbm.classic.ICBMCore;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.ex.Explosion;
 import icbm.explosion.explosive.ExplosiveRegistry;
 import icbm.explosion.items.ItemMissile;
 import icbm.explosion.machines.launcher.TileLauncherPrefab;
-
-import java.io.IOException;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.ILauncherController;
-import resonant.api.explosion.IMissile;
-import resonant.api.explosion.LauncherType;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.lib.multiblock.IBlockActivate;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.energy.EnergyStorageHandler;
-import universalelectricity.api.vector.Vector3;
 
-import com.google.common.io.ByteArrayDataInput;
+import java.io.IOException;
 
-import dan200.computercraft.api.peripheral.IPeripheral;
-
-public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActivate, IInventory, ILauncherContainer, IPacketReceiver
+public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketReceiver
 {
     // The missile that this launcher is holding
-    public IMissile daoDan = null;
+    public EntityMissile daoDan = null;
 
     public float rotationYaw = 0;
 
@@ -52,7 +37,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     {
         super();
         this.targetPos = new Pos();
-        setEnergyHandler(new EnergyStorageHandler(100000000));
+        //setEnergyHandler(new EnergyStorageHandler(100000000));
     }
 
     /** Returns the number of slots in the inventory. */
@@ -170,9 +155,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     }
 
     @Override
-    public void updateEntity()
+    public void update()
     {
-        super.updateEntity();
+        super.update();
 
         this.discharge(this.containingItems[1]);
 
@@ -447,13 +432,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IBlockActi
     }
 
     @Override
-    public LauncherType getLauncherType()
-    {
-        return LauncherType.CRUISE;
-    }
-
-    @Override
-    public boolean isInvNameLocalized()
+    public boolean targetWithYValue()
     {
         return true;
     }

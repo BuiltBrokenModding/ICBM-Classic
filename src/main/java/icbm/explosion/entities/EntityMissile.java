@@ -1,5 +1,11 @@
 package icbm.explosion.entities;
 
+import com.builtbroken.mc.api.explosive.IExplosiveContainer;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.lib.world.radar.RadarRegistry;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.Reference;
 import icbm.Settings;
 import icbm.classic.DamageUtility;
@@ -7,16 +13,10 @@ import icbm.classic.ICBMCore;
 import icbm.classic.implement.IChunkLoadHandler;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.ex.Explosion;
+import icbm.explosion.explosive.Explosive;
 import icbm.explosion.explosive.ExplosiveRegistry;
 import icbm.explosion.machines.TileCruiseLauncher;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFluid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,21 +32,11 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.MinecraftForge;
-import resonant.api.ai.ITarget;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.IExplosive;
-import resonant.api.explosion.IExplosiveContainer;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.IMissile;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.api.map.RadarRegistry;
-import universalelectricity.api.vector.Vector2;
-import universalelectricity.api.vector.Vector3;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 
 /** @Author - Calclavia */
 public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosiveContainer, IEntityAdditionalSpawnData, IMissile, ITarget
@@ -174,13 +164,13 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
             data.writeInt(this.explosiveID);
             data.writeInt(this.missileType.ordinal());
 
-            data.writeDouble(this.startPos.x);
-            data.writeDouble(this.startPos.y);
-            data.writeDouble(this.startPos.z);
+            data.writeDouble(this.startPos.x());
+            data.writeDouble(this.startPos.y());
+            data.writeDouble(this.startPos.z());
 
-            data.writeInt(this.launcherPos.intX());
-            data.writeInt(this.launcherPos.intY());
-            data.writeInt(this.launcherPos.intZ());
+            data.writeInt(this.launcherPos.xi());
+            data.writeInt(this.launcherPos.yi());
+            data.writeInt(this.launcherPos.zi());
 
             data.writeFloat(rotationYaw);
             data.writeFloat(rotationPitch);
@@ -215,14 +205,14 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     {
         this.startPos = new Pos(this);
         this.targetVector = target;
-        this.targetHeight = this.targetVector.intY();
+        this.targetHeight = this.targetVector.yi();
         ((Explosion) ExplosiveRegistry.get(this.explosiveID)).launch(this);
         this.feiXingTick = 0;
         this.recalculatePath();
         this.worldObj.playSoundAtEntity(this, Reference.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
         // TODO add an event system here
-        RadarRegistry.register(this);
-        ICBMCore.LOGGER.info("Launching " + this.getEntityName() + " (" + this.entityId + ") from " + startPos.intX() + ", " + startPos.intY() + ", " + startPos.intZ() + " to " + targetVector.intX() + ", " + targetVector.intY() + ", " + targetVector.intZ());
+        RadarRegistry.add(this);
+        ICBMCore.LOGGER.info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
     }
 
     @Override
@@ -810,7 +800,7 @@ public class EntityMissile extends Entity implements IChunkLoadHandler, IExplosi
     }
 
     @Override
-    public IExplosive getExplosiveType()
+    public Explosive getExplosiveType()
     {
         return ExplosiveRegistry.get(this.explosiveID);
     }

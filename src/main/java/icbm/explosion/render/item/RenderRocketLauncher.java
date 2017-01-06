@@ -1,35 +1,33 @@
 package icbm.explosion.render.item;
 
+import com.builtbroken.mc.lib.render.model.loader.EngineModelLoader;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.Reference;
 import icbm.explosion.ICBMExplosion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
-
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderRocketLauncher implements IItemRenderer
 {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_PREFIX + "rocketLauncher.png");
-    private static final IModelCustom MODEL = AdvancedModelLoader.loadModel(Reference.MODEL_DIRECTORY + "rocketLauncher.tcn");
+    private static final IModelCustom MODEL = EngineModelLoader.loadModel(new ResourceLocation(Reference.DOMAIN, Reference.MODEL_DIRECTORY + "rocketLauncher.tcn"));
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
     {
-        return item.itemID == ICBMExplosion.itemRocketLauncher.itemID;
+        return item.getItem() == ICBMExplosion.itemRocketLauncher;
     }
 
     @Override
     public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
     {
-        return item.itemID == ICBMExplosion.itemRocketLauncher.itemID;
+        return item.getItem() == ICBMExplosion.itemRocketLauncher;
     }
 
     @Override

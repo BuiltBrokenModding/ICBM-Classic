@@ -1,5 +1,6 @@
 package icbm.explosion.entities;
 
+import com.builtbroken.mc.api.IWorldPosition;
 import icbm.classic.ICBMCore;
 import icbm.explosion.explosive.blast.Blast;
 
@@ -21,7 +22,7 @@ import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 /** The Entity handler responsible for entity explosions.
  *
  * @author Calclavia */
-public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData, IEntityExplosion, IVectorWorld
+public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData, IWorldPosition
 {
     public Blast blast;
 

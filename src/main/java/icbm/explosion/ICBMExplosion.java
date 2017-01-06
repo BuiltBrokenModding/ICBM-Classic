@@ -89,7 +89,6 @@ public class ICBMExplosion
     // Blocks
     public static Block blockExplosive;
     public static Block blockMachine;
-    public static Block blockMissileAssembler;
 
     // Items
     public static Item itemMissile;

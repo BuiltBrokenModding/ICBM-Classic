@@ -10,27 +10,10 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModMetadata;
 
 /** Settings class for various configuration settings.
- * 
+ *
  * @author Calclavia */
 public class Settings
 {
-    /** Auto-incrementing configuration IDs. Use this to make sure no config ID is the same. */
-    public static final IDManager idManager = new IDManager(3880, 19220);
-	public static final String DOMAIN = "icbm";
-
-	public static int getNextBlockID()
-    {
-        return idManager.getNextBlockID();
-    }
-
-    public static int getNextItemID()
-    {
-        return idManager.getNextItemID();
-    }
-
-    /** Configuration file for ICBM. */
-    public static final Configuration CONFIGURATION = new Configuration(new File(Loader.instance().getConfigDir(), "ICBM.cfg"));
-
     /** Should ICBM use external fuel? **/
     @Config(key = "Use Fuel", category = Configuration.CATEGORY_GENERAL)
     public static boolean USE_FUEL = true;

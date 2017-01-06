@@ -1,5 +1,11 @@
 package icbm.explosion.render.tile;
 
+import com.builtbroken.mc.lib.render.RenderUtility;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.Reference;
 import icbm.classic.ICBMCore;
 import icbm.explosion.explosive.Explosive;
@@ -12,15 +18,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IBlockAccess;
-
 import org.lwjgl.opengl.GL11;
-
-import resonant.lib.render.RenderUtility;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpleBlockRenderingHandler
@@ -63,7 +61,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
     {
         if (modelID == ID)
         {
-            TileEntity tileEntity = iBlockAccess.getBlockTileEntity(x, y, z);
+            TileEntity tileEntity = iBlockAccess.getTileEntity(x, y, z);
 
             if (tileEntity instanceof TileExplosive)
             {
@@ -78,6 +76,12 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
         }
 
         return false;
+    }
+
+    @Override
+    public boolean shouldRender3DInInventory(int modelId)
+    {
+        return true;
     }
 
     @Override
@@ -98,12 +102,6 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
                 GL11.glPopMatrix();
             }
         }
-    }
-
-    @Override
-    public boolean shouldRender3DInInventory()
-    {
-        return true;
     }
 
     @Override

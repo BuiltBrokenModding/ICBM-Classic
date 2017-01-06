@@ -1,47 +1,42 @@
 package icbm.explosion.machines.launcher;
 
-import icbm.classic.ICBMCore;
+import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.prefab.tile.TileEnt;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.ForgeDirection;
-import resonant.api.IRotatable;
-import resonant.api.ITier;
-import resonant.lib.multiblock.IMultiBlock;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.prefab.tile.TileAdvanced;
-import universalelectricity.api.vector.Vector3;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import com.google.common.io.ByteArrayDataInput;
+import java.util.HashMap;
 
-/** This tile entity is for the screen of the missile launcher
+/**
+ * This tile entity is for the screen of the missile launcher
  *
- * @author Calclavia */
-public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, ITier, IMultiBlock, IRotatable
+ * @author Calclavia
+ */
+public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMultiTileHost, IRotatable
 {
     // The tier of this screen
     private int tier = 0;
     private byte orientation = 3;
 
-    @Override
-    public void onReceivePacket(ByteArrayDataInput data, EntityPlayer player, Object... extra)
+    public TileLauncherFrame()
     {
-        try
-        {
-            this.orientation = data.readByte();
-            this.tier = data.readInt();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        super("launcherFrame", Material.iron);
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public PacketTile getDescPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, this.orientation, this.getTier());
+        return new PacketTile(this, this.orientation, this.getTier());
     }
 
     /** Gets the inaccuracy of the missile based on the launcher support frame's tier */
@@ -58,9 +53,11 @@ public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, 
         }
     }
 
-    /** Determines if this TileEntity requires update calls.
+    /**
+     * Determines if this TileEntity requires update calls.
      *
-     * @return True if you want updateEntity() to be called, false if not */
+     * @return True if you want updateEntity() to be called, false if not
+     */
     @Override
     public boolean canUpdate()
     {
@@ -83,22 +80,16 @@ public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, 
         par1NBTTagCompound.setInteger("tier", this.tier);
     }
 
-    @Override
+
     public int getTier()
     {
         return this.tier;
     }
 
-    @Override
+
     public void setTier(int tier)
     {
         this.tier = tier;
-    }
-
-    @Override
-    public Pos[] getMultiBlockVectors()
-    {
-        return new Pos[]{new Pos(0, 1, 0), new Pos(0, 2, 0)};
     }
 
     @Override
@@ -117,5 +108,49 @@ public class TileLauncherFrame extends TileAdvanced implements IPacketReceiver, 
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
+    }
+
+    @Override
+    public void onMultiTileAdded(IMultiTile tileMulti)
+    {
+
+    }
+
+    @Override
+    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
+    {
+        return false;
+    }
+
+    @Override
+    public void onTileInvalidate(IMultiTile tileMulti)
+    {
+
+    }
+
+    @Override
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
+    {
+        return false;
+    }
+
+    @Override
+    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
+    {
+
+    }
+
+    @Override
+    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    {
+        //return new Pos[]{new Pos(0, 1, 0), new Pos(0, 2, 0)};
+        return null;
+    }
+
+    @Override
+    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
+    {
+        this.orientation = data.readByte();
+        this.tier = data.readInt();
     }
 }

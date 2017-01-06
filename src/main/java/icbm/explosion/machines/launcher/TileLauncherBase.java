@@ -1,45 +1,42 @@
 package icbm.explosion.machines.launcher;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.tile.TileModuleMachine;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.Settings;
-import icbm.classic.ICBMCore;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.ex.Explosion;
 import icbm.explosion.explosive.ExplosiveRegistry;
 import icbm.explosion.items.ItemMissile;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
-import resonant.api.IRotatable;
-import resonant.api.ITier;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.ILauncherController;
-import resonant.api.explosion.IMissile;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.lib.multiblock.IBlockActivate;
-import resonant.lib.multiblock.IMultiBlock;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.network.PacketHandler;
-import resonant.lib.prefab.tile.TileExternalInventory;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.vector.Vector3;
-import universalelectricity.api.vector.VectorHelper;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import com.google.common.io.ByteArrayDataInput;
+import java.util.HashMap;
 
-/** This tile entity is for the base of the missile launcher
+/**
+ * This tile entity is for the base of the missile launcher
  *
- * @author Calclavia */
-public class TileLauncherBase extends TileExternalInventory implements IPacketReceiver, ILauncherContainer, IRotatable, ITier, IMultiBlock, IBlockActivate
+ * @author Calclavia
+ */
+public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost
 {
     // The missile that this launcher is holding
-    public IMissile missile = null;
+    public EntityMissile missile = null;
 
     // The connected missile launcher frame
     public TileLauncherFrame supportFrame = null;
@@ -58,21 +55,22 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
         return LanguageUtility.getLocal("gui.launcherBase.name");
     }
 
-    /** Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
-     * uses this to count ticks and creates a new spawn inside its implementation. */
+    /**
+     * Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
+     * uses this to count ticks and creates a new spawn inside its implementation.
+     */
     @Override
-    public void updateEntity()
+    public void update()
     {
-        super.updateEntity();
+        super.update();
 
         if (this.supportFrame == null)
         {
             for (byte i = 2; i < 6; i++)
             {
-                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord);
-                position.translate(ForgeDirection.getOrientation(i));
+                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
 
-                TileEntity tileEntity = this.worldObj.getBlockTileEntity(position.intX(), position.intY(), position.intZ());
+                TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
 
                 if (tileEntity instanceof TileLauncherFrame)
                 {
@@ -89,7 +87,7 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
             }
             else if (this.packetGengXin || this.ticks % (20 * 30) == 0 && this.supportFrame != null && !this.worldObj.isRemote)
             {
-                PacketHandler.sendPacketToClients(this.supportFrame.getDescriptionPacket());
+                sendDescPacket();
             }
         }
 
@@ -99,16 +97,16 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
 
             if (this.packetGengXin || this.ticks % (20 * 30) == 0)
             {
-                PacketHandler.sendPacketToClients(this.getDescriptionPacket());
+                sendDescPacket();
                 this.packetGengXin = false;
             }
         }
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public PacketTile getDescPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, (byte) this.facingDirection.ordinal(), this.tier);
+        return new PacketTile(this, (byte) this.facingDirection.ordinal(), this.tier);
     }
 
     @Override
@@ -173,9 +171,11 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
         }
     }
 
-    /** Launches the missile
+    /**
+     * Launches the missile
      *
-     * @param target - The target in which the missile will land in */
+     * @param target - The target in which the missile will land in
+     */
     public void launchMissile(Pos target, int gaoDu)
     {
         // Apply inaccuracy
@@ -204,15 +204,19 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     public boolean isInRange(Pos target)
     {
         if (target != null)
+        {
             return !shiTaiYuan(target) && !shiTaiJin(target);
+        }
 
         return false;
     }
 
-    /** Checks to see if the target is too close.
+    /**
+     * Checks to see if the target is too close.
      *
      * @param target
-     * @return */
+     * @return
+     */
     public boolean shiTaiJin(Pos target)
     {
         // Check if it is greater than the minimum range
@@ -295,14 +299,18 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
 
                     this.setInventorySlotContents(0, player.inventory.getCurrentItem());
                     if (!player.capabilities.isCreativeMode)
+                    {
                         player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                    }
                     return true;
                 }
                 else
                 {
                     ItemStack player_held = player.inventory.getCurrentItem();
                     if (!player.capabilities.isCreativeMode)
+                    {
                         player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
+                    }
                     this.setInventorySlotContents(0, player_held);
                     return true;
                 }
@@ -366,14 +374,12 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
         return slot == 0 && stack.getItem() instanceof ItemMissile;
     }
 
-    @Override
-    public IMissile getContainingMissile()
+    public EntityMissile getContainingMissile()
     {
         return this.missile;
     }
 
-    @Override
-    public void setContainingMissile(IMissile missile)
+    public void setContainingMissile(EntityMissile missile)
     {
         this.missile = missile;
     }
@@ -397,8 +403,44 @@ public class TileLauncherBase extends TileExternalInventory implements IPacketRe
     }
 
     @Override
-    public int[] getMissileSlots()
+    public void onMultiTileAdded(IMultiTile tileMulti)
     {
-        return new int[] { 0 };
+        
+    }
+
+    @Override
+    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
+    {
+        return false;
+    }
+
+    @Override
+    public void onTileInvalidate(IMultiTile tileMulti)
+    {
+
+    }
+
+    @Override
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
+    {
+        return false;
+    }
+
+    @Override
+    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
+    {
+
+    }
+
+    @Override
+    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    {
+        return null;
+    }
+
+    @Override
+    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
+    {
+
     }
 }
