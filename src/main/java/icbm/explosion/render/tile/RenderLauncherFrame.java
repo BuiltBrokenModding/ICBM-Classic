@@ -1,17 +1,15 @@
 package icbm.explosion.render.tile;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.Reference;
 import icbm.explosion.machines.launcher.TileLauncherFrame;
 import icbm.explosion.model.tiles.MFaSheJia;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ForgeDirection;
-
+import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderLauncherFrame extends TileEntitySpecialRenderer
@@ -24,7 +22,7 @@ public class RenderLauncherFrame extends TileEntitySpecialRenderer
     {
         TileLauncherFrame tileEntity = (TileLauncherFrame) var1;
 
-        if (tileEntity != null && tileEntity.worldObj != null)
+        if (tileEntity != null && tileEntity.world() != null)
         {
             GL11.glPushMatrix();
             GL11.glTranslatef((float) x + 0.5F, (float) y + 1.25F, (float) z + 0.5F);

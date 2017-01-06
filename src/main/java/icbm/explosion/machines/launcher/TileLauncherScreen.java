@@ -1,34 +1,31 @@
 package icbm.explosion.machines.launcher;
 
+import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.prefab.tile.Tile;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.classic.ICBMCore;
 import icbm.explosion.ICBMExplosion;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+import resonant.api.ITier;
+import resonant.api.explosion.IMissile;
+import resonant.api.explosion.LauncherType;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
-import resonant.api.IRotatable;
-import resonant.api.ITier;
-import resonant.api.explosion.IMissile;
-import resonant.api.explosion.LauncherType;
-import resonant.lib.multiblock.IBlockActivate;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.energy.EnergyStorageHandler;
-import universalelectricity.api.vector.Vector3;
-
-import com.google.common.io.ByteArrayDataInput;
-
 /** This tile entity is for the screen of the missile launcher
  *
  * @author Calclavia */
-public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActivate, ITier, IRotatable, IPacketReceiver
+public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRotatable, IPacketReceiver
 {
     // The rotation of this missile component
     private byte fangXiang = 3;
@@ -50,9 +47,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
     }
 
     @Override
-    public void initiate()
+    public Tile newTile()
     {
-        super.initiate();
+        return null;
+    }
+
+    @Override
+    public void firstTick()
+    {
+        super.firstTick();
         this.getEnergyHandler().setCapacity(this.getLaunchCost() * 2);
     }
 
@@ -111,15 +114,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public PacketTile getDescPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, 0, this.fangXiang, this.tier, this.getFrequency(), this.gaoDu);
+        return new PacketTile(this, 0, this.fangXiang, this.tier, this.getFrequency(), this.gaoDu);
     }
 
-    @Override
-    public Packet getGUIPacket()
+
+    public PacketTile getGUIPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, 4, this.getEnergyHandler().getEnergy(), this.targetPos.intX(), this.targetPos.intY(), this.targetPos.intZ());
+        return new PacketTile(this, 4, this.getEnergyHandler().getEnergy(), this.targetPos.intX(), this.targetPos.intY(), this.targetPos.intZ());
     }
 
     @Override
@@ -333,5 +336,17 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IBlockActi
         }
 
         return null;
+    }
+
+    @Override
+    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
+    {
+
+    }
+
+    @Override
+    public void setDirection(ForgeDirection direction)
+    {
+
     }
 }

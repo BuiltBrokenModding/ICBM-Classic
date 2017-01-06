@@ -1,5 +1,8 @@
 package icbm.explosion.machines;
 
+import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.Reference;
 import icbm.classic.prefab.TileICBM;
 import icbm.explosion.ICBMExplosion;
@@ -8,19 +11,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.ForgeDirection;
-import resonant.api.IRotatable;
-import resonant.lib.multiblock.IBlockActivate;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.energy.EnergyStorageHandler;
-
-import com.google.common.io.ByteArrayDataInput;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /** Missile Coordinator
  *
  * @author Calclavia */
-public class TileMissileCoordinator extends TileICBM implements IPacketReceiver, IRotatable, IInventory, IBlockActivate
+public class TileMissileCoordinator extends TileICBM implements IPacketReceiver, IRotatable, IInventory
 {
     private byte fangXiang = 3;
     protected ItemStack[] containingItems = new ItemStack[this.getSizeInventory()];

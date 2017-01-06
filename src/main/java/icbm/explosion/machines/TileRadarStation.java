@@ -1,56 +1,28 @@
 package icbm.explosion.machines;
 
-import icbm.classic.ICBMCore;
-import icbm.classic.implement.IChunkLoadHandler;
+import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.classic.prefab.TileFrequency;
 import icbm.explosion.ICBMExplosion;
 import icbm.explosion.entities.EntityMissile;
 import icbm.explosion.machines.launcher.TileLauncherPrefab;
 import icbm.explosion.machines.launcher.TileLauncherScreen;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
-import net.minecraftforge.common.ForgeDirection;
-import resonant.api.IRedstoneProvider;
-import resonant.api.IRotatable;
-import resonant.api.blocks.IBlockFrequency;
-import resonant.api.items.IItemFrequency;
-import resonant.api.map.IRadarDetectable;
-import resonant.api.map.RadarRegistry;
-import resonant.lib.multiblock.IBlockActivate;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.network.PacketHandler;
-import resonant.lib.utility.LanguageUtility;
-import resonant.lib.utility.WrenchUtility;
-import universalelectricity.api.energy.EnergyStorageHandler;
-import universalelectricity.api.vector.Vector2;
-import universalelectricity.api.vector.Vector3;
-import calclavia.api.mffs.fortron.FrequencyGrid;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import com.google.common.io.ByteArrayDataInput;
+import java.util.*;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
-
-public class TileRadarStation extends TileFrequency implements IChunkLoadHandler, IPacketReceiver, IRedstoneProvider, IPeripheral, IBlockFrequency, IBlockActivate, IRotatable
+public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRotatable
 {
     public final static int MAX_DETECTION_RANGE = 500;
 
@@ -72,50 +44,33 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
     public TileRadarStation()
     {
         super();
-        RadarRegistry.register(this);
+       // RadarRegistry.register(this);
         setEnergyHandler(new EnergyStorageHandler(500, 400));
     }
 
     @Override
-    public void initiate()
+    public void firstTick()
     {
-        super.initiate();
+        super.FirstTick();
         this.worldObj.notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
-        this.chunkLoaderInit(ForgeChunkManager.requestTicket(ICBMExplosion.instance, this.worldObj, Type.NORMAL));
+        //this.chunkLoaderInit(ForgeChunkManager.requestTicket(ICBMExplosion.instance, this.worldObj, Type.NORMAL));
     }
 
     @Override
-    public void chunkLoaderInit(Ticket ticket)
+    public void update()
     {
-        if (!this.worldObj.isRemote)
-        {
-            if (this.ticket == null && ticket != null)
-            {
-                this.ticket = ticket;
-                new Pos(this).writeToNBT(this.ticket.getModData());
-                ForgeChunkManager.forceChunk(this.ticket, new ChunkCoordIntPair(this.xCoord >> 4, this.zCoord >> 4));
-            }
-        }
-    }
-
-    @Override
-    public void updateEntity()
-    {
-        super.updateEntity();
+        super.update();
 
         if (!this.worldObj.isRemote)
         {
             //Update client every 2 seconds
             if (this.ticks % 40 == 0)
             {
-                PacketHandler.sendPacketToClients(this.getDescriptionPacket(), this.worldObj, new Pos(this), 35);
+                sendDescPacket();
             }//Send packets to users with the gui open
             else if (this.ticks % 3 == 0)
             {
-                for (EntityPlayer player : this.playersUsing)
-                {
-                    PacketDispatcher.sendPacketToPlayer(this.getDescriptionPacket2(), (Player) player);
-                }
+               sendPacketToGuiUsers(this.getDescriptionPacket2());
             }
         }
 
@@ -309,15 +264,15 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
         return (Vector2.distance(new Pos(missile).toVector2(), new Vector2(this.xCoord, this.zCoord)) < this.alarmRange && Vector2.distance(missile.targetVector.toVector2(), new Vector2(this.xCoord, this.zCoord)) < this.safetyRange);
     }
 
-    private Packet getDescriptionPacket2()
+    private PacketTile getDescriptionPacket2()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, 1, this.alarmRange, this.safetyRange, this.getFrequency());
+        return new PacketTile(this, 1, this.alarmRange, this.safetyRange, this.getFrequency());
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public PacketTile getDescPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, 4, this.fangXiang, this.getEnergyHandler().getEnergy());
+        return new PacketTile(this, 4, this.fangXiang, this.getEnergyHandler().getEnergy());
     }
 
     @Override
@@ -462,73 +417,10 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
     }
 
     @Override
-    public String getType()
-    {
-        return "ICBMRadar";
-    }
-
-    @Override
-    public String[] getMethodNames()
-    {
-        return new String[] { "getEntities", "getBlocks" };
-    }
-
-    @Override
-    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception
-    {
-        if (!this.getEnergyHandler().checkExtract())
-        {
-            throw new Exception("Radar has insufficient electricity!");
-        }
-
-        HashMap<String, Double> returnArray = new HashMap<String, Double>();
-        int count = 0;
-
-        switch (method)
-        {
-            case 0:
-                List<Entity> entities = RadarRegistry.getEntitiesWithinRadius(new Pos(this).toVector2(), this.alarmRange);
-
-                for (Entity entity : entities)
-                {
-                    returnArray.put("x_" + count, entity.posX);
-                    returnArray.put("y_" + count, entity.posY);
-                    returnArray.put("z_" + count, entity.posZ);
-                    count++;
-                }
-
-                return new Object[] { returnArray };
-            case 1:
-                for (TileEntity jiQi : RadarRegistry.getTileEntitiesInArea(new Vector2(this.xCoord - TileRadarStation.MAX_DETECTION_RANGE, this.zCoord - TileRadarStation.MAX_DETECTION_RANGE), new Vector2(this.xCoord + TileRadarStation.MAX_DETECTION_RANGE, this.zCoord + TileRadarStation.MAX_DETECTION_RANGE)))
-                {
-                    returnArray.put("x_" + count, (double) jiQi.xCoord);
-                    returnArray.put("y_" + count, (double) jiQi.yCoord);
-                    returnArray.put("z_" + count, (double) jiQi.zCoord);
-                    count++;
-                }
-                return new Object[] { returnArray };
-        }
-
-        throw new Exception("Invalid ICBM Radar Function.");
-    }
-
-    @Override
-    public void attach(IComputerAccess computer)
-    {
-
-    }
-
-    @Override
-    public void detach(IComputerAccess computer)
-    {
-
-    }
-
-    @Override
     public void invalidate()
     {
         ForgeChunkManager.releaseTicket(this.ticket);
-        RadarRegistry.unregister(this);
+        //RadarRegistry.unregister(this);
         super.invalidate();
     }
 
@@ -542,12 +434,6 @@ public class TileRadarStation extends TileFrequency implements IChunkLoadHandler
     public void setDirection(ForgeDirection facingDirection)
     {
         this.fangXiang = (byte) facingDirection.ordinal();
-    }
-
-    @Override
-    public boolean equals(IPeripheral other)
-    {
-        return equals(other);
     }
 
 }
