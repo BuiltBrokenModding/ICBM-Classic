@@ -17,6 +17,7 @@ import icbm.explosion.ex.Explosion;
 import icbm.explosion.explosive.ExplosiveRegistry;
 import icbm.explosion.items.ItemMissile;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -25,6 +26,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import resonant.api.ITier;
+import resonant.api.explosion.ExplosionEvent;
+import resonant.api.explosion.ExplosiveType;
+import resonant.api.explosion.ILauncherController;
 
 import java.util.HashMap;
 
@@ -33,7 +38,7 @@ import java.util.HashMap;
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost
+public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier
 {
     // The missile that this launcher is holding
     public EntityMissile missile = null;
@@ -48,11 +53,11 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
 
     private boolean packetGengXin = true;
 
-    /** Returns the name of the inventory. */
-    @Override
-    public String getInvName()
+    //LanguageUtility.getLocal("gui.launcherBase.name")
+
+    public TileLauncherBase(String name, Material material)
     {
-        return LanguageUtility.getLocal("gui.launcherBase.name");
+        super(name, material);
     }
 
     /**
@@ -109,21 +114,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
         return new PacketTile(this, (byte) this.facingDirection.ordinal(), this.tier);
     }
 
-    @Override
-    public void onReceivePacket(ByteArrayDataInput data, EntityPlayer player, Object... extra)
-    {
-        try
-        {
-
-            this.facingDirection = ForgeDirection.getOrientation(data.readByte());
-            this.tier = data.readInt();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     public void setMissile()
     {
         if (!this.worldObj.isRemote)
@@ -138,7 +128,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
                     {
                         Explosion missile = (Explosion) ExplosiveRegistry.get(explosiveID);
 
-                        ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
+                        ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
                         MinecraftForge.EVENT_BUS.post(evt);
 
                         if (!evt.isCanceled())
@@ -389,7 +379,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         for (byte i = 2; i < 6; i++)
         {
-            Pos position = new Pos(this).translate(ForgeDirection.getOrientation(i));
+            Pos position = new Pos(this).add(ForgeDirection.getOrientation(i));
 
             TileEntity tileEntity = position.getTileEntity(this.worldObj);
 
@@ -405,7 +395,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
-        
+
     }
 
     @Override
@@ -439,8 +429,9 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     }
 
     @Override
-    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
+    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
     {
-
+        this.facingDirection = ForgeDirection.getOrientation(data.readByte());
+        this.tier = data.readInt();
     }
 }
