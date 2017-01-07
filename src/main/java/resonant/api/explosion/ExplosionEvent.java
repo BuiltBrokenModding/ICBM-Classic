@@ -1,5 +1,6 @@
 package resonant.api.explosion;
 
+import com.builtbroken.mc.api.explosive.IExplosiveHandler;
 import cpw.mods.fml.common.eventhandler.Cancelable;
 import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.entity.Entity;
@@ -51,11 +52,11 @@ public class ExplosionEvent extends Event
         /** The position in which the explosion might happen. */
         public double x, y, z;
         /** The explosive object. */
-        public IExplosive explosion;
+        public IExplosiveHandler explosion;
         /** The explosive type. */
         public ExplosiveType type;
 
-        public ExplosivePreDetonationEvent(World world, double x, double y, double z, ExplosiveType type, IExplosive explosion)
+        public ExplosivePreDetonationEvent(World world, double x, double y, double z, ExplosiveType type, IExplosiveHandler explosion)
         {
             this.world = world;
             this.type = type;
@@ -65,7 +66,7 @@ public class ExplosionEvent extends Event
             this.z = z;
         }
 
-        public ExplosivePreDetonationEvent(World world, Entity entity, ExplosiveType type, IExplosive explosion)
+        public ExplosivePreDetonationEvent(World world, Entity entity, ExplosiveType type, IExplosiveHandler explosion)
         {
             this.world = world;
             this.entity = entity;

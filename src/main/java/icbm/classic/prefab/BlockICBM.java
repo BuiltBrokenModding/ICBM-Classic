@@ -2,7 +2,7 @@ package icbm.classic.prefab;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.Reference;
+import icbm.classic.Reference;
 import icbm.TabICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

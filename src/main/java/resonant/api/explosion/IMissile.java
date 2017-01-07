@@ -1,10 +1,11 @@
 package resonant.api.explosion;
 
-import universalelectricity.api.vector.Vector3;
+
+import com.builtbroken.mc.lib.transform.vector.Pos;
 
 /** This is an interface applied by all missile entities. You may cast this into an @Entity. The
  * "set" version of the function will make the entity do the action on the next tick.
- * 
+ *
  * @author Calclavia */
 public interface IMissile extends IExplosiveContainer
 {
@@ -30,9 +31,9 @@ public interface IMissile extends IExplosiveContainer
     public ILauncherContainer getLauncher();
 
     /** Launches the missile into a specific target.
-     * 
+     *
      * @param target */
-    public void launch(Vector3 target);
+    public void launch(Pos target);
 
-    public void launch(Vector3 target, int height);
+    public void launch(Pos target, int height);
 }
