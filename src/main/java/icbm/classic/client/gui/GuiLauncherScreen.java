@@ -1,7 +1,7 @@
 package icbm.classic.client.gui;
 
 import icbm.classic.Reference;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
 import icbm.classic.content.machines.launcher.TileLauncherScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -98,7 +98,7 @@ public class GuiLauncherScreen extends GuiICBM
             Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
-            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, 2, this.tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));
+            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 2, this.tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));
         }
         catch (NumberFormatException e)
         {
@@ -110,7 +110,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newFrequency = (short) Math.max(Short.parseShort(this.target_freq_field.getText()), 0);
 
             this.tileEntity.setFrequency(newFrequency);
-            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, 1, this.tileEntity.getFrequency()));
+            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 1, this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {
@@ -122,7 +122,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.target_height_field.getText()), Short.MAX_VALUE), 3);
 
             this.tileEntity.gaoDu = newGaoDu;
-            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, 3, this.tileEntity.gaoDu));
+            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 3, this.tileEntity.gaoDu));
         }
         catch (NumberFormatException e)
         {

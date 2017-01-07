@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.render.fx.*;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -8,11 +9,14 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.content.entity.*;
-import icbm.explosion.ICBMExplosion;
-import icbm.classic.content.explosive.ex.missiles.MissilePlayerHandler;
-import icbm.classic.content.explosive.TileExplosive;
 import icbm.classic.client.fx.FXAntimatterPartical;
+import icbm.classic.client.render.entity.*;
+import icbm.classic.client.render.item.RenderItemMissile;
+import icbm.classic.client.render.item.RenderRocketLauncher;
+import icbm.classic.client.render.tile.*;
+import icbm.classic.content.entity.*;
+import icbm.classic.content.explosive.ex.missiles.MissilePlayerHandler;
+import icbm.classic.content.explosive.tile.TileExplosive;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import icbm.classic.content.machines.TileEMPTower;
 import icbm.classic.content.machines.TileMissileCoordinator;
@@ -20,10 +24,6 @@ import icbm.classic.content.machines.TileRadarStation;
 import icbm.classic.content.machines.launcher.TileLauncherBase;
 import icbm.classic.content.machines.launcher.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.TileLauncherScreen;
-import icbm.classic.client.render.entity.*;
-import icbm.classic.client.render.item.RenderItemMissile;
-import icbm.classic.client.render.item.RenderRocketLauncher;
-import icbm.classic.client.render.tile.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
@@ -55,8 +55,8 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, new RenderEntityBlock());
         RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, new RenderShrapnel());
 
-        MinecraftForgeClient.registerItemRenderer(ICBMExplosion.itemRocketLauncher, new RenderRocketLauncher());
-        MinecraftForgeClient.registerItemRenderer(ICBMExplosion.itemMissile, new RenderItemMissile());
+        MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemRocketLauncher, new RenderRocketLauncher());
+        MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemMissile, new RenderItemMissile());
 
         RenderingRegistry.registerBlockHandler(new RenderBombBlock());
         RenderingRegistry.registerBlockHandler(new BlockRenderHandler());
@@ -91,25 +91,25 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void spawnParticle(String name, World world, Pos position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
+    public void spawnParticle(String name, World world, IPos3D position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
     {
         EntityFX fx = null;
 
         if (name.equals("smoke"))
         {
-            fx = new FXSmoke(world, position, red, green, blue, scale, distance);
+            fx = new FXSmoke(world, new Pos(position), red, green, blue, scale, distance);
         }
         else if (name.equals("missile_smoke"))
         {
-            fx = (new FXSmoke(world, position, red, green, blue, scale, distance)).setAge(100);
+            fx = (new FXSmoke(world, new Pos(position), red, green, blue, scale, distance)).setAge(100);
         }
         else if (name.equals("portal"))
         {
-            fx = new FXEnderPortalPartical(world, position, red, green, blue, scale, distance);
+            fx = new FXEnderPortalPartical(world, new Pos(position), red, green, blue, scale, distance);
         }
         else if (name.equals("antimatter"))
         {
-            fx = new FXAntimatterPartical(world, position, red, green, blue, scale, distance);
+            fx = new FXAntimatterPartical(world, new Pos(position), red, green, blue, scale, distance);
         }
         else if (name.equals("digging"))
         {
@@ -118,7 +118,7 @@ public class ClientProxy extends CommonProxy
         }
         else if (name.equals("shockwave"))
         {
-            fx = new FXShockWave(world, position, red, green, blue, scale, distance);
+            fx = new FXShockWave(world, new Pos(position), red, green, blue, scale, distance);
         }
 
         if (fx != null)
@@ -157,13 +157,11 @@ public class ClientProxy extends CommonProxy
             {
                 EffectRenderer renderer = Minecraft.getMinecraft().effectRenderer;
                 List[] fxLayers = (List[]) ReflectionHelper.getPrivateValue(EffectRenderer.class, renderer, 2);
-
                 return fxLayers[0];
             }
             catch (Exception e)
             {
-                ICBMCore.LOGGER.severe("Failed to use relfection on entity effects.");
-                e.printStackTrace();
+                ICBMClassic.INSTANCE.logger().error("Failed to use refection on entity effects.", e);
                 this.disableReflectionFX = true;
             }
         }

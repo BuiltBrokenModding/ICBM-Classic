@@ -1,7 +1,7 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.mc.api.IWorldPosition;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
 
 import java.lang.reflect.Constructor;
@@ -106,7 +106,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (this.blast == null)
         {
             this.setDead();
-            ICBMCore.LOGGER.severe("Procedural explosion ended due to null! This is a bug!");
+            ICBMClassic.LOGGER.severe("Procedural explosion ended due to null! This is a bug!");
             return;
         }
 
@@ -161,7 +161,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         }
         catch (Exception e)
         {
-            ICBMCore.LOGGER.severe("ICBM error in loading an explosion!");
+            ICBMClassic.LOGGER.severe("ICBM error in loading an explosion!");
             e.printStackTrace();
         }
     }

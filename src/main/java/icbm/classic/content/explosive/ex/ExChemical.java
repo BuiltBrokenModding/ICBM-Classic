@@ -1,13 +1,16 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
-import icbm.classic.ICBMCore;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastChemical;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
 
 public class ExChemical extends Explosion
 {
@@ -30,11 +33,17 @@ public class ExChemical extends Explosion
     {
         if (this.getTier() == 1)
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "@@@", "@?@", "@@@", '@', ICBMCore.itemPoisonPowder, '?', debilitation.getItemStack() }), "Chemical", Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.CHEMICAL.getItemStack(),
+                    "@@@", "@?@", "@@@",
+                    '@', ICBMClassic.itemPoisonPowder,
+                    '?', Explosives.DEBLITATION.getItemStack()), "Chemical", ICBMClassic.INSTANCE.getConfig(), true);
         }
         else if (this.getTier() == 2)
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(2), new Object[] { " @ ", "@?@", " @ ", '?', Item.rottenFlesh, '@', chemical.getItemStack() }), "Contagious", Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.CONTAGIOUS.getItemStack(2),
+                    " @ ", "@?@", " @ ",
+                    '?', Items.rotten_flesh,
+                    '@', Explosives.CHEMICAL.getItemStack()), "Contagious", ICBMClassic.INSTANCE.getConfig(), true);
         }
     }
 
@@ -52,4 +61,9 @@ public class ExChemical extends Explosion
 
     }
 
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
+    }
 }

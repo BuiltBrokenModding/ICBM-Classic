@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -47,7 +47,7 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
-        player.openGui(ICBMCore.INSTANCE, 10002, world, player.inventory.currentItem, 0, 0);
+        player.openGui(ICBMClassic.INSTANCE, 10002, world, player.inventory.currentItem, 0, 0);
         return stack;
     }
 

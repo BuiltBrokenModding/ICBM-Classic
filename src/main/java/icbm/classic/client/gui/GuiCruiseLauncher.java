@@ -5,7 +5,7 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.Reference;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.container.ContainerCruiseLauncher;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import net.minecraft.client.gui.GuiTextField;
@@ -78,7 +78,7 @@ public class GuiCruiseLauncher extends GuiContainer
         {
             Pos newTarget = new Pos(parseInt(this.textFieldX.getText()), parseInt(this.textFieldY.getText()), parseInt(this.textFieldZ.getText()));
             this.tileEntity.setTarget(newTarget);
-            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(tileEntity, 2, tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));
+            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(tileEntity, 2, tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));
         }
         catch (NumberFormatException e)
         {
@@ -88,7 +88,7 @@ public class GuiCruiseLauncher extends GuiContainer
         {
             short newFrequency = (short) Math.max(Short.parseShort(this.textFieldFreq.getText()), 0);
             this.tileEntity.setFrequency(newFrequency);
-            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(tileEntity, 1, tileEntity.getFrequency()));
+            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(tileEntity, 1, tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {

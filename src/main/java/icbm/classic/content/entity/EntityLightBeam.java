@@ -1,6 +1,6 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.jlib.data.vector.IPos3D;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -21,7 +21,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.renderDistanceWeight = 3;
     }
 
-    public EntityLightBeam(World world, Pos position, int life, float red, float green, float blue)
+    public EntityLightBeam(World world, IPos3D position, int life, float red, float green, float blue)
     {
         super(world);
         this.setPosition(position.x(), position.y(), position.z());

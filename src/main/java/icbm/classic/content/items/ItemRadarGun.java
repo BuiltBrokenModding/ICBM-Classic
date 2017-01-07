@@ -1,6 +1,6 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.machines.TileCruiseLauncher;
@@ -66,7 +66,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
                     // Check for electricity
                     if (this.getEnergy(itemStack) > YONG_DIAN_LIANG)
                     {
-                        PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_ITEM.getPacket(entityPlayer, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
+                        PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_ITEM.getPacket(entityPlayer, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
                         this.discharge(itemStack, YONG_DIAN_LIANG, true);
                         entityPlayer.addChatMessage(LanguageUtility.getLocal("message.radarGun.scanned").replaceAll("%x", "" + objectMouseOver.blockX).replace("%y", "" + objectMouseOver.blockY).replaceAll("%z", "" + objectMouseOver.blockZ).replaceAll("%d", "" + Math.round(new Pos(entityPlayer).distance(new Pos(objectMouseOver)))));
                     }
@@ -115,7 +115,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
 
                         if (par3World.isRemote)
                         {
-                            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(missileLauncher, 2, savedCords.intX(), missileLauncher.getTarget().intY(), savedCords.intZ()));
+                            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(missileLauncher, 2, savedCords.intX(), missileLauncher.getTarget().intY(), savedCords.intZ()));
                             par2EntityPlayer.addChatMessage(LanguageUtility.getLocal("message.radarGun.transfer"));
                         }
                     }
@@ -142,7 +142,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
 
                         if (par3World.isRemote)
                         {
-                            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(missileLauncher, 2, savedCords.intX(), missileLauncher.getTarget().intY(), savedCords.intZ()));
+                            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(missileLauncher, 2, savedCords.intX(), missileLauncher.getTarget().intY(), savedCords.intZ()));
                             par2EntityPlayer.addChatMessage(LanguageUtility.getLocal("message.radarGun.transfer"));
                         }
                     }

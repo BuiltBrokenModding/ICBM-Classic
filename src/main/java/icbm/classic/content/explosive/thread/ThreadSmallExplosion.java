@@ -1,16 +1,18 @@
 package icbm.classic.content.explosive.thread;
 
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import universalelectricity.api.vector.Vector3;
-import universalelectricity.api.vector.VectorWorld;
 
-/** Used for small explosions.
+/**
+ * Used for small explosions.
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 public class ThreadSmallExplosion extends ThreadExplosion
 {
-    public ThreadSmallExplosion(VectorWorld position, int banJing, Entity source)
+    public ThreadSmallExplosion(Location position, int banJing, Entity source)
     {
         super(position, banJing, 0, source);
     }
@@ -36,27 +38,27 @@ public class ThreadSmallExplosion extends ThreadExplosion
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
                             float power = this.radius * (0.7F + this.position.world().rand.nextFloat() * 0.6F);
-                            double var15 = position.x;
-                            double var17 = position.y;
-                            double var19 = position.z;
+                            double var15 = position.x();
+                            double var17 = position.y();
+                            double var19 = position.z();
 
                             for (float var21 = 0.3F; power > 0.0F; power -= var21 * 0.75F)
                             {
                                 Pos targetPosition = new Pos(var15, var17, var19);
                                 double distanceFromCenter = position.distance(targetPosition);
-                                int blockID = this.position.world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
+                                Block blockID = this.position.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                                if (blockID > 0)
+                                if (blockID != null)
                                 {
                                     float resistance = 0;
 
-                                    if (blockID == Block.bedrock.blockID)
+                                    if (blockID.blockHardness < 0)
                                     {
                                         break;
                                     }
                                     else
                                     {
-                                        resistance = Block.blocksList[blockID].getExplosionResistance(this.source, this.position.world(), targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), position.intX(), position.intY(), position.intZ());
+                                        resistance = blockID.getExplosionResistance(this.source, this.position.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi());
                                     }
                                     // TODO rather than remove power divert a percentage to the
                                     // sides, and then calculate how much is absorbed by the block

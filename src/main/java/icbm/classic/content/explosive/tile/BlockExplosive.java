@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive;
+package icbm.classic.content.explosive.tile;
 
 import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
@@ -6,6 +6,8 @@ import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
+import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.prefab.BlockICBM;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.client.render.tile.RenderBombBlock;

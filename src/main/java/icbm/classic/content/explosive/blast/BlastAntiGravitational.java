@@ -1,19 +1,18 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.mffs.api.IForceFieldBlock;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import universalelectricity.api.vector.Vector3;
-import calclavia.api.mffs.IForceFieldBlock;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BlastAntiGravitational extends Blast
 {
@@ -34,7 +33,7 @@ public class BlastAntiGravitational extends Blast
             this.thread.start();
         }
 
-        this.world().playSoundEffect(position.x, position.y, position.z, Reference.PREFIX + "antigravity", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "antigravity", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     @Override
@@ -48,30 +47,30 @@ public class BlastAntiGravitational extends Blast
 
             for (Pos targetPosition : this.thread.results)
             {
-                double distance = Pos.distance(targetPosition, position);
+                double distance = targetPosition.distance(position);
 
                 if (distance > r || distance < r - 2 || blocksToTake <= 0)
                     continue;
 
-               Block block = Block.blocksList[world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ())];
+               Block block = world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                if (block == null || block.getBlockHardness(world(), targetPosition.intX(), targetPosition.intY(), targetPosition.intZ()) < 0)
+                if (block == null || block.getBlockHardness(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()) < 0)
                     continue;
 
                 if (block instanceof IForceFieldBlock)
                     continue;
 
-                int metadata = world().getBlockMetadata(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
+                int metadata = world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                 if (distance < r - 1 || world().rand.nextInt(3) > 0)
                 {
-                    this.world().setBlockToAir(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
+                    this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                    targetPosition.translate(0.5D);
+                    targetPosition = targetPosition.add(0.5D);
 
                     if (world().rand.nextFloat() < 0.3 * (this.getRadius() - r))
                     {
-                        EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, block.blockID, metadata, 0);
+                        EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, block, metadata, 0);
                         world().spawnEntityInWorld(entity);
                         flyingBlocks.add(entity);
                         entity.yawChange = 50 * world().rand.nextFloat();
@@ -85,12 +84,12 @@ public class BlastAntiGravitational extends Blast
         }
 
         int radius = (int) this.getRadius();
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x - radius, position.y - radius, position.z - radius, position.x + radius, 100, position.z + radius);
+        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities)
         {
-            if (!(entity instanceof EntityFlyingBlock) && entity.posY < 100 + position.y)
+            if (!(entity instanceof EntityFlyingBlock) && entity.posY < 100 + position.y())
             {
                 if (entity.motionY < 0.4)
                 {

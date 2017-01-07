@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -55,7 +55,7 @@ public class BlastRot extends Blast
                         {
                             if (this.world().rand.nextFloat() > 0.96)
                             {
-                                targetPosition.setBlock(this.world(), ICBMCore.blockRadioactive.blockID);
+                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive.blockID);
                             }
                         }
 
@@ -63,7 +63,7 @@ public class BlastRot extends Blast
                         {
                             if (this.world().rand.nextFloat() > 0.99)
                             {
-                                targetPosition.setBlock(this.world(), ICBMCore.blockRadioactive.blockID);
+                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive.blockID);
                             }
                         }
 
@@ -84,7 +84,7 @@ public class BlastRot extends Blast
                         }
                         else if (blockID == Block.tilledField.blockID)
                         {
-                            targetPosition.setBlock(this.world(), ICBMCore.blockRadioactive.blockID);
+                            targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive.blockID);
                         }
                         else if (blockID == Block.waterStill.blockID || blockID == Block.waterMoving.blockID)
                         {

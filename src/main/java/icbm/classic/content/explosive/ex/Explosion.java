@@ -1,5 +1,7 @@
 package icbm.classic.content.explosive.ex;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
@@ -8,8 +10,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import net.minecraftforge.client.model.ModelFormatException;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class Explosion extends Explosive
 {
@@ -67,7 +67,7 @@ public abstract class Explosion extends Explosive
         try
         {
             if (this.model == null)
-                model = AdvancedModelLoader.loadModel(Reference.MODEL_DIRECTORY + this.modelName);
+                model = AdvancedModelLoader.loadModel(new ResourceLocation(Reference.DOMAIN, Reference.MODEL_DIRECTORY + this.modelName));
         }
         catch (ModelFormatException e)
         {

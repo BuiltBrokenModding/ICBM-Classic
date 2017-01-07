@@ -1,14 +1,17 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosive;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastShrapnel;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
 
 public class ExShrapnel extends Explosion
 {
@@ -32,17 +35,26 @@ public class ExShrapnel extends Explosion
     @Override
     public void init()
     {
-        if (this.getID() == Explosive.shrapnel.getID())
+        if (this == Explosives.SHRAPNEL.handler)
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "???", "?@?", "???", '@', replsive.getItemStack(), '?', Item.arrow }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.SHRAPNEL.getItemStack(),
+                    "???", "?@?", "???",
+                    '@', Explosives.REPLUSIVE.getItemStack(),
+                    '?', Items.arrow), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
         }
-        else if (this.getID() == Explosive.anvil.getID())
+        else if (this == Explosives.ANVIL.handler)
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(10), new Object[] { "SSS", "SAS", "SSS", 'A', Block.anvil, 'S', Explosive.shrapnel.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANVIL.getItemStack(10),
+                    "SSS", "SAS", "SSS",
+                    'A', Blocks.anvil,
+                    'S', Explosives.SHRAPNEL.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
         }
-        else if (this.getID() == Explosive.fragmentation.getID())
+        else if (this == Explosives.FRAGMENTATION.handler)
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { " @ ", "@?@", " @ ", '?', incendiary.getItemStack(), '@', shrapnel.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.FRAGMENTATION.getItemStack(),
+                    " @ ", "@?@", " @ ",
+                    '?', Explosives.INCENDIARY.getItemStack(),
+                    '@', Explosives.SHRAPNEL.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
         }
     }
 
@@ -53,7 +65,7 @@ public class ExShrapnel extends Explosion
         {
             new BlastShrapnel(world, entity, x, y, z, 15, true, true, false).explode();
         }
-        else if (this.getID() == Explosive.anvil.getID())
+        else if (this == Explosives.ANVIL.handler)
         {
             new BlastShrapnel(world, entity, x, y, z, 25, false, false, true).explode();
         }
@@ -61,5 +73,11 @@ public class ExShrapnel extends Explosion
         {
             new BlastShrapnel(world, entity, x, y, z, 30, true, false, false).explode();
         }
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

@@ -7,10 +7,10 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveRegistry;
-import icbm.classic.content.explosive.TileExplosive;
+import icbm.classic.content.explosive.tile.TileExplosive;
 import icbm.classic.client.models.MDiLei;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -49,7 +49,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
                 }
                 catch (Exception e)
                 {
-                    ICBMCore.LOGGER.severe("ICBM Explosive Rendering Crash with: " + block + " and metadata: " + metadata);
+                    ICBMClassic.LOGGER.severe("ICBM Explosive Rendering Crash with: " + block + " and metadata: " + metadata);
                     e.printStackTrace();
                 }
             }

@@ -2,7 +2,7 @@ package icbm.classic.content.items;
 
 import icbm.classic.Reference;
 import icbm.classic.Settings;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.entity.EntityLightBeam;
@@ -296,7 +296,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
                                     }
 
                                     missileLauncher.setTarget(new Pos(objectMouseOver.blockX, yHit, objectMouseOver.blockZ));
-                                    PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(missileLauncher, 2, missileLauncher.getTarget().intX(), missileLauncher.getTarget().intY(), missileLauncher.getTarget().intZ()));
+                                    PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(missileLauncher, 2, missileLauncher.getTarget().intX(), missileLauncher.getTarget().intY(), missileLauncher.getTarget().intZ()));
 
                                     if (missileLauncher.canLaunch())
                                     {
@@ -312,7 +312,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
 
                             if (doAirStrike && this.getLauncherCountDown(par1ItemStack) >= 0)
                             {
-                                PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_ITEM.getPacket(player, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
+                                PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_ITEM.getPacket(player, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
                                 player.addChatMessage(LanguageUtility.getLocal("message.designator.callBlast"));
                             }
                         }

@@ -3,7 +3,7 @@ package icbm.classic.content.items;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -20,7 +20,7 @@ public class TextureTracker extends TextureAtlasSprite
 
     public TextureTracker()
     {
-        super(ICBMCore.itemTracker.getUnlocalizedName().replace("item.", ""));
+        super(ICBMClassic.itemTracker.getUnlocalizedName().replace("item.", ""));
     }
 
     @Override

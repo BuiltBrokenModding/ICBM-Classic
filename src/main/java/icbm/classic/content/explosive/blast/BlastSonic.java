@@ -4,8 +4,8 @@ import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.BlockExplosive;
-import icbm.classic.content.explosive.TileExplosive;
+import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.content.explosive.tile.TileExplosive;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion.IThreadCallBack;
 

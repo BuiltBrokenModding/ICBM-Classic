@@ -6,108 +6,22 @@ import com.builtbroken.mc.prefab.explosive.AbstractExplosiveHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.prefab.ModelICBM;
-import icbm.classic.Settings;
-import icbm.explosion.ICBMExplosion;
-import icbm.classic.content.explosive.ex.*;
-import icbm.classic.content.explosive.ex.missiles.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModelCustom;
-import resonant.lib.flag.FlagRegistry;
 
 /** The explosive registry class. Used to register explosions. */
 public abstract class Explosive extends AbstractExplosiveHandler
 {
-    /** Explosives */
-    public static Explosive condensed;
-    public static Explosive shrapnel;
-    public static Explosive incendiary;
-    public static Explosive debilitation;
-    public static Explosive chemical;
-    public static Explosive anvil;
-    public static Explosive replsive;
-    public static Explosive attractive;
-
-    public static Explosive fragmentation;
-    public static Explosive contagious;
-    public static Explosive sonic;
-    public static Explosive breaching;
-    public static Explosive rejuvenation;
-    public static Explosive thermobaric;
-    public static Explosive sMine;
-
-    public static Explosive nuclear;
-    public static Explosive emp;
-    public static Explosive exothermic;
-    public static Explosive endothermic;
-    public static Explosive antiGrav;
-    public static Explosive ender;
-    public static Explosive hypersonic;
-
-    public static Explosive antimatter;
-    public static Explosive redMatter;
-
-    /** Missiles */
-    public static Explosion missileModule;
-    public static Explosion homing;
-    public static Explosion antiBallistic;
-    public static Explosion cluster;
-    public static Explosion nuclearCluster;
-
-    public static boolean registered = false;
-
-    public static void registerExplosives()
-    {
-        condensed = ExplosiveRegistry.register(new ExCondensed("condensed", 1));
-        shrapnel = ExplosiveRegistry.register(new ExShrapnel("shrapnel", 1));
-        incendiary = ExplosiveRegistry.register(new ExIncendiary("incendiary", 1));
-        debilitation = ExplosiveRegistry.register(new ExDebilitation("debilitation", 1));
-        chemical = ExplosiveRegistry.register(new ExChemical("chemical", 1));
-        anvil = ExplosiveRegistry.register(new ExShrapnel("anvil", 1));
-        replsive = ExplosiveRegistry.register(new ExRepulsive("repulsive", 1));
-        attractive = ExplosiveRegistry.register(new ExRepulsive("attractive", 1));
-
-        fragmentation = ExplosiveRegistry.register(new ExShrapnel("fragmentation", 2));
-        contagious = ExplosiveRegistry.register(new ExChemical("contagious", 2));
-        sonic = ExplosiveRegistry.register(new ExSonic("sonic", 2));
-        breaching = ExplosiveRegistry.register(new ExBreaching());
-        rejuvenation = ExplosiveRegistry.register(new ExRejuvenation());
-        thermobaric = ExplosiveRegistry.register(new ExNuclear("thermobaric", 2));
-        sMine = ExplosiveRegistry.register(new ExSMine("sMine", 2));
-
-        nuclear = ExplosiveRegistry.register(new ExNuclear("nuclear", 3));
-        emp = ExplosiveRegistry.register(new ExEMP());
-        exothermic = ExplosiveRegistry.register(new ExExothermic());
-        endothermic = ExplosiveRegistry.register(new ExEndothermic());
-        antiGrav = ExplosiveRegistry.register(new ExAntiGravitational());
-        ender = ExplosiveRegistry.register(new ExEnder());
-        hypersonic = ExplosiveRegistry.register(new ExSonic("hypersonic", 3));
-
-        antimatter = ExplosiveRegistry.register(new ExAntimatter());
-        redMatter = ExplosiveRegistry.register(new ExRedMatter());
-
-        /** Missiles */
-        missileModule = (Explosion) ExplosiveRegistry.register(new MissileModule());
-        homing = (Explosion) ExplosiveRegistry.register(new MissileHoming());
-        antiBallistic = (Explosion) ExplosiveRegistry.register(new MissileAnti());
-        cluster = (Explosion) ExplosiveRegistry.register(new MissileCluster("cluster", 2));
-        nuclearCluster = (Explosion) ExplosiveRegistry.register(new MissileNuclearCluster());
-
-        registered = true;
-    }
-
     /** The unique identification name for this explosive. */
     private String nameID;
     /** The tier of this explosive */
     private int tier;
     /** The fuse of this explosive */
     private int fuseTime;
-    /** The flag name of this explosive */
-    public final String flagName;
     /** Is this explosive disabled? */
     protected boolean isDisabled;
     /** Is this explosive able to be pushed by other explosions? */
@@ -130,8 +44,8 @@ public abstract class Explosive extends AbstractExplosiveHandler
         this.hasGrenade = this.tier <= 1;
         this.hasMinecart = this.tier <= 2;
 
-        this.flagName = FlagRegistry.registerFlag("ban_" + this.nameID);
-        this.isDisabled = Settings.CONFIGURATION.get("Disable_Explosives", "Disable " + this.nameID, false).getBoolean(false);
+        //this.flagName = //FlagRegistry.registerFlag("ban_" + this.nameID);
+        this.isDisabled = false;//Settings.CONFIGURATION.get("Disable_Explosives", "Disable " + this.nameID, false).getBoolean(false);
 
     }
 
@@ -281,16 +195,6 @@ public abstract class Explosive extends AbstractExplosiveHandler
 
     }
 
-    public ItemStack getItemStack()
-    {
-        return this.getItemStack(1);
-    }
-
-    public ItemStack getItemStack(int amount)
-    {
-        return new ItemStack(ICBMExplosion.blockExplosive, amount, this.getID());
-    }
-
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9)
     {
         return false;
@@ -305,22 +209,4 @@ public abstract class Explosive extends AbstractExplosiveHandler
     }
 
     public abstract void doCreateExplosion(World world, double x, double y, double z, Entity entity);
-
-    /**
-     * Checks if the explosive is banned in an area
-     *
-     * @param world - world to check in
-     * @param x     - coord
-     * @param y     - coord
-     * @param z-    coord
-     * @return true if it is banned
-     */
-    public boolean isBannedInRegion(World world, double x, double y, double z)
-    {
-        //boolean flag_all = FlagRegistry.getModFlag().getFlagWorld(world).containsValue("ban_ICBM", "true", new Pos(x, y, z));
-        //boolean flag_missile = FlagRegistry.getModFlag().getFlagWorld(world).containsValue(this.flagName, "true", new Pos(x, y, z));
-
-        //return flag_all || flag_missile;
-        return false;
-    }
 }

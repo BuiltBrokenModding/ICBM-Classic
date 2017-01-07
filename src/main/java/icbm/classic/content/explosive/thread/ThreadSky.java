@@ -1,19 +1,22 @@
 package icbm.classic.content.explosive.thread;
 
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFluid;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
-import universalelectricity.api.vector.Vector3;
-import universalelectricity.api.vector.VectorWorld;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-/** Used for searching block spawn. Returns a block above this found block coordinate.
+/**
+ * Used for searching block spawn. Returns a block above this found block coordinate.
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 public class ThreadSky extends ThreadExplosion
 {
     public static interface IThreadCallBack
@@ -23,13 +26,13 @@ public class ThreadSky extends ThreadExplosion
 
     public IThreadCallBack callBack;
 
-    public ThreadSky(VectorWorld position, int banJing, float nengLiang, Entity source, IThreadCallBack callBack)
+    public ThreadSky(Location position, int banJing, float nengLiang, Entity source, IThreadCallBack callBack)
     {
         super(position, banJing, nengLiang, source);
         this.callBack = callBack;
     }
 
-    public ThreadSky(VectorWorld position, int banJing, float nengLiang, Entity source)
+    public ThreadSky(Location position, int banJing, float nengLiang, Entity source)
     {
         this(position, banJing, nengLiang, source, new IThreadCallBack()
         {
@@ -39,13 +42,13 @@ public class ThreadSky extends ThreadExplosion
             {
                 float resistance = 0;
 
-                if (block instanceof BlockFluid || block instanceof IFluidBlock)
+                if (block instanceof BlockLiquid || block instanceof IFluidBlock)
                 {
                     resistance = 0.25f;
                 }
                 else
                 {
-                    resistance = block.getExplosionResistance(source, world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), explosionPosition.intX(), explosionPosition.intY(), explosionPosition.intZ());
+                    resistance = block.getExplosionResistance(source, world, targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), explosionPosition.xi(), explosionPosition.yi(), explosionPosition.zi());
                 }
 
                 return resistance;
@@ -69,35 +72,35 @@ public class ThreadSky extends ThreadExplosion
                 Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
                 float power = this.energy - (this.energy * this.position.world().rand.nextFloat() / 2);
 
-                Pos targetPosition = this.position.clone();
+                Location targetPosition = this.position;
 
                 for (float var21 = 0.3F; power > 0f; power -= var21 * 0.75F * 10)
                 {
                     if (targetPosition.distance(position) > this.radius)
-                        break;
-
-                    int blockID = this.position.world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
-
-                    if (blockID > 0)
                     {
-                        if (blockID == Block.bedrock.blockID)
+                        break;
+                    }
+
+                    Block blockID = this.position.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+
+                    if (blockID != Blocks.air)
+                    {
+                        if (blockID == Blocks.bedrock)
                         {
                             break;
                         }
 
-                        float resistance = this.callBack.getResistance(this.position.world(), position, targetPosition, source, Block.blocksList[blockID]);
+                        float resistance = this.callBack.getResistance(this.position.world(), position.toPos(), targetPosition.toPos(), source, blockID);
 
                         power -= resistance;
 
                         if (power > 0f)
                         {
-                            this.results.add(targetPosition.clone().translate(new Pos(0, 1, 0)));
+                            this.results.add(targetPosition.add(new Pos(0, 1, 0)).toPos());
                         }
                     }
 
-                    targetPosition.x += delta.x;
-                    targetPosition.y += delta.y;
-                    targetPosition.z += delta.z;
+                    targetPosition = targetPosition.add(delta);
                 }
             }
         }

@@ -1,10 +1,10 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.TileExplosive;
+import icbm.classic.content.explosive.tile.TileExplosive;
 
 import java.util.List;
 
@@ -113,7 +113,7 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IPacketRe
                                 // Check for electricity
                                 if (this.getEnergy(itemStack) > ENERGY)
                                 {
-                                    PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(tileEntity, (byte) 2));
+                                    PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(tileEntity, (byte) 2));
                                     return itemStack;
                                 }
                                 else
@@ -134,9 +134,9 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IPacketRe
                     if (this.nengZha(tileEntity))
                     {
                         // Blow it up
-                        PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(tileEntity, (byte) 2));
+                        PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(tileEntity, (byte) 2));
                         // Use Energy
-                        PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_ITEM.getPacket(player));
+                        PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_ITEM.getPacket(player));
                     }
                 }
                 else

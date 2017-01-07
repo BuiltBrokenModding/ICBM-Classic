@@ -1,14 +1,17 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosive;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastSonic;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
-import resonant.lib.recipe.UniversalRecipe;
 
 public class ExSonic extends Explosion
 {
@@ -30,11 +33,16 @@ public class ExSonic extends Explosion
     {
         if (this.getTier() == 3)
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { " S ", "S S", " S ", 'S', Explosive.sonic.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.HYPERSONIC.getItemStack(),
+                    " S ", "S S", " S ", 'S', Explosives.SONIC.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
         }
         else
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "@?@", "?R?", "@?@", 'R', Explosive.replsive.getItemStack(), '?', Block.music, '@', UniversalRecipe.SECONDARY_METAL.get() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.SONIC.getItemStack(),
+                    "@?@", "?R?", "@?@",
+                    'R', Explosives.REPLUSIVE.getItemStack(),
+                    '?', Blocks.noteblock,
+                    '@', UniversalRecipe.SECONDARY_METAL.get()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
         }
     }
 
@@ -51,4 +59,9 @@ public class ExSonic extends Explosion
         }
     }
 
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
+    }
 }

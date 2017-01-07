@@ -1,16 +1,16 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.ICBMCore;
-import icbm.explosion.ICBMExplosion;
-
-import java.util.List;
-
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import icbm.classic.ICBMClassic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import universalelectricity.api.vector.Vector3;
+
+import java.util.List;
 
 public class BlastEnderman extends Blast
 {
@@ -41,22 +41,22 @@ public class BlastEnderman extends Blast
                 {
                     for (int y = -r; y < r; y++)
                     {
-                        Pos targetPosition = Pos.translate(position, new Pos(x, y, z));
+                        Location targetPosition = position.add(new Pos(x, y, z));
 
                         double distance = targetPosition.distance(position);
 
                         if (distance < r && distance > r - 1)
                         {
-                            if (targetPosition.getBlockID(world()) != 0)
+                            if (targetPosition.getBlock(world()) != Blocks.air)
                                 continue;
 
                             if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.01))
                             {
-                                float velX = (float) ((targetPosition.x - position.x) * 0.6);
-                                float velY = (float) ((targetPosition.y - position.y) * 0.6);
-                                float velZ = (float) ((targetPosition.z - position.z) * 0.6);
+                                float velX = (float) ((targetPosition.x() - position.x()) * 0.6);
+                                float velY = (float) ((targetPosition.y() - position.y()) * 0.6);
+                                float velZ = (float) ((targetPosition.z() - position.z()) * 0.6);
 
-                                ICBMExplosion.proxy.spawnParticle("portal", world(), targetPosition, velX, velY, velZ, 5f, 1);
+                                ICBMClassic.proxy.spawnParticle("portal", world(), targetPosition, velX, velY, velZ, 5f, 1);
                             }
                         }
                     }
@@ -65,7 +65,7 @@ public class BlastEnderman extends Blast
         }
 
         int radius = (int) this.getRadius();
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x - radius, position.y - radius, position.z - radius, position.x + radius, position.y + radius, position.z + radius);
+        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
         boolean explosionCreated = false;
 
@@ -74,9 +74,9 @@ public class BlastEnderman extends Blast
             if (entity != this.controller)
             {
 
-                double xDifference = entity.posX - position.x;
-                double yDifference = entity.posY - position.y;
-                double zDifference = entity.posZ - position.z;
+                double xDifference = entity.posX - position.x();
+                double yDifference = entity.posY - position.y();
+                double zDifference = entity.posZ - position.z();
 
                 int r = (int) this.getRadius();
                 if (xDifference < 0)
@@ -85,7 +85,7 @@ public class BlastEnderman extends Blast
                 entity.motionX -= (r - xDifference) * Math.abs(xDifference) * 0.0006;
 
                 r = (int) this.getRadius();
-                if (entity.posY > position.y)
+                if (entity.posY > position.y())
                     r = (int) -this.getRadius();
                 entity.motionY += (r - yDifference) * Math.abs(yDifference) * 0.0011;
 
@@ -95,7 +95,7 @@ public class BlastEnderman extends Blast
 
                 entity.motionZ -= (r - zDifference) * Math.abs(zDifference) * 0.0006;
 
-                if (Pos.distance(new Pos(entity.posX, entity.posY, entity.posZ), position) < 4)
+                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < 4)
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {
@@ -125,24 +125,23 @@ public class BlastEnderman extends Blast
 
                         if (entity instanceof EntityPlayerMP)
                         {
-                            ((EntityPlayerMP) entity).playerNetServerHandler.setPlayerLocation(this.teleportTarget.x + 0.5, this.teleportTarget.y + 0.5, this.teleportTarget.z + 0.5, entity.rotationYaw, entity.rotationPitch);
+                            ((EntityPlayerMP) entity).playerNetServerHandler.setPlayerLocation(this.teleportTarget.x() + 0.5, this.teleportTarget.y() + 0.5, this.teleportTarget.z() + 0.5, entity.rotationYaw, entity.rotationPitch);
                         }
                         else
                         {
-                            entity.setPosition(this.teleportTarget.x + 0.5, this.teleportTarget.y + 0.5, this.teleportTarget.z + 0.5);
+                            entity.setPosition(this.teleportTarget.x() + 0.5, this.teleportTarget.y() + 0.5, this.teleportTarget.z() + 0.5);
                         }
 
                     }
                     catch (Exception e)
                     {
-                        ICBMCore.LOGGER.severe("Failed to teleport entity to the End.");
-                        e.printStackTrace();
+                        ICBMClassic.INSTANCE.logger().error("Failed to teleport entity to the End.", e);
                     }
                 }
             }
         }
 
-        this.world().playSound(this.position.x, this.position.y, this.position.z, "portal.portal", 2F, world().rand.nextFloat() * 0.4F + 0.8F, false);
+        this.world().playSound(this.position.x(), this.position.y(), this.position.z(), "portal.portal", 2F, world().rand.nextFloat() * 0.4F + 0.8F, false);
 
         if (this.callCount > this.duration)
         {
@@ -160,7 +159,7 @@ public class BlastEnderman extends Blast
             for (int i = 0; i < 8; i++)
             {
                 EntityEnderman enderman = new EntityEnderman(world());
-                enderman.setPosition(this.position.x, this.position.y, this.position.z);
+                enderman.setPosition(this.position.x(), this.position.y(), this.position.z());
                 this.world().spawnEntityInWorld(enderman);
             }
         }

@@ -1,18 +1,21 @@
 package icbm.classic.content.explosive.ex.missiles;
 
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastRepulsive;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import resonant.api.ai.ITarget;
-import resonant.api.ai.ITarget.TargetType;
-import universalelectricity.api.vector.Vector3;
 
-/** Antiballistic missile.
+/**
+ * Antiballistic missile.
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 public class MissileAnti extends Missile
 {
     public static final int ABMRange = 30;
@@ -37,34 +40,28 @@ public class MissileAnti extends Missile
                 return;
             }
 
-            if (missileObj.lockedTarget instanceof ITarget && ((ITarget) missileObj.lockedTarget).getType() == TargetType.MISSILE)
+            if (missileObj.lockedTarget instanceof EntityMissile)
             {
-                if (((ITarget) missileObj.lockedTarget).canBeTargeted(this))
-                {
-                    target = ((ITarget) missileObj.lockedTarget).getPredictedPosition(4);
-                }
+                target = ((EntityMissile) missileObj.lockedTarget).getPredictedPosition(4);
             }
 
-            missileObj.motionX = (target.x - missileObj.posX) * (0.3F);
-            missileObj.motionY = (target.y - missileObj.posY) * (0.3F);
-            missileObj.motionZ = (target.z - missileObj.posZ) * (0.3F);
+            missileObj.motionX = (target.x() - missileObj.posX) * (0.3F);
+            missileObj.motionY = (target.y() - missileObj.posY) * (0.3F);
+            missileObj.motionZ = (target.z() - missileObj.posZ) * (0.3F);
 
             return;
         }
 
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(missileObj.posX - ABMRange, missileObj.posY - ABMRange, missileObj.posZ - ABMRange, missileObj.posX + ABMRange, missileObj.posY + ABMRange, missileObj.posZ + ABMRange);
         // TODO: Check if this works.
-        Entity nearestEntity = missileObj.worldObj.findNearestEntityWithinAABB(ITarget.class, bounds, missileObj);
+        Entity nearestEntity = missileObj.worldObj.findNearestEntityWithinAABB(EntityMissile.class, bounds, missileObj);
 
-        if (nearestEntity instanceof ITarget && ((ITarget) nearestEntity).getType() == TargetType.MISSILE)
+        if (nearestEntity instanceof EntityMissile)
         {
-            if (((ITarget) nearestEntity).canBeTargeted(this))
-            {
-                // Lock target onto missileObj missile
-                missileObj.lockedTarget = nearestEntity;
-                missileObj.didTargetLockBefore = true;
-                missileObj.worldObj.playSoundAtEntity(missileObj, Reference.PREFIX + "targetlocked", 5F, 0.9F);
-            }
+            // Lock target onto missileObj missile
+            missileObj.lockedTarget = nearestEntity;
+            missileObj.didTargetLockBefore = true;
+            missileObj.worldObj.playSoundAtEntity(missileObj, Reference.PREFIX + "targetlocked", 5F, 0.9F);
         }
         else
         {
@@ -88,5 +85,11 @@ public class MissileAnti extends Missile
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
         new BlastRepulsive(world, entity, x, y, z, 6).setDestroyItems().explode();
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

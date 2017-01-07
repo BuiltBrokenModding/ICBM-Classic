@@ -1,8 +1,6 @@
 package icbm.classic.content.explosive.ex.missiles;
 
-import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.explosive.ex.Explosion;
-import net.minecraft.item.ItemStack;
 
 /** Ex object that are only defined as missiles
  *
@@ -15,11 +13,5 @@ public abstract class Missile extends Explosion
         this.hasBlock = false;
         this.hasGrenade = false;
         this.hasMinecart = false;
-    }
-
-    @Override
-    public ItemStack getItemStack()
-    {
-        return new ItemStack(ICBMExplosion.itemMissile, 1, this.getID());
     }
 }

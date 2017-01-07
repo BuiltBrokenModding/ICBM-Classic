@@ -1,11 +1,15 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
 
 public class ExRedMatter extends Explosion
 {
@@ -18,7 +22,10 @@ public class ExRedMatter extends Explosion
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "AAA", "AEA", "AAA", 'E', antimatter.getItemStack(), 'A', "strangeMatter" }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.REDMATTER.getItemStack(),
+                "AAA", "AEA", "AAA",
+                'E', Explosives.ANTIMATTER.getItemStack(),
+                'A', "strangeMatter"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 
     @Override
@@ -27,4 +34,9 @@ public class ExRedMatter extends Explosion
         new BlastRedmatter(world, entity, x, y, z, 35).explode();
     }
 
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
+    }
 }

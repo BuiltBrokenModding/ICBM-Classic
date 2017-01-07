@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.mod.AbstractProxy;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
@@ -16,17 +17,17 @@ public class CommonProxy extends AbstractProxy
         return false;
     }
 
-    public void spawnParticle(String name, World world, Pos position, float scale, double distance)
+    public void spawnParticle(String name, World world, IPos3D position, float scale, double distance)
     {
         this.spawnParticle(name, world, position, 0, 0, 0, scale, distance);
     }
 
-    public void spawnParticle(String name, World world, Pos position, double motionX, double motionY, double motionZ, float scale, double distance)
+    public void spawnParticle(String name, World world, IPos3D position, double motionX, double motionY, double motionZ, float scale, double distance)
     {
         this.spawnParticle(name, world, position, motionX, motionY, motionZ, 1, 1, 1, scale, distance);
     }
 
-    public void spawnParticle(String name, World world, Pos position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
+    public void spawnParticle(String name, World world, IPos3D position, double motionX, double motionY, double motionZ, float red, float green, float blue, float scale, double distance)
     {
 
     }

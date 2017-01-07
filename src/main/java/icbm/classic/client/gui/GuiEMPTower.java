@@ -1,7 +1,7 @@
 package icbm.classic.client.gui;
 
 import icbm.classic.Reference;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
 import icbm.classic.content.machines.TileEMPTower;
 import net.minecraft.client.gui.GuiButton;
@@ -67,7 +67,7 @@ public class GuiEMPTower extends GuiICBM
                 break;
         }
 
-        PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, 2, this.tileEntity.empMode));
+        PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 2, this.tileEntity.empMode));
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
@@ -81,7 +81,7 @@ public class GuiEMPTower extends GuiICBM
         {
             int radius = Math.min(Math.max(Integer.parseInt(this.textFieldBanJing.getText()), 10), TileEMPTower.MAX_RADIUS);
             this.tileEntity.empRadius = radius;
-            PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, 1, this.tileEntity.empRadius));
+            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 1, this.tileEntity.empRadius));
         }
         catch (NumberFormatException e)
         {

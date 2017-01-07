@@ -1,13 +1,13 @@
-package icbm.classic.content.explosive;
+package icbm.classic.content.explosive.tile;
 
+import com.builtbroken.mc.prefab.items.ItemAbstract;
+import icbm.classic.content.explosive.ExplosiveRegistry;
 import net.minecraft.item.ItemStack;
-import resonant.lib.prefab.item.ItemBlockTooltip;
 
-public class ItemBlockExplosive extends ItemBlockTooltip
+public class ItemBlockExplosive extends ItemAbstract
 {
-    public ItemBlockExplosive(int id)
+    public ItemBlockExplosive()
     {
-        super(id);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }

@@ -1,13 +1,16 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosive;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastChemical;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
 
 public class ExDebilitation extends Explosion
 {
@@ -20,12 +23,22 @@ public class ExDebilitation extends Explosion
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(3), new Object[] { "SSS", "WRW", "SSS", 'R', Explosive.replsive.getItemStack(), 'W', Item.bucketWater, 'S', "dustSulfur" }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.DEBLITATION.getItemStack(3),
+                "SSS", "WRW", "SSS",
+                'R', Explosives.REPLUSIVE.getItemStack(),
+                'W', Items.water_bucket,
+                'S', "dustSulfur"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
         new BlastChemical(world, entity, x, y, z, 20, 20 * 30, false).setConfuse().explode();
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

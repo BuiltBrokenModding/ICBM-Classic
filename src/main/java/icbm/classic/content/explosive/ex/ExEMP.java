@@ -1,13 +1,17 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEMP;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
-import resonant.lib.recipe.UniversalRecipe;
 
 public class ExEMP extends Explosion
 {
@@ -26,6 +30,16 @@ public class ExEMP extends Explosion
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "RBR", "BTB", "RBR", 'T', replsive.getItemStack(), 'R', Block.blockRedstone, 'B', UniversalRecipe.BATTERY.get() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.EMP.getItemStack(),
+                "RBR", "BTB", "RBR",
+                'T', Explosives.REPLUSIVE.getItemStack(),
+                'R', Blocks.redstone_block,
+                'B', UniversalRecipe.BATTERY.get()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

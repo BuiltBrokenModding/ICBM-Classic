@@ -1,12 +1,12 @@
 package icbm.classic.content.explosive.ex.missiles;
 
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
-import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastNuclear;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import universalelectricity.api.vector.Vector3;
 
 import static java.lang.Math.random;
 
@@ -30,11 +30,11 @@ public class MissileNuclearCluster extends MissileCluster
                 if (!missileObj.worldObj.isRemote)
                 {
                     Pos position = new Pos(missileObj);
-                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position, new Pos(missileObj), Explosive.nuclear.getID());
+                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position, new Pos(missileObj), Explosives.NUCLEAR.ordinal());
                     missileObj.worldObj.spawnEntityInWorld(clusterMissile);
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20;
-                    clusterMissile.launch(Pos.translate(missileObj.targetVector, new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
+                    clusterMissile.launch(missileObj.targetVector.add(new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
                 }
 
                 missileObj.protectionTime = 20;

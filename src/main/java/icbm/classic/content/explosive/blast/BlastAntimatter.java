@@ -1,11 +1,12 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import universalelectricity.api.vector.Vector3;
 
 public class BlastAntimatter extends Blast
 {
@@ -27,7 +28,7 @@ public class BlastAntimatter extends Blast
     public void doPreExplode()
     {
         super.doPreExplode();
-        this.world().playSoundEffect(this.position.x, this.position.y, this.position.z, Reference.PREFIX + "antimatter", 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F));
+        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), Reference.PREFIX + "antimatter", 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F));
         this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
     }
 
@@ -42,16 +43,15 @@ public class BlastAntimatter extends Blast
                 {
                     for (int z = (int) -this.getRadius(); z < this.getRadius(); z++)
                     {
-                        Pos targetPosition = this.position.clone().translate(new Pos(x, y, z));
+                        Location targetPosition = this.position.add(new Pos(x, y, z));
 
                         double dist = position.distance(targetPosition);
 
                         if (dist < this.getRadius())
                         {
-                            int blockID = targetPosition.getBlockID(world());
-                            Block block = Block.blocksList[blockID];
+                            Block block = targetPosition.getBlock(world());
 
-                            if (block != null && !block.isAirBlock(this.world(), x, y, x))
+                            if (block != null && !block.isAir(this.world(), x, y, x))
                             {
                                 if (!this.destroyBedrock && block.getBlockHardness(this.world(), x, y, x) < 0)
                                 {
@@ -60,7 +60,7 @@ public class BlastAntimatter extends Blast
 
                                 if (dist < this.getRadius() - 1 || world().rand.nextFloat() > 0.7)
                                 {
-                                    targetPosition.setBlock(world(), 0);
+                                    targetPosition.setBlockToAir();
                                 }
                             }
                         }

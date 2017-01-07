@@ -1,11 +1,14 @@
 package icbm.classic.content.explosive.ex.missiles;
 
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.blast.BlastRepulsive;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import universalelectricity.api.vector.Vector3;
 
 /** @author Calclavia */
 public class MissileCluster extends Missile
@@ -53,7 +56,7 @@ public class MissileCluster extends Missile
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20 + missileObj.targetHeight - 1;
 
-                    clusterMissile.launch(Pos.translate(missileObj.targetVector, new Pos(x, y, z)));
+                    clusterMissile.launch(missileObj.targetVector.add(new Pos(x, y, z)));
                     missileObj.worldObj.spawnEntityInWorld(clusterMissile);
                 }
                 missileObj.protectionTime = 20;
@@ -76,5 +79,11 @@ public class MissileCluster extends Missile
     public boolean isCruise()
     {
         return false;
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

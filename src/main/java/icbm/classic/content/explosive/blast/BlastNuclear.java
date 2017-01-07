@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import icbm.classic.Reference;
 import icbm.classic.Settings;
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
 import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
@@ -137,7 +137,7 @@ public class BlastNuclear extends Blast
             else
             {
                 this.controller.endExplosion();
-                ICBMCore.LOGGER.severe("Something went wrong with multi-threading while detonating the nuclear explosive.");
+                ICBMClassic.LOGGER.severe("Something went wrong with multi-threading while detonating the nuclear explosive.");
             }
         }
     }
@@ -160,7 +160,7 @@ public class BlastNuclear extends Blast
         }
         catch (Exception e)
         {
-            ICBMCore.LOGGER.severe("Nuclear-type detonation Failed!");
+            ICBMClassic.LOGGER.severe("Nuclear-type detonation Failed!");
             e.printStackTrace();
         }
 

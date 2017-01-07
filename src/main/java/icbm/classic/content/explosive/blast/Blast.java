@@ -1,36 +1,30 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.prefab.ModelICBM;
+import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.lib.transform.vector.Location;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityMissile;
-
-import java.util.List;
-
+import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.IExplosion;
 import resonant.api.explosion.ExplosionEvent.DoExplosionEvent;
 import resonant.api.explosion.ExplosionEvent.ExplosionConstructionEvent;
 import resonant.api.explosion.ExplosionEvent.PostExplosionEvent;
 import resonant.api.explosion.ExplosionEvent.PreExplosionEvent;
-import universalelectricity.api.vector.IVectorWorld;
-import universalelectricity.api.vector.Vector3;
-import universalelectricity.api.vector.VectorWorld;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import resonant.api.explosion.IExplosion;
 
-public abstract class Blast extends Explosion implements IExplosion, IVectorWorld
+import java.util.List;
+
+public abstract class Blast extends Explosion implements IExplosion, IWorldPosition
 {
-    public VectorWorld position;
+    public Location position;
     public EntityExplosion controller = null;
 
     /** The amount of times the explosion has been called */
@@ -39,10 +33,10 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
     public Blast(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
-        this.position = new VectorWorld(world, x, y, z);
+        this.position = new Location(world, x, y, z);
     }
 
-    public Blast(VectorWorld pos, Entity entity, float size)
+    public Blast(Location pos, Entity entity, float size)
     {
         super(pos.world(), entity, pos.x(), pos.y(), pos.z(), size);
         this.position = pos;
@@ -51,7 +45,7 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
     public Blast(Entity entity, float size)
     {
         super(entity.worldObj, entity, entity.posX, entity.posY, entity.posZ, size);
-        this.position = new VectorWorld(entity);
+        this.position = new Location(entity);
     }
 
     protected void doPreExplode()
@@ -154,9 +148,11 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
         return 0;
     }
 
-    /** The interval in ticks before the next procedural call of this explosive
+    /**
+     * The interval in ticks before the next procedural call of this explosive
      *
-     * @param return - Return -1 if this explosive does not need procedural calls */
+     * @return - Return -1 if this explosive does not need procedural calls
+     */
     public int proceduralInterval()
     {
         return -1;
@@ -171,12 +167,10 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
     {
         // Step 2: Damage all entities
         radius *= 2.0F;
-        Pos minCoord = position.clone();
-        minCoord.add(-radius - 1);
-        Pos maxCoord = position.clone();
-        maxCoord.add(radius + 1);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.intX(), minCoord.intY(), minCoord.intZ(), maxCoord.intX(), maxCoord.intY(), maxCoord.intZ()));
-        Vec3 var31 = Vec3.createVectorHelper(position.x, position.y, position.z);
+        Location minCoord = position.add(-radius - 1);
+        Location maxCoord = position.add(radius + 1);
+        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
+        Vec3 var31 = Vec3.createVectorHelper(position.x(), position.y(), position.z());
 
         for (int i = 0; i < allEntities.size(); ++i)
         {
@@ -194,15 +188,17 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
             }
 
             if (entity instanceof EntityItem && !destroyItem)
+            {
                 continue;
+            }
 
-            double distance = entity.getDistance(position.x, position.y, position.z) / radius;
+            double distance = entity.getDistance(position.x(), position.y(), position.z()) / radius;
 
             if (distance <= 1.0D)
             {
-                double xDifference = entity.posX - position.x;
-                double yDifference = entity.posY - position.y;
-                double zDifference = entity.posZ - position.z;
+                double xDifference = entity.posX - position.x();
+                double yDifference = entity.posY - position.y();
+                double zDifference = entity.posZ - position.z();
                 double var35 = MathHelper.sqrt_double(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                 xDifference /= var35;
                 yDifference /= var35;
@@ -222,10 +218,12 @@ public abstract class Blast extends Explosion implements IExplosion, IVectorWorl
         }
     }
 
-    /** Called by doDamageEntity on each entity being damaged. This function should be inherited if
+    /**
+     * Called by doDamageEntity on each entity being damaged. This function should be inherited if
      * something special is to happen to a specific entity.
      *
-     * @return True if something special happens to this specific entity. */
+     * @return True if something special happens to this specific entity.
+     */
     protected boolean onDamageEntity(Entity entity)
     {
         return false;

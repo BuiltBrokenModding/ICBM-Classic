@@ -1,18 +1,22 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.prefab.ModelICBM;
-import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.blast.BlastMine;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MDiLei;
+import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.blast.BlastMine;
+import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
-import universalelectricity.api.vector.Vector3;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ExSMine extends Explosive
 {
@@ -34,7 +38,11 @@ public class ExSMine extends Explosive
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "S", "L", "R", 'S', Explosive.fragmentation.getItemStack(), 'L', Explosive.attractive.getItemStack(), 'R', Explosive.replsive.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.SMINE.getItemStack(),
+                "S", "L", "R",
+                'S', Explosives.FRAGMENTATION.getItemStack(),
+                'L', Explosives.ATTRACTIVE.getItemStack(),
+                'R', Explosives.REPLUSIVE.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 
     @SideOnly(Side.CLIENT)
@@ -57,4 +65,9 @@ public class ExSMine extends Explosive
         new BlastMine(world, entity, x, y, z, 5).explode();
     }
 
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
+    }
 }

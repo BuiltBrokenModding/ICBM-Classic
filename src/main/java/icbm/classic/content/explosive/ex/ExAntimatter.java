@@ -1,14 +1,18 @@
 package icbm.classic.content.explosive.ex;
 
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
 import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
-import universalelectricity.api.vector.Vector3;
 
 public class ExAntimatter extends Explosion
 {
@@ -30,19 +34,28 @@ public class ExAntimatter extends Explosion
 
         if (fuseTicks % 25 == 0)
         {
-            worldObj.playSoundEffect(position.x, position.y, position.z, Reference.PREFIX + "alarm", 4F, 1F);
+            worldObj.playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "alarm", 4F, 1F);
         }
     }
 
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "AAA", "AEA", "AAA", 'E', Explosive.nuclear.getItemStack(), 'A', "antimatterGram" }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTIMATTER.getItemStack(),
+                "AAA", "AEA", "AAA",
+                'E', Explosives.NUCLEAR.getItemStack(),
+                'A', "antimatterGram"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
         new BlastAntimatter(world, entity, x, y, z, Settings.ANTIMATTER_SIZE, Settings.DESTROY_BEDROCK).explode();
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

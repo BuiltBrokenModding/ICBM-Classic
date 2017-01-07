@@ -6,8 +6,7 @@ import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.Reference;
 import icbm.classic.DamageUtility;
-import icbm.classic.ICBMCore;
-import icbm.explosion.ICBMExplosion;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveRegistry;
@@ -98,7 +97,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         this.renderDistanceWeight = 3;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
-        this.shengYin = this.worldObj != null ? ICBMCore.proxy.getDaoDanShengYin(this) : null;
+        this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
     }
 
     /**
@@ -200,7 +199,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         this.worldObj.playSoundAtEntity(this, Reference.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
         // TODO add an event system here
         RadarRegistry.add(this);
-        ICBMCore.LOGGER.info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
+        ICBMClassic.LOGGER.info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
     }
 
     @Override
@@ -505,13 +504,13 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 
             position = position.add(x, y, z);
             this.worldObj.spawnParticle("flame", position.x(), position.y(), position.z(), 0, 0, 0);
-            ICBMCore.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
-            ICBMCore.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
-            ICBMCore.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
-            ICBMCore.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
         }
     }
 
@@ -610,7 +609,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 
                 this.isExpoding = true;
 
-                ICBMCore.LOGGER.info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+                ICBMClassic.instance.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
             }
 
             setDead();
@@ -618,8 +617,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         }
         catch (Exception e)
         {
-            ICBMCore.LOGGER.severe("Missile failed to explode properly. Report this to the developers.");
-            e.printStackTrace();
+            ICBMClassic.instance.logger().error("Missile failed to explode properly. Report this to the developers.", e);
         }
     }
 
@@ -644,7 +642,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     {
         if (!this.isExpoding && !this.worldObj.isRemote)
         {
-            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(ICBMExplosion.itemMissile, 1, this.explosiveID));
+            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID));
 
             float var13 = 0.05F;
             Random random = new Random();

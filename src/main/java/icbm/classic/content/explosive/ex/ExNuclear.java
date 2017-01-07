@@ -1,13 +1,16 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosive;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastNuclear;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.lib.recipe.RecipeUtility;
 
 public class ExNuclear extends Explosion
 {
@@ -31,17 +34,26 @@ public class ExNuclear extends Explosion
         {
             if (OreDictionary.getOres("ingotUranium").size() > 0)
             {
-                RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "UUU", "UEU", "UUU", 'E', thermobaric.getItemStack(), 'U', "ingotUranium" }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+                RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.NUCLEAR.getItemStack(),
+                        "UUU", "UEU", "UUU",
+                        'E', Explosives.THERMOBARIC.getItemStack(),
+                        'U', "ingotUranium"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
             }
             else
             {
-                RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "EEE", "EEE", "EEE", 'E', thermobaric.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+                RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.NUCLEAR.getItemStack(),
+                        "EEE", "EEE", "EEE",
+                        'E', Explosives.THERMOBARIC.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
 
             }
         }
         else
         {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "CIC", "IRI", "CIC", 'R', Explosive.replsive.getItemStack(), 'C', Explosive.chemical.getItemStack(), 'I', Explosive.incendiary.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.THERMOBARIC.getItemStack(),
+                    "CIC", "IRI", "CIC",
+                    'R', Explosives.REPLUSIVE.getItemStack(),
+                    'C', Explosives.CHEMICAL.getItemStack(),
+                    'I', Explosives.INCENDIARY.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
 
         }
     }
@@ -57,5 +69,11 @@ public class ExNuclear extends Explosion
         {
             new BlastNuclear(world, entity, x, y, z, 30, 45).explode();
         }
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }

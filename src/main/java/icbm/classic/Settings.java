@@ -1,11 +1,9 @@
 package icbm.classic;
 
-import java.util.Arrays;
-
-import net.minecraftforge.common.Configuration;
-import resonant.lib.config.Config;
-import resonant.lib.content.IDManager;
 import cpw.mods.fml.common.ModMetadata;
+import net.minecraftforge.common.config.Configuration;
+
+import java.util.Arrays;
 
 /** Settings class for various configuration settings.
  *
@@ -26,17 +24,15 @@ public class Settings
     //@Config(key = "Max Tier the Rocket Launcher can Fire", category = Configuration.CATEGORY_GENERAL)
     public static int MAX_ROCKET_LAUCNHER_TIER = 2;
 
-    @Deprecated
-    public static void initiate()
+
+    public static void initiate(Configuration configuration)
     {
-        CONFIGURATION.load();
-        USE_FUEL = CONFIGURATION.get(Configuration.CATEGORY_GENERAL, "Use Fuel", Settings.USE_FUEL).getBoolean(Settings.USE_FUEL);
-        LOAD_CHUNKS = Settings.CONFIGURATION.get(Configuration.CATEGORY_GENERAL, "Allow Chunk Loading", LOAD_CHUNKS).getBoolean(LOAD_CHUNKS);
-        DAO_DAN_ZUI_YUAN = Settings.CONFIGURATION.get(Configuration.CATEGORY_GENERAL, "Max Missile Distance", Settings.DAO_DAN_ZUI_YUAN).getInt(Settings.DAO_DAN_ZUI_YUAN);
-        ANTIMATTER_SIZE = Settings.CONFIGURATION.get(Configuration.CATEGORY_GENERAL, "Antimatter Explosion Size", ANTIMATTER_SIZE).getInt(ANTIMATTER_SIZE);
-        DESTROY_BEDROCK = Settings.CONFIGURATION.get(Configuration.CATEGORY_GENERAL, "Antimatter Destroy Bedrock", DESTROY_BEDROCK).getBoolean(DESTROY_BEDROCK);
-        MAX_ROCKET_LAUCNHER_TIER = Settings.CONFIGURATION.get(Configuration.CATEGORY_GENERAL, "Limits the max missile tier for rocket launcher item", MAX_ROCKET_LAUCNHER_TIER).getInt(MAX_ROCKET_LAUCNHER_TIER);
-        CONFIGURATION.save();
+        USE_FUEL = configuration.get(Configuration.CATEGORY_GENERAL, "Use Fuel", Settings.USE_FUEL).getBoolean(Settings.USE_FUEL);
+        LOAD_CHUNKS = configuration.get(Configuration.CATEGORY_GENERAL, "Allow Chunk Loading", LOAD_CHUNKS).getBoolean(LOAD_CHUNKS);
+        DAO_DAN_ZUI_YUAN = configuration.get(Configuration.CATEGORY_GENERAL, "Max Missile Distance", Settings.DAO_DAN_ZUI_YUAN).getInt(Settings.DAO_DAN_ZUI_YUAN);
+        ANTIMATTER_SIZE = configuration.get(Configuration.CATEGORY_GENERAL, "Antimatter Explosion Size", ANTIMATTER_SIZE).getInt(ANTIMATTER_SIZE);
+        DESTROY_BEDROCK = configuration.get(Configuration.CATEGORY_GENERAL, "Antimatter Destroy Bedrock", DESTROY_BEDROCK).getBoolean(DESTROY_BEDROCK);
+        MAX_ROCKET_LAUCNHER_TIER = configuration.get(Configuration.CATEGORY_GENERAL, "Limits the max missile tier for rocket launcher item", MAX_ROCKET_LAUCNHER_TIER).getInt(MAX_ROCKET_LAUCNHER_TIER);
     }
 
     public static void setModMetadata(String id, String name, ModMetadata metadata)

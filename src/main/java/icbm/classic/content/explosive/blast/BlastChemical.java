@@ -1,10 +1,8 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Reference;
 import icbm.explosion.ICBMExplosion;
-
-import java.util.List;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,7 +10,8 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import resonant.lib.prefab.potion.CustomPotionEffect;
-import universalelectricity.api.vector.Vector3;
+
+import java.util.List;
 
 public class BlastChemical extends Blast
 {

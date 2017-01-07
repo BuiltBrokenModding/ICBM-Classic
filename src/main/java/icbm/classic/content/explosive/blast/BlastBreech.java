@@ -1,12 +1,12 @@
 package icbm.classic.content.explosive.blast;
 
-import net.minecraft.block.Block;
+import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.mffs.api.IForceFieldBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import resonant.api.IRotatable;
-import universalelectricity.api.vector.Vector3;
-import calclavia.api.mffs.IForceFieldBlock;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlastBreech extends BlastRepulsive
 {
@@ -29,24 +29,24 @@ public class BlastBreech extends BlastRepulsive
     {
         if (!this.world().isRemote)
         {
-            final Pos difference = new Pos();
+            Pos difference = new Pos();
 
             if (this.exploder instanceof IRotatable)
             {
-                difference.translate(((IRotatable) this.exploder).getDirection());
+                difference = difference.add(((IRotatable) this.exploder).getDirection());
             }
             else
             {
-                difference.translate(ForgeDirection.DOWN);
+                difference = difference.add(ForgeDirection.DOWN);
             }
 
-            this.world().playSoundEffect(position.x, position.y, position.z, "random.explode", 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSoundEffect(position.x(), position.y(), position.z(), "random.explode", 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
 
             for (int i = 0; i < this.depth; i++)
             {
-                if (Block.blocksList[position.getBlockID(world())] != null)
+                if (position.getBlock() != Blocks.air)
                 {
-                    if (Block.blocksList[position.getBlockID(world())].getExplosionResistance(this.exploder, world(), position.intX(), position.intY(), position.intZ(), position.x, position.y, position.z) > Block.obsidian.getExplosionResistance(this.exploder) || Block.blocksList[position.getBlockID(world())] instanceof IForceFieldBlock)
+                    if (position.getBlock().getExplosionResistance(this.exploder, world(), position.xi(), position.yi(), position.zi(), position.x(), position.y(), position.z()) > Blocks.obsidian.getExplosionResistance(this.exploder) || position.getBlock(world()) instanceof IForceFieldBlock)
                     {
                         break;
                     }

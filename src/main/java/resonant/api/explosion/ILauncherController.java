@@ -1,14 +1,12 @@
 package resonant.api.explosion;
 
-import resonant.api.blocks.IBlockFrequency;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.item.ItemStack;
-import universalelectricity.api.energy.IEnergyContainer;
-import universalelectricity.api.vector.Vector3;
 
 /** Applied to all launcher TileEntitiies that operates the launching of missiles.
- * 
+ *
  * @author Calclavia */
-public interface ILauncherController extends IEnergyContainer, IBlockFrequency
+public interface ILauncherController
 {
     /** What type of launcher is this? */
     public LauncherType getLauncherType();
@@ -23,10 +21,10 @@ public interface ILauncherController extends IEnergyContainer, IBlockFrequency
     public String getStatus();
 
     /** @return The target of the launcher. */
-    public Vector3 getTarget();
+    public Pos getTarget();
 
     /** @param target Sets the target of the launcher */
-    public void setTarget(Vector3 target);
+    public void setTarget(Pos target);
 
     /** Places a missile into the launcher. */
     public void placeMissile(ItemStack itemStack);

@@ -1,6 +1,7 @@
-package icbm.classic.content.explosive;
+package icbm.classic.content.explosive.tile;
 
-import icbm.classic.ICBMCore;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -78,7 +79,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
     @Override
     public Packet getDescriptionPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, (byte) 1, this.haoMa);
+        return ICBMClassic.PACKET_TILE.getPacket(this, (byte) 1, this.haoMa);
     }
 
     @Override

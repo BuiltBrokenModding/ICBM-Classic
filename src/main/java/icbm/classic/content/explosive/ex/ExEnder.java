@@ -1,20 +1,26 @@
 package icbm.classic.content.explosive.ex;
 
-import icbm.classic.Settings;
+import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.api.edit.IWorldChangeAction;
+import com.builtbroken.mc.api.event.TriggerCause;
+import com.builtbroken.mc.api.items.tools.IWorldPosItem;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.TileExplosive;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEnderman;
+import icbm.classic.content.explosive.tile.TileExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.explosion.IExplosiveContainer;
-import resonant.lib.recipe.RecipeUtility;
-import universalelectricity.api.vector.Vector3;
-import calclavia.api.mffs.card.ICoordLink;
 
 public class ExEnder extends Explosion
 {
@@ -27,24 +33,23 @@ public class ExEnder extends Explosion
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9)
     {
-
         if (entityPlayer.inventory.getCurrentItem() != null)
         {
-            if (entityPlayer.inventory.getCurrentItem().getItem() instanceof ICoordLink)
+            if (entityPlayer.inventory.getCurrentItem().getItem() instanceof IWorldPosItem)
             {
-                Pos link = ((ICoordLink) entityPlayer.inventory.getCurrentItem().getItem()).getLink(entityPlayer.inventory.getCurrentItem());
+                IWorldPosition link = ((IWorldPosItem) entityPlayer.inventory.getCurrentItem().getItem()).getLocation(entityPlayer.inventory.getCurrentItem());
 
-                if (link != null)
+                if (link instanceof Location)
                 {
-                    TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
+                    TileEntity tileEntity = world.getTileEntity(x, y, z);
 
                     if (tileEntity instanceof TileExplosive)
                     {
-                        link.writeToNBT(((TileExplosive) tileEntity).nbtData);
+                        ((Location) link).writeIntNBT(((TileExplosive) tileEntity).nbtData);
 
                         if (!world.isRemote)
                         {
-                            entityPlayer.addChatMessage("Synced coordinate with " + this.getExplosiveName());
+                            entityPlayer.addChatMessage(new ChatComponentText("Synced coordinate with " + this.getExplosiveName()));
                         }
 
                         return true;
@@ -61,16 +66,16 @@ public class ExEnder extends Explosion
     {
         if (entityPlayer.inventory.getCurrentItem() != null)
         {
-            if (entityPlayer.inventory.getCurrentItem().getItem() instanceof ICoordLink)
+            if (entityPlayer.inventory.getCurrentItem().getItem() instanceof IWorldPosItem)
             {
-                Pos link = ((ICoordLink) entityPlayer.inventory.getCurrentItem().getItem()).getLink(entityPlayer.inventory.getCurrentItem());
+                IWorldPosition link = ((IWorldPosItem) entityPlayer.inventory.getCurrentItem().getItem()).getLocation(entityPlayer.inventory.getCurrentItem());
 
-                if (link != null)
+                if (link instanceof Location)
                 {
-                    link.writeToNBT(missileObj.nbtData);
+                    ((Location) link).writeIntNBT(missileObj.nbtData);
                     if (!missileObj.worldObj.isRemote)
                     {
-                        entityPlayer.addChatMessage("Synced coordinate with " + this.getMissileName());
+                        entityPlayer.addChatMessage(new ChatComponentText("Synced coordinate with " + this.getMissileName()));
                     }
                     return true;
                 }
@@ -83,7 +88,10 @@ public class ExEnder extends Explosion
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(this.getItemStack(), new Object[] { "PPP", "PTP", "PPP", 'P', Item.enderPearl, 'T', Explosive.attractive.getItemStack() }), this.getUnlocalizedName(), Settings.CONFIGURATION, true);
+        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ENDER.getItemStack(),
+                "PPP", "PTP", "PPP",
+                'P', Items.ender_pearl,
+                'T', Explosives.ATTRACTIVE.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 
     @SuppressWarnings("deprecation")
@@ -101,5 +109,11 @@ public class ExEnder extends Explosion
         }
 
         new BlastEnderman(world, entity, x, y, z, 30, teleportTarget).explode();
+    }
+
+    @Override
+    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
+    {
+        return null;
     }
 }
