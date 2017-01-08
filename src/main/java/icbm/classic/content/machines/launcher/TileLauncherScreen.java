@@ -44,7 +44,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
 
     public TileLauncherScreen()
     {
-        setEnergyHandler(new EnergyStorageHandler(Long.MAX_VALUE));
+        //setEnergyHandler(new EnergyStorageHandler(Long.MAX_VALUE));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     public void firstTick()
     {
         super.firstTick();
-        this.getEnergyHandler().setCapacity(this.getLaunchCost() * 2);
+        //this.getEnergyHandler().setCapacity(this.getLaunchCost() * 2);
     }
 
     @Override

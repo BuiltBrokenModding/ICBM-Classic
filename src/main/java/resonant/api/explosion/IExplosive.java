@@ -1,17 +1,17 @@
 package resonant.api.explosion;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModelCustom;
 import resonant.api.ITier;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /** An interface used to find various types of explosive's information.
- * 
+ *
  * @author Calclavia */
 public interface IExplosive extends ITier
 {
@@ -38,7 +38,7 @@ public interface IExplosive extends ITier
     public int getTier();
 
     /** Creates a new explosion at a given location.
-     * 
+     *
      * @param world The world in which the explosion takes place.
      * @param x The X-Coord
      * @param y The Y-Coord
@@ -56,6 +56,6 @@ public interface IExplosive extends ITier
     public ResourceLocation getBlockResource();
 
     @SideOnly(Side.CLIENT)
-    public Icon getIcon();
+    public IIcon getIcon();
 
 }

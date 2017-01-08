@@ -1,8 +1,8 @@
 package icbm.classic.content.potion;
 
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import icbm.explosion.ICBMExplosion;
-import icbm.classic.content.explosive.Explosive;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
@@ -37,7 +37,7 @@ public class PoisonContagion extends CustomPotion
         if (entityLiving.worldObj.rand.nextFloat() > 0.8)
         {
 
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(entityLiving.worldObj, entityLiving.posX, entityLiving.posY, entityLiving.posZ, ExplosiveType.ALL, Explosive.chemical);
+            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(entityLiving.worldObj, entityLiving.posX, entityLiving.posY, entityLiving.posZ, ExplosiveType.ALL, Explosives.CHEMICAL.handler);
             MinecraftForge.EVENT_BUS.post(evt);
 
             // Poison things around it
@@ -74,7 +74,7 @@ public class PoisonContagion extends CustomPotion
                             entity.setDead();
                         }
 
-                        ICBMExplosion.contagios_potion.poisonEntity(new Pos(entity), entity);
+                        ICBMClassic.contagios_potion.poisonEntity(new Pos(entity), entity);
                     }
                 }
             }

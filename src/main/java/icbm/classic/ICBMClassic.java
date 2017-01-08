@@ -508,7 +508,7 @@ public final class ICBMClassic extends AbstractMod
                     int z = blockSource.getZInt();
                     EnumFacing enumFacing = EnumFacing.getFront(blockSource.getBlockMetadata());
 
-                    EntityGrenade entity = new EntityGrenade(world, new Pos(x, y, z), itemStack.getItemDamage());
+                    EntityGrenade entity = new EntityGrenade(world, new Pos(x, y, z), Explosives.get(itemStack.getItemDamage()));
                     entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
                     world.spawnEntityInWorld(entity);
                 }
@@ -558,7 +558,7 @@ public final class ICBMClassic extends AbstractMod
                         var15 = -1.0D;
                     }
 
-                    EntityBombCart var22 = new EntityBombCart(world, var5, var7 + var15, var9, itemStack);
+                    EntityBombCart var22 = new EntityBombCart(world, var5, var7 + var15, var9, Explosives.get(itemStack.getItemDamage()));
                     world.spawnEntityInWorld(var22);
                     world.playAuxSFX(1000, x, y, z, 0);
                 }

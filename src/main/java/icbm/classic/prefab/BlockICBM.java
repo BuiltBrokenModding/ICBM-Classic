@@ -3,7 +3,6 @@ package icbm.classic.prefab;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
-import icbm.TabICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -20,7 +19,6 @@ public class BlockICBM extends Block
         super(mat);
         this.setBlockName(Reference.PREFIX + name);
         this.setBlockTextureName(Reference.PREFIX + name);
-        this.setCreativeTab(TabICBM.INSTANCE);
     }
 
     public BlockICBM(String name)

@@ -137,7 +137,7 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void spawnShock(World world, Pos startVec, Pos targetVec, int duration)
+    public void spawnShock(World world, IPos3D startVec, IPos3D targetVec, int duration)
     {
         FMLClientHandler.instance().getClient().effectRenderer.addEffect(new FXElectricBoltSpawner(world, startVec, targetVec, 0, duration));
     }
