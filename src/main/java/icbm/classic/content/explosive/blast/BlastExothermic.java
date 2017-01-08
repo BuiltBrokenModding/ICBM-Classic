@@ -1,12 +1,16 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Reference;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.ExExothermic;
-import icbm.classic.content.explosive.Explosive;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import universalelectricity.api.vector.Vector3;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlastExothermic extends BlastBeam
 {
@@ -22,7 +26,7 @@ public class BlastExothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        this.world().playSoundEffect(position.x, position.y, position.z, Reference.PREFIX + "beamcharging", 4.0F, 0.8F);
+        this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "beamcharging", 4.0F, 0.8F);
     }
 
     @Override
@@ -32,18 +36,20 @@ public class BlastExothermic extends BlastBeam
 
         if (!this.world().isRemote)
         {
-            this.world().playSoundEffect(position.x, position.y, position.z, Reference.PREFIX + "powerdown", 4.0F, 0.8F);
+            this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "powerdown", 4.0F, 0.8F);
 
             if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
             {
                 for (Pos targetPosition : this.thread.results)
                 {
-                    double distance = Pos.distance(targetPosition, position);
+                    double distance = targetPosition.distance(position);
 
                     double distanceFromCenter = position.distance(targetPosition);
 
                     if (distanceFromCenter > this.getRadius())
+                    {
                         continue;
+                    }
 
                     /*
                      * Reduce the chance of setting blocks on fire based on distance from center.
@@ -56,39 +62,40 @@ public class BlastExothermic extends BlastBeam
                          * Check to see if the block is an air block and there is a block below it
                          * to support the fire.
                          */
-                        int blockID = this.world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
+                        Block blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                        if (blockID == Block.waterStill.blockID || blockID == Block.waterMoving.blockID || blockID == Block.ice.blockID)
+                        if (blockID.getMaterial() == Material.water || blockID == Blocks.ice)
                         {
-                            this.world().setBlockToAir(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
+                            this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                         }
 
-                        if ((blockID == 0 || blockID == Block.snow.blockID) && this.world().getBlockMaterial(targetPosition.intX(), targetPosition.intY() - 1, targetPosition.intZ()).isSolid())
+                        Block blockBellow = world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                        if ((blockID.isReplaceable(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(world(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
                         {
                             if (this.world().rand.nextFloat() > 0.999)
                             {
-                                this.world().setBlock(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), Block.lavaMoving.blockID, 0, 2);
+                                this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
                             }
                             else
                             {
-                                this.world().setBlock(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), Block.fire.blockID, 0, 2);
+                                this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.fire, 0, 2);
 
-                                blockID = this.world().getBlockId(targetPosition.intX(), targetPosition.intY() - 1, targetPosition.intZ());
+                                blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
 
-                                if (((ExExothermic) Explosive.exothermic).createNetherrack && (blockID == Block.stone.blockID || blockID == Block.grass.blockID || blockID == Block.dirt.blockID) && this.world().rand.nextFloat() > 0.75)
+                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (blockID == Blocks.stone || blockID == Blocks.grass || blockID == Blocks.dirt) && this.world().rand.nextFloat() > 0.75)
                                 {
-                                    this.world().setBlock(targetPosition.intX(), targetPosition.intY() - 1, targetPosition.intZ(), Block.netherrack.blockID, 0, 2);
+                                    this.world().setBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), Blocks.netherrack, 0, 2);
                                 }
                             }
                         }
-                        else if (blockID == Block.ice.blockID)
-                        {
-                            this.world().setBlockToAir(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
-                        }
+                        else if (blockID == Blocks.ice)
+                    {
+                        this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    }
                     }
                 }
 
-                this.world().playSoundEffect(position.x + 0.5D, position.y + 0.5D, position.z + 0.5D, Reference.PREFIX + "explosionfire", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+                this.world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, Reference.PREFIX + "explosionfire", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
             }
 
             this.world().setWorldTime(18000);
@@ -96,7 +103,7 @@ public class BlastExothermic extends BlastBeam
     }
 
     @Override
-    public boolean canFocusBeam(World worldObj, Pos position)
+    public boolean canFocusBeam(World worldObj, Location position)
     {
         long worldTime = worldObj.getWorldTime();
 

@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
@@ -35,7 +36,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         this.setSize(1F, 1F);
     }
 
-    public EntityFlyingBlock(World world, Pos position, Block blockID, int metadata)
+    public EntityFlyingBlock(World world, IPos3D position, Block blockID, int metadata)
     {
         super(world);
         this.isImmuneToFire = true;

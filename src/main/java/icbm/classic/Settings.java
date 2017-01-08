@@ -24,6 +24,8 @@ public class Settings
     //@Config(key = "Max Tier the Rocket Launcher can Fire", category = Configuration.CATEGORY_GENERAL)
     public static int MAX_ROCKET_LAUCNHER_TIER = 2;
 
+    public static boolean POLLUTIVE_NUCLEAR = true;
+
 
     public static void initiate(Configuration configuration)
     {
@@ -33,6 +35,8 @@ public class Settings
         ANTIMATTER_SIZE = configuration.get(Configuration.CATEGORY_GENERAL, "Antimatter Explosion Size", ANTIMATTER_SIZE).getInt(ANTIMATTER_SIZE);
         DESTROY_BEDROCK = configuration.get(Configuration.CATEGORY_GENERAL, "Antimatter Destroy Bedrock", DESTROY_BEDROCK).getBoolean(DESTROY_BEDROCK);
         MAX_ROCKET_LAUCNHER_TIER = configuration.get(Configuration.CATEGORY_GENERAL, "Limits the max missile tier for rocket launcher item", MAX_ROCKET_LAUCNHER_TIER).getInt(MAX_ROCKET_LAUCNHER_TIER);
+
+        POLLUTIVE_NUCLEAR = configuration.get(Configuration.CATEGORY_GENERAL, "Pollutive Nuclear", POLLUTIVE_NUCLEAR).getBoolean(POLLUTIVE_NUCLEAR);
     }
 
     public static void setModMetadata(String id, String name, ModMetadata metadata)

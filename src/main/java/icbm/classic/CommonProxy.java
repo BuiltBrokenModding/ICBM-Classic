@@ -52,7 +52,7 @@ public class CommonProxy extends AbstractProxy
 
     }
 
-    public void spawnShock(World world, Pos startVec, Pos targetVec, int duration)
+    public void spawnShock(World world, IPos3D startVec, IPos3D targetVec, int duration)
     {
         // TODO Auto-generated method stub
 

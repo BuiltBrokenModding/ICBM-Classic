@@ -1,12 +1,14 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
-import universalelectricity.api.vector.Vector3;
 
 /** Creates radiation spawning
  *
@@ -47,50 +49,50 @@ public class BlastRot extends Blast
                 for (Pos targetPosition : this.thread.results)
                 {
                     /** Decay the blocks. */
-                    int blockID = targetPosition.getBlockID(this.world());
+                    Block blockID = targetPosition.getBlock(this.world());
 
-                    if (blockID > 0)
+                    if (blockID != blockID)
                     {
-                        if (blockID == Block.grass.blockID || blockID == Block.sand.blockID)
+                        if (blockID == Blocks.grass || blockID == Blocks.sand)
                         {
                             if (this.world().rand.nextFloat() > 0.96)
                             {
-                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive.blockID);
+                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive);
                             }
                         }
 
-                        if (blockID == Block.stone.blockID)
+                        if (blockID == Blocks.stone)
                         {
                             if (this.world().rand.nextFloat() > 0.99)
                             {
-                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive.blockID);
+                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive);
                             }
                         }
 
-                        else if (blockID == Block.leaves.blockID)
+                        else if (blockID == Blocks.leaves)
                         {
-                            targetPosition.setBlock(this.world(), 0);
+                            targetPosition.setBlock(this.world(), Blocks.air);
                         }
-                        else if (blockID == Block.tallGrass.blockID)
+                        else if (blockID == Blocks.tallgrass)
                         {
                             if (Math.random() * 100 > 50)
                             {
-                                targetPosition.setBlock(this.world(), Block.cobblestone.blockID);
+                                targetPosition.setBlock(this.world(), Blocks.cobblestone);
                             }
                             else
                             {
-                                targetPosition.setBlock(this.world(), 0);
+                                targetPosition.setBlock(this.world(), Blocks.air);
                             }
                         }
-                        else if (blockID == Block.tilledField.blockID)
+                        else if (blockID == Blocks.farmland)
                         {
-                            targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive.blockID);
+                            targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive);
                         }
-                        else if (blockID == Block.waterStill.blockID || blockID == Block.waterMoving.blockID)
+                        else if (blockID.getMaterial() == Material.water)
                         {
                             if (FluidRegistry.getFluid("toxicwaste") != null)
                             {
-                                targetPosition.setBlock(this.world(), FluidRegistry.getFluid("toxicwaste").getBlockID());
+                                targetPosition.setBlock(this.world(), FluidRegistry.getFluid("toxicwaste").getBlock());
                             }
                         }
                     }

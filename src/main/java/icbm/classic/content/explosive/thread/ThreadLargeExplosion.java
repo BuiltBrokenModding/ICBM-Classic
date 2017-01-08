@@ -1,51 +1,54 @@
 package icbm.classic.content.explosive.thread;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFluid;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
-import universalelectricity.api.vector.Vector3;
-import universalelectricity.api.vector.VectorWorld;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-/** Used for large raycasting explosions.
+/**
+ * Used for large raycasting explosions.
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 public class ThreadLargeExplosion extends ThreadExplosion
 {
     public static interface IThreadCallBack
     {
-        public float getResistance(World world, Pos position, Pos targetPosition, Entity source, Block block);
+        public float getResistance(World world, IPos3D position, IPos3D targetPosition, Entity source, Block block);
     }
 
     public IThreadCallBack callBack;
 
-    public ThreadLargeExplosion(VectorWorld position, int range, float energy, Entity source, IThreadCallBack callBack)
+    public ThreadLargeExplosion(Location position, int range, float energy, Entity source, IThreadCallBack callBack)
     {
         super(position, range, energy, source);
         this.callBack = callBack;
     }
 
-    public ThreadLargeExplosion(VectorWorld position, int range, float energy, Entity source)
+    public ThreadLargeExplosion(Location position, int range, float energy, Entity source)
     {
         this(position, range, energy, source, new IThreadCallBack()
         {
 
             @Override
-            public float getResistance(World world, Pos pos, Pos targetPosition, Entity source, Block block)
+            public float getResistance(World world, IPos3D pos, IPos3D targetPosition, Entity source, Block block)
             {
                 float resistance = 0;
 
-                if (block instanceof BlockFluid || block instanceof IFluidBlock)
+                if (block instanceof BlockLiquid || block instanceof IFluidBlock)
                 {
                     resistance = 0.25f;
                 }
                 else
                 {
-                    resistance = block.getExplosionResistance(source, world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), pos.intX(), pos.intY(), pos.intZ());
+                    resistance = block.getExplosionResistance(source, world, (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z(), pos.x(), pos.y(), pos.z());
                 }
 
                 return resistance;
@@ -69,29 +72,31 @@ public class ThreadLargeExplosion extends ThreadExplosion
                 Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
                 float power = this.energy - (this.energy * this.position.world().rand.nextFloat() / 2);
 
-                Pos t = position.clone();
+                Location t = position;
 
                 for (float d = 0.3F; power > 0f; power -= d * 0.75F * 10)
                 {
                     if (t.distance(position) > this.radius)
+                    {
                         break;
+                    }
 
-                    Block block = Block.blocksList[this.position.world().getBlockId(t.intX(), t.intY(), t.intZ())];
+                    Block block = t.getBlock();
 
                     if (block != null)
                     {
-                        if (block.getBlockHardness(this.position.world(), t.intX(), t.intY(), t.intZ()) >= 0)
+                        if (block.getBlockHardness(this.position.world(), t.xi(), t.yi(), t.zi()) >= 0)
                         {
                             power -= this.callBack.getResistance(this.position.world(), position, t, source, block);
 
                             if (power > 0f)
                             {
-                                this.results.add(t.clone());
+                                this.results.add(t.toPos());
                             }
 
                         }
                     }
-                    t.translate(delta);
+                    t = t.add(delta);
                 }
             }
         }

@@ -1,20 +1,21 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Reference;
+import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;
-
-import java.util.Iterator;
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import resonant.lib.prefab.potion.CustomPotionEffect;
-import universalelectricity.api.vector.Vector3;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class BlastSky extends BlastBeam
 {
@@ -30,7 +31,7 @@ public class BlastSky extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        this.world().playSoundEffect(position.x, position.y, position.z, Reference.PREFIX + "redmatter", 4.0F, 0.8F);
+        this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "redmatter", 4.0F, 0.8F);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class BlastSky extends BlastBeam
                 /*
                  * Freeze all nearby entities.
                  */
-                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox(position.x - getRadius(), position.y - getRadius(), position.z - getRadius(), position.x + getRadius(), position.y + getRadius(), position.z + getRadius()));
+                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
 
                 Iterator<EntityLiving> it = livingEntities.iterator();
 
@@ -60,7 +61,7 @@ public class BlastSky extends BlastBeam
 
                 for (Pos targetPosition : this.thread.results)
                 {
-                    double distance = Pos.distance(targetPosition, position);
+                    double distance = targetPosition.distance(position);
 
                     double distanceFromCenter = position.distance(targetPosition);
 
@@ -77,20 +78,20 @@ public class BlastSky extends BlastBeam
                         /*
                          * Place down ice blocks.
                          */
-                        int blockID = this.world().getBlockId(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ());
+                        Block blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                        if (blockID == Block.fire.blockID || blockID == Block.lavaMoving.blockID || blockID == Block.lavaStill.blockID)
+                        if (blockID == Blocks.fire || blockID == Blocks.flowing_lava || blockID == Blocks.lava)
                         {
-                            this.world().setBlock(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), Block.snow.blockID, 0, 2);
+                            this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 2);
                         }
-                        else if (blockID == 0 && this.world().getBlockId(targetPosition.intX(), targetPosition.intY() - 1, targetPosition.intZ()) != Block.ice.blockID && world().getBlockId(targetPosition.intX(), targetPosition.intY() - 1, targetPosition.intZ()) != 0)
+                        else if (blockID == Blocks.air && this.world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi()) != Blocks.ice && world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi()) != Blocks.air)
                         {
-                            this.world().setBlock(targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), Block.ice.blockID, 0, 2);
+                            this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 2);
                         }
                     }
                 }
 
-                this.world().playSoundEffect(position.x + 0.5D, position.y + 0.5D, position.z + 0.5D, Reference.PREFIX + "redmatter", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+                this.world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, Reference.PREFIX + "redmatter", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
             }
 
             this.world().setWorldTime(1200);
@@ -98,7 +99,7 @@ public class BlastSky extends BlastBeam
     }
 
     @Override
-    public boolean canFocusBeam(World worldObj, Pos position)
+    public boolean canFocusBeam(World worldObj, Location position)
     {
         long worldTime = worldObj.getWorldTime();
 

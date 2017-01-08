@@ -1,13 +1,13 @@
 package icbm.classic.content.explosive.blast;
 
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
 
 public class BlastRegen extends Blast
 {
@@ -23,7 +23,7 @@ public class BlastRegen extends Blast
         {
             try
             {
-                Chunk oldChunk = world().getChunkFromBlockCoords(position.intX(), position.intZ());
+                Chunk oldChunk = world().getChunkFromBlockCoords(position.xi(), position.zi());
 
                 if (world() instanceof WorldServer)
                 {
@@ -39,17 +39,10 @@ public class BlastRegen extends Blast
                         {
                             for (int y = 0; y < world().getHeight(); y++)
                             {
-                                int blockID = newChunk.getBlockID(x, y, z);
+                                Block blockID = newChunk.getBlock(x, y, z);
                                 int metadata = newChunk.getBlockMetadata(x, y, z);
 
                                 worldServer.setBlock(x + oldChunk.xPosition * 16, y, z + oldChunk.zPosition * 16, blockID, metadata, 2);
-
-                                TileEntity tileEntity = newChunk.getChunkBlockTileEntity(x, y, z);
-
-                                if (tileEntity != null)
-                                {
-                                    worldServer.setBlockTileEntity(x + oldChunk.xPosition * 16, y, z + oldChunk.zPosition * 16, tileEntity);
-                                }
                             }
                         }
                     }
