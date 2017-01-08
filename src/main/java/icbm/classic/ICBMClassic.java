@@ -4,6 +4,7 @@ import com.builtbroken.mc.core.registry.ModManager;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.mod.AbstractMod;
+import com.builtbroken.mc.lib.mod.AbstractProxy;
 import com.builtbroken.mc.lib.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
@@ -104,6 +105,11 @@ public final class ICBMClassic extends AbstractMod
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 1, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
+    public ICBMClassic()
+    {
+        super(Reference.DOMAIN);
+    }
+
     @Override
     public void loadHandlers(LoadableHandler loader)
     {
@@ -120,7 +126,7 @@ public final class ICBMClassic extends AbstractMod
         blockConcrete = manager.newBlock(BlockConcrete.class, ItemBlockMetadata.class);
         blockReinforcedGlass = manager.newBlock(BlockReinforcedGlass.class, ItemBlockMetadata.class);
         blockCombatRail = manager.newBlock(BlockReinforcedRail.class);
-        blockExplosive = manager.newBlock(BlockExplosive.class, ItemBlockExplosive.class);
+        blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
         //blockMachine = manager.newBlock(BlockICBMMachine.class, ItemBlockMachine.class);
     }
 
@@ -446,6 +452,12 @@ public final class ICBMClassic extends AbstractMod
                 }
             }
         }
+    }
+
+    @Override
+    public AbstractProxy getProxy()
+    {
+        return proxy;
     }
 
 

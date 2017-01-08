@@ -1,21 +1,21 @@
 package icbm.classic.content.items;
 
-import icbm.classic.prefab.item.ItemICBMBase;
-import icbm.classic.content.explosive.Explosive;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.prefab.item.ItemICBMBase;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import resonant.lib.utility.LanguageUtility;
-
 public class ItemMissile extends ItemICBMBase
 {
-    public ItemMissile(int id)
+    public ItemMissile()
     {
-        super(id, "missile");
+        super("missile");
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
@@ -40,13 +40,13 @@ public class ItemMissile extends ItemICBMBase
     }
 
     @Override
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
-        for (Explosive zhaPin : ExplosiveRegistry.getAllMissles())
+        for (Explosives zhaPin : Explosives.values())
         {
-            if (zhaPin.hasMissileForm())
+            if (zhaPin.handler.hasMissileForm())
             {
-                par3List.add(new ItemStack(par1, 1, zhaPin.getID()));
+                par3List.add(new ItemStack(par1, 1, zhaPin.ordinal()));
             }
         }
     }

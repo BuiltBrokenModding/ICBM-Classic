@@ -1,37 +1,31 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.google.common.io.ByteArrayDataInput;
 import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.item.ItemICBMElectrical;
-import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.TileLauncherScreen;
-
-import java.util.List;
-
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.item.ItemElectric;
-import universalelectricity.api.vector.Vector3;
 
-import com.google.common.io.ByteArrayDataInput;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
+import java.util.List;
 
 public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
 {
     public static final int YONG_DIAN_LIANG = 1000;
     public static final int JU_LI = 1000;
 
-    public ItemRadarGun(int id)
+    public ItemRadarGun()
     {
-        super(id, "radarGun");
+        super("radarGun");
     }
 
     /** Allows items to add custom lines of information to the mouseover description */
@@ -40,8 +34,8 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
     {
         Pos coord = getLink(itemStack);
         par3List.add("\uaa74" + LanguageUtility.getLocal("info.radarGun.savedCoords"));
-        par3List.add(LanguageUtility.getLocal("gui.misc.x") + " " + (int) coord.x + ", " + LanguageUtility.getLocal("gui.misc.y") + " " + (int) coord.y + ", " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) coord.z);
-        par3List.add((int) new Pos(entityPlayer).distance(coord) + " " + LanguageUtility.getLocal("info.radarGun.meters") + " (" + (int) (new Pos(entityPlayer).x - coord.x) + ", " + (int) (new Pos(entityPlayer).y - coord.y) + ", " + (int) (new Pos(entityPlayer).z - coord.z) + ")");
+        par3List.add(LanguageUtility.getLocal("gui.misc.x") + " " + (int) coord.x() + ", " + LanguageUtility.getLocal("gui.misc.y") + " " + (int) coord.y() + ", " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) coord.z());
+        par3List.add((int) new Pos(entityPlayer).distance(coord) + " " + LanguageUtility.getLocal("info.radarGun.meters") + " (" + (int) (new Pos(entityPlayer).x() - coord.x()) + ", " + (int) (new Pos(entityPlayer).y() - coord.y()) + ", " + (int) (new Pos(entityPlayer).z() - coord.z()) + ")");
 
 		super.addInformation(itemStack, entityPlayer, par3List, par4);
     }
@@ -57,7 +51,7 @@ public class ItemRadarGun extends ItemICBMElectrical implements IPacketReceiver
 
             if (objectMouseOver != null)
             {
-                TileEntity tileEntity = par2World.getBlockTileEntity(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
+                TileEntity tileEntity = par2World.getTileEntity(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
 
                 // Do not scan if the target is a
                 // missile launcher

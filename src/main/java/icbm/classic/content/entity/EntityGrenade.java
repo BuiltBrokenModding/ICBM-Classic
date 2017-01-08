@@ -1,13 +1,10 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.api.explosive.IExplosiveContainer;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.explosion.ICBMExplosion;
-import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,13 +14,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import resonant.api.explosion.ExplosionEvent;
+import resonant.api.explosion.ExplosiveType;
 
-public class EntityGrenade extends Entity implements IExplosiveContainer, IEntityAdditionalSpawnData
+public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
 {
     /** Is the entity that throws this 'thing' (snowball, ender pearl, eye of ender or potion) */
     protected EntityLivingBase thrower;
 
-    public int haoMa;
+    public Explosives haoMa;
     public NBTTagCompound nbtData = new NBTTagCompound();
 
     public EntityGrenade(World par1World)
@@ -33,14 +32,14 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
         this.renderDistanceWeight = 8;
     }
 
-    public EntityGrenade(World par1World, Pos position, int explosiveID)
+    public EntityGrenade(World par1World, Pos position, Explosives explosiveID)
     {
         this(par1World);
-        this.setPosition(position.x, position.y, position.z);
+        this.setPosition(position.x(), position.y(), position.z());
         this.haoMa = explosiveID;
     }
 
-    public EntityGrenade(World par1World, EntityLivingBase par2EntityLiving, int explosiveID, float nengLiang)
+    public EntityGrenade(World par1World, EntityLivingBase par2EntityLiving, Explosives explosiveID, float nengLiang)
     {
         this(par1World);
         this.thrower = par2EntityLiving;
@@ -60,26 +59,26 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
     }
 
     @Override
-    public String getEntityName()
+    public String getCommandSenderName()
     {
-        if (ExplosiveRegistry.get(this.haoMa) != null)
+        if (this.haoMa != null)
         {
-            return ExplosiveRegistry.get(this.haoMa).getGrenadeName();
+            return this.haoMa.handler.getGrenadeName();
         }
 
         return "Grenade";
     }
 
     @Override
-    public void writeSpawnData(ByteArrayDataOutput data)
+    public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.haoMa);
+        data.writeInt(this.haoMa.ordinal());
     }
 
     @Override
-    public void readSpawnData(ByteArrayDataInput data)
+    public void readSpawnData(ByteBuf data)
     {
-        this.haoMa = data.readInt();
+        this.haoMa = Explosives.get(data.readInt());
     }
 
     /** Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction. */
@@ -138,7 +137,7 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
     {
         if (!this.worldObj.isRemote)
         {
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(this.worldObj, this, ExplosiveType.ITEM, ExplosiveRegistry.get(this.haoMa));
+            ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this, ExplosiveType.ITEM, this.haoMa.handler);
             MinecraftForge.EVENT_BUS.post(evt);
 
             if (evt.isCanceled())
@@ -147,7 +146,7 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
                 double var7 = this.worldObj.rand.nextFloat() * var6 + (1.0F - var6) * 0.5D;
                 double var9 = this.worldObj.rand.nextFloat() * var6 + (1.0F - var6) * 0.5D;
                 double var11 = this.worldObj.rand.nextFloat() * var6 + (1.0F - var6) * 0.5D;
-                EntityItem var13 = new EntityItem(this.worldObj, this.posX + var7, this.posY + var9, this.posZ + var11, new ItemStack(ICBMExplosion.itemGrenade, this.haoMa, 1));
+                EntityItem var13 = new EntityItem(this.worldObj, this.posX + var7, this.posY + var9, this.posZ + var11, new ItemStack(ICBMClassic.itemGrenade, 1, this.haoMa.ordinal()));
                 var13.delayBeforeCanPickup = 10;
                 this.worldObj.spawnEntityInWorld(var13);
                 this.setDead();
@@ -213,19 +212,19 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
         else
         {
             this.motionY -= gravity;
-            this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
+            //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
-        if (this.ticksExisted > Math.max(60, ((Explosive) this.getExplosiveType()).getYinXin()))
+        if (this.ticksExisted > Math.max(60, (haoMa.handler.getYinXin())))
         {
             this.worldObj.spawnParticle("hugeexplosion", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            ((Explosive) this.getExplosiveType()).createExplosion(this.worldObj, this.posX, this.posY + 0.3f, this.posZ, this);
+            (haoMa.handler).createExplosion(this.worldObj, this.posX, this.posY + 0.3f, this.posZ, this);
             this.setDead();
             return;
         }
         else
         {
-            ((Explosive) this.getExplosiveType()).onYinZha(this.worldObj, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
+            (haoMa.handler).onYinZha(this.worldObj, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
         }
     }
 
@@ -253,7 +252,7 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.haoMa = nbt.getInteger("haoMa");
+        this.haoMa = Explosives.get(nbt.getInteger("haoMa"));
         this.nbtData = nbt.getCompoundTag("data");
 
     }
@@ -261,21 +260,8 @@ public class EntityGrenade extends Entity implements IExplosiveContainer, IEntit
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("haoMa", this.haoMa);
+        nbt.setInteger("haoMa", this.haoMa.ordinal());
         nbt.setTag("data", this.nbtData);
 
     }
-
-    @Override
-    public IExplosive getExplosiveType()
-    {
-        return ExplosiveRegistry.get(this.haoMa);
-    }
-
-    @Override
-    public NBTTagCompound getTagCompound()
-    {
-        return this.nbtData;
-    }
-
 }

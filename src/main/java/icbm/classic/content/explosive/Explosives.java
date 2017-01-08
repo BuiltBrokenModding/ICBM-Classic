@@ -61,7 +61,7 @@ public enum Explosives
 
     public ItemStack getItemStack(int amount)
     {
-        if(handler instanceof Missile)
+        if (handler instanceof Missile)
         {
             return new ItemStack(ICBMClassic.itemMissile, amount, ordinal());
         }
@@ -74,5 +74,14 @@ public enum Explosives
         {
             ExplosiveRegistry.register(ex.handler);
         }
+    }
+
+    public static Explosives get(int itemDamage)
+    {
+        if (itemDamage >= 0 && itemDamage < values().length)
+        {
+            return values()[itemDamage];
+        }
+        return CONDENSED;
     }
 }

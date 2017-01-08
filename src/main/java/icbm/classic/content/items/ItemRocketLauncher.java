@@ -1,29 +1,30 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Settings;
-import icbm.classic.prefab.item.ItemICBMElectrical;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.prefab.item.ItemICBMElectrical;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
+import resonant.api.explosion.ExplosiveType;
 
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.vector.Vector3;
-
-/** Rocket Launcher
+/**
+ * Rocket Launcher
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 
 public class ItemRocketLauncher extends ItemICBMElectrical
 {
@@ -31,9 +32,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     private static final int firingDelay = 1000;
     private HashMap<String, Long> clickTimePlayer = new HashMap<String, Long>();
 
-    public ItemRocketLauncher(int par1)
+    public ItemRocketLauncher()
     {
-        super(par1, "rocketLauncher");
+        super("rocketLauncher");
     }
 
     @Override
@@ -48,9 +49,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
         if (!world.isRemote)
         {
             long clickMs = System.currentTimeMillis();
-            if (clickTimePlayer.containsKey(player.username))
+            if (clickTimePlayer.containsKey(player.getCommandSenderName()))
             {
-                if (clickMs - clickTimePlayer.get(player.username) < firingDelay)
+                if (clickMs - clickTimePlayer.get(player.getCommandSenderName()) < firingDelay)
                 {
                     //TODO play weapon empty click audio to note the gun is reloading
                     return itemStack;
@@ -68,73 +69,58 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                         if (inventoryStack.getItem() instanceof ItemMissile)
                         {
                             int meta = inventoryStack.getItemDamage();
-                            Explosive ex = ExplosiveRegistry.get(meta);
+                            Explosives ex = Explosives.get(meta);
 
-                            if (ex instanceof Explosion)
+                            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, player.posX, player.posY, player.posZ, ExplosiveType.AIR, ExplosiveRegistry.get(meta));
+                            MinecraftForge.EVENT_BUS.post(evt);
+
+                            if (((Explosion) ex.handler) != null && !evt.isCanceled())
                             {
-                                ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, player.posX, player.posY, player.posZ, ExplosiveType.AIR, ExplosiveRegistry.get(meta));
-                                MinecraftForge.EVENT_BUS.post(evt);
-
-                                if (((Explosion) ex) != null && !evt.isCanceled())
+                                // Limit the missile to tier two.
+                                if (((Explosion) ex.handler).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER && ((Explosion) ex.handler).isCruise())
                                 {
-                                    // Limit the missile to tier two.
-                                    if (((Explosion) ex).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER && ((Explosion) ex).isCruise())
+                                    Pos launcher = new Pos(player).add(new Pos(0, 0.5, 0));
+                                    Pos playerAim = new Pos(player.getLook(1));
+                                    Pos start = launcher.add(playerAim.multiply(1.1));
+                                    Pos target = launcher.add(playerAim.multiply(100));
+
+                                    //TOD: Fix this rotation when we use the proper model loader.
+                                    EntityMissile entityMissile = new EntityMissile(world, start, ex, -player.rotationYaw, -player.rotationPitch);
+                                    world.spawnEntityInWorld(entityMissile);
+
+                                    if (player.isSneaking())
                                     {
-                                        Pos launcher = Pos.translate(new Pos(player), new Pos(0, 0.5, 0));
-                                        Pos playerAim = new Pos(player.getLook(1));
-                                        Pos start = Pos.translate(launcher, Pos.scale(playerAim, 1.1));
-                                        Pos target = Pos.translate(launcher, Pos.scale(playerAim, 100));
-
-                                        //TOD: Fix this rotation when we use the proper model loader.
-                                        EntityMissile entityMissile = new EntityMissile(world, start, ((Explosion) ex).getID(), -player.rotationYaw, -player.rotationPitch);
-                                        world.spawnEntityInWorld(entityMissile);
-
-                                        if (player.isSneaking())
-                                        {
-                                            player.mountEntity(entityMissile);
-                                            player.setSneaking(false);
-                                        }
-
-                                        entityMissile.ignore(player);
-                                        entityMissile.launch(target);
-
-                                        if (!player.capabilities.isCreativeMode)
-                                        {
-                                            player.inventory.setInventorySlotContents(slot, null);
-                                            this.discharge(itemStack, ENERGY, true);
-                                        }
-
-                                        //Store last time player launched a rocket
-                                        clickTimePlayer.put(player.username, clickMs);
-
-                                        return itemStack;
+                                        player.mountEntity(entityMissile);
+                                        player.setSneaking(false);
                                     }
-                                }
-                                else
-                                {
-                                    player.sendChatToPlayer(ChatMessageComponent.createFromText(LanguageUtility.getLocal("message.launcher.protected")));
+
+                                    entityMissile.ignore(player);
+                                    entityMissile.launch(target);
+
+                                    if (!player.capabilities.isCreativeMode)
+                                    {
+                                        player.inventory.setInventorySlotContents(slot, null);
+                                        this.discharge(itemStack, ENERGY, true);
+                                    }
+
+                                    //Store last time player launched a rocket
+                                    clickTimePlayer.put(player.getCommandSenderName(), clickMs);
+
+                                    return itemStack;
                                 }
                             }
-
+                            else
+                            {
+                                player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("message.launcher.protected")));
+                            }
                         }
+
                     }
                 }
             }
         }
 
         return itemStack;
-    }
-
-    @Override
-    public long getVoltage(ItemStack itemStack)
-    {
-        return 1000;
-    }
-
-    @Override
-    public long getEnergyCapacity(ItemStack theItem)
-    {
-        return ENERGY * 16;
     }
 
     @Override

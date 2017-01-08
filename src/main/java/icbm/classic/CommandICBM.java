@@ -1,12 +1,9 @@
 package icbm.classic;
 
-import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEMP;
-
-import java.util.List;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -14,7 +11,9 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
+
+import java.util.List;
 
 public class CommandICBM extends CommandBase
 {
@@ -39,10 +38,10 @@ public class CommandICBM extends CommandBase
             int dimension = entityPlayer.worldObj.provider.dimensionId;
             if (args == null || args.length == 0 || args[0].equalsIgnoreCase("help"))
             {
-                sender.sendChatToPlayer(ChatMessageComponent.createFromText("/ICBM help"));
-                sender.sendChatToPlayer(ChatMessageComponent.createFromText("/ICBM lag <radius>"));
-                sender.sendChatToPlayer(ChatMessageComponent.createFromText("/ICBM remove <All/Missile/Explosion> <radius>"));
-                sender.sendChatToPlayer(ChatMessageComponent.createFromText("/ICBM emp <radius>"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM help"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM lag <radius>"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM remove <All/Missile/Explosion> <radius>"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM emp <radius>"));
                 return;
             }
             else if (args.length >= 2 && args[0].equalsIgnoreCase("lag"))
@@ -71,7 +70,7 @@ public class CommandICBM extends CommandBase
                         }
                     }
 
-                    sender.sendChatToPlayer(ChatMessageComponent.createFromText("Removed all ICBM lag sources within " + radius + " radius."));
+                    ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Removed all ICBM lag sources within " + radius + " radius."));
                     return;
                 }
                 else
@@ -118,7 +117,7 @@ public class CommandICBM extends CommandBase
                         }
                     }
 
-                    sender.sendChatToPlayer(ChatMessageComponent.createFromText("Removed all ICBM " + str + " within " + radius + " radius."));
+                    ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Removed all ICBM " + str + " within " + radius + " radius."));
                     return;
                 }
                 else
@@ -135,22 +134,22 @@ public class CommandICBM extends CommandBase
                     switch (entityPlayer.worldObj.rand.nextInt(20))
                     {
                         case 0:
-                            sender.sendChatToPlayer(ChatMessageComponent.createFromText("Did you pay the power bill?"));
+                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Did you pay the power bill?"));
                             return;
                         case 1:
-                            sender.sendChatToPlayer(ChatMessageComponent.createFromText("See them power their toys now!"));
+                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("See them power their toys now!"));
                             return;
                         case 2:
-                            sender.sendChatToPlayer(ChatMessageComponent.createFromText("Hey who turned the lights out."));
+                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Hey who turned the lights out."));
                             return;
                         case 3:
-                            sender.sendChatToPlayer(ChatMessageComponent.createFromText("Ha! I run on steam power!"));
+                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Ha! I run on steam power!"));
                             return;
                         case 4:
-                            sender.sendChatToPlayer(ChatMessageComponent.createFromText("The power of lighting at my finger tips!"));
+                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("The power of lighting at my finger tips!"));
                             return;
                         default:
-                            sender.sendChatToPlayer(ChatMessageComponent.createFromText("Zap!"));
+                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Zap!"));
                             return;
                     }
                 }

@@ -4,12 +4,12 @@ import com.builtbroken.mc.api.explosive.IExplosiveContainer;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.classic.Reference;
 import icbm.classic.DamageUtility;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.Reference;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -36,7 +36,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 {
     public static final float SPEED = 0.012F;
 
-    public int explosiveID = 0;
+    public Explosives explosiveID;
     public int maxHeight = 200;
     public Pos targetVector = null;
     public Pos startPos = null;
@@ -107,7 +107,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
      * @param startPos    - Starting Position
      * @param launcherPos - Missile Launcher Position
      */
-    public EntityMissile(World world, Pos startPos, Pos launcherPos, int explosiveId)
+    public EntityMissile(World world, Pos startPos, Pos launcherPos, Explosives explosiveId)
     {
         this(world);
         this.explosiveID = explosiveId;
@@ -126,7 +126,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
      * @param yaw         - The yaw of the missle
      * @param pitch       - the pitch of the missle
      */
-    public EntityMissile(World world, Pos startPos, int explosiveId, float yaw, float pitch)
+    public EntityMissile(World world, Pos startPos, Explosives explosiveId, float yaw, float pitch)
     {
         this(world);
         this.explosiveID = explosiveId;
@@ -140,7 +140,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 
     public String getEntityName()
     {
-        return ExplosiveRegistry.get(this.explosiveID).getMissileName();
+        return this.explosiveID.handler.getMissileName();
     }
 
     @Override
@@ -148,7 +148,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     {
         try
         {
-            data.writeInt(this.explosiveID);
+            data.writeInt(this.explosiveID.ordinal());
             data.writeInt(this.missileType.ordinal());
 
             data.writeDouble(this.startPos.x());
@@ -173,7 +173,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     {
         try
         {
-            this.explosiveID = data.readInt();
+            this.explosiveID = Explosives.get(data.readInt());
             this.missileType = MissileType.values()[data.readInt()];
             this.startPos = new Pos(data.readDouble(), data.readDouble(), data.readDouble());
             this.launcherPos = new Pos(data.readInt(), data.readInt(), data.readInt());
@@ -193,13 +193,13 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         this.startPos = new Pos(this);
         this.targetVector = target;
         this.targetHeight = this.targetVector.yi();
-        ((Explosion) ExplosiveRegistry.get(this.explosiveID)).launch(this);
+        ((Explosion) explosiveID.handler).launch(this);
         this.feiXingTick = 0;
         this.recalculatePath();
         this.worldObj.playSoundAtEntity(this, Reference.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
         // TODO add an event system here
         RadarRegistry.add(this);
-        ICBMClassic.LOGGER.info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
+        ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
     }
 
     @Override
@@ -319,7 +319,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
                     // Look at the next point
                     this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
 
-                    ((Explosion) ExplosiveRegistry.get(this.explosiveID)).update(this);
+                    ((Explosion) this.explosiveID.handler).update(this);
 
                     Block block = this.worldObj.getBlock((int) this.posX, (int) this.posY, (int) this.posZ);
 
@@ -358,7 +358,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
                         // Look at the next point
                         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
 
-                        ((Explosion) ExplosiveRegistry.get(this.explosiveID)).update(this);
+                        ((Explosion) this.explosiveID.handler).update(this);
 
                         this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
@@ -453,9 +453,9 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     @Override
     public boolean interactFirst(EntityPlayer entityPlayer)
     {
-        if (((Explosion) ExplosiveRegistry.get(this.explosiveID)) != null)
+        if (this.explosiveID != null)
         {
-            if (((Explosion) ExplosiveRegistry.get(this.explosiveID)).onInteract(this, entityPlayer))
+            if (((Explosion) this.explosiveID.handler).onInteract(this, entityPlayer))
             {
                 return true;
             }
@@ -595,7 +595,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
             // Make sure the missile is not already exploding
             if (!this.isExpoding)
             {
-                if (this.explosiveID == 0)
+                if (this.explosiveID == null)
                 {
                     if (!this.worldObj.isRemote)
                     {
@@ -604,12 +604,12 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
                 }
                 else
                 {
-                    ((Explosion) ExplosiveRegistry.get(this.explosiveID)).createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
+                    ((Explosion) this.explosiveID.handler).createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
                 }
 
                 this.isExpoding = true;
 
-                ICBMClassic.instance.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+                ICBMClassic.INSTANCE.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
             }
 
             setDead();
@@ -617,7 +617,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         }
         catch (Exception e)
         {
-            ICBMClassic.instance.logger().error("Missile failed to explode properly. Report this to the developers.", e);
+            ICBMClassic.INSTANCE.logger().error("Missile failed to explode properly. Report this to the developers.", e);
         }
     }
 
@@ -642,7 +642,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     {
         if (!this.isExpoding && !this.worldObj.isRemote)
         {
-            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID));
+            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID.ordinal()));
 
             float var13 = 0.05F;
             Random random = new Random();
@@ -664,7 +664,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi"));
         this.acceleration = nbt.getFloat("jiaSu");
         this.targetHeight = nbt.getInteger("baoZhaGaoDu");
-        this.explosiveID = nbt.getInteger("haoMa");
+        this.explosiveID = Explosives.get(nbt.getInteger("haoMa"));
         this.feiXingTick = nbt.getInteger("feiXingTick");
         this.qiFeiGaoDu = nbt.getDouble("qiFeiGaoDu");
         this.missileType = MissileType.values()[nbt.getInteger("xingShi")];
@@ -690,7 +690,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         }
 
         nbt.setFloat("jiaSu", this.acceleration);
-        nbt.setInteger("haoMa", this.explosiveID);
+        nbt.setInteger("haoMa", this.explosiveID.ordinal());
         nbt.setInteger("baoZhaGaoDu", this.targetHeight);
         nbt.setInteger("feiXingTick", this.feiXingTick);
         nbt.setDouble("qiFeiGaoDu", this.qiFeiGaoDu);
@@ -713,7 +713,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     @Override
     public Explosive getExplosiveType()
     {
-        return ExplosiveRegistry.get(this.explosiveID);
+        return this.explosiveID.handler;
     }
 
     @Override

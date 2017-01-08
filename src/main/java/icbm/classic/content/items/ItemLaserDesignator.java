@@ -1,45 +1,37 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.api.items.hz.IItemFrequency;
+import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
 import icbm.classic.Settings;
-import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.item.ItemICBMElectrical;
-import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.TileLauncherScreen;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import icbm.classic.prefab.item.ItemICBMElectrical;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import resonant.api.blocks.IBlockFrequency;
-import resonant.api.items.IItemFrequency;
-import resonant.lib.network.IPacketReceiver;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.item.ItemElectric;
-import universalelectricity.api.vector.Vector3;
-import calclavia.api.mffs.fortron.FrequencyGrid;
 
-import com.google.common.io.ByteArrayDataInput;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFrequency, IPacketReceiver
 {
     public static final int BAN_JING = Settings.DAO_DAN_ZUI_YUAN;
     public static final int YONG_DIAN_LIANG = 8000;
 
-    public ItemLaserDesignator(int id)
+    public ItemLaserDesignator()
     {
-        super(id, "laserDesignator");
+        super("laserDesignator");
     }
 
     /** Allows items to add custom lines of information to the mouseover description */
@@ -48,9 +40,9 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
     {
         super.addInformation(itemStack, par2EntityPlayer, par3List, par4);
 
-        if (this.getFrequency(itemStack) > 0)
+        if (this.getBroadCastHz(itemStack) > 0)
         {
-            par3List.add(LanguageUtility.getLocal("info.misc.freq") + " " + getFrequency(itemStack));
+            par3List.add(LanguageUtility.getLocal("info.misc.freq") + " " + getBroadCastHz(itemStack));
         }
         else
         {
@@ -59,24 +51,24 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
     }
 
     @Override
-    public int getFrequency(ItemStack itemStack)
+    public float getBroadCastHz(ItemStack itemStack)
     {
         if (itemStack.stackTagCompound == null)
         {
             return 0;
         }
-        return itemStack.stackTagCompound.getInteger("frequency");
+        return itemStack.stackTagCompound.getFloat("frequency");
     }
 
     @Override
-    public void setFrequency(int frequency, ItemStack itemStack)
+    public void setBroadCastHz(ItemStack itemStack, float frequency)
     {
         if (itemStack.stackTagCompound == null)
         {
             itemStack.setTagCompound(new NBTTagCompound());
         }
 
-        itemStack.stackTagCompound.setInteger("frequency", frequency);
+        itemStack.stackTagCompound.setFloat("frequency", frequency);
     }
 
     public int getLauncherCountDown(ItemStack par1ItemStack)
@@ -296,7 +288,7 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
                                     }
 
                                     missileLauncher.setTarget(new Pos(objectMouseOver.blockX, yHit, objectMouseOver.blockZ));
-                                    PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(missileLauncher, 2, missileLauncher.getTarget().intX(), missileLauncher.getTarget().intY(), missileLauncher.getTarget().intZ()));
+                                    PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(missileLauncher, 2, missileLauncher.getTarget().xi(), missileLauncher.getTarget().yi(), missileLauncher.getTarget().zi()));
 
                                     if (missileLauncher.canLaunch())
                                     {
@@ -333,29 +325,18 @@ public class ItemLaserDesignator extends ItemICBMElectrical implements IItemFreq
     }
 
     @Override
-    public long getVoltage(ItemStack itemStack)
+    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
     {
-        return 30;
-    }
+        int slot = data.readInt();
+        ItemStack itemStack = player.inventory.getStackInSlot(slot);
+        Pos position = new Pos(data);
 
-    @Override
-    public long getEnergyCapacity(ItemStack itemStack)
-    {
-        return YONG_DIAN_LIANG * 10;
-    }
+        ((ItemLaserDesignator) ICBMClassic.itemLaserDesignator).setLauncherCountDown(itemStack, 119);
 
-    @Override
-    public void onReceivePacket(ByteArrayDataInput data, EntityPlayer player, Object... extra)
-    {
-        ItemStack itemStack = (ItemStack) extra[0];
-        Pos position = new Pos(data.readInt(), data.readInt(), data.readInt());
-
-        ((ItemLaserDesignator) ICBMExplosion.itemLaserDesignator).setLauncherCountDown(itemStack, 119);
-
-        player.worldObj.playSoundEffect(position.intX(), player.worldObj.getHeightValue(position.intX(), position.intZ()), position.intZ(), Reference.PREFIX + "airstrike", 5.0F, (1.0F + (player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+        player.worldObj.playSoundEffect(position.xi(), player.worldObj.getHeightValue(position.xi(), position.zi()), position.zi(), Reference.PREFIX + "airstrike", 5.0F, (1.0F + (player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 
         player.worldObj.spawnEntityInWorld(new EntityLightBeam(player.worldObj, position, 5 * 20, 0F, 1F, 0F));
-        if (ICBMExplosion.itemRadarGun instanceof ItemElectric)
-            ((ItemElectric) ICBMExplosion.itemRadarGun).discharge(itemStack, ItemLaserDesignator.YONG_DIAN_LIANG, true);
+        //if (ICBMExplosion.itemRadarGun instanceof ItemElectric)
+        //    ((ItemElectric) ICBMClassic.itemRadarGun).discharge(itemStack, ItemLaserDesignator.YONG_DIAN_LIANG, true);
     }
 }

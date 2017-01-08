@@ -33,4 +33,14 @@ public abstract class ItemICBMElectrical extends ItemICBMBase
             }
         }
     }
+
+    public int getEnergy(ItemStack itemStack)
+    {
+        return Integer.MAX_VALUE;
+    }
+
+    public void discharge(ItemStack itemStack, int energy, boolean b)
+    {
+
+    }
 }

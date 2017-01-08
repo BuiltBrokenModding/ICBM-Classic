@@ -1,35 +1,36 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
-import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveRegistry;
-
-import java.util.List;
-
-import net.minecraft.client.renderer.texture.IconRegister;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.prefab.item.ItemICBMBase;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.Icon;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosiveType;
 import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.lib.utility.LanguageUtility;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import resonant.api.explosion.ExplosiveType;
+
+import java.util.List;
 
 public class ItemGrenade extends ItemICBMBase
 {
-    public static final Icon[] ICONS = new Icon[256];
+    public static final IIcon[] ICONS = new IIcon[256];
 
-    public ItemGrenade(int id)
+    public ItemGrenade()
     {
-        super(id, "grenade");
+        super("grenade");
         this.setMaxStackSize(16);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
@@ -68,7 +69,7 @@ public class ItemGrenade extends ItemICBMBase
             }
             else
             {
-                entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Grenades are banned in this region."));
+                entityPlayer.addChatMessage(new ChatComponentText("Grenades are banned in this region."));
             }
         }
 
@@ -80,8 +81,8 @@ public class ItemGrenade extends ItemICBMBase
     {
         if (!world.isRemote)
         {
-            Explosive zhaPin = ExplosiveRegistry.get(itemStack.getItemDamage());
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, entityPlayer, ExplosiveType.ITEM, zhaPin);
+            Explosives zhaPin = Explosives.get(itemStack.getItemDamage());
+            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, entityPlayer, ExplosiveType.ITEM, zhaPin.handler);
             MinecraftForge.EVENT_BUS.post(evt);
 
             if (!evt.isCanceled())
@@ -97,11 +98,11 @@ public class ItemGrenade extends ItemICBMBase
                 }
 
                 world.playSoundAtEntity(entityPlayer, "random.fuse", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-                world.spawnEntityInWorld(new EntityGrenade(world, entityPlayer, zhaPin.getID(), (float) (this.getMaxItemUseDuration(itemStack) - nengLiang) / (float) this.getMaxItemUseDuration(itemStack)));
+                world.spawnEntityInWorld(new EntityGrenade(world, entityPlayer, zhaPin, (float) (this.getMaxItemUseDuration(itemStack) - nengLiang) / (float) this.getMaxItemUseDuration(itemStack)));
             }
             else
             {
-                entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Grenades are banned in this region."));
+                entityPlayer.addChatMessage(new ChatComponentText("Grenades are banned in this region."));
             }
         }
     }
@@ -134,28 +135,28 @@ public class ItemGrenade extends ItemICBMBase
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IconRegister iconRegister)
+    public void registerIcons(IIconRegister iconRegister)
     {
-        for (int i = 0; i < ExplosiveRegistry.getExplosives().size(); i++)
+        for (int i = 0; i < Explosives.values().length; i++)
         {
             ICONS[i] = iconRegister.registerIcon(Reference.PREFIX + "grenade_" + ExplosiveRegistry.get(i).getUnlocalizedName());
         }
     }
 
     @Override
-    public Icon getIconFromDamage(int i)
+    public IIcon getIconFromDamage(int i)
     {
         return ICONS[i];
     }
 
     @Override
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
-        for (Explosive zhaPin : ExplosiveRegistry.getExplosives())
+        for (Explosives ex : Explosives.values())
         {
-            if (zhaPin.hasGrenadeForm())
+            if (ex.handler.hasGrenadeForm())
             {
-                par3List.add(new ItemStack(par1, 1, zhaPin.getID()));
+                par3List.add(new ItemStack(par1, 1, ex.ordinal()));
 
             }
         }
