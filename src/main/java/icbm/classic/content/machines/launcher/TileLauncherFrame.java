@@ -7,22 +7,31 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.tile.TileEnt;
+import cpw.mods.fml.common.registry.GameRegistry;
+import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This tile entity is for the screen of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMultiTileHost, IRotatable
+public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMultiTileHost, IRotatable, IRecipeContainer
 {
     // The tier of this screen
     private int tier = 0;
@@ -152,5 +161,29 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     {
         this.orientation = data.readByte();
         this.tier = data.readInt();
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        // Missile Launcher Support Frame
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchSupport, 1, 0),
+                "! !", "!!!", "! !",
+                '!', UniversalRecipe.SECONDARY_METAL.get()));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchSupport, 1, 1),
+                "! !", "!@!", "! !",
+                '!', UniversalRecipe.PRIMARY_METAL.get(),
+                '@', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 0)));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchSupport, 1, 2),
+                "! !", "!@!", "! !",
+                '!', UniversalRecipe.PRIMARY_PLATE.get(),
+                '@', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 1)));
+    }
+
+    @Override
+    public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
+    {
+        super.onPlaced(entityLiving, itemStack);
+        this.tier = itemStack.stackSize;
     }
 }

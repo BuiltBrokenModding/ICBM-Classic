@@ -82,10 +82,18 @@ public final class ICBMClassic extends AbstractMod
     public static Block blockConcrete;
     public static Block blockReinforcedGlass;
     public static Block blockExplosive;
-    public static Block blockMachine;
     public static Block blockSulfurOre;
     public static Block blockRadioactive;
     public static Block blockCombatRail;
+
+    public static Block blockLaunchBase;
+    public static Block blockLaunchScreen;
+    public static Block blockLaunchSupport;
+    public static Block blockRadarStation;
+    public static Block blockEmpTower;
+    public static Block blockCruiseLauncher;
+    public static Block blockMissileCoordinator;
+
 
     // Items
     public static Item itemAntidote;
@@ -287,7 +295,7 @@ public final class ICBMClassic extends AbstractMod
         GameRegistry.addRecipe(new ShapedOreRecipe(itemRocketLauncher,
                 "SCR", "SB ",
                 'R', itemRadarGun,
-                'C', new ItemStack(blockMachine, 1, MachineData.CruiseLauncher.ordinal() + 6),
+                'C', new ItemStack(blockCruiseLauncher),
                 'B', Blocks.stone_button,
                 'S', UniversalRecipe.PRIMARY_METAL.get()));
         // Radar Gun
@@ -316,79 +324,7 @@ public final class ICBMClassic extends AbstractMod
                 'C', UniversalRecipe.CIRCUIT_T2.get(),
                 'W', UniversalRecipe.WRENCH.get(),
                 'I', UniversalRecipe.WIRE.get()));
-        // Missile Launcher Platform
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 0),
-                "! !", "!C!", "!!!",
-                '!', UniversalRecipe.SECONDARY_METAL.get(),
-                'C', UniversalRecipe.CIRCUIT_T1.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 1),
-                "! !", "!C!", "!@!",
-                '@', new ItemStack(blockMachine, 1, 0),
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                'C', UniversalRecipe.CIRCUIT_T2.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 2),
-                "! !", "!C!", "!@!",
-                '@', new ItemStack(blockMachine, 1, 1),
-                '!', UniversalRecipe.PRIMARY_PLATE.get(),
-                'C', UniversalRecipe.CIRCUIT_T3.get()));
-        // Missile Launcher Panel
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 3),
-                "!!!", "!#!", "!?!",
-                '#', UniversalRecipe.CIRCUIT_T1.get(),
-                '!', Blocks.glass,
-                '?', UniversalRecipe.WIRE.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 4),
-                "!$!", "!#!", "!?!",
-                '#', UniversalRecipe.CIRCUIT_T2.get(),
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                '?', UniversalRecipe.WIRE.get(),
-                '$', new ItemStack(blockMachine, 1, 3)));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 5),
-                "!$!", "!#!", "!?!",
-                '#', UniversalRecipe.CIRCUIT_T3.get(),
-                '!', Items.gold_ingot,
-                '?', UniversalRecipe.WIRE.get(),
-                '$', new ItemStack(blockMachine, 1, 4)));
-        // Missile Launcher Support Frame
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 6),
-                "! !", "!!!", "! !",
-                '!', UniversalRecipe.SECONDARY_METAL.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 7),
-                "! !", "!@!", "! !",
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                '@', new ItemStack(blockMachine, 1, 6)));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 8),
-                "! !", "!@!", "! !",
-                '!', UniversalRecipe.PRIMARY_PLATE.get(),
-                '@', new ItemStack(blockMachine, 1, 7)));
-        // Radar Station
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 9),
-                "?@?", " ! ", "!#!",
-                '@', new ItemStack(itemRadarGun),
-                '!', UniversalRecipe.PRIMARY_PLATE.get(),
-                '#', UniversalRecipe.CIRCUIT_T1.get(),
-                '?', Items.gold_ingot));
-        // EMP Tower
-        RecipeUtility.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 10),
-                        "?W?", "@!@", "?#?",
-                        '?', UniversalRecipe.PRIMARY_PLATE.get(),
-                        '!', UniversalRecipe.CIRCUIT_T3.get(),
-                        '@', UniversalRecipe.BATTERY_BOX.get(),
-                        '#', UniversalRecipe.MOTOR.get(),
-                        'W', UniversalRecipe.WIRE.get()),
-                "EMP Tower", getConfig(), true);
-        // Cruise Launcher
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 11),
-                "?! ", "@@@",
-                '@', UniversalRecipe.PRIMARY_PLATE.get(),
-                '!', new ItemStack(blockMachine, 1, 2),
-                '?', new ItemStack(blockMachine, 1, 8)));
-        // Missile Coordinator
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockMachine, 1, 12),
-                "R R", "SCS", "SSS",
-                'C', UniversalRecipe.CIRCUIT_T2.get(),
-                'S', UniversalRecipe.PRIMARY_PLATE.get(),
-                'R', itemRemoteDetonator));
+
         // Missile module
         GameRegistry.addRecipe(new ShapedOreRecipe(Explosives.MISSILE.getItemStack(),
                 " @ ", "@#@", "@?@",

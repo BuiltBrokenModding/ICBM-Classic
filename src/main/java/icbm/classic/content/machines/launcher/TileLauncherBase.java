@@ -7,8 +7,12 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
+import cpw.mods.fml.common.registry.GameRegistry;
+import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.ExplosiveRegistry;
@@ -20,24 +24,28 @@ import icbm.classic.prefab.VectorHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.ITier;
 import resonant.api.explosion.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This tile entity is for the base of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer
+public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer
 {
     // The missile that this launcher is holding
     public EntityMissile missile = null;
@@ -433,5 +441,32 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         this.facingDirection = ForgeDirection.getOrientation(data.readByte());
         this.tier = data.readInt();
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        // Missile Launcher Platform
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchBase, 1, 0),
+                "! !", "!C!", "!!!",
+                '!', UniversalRecipe.SECONDARY_METAL.get(),
+                'C', UniversalRecipe.CIRCUIT_T1.get()));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchBase, 1, 1),
+                "! !", "!C!", "!@!",
+                '@', new ItemStack(ICBMClassic.blockLaunchBase, 1, 0),
+                '!', UniversalRecipe.PRIMARY_METAL.get(),
+                'C', UniversalRecipe.CIRCUIT_T2.get()));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchBase, 1, 2),
+                "! !", "!C!", "!@!",
+                '@', new ItemStack(ICBMClassic.blockLaunchBase, 1, 1),
+                '!', UniversalRecipe.PRIMARY_PLATE.get(),
+                'C', UniversalRecipe.CIRCUIT_T3.get()));
+    }
+
+    @Override
+    public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
+    {
+        super.onPlaced(entityLiving, itemStack);
+        this.tier = itemStack.stackSize;
     }
 }

@@ -3,8 +3,11 @@ package icbm.classic.content.machines;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.ExplosiveRegistry;
@@ -19,14 +22,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.explosion.*;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer
+import java.util.List;
+
+public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer
 {
     // The missile that this launcher is holding
     public EntityMissile daoDan = null;
@@ -527,5 +534,15 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public AxisAlignedBB getRenderBoundingBox()
     {
         return AxisAlignedBB.getBoundingBox(xCoord - 1, yCoord, zCoord - 1, xCoord + 1, yCoord + 1, zCoord + 1);
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower),
+                "@@@", "!?! ", "@@@",
+                '@', UniversalRecipe.PRIMARY_PLATE.get(),
+                '!', new ItemStack(ICBMClassic.blockRadarStation),
+                '?', new ItemStack(ICBMClassic.blockRadarStation)));
     }
 }

@@ -1,37 +1,40 @@
 package icbm.classic.content.machines.launcher;
 
-import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.ITier;
 import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.IMissile;
 import resonant.api.explosion.LauncherType;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * This tile entity is for the screen of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRotatable, IPacketIDReceiver, ILauncherController
+public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IRecipeContainer
 {
-    // The rotation of this missile component
-    private byte fangXiang = 3;
 
     // The tier of this screen
     private int tier = 0;
@@ -42,25 +45,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
 
     public short gaoDu = 3;
 
-    private final Set<EntityPlayer> playersUsing = new HashSet<EntityPlayer>();
-
     public TileLauncherScreen()
     {
         super("launcherScreen", Material.iron);
-        //setEnergyHandler(new EnergyStorageHandler(Long.MAX_VALUE));
     }
 
     @Override
     public Tile newTile()
     {
-        return null;
-    }
-
-    @Override
-    public void firstTick()
-    {
-        super.firstTick();
-        //this.getEnergyHandler().setCapacity(this.getLaunchCost() * 2);
+        return new TileLauncherScreen();
     }
 
     @Override
@@ -81,7 +74,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
                     if (tileEntity instanceof TileLauncherBase)
                     {
                         this.laucherBase = (TileLauncherBase) tileEntity;
-                        this.fangXiang = i;
+                        this.setFacing(ForgeDirection.getOrientation(i));
                     }
                 }
             }
@@ -119,7 +112,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.fangXiang, this.tier, this.getFrequency(), this.gaoDu);
+        return new PacketTile(this, 0, this.getDirection().ordinal(), this.tier, this.getFrequency(), this.gaoDu);
     }
 
 
@@ -149,7 +142,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
             {
                 case 0:
                 {
-                    this.fangXiang = data.readByte();
+                    this.setFacing(ForgeDirection.getOrientation(data.readByte()));
                     this.tier = data.readInt();
                     this.setFrequency(data.readInt());
                     this.gaoDu = data.readShort();
@@ -258,7 +251,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
         super.readFromNBT(par1NBTTagCompound);
 
         this.tier = par1NBTTagCompound.getInteger("tier");
-        this.fangXiang = par1NBTTagCompound.getByte("facingDirection");
         this.gaoDu = par1NBTTagCompound.getShort("gaoDu");
     }
 
@@ -269,7 +261,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
         super.writeToNBT(par1NBTTagCompound);
 
         par1NBTTagCompound.setInteger("tier", this.tier);
-        par1NBTTagCompound.setByte("facingDirection", this.fangXiang);
         par1NBTTagCompound.setShort("gaoDu", this.gaoDu);
     }
 
@@ -286,18 +277,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     }
 
     @Override
-    public ForgeDirection getDirection()
-    {
-        return ForgeDirection.getOrientation(this.fangXiang);
-    }
-
-    @Override
-    public void setDirection(ForgeDirection facingDirection)
-    {
-        this.fangXiang = (byte) facingDirection.ordinal();
-    }
-
-    public long getLaunchCost()
+    public int getEnergyConsumption()
     {
         switch (this.getTier())
         {
@@ -306,8 +286,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
             case 1:
                 return 80000;
         }
-
         return 100000;
+    }
+
+    @Override
+    public int getMaxEnergyStored(ForgeDirection from)
+    {
+        return getEnergyConsumption() * 2;
     }
 
     @Override
@@ -335,5 +320,37 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
         }
 
         return null;
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        // Missile Launcher Panel
+        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchScreen, 1, 0),
+                "!!!", "!#!", "!?!",
+                '#', UniversalRecipe.CIRCUIT_T1.get(),
+                '!', Blocks.glass,
+                '?', UniversalRecipe.WIRE.get()));
+
+        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchScreen, 1, 1),
+                "!$!", "!#!", "!?!",
+                '#', UniversalRecipe.CIRCUIT_T2.get(),
+                '!', UniversalRecipe.PRIMARY_METAL.get(),
+                '?', UniversalRecipe.WIRE.get(),
+                '$', new ItemStack(ICBMClassic.blockLaunchScreen, 1, 0)));
+
+        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchScreen, 1, 2),
+                "!$!", "!#!", "!?!",
+                '#', UniversalRecipe.CIRCUIT_T3.get(),
+                '!', Items.gold_ingot,
+                '?', UniversalRecipe.WIRE.get(),
+                '$', new ItemStack(ICBMClassic.blockLaunchScreen, 1, 1)));
+    }
+
+    @Override
+    public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
+    {
+        super.onPlaced(entityLiving, itemStack);
+        this.tier = itemStack.stackSize;
     }
 }

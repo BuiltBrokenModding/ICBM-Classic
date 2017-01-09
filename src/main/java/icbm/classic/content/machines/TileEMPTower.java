@@ -6,6 +6,8 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import icbm.classic.ICBMClassic;
@@ -14,13 +16,17 @@ import icbm.classic.content.explosive.blast.BlastEMP;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.HashMap;
+import java.util.List;
 
-public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPacketIDReceiver
+public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPacketIDReceiver, IRecipeContainer
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
@@ -312,5 +318,17 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     public boolean hasPower()
     {
         return true;
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
+                "?W?", "@!@", "?#?",
+                '?', UniversalRecipe.PRIMARY_PLATE.get(),
+                '!', UniversalRecipe.CIRCUIT_T3.get(),
+                '@', UniversalRecipe.BATTERY_BOX.get(),
+                '#', UniversalRecipe.MOTOR.get(),
+                'W', UniversalRecipe.WIRE.get()));
     }
 }

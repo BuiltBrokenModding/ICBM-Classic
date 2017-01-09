@@ -6,14 +6,17 @@ import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.WrenchUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Point;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.tile.Tile;
+import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.TileFrequency;
@@ -21,18 +24,21 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRotatable, IRadioWaveSender
+public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRotatable, IRadioWaveSender, IRecipeContainer
 {
     public final static int MAX_DETECTION_RANGE = 500;
 
@@ -406,4 +412,15 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         return null;
     }
 
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        // Radar Station
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockRadarStation),
+                "?@?", " ! ", "!#!",
+                '@', new ItemStack(ICBMClassic.itemRadarGun),
+                '!', UniversalRecipe.PRIMARY_PLATE.get(),
+                '#', UniversalRecipe.CIRCUIT_T1.get(),
+                '?', Items.gold_ingot));
+    }
 }

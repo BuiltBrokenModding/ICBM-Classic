@@ -2,25 +2,32 @@ package icbm.classic.content.machines;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
 import icbm.classic.client.render.tile.RenderMissileCoordinator;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 /**
  * Missile Coordinator
  *
  * @author Calclavia
  */
-public class TileMissileCoordinator extends TileModuleMachine implements ISimpleItemRenderer
+public class TileMissileCoordinator extends TileModuleMachine implements ISimpleItemRenderer, IRecipeContainer
 {
     public TileMissileCoordinator()
     {
@@ -68,5 +75,15 @@ public class TileMissileCoordinator extends TileModuleMachine implements ISimple
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderMissileCoordinator.TEXTURE_FILE);
         RenderMissileCoordinator.MODEL.render(0, 0.0625F);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockMissileCoordinator, 1, 12),
+                "R R", "SCS", "SSS",
+                'C', UniversalRecipe.CIRCUIT_T2.get(),
+                'S', UniversalRecipe.PRIMARY_PLATE.get(),
+                'R', ICBMClassic.itemRemoteDetonator));
     }
 }
