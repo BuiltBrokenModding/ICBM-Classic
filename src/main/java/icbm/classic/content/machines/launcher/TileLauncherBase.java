@@ -12,7 +12,9 @@ import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.prefab.VectorHelper;
 import io.netty.buffer.ByteBuf;
@@ -26,9 +28,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import resonant.api.ITier;
-import resonant.api.explosion.ExplosionEvent;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.ILauncherController;
+import resonant.api.explosion.*;
 
 import java.util.HashMap;
 
@@ -37,7 +37,7 @@ import java.util.HashMap;
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier
+public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer
 {
     // The missile that this launcher is holding
     public EntityMissile missile = null;
@@ -122,8 +122,8 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
                 if (this.getStackInSlot(0).getItem() instanceof ItemMissile)
                 {
                     int explosiveID = this.getStackInSlot(0).getItemDamage();
-
-                    if (ExplosiveRegistry.get(explosiveID) instanceof Explosion)
+                    Explosives ex = Explosives.get(explosiveID);
+                    if (ex.handler instanceof Missile)
                     {
                         Explosion missile = (Explosion) ExplosiveRegistry.get(explosiveID);
 
@@ -135,13 +135,13 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
                             if (this.missile == null)
                             {
                                 Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1.8f), (this.zCoord + 0.5f));
-                                this.missile = new EntityMissile(this.worldObj, startingPosition, new Pos(this), explosiveID);
+                                this.missile = new EntityMissile(this.worldObj, startingPosition, new Pos(this), ex);
                                 this.worldObj.spawnEntityInWorld((Entity) this.missile);
                                 return;
                             }
                             else
                             {
-                                if (this.missile.getExplosiveType().getID() == explosiveID)
+                                if (this.missile.explosiveID == ex)
                                 {
                                     return;
                                 }
@@ -272,7 +272,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player)
+    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
     {
         if (player.inventory.getCurrentItem() != null)
         {
@@ -321,7 +321,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
         super.invalidate();
     }
 
-    @Override
+
     public Pos[] getMultiBlockVectors()
     {
         if (this.facingDirection == ForgeDirection.SOUTH || this.facingDirection == ForgeDirection.NORTH)
@@ -361,6 +361,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     public EntityMissile getContainingMissile()
     {
         return this.missile;
+    }
+
+    @Override
+    public void setContainingMissile(IMissile missile)
+    {
+        this.missile = (EntityMissile) missile;
     }
 
     public void setContainingMissile(EntityMissile missile)

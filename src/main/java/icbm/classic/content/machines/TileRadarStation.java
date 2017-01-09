@@ -18,6 +18,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.TileFrequency;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -49,7 +50,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
 
     public TileRadarStation()
     {
-        //super("radarStation", Material.iron);
+        super("radarStation", Material.iron);
         // RadarRegistry.register(this);
         //setEnergyHandler(new EnergyStorageHandler(500, 400));
     }
@@ -405,8 +406,4 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         return null;
     }
 
-    public boolean hasPower()
-    {
-        return true;
-    }
 }

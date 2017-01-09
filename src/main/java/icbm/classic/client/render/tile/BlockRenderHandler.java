@@ -119,16 +119,6 @@ public class BlockRenderHandler implements ISimpleBlockRenderingHandler
                 RenderCruiseLauncher.MODEL0.render(0.0625F);
                 RenderCruiseLauncher.MODEL1.render(0.0625F);
             }
-            else if (metadata == MachineData.MissileCoordinator.ordinal() + 6)
-            {
-                GL11.glTranslatef(0f, 1.1f, 0f);
-                GL11.glRotatef(180f, 0f, 0f, 1f);
-                GL11.glRotatef(180f, 0f, 1f, 0f);
-
-                FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderMissileCoordinator.TEXTURE_FILE);
-
-                RenderMissileCoordinator.MODEL.render(0, 0.0625F);
-            }
 
             GL11.glPopMatrix();
         }

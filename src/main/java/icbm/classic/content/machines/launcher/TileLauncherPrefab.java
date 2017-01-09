@@ -9,9 +9,8 @@ import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import icbm.classic.prefab.TileFrequency;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
-import resonant.api.explosion.ILauncherContainer;
 
-public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver, ILauncherContainer
+public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver
 {
     protected Pos targetPos = null;
 

@@ -142,7 +142,7 @@ public final class ICBMClassic extends AbstractMod
         itemDefuser = manager.newItem(ItemDefuser.class);
         itemRadarGun = manager.newItem(ItemRadarGun.class);
         itemRemoteDetonator = manager.newItem(ItemRemoteDetonator.class);
-        itemLaserDesignator = manager.newItem(ItemLaserDesignator.class);
+        itemLaserDesignator = manager.newItem(ItemLaserDetonator.class);
         itemRocketLauncher = manager.newItem(ItemRocketLauncher.class);
         itemGrenade = manager.newItem(ItemGrenade.class);
         itemBombCart = manager.newItem(ItemBombCart.class);

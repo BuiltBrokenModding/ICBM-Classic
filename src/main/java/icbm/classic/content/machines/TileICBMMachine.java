@@ -1,7 +1,7 @@
 package icbm.classic.content.machines;
 
 import cofh.api.energy.IEnergyHandler;
-import com.builtbroken.mc.prefab.tile.TileMachine;
+import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public class TileICBMMachine extends TileMachine implements IEnergyHandler
+public class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
 {
     protected int energy = 0;
 
@@ -119,5 +119,10 @@ public class TileICBMMachine extends TileMachine implements IEnergyHandler
     public int getEnergyConsumption()
     {
         return (int) (getMaxEnergyStored(ForgeDirection.UNKNOWN) * .9);
+    }
+
+    public boolean hasPower()
+    {
+        return getEnergyStored(ForgeDirection.UNKNOWN) > 0;
     }
 }

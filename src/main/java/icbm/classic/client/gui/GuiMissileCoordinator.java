@@ -26,7 +26,7 @@ public class GuiMissileCoordinator extends GuiICBMContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRendererObj.drawString("\u00a77" + tileEntity.getInvName(), 48, 6, 4210752);
+        this.fontRendererObj.drawString("\u00a77" + tileEntity.getInventoryName(), 48, 6, 4210752);
         this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.sim"), 50, 20, 4210752);
         this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.from"), 13, 30, 4210752);
         this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.to"), 134, 30, 4210752);

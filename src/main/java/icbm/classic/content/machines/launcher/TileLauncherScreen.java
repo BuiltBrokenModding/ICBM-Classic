@@ -1,32 +1,34 @@
 package icbm.classic.content.machines.launcher;
 
 import com.builtbroken.mc.api.tile.IRotatable;
-import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
-import com.google.common.io.ByteArrayDataInput;
-import icbm.explosion.ICBMExplosion;
+import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import resonant.api.ITier;
+import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.IMissile;
 import resonant.api.explosion.LauncherType;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-/** This tile entity is for the screen of the missile launcher
+/**
+ * This tile entity is for the screen of the missile launcher
  *
- * @author Calclavia */
-public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRotatable, IPacketReceiver
+ * @author Calclavia
+ */
+public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRotatable, IPacketIDReceiver, ILauncherController
 {
     // The rotation of this missile component
     private byte fangXiang = 3;
@@ -44,6 +46,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
 
     public TileLauncherScreen()
     {
+        super("launcherScreen", Material.iron);
         //setEnergyHandler(new EnergyStorageHandler(Long.MAX_VALUE));
     }
 
@@ -122,7 +125,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
 
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, this.getEnergyHandler().getEnergy(), this.targetPos.intX(), this.targetPos.intY(), this.targetPos.intZ());
+        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.targetPos.xi(), this.targetPos.yi(), this.targetPos.zi());
     }
 
     @Override
@@ -138,47 +141,45 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     }
 
     @Override
-    public void onReceivePacket(int id, ByteArrayDataInput data, EntityPlayer player, Object... extra) throws IOException
+    public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType packet)
     {
-        switch (id)
+        if (!super.read(data, id, player, packet))
         {
-            case 0:
+            switch (id)
             {
-                this.fangXiang = data.readByte();
-                this.tier = data.readInt();
-                this.setFrequency(data.readInt());
-                this.gaoDu = data.readShort();
-                break;
-            }
-            case 1:
-            {
-                this.setFrequency(data.readInt());
-                break;
-            }
-            case 2:
-            {
-                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
-
-                if (this.getTier() < 2)
+                case 0:
                 {
-                    this.targetPos.y = 0;
+                    this.fangXiang = data.readByte();
+                    this.tier = data.readInt();
+                    this.setFrequency(data.readInt());
+                    this.gaoDu = data.readShort();
+                    return true;
                 }
-                break;
+                case 1:
+                {
+                    this.setFrequency(data.readInt());
+                    return true;
+                }
+                case 2:
+                {
+                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                    return true;
+                }
+                case 3:
+                {
+                    this.gaoDu = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
+                    return true;
+                }
+                case 4:
+                {
+                    this.energy = data.readInt();
+                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                    return true;
+                }
             }
-            case 3:
-            {
-                this.gaoDu = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
-                break;
-            }
-            case 4:
-            {
-                this.getEnergyHandler().setEnergy(data.readLong());
-                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
-                break;
-            }
+            return false;
         }
-
-        super.onReceivePacket(id, data, player, extra);
+        return true;
     }
 
     // Checks if the missile is launchable
@@ -187,7 +188,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     {
         if (this.laucherBase != null && this.laucherBase.missile != null)
         {
-            if (this.getEnergyHandler().extractEnergy(getLaunchCost(), false) >= getLaunchCost())
+            if (this.checkExtract())
             {
                 return this.laucherBase.isInRange(this.targetPos);
             }
@@ -201,14 +202,16 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     {
         if (this.canLaunch())
         {
-            this.getEnergyHandler().extractEnergy(getLaunchCost(), true);
+            this.extractEnergy();
             this.laucherBase.launchMissile(this.targetPos.clone(), this.gaoDu);
         }
     }
 
-    /** Gets the display status of the missile launcher
+    /**
+     * Gets the display status of the missile launcher
      *
-     * @return The string to be displayed */
+     * @return The string to be displayed
+     */
     @Override
     public String getStatus()
     {
@@ -219,7 +222,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusMissing");
         }
-        else if (!this.getEnergyHandler().isFull())
+        else if (!checkExtract())
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusNoPower");
         }
@@ -280,7 +283,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     public void setTier(int tier)
     {
         this.tier = tier;
-        this.getEnergyHandler().setCapacity(getEnergyCapacity(null));
     }
 
     @Override
@@ -309,9 +311,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
     }
 
     @Override
-    public boolean onActivated(EntityPlayer entityPlayer)
+    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
     {
-        entityPlayer.openGui(ICBMExplosion.instance, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+        if (isServer())
+        {
+            openGui(player, ICBMClassic.INSTANCE);
+        }
         return true;
     }
 
@@ -330,11 +335,5 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IRo
         }
 
         return null;
-    }
-
-    @Override
-    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
-    {
-
     }
 }
