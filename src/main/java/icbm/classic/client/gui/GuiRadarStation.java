@@ -1,11 +1,11 @@
 package icbm.classic.client.gui;
 
+import com.builtbroken.jlib.data.science.units.UnitDisplay;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.region.Rectangle;
 import com.builtbroken.mc.lib.transform.vector.Point;
-import com.mffs.api.utils.UnitDisplay;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityMissile;
@@ -106,7 +106,7 @@ public class GuiRadarStation extends GuiICBM
         this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.freq"), 155, 100, 4210752);
         this.textFieldFrequency.drawTextBox();
 
-        this.fontRendererObj.drawString(UnitDisplay.getDisplay(TileRadarStation.WATTS, UnitDisplay.Unit.WATT), 155, 128, 4210752);
+        //this.fontRendererObj.drawString(UnitDisplay.getDisplay(TileRadarStation.WATTS, UnitDisplay.Unit.WATT), 155, 128, 4210752);
 
         //this.fontRendererObj.drawString(UnitDisplay.getDisplay(this.tileEntity.getVoltageInput(null), Unit.VOLTAGE), 155, 138, 4210752);
 

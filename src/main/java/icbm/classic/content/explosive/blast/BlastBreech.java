@@ -2,7 +2,6 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.mffs.api.IForceFieldBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -46,7 +45,7 @@ public class BlastBreech extends BlastRepulsive
             {
                 if (position.getBlock() != Blocks.air)
                 {
-                    if (position.getBlock().getExplosionResistance(this.exploder, world(), position.xi(), position.yi(), position.zi(), position.x(), position.y(), position.z()) > Blocks.obsidian.getExplosionResistance(this.exploder) || position.getBlock(world()) instanceof IForceFieldBlock)
+                    if (position.getBlock().getExplosionResistance(this.exploder, world(), position.xi(), position.yi(), position.zi(), position.x(), position.y(), position.z()) > Blocks.obsidian.getExplosionResistance(this.exploder))
                     {
                         break;
                     }

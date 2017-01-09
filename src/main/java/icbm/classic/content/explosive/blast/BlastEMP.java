@@ -4,8 +4,6 @@ import com.builtbroken.mc.lib.energy.UniversalEnergySystem;
 import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
-import com.mffs.api.IForceFieldBlock;
-import com.mffs.api.fortron.IFortronStorage;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityExplosive;
@@ -77,11 +75,11 @@ public class BlastEMP extends Blast
 
                         if (block != null)
                         {
-                            if (block instanceof IForceFieldBlock)
-                            {
-                                ((IForceFieldBlock) block).weakenForceField(world(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), 1000);
-                            }
-                            else if (block instanceof IEMPBlock)
+                            //if (block instanceof IForceFieldBlock)
+                            //{
+                            //    ((IForceFieldBlock) block).weakenForceField(world(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), 1000);
+                            //}
+                            if (block instanceof IEMPBlock)
                             {
                                 ((IEMPBlock) block).onEMP(world(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), this);
                             }
@@ -89,10 +87,10 @@ public class BlastEMP extends Blast
 
                         if (tileEntity != null)
                         {
-                            if (tileEntity instanceof IFortronStorage)
-                            {
-                                ((IFortronStorage) tileEntity).provideFortron((int) world().rand.nextFloat() * ((IFortronStorage) tileEntity).getFortronCapacity(), true);
-                            }
+                            //if (tileEntity instanceof IFortronStorage)
+                            //{
+                            //    ((IFortronStorage) tileEntity).provideFortron((int) world().rand.nextFloat() * ((IFortronStorage) tileEntity).getFortronCapacity(), true);
+                            //}
                             UniversalEnergySystem.clearEnergy(tileEntity, true);
                         }
                     }

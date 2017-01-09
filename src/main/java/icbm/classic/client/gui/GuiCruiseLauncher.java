@@ -110,7 +110,7 @@ public class GuiCruiseLauncher extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int par1, int par2)
     {
-        this.fontRendererObj.drawString("\u00a77" + tileEntity.getInvName(), 52, 6, 4210752);
+        this.fontRendererObj.drawString("\u00a77" + tileEntity.getInventoryName(), 52, 6, 4210752);
 
         this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.x"), 8, 23, 4210752);
         this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.y"), 8, 39, 4210752);

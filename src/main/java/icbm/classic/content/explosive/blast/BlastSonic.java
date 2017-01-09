@@ -3,7 +3,6 @@ package icbm.classic.content.explosive.blast;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.mffs.api.IForceFieldBlock;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -139,10 +138,10 @@ public class BlastSonic extends Blast
                         continue;
                     }
 
-                    if (blockID instanceof IForceFieldBlock)
-                    {
-                        continue;
-                    }
+                    //if (blockID instanceof IForceFieldBlock)
+                    //{
+                    //    continue;
+                    //}
 
                     int metadata = this.world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 

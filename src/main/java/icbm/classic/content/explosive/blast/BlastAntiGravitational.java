@@ -1,7 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.mffs.api.IForceFieldBlock;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
@@ -55,9 +54,6 @@ public class BlastAntiGravitational extends Blast
                Block block = world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                 if (block == null || block.getBlockHardness(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()) < 0)
-                    continue;
-
-                if (block instanceof IForceFieldBlock)
                     continue;
 
                 int metadata = world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());

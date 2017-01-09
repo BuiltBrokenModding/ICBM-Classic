@@ -3,7 +3,6 @@ package icbm.classic.content.explosive.blast;
 import com.builtbroken.mc.lib.transform.rotation.EulerAngle;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.mffs.api.IForceFieldBlock;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityExplosion;
@@ -102,11 +101,11 @@ public class BlastRedmatter extends Blast
 
                             if (block != null && block.getBlockHardness(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0)
                             {
-                                if (block instanceof IForceFieldBlock)
-                                {
-                                    ((IForceFieldBlock) block).weakenForceField(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi(), 50);
-                                    continue;
-                                }
+                                //if (block instanceof IForceFieldBlock)
+                                //{
+                                //    ((IForceFieldBlock) block).weakenForceField(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi(), 50);
+                                //    continue;
+                                //}
 
                                 this.world().setBlock(currentPos.xi(), currentPos.yi(), currentPos.zi(), Blocks.air, 0, block instanceof BlockLiquid ? 0 : 2);
                                 //TODO: render fluid streams
