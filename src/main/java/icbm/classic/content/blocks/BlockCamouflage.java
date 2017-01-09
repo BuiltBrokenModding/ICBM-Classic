@@ -1,6 +1,5 @@
 package icbm.classic.content.blocks;
 
-import icbm.TabICBM;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,7 +22,6 @@ public class BlockCamouflage extends BlockICBM
         this.setHardness(0.3F);
         this.setResistance(1F);
         this.setStepSound(soundTypeCloth);
-        this.setCreativeTab(TabICBM.INSTANCE);
     }
 
     /**

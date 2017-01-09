@@ -1,14 +1,11 @@
 package icbm.classic.content.container;
 
-import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import resonant.lib.prefab.slot.SlotEnergyItem;
-import resonant.lib.prefab.slot.SlotSpecific;
 
 public class ContainerCruiseLauncher extends Container
 {
@@ -18,9 +15,9 @@ public class ContainerCruiseLauncher extends Container
     {
         this.tileEntity = tileEntity;
         // Missile Slot
-        this.addSlotToContainer(new SlotSpecific(tileEntity, 0, 151, 23, ItemMissile.class));
+        this.addSlotToContainer(new Slot(tileEntity, 0, 151, 23));
         // Battery Slot
-        this.addSlotToContainer(new SlotEnergyItem(tileEntity, 1, 151, 47));
+        this.addSlotToContainer(new Slot(tileEntity, 1, 151, 47));
 
         int var3;
 

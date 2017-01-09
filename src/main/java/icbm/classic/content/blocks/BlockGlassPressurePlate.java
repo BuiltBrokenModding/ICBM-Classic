@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks;
 
 import icbm.classic.Reference;
-import icbm.TabICBM;
 import net.minecraft.block.BlockPressurePlate;
 import net.minecraft.block.material.Material;
 
@@ -15,7 +14,6 @@ public class BlockGlassPressurePlate extends BlockPressurePlate
         this.setHardness(0.3F);
         this.setStepSound(soundTypeGlass);
         this.setBlockName(Reference.PREFIX + "glassPressurePlate");
-        this.setCreativeTab(TabICBM.INSTANCE);
     }
 
     @Override

@@ -1,22 +1,17 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.lib.transform.vector.Location;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
-
-import java.lang.reflect.Constructor;
-
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import resonant.lib.network.PacketHandler;
-import universalelectricity.api.vector.IVectorWorld;
-import universalelectricity.api.vector.VectorWorld;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import java.lang.reflect.Constructor;
 
 /** The Entity handler responsible for entity explosions.
  *
@@ -42,23 +37,23 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
         this(blast.world());
         this.blast = blast;
-        this.setPosition(blast.position.x, blast.position.y, blast.position.z);
+        this.setPosition(blast.position.x(), blast.position.y(), blast.position.z());
     }
 
     @Override
-    public String getEntityName()
+    public String getCommandSenderName()
     {
         return "Explosion";
     }
 
     @Override
-    public void writeSpawnData(ByteArrayDataOutput data)
+    public void writeSpawnData(ByteBuf data)
     {
         try
         {
             NBTTagCompound nbt = new NBTTagCompound();
             this.writeEntityToNBT(nbt);
-            PacketHandler.writeNBTTagCompound(nbt, data);
+            ByteBufUtils.writeTag(data, nbt);
         }
         catch (Exception e)
         {
@@ -67,11 +62,11 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public void readSpawnData(ByteArrayDataInput data)
+    public void readSpawnData(ByteBuf data)
     {
         try
         {
-            this.readEntityFromNBT(PacketHandler.readNBTTagCompound(data));
+            this.readEntityFromNBT(ByteBufUtils.readTag(data));
         }
         catch (Exception e)
         {
@@ -106,12 +101,12 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (this.blast == null)
         {
             this.setDead();
-            ICBMClassic.LOGGER.severe("Procedural explosion ended due to null! This is a bug!");
+            ICBMClassic.INSTANCE.logger().error("Procedural explosion ended due to null! This is a bug!");
             return;
         }
 
         this.blast.controller = this;
-        this.blast.position = new VectorWorld((IVectorWorld) this);
+        this.blast.position = new Location((IWorldPosition) this);
 
         if (this.blast.isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
@@ -136,7 +131,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         }
     }
 
-    @Override
+
     public void endExplosion()
     {
         this.endExplosion = true;
@@ -161,7 +156,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         }
         catch (Exception e)
         {
-            ICBMClassic.LOGGER.severe("ICBM error in loading an explosion!");
+            ICBMClassic.INSTANCE.logger().error("ICBM error in loading an explosion!");
             e.printStackTrace();
         }
     }
@@ -173,7 +168,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         NBTTagCompound baoZhaNBT = new NBTTagCompound();
         baoZhaNBT.setString("class", this.blast.getClass().getCanonicalName());
         this.blast.writeToNBT(baoZhaNBT);
-        nbt.setCompoundTag("blast", baoZhaNBT);
+        nbt.setTag("blast", baoZhaNBT);
     }
 
     @Override

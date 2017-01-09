@@ -30,7 +30,7 @@ public class MissileNuclearCluster extends MissileCluster
                 if (!missileObj.worldObj.isRemote)
                 {
                     Pos position = new Pos(missileObj);
-                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position, new Pos(missileObj), Explosives.NUCLEAR.ordinal());
+                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position, new Pos(missileObj), Explosives.NUCLEAR);
                     missileObj.worldObj.spawnEntityInWorld(clusterMissile);
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20;

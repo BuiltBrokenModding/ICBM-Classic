@@ -1,20 +1,20 @@
-package icbm.classic.content.entity;
+package icbm.classic.client.render.entity;
 
+import com.builtbroken.mc.lib.render.RenderUtility;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
+import icbm.classic.content.entity.EntityFragments;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import resonant.lib.render.RenderUtility;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderShrapnel extends Render
@@ -28,15 +28,15 @@ public class RenderShrapnel extends Render
             GL11.glPushMatrix();
             GL11.glTranslatef((float) par2, (float) par4, (float) par6);
             RenderUtility.setTerrainTexture();
-            Block block = Block.anvil;
+            Block block = Blocks.anvil;
             World world = suiPian.worldObj;
             GL11.glDisable(GL11.GL_LIGHTING);
 
-            this.renderBlocks.blockAccess = world;
+            RenderUtility.renderBlocks.blockAccess = world;
             Tessellator var12 = Tessellator.instance;
             var12.startDrawingQuads();
             var12.setTranslation((-MathHelper.floor_double(suiPian.posX)) - 0.5F, (-MathHelper.floor_double(suiPian.posY)) - 0.5F, (-MathHelper.floor_double(suiPian.posZ)) - 0.5F);
-            this.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(suiPian.posX), MathHelper.floor_double(suiPian.posY), MathHelper.floor_double(suiPian.posZ));
+            RenderUtility.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(suiPian.posX), MathHelper.floor_double(suiPian.posY), MathHelper.floor_double(suiPian.posZ));
             var12.setTranslation(0.0D, 0.0D, 0.0D);
             var12.draw();
 

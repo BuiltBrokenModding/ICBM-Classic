@@ -4,8 +4,8 @@ import com.builtbroken.mc.lib.render.model.loader.EngineModelLoader;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
-import icbm.explosion.ICBMExplosion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -21,13 +21,13 @@ public class RenderRocketLauncher implements IItemRenderer
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
     {
-        return item.getItem() == ICBMExplosion.itemRocketLauncher;
+        return item.getItem() == ICBMClassic.itemRocketLauncher;
     }
 
     @Override
     public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
     {
-        return item.getItem() == ICBMExplosion.itemRocketLauncher;
+        return item.getItem() == ICBMClassic.itemRocketLauncher;
     }
 
     @Override

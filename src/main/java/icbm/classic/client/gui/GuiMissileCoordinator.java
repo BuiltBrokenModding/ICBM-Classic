@@ -1,16 +1,15 @@
 package icbm.classic.client.gui;
 
-import icbm.classic.content.gui.GuiICBMContainer;
+import com.builtbroken.jlib.data.science.units.UnitDisplay;
+import com.builtbroken.mc.api.items.tools.IWorldPosItem;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Location;
 import icbm.classic.content.container.ContainerMissileCoordinator;
+import icbm.classic.content.gui.GuiICBMContainer;
 import icbm.classic.content.machines.TileMissileCoordinator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.energy.UnitDisplay;
-import universalelectricity.api.vector.Vector2;
-import universalelectricity.api.vector.Vector3;
-import calclavia.api.mffs.card.ICoordLink;
 
 public class GuiMissileCoordinator extends GuiICBMContainer
 {
@@ -27,39 +26,39 @@ public class GuiMissileCoordinator extends GuiICBMContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + tileEntity.getInvName(), 48, 6, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.sim"), 50, 20, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.from"), 13, 30, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.to"), 134, 30, 4210752);
+        this.fontRendererObj.drawString("\u00a77" + tileEntity.getInvName(), 48, 6, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.sim"), 50, 20, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.from"), 13, 30, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.to"), 134, 30, 4210752);
 
         if (this.tileEntity.getStackInSlot(0) != null && this.tileEntity.getStackInSlot(1) != null)
         {
-            if (this.tileEntity.getStackInSlot(0).getItem() instanceof ICoordLink && this.tileEntity.getStackInSlot(1).getItem() instanceof ICoordLink)
+            if (this.tileEntity.getStackInSlot(0).getItem() instanceof IWorldPosItem && this.tileEntity.getStackInSlot(1).getItem() instanceof IWorldPosItem)
             {
-                Pos pos1 = ((ICoordLink) this.tileEntity.getStackInSlot(0).getItem()).getLink(this.tileEntity.getStackInSlot(0));
-                Pos pos2 = ((ICoordLink) this.tileEntity.getStackInSlot(1).getItem()).getLink(this.tileEntity.getStackInSlot(1));
+                Location pos1 = new Location(((IWorldPosItem) this.tileEntity.getStackInSlot(0).getItem()).getLocation(this.tileEntity.getStackInSlot(0)));
+                Location pos2 = new Location(((IWorldPosItem) this.tileEntity.getStackInSlot(1).getItem()).getLocation(this.tileEntity.getStackInSlot(1)));
 
                 double displacement = pos1.distance(pos2);
 
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.displace").replaceAll("%p", "" + UnitDisplay.roundDecimals(displacement)), 13, 65, 4210752);
+                this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.displace").replaceAll("%p", "" + UnitDisplay.roundDecimals(displacement)), 13, 65, 4210752);
 
-                double w = Vector2.distance(pos1.toVector2(), pos2.toVector2());
-                double h = 160 + (w * 3) - pos1.y;
+                double w = pos1.toVector2().distance(pos2.toVector2());
+                double h = 160 + (w * 3) - pos1.y();
 
                 double distance = 0.5 * Math.sqrt(16 * (h * h) + (w * w)) + (((w * w) / (8 * h)) * (Math.log(4 * h + Math.sqrt(16 * (h * h) + (w * w))) - Math.log(w)));
 
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.arc").replaceAll("%p", "" + UnitDisplay.roundDecimals(distance)), 13, 75, 4210752);
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.time").replaceAll("%p", "" + UnitDisplay.roundDecimals(Math.max(100, 2 * displacement) / 20)), 13, 85, 4210752);
+                this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.arc").replaceAll("%p", "" + UnitDisplay.roundDecimals(distance)), 13, 75, 4210752);
+                this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.time").replaceAll("%p", "" + UnitDisplay.roundDecimals(Math.max(100, 2 * displacement) / 20)), 13, 85, 4210752);
 
-                Pos delta = pos1.clone().subtract(pos2);
-                double rotation = MathHelper.wrapAngleTo180_double(Math.toDegrees(Math.atan2(delta.z, delta.x))) - 90;
+                Location delta = pos1.subtract(pos2);
+                double rotation = MathHelper.wrapAngleTo180_double(Math.toDegrees(Math.atan2(delta.z(), delta.x()))) - 90;
                 int heading = MathHelper.floor_double(rotation * 4.0F / 360.0F + 0.5D) & 3;
 
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.direction") + " " + UnitDisplay.roundDecimals(rotation) + " (" + Direction.directions[heading] + ")", 13, 95, 4210752);
+                this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.direction") + " " + UnitDisplay.roundDecimals(rotation) + " (" + Direction.directions[heading] + ")", 13, 95, 4210752);
             }
         }
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.wip"), 13, 120, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.wip"), 13, 120, 4210752);
 
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
@@ -71,7 +70,7 @@ public class GuiMissileCoordinator extends GuiICBMContainer
         this.drawSlot(15, 40);
         this.drawSlot(135, 40);
 
-        this.drawBar(75, 40, 1 - this.animation);
+        //this.drawBar(75, 40, 1 - this.animation);
 
         if (this.tileEntity.getStackInSlot(0) != null && this.tileEntity.getStackInSlot(1) != null)
         {

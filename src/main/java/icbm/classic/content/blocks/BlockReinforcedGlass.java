@@ -2,7 +2,6 @@ package icbm.classic.content.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.TabICBM;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.material.Material;
 import net.minecraft.world.IBlockAccess;
@@ -13,7 +12,6 @@ public class BlockReinforcedGlass extends BlockICBM
     {
         super("glassReinforced", Material.glass);
         this.setResistance(48);
-        this.setCreativeTab(TabICBM.INSTANCE);
     }
 
     @SideOnly(Side.CLIENT)

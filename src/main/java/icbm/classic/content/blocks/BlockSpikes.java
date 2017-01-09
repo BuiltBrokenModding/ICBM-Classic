@@ -2,7 +2,6 @@ package icbm.classic.content.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.TabICBM;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -29,7 +28,6 @@ public class BlockSpikes extends BlockICBM
     {
         super("spikes", Material.cactus);
         this.setHardness(1.0F);
-        this.setCreativeTab(TabICBM.INSTANCE);
     }
 
     @SideOnly(Side.CLIENT)

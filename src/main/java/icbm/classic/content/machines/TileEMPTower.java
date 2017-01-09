@@ -108,9 +108,9 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
 
     private void updateCapacity()
     {
-        this.getEnergyHandler().setCapacity(Math.max(300000000 * (this.empRadius / MAX_RADIUS), 1000000000));
-        this.getEnergyHandler().setMaxReceive(this.getEnergyHandler().getEnergyCapacity() / 50);
-        this.getEnergyHandler().setMaxExtract((long) (this.getEnergyHandler().getEnergyCapacity() / .9));
+        //this.getEnergyHandler().setCapacity(Math.max(300000000 * (this.empRadius / MAX_RADIUS), 1000000000));
+        //this.getEnergyHandler().setMaxReceive(this.getEnergyHandler().getEnergyCapacity() / 50);
+        //this.getEnergyHandler().setMaxExtract((long) (this.getEnergyHandler().getEnergyCapacity() / .9));
     }
 
     @Override
@@ -320,5 +320,10 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
         map.put(new Pos(0, 1, 0), "");
         map.put(new Pos(0, 2, 0), "");
         return map;
+    }
+
+    public boolean hasPower()
+    {
+        return true;
     }
 }

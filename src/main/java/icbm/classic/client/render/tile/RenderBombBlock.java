@@ -6,12 +6,12 @@ import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.ExplosiveRegistry;
-import icbm.classic.content.explosive.tile.TileExplosive;
+import icbm.classic.Reference;
 import icbm.classic.client.models.MDiLei;
+import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.tile.TileExplosive;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -31,7 +31,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
     {
         if (modelID == ID)
         {
-            if (metadata == Explosive.sMine.getID())
+            if (metadata == Explosives.SMINE.ordinal())
             {
                 GL11.glPushMatrix();
                 GL11.glTranslatef(0.0F, 1.5F, 0.0F);
@@ -49,7 +49,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
                 }
                 catch (Exception e)
                 {
-                    ICBMClassic.LOGGER.severe("ICBM Explosive Rendering Crash with: " + block + " and metadata: " + metadata);
+                    ICBMClassic.INSTANCE.logger().error("ICBM Explosive Rendering Crash with: " + block + " and metadata: " + metadata);
                     e.printStackTrace();
                 }
             }
@@ -65,7 +65,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
 
             if (tileEntity instanceof TileExplosive)
             {
-                Explosive explosive = ExplosiveRegistry.get(((TileExplosive) tileEntity).haoMa);
+                Explosive explosive = ((TileExplosive) tileEntity).haoMa.handler;
 
                 if (!(explosive.getBlockModel() != null && explosive.getBlockResource() != null))
                 {
@@ -89,7 +89,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
     {
         if (tileEntity instanceof TileExplosive)
         {
-            Explosive explosive = ExplosiveRegistry.get(((TileExplosive) tileEntity).haoMa);
+            Explosive explosive = ((TileExplosive) tileEntity).haoMa.handler;
 
             if (explosive != null && explosive.getBlockModel() != null && explosive.getBlockResource() != null)
             {

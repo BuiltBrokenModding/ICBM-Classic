@@ -404,4 +404,9 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     {
         return null;
     }
+
+    public boolean hasPower()
+    {
+        return true;
+    }
 }

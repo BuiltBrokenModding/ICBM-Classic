@@ -5,6 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastRepulsive;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,7 +34,7 @@ public class MissileCluster extends Missile
                 if (!missileObj.worldObj.isRemote)
                 {
                     Pos position = new Pos(missileObj);
-                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position.clone(), position.clone(), 0);
+                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj, position.clone(), position.clone(), Explosives.CONDENSED);
 
                     double radius = spread;
                     double theta = 0;

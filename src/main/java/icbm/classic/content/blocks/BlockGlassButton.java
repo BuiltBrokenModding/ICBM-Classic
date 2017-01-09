@@ -3,7 +3,6 @@ package icbm.classic.content.blocks;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.Reference;
-import icbm.TabICBM;
 import net.minecraft.block.BlockButton;
 import net.minecraft.client.renderer.texture.IIconRegister;
 
@@ -17,7 +16,6 @@ public class BlockGlassButton extends BlockButton
         this.setTickRandomly(true);
         this.setBlockName(Reference.PREFIX + "glassButton");
         this.setStepSound(soundTypeGlass);
-        this.setCreativeTab(TabICBM.INSTANCE);
     }
 
     @SideOnly(Side.CLIENT)

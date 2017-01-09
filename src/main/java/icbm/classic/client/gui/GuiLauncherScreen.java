@@ -1,20 +1,16 @@
 package icbm.classic.client.gui;
 
+import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.Reference;
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
 import icbm.classic.content.machines.launcher.TileLauncherScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
-
-import resonant.lib.utility.LanguageUtility;
-import universalelectricity.api.energy.UnitDisplay;
-import universalelectricity.api.energy.UnitDisplay.Unit;
-import universalelectricity.api.vector.Vector3;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
@@ -45,11 +41,11 @@ public class GuiLauncherScreen extends GuiICBM
     public void initGui()
     {
         super.initGui();
-        this.target_xCoord_field = new GuiTextField(fontRenderer, 110, 37, 45, 12);
-        this.target_zCoord_field = new GuiTextField(fontRenderer, 110, 52, 45, 12);
-        this.target_yCoord_field = new GuiTextField(fontRenderer, 110, 67, 45, 12);
-        this.target_height_field = new GuiTextField(fontRenderer, 110, 82, 45, 12);
-        this.target_freq_field = new GuiTextField(fontRenderer, 110, 97, 45, 12);
+        this.target_xCoord_field = new GuiTextField(fontRendererObj, 110, 37, 45, 12);
+        this.target_zCoord_field = new GuiTextField(fontRendererObj, 110, 52, 45, 12);
+        this.target_yCoord_field = new GuiTextField(fontRendererObj, 110, 67, 45, 12);
+        this.target_height_field = new GuiTextField(fontRendererObj, 110, 82, 45, 12);
+        this.target_freq_field = new GuiTextField(fontRendererObj, 110, 97, 45, 12);
 
         this.target_freq_field.setMaxStringLength(4);
         this.target_xCoord_field.setMaxStringLength(6);
@@ -68,9 +64,9 @@ public class GuiLauncherScreen extends GuiICBM
         }
         else
         {
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x) + "");
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z) + "");
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y) + "");
+            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x()) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z()) + "");
+            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
         }
     }
 
@@ -98,7 +94,7 @@ public class GuiLauncherScreen extends GuiICBM
             Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
-            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 2, this.tileEntity.getTarget().intX(), this.tileEntity.getTarget().intY(), this.tileEntity.getTarget().intZ()));
+            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -110,7 +106,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newFrequency = (short) Math.max(Short.parseShort(this.target_freq_field.getText()), 0);
 
             this.tileEntity.setFrequency(newFrequency);
-            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 1, this.tileEntity.getFrequency()));
+            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 1, this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {
@@ -122,7 +118,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.target_height_field.getText()), Short.MAX_VALUE), 3);
 
             this.tileEntity.gaoDu = newGaoDu;
-            PacketDispatcher.sendPacketToServer(ICBMClassic.PACKET_TILE.getPacket(this.tileEntity, 3, this.tileEntity.gaoDu));
+            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.gaoDu));
         }
         catch (NumberFormatException e)
         {
@@ -162,24 +158,24 @@ public class GuiLauncherScreen extends GuiICBM
         if (tileEntity.getTier() >= 1)
         {
             this.target_yCoord_field.drawTextBox();
-            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.detHeight"), 12, 68, 4210752);
+            this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.detHeight"), 12, 68, 4210752);
 
             this.target_height_field.drawTextBox();
-            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.lockHeight"), 12, 83, 4210752);
+            this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.lockHeight"), 12, 83, 4210752);
 
             if (tileEntity.getTier() > 1)
             {
                 this.target_freq_field.drawTextBox();
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 12, 98, 4210752);
+                this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.freq"), 12, 98, 4210752);
             }
         }
 
-        this.fontRenderer.drawString("", 45, 6, 4210752);
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherScreen.name"), 30, 6, 4210752);
+        this.fontRendererObj.drawString("", 45, 6, 4210752);
+        this.fontRendererObj.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherScreen.name"), 30, 6, 4210752);
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.target"), 12, 25, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.XCoord"), 25, 40, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.ZCoord"), 25, 55, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.target"), 12, 25, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.XCoord"), 25, 40, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.ZCoord"), 25, 55, 4210752);
 
         int inaccuracy = 30;
 
@@ -191,12 +187,12 @@ public class GuiLauncherScreen extends GuiICBM
             }
         }
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
 
         // Shows the status of the missile launcher
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.voltage") + " " + this.tileEntity.getVoltageInput(null) + "v", 12, 137, 4210752);
-        this.fontRenderer.drawString(UnitDisplay.getDisplayShort(this.tileEntity.getEnergyHandler().getEnergy(), Unit.JOULES) + "/" + UnitDisplay.getDisplay(this.tileEntity.getEnergyHandler().getEnergyCapacity(), Unit.JOULES), 12, 150, 4210752);
+        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);
+        //this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.voltage") + " " + this.tileEntity.getVoltageInput(null) + "v", 12, 137, 4210752);
+        //this.fontRendererObj.drawString(UnitDisplay.getDisplayShort(this.tileEntity.getEnergyHandler().getEnergy(), Unit.JOULES) + "/" + UnitDisplay.getDisplay(this.tileEntity.getEnergyHandler().getEnergyCapacity(), Unit.JOULES), 12, 150, 4210752);
     }
 
     @Override
@@ -216,11 +212,11 @@ public class GuiLauncherScreen extends GuiICBM
         super.updateScreen();
 
         if (!this.target_xCoord_field.isFocused())
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x) + "");
+            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x()) + "");
         if (!this.target_zCoord_field.isFocused())
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z()) + "");
         if (!this.target_yCoord_field.isFocused())
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y) + "");
+            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
 
         if (!this.target_height_field.isFocused())
             this.target_height_field.setText(this.tileEntity.gaoDu + "");
