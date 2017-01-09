@@ -1,5 +1,6 @@
 package icbm.classic.content.machines;
 
+import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -7,8 +8,10 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.render.tile.RenderCruiseLauncher;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
@@ -26,14 +29,16 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import org.lwjgl.opengl.GL11;
 import resonant.api.explosion.*;
 
 import java.util.List;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer
+public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer, ISimpleItemRenderer
 {
     // The missile that this launcher is holding
     public EntityMissile daoDan = null;
@@ -544,5 +549,20 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                 '@', UniversalRecipe.PRIMARY_PLATE.get(),
                 '!', new ItemStack(ICBMClassic.blockRadarStation),
                 '?', new ItemStack(ICBMClassic.blockRadarStation)));
+    }
+
+    @Override
+    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
+    {
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0f, 0.4f, 0f);
+        GL11.glRotatef(180f, 0f, 0f, 1f);
+        GL11.glScalef(0.55f, 0.5f, 0.55f);
+
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderCruiseLauncher.TEXTURE_FILE);
+
+        RenderCruiseLauncher.MODEL0.render(0.0625F);
+        RenderCruiseLauncher.MODEL1.render(0.0625F);
+        GL11.glPopMatrix();
     }
 }

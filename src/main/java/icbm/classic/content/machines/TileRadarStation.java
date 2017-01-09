@@ -1,5 +1,6 @@
 package icbm.classic.content.machines;
 
+import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.IRotatable;
@@ -16,8 +17,10 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.tile.Tile;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.render.tile.RenderRadarStation;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.TileFrequency;
 import io.netty.buffer.ByteBuf;
@@ -30,15 +33,17 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRotatable, IRadioWaveSender, IRecipeContainer
+public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRotatable, IRadioWaveSender, IRecipeContainer, ISimpleItemRenderer
 {
     public final static int MAX_DETECTION_RANGE = 500;
 
@@ -422,5 +427,19 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                 '!', UniversalRecipe.PRIMARY_PLATE.get(),
                 '#', UniversalRecipe.CIRCUIT_T1.get(),
                 '?', Items.gold_ingot));
+    }
+
+    @Override
+    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
+    {
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0f, 1f, 0f);
+        GL11.glRotatef(180f, 0f, 0f, 1f);
+        GL11.glRotatef(180f, 0, 1, 0);
+
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderRadarStation.TEXTURE_FILE);
+
+        RenderRadarStation.MODEL.render(0.0625f, 0, 1.2f);
+        GL11.glPopMatrix();
     }
 }

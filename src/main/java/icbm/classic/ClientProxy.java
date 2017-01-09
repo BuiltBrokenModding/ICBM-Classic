@@ -59,7 +59,6 @@ public class ClientProxy extends CommonProxy
         MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemMissile, new RenderItemMissile());
 
         RenderingRegistry.registerBlockHandler(new RenderBombBlock());
-        RenderingRegistry.registerBlockHandler(new BlockRenderHandler());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, new RenderEntityExplosive());
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, new RenderMissile(0.5F));

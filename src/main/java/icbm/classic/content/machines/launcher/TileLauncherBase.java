@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.launcher;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
@@ -11,9 +12,11 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
+import icbm.classic.client.render.tile.RenderLauncherBase;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
@@ -31,9 +34,11 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import org.lwjgl.opengl.GL11;
 import resonant.api.ITier;
 import resonant.api.explosion.*;
 
@@ -45,7 +50,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer
+public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer, ISimpleItemRenderer
 {
     // The missile that this launcher is holding
     public EntityMissile missile = null;
@@ -468,5 +473,40 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         super.onPlaced(entityLiving, itemStack);
         this.tier = itemStack.stackSize;
+    }
+
+    @Override
+    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
+    {
+        GL11.glPushMatrix();
+        int tier = itemStack.getItemDamage();
+
+        GL11.glRotatef(180f, 0f, 0f, 1f);
+        GL11.glScalef(0.4f, 0.4f, 0.4f);
+
+        if (tier == 0)
+        {
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherBase.TEXTURE_FILE_0);
+            RenderLauncherBase.modelBase0.render(0.0625F);
+            RenderLauncherBase.modelRail0.render(0.0625F);
+        }
+        else if (tier == 1)
+        {
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherBase.TEXTURE_FILE_1);
+
+            RenderLauncherBase.modelBase1.render(0.0625F);
+            RenderLauncherBase.modelRail1.render(0.0625F);
+            GL11.glRotatef(180F, 0F, 180F, 1.0F);
+            RenderLauncherBase.modelRail1.render(0.0625F);
+        }
+        else if (tier == 2)
+        {
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherBase.TEXTURE_FILE_2);
+            RenderLauncherBase.modelBase2.render(0.0625F);
+            RenderLauncherBase.modelRail2.render(0.0625F);
+            GL11.glRotatef(180F, 0F, 180F, 1.0F);
+            RenderLauncherBase.modelRail2.render(0.0625F);
+        }
+        GL11.glPopMatrix();
     }
 }

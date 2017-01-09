@@ -1,6 +1,7 @@
 package icbm.classic.content.machines;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
@@ -10,8 +11,10 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
+import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
+import icbm.classic.client.render.tile.RenderEmpTower;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
@@ -20,13 +23,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPacketIDReceiver, IRecipeContainer
+public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPacketIDReceiver, IRecipeContainer, ISimpleItemRenderer
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
@@ -330,5 +335,19 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
                 '@', UniversalRecipe.BATTERY_BOX.get(),
                 '#', UniversalRecipe.MOTOR.get(),
                 'W', UniversalRecipe.WIRE.get()));
+    }
+
+    @Override
+    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
+    {
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0f, 0.3f, 0f);
+        GL11.glRotatef(180f, 0f, 0f, 1f);
+        GL11.glScalef(0.6f, 0.6f, 0.6f);
+
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderEmpTower.TEXTURE_FILE);
+
+        RenderEmpTower.MODEL.render(0, 0.0625F);
+        GL11.glPopMatrix();
     }
 }
