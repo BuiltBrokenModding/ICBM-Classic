@@ -1,10 +1,23 @@
 package icbm.classic.prefab;
 
+import icbm.classic.content.machines.TileICBMMachine;
+import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class TileFrequency extends TileICBM
+public abstract class TileFrequency extends TileICBMMachine
 {
     private int frequency = 0;
+
+    /**
+     * Creates a new TileMachine instance
+     *
+     * @param name     - name of the tile
+     * @param material - material of the tile
+     */
+    public TileFrequency(String name, Material material)
+    {
+        super(name, material);
+    }
 
 
     public int getFrequency()

@@ -2,16 +2,29 @@ package icbm.classic.content.machines.launcher;
 
 import com.builtbroken.mc.api.map.radio.IRadioWaveReceiver;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import icbm.classic.prefab.TileFrequency;
+import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 import resonant.api.explosion.ILauncherContainer;
 
 public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver, ILauncherContainer
 {
     protected Pos targetPos = null;
+
+    /**
+     * Creates a new TileMachine instance
+     *
+     * @param name     - name of the tile
+     * @param material - material of the tile
+     */
+    public TileLauncherPrefab(String name, Material material)
+    {
+        super(name, material);
+    }
 
     @Override
     public void firstTick()
@@ -70,6 +83,13 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
         {
             nbt.setTag("target", this.targetPos.toNBT());
         }
+    }
+
+    public String getStatus()
+    {
+        String color = "\u00a74";
+        String status = LanguageUtility.getLocal("gui.misc.idle");
+        return color + status;
     }
 
     @Override

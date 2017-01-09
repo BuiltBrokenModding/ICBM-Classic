@@ -1,15 +1,20 @@
 package icbm.classic.content.machines;
 
-import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
+import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.google.common.io.ByteArrayDataInput;
-import icbm.explosion.ICBMExplosion;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -18,10 +23,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
+import resonant.api.explosion.*;
 
-import java.io.IOException;
-
-public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketReceiver
+public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController
 {
     // The missile that this launcher is holding
     public EntityMissile daoDan = null;
@@ -35,9 +40,14 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
     public TileCruiseLauncher()
     {
-        super();
+        super("cruiseLauncher", Material.iron);
         this.targetPos = new Pos();
-        //setEnergyHandler(new EnergyStorageHandler(100000000));
+    }
+
+    @Override
+    public int getMaxEnergyStored(ForgeDirection from)
+    {
+        return 100000000;
     }
 
     /** Returns the number of slots in the inventory. */
@@ -54,8 +64,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return this.containingItems[par1];
     }
 
-    /** Decrease the size of the stack in slot (first int arg) by the amount of the second int arg.
-     * Returns the new stack. */
+    /**
+     * Decrease the size of the stack in slot (first int arg) by the amount of the second int arg.
+     * Returns the new stack.
+     */
     @Override
     public ItemStack decrStackSize(int par1, int par2)
     {
@@ -87,8 +99,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         }
     }
 
-    /** When some containers are closed they call this on each slot, then drop whatever it returns as
-     * an EntityItem - like when you close a workbench GUI. */
+    /**
+     * When some containers are closed they call this on each slot, then drop whatever it returns as
+     * an EntityItem - like when you close a workbench GUI.
+     */
     @Override
     public ItemStack getStackInSlotOnClosing(int par1)
     {
@@ -104,8 +118,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         }
     }
 
-    /** Sets the given item stack to the specified slot in the inventory (can be crafting or armor
-     * sections). */
+    /**
+     * Sets the given item stack to the specified slot in the inventory (can be crafting or armor
+     * sections).
+     */
     @Override
     public void setInventorySlotContents(int par1, ItemStack par2ItemStack)
     {
@@ -117,16 +133,18 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         }
     }
 
-    /** Gets the display status of the missile launcher
+    /**
+     * Gets the display status of the missile launcher
      *
-     * @return The string to be displayed */
+     * @return The string to be displayed
+     */
     @Override
     public String getStatus()
     {
         String color = "\u00a74";
         String status = LanguageUtility.getLocal("gui.misc.idle");
 
-        if (!this.getEnergyHandler().isFull())
+        if (!this.checkExtract())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusNoPower");
         }
@@ -149,9 +167,15 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
     /** Returns the name of the inventory. */
     @Override
-    public String getInvName()
+    public String getInventoryName()
     {
         return LanguageUtility.getLocal("gui.launcherCruise.name");
+    }
+
+    @Override
+    public boolean hasCustomInventoryName()
+    {
+        return false;
     }
 
     @Override
@@ -159,7 +183,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         super.update();
 
-        this.discharge(this.containingItems[1]);
+        //this.discharge(this.containingItems[1]);
 
         // Rotate the yaw
         if (this.getYawFromTarget() - this.rotationYaw != 0)
@@ -197,11 +221,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                 if (this.containingItems[0].getItem() instanceof ItemMissile)
                 {
                     int haoMa = this.containingItems[0].getItemDamage();
-                    if (ExplosiveRegistry.get(haoMa) instanceof Explosion)
-                    {
-                        Explosion missile = (Explosion) ExplosiveRegistry.get(haoMa);
 
-                        ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
+                    if (Explosives.get(haoMa).handler instanceof Missile)
+                    {
+                        Missile missile = (Missile) Explosives.get(haoMa).handler;
+
+                        ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
                         MinecraftForge.EVENT_BUS.post(evt);
 
                         if (!evt.isCanceled())
@@ -212,7 +237,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                                 if (missile.isCruise() && missile.getTier() <= 3)
                                 {
                                     Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1f), (this.zCoord + 0.5f));
-                                    this.daoDan = new EntityMissile(this.worldObj, startingPosition, new Pos(this), haoMa);
+                                    this.daoDan = new EntityMissile(this.worldObj, startingPosition, new Pos(this), Explosives.get(haoMa));
                                     this.worldObj.spawnEntityInWorld((Entity) this.daoDan);
                                     return;
                                 }
@@ -220,7 +245,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
                             if (this.daoDan != null)
                             {
-                                if (this.daoDan.getExplosiveType().getID() == haoMa)
+                                if (this.daoDan.explosiveID == Explosives.get(haoMa))
                                 {
                                     return;
                                 }
@@ -240,56 +265,47 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public PacketTile getDescPacket()
     {
-        return ICBMCore.PACKET_TILE.getPacket(this, 0, this.getEnergyHandler().getEnergy(), this.getFrequency(), this.targetPos.intX(), this.targetPos.intY(), this.targetPos.intZ());
+        return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.getFrequency(), this.targetPos.xi(), this.targetPos.yi(), this.targetPos.zi());
     }
 
     @Override
-    protected void onReceivePacket(int id, ByteArrayDataInput data, EntityPlayer player, Object... extra) throws IOException
+    public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType type)
     {
-        super.onReceivePacket(id, data, player, extra);
-
-        try
+        switch (id)
         {
-            switch (id)
+            case 0:
             {
-                case 0:
-                {
-                    this.getEnergyHandler().setEnergy(data.readLong());
-                    this.setFrequency(data.readInt());
-                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
-                    break;
-                }
-                case 1:
-                {
-                    this.setFrequency(data.readInt());
-                    break;
-                }
-                case 2:
-                {
-                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
-                    break;
-
-                }
+                this.energy = data.readInt();
+                this.setFrequency(data.readInt());
+                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                return true;
+            }
+            case 1:
+            {
+                this.setFrequency(data.readInt());
+                return true;
+            }
+            case 2:
+            {
+                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                return true;
             }
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        return false;
     }
 
     private float getPitchFromTarget()
     {
-        double distance = Math.sqrt((this.targetPos.x - this.xCoord) * (this.targetPos.x - this.xCoord) + (this.targetPos.z - this.zCoord) * (this.targetPos.z - this.zCoord));
-        return (float) Math.toDegrees(Math.atan((this.targetPos.y - (this.yCoord + 0.5F)) / distance));
+        double distance = Math.sqrt((this.targetPos.x() - this.xCoord) * (this.targetPos.x() - this.xCoord) + (this.targetPos.z() - this.zCoord) * (this.targetPos.z() - this.zCoord));
+        return (float) Math.toDegrees(Math.atan((this.targetPos.y() - (this.yCoord + 0.5F)) / distance));
     }
 
     private float getYawFromTarget()
     {
-        double xDifference = this.targetPos.x - (this.xCoord + 0.5F);
-        double yDifference = this.targetPos.z - (this.zCoord + 0.5F);
+        double xDifference = this.targetPos.x() - (this.xCoord + 0.5F);
+        double yDifference = this.targetPos.z() - (this.zCoord + 0.5F);
         return (float) Math.toDegrees(Math.atan2(yDifference, xDifference));
     }
 
@@ -302,7 +318,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
             if (missile != null && missile.getID() == daoDan.getExplosiveType().getID() && missile.isCruise() && missile.getTier() <= 3)
             {
-                if (this.getEnergyHandler().isFull())
+                if (this.checkExtract())
                 {
                     if (!this.isTooClose(this.targetPos))
                     {
@@ -315,16 +331,22 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return false;
     }
 
-    /** Launches the missile
-     *
-     * @param targetVector - The target in which the missile will land in */
+    @Override
+    public LauncherType getLauncherType()
+    {
+        return LauncherType.CRUISE;
+    }
+
+    /**
+     * Launches the missile
+     */
     @Override
     public void launch()
     {
         if (this.canLaunch())
         {
             this.decrStackSize(0, 1);
-            this.setEnergy(ForgeDirection.UNKNOWN, 0);
+            this.extractEnergy();
             this.daoDan.launch(this.targetPos);
             this.daoDan = null;
         }
@@ -333,7 +355,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     // Is the target too close?
     public boolean isTooClose(Pos target)
     {
-        return Pos.distance(new Pos(this.xCoord, 0, this.zCoord), new Pos(target.x, 0, target.z)) < 8;
+        return new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z())) < 8;
     }
 
     /** Reads a tile entity from NBT. */
@@ -342,13 +364,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         super.readFromNBT(nbt);
 
-        NBTTagList var2 = nbt.getTagList("Items");
+        NBTTagList var2 = nbt.getTagList("Items", 10);
 
         this.containingItems = new ItemStack[this.getSizeInventory()];
 
         for (int var3 = 0; var3 < var2.tagCount(); ++var3)
         {
-            NBTTagCompound var4 = (NBTTagCompound) var2.tagAt(var3);
+            NBTTagCompound var4 = var2.getCompoundTagAt(var3);
             byte var5 = var4.getByte("Slot");
 
             if (var5 >= 0 && var5 < this.containingItems.length)
@@ -380,8 +402,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         nbt.setTag("Items", var2);
     }
 
-    /** Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be
-     * extended. *Isn't this more of a set than a get?* */
+    /**
+     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be
+     * extended. *Isn't this more of a set than a get?*
+     */
     @Override
     public int getInventoryStackLimit()
     {
@@ -392,11 +416,23 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
     {
-        return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : par1EntityPlayer.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
+        return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : par1EntityPlayer.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player)
+    public void openInventory()
+    {
+
+    }
+
+    @Override
+    public void closeInventory()
+    {
+
+    }
+
+    @Override
+    public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
     {
         if (player.inventory.getCurrentItem() != null)
         {
@@ -407,14 +443,18 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
                     this.setInventorySlotContents(0, player.inventory.getCurrentItem());
                     if (!player.capabilities.isCreativeMode)
+                    {
                         player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                    }
                     return true;
                 }
                 else
                 {
                     ItemStack player_held = player.inventory.getCurrentItem();
                     if (!player.capabilities.isCreativeMode)
+                    {
                         player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
+                    }
                     this.setInventorySlotContents(0, player_held);
                     return true;
                 }
@@ -427,7 +467,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             return true;
         }
 
-        player.openGui(ICBMExplosion.instance, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+        player.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
         return true;
     }
 
@@ -462,7 +502,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public void setContainingMissile(IMissile missile)
     {
-        this.daoDan = missile;
+        this.daoDan = (EntityMissile) missile;
     }
 
     @Override
@@ -487,29 +527,5 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public AxisAlignedBB getRenderBoundingBox()
     {
         return AxisAlignedBB.getBoundingBox(xCoord - 1, yCoord, zCoord - 1, xCoord + 1, yCoord + 1, zCoord + 1);
-    }
-
-    @Override
-    public void openChest()
-    {
-
-    }
-
-    @Override
-    public void closeChest()
-    {
-
-    }
-
-    @Override
-    public int[] getMissileSlots()
-    {
-        return new int[] { 0 };
-    }
-
-    @Override
-    public boolean equals(IPeripheral other)
-    {
-        return equals(other);
     }
 }

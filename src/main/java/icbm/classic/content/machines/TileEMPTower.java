@@ -5,22 +5,22 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.TileEnt;
-import com.google.common.io.ByteArrayDataInput;
+import icbm.classic.ICBMClassic;
 import icbm.classic.Reference;
-import icbm.explosion.ICBMExplosion;
 import icbm.classic.content.explosive.blast.BlastEMP;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.common.util.ForgeDirection;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDReceiver
+public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPacketIDReceiver
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
@@ -48,12 +48,6 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
     }
 
     @Override
-    public void firstTick()
-    {
-        updateCapacity();
-    }
-
-    @Override
     public void update()
     {
         super.update();
@@ -62,13 +56,17 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
         {
             cooldownTicks--;
         }
-
-        if (ticks % 20 == 0 && getEnergyHandler().getEnergy() > 0)
+        else if (isIndirectlyPowered())
         {
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Reference.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyHandler().getEnergy() / getEnergyHandler().getEnergyCapacity());
+            fire();
         }
 
-        rotationDelta = (float) (Math.pow(getEnergyHandler().getEnergy() / getEnergyHandler().getEnergyCapacity(), 2) * 0.5);
+        if (ticks % 20 == 0 && getEnergyStored(ForgeDirection.UNKNOWN) > 0)
+        {
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Reference.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN));
+        }
+
+        rotationDelta = (float) (Math.pow(getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN), 2) * 0.5);
         rotation += rotationDelta;
         if (rotation > 360)
         {
@@ -79,44 +77,45 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
     }
 
     @Override
-    public void onReceivePacket(int id, ByteArrayDataInput data, EntityPlayer player, Object... extra) throws IOException
+    public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType type)
     {
-        switch (id)
+        if (!super.read(data, id, player, type))
         {
-            case 0:
+            switch (id)
             {
-                getEnergyHandler().setEnergy(data.readLong());
-                empRadius = data.readInt();
-                empMode = data.readByte();
-                break;
+                case 0:
+                {
+                    energy = data.readInt();
+                    empRadius = data.readInt();
+                    empMode = data.readByte();
+                    return true;
+                }
+                case 1:
+                {
+                    empRadius = data.readInt();
+                    return true;
+                }
+                case 2:
+                {
+                    empMode = data.readByte();
+                    return true;
+                }
             }
-            case 1:
-            {
-                empRadius = data.readInt();
-                updateCapacity();
-                break;
-            }
-            case 2:
-            {
-                empMode = data.readByte();
-                break;
-            }
+            return false;
         }
-
-        super.onReceivePacket(id, data, player, extra);
+        return true;
     }
 
-    private void updateCapacity()
+    @Override
+    public int getMaxEnergyStored(ForgeDirection from)
     {
-        //this.getEnergyHandler().setCapacity(Math.max(300000000 * (this.empRadius / MAX_RADIUS), 1000000000));
-        //this.getEnergyHandler().setMaxReceive(this.getEnergyHandler().getEnergyCapacity() / 50);
-        //this.getEnergyHandler().setMaxExtract((long) (this.getEnergyHandler().getEnergyCapacity() / .9));
+        return Math.max(300000000 * (this.empRadius / MAX_RADIUS), 1000000000);
     }
 
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.getEnergyHandler().getEnergy(), this.empRadius, this.empMode);
+        return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.empRadius, this.empMode);
     }
 
     /** Reads a tile entity from NBT. */
@@ -142,7 +141,7 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
     //@Callback(limit = 1)
     public boolean fire()
     {
-        if (this.getEnergyHandler().checkExtract())
+        if (this.checkExtract())
         {
             if (isReady())
             {
@@ -158,7 +157,7 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
                         new BlastEMP(this.worldObj, null, this.xCoord, this.yCoord, this.zCoord, this.empRadius).setEffectBlocks().explode();
                         break;
                 }
-                this.getEnergyHandler().extractEnergy();
+                this.extractEnergy();
                 this.cooldownTicks = getMaxCooldown();
                 return true;
             }
@@ -166,21 +165,13 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
         return false;
     }
 
-    //@Override
-    public void onPowerOn()
-    {
-        fire();
-    }
-
-    //@Override
-    public void onPowerOff()
-    {
-    }
-
     @Override
-    public boolean onActivated(EntityPlayer entityPlayer)
+    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
     {
-        entityPlayer.openGui(ICBMExplosion.instance, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+        if (isServer())
+        {
+            openGui(player, ICBMClassic.INSTANCE);
+        }
         return true;
     }
 
@@ -249,10 +240,6 @@ public class TileEMPTower extends TileEnt implements IMultiTileHost, IPacketIDRe
     {
         int prev = getEmpRadius();
         this.empRadius = Math.min(Math.max(empRadius, 0), MAX_RADIUS);
-        if (prev != getEmpRadius())
-        {
-            updateCapacity();
-        }
     }
 
     //@Callback
