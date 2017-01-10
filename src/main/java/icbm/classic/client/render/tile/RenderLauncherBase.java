@@ -1,6 +1,5 @@
 package icbm.classic.client.render.tile;
 
-import com.builtbroken.mc.core.References;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
@@ -15,9 +14,9 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderLauncherBase extends TileEntitySpecialRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "launcher_0.png");
-    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "launcher_1.png");
-    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "launcher_2.png");
+    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_1.png");
+    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_2.png");
 
     public static final MFaSheDi0 modelBase0 = new MFaSheDi0();
     public static final MFaSheDiRail0 modelRail0 = new MFaSheDiRail0();

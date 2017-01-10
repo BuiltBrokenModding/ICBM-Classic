@@ -1,7 +1,6 @@
 package icbm.classic.content.radarstation;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
-import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -20,8 +19,8 @@ import org.lwjgl.opengl.GL11;
  */
 public class TileRadarStationClient extends TileRadarStation implements ISimpleItemRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "radar.png");
-    public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "radar_off.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "radar.png");
+    public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "radar_off.png");
 
     public static final ModelRadarStation MODEL = new ModelRadarStation();
 

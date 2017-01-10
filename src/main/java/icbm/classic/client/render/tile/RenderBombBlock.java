@@ -1,6 +1,5 @@
 package icbm.classic.client.render.tile;
 
-import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -23,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpleBlockRenderingHandler
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "s-mine.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "s-mine.png");
     public static final int ID = RenderingRegistry.getNextAvailableRenderId();
 
     @Override

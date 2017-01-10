@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 public class MDiLei extends ModelICBM
 {
     public static final MDiLei INSTANCE = new MDiLei();
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "s-mine.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "s-mine.png");
 
     // fields
     ModelRenderer A;

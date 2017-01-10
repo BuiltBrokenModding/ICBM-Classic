@@ -1,11 +1,10 @@
 package icbm.classic.client.render.tile;
 
-import com.builtbroken.mc.core.References;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.machines.launcher.TileLauncherFrame;
 import icbm.classic.client.models.MFaSheJia;
+import icbm.classic.content.machines.launcher.TileLauncherFrame;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderLauncherFrame extends TileEntitySpecialRenderer
 {
     public static final MFaSheJia MODEL = new MFaSheJia();
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
 
     @Override
     public void renderTileEntityAt(TileEntity var1, double x, double y, double z, float var8)

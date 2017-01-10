@@ -1,6 +1,5 @@
 package icbm.classic.client.render.entity;
 
-import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -20,7 +19,7 @@ import org.lwjgl.opengl.GL12;
 @SideOnly(Side.CLIENT)
 public class RenderShrapnel extends Render
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "fragment.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "fragment.png");
 
     public void renderArrow(EntityFragments suiPian, double par2, double par4, double par6, float par8, float par9)
     {

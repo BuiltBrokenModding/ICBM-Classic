@@ -1,6 +1,5 @@
 package icbm.classic.content.explosive.ex;
 
-import com.builtbroken.mc.core.References;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
@@ -55,7 +54,7 @@ public abstract class Explosion extends Explosive
     {
         if (this.resourceLocation == null)
         {
-            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "missile_" + this.getUnlocalizedName() + ".png");
+            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "missile_" + this.getUnlocalizedName() + ".png");
         }
 
         return this.resourceLocation;

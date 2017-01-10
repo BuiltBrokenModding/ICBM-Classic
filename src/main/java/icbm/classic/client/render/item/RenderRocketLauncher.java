@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderRocketLauncher implements IItemRenderer
 {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "rocketLauncher.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "rocketLauncher.png");
     private static final IModelCustom MODEL = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "rocketLauncher.tcn"));
 
     @Override
