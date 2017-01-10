@@ -16,8 +16,10 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -62,6 +64,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         this.renderSides = data.readByte();
         this.isSolid = data.readBoolean();
         markDirty();
+        markRender();
     }
 
     @Override
@@ -118,8 +121,10 @@ public class TileCamouflage extends Tile implements IPacketReceiver
 
             if (!this.worldObj.isRemote)
             {
-                sendDescPacket();
+                sendDescPacket();               
             }
+            markDirty();
+            markRender();
         }
     }
 
@@ -192,6 +197,10 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side)
     {
+        if (canRenderSide(ForgeDirection.getOrientation(side)))
+        {
+            return Blocks.glass.getIcon(0, 0);
+        }
         if (getMimicBlock() != null)
         {
             try
@@ -232,7 +241,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         {
             //TODO add call back global permission system (Friends list)
             //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
-            if(owner == null || owner == player.getGameProfile().getId())
+            if (owner == null || owner == player.getGameProfile().getId())
             {
                 if (player.getHeldItem().getItem() instanceof ItemBlock)
                 {
@@ -255,21 +264,24 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     @Override
     protected boolean onPlayerRightClickWrench(EntityPlayer player, int side, Pos hit)
     {
-        if(player.canPlayerEdit(xi(), yi(), zi(), side, player.getHeldItem()))
+        if (player.canPlayerEdit(xi(), yi(), zi(), side, player.getHeldItem()))
         {
             //TODO add call back global permission system (Friends list)
             //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
-            if(owner == null || owner == player.getGameProfile().getId())
+            if (owner == null || owner == player.getGameProfile().getId())
             {
                 if (player.isSneaking())
                 {
                     toggleCollision();
+                    player.addChatComponentMessage(new ChatComponentText("Collision set to " + getCanCollide()));
                 }
                 else
                 {
                     toggleRenderSide(ForgeDirection.getOrientation(side));
-                    markDirty();
+                    markRender();
+                    player.addChatComponentMessage(new ChatComponentText("Side set to render: " + canRenderSide(ForgeDirection.getOrientation(side))));
                 }
+                markDirty();
                 return true;
             }
         }
