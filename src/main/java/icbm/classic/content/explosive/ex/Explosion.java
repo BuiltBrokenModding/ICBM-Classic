@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
-import net.minecraftforge.client.model.ModelFormatException;
 
 public abstract class Explosion extends Explosive
 {
@@ -41,9 +40,11 @@ public abstract class Explosion extends Explosive
         return false;
     }
 
-    /** Is this missile compatible with the cruise launcher?
+    /**
+     * Is this missile compatible with the cruise launcher?
      *
-     * @return */
+     * @return
+     */
     public boolean isCruise()
     {
         return true;
@@ -67,12 +68,13 @@ public abstract class Explosion extends Explosive
         try
         {
             if (this.model == null)
-                model = AdvancedModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/"  + this.modelName));
+            {
+                model = AdvancedModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + this.modelName));
+            }
         }
-        catch (ModelFormatException e)
+        catch (Exception e)
         {
-            System.out.println("Crash  ModelName: " + this.modelName);
-            e.printStackTrace();
+            ICBMClassic.INSTANCE.logger().error("Unexpected error while loading missile Model[ " + this.modelName + "]", e);
         }
 
         return model;

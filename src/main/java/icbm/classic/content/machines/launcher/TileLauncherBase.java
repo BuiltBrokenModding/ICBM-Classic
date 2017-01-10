@@ -18,7 +18,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
 import icbm.classic.client.render.tile.RenderLauncherBase;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.explosive.ex.missiles.Missile;
@@ -138,7 +137,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
                     Explosives ex = Explosives.get(explosiveID);
                     if (ex.handler instanceof Missile)
                     {
-                        Explosion missile = (Explosion) ExplosiveRegistry.get(explosiveID);
+                        Explosion missile = (Explosion) ex.handler;
 
                         ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
                         MinecraftForge.EVENT_BUS.post(evt);

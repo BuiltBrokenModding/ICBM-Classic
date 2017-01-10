@@ -3,23 +3,17 @@ package icbm.classic.client.render.item;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
-import icbm.classic.prefab.ModelICBM;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
-
-import java.util.HashMap;
 
 @SideOnly(Side.CLIENT)
 public class RenderItemMissile implements IItemRenderer
 {
-    HashMap<Explosion, ModelICBM> cache = new HashMap<Explosion, ModelICBM>();
-
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
     {
@@ -39,17 +33,18 @@ public class RenderItemMissile implements IItemRenderer
         {
             Explosives ex = Explosives.get(item.getItemDamage());
 
-            if (ex.handler instanceof Missile)
+            if (ex.handler instanceof Explosion)
             {
-                Missile missile = (Missile) ex.handler;
+                Explosion missile = (Explosion) ex.handler;
 
-                float scale = 0.7f;
-                float right = 0f;
+                float scale = 0.07f;
+
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(missile.getMissileResource());
 
                 if (type == ItemRenderType.INVENTORY)
                 {
-                    scale = 0.4f;
-                    right = -0.5f;
+                    scale = 0.025f;
+                    float right = -0.5f;
 
                     if (missile.getTier() == 2 || !missile.hasBlockForm())
                     {
@@ -66,7 +61,7 @@ public class RenderItemMissile implements IItemRenderer
                         right = -0.45f;
                     }
 
-                    GL11.glTranslatef(right, 0f, 0f);
+                    GL11.glTranslatef(right + 0.6f, -0.5f, -0.5f);
                 }
 
                 if (type == ItemRenderType.EQUIPPED)
@@ -90,17 +85,10 @@ public class RenderItemMissile implements IItemRenderer
                 }
 
                 GL11.glScalef(scale, scale, scale);
-
-                FMLClientHandler.instance().getClient().renderEngine.bindTexture(missile.getMissileResource());
-
-                synchronized (RenderMissile.cache)
+                IModelCustom model = missile.getMissileModel();
+                if (model != null)
                 {
-                    if (!RenderMissile.cache.containsKey(missile))
-                    {
-                        RenderMissile.cache.put(missile, missile.getMissileModel());
-                    }
-
-                    RenderMissile.cache.get(missile).renderAll();
+                    model.renderAll();
                 }
             }
         }

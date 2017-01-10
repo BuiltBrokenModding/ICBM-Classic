@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.tile;
 
-import icbm.classic.content.explosive.ExplosiveRegistry;
+import icbm.classic.content.explosive.Explosives;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -23,7 +23,7 @@ public class ItemBlockExplosive extends ItemBlock
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
-        return this.getUnlocalizedName() + "." + ExplosiveRegistry.get(itemstack.getItemDamage()).getUnlocalizedName();
+        return this.getUnlocalizedName() + "." + Explosives.get(itemstack.getItemDamage()).handler.getUnlocalizedName();
     }
 
     @Override

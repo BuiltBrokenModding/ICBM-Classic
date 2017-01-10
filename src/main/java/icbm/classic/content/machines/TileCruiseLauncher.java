@@ -13,7 +13,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.render.tile.RenderCruiseLauncher;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.explosive.ex.missiles.Missile;
@@ -326,7 +325,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         if (this.daoDan != null && this.containingItems[0] != null)
         {
-            Explosion missile = (Explosion) ExplosiveRegistry.get(this.containingItems[0].getItemDamage());
+            Explosion missile = (Explosion) Explosives.get(this.containingItems[0].getItemDamage()).handler;
 
             if (missile != null && missile.getID() == daoDan.getExplosiveType().getID() && missile.isCruise() && missile.getTier() <= 3)
             {
@@ -496,9 +495,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             if (itemStack.getItem() instanceof ItemMissile && this.getStackInSlot(slotID) == null)
             {
-                if (ExplosiveRegistry.get(itemStack.getItemDamage()) instanceof Explosion)
+                if (Explosives.get(itemStack.getItemDamage()).handler instanceof Explosion)
                 {
-                    Explosion missile = (Explosion) ExplosiveRegistry.get(itemStack.getItemDamage());
+                    Explosion missile = (Explosion) Explosives.get(itemStack.getItemDamage()).handler;
 
                     if (missile.isCruise() && missile.getTier() <= 3)
                     {

@@ -1,7 +1,6 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
@@ -30,7 +29,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     public String getUnlocalizedName(ItemStack itemStack)
     {
-        return this.getUnlocalizedName() + "." + ExplosiveRegistry.get(itemStack.getItemDamage()).getUnlocalizedName();
+        return this.getUnlocalizedName() + "." + Explosives.get(itemStack.getItemDamage()).handler.getUnlocalizedName();
     }
 
     @Override
@@ -54,7 +53,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean bool)
     {
-        int tierdata = ExplosiveRegistry.get(stack.getItemDamage()).getTier();
+        int tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
         list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata);
 
 		super.addInformation(stack, player, list, bool);

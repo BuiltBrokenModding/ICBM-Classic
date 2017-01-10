@@ -3,7 +3,6 @@ package icbm.classic.content.items;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.content.entity.EntityBombCart;
-import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
@@ -67,7 +66,7 @@ public class ItemBombCart extends ItemICBMBase
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
-        return "icbm.minecart." + ExplosiveRegistry.get(itemstack.getItemDamage()).getUnlocalizedName();
+        return "icbm.minecart." + Explosives.get(itemstack.getItemDamage()).handler.getUnlocalizedName();
     }
 
     @Override

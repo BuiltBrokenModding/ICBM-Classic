@@ -68,14 +68,6 @@ public enum Explosives
         return new ItemStack(ICBMClassic.blockExplosive, amount, ordinal());
     }
 
-    public static void register()
-    {
-        for (Explosives ex : values())
-        {
-            ExplosiveRegistry.register(ex.handler);
-        }
-    }
-
     public static Explosives get(int itemDamage)
     {
         if (itemDamage >= 0 && itemDamage < values().length)

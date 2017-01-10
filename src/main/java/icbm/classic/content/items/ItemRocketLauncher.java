@@ -4,7 +4,6 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -71,7 +70,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             int meta = inventoryStack.getItemDamage();
                             Explosives ex = Explosives.get(meta);
 
-                            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, player.posX, player.posY, player.posZ, ExplosiveType.AIR, ExplosiveRegistry.get(meta));
+                            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, player.posX, player.posY, player.posZ, ExplosiveType.AIR, Explosives.get(meta).handler);
                             MinecraftForge.EVENT_BUS.post(evt);
 
                             if (((Explosion) ex.handler) != null && !evt.isCanceled())

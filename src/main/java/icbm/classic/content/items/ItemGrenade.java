@@ -6,7 +6,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.ExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -60,7 +59,7 @@ public class ItemGrenade extends ItemICBMBase
     {
         if (itemStack != null)
         {
-            Explosive zhaPin = ExplosiveRegistry.get(itemStack.getItemDamage());
+            Explosive zhaPin = Explosives.get(itemStack.getItemDamage()).handler;
             ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, entityPlayer, ExplosiveType.ITEM, zhaPin);
             MinecraftForge.EVENT_BUS.post(evt);
 
@@ -117,7 +116,7 @@ public class ItemGrenade extends ItemICBMBase
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
-        return this.getUnlocalizedName() + "." + ExplosiveRegistry.get(itemstack.getItemDamage()).getUnlocalizedName();
+        return this.getUnlocalizedName() + "." + Explosives.get(itemstack.getItemDamage()).handler.getUnlocalizedName();
     }
 
     @Override
@@ -129,7 +128,7 @@ public class ItemGrenade extends ItemICBMBase
     @Override
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4)
     {
-        int explosiveTier = ExplosiveRegistry.get(par1ItemStack.getItemDamage()).getTier();
+        int explosiveTier = Explosives.get(par1ItemStack.getItemDamage()).handler.getTier();
         par3List.add(LanguageUtility.getLocal("info.misc.tier") + ": " + explosiveTier);
 		super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
     }
