@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.render.fx.*;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -13,17 +12,10 @@ import icbm.classic.client.fx.FXAntimatterPartical;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.client.render.item.RenderItemMissile;
 import icbm.classic.client.render.item.RenderRocketLauncher;
-import icbm.classic.client.render.tile.*;
+import icbm.classic.client.render.tile.RenderBombBlock;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.ex.missiles.MissilePlayerHandler;
-import icbm.classic.content.explosive.tile.TileExplosive;
-import icbm.classic.content.machines.TileCruiseLauncher;
-import icbm.classic.content.machines.TileEMPTower;
-import icbm.classic.content.machines.TileMissileCoordinator;
-import icbm.classic.content.machines.TileRadarStation;
-import icbm.classic.content.machines.launcher.TileLauncherBase;
-import icbm.classic.content.machines.launcher.TileLauncherFrame;
-import icbm.classic.content.machines.launcher.TileLauncherScreen;
+import icbm.classic.content.radarstation.TileRadarStationClient;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
@@ -46,6 +38,7 @@ public class ClientProxy extends CommonProxy
     public void preInit()
     {
         super.preInit();
+        ICBMClassic.blockRadarStation = ICBMClassic.INSTANCE.getManager().newBlock("icbmCRadarStation", new TileRadarStationClient());
     }
 
     @Override
@@ -66,15 +59,6 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, new RenderLightBeam());
         RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, new RenderGrenade());
         RenderingRegistry.registerEntityRenderingHandler(EntityBombCart.class, new RenderMinecart());
-
-        ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new RenderCruiseLauncher());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new RenderLauncherBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherScreen.class, new RenderLauncherScreen());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new RenderLauncherFrame());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new RenderRadarStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new RenderEmpTower());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileMissileCoordinator.class, new RenderMissileCoordinator());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileExplosive.class, new RenderBombBlock());
     }
 
     @Override

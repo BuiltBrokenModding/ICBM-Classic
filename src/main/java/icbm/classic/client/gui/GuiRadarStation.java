@@ -1,16 +1,16 @@
 package icbm.classic.client.gui;
 
-import com.builtbroken.jlib.data.science.units.UnitDisplay;
 import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.region.Rectangle;
 import com.builtbroken.mc.lib.transform.vector.Point;
 import cpw.mods.fml.client.FMLClientHandler;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.gui.GuiICBM;
-import icbm.classic.content.machines.TileRadarStation;
+import icbm.classic.content.radarstation.TileRadarStation;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,10 +23,10 @@ import java.util.List;
 
 public class GuiRadarStation extends GuiICBM
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "gui_radar.png");
-    public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "reddot.png");
-    public static final ResourceLocation TEXTURE_YELLOW_DOT = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "yellowdot.png");
-    public static final ResourceLocation TEXTURE_WHITE_DOT = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "whitedot.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_radar.png");
+    public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "reddot.png");
+    public static final ResourceLocation TEXTURE_YELLOW_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "yellowdot.png");
+    public static final ResourceLocation TEXTURE_WHITE_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "whitedot.png");
     private TileRadarStation tileEntity;
 
     private int containerPosX;

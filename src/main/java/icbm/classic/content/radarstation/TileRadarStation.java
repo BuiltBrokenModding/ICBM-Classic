@@ -1,9 +1,10 @@
-package icbm.classic.content.machines;
+package icbm.classic.content.radarstation;
 
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
-import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
+import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -17,10 +18,8 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.tile.Tile;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.render.tile.RenderRadarStation;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.TileFrequency;
 import io.netty.buffer.ByteBuf;
@@ -33,17 +32,14 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRotatable, IRadioWaveSender, IRecipeContainer, ISimpleItemRenderer
+public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRadioWaveSender, IRecipeContainer, IMultiTileHost
 {
     public final static int MAX_DETECTION_RANGE = 500;
 
@@ -55,21 +51,16 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     public boolean emitAll = true;
     /** List of all incoming missiles, in order of distance. */
     private List<EntityMissile> incomingMissiles = new ArrayList<EntityMissile>();
-    private byte fangXiang = 3;
-
-    private Ticket ticket;
 
     public TileRadarStation()
     {
         super("radarStation", Material.iron);
-        // RadarRegistry.register(this);
-        //setEnergyHandler(new EnergyStorageHandler(500, 400));
     }
 
     @Override
     public Tile newTile()
     {
-        return null;
+        return new TileRadarStation();
     }
 
     @Override
@@ -77,7 +68,6 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     {
         super.firstTick();
         this.worldObj.notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord));
-        //this.chunkLoaderInit(ForgeChunkManager.requestTicket(ICBMExplosion.instance, this.worldObj, Type.NORMAL));
     }
 
     @Override
@@ -257,7 +247,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 4, this.fangXiang, /* Energy */0);
+        return new PacketTile(this, 4, getEnergyStored(ForgeDirection.UNKNOWN));
     }
 
     @Override
@@ -277,8 +267,8 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                 }
                 else if (ID == 4)
                 {
-                    this.fangXiang = data.readByte();
-                    //this.getEnergyHandler().setEnergy(data.readLong());
+                    //this.fangXiang = data.readByte();
+                    this.energy = data.readInt();
                 }
             }
             else if (!this.worldObj.isRemote)
@@ -340,11 +330,6 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         return false;
     }
 
-    public boolean isIndirectlyPoweringTo(ForgeDirection side)
-    {
-        return this.isPoweringTo(side);
-    }
-
     /** Reads a tile entity from NBT. */
     @Override
     public void readFromNBT(NBTTagCompound nbt)
@@ -353,7 +338,6 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         this.safetyRange = nbt.getInteger("safetyBanJing");
         this.alarmRange = nbt.getInteger("alarmBanJing");
         this.emitAll = nbt.getBoolean("emitAll");
-        this.fangXiang = nbt.getByte("fangXiang");
     }
 
     /** Writes a tile entity to NBT. */
@@ -364,11 +348,10 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         nbt.setInteger("safetyBanJing", this.safetyRange);
         nbt.setInteger("alarmBanJing", this.alarmRange);
         nbt.setBoolean("emitAll", this.emitAll);
-        nbt.setByte("fangXiang", this.fangXiang);
     }
 
-
-    public boolean onActivated(EntityPlayer entityPlayer)
+    @Override
+    protected boolean onPlayerRightClick(EntityPlayer entityPlayer, int side, Pos hit)
     {
         if (entityPlayer.inventory.getCurrentItem() != null)
         {
@@ -384,31 +367,11 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
             }
         }
 
-        if(isServer())
+        if (isServer())
         {
             entityPlayer.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
         }
         return true;
-    }
-
-    @Override
-    public void invalidate()
-    {
-        ForgeChunkManager.releaseTicket(this.ticket);
-        //RadarRegistry.unregister(this);
-        super.invalidate();
-    }
-
-    @Override
-    public ForgeDirection getDirection()
-    {
-        return ForgeDirection.getOrientation(this.fangXiang);
-    }
-
-    @Override
-    public void setDirection(ForgeDirection facingDirection)
-    {
-        this.fangXiang = (byte) facingDirection.ordinal();
     }
 
     @Override
@@ -430,16 +393,38 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     }
 
     @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
+    public void onMultiTileAdded(IMultiTile tileMulti)
     {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0f, 1f, 0f);
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glRotatef(180f, 0, 1, 0);
 
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderRadarStation.TEXTURE_FILE);
+    }
 
-        RenderRadarStation.MODEL.render(0.0625f, 0, 1.2f);
-        GL11.glPopMatrix();
+    @Override
+    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
+    {
+        return false;
+    }
+
+    @Override
+    public void onTileInvalidate(IMultiTile tileMulti)
+    {
+
+    }
+
+    @Override
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
+    {
+        return false;
+    }
+
+    @Override
+    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
+    {
+
+    }
+
+    @Override
+    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    {
+        return null;
     }
 }

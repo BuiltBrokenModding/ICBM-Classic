@@ -59,17 +59,26 @@ import java.util.ArrayList;
  *
  * @author Calclavia
  */
-@Mod(modid = Reference.NAME, name = Reference.NAME, version = Reference.VERSION, dependencies = "after:ResonantInduction|Atomic;required-after:ResonantEngine")
+@Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = "after:ResonantInduction|Atomic;required-after:ResonantEngine")
 public final class ICBMClassic extends AbstractMod
 {
-    @Instance(Reference.NAME)
+    @Instance(ICBMClassic.DOMAIN)
     public static ICBMClassic INSTANCE;
 
-    @Metadata(Reference.NAME)
+    @Metadata(ICBMClassic.DOMAIN)
     public static ModMetadata metadata;
 
-    @SidedProxy(clientSide = "icbm.core.ClientProxy", serverSide = "icbm.core.CommonProxy")
+    @SidedProxy(clientSide = "icbm.classic.ClientProxy", serverSide = "icbm.classic.ServerProxy")
     public static CommonProxy proxy;
+
+    public static final String DOMAIN = "icbmclassic";
+    public static final String PREFIX = DOMAIN + ":";
+
+    public static final String MAJOR_VERSION = "@MAJOR@";
+    public static final String MINOR_VERSION = "@MINOR@";
+    public static final String REVISION_VERSION = "@REVIS@";
+    public static final String BUILD_VERSION = "@BUILD@";
+    public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
 
     public static final int ENTITY_ID_PREFIX = 50;
 
@@ -115,7 +124,7 @@ public final class ICBMClassic extends AbstractMod
 
     public ICBMClassic()
     {
-        super(Reference.DOMAIN);
+        super(ICBMClassic.DOMAIN);
     }
 
     @Override
@@ -127,33 +136,32 @@ public final class ICBMClassic extends AbstractMod
     @Override
     protected void loadBlocks(ModManager manager)
     {
-        blockGlassPlate = manager.newBlock(BlockGlassPressurePlate.class);
-        blockGlassButton = manager.newBlock(BlockGlassButton.class);
-        blockSpikes = manager.newBlock(BlockSpikes.class, ItemBlockMetadata.class);
-        blockCamo = manager.newBlock(TileCamouflage.class);
-        blockConcrete = manager.newBlock(BlockConcrete.class, ItemBlockMetadata.class);
-        blockReinforcedGlass = manager.newBlock(BlockReinforcedGlass.class, ItemBlockMetadata.class);
-        blockCombatRail = manager.newBlock(BlockReinforcedRail.class);
+        blockGlassPlate = manager.newBlock("icbmCGlassPlate", BlockGlassPressurePlate.class);
+        blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class);
+        blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockMetadata.class);
+        blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
+        blockConcrete = manager.newBlock("icbmCConcrete", BlockConcrete.class, ItemBlockMetadata.class);
+        blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class, ItemBlockMetadata.class);
+        blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class);
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
-        //blockMachine = manager.newBlock(BlockICBMMachine.class, ItemBlockMachine.class);
     }
 
     @Override
     public void loadItems(ModManager manager)
     {
-        itemPoisonPowder = manager.newItem("poisonPowder", new ItemICBMBase("poisonPowder"));
-        itemSulfurDust = manager.newItem(ItemSulfurDust.class);
-        itemAntidote = manager.newItem(ItemAntidote.class);
-        itemSignalDisrupter = manager.newItem(ItemSignalDisrupter.class);
-        itemTracker = manager.newItem(ItemTracker.class);
-        itemMissile = manager.newItem(ItemMissile.class);
-        itemDefuser = manager.newItem(ItemDefuser.class);
-        itemRadarGun = manager.newItem(ItemRadarGun.class);
-        itemRemoteDetonator = manager.newItem(ItemRemoteDetonator.class);
-        itemLaserDesignator = manager.newItem(ItemLaserDetonator.class);
-        itemRocketLauncher = manager.newItem(ItemRocketLauncher.class);
-        itemGrenade = manager.newItem(ItemGrenade.class);
-        itemBombCart = manager.newItem(ItemBombCart.class);
+        itemPoisonPowder = manager.newItem("icbmCPoisonPowder", new ItemICBMBase("poisonPowder"));
+        itemSulfurDust = manager.newItem("icbmCSulfurDust", ItemSulfurDust.class);
+        itemAntidote = manager.newItem("icbmCAntidote", ItemAntidote.class);
+        itemSignalDisrupter = manager.newItem("icbmCSignalDisrupter", ItemSignalDisrupter.class);
+        itemTracker = manager.newItem("icbmCTracker", ItemTracker.class);
+        itemMissile = manager.newItem("icbmCMissile", ItemMissile.class);
+        itemDefuser = manager.newItem("icbmCDefuser", ItemDefuser.class);
+        itemRadarGun = manager.newItem("icbmCRadarGun", ItemRadarGun.class);
+        itemRemoteDetonator = manager.newItem("icbmCRemoteDetonator", ItemRemoteDetonator.class);
+        itemLaserDesignator = manager.newItem("icbmCLaserDetonator", ItemLaserDetonator.class);
+        itemRocketLauncher = manager.newItem("icbmCRocketLauncher", ItemRocketLauncher.class);
+        itemGrenade = manager.newItem("icbmCGrenade", ItemGrenade.class);
+        itemBombCart = manager.newItem("icbmCBombCart", ItemBombCart.class);
     }
 
     @Override
@@ -407,7 +415,7 @@ public final class ICBMClassic extends AbstractMod
     public void init(FMLInitializationEvent event)
     {
         super.init(event);
-        Settings.setModMetadata(Reference.NAME, Reference.NAME, metadata);
+        Settings.setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
         OreDictionary.registerOre("dustSulfur", new ItemStack(itemSulfurDust, 1, 0));
         OreDictionary.registerOre("dustSaltpeter", new ItemStack(itemSulfurDust, 1, 1));
