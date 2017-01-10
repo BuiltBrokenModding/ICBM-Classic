@@ -14,9 +14,9 @@ import icbm.classic.client.render.tile.RenderBombBlock;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.prefab.BlockICBM;
 import icbm.classic.prefab.VectorHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -45,13 +45,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class BlockExplosive extends BlockICBM implements IPostInit
+public class BlockExplosive extends BlockContainer implements IPostInit
 {
     public final HashMap<String, IIcon> ICONS = new HashMap();
 
     public BlockExplosive()
     {
-        super("explosives", Material.tnt);
+        super(Material.tnt);
+        this.setBlockName(ICBMClassic.PREFIX + "explosives");
+        this.setBlockTextureName(ICBMClassic.PREFIX + "explosives");
         setHardness(0.0F);
         setStepSound(soundTypeGrass);
     }
@@ -135,46 +137,50 @@ public class BlockExplosive extends BlockICBM implements IPostInit
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack)
     {
-        ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive = Explosives.get(itemStack.getItemDamage());
-        Explosives explosiveID = ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive;
-
-        if (!world.isRemote)
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileEntityExplosive)
         {
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, x, y, z, ExplosiveType.BLOCK, explosiveID.handler);
-            MinecraftForge.EVENT_BUS.post(evt);
+            Explosives ex = Explosives.get(itemStack.getItemDamage());
+            ((TileEntityExplosive) tile).explosive = ex;
 
-            if (evt.isCanceled())
+            if (!world.isRemote)
             {
-                this.dropBlockAsItem(world, x, y, z, explosiveID.ordinal(), 0);
-                world.setBlock(x, y, z, Blocks.air, 0, 2);
-                return;
+                ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, x, y, z, ExplosiveType.BLOCK, ex.handler);
+                MinecraftForge.EVENT_BUS.post(evt);
+
+                if (evt.isCanceled())
+                {
+                    this.dropBlockAsItem(world, x, y, z, ex.ordinal(), 0);
+                    world.setBlock(x, y, z, Blocks.air, 0, 2);
+                    return;
+                }
             }
-        }
 
-        world.setBlockMetadataWithNotify(x, y, z, VectorHelper.getOrientationFromSide(ForgeDirection.getOrientation(determineOrientation(world, x, y, z, entityLiving)), ForgeDirection.NORTH).ordinal(), 2);
+            world.setBlockMetadataWithNotify(x, y, z, VectorHelper.getOrientationFromSide(ForgeDirection.getOrientation(determineOrientation(world, x, y, z, entityLiving)), ForgeDirection.NORTH).ordinal(), 2);
 
-        if (world.isBlockIndirectlyGettingPowered(x, y, z))
-        {
-            BlockExplosive.yinZha(world, x, y, z, explosiveID, 0);
-        }
-
-        // Check to see if there is fire nearby.
-        // If so, then detonate.
-        for (byte i = 0; i < 6; i++)
-        {
-            Pos position = new Pos(x, y, z).add(ForgeDirection.getOrientation(i));
-
-            Block blockId = position.getBlock(world);
-
-            if (blockId == Blocks.fire || blockId == Blocks.flowing_lava || blockId == Blocks.lava)
+            if (world.isBlockIndirectlyGettingPowered(x, y, z))
             {
-                BlockExplosive.yinZha(world, x, y, z, explosiveID, 2);
+                BlockExplosive.triggerExplosive(world, x, y, z, ex, 0);
             }
-        }
 
-        if (entityLiving != null)
-        {
-            FMLLog.fine(entityLiving.getCommandSenderName() + " placed " + explosiveID.handler.getExplosiveName() + " in: " + x + ", " + y + ", " + z + ".");
+            // Check to see if there is fire nearby.
+            // If so, then detonate.
+            for (byte i = 0; i < 6; i++)
+            {
+                Pos position = new Pos(x, y, z).add(ForgeDirection.getOrientation(i));
+                Block blockId = position.getBlock(world);
+
+                if (blockId == Blocks.fire || blockId == Blocks.flowing_lava || blockId == Blocks.lava)
+                {
+                    BlockExplosive.triggerExplosive(world, x, y, z, ex, 2);
+                    break;
+                }
+            }
+
+            if (entityLiving != null)
+            {
+                FMLLog.fine(entityLiving.getCommandSenderName() + " placed " + ex.handler.getExplosiveName() + " in: " + x + ", " + y + ", " + z + ".");
+            }
         }
     }
 
@@ -218,9 +224,12 @@ public class BlockExplosive extends BlockICBM implements IPostInit
         /** Register every single texture for all explosives. */
         for (Explosives ex : Explosives.values())
         {
-            ICONS.put(ex.ordinal() + "_top", this.getIcon(iconRegister, ex.handler, "_top"));
-            ICONS.put(ex.ordinal() + "_side", this.getIcon(iconRegister, ex.handler, "_side"));
-            ICONS.put(ex.ordinal() + "_bottom", this.getIcon(iconRegister, ex.handler, "_bottom"));
+            if (ex.handler.hasBlockForm() && ex != Explosives.SMINE)
+            {
+                ICONS.put(ex.ordinal() + "_top", this.getIcon(iconRegister, ex.handler, "_top"));
+                ICONS.put(ex.ordinal() + "_side", this.getIcon(iconRegister, ex.handler, "_side"));
+                ICONS.put(ex.ordinal() + "_bottom", this.getIcon(iconRegister, ex.handler, "_bottom"));
+            }
         }
     }
 
@@ -286,11 +295,11 @@ public class BlockExplosive extends BlockICBM implements IPostInit
 
         if (world.isBlockIndirectlyGettingPowered(x, y, z))
         {
-            BlockExplosive.yinZha(world, x, y, z, explosiveID, 0);
+            BlockExplosive.triggerExplosive(world, x, y, z, explosiveID, 0);
         }
         else if (blockId == Blocks.fire || blockId == Blocks.flowing_lava || blockId == Blocks.lava)
         {
-            BlockExplosive.yinZha(world, x, y, z, explosiveID, 2);
+            BlockExplosive.triggerExplosive(world, x, y, z, explosiveID, 2);
         }
     }
 
@@ -298,7 +307,7 @@ public class BlockExplosive extends BlockICBM implements IPostInit
      * Called to detonate the TNT. Args: world, x, y, z, metaData, CauseOfExplosion (0, intentional,
      * 1, exploded, 2 burned)
      */
-    public static void yinZha(World world, int x, int y, int z, Explosives explosiveID, int causeOfExplosion)
+    public static void triggerExplosive(World world, int x, int y, int z, Explosives explosiveID, int causeOfExplosion)
     {
         if (!world.isRemote)
         {
@@ -337,7 +346,7 @@ public class BlockExplosive extends BlockICBM implements IPostInit
     {
         if (world.getTileEntity(x, y, z) != null)
         {
-            BlockExplosive.yinZha(world, x, y, z, ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive, 1);
+            BlockExplosive.triggerExplosive(world, x, y, z, ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive, 1);
         }
 
         super.onBlockExploded(world, x, y, z, explosion);
@@ -357,7 +366,7 @@ public class BlockExplosive extends BlockICBM implements IPostInit
             if (entityPlayer.getHeldItem().getItem() == Items.flint_and_steel)
             {
                 Explosives explosiveID = ((TileEntityExplosive) tileEntity).explosive;
-                BlockExplosive.yinZha(world, x, y, z, explosiveID, 0);
+                BlockExplosive.triggerExplosive(world, x, y, z, explosiveID, 0);
                 return true;
             }
             else if (WrenchUtility.isUsableWrench(entityPlayer, entityPlayer.getCurrentEquippedItem(), x, y, z))
@@ -413,12 +422,12 @@ public class BlockExplosive extends BlockICBM implements IPostInit
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
     {
-        if (world.getTileEntity(x, y, z) != null)
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileEntityExplosive && ((TileEntityExplosive) tile).explosive != null)
         {
-            return new ItemStack(this, 1, ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive.ordinal());
+            return new ItemStack(this, 1, ((TileEntityExplosive) tile).explosive.ordinal());
         }
-
-        return null;
+        return new ItemStack(this);
     }
 
     @Override
@@ -426,15 +435,12 @@ public class BlockExplosive extends BlockICBM implements IPostInit
     {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
 
-        if (tileEntity != null)
+        if (tileEntity instanceof TileEntityExplosive)
         {
-            if (tileEntity instanceof TileEntityExplosive)
+            if (!((TileEntityExplosive) tileEntity).exploding)
             {
-                if (!((TileEntityExplosive) tileEntity).exploding)
-                {
-                    int explosiveID = ((TileEntityExplosive) tileEntity).explosive.ordinal();
-                    InventoryUtility.dropItemStack(world, x, y, z, new ItemStack(ICBMClassic.blockExplosive, 1, explosiveID), 10, 0);
-                }
+                int explosiveID = ((TileEntityExplosive) tileEntity).explosive.ordinal();
+                InventoryUtility.dropItemStack(world, x, y, z, new ItemStack(ICBMClassic.blockExplosive, 1, explosiveID), 10, 0);
             }
         }
 
@@ -460,7 +466,7 @@ public class BlockExplosive extends BlockICBM implements IPostInit
     }
 
     @Override
-    public TileEntity createTileEntity(World var1, int meta)
+    public TileEntity createNewTileEntity(World world, int meta)
     {
         return new TileEntityExplosive();
     }

@@ -23,7 +23,7 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
     /** Is the tile currently exploding */
     public boolean exploding = false;
     /** Explosive ID */
-    public Explosives explosive = null;
+    public Explosives explosive = Explosives.CONDENSED;
     /** Extra explosive data */
     public NBTTagCompound nbtData = new NBTTagCompound();
 
@@ -69,7 +69,7 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
                 if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
                 {
                     ItemStack itemStack = player.inventory.getCurrentItem();
-                    BlockExplosive.yinZha(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.explosive, 0);
+                    BlockExplosive.triggerExplosive(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.explosive, 0);
                     ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
                 }
             }

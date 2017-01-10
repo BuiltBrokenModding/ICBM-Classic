@@ -148,7 +148,7 @@ public class BlastSonic extends Blast
                     {
                         if (blockID == ICBMClassic.blockExplosive)
                         {
-                            BlockExplosive.yinZha(this.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileEntityExplosive) this.world().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).explosive, 1);
+                            BlockExplosive.triggerExplosive(this.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileEntityExplosive) this.world().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).explosive, 1);
                         }
                         else
                         {
