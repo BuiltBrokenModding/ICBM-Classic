@@ -19,7 +19,7 @@ public class ItemSulfurDust extends ItemICBMBase
 
     public ItemSulfurDust()
     {
-        super("sulfur");
+        super("sulfurDust");
         this.setHasSubtypes(true);
     }
 
