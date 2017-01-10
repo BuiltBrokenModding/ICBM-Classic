@@ -1,4 +1,4 @@
-package icbm.classic.content.machines;
+package icbm.classic.prefab;
 
 import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;

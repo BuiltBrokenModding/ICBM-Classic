@@ -1,4 +1,4 @@
-package icbm.classic.content.radarstation;
+package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.tile.IGuiTile;
@@ -9,7 +9,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.gui.GuiRadarStation;
 import icbm.classic.client.models.ModelRadarStation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

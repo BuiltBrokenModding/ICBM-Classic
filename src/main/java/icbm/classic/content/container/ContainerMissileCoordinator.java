@@ -1,7 +1,7 @@
 package icbm.classic.content.container;
 
 import icbm.classic.prefab.ContainerBase;
-import icbm.classic.content.machines.TileMissileCoordinator;
+import icbm.classic.content.machines.coordinator.TileMissileCoordinator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 

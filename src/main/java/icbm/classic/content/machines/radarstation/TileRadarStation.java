@@ -1,4 +1,4 @@
-package icbm.classic.content.radarstation;
+package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;

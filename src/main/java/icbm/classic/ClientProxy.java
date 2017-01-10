@@ -15,7 +15,13 @@ import icbm.classic.client.render.item.RenderRocketLauncher;
 import icbm.classic.client.render.tile.RenderBombBlock;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.ex.missiles.MissilePlayerHandler;
-import icbm.classic.content.radarstation.TileRadarStationClient;
+import icbm.classic.content.machines.coordinator.TileMissileCoordinatorClient;
+import icbm.classic.content.machines.emptower.TileEMPTowerClient;
+import icbm.classic.content.machines.launcher.base.TileLauncherBaseClient;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncherClient;
+import icbm.classic.content.machines.launcher.frame.TileLauncherFrameClient;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreenClient;
+import icbm.classic.content.machines.radarstation.TileRadarStationClient;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
@@ -39,6 +45,12 @@ public class ClientProxy extends CommonProxy
     {
         super.preInit();
         ICBMClassic.blockRadarStation = ICBMClassic.INSTANCE.getManager().newBlock("icbmCRadarStation", new TileRadarStationClient());
+        ICBMClassic.blockEmpTower = ICBMClassic.INSTANCE.getManager().newBlock("icbmCEmpTower", new TileEMPTowerClient());
+        ICBMClassic.blockLaunchBase = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherBase", new TileLauncherBaseClient());
+        ICBMClassic.blockLaunchSupport = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherFrame", new TileLauncherFrameClient());
+        ICBMClassic.blockLaunchScreen = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherScreen", new TileLauncherScreenClient());
+        ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncherClient());
+        ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinatorClient());
     }
 
     @Override

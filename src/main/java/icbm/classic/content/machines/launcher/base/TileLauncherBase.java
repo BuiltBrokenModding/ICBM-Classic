@@ -1,7 +1,6 @@
-package icbm.classic.content.machines.launcher;
+package icbm.classic.content.machines.launcher.base;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
@@ -9,19 +8,22 @@ import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
-import cpw.mods.fml.client.FMLClientHandler;
+import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
+import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
-import icbm.classic.client.render.tile.RenderLauncherBase;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
+import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.VectorHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
@@ -33,11 +35,9 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import org.lwjgl.opengl.GL11;
 import resonant.api.ITier;
 import resonant.api.explosion.*;
 
@@ -49,8 +49,28 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer, ISimpleItemRenderer
+public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer
 {
+    public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
+    public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
+
+    static
+    {
+        northSouthMultiBlockCache.put(new Pos(1, 0, 0), EnumMultiblock.TILE.getName());
+        northSouthMultiBlockCache.put(new Pos(1, 1, 0), EnumMultiblock.TILE.getName());
+        northSouthMultiBlockCache.put(new Pos(1, 2, 0), EnumMultiblock.TILE.getName());
+        northSouthMultiBlockCache.put(new Pos(-1, 0, 0), EnumMultiblock.TILE.getName());
+        northSouthMultiBlockCache.put(new Pos(-1, 1, 0), EnumMultiblock.TILE.getName());
+        northSouthMultiBlockCache.put(new Pos(-1, 2, 0), EnumMultiblock.TILE.getName());
+
+        eastWestMultiBlockCache.put(new Pos(0, 0, 1), EnumMultiblock.TILE.getName());
+        eastWestMultiBlockCache.put(new Pos(0, 1, 1), EnumMultiblock.TILE.getName());
+        eastWestMultiBlockCache.put(new Pos(0, 2, 1), EnumMultiblock.TILE.getName());
+        eastWestMultiBlockCache.put(new Pos(0, 0, -1), EnumMultiblock.TILE.getName());
+        eastWestMultiBlockCache.put(new Pos(0, 1, -1), EnumMultiblock.TILE.getName());
+        eastWestMultiBlockCache.put(new Pos(0, 2, -1), EnumMultiblock.TILE.getName());
+    }
+
     // The missile that this launcher is holding
     public EntityMissile missile = null;
 
@@ -64,11 +84,19 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
 
     private boolean packetGengXin = true;
 
-    //LanguageUtility.getLocal("gui.launcherBase.name")
+    private boolean _destroyingStructure = false;
 
-    public TileLauncherBase(String name, Material material)
+    //
+
+    public TileLauncherBase()
     {
-        super(name, material);
+        super("launcherBase", Material.iron);
+    }
+
+    @Override
+    public Tile newTile()
+    {
+        return new TileLauncherBaseClient();
     }
 
     /**
@@ -170,6 +198,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
 
             this.missile = null;
         }
+    }
+
+    @Override
+    public String getInventoryName()
+    {
+        return LanguageUtility.getLocal("gui.launcherBase.name");
     }
 
     /**
@@ -353,12 +387,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     }
 
     @Override
-    public void setDirection(ForgeDirection facingDirection)
-    {
-        this.facingDirection = facingDirection;
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
@@ -404,16 +432,62 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
         return null;
     }
 
+    //==========================================
+    //==== Multi-Block code
+    //=========================================
+
+    @Override
+    public void firstTick()
+    {
+        super.firstTick();
+        MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+    }
+
     @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
-
+        if (tileMulti instanceof TileEntity)
+        {
+            if (northSouthMultiBlockCache.containsKey(new Pos(this).sub(new Pos((TileEntity) tileMulti))))
+            {
+                tileMulti.setHost(this);
+            }
+        }
     }
 
     @Override
     public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
     {
+        if (!_destroyingStructure && tileMulti instanceof TileEntity)
+        {
+            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos(this));
+
+            if (northSouthMultiBlockCache.containsKey(pos))
+            {
+                MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
+                return true;
+            }
+        }
         return false;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt()
+    {
+        return super.canPlaceBlockAt() && world().getBlock(xi(), yi() + 1, zi()).isReplaceable(world(), xi(), yi() + 1, zi()) && world().getBlock(xi(), yi() + 2, zi()).isReplaceable(world(), xi(), yi() + 2, zi());
+    }
+
+    @Override
+    public boolean canPlaceBlockOnSide(ForgeDirection side)
+    {
+        return side == ForgeDirection.UP && canPlaceBlockAt();
+    }
+
+    @Override
+    public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
+    {
+        MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
+        return super.removeByPlayer(player, willHarvest);
     }
 
     @Override
@@ -425,7 +499,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     @Override
     public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
     {
-        return false;
+        return this.onPlayerRightClick(player, side, new Pos(hit));
     }
 
     @Override
@@ -437,7 +511,23 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     @Override
     public HashMap<IPos3D, String> getLayoutOfMultiBlock()
     {
-        return null;
+        if(getDirection() == ForgeDirection.EAST || getDirection() == ForgeDirection.WEST)
+        {
+            return eastWestMultiBlockCache;
+        }
+        return northSouthMultiBlockCache;
+    }
+
+    @Override
+    public void setDirection(ForgeDirection facingDirection)
+    {
+        if(facingDirection != getDirection())
+        {
+            MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
+            this.facingDirection = facingDirection;
+            MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+            markDirty();
+        }
     }
 
     @Override
@@ -472,40 +562,5 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         super.onPlaced(entityLiving, itemStack);
         this.tier = itemStack.stackSize;
-    }
-
-    @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
-    {
-        GL11.glPushMatrix();
-        int tier = itemStack.getItemDamage();
-
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glScalef(0.4f, 0.4f, 0.4f);
-
-        if (tier == 0)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherBase.TEXTURE_FILE_0);
-            RenderLauncherBase.modelBase0.render(0.0625F);
-            RenderLauncherBase.modelRail0.render(0.0625F);
-        }
-        else if (tier == 1)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherBase.TEXTURE_FILE_1);
-
-            RenderLauncherBase.modelBase1.render(0.0625F);
-            RenderLauncherBase.modelRail1.render(0.0625F);
-            GL11.glRotatef(180F, 0F, 180F, 1.0F);
-            RenderLauncherBase.modelRail1.render(0.0625F);
-        }
-        else if (tier == 2)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherBase.TEXTURE_FILE_2);
-            RenderLauncherBase.modelBase2.render(0.0625F);
-            RenderLauncherBase.modelRail2.render(0.0625F);
-            GL11.glRotatef(180F, 0F, 180F, 1.0F);
-            RenderLauncherBase.modelRail2.render(0.0625F);
-        }
-        GL11.glPopMatrix();
     }
 }

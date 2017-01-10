@@ -1,4 +1,4 @@
-package icbm.classic.client.gui;
+package icbm.classic.content.machines.emptower;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
@@ -7,7 +7,6 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
-import icbm.classic.content.machines.TileEMPTower;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;

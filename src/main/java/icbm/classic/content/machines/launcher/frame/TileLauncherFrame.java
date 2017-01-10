@@ -1,7 +1,6 @@
-package icbm.classic.content.machines.launcher;
+package icbm.classic.content.machines.launcher.frame;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
@@ -10,11 +9,13 @@ import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileEnt;
-import cpw.mods.fml.client.FMLClientHandler;
+import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
+import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.render.tile.RenderLauncherFrame;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,11 +23,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,15 +36,31 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMultiTileHost, IRotatable, IRecipeContainer, ISimpleItemRenderer
+public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMultiTileHost, IRotatable, IRecipeContainer
 {
+    public static HashMap<IPos3D, String> tileMapCache = new HashMap();
+
+    static
+    {
+        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getName());
+        tileMapCache.put(new Pos(0, 2, 0), EnumMultiblock.TILE.getName());
+    }
+
     // The tier of this screen
     private int tier = 0;
     private byte orientation = 3;
 
+    private boolean _destroyingStructure = false;
+
     public TileLauncherFrame()
     {
         super("launcherFrame", Material.iron);
+    }
+
+    @Override
+    public Tile newTile()
+    {
+        return new TileLauncherFrame();
     }
 
     @Override
@@ -124,16 +140,62 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
         return INFINITE_EXTENT_AABB;
     }
 
+    //==========================================
+    //==== Multi-Block code
+    //=========================================
+
+    @Override
+    public void firstTick()
+    {
+        super.firstTick();
+        MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+    }
+
     @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
-
+        if (tileMulti instanceof TileEntity)
+        {
+            if (tileMapCache.containsKey(new Pos(this).sub(new Pos((TileEntity) tileMulti))))
+            {
+                tileMulti.setHost(this);
+            }
+        }
     }
 
     @Override
     public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
     {
+        if (!_destroyingStructure && tileMulti instanceof TileEntity)
+        {
+            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos(this));
+
+            if (tileMapCache.containsKey(pos))
+            {
+                MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
+                return true;
+            }
+        }
         return false;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt()
+    {
+        return super.canPlaceBlockAt() && world().getBlock(xi(), yi() + 1, zi()).isReplaceable(world(), xi(), yi() + 1, zi()) && world().getBlock(xi(), yi() + 2, zi()).isReplaceable(world(), xi(), yi() + 2, zi());
+    }
+
+    @Override
+    public boolean canPlaceBlockOnSide(ForgeDirection side)
+    {
+        return side == ForgeDirection.UP && canPlaceBlockAt();
+    }
+
+    @Override
+    public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
+    {
+        MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
+        return super.removeByPlayer(player, willHarvest);
     }
 
     @Override
@@ -145,7 +207,7 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     @Override
     public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
     {
-        return false;
+        return this.onPlayerRightClick(player, side, new Pos(hit));
     }
 
     @Override
@@ -157,8 +219,7 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     @Override
     public HashMap<IPos3D, String> getLayoutOfMultiBlock()
     {
-        //return new Pos[]{new Pos(0, 1, 0), new Pos(0, 2, 0)};
-        return null;
+        return tileMapCache;
     }
 
     @Override
@@ -190,20 +251,5 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     {
         super.onPlaced(entityLiving, itemStack);
         this.tier = itemStack.stackSize;
-    }
-
-    @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
-    {
-        GL11.glPushMatrix();
-        int tier = itemStack.getItemDamage();
-        GL11.glTranslatef(0f, -0.1f, 0f);
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glScalef(0.8f, 0.4f, 0.8f);
-
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherFrame.TEXTURE_FILE);
-
-        RenderLauncherFrame.MODEL.render(0.0625F);
-        GL11.glPopMatrix();
     }
 }

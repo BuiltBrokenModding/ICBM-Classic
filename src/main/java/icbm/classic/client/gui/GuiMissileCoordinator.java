@@ -6,7 +6,7 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import icbm.classic.content.container.ContainerMissileCoordinator;
 import icbm.classic.content.gui.GuiICBMContainer;
-import icbm.classic.content.machines.TileMissileCoordinator;
+import icbm.classic.content.machines.coordinator.TileMissileCoordinator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;

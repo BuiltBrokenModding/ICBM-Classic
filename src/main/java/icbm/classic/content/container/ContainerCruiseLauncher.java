@@ -1,6 +1,6 @@
 package icbm.classic.content.container;
 
-import icbm.classic.content.machines.TileCruiseLauncher;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;

@@ -1,6 +1,6 @@
-package icbm.classic.content.machines.launcher;
+package icbm.classic.content.machines.launcher.screen;
 
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -8,10 +8,11 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.tile.Tile;
-import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.render.tile.RenderLauncherScreen;
+import icbm.classic.content.machines.launcher.TileLauncherPrefab;
+import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,10 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import org.lwjgl.opengl.GL11;
 import resonant.api.ITier;
 import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.IMissile;
@@ -38,7 +37,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IRecipeContainer, ISimpleItemRenderer
+public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IRecipeContainer, IGuiTile
 {
 
     // The tier of this screen
@@ -360,30 +359,14 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
+    public Object getServerGuiElement(int ID, EntityPlayer player)
     {
-        GL11.glPushMatrix();
-        int tier = itemStack.getItemDamage();
+        return new ContainerDummy();
+    }
 
-        GL11.glTranslatef(0f, 0.9f, 0f);
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glRotatef(180f, 0f, 180f, 1f);
-
-        if (tier == 0)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherScreen.TEXTURE_FILE_0);
-            RenderLauncherScreen.model0.render(0.0625F);
-        }
-        else if (tier == 1)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherScreen.TEXTURE_FILE_1);
-            RenderLauncherScreen.model1.render(0.0625F);
-        }
-        else if (tier == 2)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderLauncherScreen.TEXTURE_FILE_2);
-            RenderLauncherScreen.model2.render(0.0625F);
-        }
-        GL11.glPopMatrix();
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return null;
     }
 }

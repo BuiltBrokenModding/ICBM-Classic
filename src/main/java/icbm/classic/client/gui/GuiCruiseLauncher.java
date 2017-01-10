@@ -8,7 +8,7 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.container.ContainerCruiseLauncher;
-import icbm.classic.content.machines.TileCruiseLauncher;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;

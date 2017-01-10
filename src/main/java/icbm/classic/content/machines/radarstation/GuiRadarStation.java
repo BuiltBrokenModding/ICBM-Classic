@@ -1,4 +1,4 @@
-package icbm.classic.client.gui;
+package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
@@ -10,7 +10,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.gui.GuiICBM;
-import icbm.classic.content.radarstation.TileRadarStation;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

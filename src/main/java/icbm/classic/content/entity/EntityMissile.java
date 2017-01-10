@@ -9,7 +9,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.content.machines.TileCruiseLauncher;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

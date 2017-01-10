@@ -1,6 +1,5 @@
 package icbm.classic.prefab;
 
-import icbm.classic.content.machines.TileICBMMachine;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 

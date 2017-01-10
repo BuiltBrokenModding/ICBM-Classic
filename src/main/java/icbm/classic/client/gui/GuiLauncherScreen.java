@@ -8,7 +8,7 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
-import icbm.classic.content.machines.launcher.TileLauncherScreen;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;

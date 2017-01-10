@@ -1,23 +1,19 @@
-package icbm.classic.content.machines;
+package icbm.classic.content.machines.coordinator;
 
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.render.tile.RenderMissileCoordinator;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -26,12 +22,18 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileMissileCoordinator extends TileModuleMachine implements ISimpleItemRenderer, IRecipeContainer
+public class TileMissileCoordinator extends TileModuleMachine implements IRecipeContainer
 {
     public TileMissileCoordinator()
     {
         super("missileCoordinator", Material.iron);
         addInventoryModule(2);
+    }
+
+    @Override
+    public Tile newTile()
+    {
+        return new TileMissileCoordinator();
     }
 
     @Override
@@ -62,18 +64,6 @@ public class TileMissileCoordinator extends TileModuleMachine implements ISimple
         }
 
         return true;
-    }
-
-    @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
-    {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0f, 1.1f, 0f);
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glRotatef(180f, 0f, 1f, 0f);
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(RenderMissileCoordinator.TEXTURE_FILE);
-        RenderMissileCoordinator.MODEL.render(0, 0.0625F);
-        GL11.glPopMatrix();
     }
 
     @Override
