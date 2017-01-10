@@ -15,7 +15,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -40,6 +39,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPostIn
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.setUnlocalizedName(ICBMClassic.PREFIX + "radarGun");
+        this.setTextureName(ICBMClassic.PREFIX + "radarGun");
     }
 
     @Override
@@ -61,24 +61,6 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPostIn
                 lines.add(line.trim());
             }
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerIcons(IIconRegister reg)
-    {
-        this.itemIcon = reg.registerIcon(ICBMClassic.PREFIX + "radargun.unlinked");
-        this.linked_icon = reg.registerIcon(ICBMClassic.PREFIX + "radargun.linked");
-    }
-
-    @Override
-    public IIcon getIconFromDamage(int meta)
-    {
-        if (meta == 1)
-        {
-            return this.linked_icon;
-        }
-        return this.itemIcon;
     }
 
     @Override

@@ -39,6 +39,7 @@ import resonant.api.explosion.ExplosiveType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -237,6 +238,15 @@ public class BlockExplosive extends BlockICBM implements IPostInit
             if (bufferedimage != null)
             {
                 return iconRegister.registerIcon(ICBMClassic.PREFIX + iconName);
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            if (Engine.runningAsDev)
+            {
+                ICBMClassic.INSTANCE.logger().info("Failed to find texture for " + iconName + " moving to using backup texture. " +
+                        "For some textures this is normally, especially bottom textures. " +
+                        "However, if a side or top texture is missing this may be a bug.");
             }
         }
         catch (Exception e)
