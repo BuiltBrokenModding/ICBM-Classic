@@ -168,9 +168,9 @@ public class BlastRepulsive extends Blast
     {
         // Step 2: Damage all entities
         Pos minCoord = position.toPos();
-        minCoord.add(-radius - 1);
+        minCoord = minCoord.add(-radius - 1);
         Pos maxCoord = position.toPos();
-        maxCoord.add(radius + 1);
+        maxCoord = maxCoord.add(radius + 1);
 
         Cube region = new Cube(minCoord, maxCoord);
         List<Entity> entities = region.getEntities(this.world(), Entity.class);
