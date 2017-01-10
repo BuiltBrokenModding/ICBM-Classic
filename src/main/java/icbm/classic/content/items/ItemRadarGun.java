@@ -13,7 +13,7 @@ import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.prefab.items.ItemWorldPos;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +39,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPostIn
     {
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
-        this.setUnlocalizedName(Reference.PREFIX + "radarGun");
+        this.setUnlocalizedName(ICBMClassic.PREFIX + "radarGun");
     }
 
     @Override
@@ -67,8 +67,8 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPostIn
     @Override
     public void registerIcons(IIconRegister reg)
     {
-        this.itemIcon = reg.registerIcon(Reference.PREFIX + "radargun.unlinked");
-        this.linked_icon = reg.registerIcon(Reference.PREFIX + "radargun.linked");
+        this.itemIcon = reg.registerIcon(ICBMClassic.PREFIX + "radargun.unlinked");
+        this.linked_icon = reg.registerIcon(ICBMClassic.PREFIX + "radargun.linked");
     }
 
     @Override

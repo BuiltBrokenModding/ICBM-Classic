@@ -1,21 +1,20 @@
 package icbm.classic.client.render.tile;
 
-import icbm.classic.Reference;
-import icbm.classic.content.machines.TileEMPTower;
+import com.builtbroken.mc.core.References;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelEmpTower;
+import icbm.classic.content.machines.TileEMPTower;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderEmpTower extends TileEntitySpecialRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "emp_tower.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "emp_tower.png");
 
     public static final ModelEmpTower MODEL = new ModelEmpTower();
 

@@ -2,7 +2,7 @@ package icbm.classic.content.items;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -39,7 +39,7 @@ public class ItemSulfurDust extends ItemICBMBase
     public void registerIcons(IIconRegister iconRegister)
     {
         super.registerIcons(iconRegister);
-        this.salt_icon = iconRegister.registerIcon(Reference.PREFIX + "saltpeter");
+        this.salt_icon = iconRegister.registerIcon(ICBMClassic.PREFIX + "saltpeter");
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ItemSulfurDust extends ItemICBMBase
         // Damage value of 1 returns name of saltpeter.
         if (stack.getItemDamage() == 1)
         {
-            return "item." + Reference.PREFIX + "saltpeter";
+            return "item." + ICBMClassic.PREFIX + "saltpeter";
         }
 
         return super.getUnlocalizedName();

@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
 import net.minecraft.block.Block;
@@ -32,7 +32,7 @@ public class BlastAntiGravitational extends Blast
             this.thread.start();
         }
 
-        this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "antigravity", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world().playSoundEffect(position.x(), position.y(), position.z(), References.PREFIX + "antigravity", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     @Override

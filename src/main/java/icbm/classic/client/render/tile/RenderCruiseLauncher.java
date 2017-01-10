@@ -1,6 +1,7 @@
 package icbm.classic.client.render.tile;
 
-import icbm.classic.Reference;
+import com.builtbroken.mc.core.References;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import icbm.classic.client.models.MXiaoFaSheQi;
 import icbm.classic.client.models.MXiaoFaSheQiJia;
@@ -16,7 +17,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderCruiseLauncher extends TileEntitySpecialRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "cruise_launcher.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "cruise_launcher.png");
 
     public static final MXiaoFaSheQi MODEL0 = new MXiaoFaSheQi();
     public static final MXiaoFaSheQiJia MODEL1 = new MXiaoFaSheQiJia();

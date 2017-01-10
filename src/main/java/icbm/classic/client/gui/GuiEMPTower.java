@@ -1,10 +1,11 @@
 package icbm.classic.client.gui;
 
 import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.client.FMLClientHandler;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
 import icbm.classic.content.machines.TileEMPTower;
 import net.minecraft.client.gui.GuiButton;
@@ -14,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiEMPTower extends GuiICBM
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
 
     private TileEMPTower tileEntity;
     private GuiTextField textFieldBanJing;

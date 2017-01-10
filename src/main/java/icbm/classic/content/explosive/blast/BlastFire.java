@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -86,7 +86,7 @@ public class BlastFire extends Blast
             }
         }
 
-        world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, Reference.PREFIX + "explosionfire", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+        world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
     }
 
     @Override

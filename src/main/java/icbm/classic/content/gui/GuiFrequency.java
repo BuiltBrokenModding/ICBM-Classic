@@ -2,10 +2,11 @@ package icbm.classic.content.gui;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.client.FMLClientHandler;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -14,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiFrequency extends GuiICBM
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
 
     private ItemStack itemStack;
 

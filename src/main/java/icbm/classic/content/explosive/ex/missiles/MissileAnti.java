@@ -3,7 +3,7 @@ package icbm.classic.content.explosive.ex.missiles;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastRepulsive;
 import net.minecraft.entity.Entity;
@@ -61,7 +61,7 @@ public class MissileAnti extends Missile
             // Lock target onto missileObj missile
             missileObj.lockedTarget = nearestEntity;
             missileObj.didTargetLockBefore = true;
-            missileObj.worldObj.playSoundAtEntity(missileObj, Reference.PREFIX + "targetlocked", 5F, 0.9F);
+            missileObj.worldObj.playSoundAtEntity(missileObj, ICBMClassic.PREFIX + "targetlocked", 5F, 0.9F);
         }
         else
         {

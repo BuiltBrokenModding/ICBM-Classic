@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.tile;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
@@ -7,7 +8,6 @@ import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.client.render.tile.RenderBombBlock;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosive;
@@ -221,13 +221,13 @@ public class BlockExplosive extends BlockICBM
 
         try
         {
-            ResourceLocation resourcelocation = new ResourceLocation(Reference.DOMAIN, Reference.BLOCK_PATH + iconName + ".png");
+            ResourceLocation resourcelocation = new ResourceLocation(ICBMClassic.DOMAIN, References.BLOCK_TEXTURE_DIRECTORY + iconName + ".png");
             InputStream inputstream = Minecraft.getMinecraft().getResourceManager().getResource(resourcelocation).getInputStream();
             BufferedImage bufferedimage = ImageIO.read(inputstream);
 
             if (bufferedimage != null)
             {
-                return iconRegister.registerIcon(Reference.PREFIX + iconName);
+                return iconRegister.registerIcon(ICBMClassic.PREFIX + iconName);
             }
         }
         catch (Exception e)
@@ -236,10 +236,10 @@ public class BlockExplosive extends BlockICBM
 
         if (suffix.equals("_bottom"))
         {
-            return iconRegister.registerIcon(Reference.PREFIX + "explosive_bottom_" + zhaPin.getTier());
+            return iconRegister.registerIcon(ICBMClassic.PREFIX + "explosive_bottom_" + zhaPin.getTier());
         }
 
-        return iconRegister.registerIcon(Reference.PREFIX + "explosive_base_" + zhaPin.getTier());
+        return iconRegister.registerIcon(ICBMClassic.PREFIX + "explosive_base_" + zhaPin.getTier());
     }
 
     /** Called whenever the block is added into the world. Args: world, x, y, z */

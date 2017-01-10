@@ -1,6 +1,6 @@
 package icbm.classic.content.items;
 
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,7 +46,7 @@ public class ItemAntidote extends ItemICBMBase
     public void registerIcons(IIconRegister iconRegister)
     {
         super.registerIcons(iconRegister);
-        this.itemIcon = iconRegister.registerIcon(Reference.PREFIX + "antidote");
+        this.itemIcon = iconRegister.registerIcon(ICBMClassic.PREFIX + "antidote");
     }
 
     /** Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack,

@@ -3,7 +3,7 @@ package icbm.classic.content.items;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveRegistry;
@@ -26,7 +26,8 @@ import java.util.List;
 
 public class ItemGrenade extends ItemICBMBase
 {
-    public static final IIcon[] ICONS = new IIcon[256];
+    @SideOnly(Side.CLIENT)
+    public static IIcon[] ICONS;
 
     public ItemGrenade()
     {
@@ -137,9 +138,10 @@ public class ItemGrenade extends ItemICBMBase
     @Override
     public void registerIcons(IIconRegister iconRegister)
     {
-        for (int i = 0; i < Explosives.values().length; i++)
+        ICONS = new IIcon[Explosives.values().length];
+        for (Explosives ex : Explosives.values())
         {
-            ICONS[i] = iconRegister.registerIcon(Reference.PREFIX + "grenade_" + ExplosiveRegistry.get(i).getUnlocalizedName());
+            ICONS[ex.ordinal()] = iconRegister.registerIcon(ICBMClassic.PREFIX + "grenade_" + ex.handler.getUnlocalizedName());
         }
     }
 
@@ -157,7 +159,6 @@ public class ItemGrenade extends ItemICBMBase
             if (ex.handler.hasGrenadeForm())
             {
                 par3List.add(new ItemStack(par1, 1, ex.ordinal()));
-
             }
         }
     }

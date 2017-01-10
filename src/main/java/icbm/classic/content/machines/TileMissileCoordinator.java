@@ -10,7 +10,6 @@ import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.client.render.tile.RenderMissileCoordinator;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,7 +57,7 @@ public class TileMissileCoordinator extends TileModuleMachine implements ISimple
     {
         if (isServer())
         {
-            this.worldObj.playSoundEffect(this.xCoord, this.yCoord, this.zCoord, Reference.PREFIX + "interface", 1, (float) (this.worldObj.rand.nextFloat() * 0.2 + 0.9F));
+            this.worldObj.playSoundEffect(this.xCoord, this.yCoord, this.zCoord, ICBMClassic.PREFIX + "interface", 1, (float) (this.worldObj.rand.nextFloat() * 0.2 + 0.9F));
             openGui(player, ICBMClassic.INSTANCE);
         }
 

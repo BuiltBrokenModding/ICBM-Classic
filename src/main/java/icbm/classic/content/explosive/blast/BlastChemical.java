@@ -2,7 +2,6 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.content.potion.CustomPotionEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -68,7 +67,7 @@ public class BlastChemical extends Blast
         super.doPreExplode();
         if (!this.playShortSoundFX)
         {
-            this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), Reference.PREFIX + "debilitation", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "debilitation", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 
@@ -122,7 +121,7 @@ public class BlastChemical extends Blast
 
         if (this.playShortSoundFX)
         {
-            world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, Reference.PREFIX + "gasleak", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+            world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "gasleak", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
         }
 
         if (this.callCount > this.duration)

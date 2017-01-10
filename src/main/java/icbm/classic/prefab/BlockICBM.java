@@ -2,7 +2,7 @@ package icbm.classic.prefab;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -17,8 +17,8 @@ public class BlockICBM extends Block
     public BlockICBM(String name, Material mat)
     {
         super(mat);
-        this.setBlockName(Reference.PREFIX + name);
-        this.setBlockTextureName(Reference.PREFIX + name);
+        this.setBlockName(ICBMClassic.PREFIX + name);
+        this.setBlockTextureName(ICBMClassic.PREFIX + name);
     }
 
     public BlockICBM(String name)

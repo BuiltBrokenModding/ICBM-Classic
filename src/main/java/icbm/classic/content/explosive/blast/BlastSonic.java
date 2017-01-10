@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
@@ -102,11 +101,11 @@ public class BlastSonic extends Blast
 
         if (this.hasShockWave)
         {
-            this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "hypersonic", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "hypersonic", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
         }
         else
         {
-            this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "sonicwave", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "sonicwave", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 

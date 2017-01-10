@@ -10,7 +10,7 @@ import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -37,8 +37,8 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
         this.setNoRepair();
-        this.setUnlocalizedName(Reference.PREFIX + "laserDetonator");
-        this.setTextureName(Reference.PREFIX + "laserDesignator");
+        this.setUnlocalizedName(ICBMClassic.PREFIX + "laserDetonator");
+        this.setTextureName(ICBMClassic.PREFIX + "laserDesignator");
     }
 
     @Override

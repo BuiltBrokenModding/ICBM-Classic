@@ -1,8 +1,9 @@
 package icbm.classic.content.explosive.ex;
 
+import com.builtbroken.mc.core.References;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +55,7 @@ public abstract class Explosion extends Explosive
     {
         if (this.resourceLocation == null)
         {
-            this.resourceLocation = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "missile_" + this.getUnlocalizedName() + ".png");
+            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "missile_" + this.getUnlocalizedName() + ".png");
         }
 
         return this.resourceLocation;
@@ -67,7 +68,7 @@ public abstract class Explosion extends Explosive
         try
         {
             if (this.model == null)
-                model = AdvancedModelLoader.loadModel(new ResourceLocation(Reference.DOMAIN, Reference.MODEL_DIRECTORY + this.modelName));
+                model = AdvancedModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY  + this.modelName));
         }
         catch (ModelFormatException e)
         {

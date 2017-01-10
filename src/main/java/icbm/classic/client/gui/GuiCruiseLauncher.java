@@ -1,11 +1,12 @@
 package icbm.classic.client.gui;
 
 import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.container.ContainerCruiseLauncher;
 import icbm.classic.content.machines.TileCruiseLauncher;
 import net.minecraft.client.gui.GuiTextField;
@@ -19,7 +20,7 @@ import static java.lang.Integer.parseInt;
 
 public class GuiCruiseLauncher extends GuiContainer
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "gui_cruise_launcher.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_cruise_launcher.png");
 
     private TileCruiseLauncher tileEntity;
     private GuiTextField textFieldX;

@@ -6,7 +6,6 @@ import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.DamageUtility;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
@@ -196,7 +195,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         ((Explosion) explosiveID.handler).launch(this);
         this.feiXingTick = 0;
         this.recalculatePath();
-        this.worldObj.playSoundAtEntity(this, Reference.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+        this.worldObj.playSoundAtEntity(this, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
         // TODO add an event system here
         RadarRegistry.add(this);
         ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());

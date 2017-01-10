@@ -3,7 +3,6 @@ package icbm.classic.content.explosive.blast;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -82,7 +81,7 @@ public class BlastNuclear extends Blast
 
         this.doDamageEntities(this.getRadius(), this.energy * 1000);
 
-        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), Reference.PREFIX + "explosion", 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     @Override
@@ -165,7 +164,7 @@ public class BlastNuclear extends Blast
             }
         }
 
-        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), Reference.PREFIX + "explosion", 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     /** The interval in ticks before the next procedural call of this explosive

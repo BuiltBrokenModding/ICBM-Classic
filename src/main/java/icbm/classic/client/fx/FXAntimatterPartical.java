@@ -1,11 +1,12 @@
 package icbm.classic.client.fx;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class FXAntimatterPartical extends EntityFX
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.TEXTURE_PATH + "antimatter.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.TEXTURE_DIRECTORY + "antimatter.png");
 
     float antimatterParticleScale;
 

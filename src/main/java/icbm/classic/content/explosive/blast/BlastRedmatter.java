@@ -4,7 +4,6 @@ import com.builtbroken.mc.lib.transform.rotation.EulerAngle;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -157,10 +156,10 @@ public class BlastRedmatter extends Blast
 
         if (this.world().rand.nextInt(8) == 0)
         {
-            this.world().playSoundEffect(position.x() + (Math.random() - 0.5) * radius, position.y() + (Math.random() - 0.5) * radius, position.z() + (Math.random() - 0.5) * radius, Reference.PREFIX + "collapse", 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F);
+            this.world().playSoundEffect(position.x() + (Math.random() - 0.5) * radius, position.y() + (Math.random() - 0.5) * radius, position.z() + (Math.random() - 0.5) * radius, ICBMClassic.PREFIX + "collapse", 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F);
         }
 
-        this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "redmatter", 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F);
+        this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "redmatter", 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F);
     }
 
     /** Makes an entity get affected by Red Matter.
@@ -248,7 +247,7 @@ public class BlastRedmatter extends Blast
                 {
                     if (((EntityExplosion) entity).blast instanceof BlastAntimatter || ((EntityExplosion) entity).blast instanceof BlastRedmatter)
                     {
-                        this.world().playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "explosion", 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+                        this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
 
                         if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
                         {

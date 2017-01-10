@@ -13,7 +13,6 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.client.render.tile.RenderEmpTower;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import io.netty.buffer.ByteBuf;
@@ -74,7 +73,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
 
         if (ticks % 20 == 0 && getEnergyStored(ForgeDirection.UNKNOWN) > 0)
         {
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Reference.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN));
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN));
         }
 
         rotationDelta = (float) (Math.pow(getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN), 2) * 0.5);

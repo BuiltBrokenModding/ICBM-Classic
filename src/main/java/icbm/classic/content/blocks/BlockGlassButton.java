@@ -2,7 +2,7 @@ package icbm.classic.content.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockButton;
 import net.minecraft.client.renderer.texture.IIconRegister;
 
@@ -14,7 +14,7 @@ public class BlockGlassButton extends BlockButton
     {
         super(true);
         this.setTickRandomly(true);
-        this.setBlockName(Reference.PREFIX + "glassButton");
+        this.setBlockName(ICBMClassic.PREFIX + "glassButton");
         this.setStepSound(soundTypeGlass);
     }
 

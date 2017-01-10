@@ -1,16 +1,17 @@
 package icbm.classic.content.gui;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import cpw.mods.fml.client.FMLClientHandler;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public abstract class GuiICBM extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
 
     protected int containerWidth;
     protected int containerHeight;

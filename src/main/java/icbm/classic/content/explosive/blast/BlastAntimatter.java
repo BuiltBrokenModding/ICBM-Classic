@@ -1,8 +1,8 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import icbm.classic.Reference;
 import icbm.classic.content.entity.EntityExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -28,7 +28,7 @@ public class BlastAntimatter extends Blast
     public void doPreExplode()
     {
         super.doPreExplode();
-        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), Reference.PREFIX + "antimatter", 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F));
+        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), References.PREFIX + "antimatter", 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F));
         this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
     }
 

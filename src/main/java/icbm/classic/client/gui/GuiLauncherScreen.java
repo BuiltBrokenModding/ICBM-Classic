@@ -1,11 +1,12 @@
 package icbm.classic.client.gui;
 
 import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.gui.GuiICBM;
 import icbm.classic.content.machines.launcher.TileLauncherScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -17,7 +18,7 @@ import static java.lang.Math.max;
 
 public class GuiLauncherScreen extends GuiICBM
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.DOMAIN, Reference.GUI_PATH + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
 
     private TileLauncherScreen tileEntity;
     private GuiTextField target_xCoord_field;

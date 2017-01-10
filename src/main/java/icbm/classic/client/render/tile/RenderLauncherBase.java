@@ -1,10 +1,11 @@
 package icbm.classic.client.render.tile;
 
+import com.builtbroken.mc.core.References;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
-import icbm.classic.content.machines.launcher.TileLauncherBase;
+import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.*;
+import icbm.classic.content.machines.launcher.TileLauncherBase;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -14,9 +15,9 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderLauncherBase extends TileEntitySpecialRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "launcher_0.png");
-    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "launcher_1.png");
-    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "launcher_2.png");
+    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "launcher_1.png");
+    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "launcher_2.png");
 
     public static final MFaSheDi0 modelBase0 = new MFaSheDi0();
     public static final MFaSheDiRail0 modelRail0 = new MFaSheDiRail0();

@@ -1,27 +1,25 @@
 package icbm.classic.client.render.tile;
 
-import icbm.classic.Reference;
-import icbm.classic.content.machines.TileMissileCoordinator;
+import com.builtbroken.mc.core.References;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelMissileCoordinator;
-
-import java.util.List;
-
+import icbm.classic.content.machines.TileMissileCoordinator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class RenderMissileCoordinator extends TileEntitySpecialRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "missile_coordinator_off.png");
-    public static final ResourceLocation TEXTURE_FILE_ON = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "missile_coordinator_on.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "missile_coordinator_off.png");
+    public static final ResourceLocation TEXTURE_FILE_ON = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "missile_coordinator_on.png");
     public static final ModelMissileCoordinator MODEL = new ModelMissileCoordinator();
     private float lastSeePlayer = 0;
     private float lastFlicker = 0;

@@ -1,7 +1,7 @@
 package icbm.classic.prefab.item;
 
 import com.builtbroken.mc.prefab.items.ItemAbstract;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 
 /** Prefab for ICBM items that sets the creative tab, texture name, and translation name
  *
@@ -10,7 +10,7 @@ public class ItemICBMBase extends ItemAbstract
 {
     public ItemICBMBase(String name)
     {
-        this.setUnlocalizedName(Reference.PREFIX + name);
-        this.setTextureName(Reference.PREFIX + name);
+        this.setUnlocalizedName(ICBMClassic.PREFIX + name);
+        this.setTextureName(ICBMClassic.PREFIX + name);
     }
 }

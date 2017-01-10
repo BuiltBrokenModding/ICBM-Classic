@@ -1,9 +1,10 @@
 package icbm.classic.client.render.entity;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityFragments;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.Tessellator;
@@ -19,7 +20,7 @@ import org.lwjgl.opengl.GL12;
 @SideOnly(Side.CLIENT)
 public class RenderShrapnel extends Render
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(Reference.DOMAIN, Reference.MODEL_TEXTURE_PATH + "fragment.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "fragment.png");
 
     public void renderArrow(EntityFragments suiPian, double par2, double par4, double par6, float par8, float par9)
     {

@@ -1,9 +1,10 @@
 package icbm.classic.client.render.entity;
 
+import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.Reference;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
 import net.minecraft.client.renderer.RenderHelper;
@@ -19,7 +20,7 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RenderExplosion extends Render
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(Reference.DOMAIN, Reference.TEXTURE_PATH + "blackhole.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.TEXTURE_DIRECTORY + "blackhole.png");
 
     public Random random = new Random();
 

@@ -5,7 +5,6 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
-import icbm.classic.Reference;
 import icbm.classic.Settings;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
@@ -34,7 +33,7 @@ public class ExAntimatter extends Explosion
 
         if (fuseTicks % 25 == 0)
         {
-            worldObj.playSoundEffect(position.x(), position.y(), position.z(), Reference.PREFIX + "alarm", 4F, 1F);
+            worldObj.playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "alarm", 4F, 1F);
         }
     }
 

@@ -1,10 +1,7 @@
 package icbm.classic.content.radarstation;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
-import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
-import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -36,19 +33,22 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRadioWaveSender, IRecipeContainer, IMultiTileHost
+public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRadioWaveSender, IRecipeContainer
 {
+    /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
+    /** Energy used per tick */
+    public static final int WATTS = 2;
 
-    public static final float WATTS = 1.5f;
     public float rotation = 0;
     public int alarmRange = 100;
     public int safetyRange = 50;
-    public List<Entity> detectedEntities = new ArrayList<Entity>();
+
     public boolean emitAll = true;
+
+    public List<Entity> detectedEntities = new ArrayList<Entity>();
     /** List of all incoming missiles, in order of distance. */
     private List<EntityMissile> incomingMissiles = new ArrayList<EntityMissile>();
 
@@ -390,41 +390,5 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                 '!', UniversalRecipe.PRIMARY_PLATE.get(),
                 '#', UniversalRecipe.CIRCUIT_T1.get(),
                 '?', Items.gold_ingot));
-    }
-
-    @Override
-    public void onMultiTileAdded(IMultiTile tileMulti)
-    {
-
-    }
-
-    @Override
-    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
-    {
-        return false;
-    }
-
-    @Override
-    public void onTileInvalidate(IMultiTile tileMulti)
-    {
-
-    }
-
-    @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
-    {
-        return false;
-    }
-
-    @Override
-    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
-    {
-
-    }
-
-    @Override
-    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
-    {
-        return null;
     }
 }

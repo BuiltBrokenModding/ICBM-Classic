@@ -59,7 +59,7 @@ import java.util.ArrayList;
  *
  * @author Calclavia
  */
-@Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = "after:ResonantInduction|Atomic;required-after:ResonantEngine")
+@Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
 public final class ICBMClassic extends AbstractMod
 {
     @Instance(ICBMClassic.DOMAIN)
@@ -79,6 +79,7 @@ public final class ICBMClassic extends AbstractMod
     public static final String REVISION_VERSION = "@REVIS@";
     public static final String BUILD_VERSION = "@BUILD@";
     public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
+    public static final String DEPENDENCIES = "required-after:VoltzEngine;after:OpenComputers";
 
     public static final int ENTITY_ID_PREFIX = 50;
 
@@ -167,25 +168,24 @@ public final class ICBMClassic extends AbstractMod
     @Override
     public void loadEntities(ModManager manager)
     {
-        EntityRegistry.registerGlobalEntityID(EntityFlyingBlock.class, "ICBMGravityBlock", EntityRegistry.findGlobalUniqueEntityId());
-        EntityRegistry.registerGlobalEntityID(EntityFragments.class, "ICBMFragment", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityFlyingBlock.class, "ICBMGravityBlock", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityFragments.class, "ICBMFragment", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityExplosive.class, "ICBMExplosive", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityMissile.class, "ICBMMissile", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityExplosion.class, "ICBMProceduralExplosion", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityLightBeam.class, "ICBMLightBeam", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityGrenade.class, "ICBMGrenade", EntityRegistry.findGlobalUniqueEntityId());
+        //EntityRegistry.registerGlobalEntityID(EntityBombCart.class, "ICBMChe", EntityRegistry.findGlobalUniqueEntityId());
 
-        EntityRegistry.registerModEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 0, this, 50, 15, true);
-        EntityRegistry.registerModEntity(EntityFragments.class, "ICBMFragment", 1, this, 40, 8, true);
-
-        EntityRegistry.registerGlobalEntityID(EntityExplosive.class, "ICBMExplosive", EntityRegistry.findGlobalUniqueEntityId());
-        EntityRegistry.registerGlobalEntityID(EntityMissile.class, "ICBMMissile", EntityRegistry.findGlobalUniqueEntityId());
-        EntityRegistry.registerGlobalEntityID(EntityExplosion.class, "ICBMProceduralExplosion", EntityRegistry.findGlobalUniqueEntityId());
-        EntityRegistry.registerGlobalEntityID(EntityLightBeam.class, "ICBMLightBeam", EntityRegistry.findGlobalUniqueEntityId());
-        EntityRegistry.registerGlobalEntityID(EntityGrenade.class, "ICBMGrenade", EntityRegistry.findGlobalUniqueEntityId());
-        EntityRegistry.registerGlobalEntityID(EntityBombCart.class, "ICBMChe", EntityRegistry.findGlobalUniqueEntityId());
-
-        EntityRegistry.registerModEntity(EntityExplosive.class, "ICBMExplosive", ENTITY_ID_PREFIX, this, 50, 5, true);
-        EntityRegistry.registerModEntity(EntityMissile.class, "ICBMMissile", ENTITY_ID_PREFIX + 1, this, 500, 1, true);
-        EntityRegistry.registerModEntity(EntityExplosion.class, "ICBMProceduralExplosion", ENTITY_ID_PREFIX + 2, this, 100, 5, true);
-        EntityRegistry.registerModEntity(EntityLightBeam.class, "ICBMLightBeam", ENTITY_ID_PREFIX + 4, this, 80, 5, true);
-        EntityRegistry.registerModEntity(EntityGrenade.class, "ICBMGrenade", ENTITY_ID_PREFIX + 6, this, 50, 5, true);
-        EntityRegistry.registerModEntity(EntityBombCart.class, "ICBMChe", ENTITY_ID_PREFIX + 8, this, 50, 4, true);
+        int nextID = ENTITY_ID_PREFIX;
+        EntityRegistry.registerModEntity(EntityFlyingBlock.class, "ICBMGravityBlock", nextID++, this, 50, 15, true);
+        EntityRegistry.registerModEntity(EntityFragments.class, "ICBMFragment", nextID++, this, 40, 8, true);
+        EntityRegistry.registerModEntity(EntityExplosive.class, "ICBMExplosive", nextID++, this, 50, 5, true);
+        EntityRegistry.registerModEntity(EntityMissile.class, "ICBMMissile", nextID++, this, 500, 1, true);
+        EntityRegistry.registerModEntity(EntityExplosion.class, "ICBMProceduralExplosion", nextID++, this, 100, 5, true);
+        EntityRegistry.registerModEntity(EntityLightBeam.class, "ICBMLightBeam", nextID++, this, 80, 5, true);
+        EntityRegistry.registerModEntity(EntityGrenade.class, "ICBMGrenade", nextID++, this, 50, 5, true);
+        EntityRegistry.registerModEntity(EntityBombCart.class, "ICBMChe", nextID++, this, 50, 4, true);
     }
 
     @Override
