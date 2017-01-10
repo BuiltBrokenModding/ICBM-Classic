@@ -168,6 +168,8 @@ public final class ICBMClassic extends AbstractMod
         itemRocketLauncher = manager.newItem("icbmCRocketLauncher", ItemRocketLauncher.class);
         itemGrenade = manager.newItem("icbmCGrenade", ItemGrenade.class);
         itemBombCart = manager.newItem("icbmCBombCart", ItemBombCart.class);
+
+        CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
 
     @Override

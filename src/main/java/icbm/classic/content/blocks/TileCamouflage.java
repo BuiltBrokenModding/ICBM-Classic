@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks;
 
+import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -33,7 +34,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver
 
     // The block Id this block is trying to mimick
     private Block _blockToMimic = null;
-    private int blockMetaToMic = 0;
+    private int metaToMimic = 0;
     private boolean isSolid = true;
 
     /** Bitmask **/
@@ -60,10 +61,16 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     public void read(ByteBuf data, EntityPlayer player, PacketType packet)
     {
         String blockName = ByteBufUtils.readUTF8String(data);
-        this.setMimicBlock(blockName.isEmpty() ? null : (Block) Block.blockRegistry.getObject(blockName), data.readInt());
+        this._blockToMimic = blockName.isEmpty() ? null : (Block) Block.blockRegistry.getObject(blockName);
+        this.metaToMimic = data.readInt();
         this.renderSides = data.readByte();
         this.isSolid = data.readBoolean();
-        markDirty();
+        markRender();
+    }
+
+    @Override
+    public void onWorldJoin()
+    {
         markRender();
     }
 
@@ -79,7 +86,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver
                 blockName = "";
             }
         }
-        return new PacketTile(this, blockName, this.blockMetaToMic, this.renderSides, this.isSolid);
+        return new PacketTile(this, blockName, this.metaToMimic, this.renderSides, this.isSolid);
     }
 
     public boolean getCanCollide()
@@ -95,6 +102,8 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         {
             sendDescPacket();
         }
+        markDirty();
+        markRender();
     }
 
     public void toggleCollision()
@@ -109,22 +118,24 @@ public class TileCamouflage extends Tile implements IPacketReceiver
 
     public int getMimicBlockMeta()
     {
-        return this.blockMetaToMic;
+        return this.metaToMimic;
     }
 
     public void setMimicBlock(Block block, int metadata)
     {
-        if (this.getMimicBlock() != block || this.blockMetaToMic != metadata)
+        if (this.getMimicBlock() != block || this.metaToMimic != metadata)
         {
             this._blockToMimic = block;
-            this.blockMetaToMic = Math.max(metadata, 0);
-
-            if (!this.worldObj.isRemote)
+            this.metaToMimic = Math.max(Math.min(metadata, 15), 0);
+            if (isServer())
             {
-                sendDescPacket();               
+                markDirty();
+                sendDescPacket();
             }
-            markDirty();
-            markRender();
+            else
+            {
+                markRender();
+            }
         }
     }
 
@@ -149,6 +160,9 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         {
             sendDescPacket();
         }
+
+        markDirty();
+        markRender();
     }
 
     public void toggleRenderSide(ForgeDirection direction)
@@ -156,25 +170,12 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         this.setRenderSide(direction, !canRenderSide(direction));
     }
 
-    public void setRenderSide(boolean isClear)
-    {
-        if (isClear)
-        {
-            this.renderSides = 63;
-        }
-        else
-        {
-            this.renderSides = 0;
-        }
-    }
-
     @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-
         this._blockToMimic = (Block) Block.blockRegistry.getObject(nbt.getString("blockToMimic"));
-        this.blockMetaToMic = nbt.getInteger("metaToMimic");
+        this.metaToMimic = nbt.getInteger("metaToMimic");
         this.renderSides = nbt.getByte("renderSides");
         this.isSolid = nbt.getBoolean("isSold");
     }
@@ -186,8 +187,8 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         super.writeToNBT(nbt);
         if (getMimicBlock() != null)
         {
-            nbt.setString("blockToMic", Block.blockRegistry.getNameForObject(this._blockToMimic));
-            nbt.setInteger("metaToMimic", this.blockMetaToMic);
+            nbt.setString("blockToMimic", Block.blockRegistry.getNameForObject(this._blockToMimic));
+            nbt.setInteger("metaToMimic", this.metaToMimic);
         }
         nbt.setByte("renderSides", renderSides);
         nbt.setBoolean("isSold", this.isSolid);
@@ -239,24 +240,52 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     {
         if (player.getHeldItem() != null && player.canPlayerEdit(xi(), yi(), zi(), side, player.getHeldItem()))
         {
-            //TODO add call back global permission system (Friends list)
-            //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
-            if (owner == null || owner == player.getGameProfile().getId())
+            if (player.getHeldItem().getItem() instanceof ItemBlock)
             {
-                if (player.getHeldItem().getItem() instanceof ItemBlock)
+                //TODO add call back global permission system (Friends list)
+                //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
+                if (owner == null || owner.equals(player.getGameProfile().getId()))
                 {
+
                     Block block = Block.getBlockFromItem(player.getCurrentEquippedItem().getItem());
 
-                    if (block != null && block != getBlockType())
+                    if (block != getMimicBlock() && block != getBlockType())
                     {
                         if (block.isNormalCube() && (block.getRenderType() == 0 || block.getRenderType() == 31))
                         {
-                            setMimicBlock(block, player.getCurrentEquippedItem().getItemDamage());
+                            if (isServer())
+                            {
+                                setMimicBlock(block, player.getCurrentEquippedItem().getItemDamage());
+                                if (Engine.runningAsDev)
+                                {
+                                    player.addChatComponentMessage(new ChatComponentText("Camo block set to " + block.getUnlocalizedName()));
+                                }
+                            }
                             return true;
                         }
+                        else if (Engine.runningAsDev && isServer())
+                        {
+                            player.addChatComponentMessage(new ChatComponentText("Not normal cube or invalid render type"));
+                        }
+                    }
+                    else if (Engine.runningAsDev && isServer())
+                    {
+                        player.addChatComponentMessage(new ChatComponentText("Same block"));
                     }
                 }
+                else if (Engine.runningAsDev && isServer())
+                {
+                    player.addChatComponentMessage(new ChatComponentText("No perms"));
+                }
             }
+            else if (Engine.runningAsDev && isServer())
+            {
+                player.addChatComponentMessage(new ChatComponentText("Not a block"));
+            }
+        }
+        else if (Engine.runningAsDev && isServer())
+        {
+            player.addChatComponentMessage(new ChatComponentText("Empty hand or can not edit"));
         }
         return false;
     }
@@ -268,22 +297,31 @@ public class TileCamouflage extends Tile implements IPacketReceiver
         {
             //TODO add call back global permission system (Friends list)
             //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
-            if (owner == null || owner == player.getGameProfile().getId())
+            if (owner == null || owner.equals(player.getGameProfile().getId()))
             {
-                if (player.isSneaking())
+                if (isServer())
                 {
-                    toggleCollision();
-                    player.addChatComponentMessage(new ChatComponentText("Collision set to " + getCanCollide()));
+                    if (player.isSneaking())
+                    {
+                        toggleCollision();
+                        player.addChatComponentMessage(new ChatComponentText("Collision set to " + getCanCollide()));
+                    }
+                    else
+                    {
+                        toggleRenderSide(ForgeDirection.getOrientation(side));
+                        player.addChatComponentMessage(new ChatComponentText("Side set to render: " + canRenderSide(ForgeDirection.getOrientation(side))));
+                    }
                 }
-                else
-                {
-                    toggleRenderSide(ForgeDirection.getOrientation(side));
-                    markRender();
-                    player.addChatComponentMessage(new ChatComponentText("Side set to render: " + canRenderSide(ForgeDirection.getOrientation(side))));
-                }
-                markDirty();
                 return true;
             }
+            else if (Engine.runningAsDev && isServer())
+            {
+                player.addChatComponentMessage(new ChatComponentText("No perms"));
+            }
+        }
+        else if (Engine.runningAsDev && isServer())
+        {
+            player.addChatComponentMessage(new ChatComponentText("Empty hand or can not edit"));
         }
         return false;
     }

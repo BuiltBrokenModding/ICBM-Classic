@@ -55,6 +55,8 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     public TileRadarStation()
     {
         super("radarStation", Material.iron);
+        this.renderTileEntity = true;
+        this.renderNormalBlock = false;
     }
 
     @Override

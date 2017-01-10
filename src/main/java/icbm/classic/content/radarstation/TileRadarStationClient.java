@@ -47,7 +47,7 @@ public class TileRadarStationClient extends TileRadarStation implements ISimpleI
     public void renderDynamic(Pos pos, float frame, int pass)
     {
         GL11.glPushMatrix();
-        GL11.glTranslatef((float) x() + 0.5F, (float) y() + 1.5F, (float) z() + 0.5F);
+        GL11.glTranslated(pos.xf() + 0.5f, pos.yf() + 1.5f, pos.zf() + 0.5f);
 
         if (hasPower())
         {
@@ -72,7 +72,7 @@ public class TileRadarStationClient extends TileRadarStation implements ISimpleI
                 break;
         }
 
-        MODEL.render(0.0625F, 0f, rotation);
+        MODEL.render(0.0625f, 0f, rotation);
         GL11.glPopMatrix();
     }
 }
