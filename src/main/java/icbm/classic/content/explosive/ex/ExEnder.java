@@ -11,7 +11,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEnderman;
-import icbm.classic.content.explosive.tile.TileExplosive;
+import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -43,9 +43,9 @@ public class ExEnder extends Explosion
                 {
                     TileEntity tileEntity = world.getTileEntity(x, y, z);
 
-                    if (tileEntity instanceof TileExplosive)
+                    if (tileEntity instanceof TileEntityExplosive)
                     {
-                        ((Location) link).writeIntNBT(((TileExplosive) tileEntity).nbtData);
+                        ((Location) link).writeIntNBT(((TileEntityExplosive) tileEntity).nbtData);
 
                         if (!world.isRemote)
                         {

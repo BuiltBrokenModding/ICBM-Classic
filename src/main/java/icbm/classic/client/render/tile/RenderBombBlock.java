@@ -10,7 +10,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MDiLei;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.tile.TileExplosive;
+import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -43,7 +43,6 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
             {
                 try
                 {
-
                     RenderUtility.renderNormalBlockAsItem(block, metadata, renderer);
                 }
                 catch (Exception e)
@@ -62,9 +61,9 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
         {
             TileEntity tileEntity = iBlockAccess.getTileEntity(x, y, z);
 
-            if (tileEntity instanceof TileExplosive)
+            if (tileEntity instanceof TileEntityExplosive)
             {
-                Explosive explosive = ((TileExplosive) tileEntity).haoMa.handler;
+                Explosive explosive = ((TileEntityExplosive) tileEntity).explosive.handler;
 
                 if (!(explosive.getBlockModel() != null && explosive.getBlockResource() != null))
                 {
@@ -86,9 +85,9 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f)
     {
-        if (tileEntity instanceof TileExplosive)
+        if (tileEntity instanceof TileEntityExplosive)
         {
-            Explosive explosive = ((TileExplosive) tileEntity).haoMa.handler;
+            Explosive explosive = ((TileEntityExplosive) tileEntity).explosive.handler;
 
             if (explosive != null && explosive.getBlockModel() != null && explosive.getBlockResource() != null)
             {

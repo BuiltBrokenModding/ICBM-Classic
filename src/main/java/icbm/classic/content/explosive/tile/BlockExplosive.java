@@ -1,10 +1,12 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.core.References;
+import com.builtbroken.mc.core.Engine;
+import com.builtbroken.mc.core.registry.implement.IPostInit;
 import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
@@ -42,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class BlockExplosive extends BlockICBM
+public class BlockExplosive extends BlockICBM implements IPostInit
 {
     public final HashMap<String, IIcon> ICONS = new HashMap();
 
@@ -86,9 +88,9 @@ public class BlockExplosive extends BlockICBM
 
         if (tileEntity != null)
         {
-            if (tileEntity instanceof TileExplosive)
+            if (tileEntity instanceof TileEntityExplosive)
             {
-                if (((TileExplosive) tileEntity).haoMa == Explosives.SMINE)
+                if (((TileEntityExplosive) tileEntity).explosive == Explosives.SMINE)
                 {
                     this.setBlockBounds(0, 0, 0, 1f, 0.2f, 1f);
                     return;
@@ -105,8 +107,10 @@ public class BlockExplosive extends BlockICBM
         this.setBlockBounds(0, 0, 0, 1f, 1f, 1f);
     }
 
-    /** Returns a bounding box from the pool of bounding boxes (this means this box can change after
-     * the pool has been cleared to be reused) */
+    /**
+     * Returns a bounding box from the pool of bounding boxes (this means this box can change after
+     * the pool has been cleared to be reused)
+     */
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World par1World, int x, int y, int z)
     {
@@ -114,9 +118,9 @@ public class BlockExplosive extends BlockICBM
 
         if (tileEntity != null)
         {
-            if (tileEntity instanceof TileExplosive)
+            if (tileEntity instanceof TileEntityExplosive)
             {
-                if (((TileExplosive) tileEntity).haoMa == Explosives.SMINE)
+                if (((TileEntityExplosive) tileEntity).explosive == Explosives.SMINE)
                 {
                     return AxisAlignedBB.getBoundingBox(x + this.minX, y + this.minY, z + this.minZ, x + this.maxX, y + 0.2, z + this.maxZ);
                 }
@@ -130,8 +134,8 @@ public class BlockExplosive extends BlockICBM
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack)
     {
-        ((TileExplosive) world.getTileEntity(x, y, z)).haoMa = Explosives.get(itemStack.getItemDamage());
-        Explosives explosiveID = ((TileExplosive) world.getTileEntity(x, y, z)).haoMa;
+        ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive = Explosives.get(itemStack.getItemDamage());
+        Explosives explosiveID = ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive;
 
         if (!world.isRemote)
         {
@@ -177,7 +181,7 @@ public class BlockExplosive extends BlockICBM
     @Override
     public IIcon getIcon(IBlockAccess par1IBlockAccess, int x, int y, int z, int side)
     {
-        return getIcon(side, ((TileExplosive) par1IBlockAccess.getTileEntity(x, y, z)).haoMa.ordinal());
+        return getIcon(side, ((TileEntityExplosive) par1IBlockAccess.getTileEntity(x, y, z)).explosive.ordinal());
     }
 
     @Override
@@ -198,6 +202,11 @@ public class BlockExplosive extends BlockICBM
     @SideOnly(Side.CLIENT)
     private IIcon getIcon(String name)
     {
+        IIcon icon = ICONS.get(name);
+        if (icon != null)
+        {
+            return icon;
+        }
         return Blocks.sandstone.getIcon(0, 0);
     }
 
@@ -221,7 +230,7 @@ public class BlockExplosive extends BlockICBM
 
         try
         {
-            ResourceLocation resourcelocation = new ResourceLocation(ICBMClassic.DOMAIN, References.BLOCK_TEXTURE_DIRECTORY + iconName + ".png");
+            ResourceLocation resourcelocation = new ResourceLocation(ICBMClassic.DOMAIN, "textures/blocks/" + iconName + ".png");
             InputStream inputstream = Minecraft.getMinecraft().getResourceManager().getResource(resourcelocation).getInputStream();
             BufferedImage bufferedimage = ImageIO.read(inputstream);
 
@@ -232,6 +241,10 @@ public class BlockExplosive extends BlockICBM
         }
         catch (Exception e)
         {
+            if (Engine.runningAsDev)
+            {
+                e.printStackTrace();
+            }
         }
 
         if (suffix.equals("_bottom"))
@@ -252,12 +265,14 @@ public class BlockExplosive extends BlockICBM
         par1World.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
     }
 
-    /** Lets the block know when one of its neighbor changes. Doesn't know which neighbor changed
-     * (coordinates passed are their own) Args: x, y, z, neighbor blockID */
+    /**
+     * Lets the block know when one of its neighbor changes. Doesn't know which neighbor changed
+     * (coordinates passed are their own) Args: x, y, z, neighbor blockID
+     */
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block blockId)
     {
-        Explosives explosiveID = ((TileExplosive) world.getTileEntity(x, y, z)).haoMa;
+        Explosives explosiveID = ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive;
 
         if (world.isBlockIndirectlyGettingPowered(x, y, z))
         {
@@ -281,15 +296,15 @@ public class BlockExplosive extends BlockICBM
 
             if (tileEntity != null)
             {
-                if (tileEntity instanceof TileExplosive)
+                if (tileEntity instanceof TileEntityExplosive)
                 {
-                    ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, x, y, z, ExplosiveType.BLOCK, ((TileExplosive) tileEntity).haoMa.handler);
+                    ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, x, y, z, ExplosiveType.BLOCK, ((TileEntityExplosive) tileEntity).explosive.handler);
                     MinecraftForge.EVENT_BUS.post(evt);
 
                     if (!evt.isCanceled())
                     {
-                        ((TileExplosive) tileEntity).exploding = true;
-                        EntityExplosive eZhaDan = new EntityExplosive(world, new Pos(x, y, z).add(0.5), ((TileExplosive) tileEntity).haoMa, (byte) world.getBlockMetadata(x, y, z), ((TileExplosive) tileEntity).nbtData);
+                        ((TileEntityExplosive) tileEntity).exploding = true;
+                        EntityExplosive eZhaDan = new EntityExplosive(world, new Pos(x, y, z).add(0.5), ((TileEntityExplosive) tileEntity).explosive, (byte) world.getBlockMetadata(x, y, z), ((TileEntityExplosive) tileEntity).nbtData);
 
                         switch (causeOfExplosion)
                         {
@@ -312,14 +327,16 @@ public class BlockExplosive extends BlockICBM
     {
         if (world.getTileEntity(x, y, z) != null)
         {
-            BlockExplosive.yinZha(world, x, y, z, ((TileExplosive) world.getTileEntity(x, y, z)).haoMa, 1);
+            BlockExplosive.yinZha(world, x, y, z, ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive, 1);
         }
 
         super.onBlockExploded(world, x, y, z, explosion);
     }
 
-    /** Called upon block activation (left or right click on the block.). The three integers
-     * represent x,y,z of the block. */
+    /**
+     * Called upon block activation (left or right click on the block.). The three integers
+     * represent x,y,z of the block.
+     */
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9)
     {
@@ -329,7 +346,7 @@ public class BlockExplosive extends BlockICBM
         {
             if (entityPlayer.getHeldItem().getItem() == Items.flint_and_steel)
             {
-                Explosives explosiveID = ((TileExplosive) tileEntity).haoMa;
+                Explosives explosiveID = ((TileEntityExplosive) tileEntity).explosive;
                 BlockExplosive.yinZha(world, x, y, z, explosiveID, 0);
                 return true;
             }
@@ -368,9 +385,9 @@ public class BlockExplosive extends BlockICBM
 
         }
 
-        if (tileEntity instanceof TileExplosive)
+        if (tileEntity instanceof TileEntityExplosive)
         {
-            return ((TileExplosive) tileEntity).haoMa.handler.onBlockActivated(world, x, y, z, entityPlayer, par6, par7, par8, par9);
+            return ((TileEntityExplosive) tileEntity).explosive.handler.onBlockActivated(world, x, y, z, entityPlayer, par6, par7, par8, par9);
         }
 
         return false;
@@ -388,7 +405,7 @@ public class BlockExplosive extends BlockICBM
     {
         if (world.getTileEntity(x, y, z) != null)
         {
-            return new ItemStack(this, 1, ((TileExplosive) world.getTileEntity(x, y, z)).haoMa.ordinal());
+            return new ItemStack(this, 1, ((TileEntityExplosive) world.getTileEntity(x, y, z)).explosive.ordinal());
         }
 
         return null;
@@ -401,11 +418,11 @@ public class BlockExplosive extends BlockICBM
 
         if (tileEntity != null)
         {
-            if (tileEntity instanceof TileExplosive)
+            if (tileEntity instanceof TileEntityExplosive)
             {
-                if (!((TileExplosive) tileEntity).exploding)
+                if (!((TileEntityExplosive) tileEntity).exploding)
                 {
-                    int explosiveID = ((TileExplosive) tileEntity).haoMa.ordinal();
+                    int explosiveID = ((TileEntityExplosive) tileEntity).explosive.ordinal();
                     InventoryUtility.dropItemStack(world, x, y, z, new ItemStack(ICBMClassic.blockExplosive, 1, explosiveID), 10, 0);
                 }
             }
@@ -435,12 +452,18 @@ public class BlockExplosive extends BlockICBM
     @Override
     public TileEntity createTileEntity(World var1, int meta)
     {
-        return new TileExplosive();
+        return new TileEntityExplosive();
     }
 
     @Override
     public boolean isOpaqueCube()
     {
         return false;
+    }
+
+    @Override
+    public void onPostInit()
+    {
+        GameRegistry.registerTileEntity(TileEntityExplosive.class, "icbmCTileExplosive");
     }
 }

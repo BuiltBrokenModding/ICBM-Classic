@@ -9,7 +9,7 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion.IThreadCallBack;
 import icbm.classic.content.explosive.tile.BlockExplosive;
-import icbm.classic.content.explosive.tile.TileExplosive;
+import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -148,7 +148,7 @@ public class BlastSonic extends Blast
                     {
                         if (blockID == ICBMClassic.blockExplosive)
                         {
-                            BlockExplosive.yinZha(this.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileExplosive) this.world().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).haoMa, 1);
+                            BlockExplosive.yinZha(this.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileEntityExplosive) this.world().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).explosive, 1);
                         }
                         else
                         {

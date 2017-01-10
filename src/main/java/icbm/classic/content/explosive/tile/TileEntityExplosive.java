@@ -18,10 +18,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import resonant.api.explosion.IExplosiveContainer;
 
-public class TileExplosive extends TileEntity implements IExplosiveContainer, IPacketReceiver, IRotatable
+public class TileEntityExplosive extends TileEntity implements IExplosiveContainer, IPacketReceiver, IRotatable
 {
+    /** Is the tile currently exploding */
     public boolean exploding = false;
-    public Explosives haoMa = null;
+    /** Explosive ID */
+    public Explosives explosive = null;
+    /** Extra explosive data */
     public NBTTagCompound nbtData = new NBTTagCompound();
 
     @Override
@@ -35,7 +38,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
     {
         super.readFromNBT(par1NBTTagCompound);
-        this.haoMa = Explosives.get(par1NBTTagCompound.getInteger("explosiveID"));
+        this.explosive = Explosives.get(par1NBTTagCompound.getInteger("explosiveID"));
         this.nbtData = par1NBTTagCompound.getCompoundTag("data");
     }
 
@@ -44,7 +47,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
     public void writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
         super.writeToNBT(par1NBTTagCompound);
-        par1NBTTagCompound.setInteger("explosiveID", this.haoMa.ordinal());
+        par1NBTTagCompound.setInteger("explosiveID", this.explosive.ordinal());
         par1NBTTagCompound.setTag("data", this.nbtData);
     }
 
@@ -57,7 +60,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
 
             if (ID == 1)
             {
-                haoMa = Explosives.get(data.readInt());
+                explosive = Explosives.get(data.readInt());
                 worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
             }
             else if (ID == 2 && !this.worldObj.isRemote)
@@ -66,7 +69,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
                 if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
                 {
                     ItemStack itemStack = player.inventory.getCurrentItem();
-                    BlockExplosive.yinZha(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.haoMa, 0);
+                    BlockExplosive.yinZha(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.explosive, 0);
                     ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
                 }
             }
@@ -80,7 +83,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
     @Override
     public Packet getDescriptionPacket()
     {
-        return Engine.instance.packetHandler.toMCPacket(new PacketTile(this, (byte) 1, this.haoMa.ordinal()));
+        return Engine.instance.packetHandler.toMCPacket(new PacketTile(this, (byte) 1, this.explosive.ordinal()));
     }
 
     @Override
@@ -98,7 +101,7 @@ public class TileExplosive extends TileEntity implements IExplosiveContainer, IP
     @Override
     public Explosive getExplosiveType()
     {
-        return this.haoMa.handler;
+        return this.explosive.handler;
     }
 
     @Override
