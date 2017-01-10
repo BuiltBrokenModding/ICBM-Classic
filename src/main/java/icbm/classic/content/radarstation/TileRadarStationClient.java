@@ -1,13 +1,17 @@
 package icbm.classic.content.radarstation;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.gui.GuiRadarStation;
 import icbm.classic.client.models.ModelRadarStation;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -17,7 +21,7 @@ import org.lwjgl.opengl.GL11;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public class TileRadarStationClient extends TileRadarStation implements ISimpleItemRenderer
+public class TileRadarStationClient extends TileRadarStation implements ISimpleItemRenderer, IGuiTile
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "radar.png");
     public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "radar_off.png");
@@ -61,18 +65,30 @@ public class TileRadarStationClient extends TileRadarStation implements ISimpleI
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
         switch (getDirection().ordinal())
         {
-            case 2:
+            case 3:
                 GL11.glRotatef(180F, 0.0F, 180F, 1.0F);
                 break;
-            case 4:
+            case 5:
                 GL11.glRotatef(90F, 0.0F, 180F, 1.0F);
                 break;
-            case 5:
+            case 4:
                 GL11.glRotatef(-90F, 0.0F, 180F, 1.0F);
                 break;
         }
 
         MODEL.render(0.0625f, 0f, rotation);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player)
+    {
+        return new ContainerDummy();
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return new GuiRadarStation(this);
     }
 }
