@@ -5,6 +5,7 @@ import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.mod.AbstractMod;
 import com.builtbroken.mc.lib.mod.AbstractProxy;
+import com.builtbroken.mc.lib.mod.ModCreativeTab;
 import com.builtbroken.mc.lib.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
@@ -123,9 +124,13 @@ public final class ICBMClassic extends AbstractMod
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 1, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
+    public final ModCreativeTab CREATIVE_TAB;
+
     public ICBMClassic()
     {
         super(ICBMClassic.DOMAIN);
+        CREATIVE_TAB = new ModCreativeTab(DOMAIN);
+        getManager().setTab(CREATIVE_TAB);
     }
 
     @Override

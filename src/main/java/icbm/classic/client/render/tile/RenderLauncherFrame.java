@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderLauncherFrame extends TileEntitySpecialRenderer
 {
     public static final MFaSheJia MODEL = new MFaSheJia();
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "launcher_0.png");
 
     @Override
     public void renderTileEntityAt(TileEntity var1, double x, double y, double z, float var8)

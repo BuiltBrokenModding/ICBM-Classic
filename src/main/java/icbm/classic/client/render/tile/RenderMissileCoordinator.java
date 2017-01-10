@@ -18,8 +18,8 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class RenderMissileCoordinator extends TileEntitySpecialRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "missile_coordinator_off.png");
-    public static final ResourceLocation TEXTURE_FILE_ON = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "missile_coordinator_on.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "missile_coordinator_off.png");
+    public static final ResourceLocation TEXTURE_FILE_ON = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "missile_coordinator_on.png");
     public static final ModelMissileCoordinator MODEL = new ModelMissileCoordinator();
     private float lastSeePlayer = 0;
     private float lastFlicker = 0;

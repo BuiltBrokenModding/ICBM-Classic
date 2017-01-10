@@ -1,6 +1,5 @@
 package icbm.classic.client.render.item;
 
-import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.model.loader.EngineModelLoader;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -15,8 +14,8 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderRocketLauncher implements IItemRenderer
 {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "rocketLauncher.png");
-    private static final IModelCustom MODEL = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "rocketLauncher.tcn"));
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "rocketLauncher.png");
+    private static final IModelCustom MODEL = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "rocketLauncher.tcn"));
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)

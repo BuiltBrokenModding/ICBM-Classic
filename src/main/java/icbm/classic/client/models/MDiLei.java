@@ -1,19 +1,18 @@
 package icbm.classic.client.models;
 
-import com.builtbroken.mc.core.References;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.ModelICBM;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class MDiLei extends ModelICBM
 {
     public static final MDiLei INSTANCE = new MDiLei();
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "s-mine.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "s-mine.png");
 
     // fields
     ModelRenderer A;

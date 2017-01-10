@@ -55,7 +55,7 @@ public abstract class Explosion extends Explosive
     {
         if (this.resourceLocation == null)
         {
-            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "missile_" + this.getUnlocalizedName() + ".png");
+            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "missile_" + this.getUnlocalizedName() + ".png");
         }
 
         return this.resourceLocation;
@@ -68,7 +68,7 @@ public abstract class Explosion extends Explosive
         try
         {
             if (this.model == null)
-                model = AdvancedModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY  + this.modelName));
+                model = AdvancedModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/"  + this.modelName));
         }
         catch (ModelFormatException e)
         {

@@ -20,8 +20,8 @@ import org.lwjgl.opengl.GL11;
  */
 public class TileRadarStationClient extends TileRadarStation implements ISimpleItemRenderer
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "radar.png");
-    public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "radar_off.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "radar.png");
+    public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "radar_off.png");
 
     public static final ModelRadarStation MODEL = new ModelRadarStation();
 

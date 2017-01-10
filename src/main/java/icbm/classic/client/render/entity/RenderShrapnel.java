@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL12;
 @SideOnly(Side.CLIENT)
 public class RenderShrapnel extends Render
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.MODEL_DIRECTORY + "fragment.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "models/" + "fragment.png");
 
     public void renderArrow(EntityFragments suiPian, double par2, double par4, double par6, float par8, float par9)
     {
