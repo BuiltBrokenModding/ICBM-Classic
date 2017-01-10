@@ -224,7 +224,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
             this.deltaPathY = this.targetVector.y() - this.startPos.y();
             this.deltaPathZ = this.targetVector.z() - this.startPos.z();
 
-            // TODO: Calculate parabola and relative out the height.
+            // TODO: Calculate parabola and relative out the targetHeight.
             // Calculate the power required to reach the target co-ordinates
             // Ground Displacement
             this.flatDistance = this.startPos.toVector2().distance(this.targetVector.toVector2());

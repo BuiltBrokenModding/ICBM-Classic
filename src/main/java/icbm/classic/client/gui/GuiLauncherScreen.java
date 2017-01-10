@@ -55,7 +55,7 @@ public class GuiLauncherScreen extends GuiICBM
         this.target_height_field.setMaxStringLength(3);
 
         this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
-        this.target_height_field.setText(this.tileEntity.gaoDu + "");
+        this.target_height_field.setText(this.tileEntity.targetHeight + "");
 
         if (this.tileEntity.getTarget() == null)
         {
@@ -118,8 +118,8 @@ public class GuiLauncherScreen extends GuiICBM
         {
             short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.target_height_field.getText()), Short.MAX_VALUE), 3);
 
-            this.tileEntity.gaoDu = newGaoDu;
-            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.gaoDu));
+            this.tileEntity.targetHeight = newGaoDu;
+            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.targetHeight));
         }
         catch (NumberFormatException e)
         {
@@ -220,7 +220,7 @@ public class GuiLauncherScreen extends GuiICBM
             this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
 
         if (!this.target_height_field.isFocused())
-            this.target_height_field.setText(this.tileEntity.gaoDu + "");
+            this.target_height_field.setText(this.tileEntity.targetHeight + "");
 
         if (!this.target_freq_field.isFocused())
             this.target_freq_field.setText(this.tileEntity.getFrequency() + "");

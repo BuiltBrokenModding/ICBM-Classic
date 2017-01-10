@@ -15,10 +15,12 @@ import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -47,7 +49,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     // screen is connected with
     public TileLauncherBase laucherBase = null;
 
-    public short gaoDu = 3;
+    public short targetHeight = 3;
 
     public TileLauncherScreen()
     {
@@ -104,6 +106,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 {
                     this.targetPos = new Pos(this.xCoord, 0, this.zCoord);
                 }
+                sendPacketToGuiUsers(getGUIPacket());
             }
 
             if (this.ticks % 600 == 0)
@@ -116,7 +119,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.getDirection().ordinal(), this.tier, this.getFrequency(), this.gaoDu);
+        return new PacketTile(this, 0, this.getDirection().ordinal(), this.tier, this.getFrequency(), this.targetHeight);
     }
 
 
@@ -149,7 +152,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                     this.setFacing(ForgeDirection.getOrientation(data.readByte()));
                     this.tier = data.readInt();
                     this.setFrequency(data.readInt());
-                    this.gaoDu = data.readShort();
+                    this.targetHeight = data.readShort();
                     return true;
                 }
                 case 1:
@@ -164,7 +167,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 }
                 case 3:
                 {
-                    this.gaoDu = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
+                    this.targetHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
                     return true;
                 }
                 case 4:
@@ -200,7 +203,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         if (this.canLaunch())
         {
             this.extractEnergy();
-            this.laucherBase.launchMissile(this.targetPos.clone(), this.gaoDu);
+            this.laucherBase.launchMissile(this.targetPos.clone(), this.targetHeight);
         }
     }
 
@@ -255,7 +258,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         super.readFromNBT(par1NBTTagCompound);
 
         this.tier = par1NBTTagCompound.getInteger("tier");
-        this.gaoDu = par1NBTTagCompound.getShort("gaoDu");
+        this.targetHeight = par1NBTTagCompound.getShort("targetHeight");
     }
 
     /** Writes a tile entity to NBT. */
@@ -265,7 +268,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         super.writeToNBT(par1NBTTagCompound);
 
         par1NBTTagCompound.setInteger("tier", this.tier);
-        par1NBTTagCompound.setShort("gaoDu", this.gaoDu);
+        par1NBTTagCompound.setShort("targetHeight", this.targetHeight);
     }
 
     @Override
@@ -356,6 +359,14 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     {
         super.onPlaced(entityLiving, itemStack);
         this.tier = itemStack.stackSize;
+    }
+
+    @Override
+    public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list)
+    {
+        list.add(new ItemStack(item, 1, 0));
+        list.add(new ItemStack(item, 1, 1));
+        list.add(new ItemStack(item, 1, 2));
     }
 
     @Override

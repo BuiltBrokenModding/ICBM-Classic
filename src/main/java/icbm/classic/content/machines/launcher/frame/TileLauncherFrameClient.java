@@ -8,11 +8,15 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MFaSheJia;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -70,5 +74,13 @@ public class TileLauncherFrameClient extends TileLauncherFrame implements ISimpl
 
         MODEL.render(0.0625F);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list)
+    {
+        list.add(new ItemStack(item, 1, 0));
+        list.add(new ItemStack(item, 1, 1));
+        list.add(new ItemStack(item, 1, 2));
     }
 }

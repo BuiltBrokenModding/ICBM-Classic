@@ -11,11 +11,15 @@ import icbm.classic.client.gui.GuiLauncherScreen;
 import icbm.classic.client.models.MFaSheShiMuo0;
 import icbm.classic.client.models.MFaSheShiMuo1;
 import icbm.classic.client.models.MFaSheShiMuo2;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -68,10 +72,6 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
 
         switch (getTier())
         {
-            case 0:
-                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
-                model0.render(0.0625F);
-                break;
             case 1:
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
                 model1.render(0.0625F);
@@ -80,8 +80,11 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
                 model2.render(0.0625F);
                 break;
+            default:
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
+                model0.render(0.0625F);
+                break;
         }
-
         GL11.glPopMatrix();
     }
 
@@ -117,5 +120,13 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiLauncherScreen(this);
+    }
+
+    @Override
+    public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list)
+    {
+        list.add(new ItemStack(item, 1, 0));
+        list.add(new ItemStack(item, 1, 1));
+        list.add(new ItemStack(item, 1, 2));
     }
 }

@@ -546,7 +546,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public void genRecipes(List<IRecipe> recipes)
     {
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower),
-                "@@@", "!?! ", "@@@",
+                "@@@", "!?!", "@@@",
                 '@', UniversalRecipe.PRIMARY_PLATE.get(),
                 '!', new ItemStack(ICBMClassic.blockRadarStation),
                 '?', new ItemStack(ICBMClassic.blockRadarStation)));
