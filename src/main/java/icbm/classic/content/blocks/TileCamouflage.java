@@ -14,11 +14,15 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileCamouflage extends Tile implements IPacketReceiver
 {
@@ -222,30 +226,28 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     }
 
     @Override
-    protected boolean onPlayerRightClick(EntityPlayer par5EntityPlayer, int side, Pos hit)
+    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
     {
-        try
+        if (player.getHeldItem() != null && player.canPlayerEdit(xi(), yi(), zi(), side, player.getHeldItem()))
         {
-            if (par5EntityPlayer.getHeldItem() != null)
+            //TODO add call back global permission system (Friends list)
+            //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
+            if(owner == null || owner == player.getGameProfile().getId())
             {
-                if (par5EntityPlayer.getHeldItem().getItem() instanceof ItemBlock)
+                if (player.getHeldItem().getItem() instanceof ItemBlock)
                 {
-                    Block block = Block.getBlockFromItem(par5EntityPlayer.getCurrentEquippedItem().getItem());
+                    Block block = Block.getBlockFromItem(player.getCurrentEquippedItem().getItem());
 
                     if (block != null && block != getBlockType())
                     {
                         if (block.isNormalCube() && (block.getRenderType() == 0 || block.getRenderType() == 31))
                         {
-                            setMimicBlock(block, par5EntityPlayer.getCurrentEquippedItem().getItemDamage());
+                            setMimicBlock(block, player.getCurrentEquippedItem().getItemDamage());
                             return true;
                         }
                     }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
         }
         return false;
     }
@@ -253,16 +255,25 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     @Override
     protected boolean onPlayerRightClickWrench(EntityPlayer player, int side, Pos hit)
     {
-        if (player.isSneaking())
+        if(player.canPlayerEdit(xi(), yi(), zi(), side, player.getHeldItem()))
         {
-            toggleCollision();
+            //TODO add call back global permission system (Friends list)
+            //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
+            if(owner == null || owner == player.getGameProfile().getId())
+            {
+                if (player.isSneaking())
+                {
+                    toggleCollision();
+                }
+                else
+                {
+                    toggleRenderSide(ForgeDirection.getOrientation(side));
+                    markDirty();
+                }
+                return true;
+            }
         }
-        else
-        {
-            toggleRenderSide(ForgeDirection.getOrientation(side));
-            markDirty();
-        }
-        return true;
+        return false;
     }
 
     /**
@@ -288,13 +299,14 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     }
 
     @Override
-    public Cube getCollisionBounds()
+    public Iterable<Cube> getCollisionBoxes(Cube intersect, Entity entity)
     {
+        List<Cube> boxes = new ArrayList<>();
         if (getCanCollide())
         {
-            return super.getCollisionBounds();
+            boxes.add(getCollisionBounds());
         }
-        return null;
+        return boxes;
     }
 
     @Override
