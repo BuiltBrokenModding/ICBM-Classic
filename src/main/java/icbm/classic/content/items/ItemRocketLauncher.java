@@ -77,11 +77,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                 // Limit the missile to tier two.
                                 if (((Explosion) ex.handler).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER && ((Explosion) ex.handler).isCruise())
                                 {
-
                                     EntityMissile entityMissile = new EntityMissile(player);
                                     entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
                                     entityMissile.explosiveID = ex;
-                                    entityMissile.ignore(player);
                                     world.spawnEntityInWorld(entityMissile);
 
                                     if (player.isSneaking())
@@ -90,7 +88,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                         player.setSneaking(false);
                                     }
 
-                                    entityMissile.launch(entityMissile.getPredictedPosition(100));
+                                    entityMissile.launch(null);
 
                                     if (!player.capabilities.isCreativeMode)
                                     {

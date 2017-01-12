@@ -9,14 +9,11 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.gui.IUpdatePlayerListBox;
@@ -96,7 +93,7 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
 
     public EntityMissile(EntityLivingBase entity)
     {
-        super(entity.worldObj, entity, 1);
+        super(entity.worldObj, entity, 2);
         this.setSize(.5F, .5F);
         this.launcherPos = new Pos(entity);
         this.inAirKillTime = 144000 /* 2 hours */;
@@ -128,16 +125,31 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
     @Override
     public void launch(Pos target)
     {
+        //Update data
         this.sourceOfProjectile = new Pos(this);
         this.targetVector = target;
-        this.targetHeight = this.targetVector.yi();
+        this.targetHeight = this.targetVector != null ? this.targetVector.yi() : 0;
         ((Explosion) explosiveID.handler).launch(this);
         this.ticksInAir = 0;
+
+        //Trigger code
         this.recalculatePath();
+        this.updateMotion();
+
+        //Play audio
         this.worldObj.playSoundAtEntity(this, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+
+        //Trigger events
         // TODO add an event system here
         RadarRegistry.add(this);
-        ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
+        if (target != null)
+        {
+            ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
+        }
+        else
+        {
+            ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
+        }
     }
 
     @Override
@@ -190,24 +202,14 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
         return true;
     }
 
-    /** Called to update the entity's position/logic. */
     @Override
-    public void onUpdate()
+    protected void updateMotion()
     {
-        if (this.shengYin != null)
-        {
-            this.shengYin.update();
-        }
-
         if (this.ticksInAir >= 0)
         {
             if (!this.worldObj.isRemote)
             {
-                if (this.missileType == MissileType.CruiseMissile || this.missileType == MissileType.LAUNCHER)
-                {
-                    super.onUpdate();
-                }
-                else
+                if (this.missileType == MissileType.MISSILE)
                 {
                     // Start the launch
                     if (this.lockHeight > 0)
@@ -216,8 +218,6 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
                         this.motionX = 0;
                         this.motionZ = 0;
                         this.lockHeight -= this.motionY;
-                        this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
                         if (this.lockHeight <= 0)
                         {
                             this.motionY = this.acceleration * (this.missileFlightTime / 2);
@@ -228,35 +228,11 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
                     else
                     {
                         this.motionY -= this.acceleration;
-
                         this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-
                         // Look at the next point
                         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-
                         ((Explosion) this.explosiveID.handler).update(this);
-
-                        this.moveEntity(this.motionX, this.motionY, this.motionZ);
-
-                        // If the missile contacts anything, it will explode.
-                        if (this.isCollided)
-                        {
-                            this.explode();
-                        }
-
-                        // If the missile is commanded to explode before impact
-                        if (this.targetHeight > 0 && this.motionY < 0)
-                        {
-                            // Check the block below it.
-                            Block block = this.worldObj.getBlock((int) this.posX, (int) this.posY - targetHeight, (int) this.posZ);
-
-                            if (block != null && block != Blocks.air)
-                            {
-                                this.targetHeight = 0;
-                                this.explode();
-                            }
-                        }
-                    } // end else
+                    }
                 }
             }
             else
@@ -265,46 +241,33 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
                 // Look at the next point
                 this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
             }
-
-            this.lastTickPosX = this.posX;
-            this.lastTickPosY = this.posY;
-            this.lastTickPosZ = this.posZ;
-
-            this.spawnMissileSmoke();
-            this.protectionTime--;
-            this.ticksInAir++;
         }
-        else if (this.missileType != MissileType.LAUNCHER)
-        {
-            // Check to find the launcher in which this missile belongs in.
-            ILauncherContainer launcher = this.getLauncher();
+        super.updateMotion();
+        this.spawnMissileSmoke();
+        this.protectionTime--;
+    }
 
-            if (launcher != null)
-            {
-                launcher.setContainingMissile(this);
+    @Override
+    protected void onImpactTile()
+    {
+        explode();
+    }
 
-                /** Rotate the missile to the cruise launcher's rotation. */
-                if (launcher instanceof TileCruiseLauncher)
-                {
-                    this.missileType = MissileType.CruiseMissile;
-                    this.noClip = true;
+    protected void onImpactEntity(Entity entityHit, float velocity)
+    {
+        super.onImpactEntity(entityHit, velocity);
+        explode();
+    }
 
-                    if (this.worldObj.isRemote)
-                    {
-                        this.rotationYaw = -((TileCruiseLauncher) launcher).rotationYaw + 90;
-                        this.rotationPitch = ((TileCruiseLauncher) launcher).rotationPitch;
-                    }
-
-                    this.posY = ((TileCruiseLauncher) launcher).yCoord + 1;
-                }
-            }
-            else
-            {
-                this.setDead();
-            }
-        }
-
+    /** Called to update the entity's position/logic. */
+    @Override
+    public void onUpdate()
+    {
         super.onUpdate();
+        if (this.shengYin != null)
+        {
+            this.shengYin.update();
+        }
     }
 
     @Override
