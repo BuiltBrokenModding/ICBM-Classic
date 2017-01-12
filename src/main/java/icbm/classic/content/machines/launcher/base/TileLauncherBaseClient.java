@@ -1,13 +1,18 @@
 package icbm.classic.content.machines.launcher.base;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.mc.client.SharedAssets;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.*;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.Explosion;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,6 +42,8 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     public static final MFaSheDi2 modelBase2 = new MFaSheDi2();
     public static final MFaSheDiRail2 modelRail2 = new MFaSheDiRail2();
 
+    private ItemStack cachedMissileStack;
+
     public TileLauncherBaseClient()
     {
         super();
@@ -54,7 +61,6 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Pos pos, float frame, int pass)
     {
-
         GL11.glPushMatrix();
         GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
 
@@ -88,8 +94,22 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
             GL11.glRotatef(180F, 0F, 180F, 1.0F);
             modelRail2.render(0.0625F);
         }
-
         GL11.glPopMatrix();
+
+        if (cachedMissileStack != null)
+        {
+            GL11.glPushMatrix();
+            GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
+
+            GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+
+            Explosives e = Explosives.get(cachedMissileStack.getItemDamage());
+            Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
+
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(SharedAssets.GREY_TEXTURE);
+            missile.getMissileModel().renderAll();
+            GL11.glPopMatrix();
+        }
     }
 
     @Override
@@ -133,5 +153,19 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
         list.add(new ItemStack(item, 1, 0));
         list.add(new ItemStack(item, 1, 1));
         list.add(new ItemStack(item, 1, 2));
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        if (buf.readBoolean())
+        {
+            cachedMissileStack = ByteBufUtils.readItemStack(buf);
+        }
+        else
+        {
+            cachedMissileStack = null;
+        }
     }
 }

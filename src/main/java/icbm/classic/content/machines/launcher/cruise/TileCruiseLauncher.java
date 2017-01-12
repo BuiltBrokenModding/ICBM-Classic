@@ -516,27 +516,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
-    public void setContainingMissile(IMissile missile)
-    {
-        this.daoDan = (EntityMissile) missile;
-    }
-
-    @Override
     public ILauncherController getController()
     {
         return this;
-    }
-
-    @Override
-    public IMissile getMissile()
-    {
-        return this.daoDan;
-    }
-
-    @Override
-    public IMissile getContainingMissile()
-    {
-        return this.daoDan;
     }
 
     @Override

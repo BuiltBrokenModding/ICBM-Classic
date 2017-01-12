@@ -30,7 +30,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.ITier;
 import resonant.api.explosion.ILauncherController;
-import resonant.api.explosion.IMissile;
 import resonant.api.explosion.LauncherType;
 
 import java.util.List;
@@ -166,7 +165,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public boolean canLaunch()
     {
-        if (this.laucherBase != null && this.laucherBase.missile != null)
+        if (this.laucherBase != null && this.laucherBase.getStackInSlot(0) != null)
         {
             if (this.checkExtract())
             {
@@ -207,7 +206,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusNoPower");
         }
-        else if (this.laucherBase.missile == null)
+        else if (this.laucherBase.getStackInSlot(0) == null)
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusEmpty");
         }
@@ -298,16 +297,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public LauncherType getLauncherType()
     {
         return LauncherType.TRADITIONAL;
-    }
-
-    @Override
-    public IMissile getMissile()
-    {
-        if (this.laucherBase != null)
-        {
-            return this.laucherBase.getContainingMissile();
-        }
-        return null;
     }
 
     @Override

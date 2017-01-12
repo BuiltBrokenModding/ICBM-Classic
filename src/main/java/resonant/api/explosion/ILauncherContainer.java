@@ -7,12 +7,6 @@ import net.minecraft.inventory.IInventory;
  * @author Calclavia */
 public interface ILauncherContainer extends IInventory
 {
-    @Deprecated
-    public IMissile getContainingMissile();
-
-    @Deprecated
-    public void setContainingMissile(IMissile missile);
-
     /** Retrieves the launcher controller controlling this container. */
     public ILauncherController getController();
 }

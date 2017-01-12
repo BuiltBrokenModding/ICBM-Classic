@@ -28,6 +28,4 @@ public interface ILauncherController
 
     /** Places a missile into the launcher. */
     public void placeMissile(ItemStack itemStack);
-
-    public IMissile getMissile();
 }

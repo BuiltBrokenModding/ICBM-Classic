@@ -12,13 +12,11 @@ import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
 import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.VectorHelper;
@@ -31,11 +29,11 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.ITier;
-import resonant.api.explosion.*;
+import resonant.api.explosion.ILauncherContainer;
+import resonant.api.explosion.ILauncherController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -67,9 +65,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         eastWestMultiBlockCache.put(new Pos(0, 2, -1), EnumMultiblock.TILE.getName());
     }
 
-    // The missile that this launcher is holding
-    public EntityMissile missile = null;
-
     // The connected missile launcher frame
     public TileLauncherFrame supportFrame = null;
 
@@ -77,8 +72,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     private int tier = 0;
 
     private boolean _destroyingStructure = false;
-
-    //
 
     public TileLauncherBase()
     {
@@ -121,57 +114,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         }
     }
 
-    public void setMissile()
-    {
-        if (!this.worldObj.isRemote)
-        {
-            if (this.getStackInSlot(0) != null && this.getStackInSlot(0).getItem() instanceof ItemMissile)
-            {
-                int explosiveID = this.getStackInSlot(0).getItemDamage();
-                Explosives ex = Explosives.get(explosiveID);
-                if (ex.handler instanceof Missile)
-                {
-                    Explosion missile = (Explosion) ex.handler;
-
-                    ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
-                    MinecraftForge.EVENT_BUS.post(evt);
-
-                    if (!evt.isCanceled())
-                    {
-                        if (this.missile == null)
-                        {
-                            Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1.8f), (this.zCoord + 0.5f));
-                            this.missile = new EntityMissile(this.worldObj);
-                            this.missile.setPosition(startingPosition.x(), startingPosition.y(), startingPosition.z());
-                            this.missile.launcherPos = new Pos(this);
-                            this.missile.explosiveID = ex;
-                            this.worldObj.spawnEntityInWorld(this.missile);
-                            return;
-                        }
-                        else
-                        {
-                            this.missile.explosiveID = ex;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (this.missile != null)
-                {
-                    this.missile.setDead();
-                }
-                this.missile = null;
-            }
-        }
-    }
-
     @Override
     public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
     {
         if (slot == 0)
         {
-            setMissile();
+            sendDescPacket();
         }
     }
 
@@ -205,8 +153,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         target = target.add(inaccuracy, 0, inaccuracy);
 
         this.decrStackSize(0, 1);
-        this.missile.launch(target, gaoDu);
-        this.missile = null;
+
+        EntityMissile missile = new EntityMissile(world());
+        missile.launcherPos = new Pos(this);
+        missile.setPosition(xi(), yi() + 3, zi());
+        missile.launch(target, gaoDu);
+        world().spawnEntityInWorld(missile);
     }
 
     // Checks if the missile target is in range
@@ -216,7 +168,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         {
             return !isTargetTooFar(target) && !isTargetTooClose(target);
         }
-
         return false;
     }
 
@@ -290,6 +241,11 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         super.writeDescPacket(buf);
         buf.writeInt(tier);
+        buf.writeBoolean(getStackInSlot(0) != null);
+        if(getStackInSlot(0) != null)
+        {
+            ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
+        }
     }
 
     @Override
@@ -341,16 +297,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public void invalidate()
-    {
-        if (this.missile != null)
-        {
-            this.missile.setDead();
-        }
-        super.invalidate();
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
@@ -360,17 +306,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public boolean canStore(ItemStack stack, int slot, ForgeDirection side)
     {
         return slot == 0 && stack.getItem() instanceof ItemMissile;
-    }
-
-    public EntityMissile getContainingMissile()
-    {
-        return this.missile;
-    }
-
-    @Override
-    public void setContainingMissile(IMissile missile)
-    {
-        this.missile = (EntityMissile) missile;
     }
 
     @Override
