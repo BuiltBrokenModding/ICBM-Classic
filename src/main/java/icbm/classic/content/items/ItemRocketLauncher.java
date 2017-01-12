@@ -80,6 +80,8 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                     EntityMissile entityMissile = new EntityMissile(player);
                                     entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
                                     entityMissile.explosiveID = ex;
+                                    entityMissile.acceleration = 1;
+                                    entityMissile.launch(null);
                                     world.spawnEntityInWorld(entityMissile);
 
                                     if (player.isSneaking())
@@ -87,8 +89,6 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                         player.mountEntity(entityMissile);
                                         player.setSneaking(false);
                                     }
-
-                                    entityMissile.launch(null);
 
                                     if (!player.capabilities.isCreativeMode)
                                     {

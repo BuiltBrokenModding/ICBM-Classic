@@ -1,6 +1,5 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.api.explosive.IExplosiveContainer;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.prefab.entity.EntityProjectile;
@@ -27,7 +26,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 /** @Author - Calclavia */
-public class EntityMissile extends EntityProjectile implements IExplosiveContainer, IEntityAdditionalSpawnData, IMissile
+public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IMissile
 {
     public static final float SPEED = 0.012F;
 
@@ -129,8 +128,11 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
         this.sourceOfProjectile = new Pos(this);
         this.targetVector = target;
         this.targetHeight = this.targetVector != null ? this.targetVector.yi() : 0;
-        ((Explosion) explosiveID.handler).launch(this);
-        this.ticksInAir = 0;
+        if(explosiveID != null && explosiveID.handler instanceof Explosion)
+        {
+            ((Explosion) explosiveID.handler).launch(this);
+        }
+        this.ticksInAir = 1;
 
         //Trigger code
         this.recalculatePath();
@@ -193,7 +195,6 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
     {
         this.dataWatcher.addObject(16, -1);
         this.dataWatcher.addObject(17, 0);
-        //this.chunkLoaderInit(ForgeChunkManager.requestTicket(ICBMExplosion.instance, this.worldObj, Type.ENTITY));
     }
 
     @Override
@@ -205,9 +206,9 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
     @Override
     protected void updateMotion()
     {
-        if (this.ticksInAir >= 0)
+        if (!this.worldObj.isRemote)
         {
-            if (!this.worldObj.isRemote)
+            if (this.ticksInAir >= 0)
             {
                 if (this.missileType == MissileType.MISSILE)
                 {
@@ -231,20 +232,34 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
                         this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
                         // Look at the next point
                         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-                        ((Explosion) this.explosiveID.handler).update(this);
+
                     }
                 }
             }
             else
             {
-                this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
+                //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
                 // Look at the next point
-                this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
             }
+
+            this.spawnMissileSmoke();
+            this.protectionTime--;
+        }
+        if(this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
+        {
+            ((Explosion) this.explosiveID.handler).update(this);
         }
         super.updateMotion();
-        this.spawnMissileSmoke();
-        this.protectionTime--;
+    }
+
+    @Override
+    protected void decreaseMotion()
+    {
+        if (this.missileType != MissileType.MISSILE && ticksInAir > 1000)
+        {
+            super.decreaseMotion();
+        }
     }
 
     @Override
@@ -253,20 +268,13 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
         explode();
     }
 
+    @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        super.onImpactEntity(entityHit, velocity);
-        explode();
-    }
-
-    /** Called to update the entity's position/logic. */
-    @Override
-    public void onUpdate()
-    {
-        super.onUpdate();
-        if (this.shengYin != null)
+        if(!worldObj.isRemote)
         {
-            this.shengYin.update();
+            super.onImpactEntity(entityHit, velocity);
+            explode();
         }
     }
 
@@ -538,12 +546,6 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
     }
 
     @Override
-    public float getShadowSize()
-    {
-        return 1.0F;
-    }
-
-    @Override
     public int getTicksInAir()
     {
         return this.ticksInAir;
@@ -559,18 +561,6 @@ public class EntityMissile extends EntityProjectile implements IExplosiveContain
     public NBTTagCompound getTagCompound()
     {
         return this.nbtData;
-    }
-
-    @Override
-    public ItemStack getExplosiveStack()
-    {
-        return null;
-    }
-
-    @Override
-    public boolean setExplosiveStack(ItemStack stack)
-    {
-        return false;
     }
 
     public enum MissileType

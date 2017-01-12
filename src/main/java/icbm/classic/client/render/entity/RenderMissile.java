@@ -36,7 +36,7 @@ public class RenderMissile extends Render
         Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e;
 
         GL11.glPushMatrix();
-        GL11.glTranslated(x, y - 1, z);
+        GL11.glTranslated(x, y, z);
         GL11.glRotatef(entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * f1 - 90.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * f1 - 90, 0.0F, 0.0F, 1.0F);
 
