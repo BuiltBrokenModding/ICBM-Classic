@@ -10,6 +10,7 @@ import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.tile.Tile;
+import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
@@ -49,11 +50,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     // screen is connected with
     public TileLauncherBase laucherBase = null;
 
+    /** Detonation height of the missile. */
     public short targetHeight = 3;
 
     public TileLauncherScreen()
     {
         super("launcherScreen", Material.iron);
+        this.itemBlock = ItemBlockMetadata.class;
     }
 
     @Override
@@ -66,52 +69,30 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public void update()
     {
         super.update();
-
-        if (this.laucherBase == null)
+        if (isServer())
         {
-            for (byte i = 2; i < 6; i++)
+            if (this.laucherBase == null || this.laucherBase.isInvalid())
             {
-                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
-
-                TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
-
-                if (tileEntity != null)
+                this.laucherBase = null;
+                for (byte i = 2; i < 6; i++)
                 {
-                    if (tileEntity instanceof TileLauncherBase)
+                    Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
+
+                    TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
+
+                    if (tileEntity != null)
                     {
-                        this.laucherBase = (TileLauncherBase) tileEntity;
-                        this.setFacing(ForgeDirection.getOrientation(i));
+                        if (tileEntity instanceof TileLauncherBase)
+                        {
+                            this.laucherBase = (TileLauncherBase) tileEntity;
+                            this.setFacing(ForgeDirection.getOrientation(i));
+                        }
                     }
                 }
             }
-        }
-        else
-        {
-            if (this.laucherBase.isInvalid())
+            if (this.ticks % 100 == 0 && this.isIndirectlyPowered())
             {
-                this.laucherBase = null;
-            }
-        }
-
-        if (this.ticks % 100 == 0 && this.worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
-        {
-            this.launch();
-        }
-
-        if (!this.worldObj.isRemote)
-        {
-            if (this.ticks % 3 == 0)
-            {
-                if (this.targetPos == null)
-                {
-                    this.targetPos = new Pos(this.xCoord, 0, this.zCoord);
-                }
-                sendPacketToGuiUsers(getGUIPacket());
-            }
-
-            if (this.ticks % 600 == 0)
-            {
-                this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+                this.launch();
             }
         }
     }
@@ -119,13 +100,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.getDirection().ordinal(), this.tier, this.getFrequency(), this.targetHeight);
+        return new PacketTile(this, 0, this.tier, this.getFrequency(), this.targetHeight);
     }
 
-
+    @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.targetPos.xi(), this.targetPos.yi(), this.targetPos.zi());
+        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -149,7 +130,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             {
                 case 0:
                 {
-                    this.setFacing(ForgeDirection.getOrientation(data.readByte()));
                     this.tier = data.readInt();
                     this.setFrequency(data.readInt());
                     this.targetHeight = data.readShort();
@@ -162,7 +142,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 }
                 case 2:
                 {
-                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
                 case 3:
@@ -173,7 +153,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 case 4:
                 {
                     this.energy = data.readInt();
-                    this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
             }
@@ -190,7 +170,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             if (this.checkExtract())
             {
-                return this.laucherBase.isInRange(this.targetPos);
+                return this.laucherBase.isInRange(this.getTarget());
             }
         }
         return false;
@@ -203,7 +183,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         if (this.canLaunch())
         {
             this.extractEnergy();
-            this.laucherBase.launchMissile(this.targetPos.clone(), this.targetHeight);
+            this.laucherBase.launchMissile(this.getTarget(), this.targetHeight);
+            updateClient = true;
         }
     }
 
@@ -230,15 +211,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusEmpty");
         }
-        else if (this.targetPos == null)
+        else if (this.getTarget() == null)
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusInvalid");
         }
-        else if (this.laucherBase.shiTaiJin(this.targetPos))
+        else if (this.laucherBase.isTargetTooClose(this.getTarget()))
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusClose");
         }
-        else if (this.laucherBase.shiTaiYuan(this.targetPos))
+        else if (this.laucherBase.isTargetTooFar(this.getTarget()))
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusFar");
         }
@@ -281,6 +262,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public void setTier(int tier)
     {
         this.tier = tier;
+        updateClient = true;
     }
 
     @Override
@@ -325,7 +307,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             return this.laucherBase.getContainingMissile();
         }
-
         return null;
     }
 
@@ -358,7 +339,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
     {
         super.onPlaced(entityLiving, itemStack);
-        this.tier = itemStack.stackSize;
+        setTier(itemStack.getItemDamage());
     }
 
     @Override

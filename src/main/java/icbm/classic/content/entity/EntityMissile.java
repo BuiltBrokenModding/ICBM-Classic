@@ -3,8 +3,8 @@ package icbm.classic.content.entity;
 import com.builtbroken.mc.api.explosive.IExplosiveContainer;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
+import com.builtbroken.mc.prefab.entity.EntityProjectile;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.classic.DamageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
@@ -13,6 +13,7 @@ import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -21,9 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.IFluidBlock;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.IMissile;
 
@@ -31,19 +30,17 @@ import java.util.HashSet;
 import java.util.Random;
 
 /** @Author - Calclavia */
-public class EntityMissile extends Entity implements IExplosiveContainer, IEntityAdditionalSpawnData, IMissile
+public class EntityMissile extends EntityProjectile implements IExplosiveContainer, IEntityAdditionalSpawnData, IMissile
 {
     public static final float SPEED = 0.012F;
 
-    public Explosives explosiveID;
+    public Explosives explosiveID = Explosives.CONDENSED;
     public int maxHeight = 200;
     public Pos targetVector = null;
-    public Pos startPos = null;
     public Pos launcherPos = null;
     public boolean isExpoding = false;
 
     public int targetHeight = 0;
-    public int feiXingTick = -1;
     // Difference
     public double deltaPathX;
     public double deltaPathY;
@@ -54,9 +51,6 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     public float missileFlightTime;
     // Acceleration
     public float acceleration;
-    // Hp
-    public float damage = 0;
-    public float max_damage = 10;
     // Protection Time
     public int protectionTime = 2;
 
@@ -79,7 +73,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 
     public Pos xiaoDanMotion = new Pos();
 
-    private double qiFeiGaoDu = 3;
+    private double lockHeight = 3;
 
     // Used for the rocket launcher preventing the players from killing themselves.
     private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
@@ -89,52 +83,27 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 
     public NBTTagCompound nbtData = new NBTTagCompound();
 
-    public EntityMissile(World par1World)
+    public EntityMissile(World w)
     {
-        super(par1World);
-        this.setSize(1F, 1F);
+        super(w);
+        this.setSize(.5F, .5F);
+        this.inAirKillTime = 144000 /* 2 hours */;
+        this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
         this.renderDistanceWeight = 3;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
+    }
+
+    public EntityMissile(EntityLivingBase entity)
+    {
+        super(entity.worldObj, entity, 1);
+        this.setSize(.5F, .5F);
+        this.launcherPos = new Pos(entity);
+        this.inAirKillTime = 144000 /* 2 hours */;
         this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
-    }
-
-    /**
-     * Spawns a traditional missile and cruise missiles
-     *
-     * @param explosiveId - Explosive ID
-     * @param startPos    - Starting Position
-     * @param launcherPos - Missile Launcher Position
-     */
-    public EntityMissile(World world, Pos startPos, Pos launcherPos, Explosives explosiveId)
-    {
-        this(world);
-        this.explosiveID = explosiveId;
-        this.startPos = startPos;
-        this.launcherPos = launcherPos;
-
-        this.setPosition(this.startPos.x(), this.startPos.y(), this.startPos.z());
-        this.setRotation(0, 90);
-    }
-
-    /**
-     * For rocket launchers
-     *
-     * @param explosiveId - Explosive ID
-     * @param startPos    - Starting Position
-     * @param yaw         - The yaw of the missle
-     * @param pitch       - the pitch of the missle
-     */
-    public EntityMissile(World world, Pos startPos, Explosives explosiveId, float yaw, float pitch)
-    {
-        this(world);
-        this.explosiveID = explosiveId;
-        this.launcherPos = this.startPos = startPos;
-        this.missileType = MissileType.LAUNCHER;
-        this.protectionTime = 0;
-
-        this.setPosition(this.startPos.x(), this.startPos.y(), this.startPos.z());
-        this.setRotation(yaw, pitch);
+        this.renderDistanceWeight = 3;
+        this.isImmuneToFire = true;
+        this.ignoreFrustumCheck = true;
     }
 
     public String getEntityName()
@@ -143,68 +112,38 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(ByteBuf additionalMissileData)
     {
-        try
-        {
-            data.writeInt(this.explosiveID.ordinal());
-            data.writeInt(this.missileType.ordinal());
-
-            data.writeDouble(this.startPos.x());
-            data.writeDouble(this.startPos.y());
-            data.writeDouble(this.startPos.z());
-
-            data.writeInt(this.launcherPos.xi());
-            data.writeInt(this.launcherPos.yi());
-            data.writeInt(this.launcherPos.zi());
-
-            data.writeFloat(rotationYaw);
-            data.writeFloat(rotationPitch);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        additionalMissileData.writeInt(this.explosiveID.ordinal());
+        additionalMissileData.writeInt(this.missileType.ordinal());
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(ByteBuf additionalMissileData)
     {
-        try
-        {
-            this.explosiveID = Explosives.get(data.readInt());
-            this.missileType = MissileType.values()[data.readInt()];
-            this.startPos = new Pos(data.readDouble(), data.readDouble(), data.readDouble());
-            this.launcherPos = new Pos(data.readInt(), data.readInt(), data.readInt());
-
-            rotationYaw = data.readFloat();
-            rotationPitch = data.readFloat();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        this.explosiveID = Explosives.get(additionalMissileData.readInt());
+        this.missileType = MissileType.values()[additionalMissileData.readInt()];
     }
 
     @Override
     public void launch(Pos target)
     {
-        this.startPos = new Pos(this);
+        this.sourceOfProjectile = new Pos(this);
         this.targetVector = target;
         this.targetHeight = this.targetVector.yi();
         ((Explosion) explosiveID.handler).launch(this);
-        this.feiXingTick = 0;
+        this.ticksInAir = 0;
         this.recalculatePath();
         this.worldObj.playSoundAtEntity(this, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
         // TODO add an event system here
         RadarRegistry.add(this);
-        ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + startPos.xi() + ", " + startPos.yi() + ", " + startPos.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
+        ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
     }
 
     @Override
     public void launch(Pos target, int height)
     {
-        this.qiFeiGaoDu = height;
+        this.lockHeight = height;
         this.launch(target);
     }
 
@@ -220,18 +159,18 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         if (this.targetVector != null)
         {
             // Calculate the distance difference of the missile
-            this.deltaPathX = this.targetVector.x() - this.startPos.x();
-            this.deltaPathY = this.targetVector.y() - this.startPos.y();
-            this.deltaPathZ = this.targetVector.z() - this.startPos.z();
+            this.deltaPathX = this.targetVector.x() - this.sourceOfProjectile.x();
+            this.deltaPathY = this.targetVector.y() - this.sourceOfProjectile.y();
+            this.deltaPathZ = this.targetVector.z() - this.sourceOfProjectile.z();
 
             // TODO: Calculate parabola and relative out the targetHeight.
             // Calculate the power required to reach the target co-ordinates
             // Ground Displacement
-            this.flatDistance = this.startPos.toVector2().distance(this.targetVector.toVector2());
+            this.flatDistance = this.sourceOfProjectile.toVector2().distance(this.targetVector.toVector2());
             // Parabolic Height
             this.maxHeight = 160 + (int) (this.flatDistance * 3);
             // Flight time
-            this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.feiXingTick;
+            this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
             // Acceleration
             this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
         }
@@ -260,88 +199,26 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
             this.shengYin.update();
         }
 
-        try
-        {
-            if (this.worldObj.isRemote)
-            {
-                this.feiXingTick = this.dataWatcher.getWatchableObjectInt(16);
-                int status = this.dataWatcher.getWatchableObjectInt(17);
-
-                switch (status)
-                {
-                    case 1:
-                        setNormalExplode = true;
-                        break;
-                    case 2:
-                        setExplode = true;
-                        break;
-                }
-            }
-            else
-            {
-                this.dataWatcher.updateObject(16, feiXingTick);
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        if (setNormalExplode)
-        {
-            normalExplode();
-            return;
-        }
-
-        if (setExplode)
-        {
-            explode();
-            return;
-        }
-
-        if (this.feiXingTick >= 0)
+        if (this.ticksInAir >= 0)
         {
             if (!this.worldObj.isRemote)
             {
                 if (this.missileType == MissileType.CruiseMissile || this.missileType == MissileType.LAUNCHER)
                 {
-                    if (this.feiXingTick == 0 && this.xiaoDanMotion != null)
-                    {
-                        this.xiaoDanMotion = new Pos(this.deltaPathX / (missileFlightTime * 0.3), this.deltaPathY / (missileFlightTime * 0.3), this.deltaPathZ / (missileFlightTime * 0.3));
-                        this.motionX = this.xiaoDanMotion.x();
-                        this.motionY = this.xiaoDanMotion.y();
-                        this.motionZ = this.xiaoDanMotion.z();
-                    }
-
-                    this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-
-                    // Look at the next point
-                    this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-
-                    ((Explosion) this.explosiveID.handler).update(this);
-
-                    Block block = this.worldObj.getBlock((int) this.posX, (int) this.posY, (int) this.posZ);
-
-                    if (this.protectionTime <= 0 && ((block != null && !(block instanceof IFluidBlock)) || this.posY > 1000 || this.isCollided || this.feiXingTick > 20 * 1000 || (this.motionX == 0 && this.motionY == 0 && this.motionZ == 0)))
-                    {
-                        setExplode();
-                        return;
-                    }
-
-                    this.moveEntity(this.motionX, this.motionY, this.motionZ);
+                    super.onUpdate();
                 }
                 else
                 {
                     // Start the launch
-                    if (this.qiFeiGaoDu > 0)
+                    if (this.lockHeight > 0)
                     {
-                        this.motionY = SPEED * this.feiXingTick * (this.feiXingTick / 2);
+                        this.motionY = SPEED * this.ticksInAir * (this.ticksInAir / 2);
                         this.motionX = 0;
                         this.motionZ = 0;
-                        this.qiFeiGaoDu -= this.motionY;
+                        this.lockHeight -= this.motionY;
                         this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
-                        if (this.qiFeiGaoDu <= 0)
+                        if (this.lockHeight <= 0)
                         {
                             this.motionY = this.acceleration * (this.missileFlightTime / 2);
                             this.motionX = this.deltaPathX / missileFlightTime;
@@ -395,7 +272,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
 
             this.spawnMissileSmoke();
             this.protectionTime--;
-            this.feiXingTick++;
+            this.ticksInAir++;
         }
         else if (this.missileType != MissileType.LAUNCHER)
         {
@@ -541,7 +418,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         Pos guJiDiDian = new Pos(this);
         double tempMotionY = this.motionY;
 
-        if (this.feiXingTick > 20)
+        if (this.ticksInAir > 20)
         {
             for (int i = 0; i < t; i++)
             {
@@ -576,7 +453,10 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     @Override
     public void setDead()
     {
-        RadarRegistry.remove(this);
+        if (!worldObj.isRemote)
+        {
+            RadarRegistry.remove(this);
+        }
 
         super.setDead();
 
@@ -654,47 +534,44 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
         this.setDead();
     }
 
-    /** (abstract) Protected helper method to read subclass entity data from NBT. */
+    /** (abstract) Protected helper method to read subclass entity additionalMissileData from NBT. */
     @Override
-    protected void readEntityFromNBT(NBTTagCompound nbt)
+    public void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.startPos = new Pos(nbt.getCompoundTag("kaiShi"));
-        this.targetVector = new Pos(nbt.getCompoundTag("muBiao"));
+        super.readEntityFromNBT(nbt);
+        this.targetVector = new Pos(nbt.getCompoundTag("target"));
         this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi"));
-        this.acceleration = nbt.getFloat("jiaSu");
-        this.targetHeight = nbt.getInteger("baoZhaGaoDu");
-        this.explosiveID = Explosives.get(nbt.getInteger("haoMa"));
-        this.feiXingTick = nbt.getInteger("feiXingTick");
-        this.qiFeiGaoDu = nbt.getDouble("qiFeiGaoDu");
-        this.missileType = MissileType.values()[nbt.getInteger("xingShi")];
-        this.nbtData = nbt.getCompoundTag("data");
+        this.acceleration = nbt.getFloat("acceleration");
+        this.targetHeight = nbt.getInteger("targetHeight");
+        this.explosiveID = Explosives.get(nbt.getInteger("explosiveID"));
+        this.ticksInAir = nbt.getInteger("ticksInAir");
+        this.lockHeight = nbt.getDouble("lockHeight");
+        this.missileType = MissileType.values()[nbt.getInteger("missileType")];
+        this.nbtData = nbt.getCompoundTag("additionalMissileData");
     }
 
-    /** (abstract) Protected helper method to write subclass entity data to NBT. */
+    /** (abstract) Protected helper method to write subclass entity additionalMissileData to NBT. */
     @Override
-    protected void writeEntityToNBT(NBTTagCompound nbt)
+    public void writeEntityToNBT(NBTTagCompound nbt)
     {
-        if (this.startPos != null)
-        {
-            nbt.setTag("kaiShi", this.startPos.toNBT());
-        }
+        super.writeEntityToNBT(nbt);
         if (this.targetVector != null)
         {
-            nbt.setTag("muBiao", this.targetVector.toNBT());
+            nbt.setTag("target", this.targetVector.toNBT());
         }
 
         if (this.launcherPos != null)
         {
-            nbt.setTag("faSheQi", this.launcherPos.toNBT());
+            nbt.setTag("launcherPos", this.launcherPos.toNBT());
         }
 
-        nbt.setFloat("jiaSu", this.acceleration);
-        nbt.setInteger("haoMa", this.explosiveID.ordinal());
-        nbt.setInteger("baoZhaGaoDu", this.targetHeight);
-        nbt.setInteger("feiXingTick", this.feiXingTick);
-        nbt.setDouble("qiFeiGaoDu", this.qiFeiGaoDu);
-        nbt.setInteger("xingShi", this.missileType.ordinal());
-        nbt.setTag("data", this.nbtData);
+        nbt.setFloat("acceleration", this.acceleration);
+        nbt.setInteger("explosiveID", this.explosiveID.ordinal());
+        nbt.setInteger("targetHeight", this.targetHeight);
+        nbt.setInteger("ticksInAir", this.ticksInAir);
+        nbt.setDouble("lockHeight", this.lockHeight);
+        nbt.setInteger("missileType", this.missileType.ordinal());
+        nbt.setTag("additionalMissileData", this.nbtData);
     }
 
     @Override
@@ -706,7 +583,7 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     @Override
     public int getTicksInAir()
     {
-        return this.feiXingTick;
+        return this.ticksInAir;
     }
 
     @Override
@@ -716,26 +593,10 @@ public class EntityMissile extends Entity implements IExplosiveContainer, IEntit
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float damage)
-    {
-        if (DamageUtility.canHarm(this, source, damage))
-        {
-            this.damage += damage;
-            if (this.damage >= this.max_damage)
-            {
-                this.setDead();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public NBTTagCompound getTagCompound()
     {
         return this.nbtData;
     }
-
 
     @Override
     public ItemStack getExplosiveStack()

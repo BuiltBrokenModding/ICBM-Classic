@@ -48,7 +48,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public TileCruiseLauncher()
     {
         super("cruiseLauncher", Material.iron);
-        this.targetPos = new Pos();
+        this.setTarget(new Pos());
     }
 
     @Override
@@ -165,7 +165,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (this.targetPos == null)
+        else if (this.getTarget() == null)
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
         }
@@ -250,7 +250,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                                 if (missile.isCruise() && missile.getTier() <= 3)
                                 {
                                     Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1f), (this.zCoord + 0.5f));
-                                    this.daoDan = new EntityMissile(this.worldObj, startingPosition, new Pos(this), Explosives.get(haoMa));
+                                    this.daoDan = new EntityMissile(this.worldObj);
+                                    this.daoDan.setPosition(startingPosition.x(), startingPosition.y(), startingPosition.z());
+                                    this.daoDan.launcherPos = new Pos(this);
+                                    this.daoDan.explosiveID = Explosives.get(haoMa);
                                     this.worldObj.spawnEntityInWorld((Entity) this.daoDan);
                                     return;
                                 }
@@ -280,7 +283,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.getFrequency(), this.targetPos.xi(), this.targetPos.yi(), this.targetPos.zi());
+        return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -292,7 +295,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             {
                 this.energy = data.readInt();
                 this.setFrequency(data.readInt());
-                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                 return true;
             }
             case 1:
@@ -302,7 +305,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             }
             case 2:
             {
-                this.targetPos = new Pos(data.readInt(), data.readInt(), data.readInt());
+                this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                 return true;
             }
         }
@@ -311,14 +314,14 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
     private float getPitchFromTarget()
     {
-        double distance = Math.sqrt((this.targetPos.x() - this.xCoord) * (this.targetPos.x() - this.xCoord) + (this.targetPos.z() - this.zCoord) * (this.targetPos.z() - this.zCoord));
-        return (float) Math.toDegrees(Math.atan((this.targetPos.y() - (this.yCoord + 0.5F)) / distance));
+        double distance = Math.sqrt((this.getTarget().x() - this.xCoord) * (this.getTarget().x() - this.xCoord) + (this.getTarget().z() - this.zCoord) * (this.getTarget().z() - this.zCoord));
+        return (float) Math.toDegrees(Math.atan((this.getTarget().y() - (this.yCoord + 0.5F)) / distance));
     }
 
     private float getYawFromTarget()
     {
-        double xDifference = this.targetPos.x() - (this.xCoord + 0.5F);
-        double yDifference = this.targetPos.z() - (this.zCoord + 0.5F);
+        double xDifference = this.getTarget().x() - (this.xCoord + 0.5F);
+        double yDifference = this.getTarget().z() - (this.zCoord + 0.5F);
         return (float) Math.toDegrees(Math.atan2(yDifference, xDifference));
     }
 
@@ -333,7 +336,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             {
                 if (this.checkExtract())
                 {
-                    if (!this.isTooClose(this.targetPos))
+                    if (!this.isTooClose(this.getTarget()))
                     {
                         return true;
                     }
@@ -360,7 +363,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             this.decrStackSize(0, 1);
             this.extractEnergy();
-            this.daoDan.launch(this.targetPos);
+            this.daoDan.launch(this.getTarget());
             this.daoDan = null;
         }
     }

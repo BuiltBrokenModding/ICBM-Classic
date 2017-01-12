@@ -1,6 +1,7 @@
 package icbm.classic.prefab;
 
 import cofh.api.energy.IEnergyHandler;
+import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,7 +13,14 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
 {
+    /** Energy stored by the machine. */
     protected int energy = 0;
+    /**
+     * Toggle to send a {@link #getDescPacket()} on the next tick, keep in mind only do this for render data.
+     * if the data is not used by the renderer then send it at the time it is needed. For example, GUI data
+     * should be sent to only GUI users and not everyone.
+     */
+    protected boolean updateClient = false;
 
     /**
      * Creates a new TileMachine instance
@@ -23,6 +31,46 @@ public class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
     public TileICBMMachine(String name, Material material)
     {
         super(name, material);
+    }
+
+    @Override
+    public void update()
+    {
+        super.update();
+        doUpdateGuiUsers();
+    }
+
+    @Override
+    public void doUpdateGuiUsers()
+    {
+        if (isServer())
+        {
+            //Sync client(s) if needed
+            if (updateClient)
+            {
+                updateClient = false;
+                sendDescPacket();
+            }
+            //Sync GUI data to client(s)
+            if (ticks % 3 == 0)
+            {
+                PacketTile packet = getGUIPacket();
+                if (packet != null)
+                {
+                    sendPacketToGuiUsers(packet);
+                }
+            }
+        }
+    }
+
+    /**
+     * Packet sent to GUI users
+     *
+     * @return
+     */
+    protected PacketTile getGUIPacket()
+    {
+        return null;
     }
 
     @Override
@@ -106,21 +154,39 @@ public class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
         return true;
     }
 
+    /**
+     * Called to extract the amount of energy the machine needs to use per operation
+     */
     public void extractEnergy()
     {
         extractEnergy(ForgeDirection.UNKNOWN, getEnergyConsumption(), false);
     }
 
+    /**
+     * Called to check if the machine has enough energy to operate
+     *
+     * @return true if yes
+     */
     public boolean checkExtract()
     {
         return getEnergyStored(ForgeDirection.UNKNOWN) >= getEnergyConsumption();
     }
 
+    /**
+     * How much energy does this machine consume per operation
+     *
+     * @return
+     */
     public int getEnergyConsumption()
     {
         return (int) (getMaxEnergyStored(ForgeDirection.UNKNOWN) * .9);
     }
 
+    /**
+     * Do we have any amount of power stored.
+     *
+     * @return true if greater than zero or other condition.
+     */
     public boolean hasPower()
     {
         return getEnergyStored(ForgeDirection.UNKNOWN) > 0;

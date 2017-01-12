@@ -46,7 +46,7 @@ public class MissileHoming extends Missile
     @Override
     public void update(EntityMissile missileObj)
     {
-        if (missileObj.feiXingTick > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileType.MISSILE)
+        if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileType.MISSILE)
         {
             WorldServer worldServer = (WorldServer) missileObj.worldObj;
             Entity trackingEntity = worldServer.getEntityByID(missileObj.trackingVar);
@@ -66,7 +66,7 @@ public class MissileHoming extends Missile
                 missileObj.deltaPathY = missileObj.targetVector.y() - missileObj.posY;
                 missileObj.deltaPathZ = missileObj.targetVector.z() - missileObj.posZ;
 
-                missileObj.flatDistance = missileObj.startPos.toVector2().distance(missileObj.targetVector.toVector2());
+                missileObj.flatDistance = missileObj.sourceOfProjectile.toVector2().distance(missileObj.targetVector.toVector2());
                 missileObj.maxHeight = 150 + (int) (missileObj.flatDistance * 1.8);
                 missileObj.missileFlightTime = (float) Math.max(100, 2.4 * missileObj.flatDistance);
                 missileObj.acceleration = (float) missileObj.maxHeight * 2 / (missileObj.missileFlightTime * missileObj.missileFlightTime);
@@ -85,7 +85,7 @@ public class MissileHoming extends Missile
     @Override
     public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer)
     {
-        if (!missileObj.worldObj.isRemote && missileObj.feiXingTick <= 0)
+        if (!missileObj.worldObj.isRemote && missileObj.getTicksInAir() <= 0)
         {
             if (entityPlayer.getCurrentEquippedItem() != null)
             {

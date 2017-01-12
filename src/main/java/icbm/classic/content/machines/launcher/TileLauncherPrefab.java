@@ -8,11 +8,13 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import icbm.classic.prefab.TileFrequency;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver
 {
-    protected Pos targetPos = null;
+    /** Target position of the launcher */
+    private Pos _targetPos = null;
 
     /**
      * Creates a new TileMachine instance
@@ -41,36 +43,47 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
 
     public Pos getTarget()
     {
-        if (this.targetPos == null)
+        if (this._targetPos == null)
         {
             if (targetWithYValue())
             {
-                this.targetPos = new Pos(this.xCoord, this.yCoord, this.zCoord);
+                this._targetPos = new Pos(this.xCoord, this.yCoord, this.zCoord);
             }
             else
             {
-                this.targetPos = new Pos(this.xCoord, 0, this.zCoord);
+                this._targetPos = new Pos(this.xCoord, 0, this.zCoord);
             }
         }
 
-        return this.targetPos;
+        return this._targetPos;
     }
 
+    /**
+     * Should we use the Y value when setting the target data
+     * into the missile
+     *
+     * @return true if yes
+     */
     public boolean targetWithYValue()
     {
         return false;
     }
 
+    /**
+     * Called to set the target
+     *
+     * @param target
+     */
     public void setTarget(Pos target)
     {
-        this.targetPos = target.floor();
+        this._targetPos = target.floor();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.targetPos = new Pos(nbt.getCompoundTag("target"));
+        this._targetPos = new Pos(nbt.getCompoundTag("target"));
     }
 
     @Override
@@ -78,9 +91,9 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     {
         super.writeToNBT(nbt);
 
-        if (this.targetPos != null)
+        if (this._targetPos != null)
         {
-            nbt.setTag("target", this.targetPos.toNBT());
+            nbt.setTag("target", this._targetPos.toNBT());
         }
     }
 
@@ -101,5 +114,11 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     public Cube getRadioReceiverRange()
     {
         return new Cube();
+    }
+
+    @Override
+    public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
+    {
+        updateClient = true;
     }
 }

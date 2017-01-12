@@ -250,6 +250,6 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
     {
         super.onPlaced(entityLiving, itemStack);
-        this.tier = itemStack.stackSize;
+        this.tier = itemStack.getItemDamage();
     }
 }

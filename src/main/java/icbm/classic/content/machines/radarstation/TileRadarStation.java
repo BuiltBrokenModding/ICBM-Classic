@@ -153,7 +153,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         {
             if (entity instanceof EntityMissile)
             {
-                if (((EntityMissile) entity).feiXingTick > -1)
+                if (((EntityMissile) entity).getTicksInAir() > -1)
                 {
                     if (!this.detectedEntities.contains(entity))
                     {

@@ -1,7 +1,6 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
@@ -78,13 +77,11 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                 // Limit the missile to tier two.
                                 if (((Explosion) ex.handler).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER && ((Explosion) ex.handler).isCruise())
                                 {
-                                    Pos launcher = new Pos(player).add(new Pos(0, 0.5, 0));
-                                    Pos playerAim = new Pos(player.getLook(1));
-                                    Pos start = launcher.add(playerAim.multiply(1.1));
-                                    Pos target = launcher.add(playerAim.multiply(100));
 
-                                    //TOD: Fix this rotation when we use the proper model loader.
-                                    EntityMissile entityMissile = new EntityMissile(world, start, ex, -player.rotationYaw, -player.rotationPitch);
+                                    EntityMissile entityMissile = new EntityMissile(player);
+                                    entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
+                                    entityMissile.explosiveID = ex;
+                                    entityMissile.ignore(player);
                                     world.spawnEntityInWorld(entityMissile);
 
                                     if (player.isSneaking())
@@ -93,12 +90,12 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                         player.setSneaking(false);
                                     }
 
-                                    entityMissile.ignore(player);
-                                    entityMissile.launch(target);
+                                    entityMissile.launch(entityMissile.getPredictedPosition(100));
 
                                     if (!player.capabilities.isCreativeMode)
                                     {
                                         player.inventory.setInventorySlotContents(slot, null);
+                                        player.inventoryContainer.detectAndSendChanges();
                                         this.discharge(itemStack, ENERGY, true);
                                     }
 

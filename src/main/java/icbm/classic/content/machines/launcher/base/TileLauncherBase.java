@@ -1,12 +1,9 @@
 package icbm.classic.content.machines.launcher.base;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
-import com.builtbroken.mc.core.network.IPacketReceiver;
-import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
@@ -27,7 +24,6 @@ import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.VectorHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -49,7 +45,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketReceiver, IRotatable, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer
+public class TileLauncherBase extends TileModuleMachine implements IPacketIDReceiver, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer
 {
     public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
     public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
@@ -80,10 +76,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     // The tier of this launcher base
     private int tier = 0;
 
-    private ForgeDirection facingDirection = ForgeDirection.NORTH;
-
-    private boolean packetGengXin = true;
-
     private boolean _destroyingStructure = false;
 
     //
@@ -91,6 +83,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     public TileLauncherBase()
     {
         super("launcherBase", Material.iron);
+        addInventoryModule(1);
     }
 
     @Override
@@ -107,96 +100,78 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     public void update()
     {
         super.update();
-
-        if (this.supportFrame == null)
+        if (!isServer())
         {
-            for (byte i = 2; i < 6; i++)
+            if (this.supportFrame == null || this.supportFrame.isInvalid())
             {
-                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
-
-                TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
-
-                if (tileEntity instanceof TileLauncherFrame)
+                this.supportFrame = null;
+                for (byte i = 2; i < 6; i++)
                 {
-                    this.supportFrame = (TileLauncherFrame) tileEntity;
-                    this.supportFrame.setDirection(VectorHelper.getOrientationFromSide(ForgeDirection.getOrientation(i), ForgeDirection.NORTH));
+                    Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
+
+                    TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
+
+                    if (tileEntity instanceof TileLauncherFrame)
+                    {
+                        this.supportFrame = (TileLauncherFrame) tileEntity;
+                        this.supportFrame.setDirection(VectorHelper.getOrientationFromSide(ForgeDirection.getOrientation(i), ForgeDirection.NORTH));
+                    }
                 }
             }
         }
-        else
-        {
-            if (this.supportFrame.isInvalid())
-            {
-                this.supportFrame = null;
-            }
-            else if (this.packetGengXin || this.ticks % (20 * 30) == 0 && this.supportFrame != null && !this.worldObj.isRemote)
-            {
-                sendDescPacket();
-            }
-        }
-
-        if (!this.worldObj.isRemote)
-        {
-            this.setMissile();
-
-            if (this.packetGengXin || this.ticks % (20 * 30) == 0)
-            {
-                sendDescPacket();
-                this.packetGengXin = false;
-            }
-        }
-    }
-
-    @Override
-    public PacketTile getDescPacket()
-    {
-        return new PacketTile(this, (byte) this.facingDirection.ordinal(), this.tier);
     }
 
     public void setMissile()
     {
         if (!this.worldObj.isRemote)
         {
-            if (this.getStackInSlot(0) != null)
+            if (this.getStackInSlot(0) != null && this.getStackInSlot(0).getItem() instanceof ItemMissile)
             {
-                if (this.getStackInSlot(0).getItem() instanceof ItemMissile)
+                int explosiveID = this.getStackInSlot(0).getItemDamage();
+                Explosives ex = Explosives.get(explosiveID);
+                if (ex.handler instanceof Missile)
                 {
-                    int explosiveID = this.getStackInSlot(0).getItemDamage();
-                    Explosives ex = Explosives.get(explosiveID);
-                    if (ex.handler instanceof Missile)
+                    Explosion missile = (Explosion) ex.handler;
+
+                    ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
+                    MinecraftForge.EVENT_BUS.post(evt);
+
+                    if (!evt.isCanceled())
                     {
-                        Explosion missile = (Explosion) ex.handler;
-
-                        ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
-                        MinecraftForge.EVENT_BUS.post(evt);
-
-                        if (!evt.isCanceled())
+                        if (this.missile == null)
                         {
-                            if (this.missile == null)
-                            {
-                                Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1.8f), (this.zCoord + 0.5f));
-                                this.missile = new EntityMissile(this.worldObj, startingPosition, new Pos(this), ex);
-                                this.worldObj.spawnEntityInWorld((Entity) this.missile);
-                                return;
-                            }
-                            else
-                            {
-                                if (this.missile.explosiveID == ex)
-                                {
-                                    return;
-                                }
-                            }
+                            Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1.8f), (this.zCoord + 0.5f));
+                            this.missile = new EntityMissile(this.worldObj);
+                            this.missile.setPosition(startingPosition.x(), startingPosition.y(), startingPosition.z());
+                            this.missile.launcherPos = new Pos(this);
+                            this.missile.explosiveID = ex;
+                            this.worldObj.spawnEntityInWorld(this.missile);
+                            return;
+                        }
+                        else
+                        {
+                            this.missile.explosiveID = ex;
                         }
                     }
                 }
             }
-
-            if (this.missile != null)
+            else
             {
-                ((Entity) this.missile).setDead();
+                if (this.missile != null)
+                {
+                    this.missile.setDead();
+                }
+                this.missile = null;
             }
+        }
+    }
 
-            this.missile = null;
+    @Override
+    public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
+    {
+        if (slot == 0)
+        {
+            setMissile();
         }
     }
 
@@ -239,7 +214,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         if (target != null)
         {
-            return !shiTaiYuan(target) && !shiTaiJin(target);
+            return !isTargetTooFar(target) && !isTargetTooClose(target);
         }
 
         return false;
@@ -251,14 +226,14 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
      * @param target
      * @return
      */
-    public boolean shiTaiJin(Pos target)
+    public boolean isTargetTooClose(Pos target)
     {
         // Check if it is greater than the minimum range
         return new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z())) < 10;
     }
 
     // Is the target too far?
-    public boolean shiTaiYuan(Pos target)
+    public boolean isTargetTooFar(Pos target)
     {
         // Checks if it is greater than the maximum range for the launcher base
         double distance = new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z()));
@@ -293,7 +268,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         super.readFromNBT(nbt);
         this.tier = nbt.getInteger("tier");
-        this.facingDirection = ForgeDirection.getOrientation(nbt.getByte("facingDirection"));
     }
 
     /** Writes a tile entity to NBT. */
@@ -302,7 +276,20 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         super.writeToNBT(nbt);
         nbt.setInteger("tier", this.tier);
-        nbt.setByte("facingDirection", (byte) this.facingDirection.ordinal());
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        this.tier = buf.readInt();
+    }
+
+    @Override
+    public void writeDescPacket(ByteBuf buf)
+    {
+        super.writeDescPacket(buf);
+        buf.writeInt(tier);
     }
 
     @Override
@@ -326,30 +313,27 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
             {
                 if (this.getStackInSlot(0) == null)
                 {
-
-                    this.setInventorySlotContents(0, player.inventory.getCurrentItem());
-                    if (!player.capabilities.isCreativeMode)
+                    if(isServer())
                     {
-                        player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                        this.setInventorySlotContents(0, player.inventory.getCurrentItem());
+                        if (!player.capabilities.isCreativeMode)
+                        {
+                            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                            player.inventoryContainer.detectAndSendChanges();
+                        }
                     }
-                    return true;
-                }
-                else
-                {
-                    ItemStack player_held = player.inventory.getCurrentItem();
-                    if (!player.capabilities.isCreativeMode)
-                    {
-                        player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
-                    }
-                    this.setInventorySlotContents(0, player_held);
                     return true;
                 }
             }
         }
         else if (this.getStackInSlot(0) != null)
         {
-            player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
-            this.setInventorySlotContents(0, null);
+            if(isServer())
+            {
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
+                this.setInventorySlotContents(0, null);
+                player.inventoryContainer.detectAndSendChanges();
+            }
             return true;
         }
 
@@ -361,29 +345,9 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     {
         if (this.missile != null)
         {
-            ((Entity) this.missile).setDead();
+            this.missile.setDead();
         }
-
         super.invalidate();
-    }
-
-
-    public Pos[] getMultiBlockVectors()
-    {
-        if (this.facingDirection == ForgeDirection.SOUTH || this.facingDirection == ForgeDirection.NORTH)
-        {
-            return new Pos[]{new Pos(1, 0, 0), new Pos(1, 1, 0), new Pos(1, 2, 0), new Pos(-1, 0, 0), new Pos(-1, 1, 0), new Pos(-1, 2, 0)};
-        }
-        else
-        {
-            return new Pos[]{new Pos(0, 0, 1), new Pos(0, 1, 1), new Pos(0, 2, 1), new Pos(0, 0, -1), new Pos(0, 1, -1), new Pos(0, 2, -1)};
-        }
-    }
-
-    @Override
-    public ForgeDirection getDirection()
-    {
-        return this.facingDirection;
     }
 
     @Override
@@ -407,11 +371,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     public void setContainingMissile(IMissile missile)
     {
         this.missile = (EntityMissile) missile;
-    }
-
-    public void setContainingMissile(EntityMissile missile)
-    {
-        this.missile = missile;
     }
 
     @Override
@@ -511,7 +470,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     @Override
     public HashMap<IPos3D, String> getLayoutOfMultiBlock()
     {
-        if(getDirection() == ForgeDirection.EAST || getDirection() == ForgeDirection.WEST)
+        if (getDirection() == ForgeDirection.EAST || getDirection() == ForgeDirection.WEST)
         {
             return eastWestMultiBlockCache;
         }
@@ -519,22 +478,15 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     }
 
     @Override
-    public void setDirection(ForgeDirection facingDirection)
+    public void setFacing(ForgeDirection facingDirection)
     {
-        if(facingDirection != getDirection())
+        if (facingDirection != getDirection())
         {
             MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
-            this.facingDirection = facingDirection;
+            super.setFacing(facingDirection);
             MultiBlockHelper.buildMultiBlock(world(), this, true, true);
             markDirty();
         }
-    }
-
-    @Override
-    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
-    {
-        this.facingDirection = ForgeDirection.getOrientation(data.readByte());
-        this.tier = data.readInt();
     }
 
     @Override
@@ -561,6 +513,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketReceiv
     public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
     {
         super.onPlaced(entityLiving, itemStack);
-        this.tier = itemStack.stackSize;
+        this.tier = itemStack.getItemDamage();
     }
 }

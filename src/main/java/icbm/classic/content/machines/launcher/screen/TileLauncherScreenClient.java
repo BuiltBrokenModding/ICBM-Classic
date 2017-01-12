@@ -59,13 +59,13 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
 
         switch (getDirection().ordinal())
         {
-            case 2:
+            case 3:
                 GL11.glRotatef(180F, 0.0F, 180F, 1.0F);
                 break;
-            case 4:
+            case 5:
                 GL11.glRotatef(90F, 0.0F, 180F, 1.0F);
                 break;
-            case 5:
+            case 4:
                 GL11.glRotatef(-90F, 0.0F, 180F, 1.0F);
                 break;
         }
