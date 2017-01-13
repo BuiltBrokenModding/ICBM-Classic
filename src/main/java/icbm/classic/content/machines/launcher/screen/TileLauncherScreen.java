@@ -68,27 +68,30 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public void update()
     {
         super.update();
-        if (isServer())
+        if (this.laucherBase == null || this.laucherBase.isInvalid())
         {
-            if (this.laucherBase == null || this.laucherBase.isInvalid())
+            this.laucherBase = null;
+            for (byte i = 2; i < 6; i++)
             {
-                this.laucherBase = null;
-                for (byte i = 2; i < 6; i++)
+                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
+
+                TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
+
+                if (tileEntity != null)
                 {
-                    Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
-
-                    TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
-
-                    if (tileEntity != null)
+                    if (tileEntity instanceof TileLauncherBase)
                     {
-                        if (tileEntity instanceof TileLauncherBase)
+                        this.laucherBase = (TileLauncherBase) tileEntity;
+                        if (isServer())
                         {
-                            this.laucherBase = (TileLauncherBase) tileEntity;
                             this.setFacing(ForgeDirection.getOrientation(i));
                         }
                     }
                 }
             }
+        }
+        if (isServer())
+        {
             if (this.ticks % 100 == 0 && this.isIndirectlyPowered())
             {
                 this.launch();

@@ -99,9 +99,10 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
         if (cachedMissileStack != null)
         {
             GL11.glPushMatrix();
-            GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
+            GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 0.5F, (float) pos.z() + 0.5F);
 
             GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+            GL11.glScalef(0.05f, 0.05f, 0.05f);
 
             Explosives e = Explosives.get(cachedMissileStack.getItemDamage());
             Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;

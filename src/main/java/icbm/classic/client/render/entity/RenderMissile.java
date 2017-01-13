@@ -38,7 +38,15 @@ public class RenderMissile extends Render
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glRotatef(entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * f1 - 90.0F, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * f1 - 90, 0.0F, 0.0F, 1.0F);
+        float pitch = entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * f1 - 90;
+        if(entityMissile.missileType == MissileType.MISSILE)
+        {
+            GL11.glRotatef(pitch - 180, 0.0F, 0.0F, 1.0F);
+        }
+        else
+        {
+            GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
+        }
 
         if (entityMissile.missileType == MissileType.CruiseMissile)
         {
