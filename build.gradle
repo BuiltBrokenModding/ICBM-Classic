@@ -40,10 +40,71 @@ targetCompatibility = 1.8
 dependencies
 {
     compile "dev.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf-dev"
-    //if (project.hasProperty("bambooshortPlanName") && project.getProperty("bambooshortPlanName") == "BBM-Dev")
-    //compile "dev.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf-dev"
-    //else
-    //compile "com.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf"
+    compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
+    compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
+    compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
+    compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
+    compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
+    /*if (project.hasProperty("bambooshortPlanName") && project.getProperty("bambooshortPlanName") == "BBM-Dev")
+        {
+            compile "dev.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf-dev"
+            compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
+            compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
+            compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
+            compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
+            compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
+        }
+    else
+        {
+            compile "com.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf"
+            compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
+            compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
+            compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
+            compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
+            compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
+            }*/
+
+}
+
+def currentJvm = org.gradle.internal.jvm.Jvm.current()
+println "Current Java version = " + currentJvm
+
+import org.ajoberstar.grgit.*
+
+def gitHash = 'unknown'
+if (new File(projectDir, '.git').exists()) {
+    def repo = Grgit.open(project.file('.'))
+    gitHash = repo.log().find().abbreviatedId
+}
+
+jar {
+     manifest.mainAttributes(
+            "Built-By": System.getProperty('user.name'),
+            "Created-By": currentJvm,
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": project.version,
+            "Git-Hash": gitHash,
+            "FMLAT": "ICBMClassic_at.cfg")
+}
+
+deobfJar {
+     manifest.mainAttributes(
+            "Built-By": System.getProperty('user.name'),
+            "Created-By": currentJvm,
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": project.version,
+            "Git-Hash": gitHash,
+            "FMLAT": "ICBMClassic_at.cfg")
+}
+
+sourcesJar {
+     manifest.mainAttributes(
+            "Built-By": System.getProperty('user.name'),
+            "Created-By": currentJvm,
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": project.version,
+            "Git-Hash": gitHash,
+            "FMLAT": "ICBMClassic_at.cfg")
 }
 
 jacocoTestReport {

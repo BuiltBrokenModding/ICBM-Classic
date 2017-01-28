@@ -14,3 +14,6 @@ eclipse/
 *.ipr
 *.idea/
 *.ini
+ICBM-classic.txt
+CompiledWith.txt
+output
