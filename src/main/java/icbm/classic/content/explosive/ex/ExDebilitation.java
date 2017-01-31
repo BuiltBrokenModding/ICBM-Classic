@@ -17,7 +17,7 @@ public class ExDebilitation extends Explosion
     public ExDebilitation(String mingZi, int tier)
     {
         super(mingZi, tier);
-        this.modelName = "missle_deblitation.tcn";
+        this.missileModelPath = "missiles/tier1/missile_head_dibilitation.obj";
     }
 
     @Override

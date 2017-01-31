@@ -19,7 +19,7 @@ public class ExAntimatter extends Explosion
     {
         super("antimatter", 4);
         this.setYinXin(300);
-        this.modelName = "missile_antimatter.tcn";
+        this.missileModelPath = "missile_antimatter.tcn";
     }
 
     /** Called when the explosive is on fuse and going to explode. Called only when the explosive is

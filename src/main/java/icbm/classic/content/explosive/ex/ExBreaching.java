@@ -18,7 +18,7 @@ public class ExBreaching extends Explosion
     {
         super("breaching", 2);
         this.setYinXin(40);
-        this.modelName = "missile_breaching.tcn";
+        this.missileModelPath = "missiles/tier2/missile_head_breaching.obj";
     }
 
     @Override

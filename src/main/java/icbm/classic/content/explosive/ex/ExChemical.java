@@ -20,11 +20,11 @@ public class ExChemical extends Explosion
         //chemical
         if (this.getTier() == 1)
         {
-            this.modelName = "missile_chemical.tcn";
+            this.missileModelPath = "missiles/tier1/missile_head_chemical.obj";
         }//contagious
         else if (this.getTier() == 2)
         {
-            this.modelName = "missile_contagious.tcn";
+            this.missileModelPath = "missiles/tier2/missile_head_contagious.obj";
         }
     }
 

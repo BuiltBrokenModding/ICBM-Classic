@@ -16,7 +16,7 @@ public class ExRedMatter extends Explosion
     public ExRedMatter()
     {
         super("redMatter", 4);
-        this.modelName = "missile_redmatter.tcn";
+        this.missileModelPath = "missile_redmatter.tcn";
     }
 
     @Override

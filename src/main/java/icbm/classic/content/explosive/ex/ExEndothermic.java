@@ -17,7 +17,7 @@ public class ExEndothermic extends Explosion
     public ExEndothermic()
     {
         super("endothermic", 3);
-        this.modelName = "missile_endothermic.tcn";
+        this.missileModelPath = "missile_endothermic.tcn";
     }
 
     @Override

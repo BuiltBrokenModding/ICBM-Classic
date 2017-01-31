@@ -20,7 +20,7 @@ public class MissileHoming extends Missile
     {
         super("homing", 1);
         this.hasBlock = false;
-        this.modelName = "missile_homing.tcn";
+        this.missileModelPath = "missiles/tier1/missile_head_homing.obj";
     }
 
     @Override

@@ -19,7 +19,7 @@ public class ExCondensed extends Explosion
     {
         super(mingZi, tier);
         this.setYinXin(1);
-        this.modelName = "missile_concussion.tcn";
+        this.missileModelPath = "missiles/tier1/missile_head_concussion.obj";
     }
 
     @Override

@@ -20,15 +20,15 @@ public class ExShrapnel extends Explosion
         super(name, tier);
         if (name.equalsIgnoreCase("shrapnel"))
         {
-            this.modelName = "missile_shrapnel.tcn";
+            this.missileModelPath = "missiles/tier1/missile_head_shrapnel.obj";
         }
         else if (name.equalsIgnoreCase("anvil"))
         {
-            this.modelName = "missile_anvil.tcn";
+            this.missileModelPath = "missiles/tier1/missile_head_anvil.obj";
         }
         else if (name.equalsIgnoreCase("fragmentation"))
         {
-            this.modelName = "missile_fragment.tcn";
+            this.missileModelPath = "missiles/tier2/missile_head_frag.obj";
         }
     }
 

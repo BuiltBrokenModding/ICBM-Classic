@@ -18,7 +18,7 @@ public class ExIncendiary extends Explosion
     public ExIncendiary(String mingZi, int tier)
     {
         super(mingZi, tier);
-        this.modelName = "missile_incendiary.tcn";
+        this.missileModelPath = "missiles/tier1/missile_head_incen.obj";
     }
 
     @Override

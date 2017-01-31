@@ -13,7 +13,7 @@ public class MissileModule extends Missile
     {
         super("missileModule", 1);
         this.hasBlock = false;
-        this.modelName = "missile_conventional.tcn";
+        this.missileModelPath = "missiles/tier1/missile_head_conventional.obj";
     }
 
     @Override

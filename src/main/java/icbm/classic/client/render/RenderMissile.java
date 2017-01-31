@@ -1,0 +1,174 @@
+package icbm.classic.client.render;
+
+import com.builtbroken.mc.lib.render.model.loader.EngineModelLoader;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
+import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.EntityMissile.MissileType;
+import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.Explosion;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.model.IModelCustom;
+import org.lwjgl.opengl.GL11;
+
+@SideOnly(Side.CLIENT)
+/** @author Calclavia */
+public class RenderMissile extends Render implements IItemRenderer
+{
+    private static IModelCustom TIER1_BASE;
+    private static IModelCustom TIER2_BASE;
+
+    public RenderMissile(float f)
+    {
+        this.shadowSize = f;
+        TIER1_BASE = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/missiles/tier1/missile_base_t1.obj"));
+        TIER2_BASE = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/missiles/tier2/missile_base_t2.obj"));
+    }
+
+    @Override
+    public void doRender(Entity entity, double x, double y, double z, float f, float f1)
+    {
+        EntityMissile entityMissile = (EntityMissile) entity;
+        Explosive e = entityMissile.getExplosiveType();
+        Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e;
+
+        GL11.glPushMatrix();
+        GL11.glTranslated(x, y, z);
+        GL11.glRotatef(entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * f1 - 90.0F, 0.0F, 1.0F, 0.0F);
+        float pitch = entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * f1 - 90;
+        if (entityMissile.missileType == MissileType.MISSILE)
+        {
+            GL11.glRotatef(pitch - 180, 0.0F, 0.0F, 1.0F);
+        }
+        else
+        {
+            GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
+        }
+        if(missile.missileModelPath.contains("missiles"))
+        {
+            GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
+        }
+        else
+        {
+            GL11.glScalef(0.07f, 0.07f, 0.07f);
+        }
+        renderMissile(missile);
+
+        GL11.glPopMatrix();
+    }
+
+    public static void renderMissile(Explosion missile)
+    {
+        if (missile.getMissileModel() != null)
+        {
+            if (missile.missileModelPath.contains("missiles"))
+            {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(missile.getMissileResource());
+                if (missile.getTier() == 1)
+                {
+                    TIER1_BASE.renderAll();
+                }
+                else if (missile.getTier() == 2)
+                {
+                    TIER2_BASE.renderAll();
+                }
+                missile.getMissileModel().renderAll();
+            }
+            else
+            {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(missile.getMissileResource());
+                //FMLClientHandler.instance().getClient().renderEngine.bindTexture(SharedAssets.GREY_TEXTURE);
+                missile.getMissileModel().renderAll();
+            }
+        }
+        else
+        {
+            TIER1_BASE.renderAll();
+        }
+    }
+
+    @Override
+    protected ResourceLocation getEntityTexture(Entity entity)
+    {
+        return null;
+    }
+
+    @Override
+    public boolean handleRenderType(ItemStack item, IItemRenderer.ItemRenderType type)
+    {
+        return true;
+    }
+
+    @Override
+    public boolean shouldUseRenderHelper(IItemRenderer.ItemRenderType type, ItemStack item, IItemRenderer.ItemRendererHelper helper)
+    {
+        return true;
+    }
+
+    @Override
+    public void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data)
+    {
+        Explosives ex = Explosives.get(item.getItemDamage());
+
+        if (ex.handler instanceof Explosion)
+        {
+            Explosion missile = (Explosion) ex.handler;
+            float yaw = 0;
+            float pitch = -90;
+            float scale = missile.missileModelPath.contains("missiles") ? 0.00625f : 0.7f;
+
+
+            switch (type)
+            {
+                case INVENTORY:
+
+                    scale = missile.missileModelPath.contains("missiles") ? 0.0035f : 0.5f;
+
+                    if (missile.getTier() == 2 || !missile.hasBlockForm())
+                    {
+                        scale = scale / 1.5f;
+                        GL11.glTranslatef(-0.7f, 0f, 0f);
+                    }
+                    else if (missile.getTier() == 3)
+                    {
+                        scale = scale / 1.7f;
+                        GL11.glTranslatef(-0.65f, 0f, 0f);
+                    }
+                    else if (missile.getTier() == 4)
+                    {
+                        scale = scale / 1.4f;
+                        GL11.glTranslatef(-0.5f, 0f, 0f);
+                    }
+                    else
+                    {
+                        GL11.glTranslatef(-0.5f, 0f, 0f);
+                    }
+                    break;
+                case EQUIPPED:
+                    GL11.glTranslatef(1f, 0.3f, 0.5f);
+                    break;
+                case EQUIPPED_FIRST_PERSON:
+                    GL11.glTranslatef(1.15f, -1f, 0.5f);
+                    break;
+                case ENTITY:
+                    GL11.glTranslatef(-0.6f, 0f, 0f);
+                    break;
+                default:
+                    break;
+            }
+
+            GL11.glRotatef(yaw, 0, 1f, 0f);
+            GL11.glRotatef(pitch, 0, 0f, 1f);
+            GL11.glScalef(scale, scale, scale);
+
+            renderMissile(missile);
+        }
+    }
+}

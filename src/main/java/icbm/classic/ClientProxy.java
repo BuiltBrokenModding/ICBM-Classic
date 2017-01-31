@@ -9,8 +9,8 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.client.fx.FXAntimatterPartical;
+import icbm.classic.client.render.RenderMissile;
 import icbm.classic.client.render.entity.*;
-import icbm.classic.client.render.item.RenderItemMissile;
 import icbm.classic.client.render.item.RenderRocketLauncher;
 import icbm.classic.client.render.tile.RenderBombBlock;
 import icbm.classic.content.entity.*;
@@ -61,12 +61,13 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, new RenderShrapnel());
 
         MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemRocketLauncher, new RenderRocketLauncher());
-        MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemMissile, new RenderItemMissile());
+        RenderMissile renderMissile = new RenderMissile(0.5F);
+        MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemMissile, renderMissile);
 
         RenderingRegistry.registerBlockHandler(new RenderBombBlock());
 
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, new RenderEntityExplosive());
-        RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, new RenderMissile(0.5F));
+        RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, renderMissile);
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, new RenderExplosion());
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, new RenderLightBeam());
         RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, new RenderGrenade());

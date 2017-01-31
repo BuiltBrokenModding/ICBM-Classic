@@ -18,7 +18,7 @@ public class ExRejuvenation extends Explosion
     public ExRejuvenation()
     {
         super("rejuvenation", 2);
-        this.modelName = "missile_regen.tcn";
+        this.missileModelPath = "missiles/tier2/missile_head_regeneration.obj";
     }
 
     @Override

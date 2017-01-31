@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.ex;
 
+import com.builtbroken.mc.lib.render.model.loader.EngineModelLoader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
@@ -7,7 +8,6 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
 public abstract class Explosion extends Explosive
@@ -18,7 +18,8 @@ public abstract class Explosion extends Explosive
     @SideOnly(Side.CLIENT)
     private IModelCustom model;
 
-    protected String modelName;
+    /** Path in the asset folder to the missile model */
+    public String missileModelPath;
 
     public Explosion(String name, int tier)
     {
@@ -55,9 +56,8 @@ public abstract class Explosion extends Explosive
     {
         if (this.resourceLocation == null)
         {
-            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "missile_" + this.getUnlocalizedName() + ".png");
+            this.resourceLocation = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/missile_" + this.getUnlocalizedName() + ".png");
         }
-
         return this.resourceLocation;
     }
 
@@ -69,12 +69,12 @@ public abstract class Explosion extends Explosive
         {
             if (this.model == null)
             {
-                model = AdvancedModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + this.modelName));
+                model = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + this.missileModelPath));
             }
         }
         catch (Exception e)
         {
-            ICBMClassic.INSTANCE.logger().error("Unexpected error while loading missile Model[ " + this.modelName + "]", e);
+            ICBMClassic.INSTANCE.logger().error("Unexpected error while loading missile Model[ " + this.missileModelPath + "]", e);
         }
 
         return model;

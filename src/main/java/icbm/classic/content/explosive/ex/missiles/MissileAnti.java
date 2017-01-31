@@ -24,7 +24,7 @@ public class MissileAnti extends Missile
     {
         super("antiBallistic", 2);
         this.hasBlock = false;
-        this.modelName = "missile_antimatter.tcn";
+        this.missileModelPath = "missiles/tier2/missile_head_antballistic.obj";
     }
 
     @Override

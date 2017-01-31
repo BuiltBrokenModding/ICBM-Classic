@@ -21,7 +21,7 @@ public class MissileCluster extends Missile
     {
         super(name, tier);
         this.hasBlock = false;
-        this.modelName = "missile_cluster.tcn";
+        this.missileModelPath = "missiles/tier2/missile_head_cluster.obj";
     }
 
     @Override

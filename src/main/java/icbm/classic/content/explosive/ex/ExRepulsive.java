@@ -19,11 +19,11 @@ public class ExRepulsive extends Explosion
         this.setYinXin(120);
         if (name.equalsIgnoreCase("attractive"))
         {
-            this.modelName = "missile_attractive.tcn";
+            this.missileModelPath = "missiles/tier1/missile_head_attraction.obj";
         }
         else
         {
-            this.modelName = "missile_repulsion .tcn";
+            this.missileModelPath = "missiles/tier1/missile_head_repulsion.obj";
         }
     }
 

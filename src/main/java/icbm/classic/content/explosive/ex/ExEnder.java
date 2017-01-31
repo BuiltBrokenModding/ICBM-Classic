@@ -27,7 +27,7 @@ public class ExEnder extends Explosion
     public ExEnder()
     {
         super("ender", 3);
-        this.modelName = "missile_ender.tcn";
+        this.missileModelPath = "missile_ender.tcn";
     }
 
     @Override

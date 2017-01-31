@@ -19,11 +19,11 @@ public class ExNuclear extends Explosion
         super(mingZi, tier);
         if (this.getTier() == 3)
         {
-            this.modelName = "missile_nuclear.tcn";
+            this.missileModelPath = "missile_nuclear.tcn";
         }
         else
         {
-            this.modelName = "missile_conflag.tcn";
+            this.missileModelPath = "missile_conflag.tcn";
         }
     }
 
