@@ -82,7 +82,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     @Override
     public Tile newTile()
     {
-        return new TileLauncherBaseClient();
+        return new TileLauncherBase();
     }
 
     /**

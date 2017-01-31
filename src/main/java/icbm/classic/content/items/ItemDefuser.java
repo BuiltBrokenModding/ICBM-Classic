@@ -19,7 +19,7 @@ import java.util.Random;
 //Explosive Defuser
 public class ItemDefuser extends ItemICBMElectrical
 {
-    private static final int YONG_DIAN_LIANG = 2000;
+    private static final int ENERGY_COST = 2000;
 
     public ItemDefuser()
     {
@@ -38,8 +38,7 @@ public class ItemDefuser extends ItemICBMElectrical
     @Override
     public boolean onLeftClickEntity(ItemStack itemStack, EntityPlayer player, Entity entity)
     {
-        System.out.println("stackCharge " + this.getEnergy(itemStack));
-        if (this.getEnergy(itemStack) >= YONG_DIAN_LIANG)
+        if (this.getEnergy(itemStack) >= ENERGY_COST)
         {
             if (entity instanceof EntityExplosive)
             {
@@ -75,7 +74,7 @@ public class ItemDefuser extends ItemICBMElectrical
                 ((EntityBombCart) entity).killMinecart(DamageSource.generic);
             }
 
-            this.discharge(itemStack, YONG_DIAN_LIANG, true);
+            this.discharge(itemStack, ENERGY_COST, true);
             return true;
         }
         else

@@ -65,21 +65,20 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public void killMinecart(DamageSource par1DamageSource)
     {
-        this.setDead();
-        ItemStack itemstack = new ItemStack(Items.minecart, 1);
-
-        this.entityDropItem(itemstack, 0.0F);
-
-        double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
-
-        if (!par1DamageSource.isExplosion())
+        if(!worldObj.isRemote)
         {
-            this.entityDropItem(getCartItem(), 0.0F);
-        }
+            this.setDead();
+            double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
-        if (par1DamageSource.isFireDamage() || par1DamageSource.isExplosion() || d0 >= 0.009999999776482582D)
-        {
-            this.explodeCart(d0);
+            if (!par1DamageSource.isExplosion())
+            {
+                this.entityDropItem(getCartItem(), 0.0F);
+            }
+
+            if (par1DamageSource.isFireDamage() || par1DamageSource.isExplosion() || d0 >= 0.009999999776482582D)
+            {
+                this.explodeCart(d0);
+            }
         }
     }
 

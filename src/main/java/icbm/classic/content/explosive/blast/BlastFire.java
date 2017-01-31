@@ -63,13 +63,16 @@ public class BlastFire extends Blast
                                          * Check to see if the block is an air block and there is a
                                          * block below it to support the fire.
                                          */
-                                        Block blockID = world().getBlock((int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
+                                        Block block = world().getBlock((int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
 
-                                        if ((blockID == Blocks.air || blockID == Blocks.snow) && world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi()).getMaterial().isSolid())
+                                        boolean canReplace = block.isReplaceable(world(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z())
+                                                || block.isAir(world(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
+
+                                        if (canReplace && Blocks.fire.canPlaceBlockAt(world(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z()))
                                         {
                                             targetPosition.setBlock(world(), Blocks.fire);
                                         }
-                                        else if (blockID == Blocks.ice)
+                                        else if (block == Blocks.ice)
                                         {
                                             targetPosition.setBlockToAir(world());
                                         }
