@@ -8,6 +8,7 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
+import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
@@ -42,9 +43,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
     public float rotationPitch = 0;
 
-    /** The ItemStacks that hold the items currently being used in the missileLauncher */
-    private ItemStack[] containingItems = new ItemStack[2];
-
     public TileCruiseLauncher()
     {
         super("cruiseLauncher", Material.iron);
@@ -58,92 +56,15 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
+    protected IInventory createInventory()
+    {
+        return new TileModuleInventory(this, 2);
+    }
+
+    @Override
     public int getMaxEnergyStored(ForgeDirection from)
     {
         return 100000000;
-    }
-
-    /** Returns the number of slots in the inventory. */
-    @Override
-    public int getSizeInventory()
-    {
-        return this.containingItems.length;
-    }
-
-    /** Returns the stack in slot i */
-    @Override
-    public ItemStack getStackInSlot(int par1)
-    {
-        return this.containingItems[par1];
-    }
-
-    /**
-     * Decrease the size of the stack in slot (first int arg) by the amount of the second int arg.
-     * Returns the new stack.
-     */
-    @Override
-    public ItemStack decrStackSize(int par1, int par2)
-    {
-        if (this.containingItems[par1] != null)
-        {
-            ItemStack var3;
-
-            if (this.containingItems[par1].stackSize <= par2)
-            {
-                var3 = this.containingItems[par1];
-                this.containingItems[par1] = null;
-                return var3;
-            }
-            else
-            {
-                var3 = this.containingItems[par1].splitStack(par2);
-
-                if (this.containingItems[par1].stackSize == 0)
-                {
-                    this.containingItems[par1] = null;
-                }
-
-                return var3;
-            }
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /**
-     * When some containers are closed they call this on each slot, then drop whatever it returns as
-     * an EntityItem - like when you close a workbench GUI.
-     */
-    @Override
-    public ItemStack getStackInSlotOnClosing(int par1)
-    {
-        if (this.containingItems[par1] != null)
-        {
-            ItemStack var2 = this.containingItems[par1];
-            this.containingItems[par1] = null;
-            return var2;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Sets the given item stack to the specified slot in the inventory (can be crafting or armor
-     * sections).
-     */
-    @Override
-    public void setInventorySlotContents(int par1, ItemStack par2ItemStack)
-    {
-        this.containingItems[par1] = par2ItemStack;
-
-        if (par2ItemStack != null && par2ItemStack.stackSize > this.getInventoryStackLimit())
-        {
-            par2ItemStack.stackSize = this.getInventoryStackLimit();
-        }
     }
 
     /**
@@ -222,18 +143,18 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public void placeMissile(ItemStack itemStack)
     {
-        this.containingItems[0] = itemStack;
+        setInventorySlotContents(0, itemStack);
     }
 
     public void setMissile()
     {
         if (!this.worldObj.isRemote)
         {
-            if (this.containingItems[0] != null)
+            if (this.getStackInSlot(0) != null)
             {
-                if (this.containingItems[0].getItem() instanceof ItemMissile)
+                if (this.getStackInSlot(0).getItem() instanceof ItemMissile)
                 {
-                    int haoMa = this.containingItems[0].getItemDamage();
+                    int haoMa = this.getStackInSlot(0).getItemDamage();
 
                     if (Explosives.get(haoMa).handler instanceof Missile)
                     {
@@ -328,9 +249,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public boolean canLaunch()
     {
-        if (this.daoDan != null && this.containingItems[0] != null)
+        if (this.daoDan != null && this.getStackInSlot(0) != null)
         {
-            Explosion missile = (Explosion) Explosives.get(this.containingItems[0].getItemDamage()).handler;
+            Explosion missile = (Explosion) Explosives.get(this.getStackInSlot(0).getItemDamage()).handler;
 
             if (missile != null && missile.getID() == daoDan.getExplosiveType().getID() && missile.isCruise() && missile.getTier() <= 3)
             {
@@ -381,19 +302,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         super.readFromNBT(nbt);
 
         NBTTagList var2 = nbt.getTagList("Items", 10);
-
-        this.containingItems = new ItemStack[this.getSizeInventory()];
-
-        for (int var3 = 0; var3 < var2.tagCount(); ++var3)
-        {
-            NBTTagCompound var4 = var2.getCompoundTagAt(var3);
-            byte var5 = var4.getByte("Slot");
-
-            if (var5 >= 0 && var5 < this.containingItems.length)
-            {
-                this.containingItems[var5] = ItemStack.loadItemStackFromNBT(var4);
-            }
-        }
     }
 
     /** Writes a tile entity to NBT. */
@@ -404,47 +312,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
         NBTTagList var2 = new NBTTagList();
 
-        for (int var3 = 0; var3 < this.containingItems.length; ++var3)
-        {
-            if (this.containingItems[var3] != null)
-            {
-                NBTTagCompound var4 = new NBTTagCompound();
-                var4.setByte("Slot", (byte) var3);
-                this.containingItems[var3].writeToNBT(var4);
-                var2.appendTag(var4);
-            }
-        }
-
         nbt.setTag("Items", var2);
-    }
-
-    /**
-     * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be
-     * extended. *Isn't this more of a set than a get?*
-     */
-    @Override
-    public int getInventoryStackLimit()
-    {
-        return 1;
-    }
-
-    /** Do not make give this method the name canInteractWith because it clashes with Container */
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
-    {
-        return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : par1EntityPlayer.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
-    }
-
-    @Override
-    public void openInventory()
-    {
-
-    }
-
-    @Override
-    public void closeInventory()
-    {
-
     }
 
     @Override

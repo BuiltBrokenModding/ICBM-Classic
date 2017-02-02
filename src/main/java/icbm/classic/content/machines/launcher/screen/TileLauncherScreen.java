@@ -11,6 +11,7 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
+import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
@@ -21,6 +22,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -56,6 +58,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     {
         super("launcherScreen", Material.iron);
         this.itemBlock = ItemBlockMetadata.class;
+    }
+
+    @Override
+    protected IInventory createInventory()
+    {
+        return new TileModuleInventory(this, 2);
     }
 
     @Override

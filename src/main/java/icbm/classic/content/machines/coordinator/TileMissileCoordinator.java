@@ -7,10 +7,12 @@ import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
+import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -27,7 +29,12 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
     public TileMissileCoordinator()
     {
         super("missileCoordinator", Material.iron);
-        addInventoryModule(2);
+    }
+
+    @Override
+    protected IInventory createInventory()
+    {
+        return new TileModuleInventory(this, 2);
     }
 
     @Override

@@ -60,12 +60,15 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     @Override
     public void read(ByteBuf data, EntityPlayer player, PacketType packet)
     {
-        String blockName = ByteBufUtils.readUTF8String(data);
-        this._blockToMimic = blockName.isEmpty() ? null : (Block) Block.blockRegistry.getObject(blockName);
-        this.metaToMimic = data.readInt();
-        this.renderSides = data.readByte();
-        this.isSolid = data.readBoolean();
-        markRender();
+        if(isClient())
+        {
+            String blockName = ByteBufUtils.readUTF8String(data);
+            this._blockToMimic = blockName.isEmpty() ? null : (Block) Block.blockRegistry.getObject(blockName);
+            this.metaToMimic = data.readInt();
+            this.renderSides = data.readByte();
+            this.isSolid = data.readBoolean();
+            markRender();
+        }
     }
 
     @Override

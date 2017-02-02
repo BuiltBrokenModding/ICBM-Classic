@@ -10,6 +10,7 @@ import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
+import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
 import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -24,6 +25,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -76,7 +78,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public TileLauncherBase()
     {
         super("launcherBase", Material.iron);
-        addInventoryModule(1);
+    }
+
+    @Override
+    protected IInventory createInventory()
+    {
+        return new TileModuleInventory(this, 1);
     }
 
     @Override

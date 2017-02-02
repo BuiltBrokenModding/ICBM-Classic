@@ -12,6 +12,7 @@ import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.tile.Tile;
+import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
 import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import icbm.classic.ICBMClassic;
@@ -20,6 +21,7 @@ import icbm.classic.prefab.TileICBMMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,6 +61,12 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     public TileEMPTower()
     {
         super("empTower", Material.iron);
+    }
+
+    @Override
+    protected IInventory createInventory()
+    {
+        return new TileModuleInventory(this, 2);
     }
 
     @Override

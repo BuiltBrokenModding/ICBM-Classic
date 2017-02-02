@@ -15,6 +15,7 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.tile.Tile;
+import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
@@ -24,6 +25,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -57,6 +59,12 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         super("radarStation", Material.iron);
         this.renderTileEntity = true;
         this.renderNormalBlock = false;
+    }
+
+    @Override
+    protected IInventory createInventory()
+    {
+        return new TileModuleInventory(this, 2);
     }
 
     @Override
