@@ -24,12 +24,16 @@ public class RenderMissile extends Render implements IItemRenderer
 {
     private static IModelCustom TIER1_BASE;
     private static IModelCustom TIER2_BASE;
+    private static IModelCustom TIER3_BASE;
+    private static IModelCustom TIER4_BASE;
 
     public RenderMissile(float f)
     {
         this.shadowSize = f;
         TIER1_BASE = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/missiles/tier1/missile_base_t1.obj"));
         TIER2_BASE = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/missiles/tier2/missile_base_t2.obj"));
+        TIER3_BASE = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/missiles/tier3/missile_base_t3.obj"));
+        TIER4_BASE = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/missiles/tier4/missile_base_t4.obj"));
     }
 
     @Override
@@ -78,6 +82,14 @@ public class RenderMissile extends Render implements IItemRenderer
                 else if (missile.getTier() == 2)
                 {
                     TIER2_BASE.renderAll();
+                }
+                else if (missile.getTier() == 3)
+                {
+                    TIER3_BASE.renderAll();
+                }
+                else if (missile.getTier() == 4)
+                {
+                    TIER4_BASE.renderAll();
                 }
                 missile.getMissileModel().renderAll();
             }
