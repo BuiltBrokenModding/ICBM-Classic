@@ -1,6 +1,5 @@
 package icbm.classic.content.explosive.blast;
 
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -29,8 +28,7 @@ public class BlastRegen extends Blast
                 {
                     WorldServer worldServer = (WorldServer) world();
                     ChunkProviderServer chunkProviderServer = worldServer.theChunkProviderServer;
-                    IChunkProvider chunkProviderGenerate = ((IChunkProvider) ObfuscationReflectionHelper.getPrivateValue(ChunkProviderServer.class, chunkProviderServer, "currentChunkProvider", "d", "field_73246_d"));
-
+                    IChunkProvider chunkProviderGenerate = chunkProviderServer.currentChunkProvider;
                     Chunk newChunk = chunkProviderGenerate.provideChunk(oldChunk.xPosition, oldChunk.zPosition);
 
                     for (int x = 0; x < 16; x++)
