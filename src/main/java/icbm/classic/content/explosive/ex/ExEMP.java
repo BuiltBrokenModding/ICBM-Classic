@@ -18,7 +18,7 @@ public class ExEMP extends Explosion
     public ExEMP()
     {
         super("emp", 3);
-        this.missileModelPath = "missile_emp.tcn";
+        this.missileModelPath = "missiles/tier3/missile_head_emp.obj";
     }
 
     @Override

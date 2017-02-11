@@ -22,7 +22,7 @@ public class ExExothermic extends Explosion
     {
         super("exothermic", 3);
         this.createNetherrack = ICBMClassic.INSTANCE.getConfig().get(Configuration.CATEGORY_GENERAL, "Exothermic Create Netherrack", createNetherrack).getBoolean(createNetherrack);
-        this.missileModelPath = "missile_endothermic.tcn";
+        this.missileModelPath = "missiles/tier3/missile_head_endothermic.obj";
     }
 
     @Override
