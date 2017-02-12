@@ -41,7 +41,7 @@ targetCompatibility = 1.8
 
 dependencies
 {
-    compile "dev.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf-dev"
+    compile ("dev.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf-dev") { changing = true }
     compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
     compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
     compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
