@@ -9,7 +9,6 @@ import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
@@ -398,10 +397,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public void genRecipes(List<IRecipe> recipes)
     {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower),
-                "@@@", "!?!", "@@@",
-                '@', UniversalRecipe.PRIMARY_PLATE.get(),
-                '!', new ItemStack(ICBMClassic.blockRadarStation),
-                '?', new ItemStack(ICBMClassic.blockRadarStation)));
+        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockCruiseLauncher),
+                "RL ", "PPP",
+                'R', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 2),
+                'L', new ItemStack(ICBMClassic.blockLaunchBase, 1, 2),
+                'P', UniversalRecipe.PRIMARY_METAL.get()));
     }
 }

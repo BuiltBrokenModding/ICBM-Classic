@@ -76,7 +76,7 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
     @Override
     public void genRecipes(List<IRecipe> recipes)
     {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockMissileCoordinator, 1, 12),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockMissileCoordinator, 1),
                 "R R", "SCS", "SSS",
                 'C', UniversalRecipe.CIRCUIT_T2.get(),
                 'S', UniversalRecipe.PRIMARY_PLATE.get(),
