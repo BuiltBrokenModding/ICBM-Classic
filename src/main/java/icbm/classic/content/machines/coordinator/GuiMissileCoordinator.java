@@ -1,13 +1,11 @@
-package icbm.classic.client.gui;
+package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.jlib.data.science.units.UnitDisplay;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Location;
-import icbm.classic.content.container.ContainerMissileCoordinator;
 import icbm.classic.content.gui.GuiICBMContainer;
-import icbm.classic.content.machines.coordinator.TileMissileCoordinator;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 
@@ -16,10 +14,11 @@ public class GuiMissileCoordinator extends GuiICBMContainer
     private TileMissileCoordinator tileEntity;
     private float animation = 0;
 
-    public GuiMissileCoordinator(InventoryPlayer par1InventoryPlayer, TileMissileCoordinator tileEntity)
+    public GuiMissileCoordinator(EntityPlayer player, TileMissileCoordinator tileEntity)
     {
-        super(new ContainerMissileCoordinator(par1InventoryPlayer, tileEntity));
+        super(new ContainerMissileCoordinator(player, tileEntity));
         this.tileEntity = tileEntity;
+        this.ySize = 220;
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
@@ -58,7 +57,7 @@ public class GuiMissileCoordinator extends GuiICBMContainer
             }
         }
 
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.wip"), 13, 120, 4210752);
+        //this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.coordinator.wip"), 13, 120, 4210752);
 
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }

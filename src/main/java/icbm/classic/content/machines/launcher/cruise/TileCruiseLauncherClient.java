@@ -9,6 +9,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MXiaoFaSheQi;
 import icbm.classic.client.models.MXiaoFaSheQiJia;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -66,5 +67,11 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
         MODEL0.render(0.0625F);
         MODEL1.render(0.0625F);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return new GuiCruiseLauncher(player, this);
     }
 }

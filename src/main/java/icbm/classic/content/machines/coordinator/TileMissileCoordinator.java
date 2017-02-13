@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
+import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
@@ -20,11 +21,11 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import java.util.List;
 
 /**
- * Missile Coordinator
+ * Missile Coordinator, used to calculate paths between two points to better plan missile actions
  *
  * @author Calclavia
  */
-public class TileMissileCoordinator extends TileModuleMachine implements IRecipeContainer
+public class TileMissileCoordinator extends TileModuleMachine implements IRecipeContainer, IGuiTile
 {
     public TileMissileCoordinator()
     {
@@ -81,5 +82,17 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
                 'C', UniversalRecipe.CIRCUIT_T2.get(),
                 'S', UniversalRecipe.PRIMARY_PLATE.get(),
                 'R', ICBMClassic.itemRemoteDetonator));
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player)
+    {
+        return new ContainerMissileCoordinator(player, this);
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return null;
     }
 }

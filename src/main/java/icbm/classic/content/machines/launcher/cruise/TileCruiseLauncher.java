@@ -1,5 +1,6 @@
 package icbm.classic.content.machines.launcher.cruise;
 
+import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -33,7 +34,7 @@ import resonant.api.explosion.*;
 
 import java.util.List;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer
+public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer, IGuiTile
 {
     // The missile that this launcher is holding
     public EntityMissile daoDan = null;
@@ -402,5 +403,17 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                 'R', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 2),
                 'L', new ItemStack(ICBMClassic.blockLaunchBase, 1, 2),
                 'P', UniversalRecipe.PRIMARY_METAL.get()));
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player)
+    {
+        return new ContainerCruiseLauncher(player, this);
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return null;
     }
 }

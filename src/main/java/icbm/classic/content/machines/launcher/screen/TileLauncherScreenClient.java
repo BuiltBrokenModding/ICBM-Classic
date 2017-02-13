@@ -7,7 +7,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.gui.GuiLauncherScreen;
 import icbm.classic.client.models.MFaSheShiMuo0;
 import icbm.classic.client.models.MFaSheShiMuo1;
 import icbm.classic.client.models.MFaSheShiMuo2;

@@ -147,7 +147,7 @@ public final class ICBMClassic extends AbstractMod
         blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockMetadata.class);
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
         blockConcrete = manager.newBlock("icbmCConcrete", BlockConcrete.class, ItemBlockMetadata.class);
-        blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class, ItemBlockMetadata.class);
+        blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class);
         blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class);
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
     }
