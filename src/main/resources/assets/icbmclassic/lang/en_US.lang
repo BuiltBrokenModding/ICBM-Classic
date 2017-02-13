@@ -14,26 +14,26 @@ item.icbmclassic:antidote.name=Antidote
 item.icbmclassic:radarGun.name=Radar Gun
 item.icbmclassic:remoteDetonator.name=Remote Detonator
 item.icbmclassic:defuser.name=Defuser
-item.icbmclassic:laserDesignator.name=Laser Designator
+item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:tracker.name=Tracker
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
 item.icbmclassic:computer.name=Tactical Interface
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 
 ## ICBM Machines
-icbm.machine.0.name=Launcher Platform T1
-icbm.machine.1.name=Launcher Platform T2
-icbm.machine.2.name=Launcher Platform T3
-icbm.machine.3.name=Launcher Control Panel T1
-icbm.machine.4.name=Launcher Control Panel T2
-icbm.machine.5.name=Launcher Control Panel T3
-icbm.machine.6.name=Launcher Support Frame T1
-icbm.machine.7.name=Launcher Support Frame T2
-icbm.machine.8.name=Launcher Support Frame T3
-icbm.machine.9.name=Radar Station
-icbm.machine.10.name=EMP Tower
-icbm.machine.11.name=Cruise Launcher
-icbm.machine.12.name=Missile Coordinator
+tile.icbmclassic:launcherBase.0.name=Launcher Platform T1
+tile.icbmclassic:launcherBase.1.name=Launcher Platform T2
+tile.icbmclassic:launcherBase.2.name=Launcher Platform T3
+tile.icbmclassic:launcherScreen.0.name=Launcher Control Panel T1
+tile.icbmclassic:launcherScreen.1.name=Launcher Control Panel T2
+tile.icbmclassic:launcherScreen.2.name=Launcher Control Panel T3
+tile.icbmclassic:launcherFrame.0.name=Launcher Support Frame T1
+tile.icbmclassic:launcherFrame.1.name=Launcher Support Frame T2
+tile.icbmclassic:launcherFrame.2.name=Launcher Support Frame T3
+tile.icbmclassic:radarStation.name=Radar Station
+tile.icbmclassic:empTower.name=EMP Tower
+tile.icbmclassic:cruiseLauncher.name=Cruise Launcher
+tile.icbmclassic:missileCoordinator.name=Missile Coordinator
 
 ## Blocks
 tile.icbmclassic:sulfurOre.name=Sulfur Ore
