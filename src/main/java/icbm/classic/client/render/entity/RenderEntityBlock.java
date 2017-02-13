@@ -3,12 +3,15 @@ package icbm.classic.client.render.entity;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -29,6 +32,10 @@ public class RenderEntityBlock extends Render
         RenderUtility.setTerrainTexture();
 
         Block block = entity.blockID;
+        if (block == null || block.getMaterial() == Material.air)
+        {
+            block = Blocks.stone;
+        }
         GL11.glDisable(GL11.GL_LIGHTING);
 
         GL11.glRotatef(entity.rotationPitch, 0.0F, 0.0F, 1.0F);
@@ -37,12 +44,20 @@ public class RenderEntityBlock extends Render
 
         if (block.getRenderType() != 0)
         {
-            Tessellator tessellator = Tessellator.instance;
-            tessellator.startDrawingQuads();
-            tessellator.setTranslation((-MathHelper.floor_double(entity.posX)) - 0.5F, (-MathHelper.floor_double(entity.posY)) - 0.5F, (-MathHelper.floor_double(entity.posZ)) - 0.5F);
-            RenderUtility.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
-            tessellator.setTranslation(0.0D, 0.0D, 0.0D);
-            tessellator.draw();
+            try
+            {
+                Tessellator tessellator = Tessellator.instance;
+                tessellator.startDrawingQuads();
+                tessellator.setTranslation((-MathHelper.floor_double(entity.posX)) - 0.5F, (-MathHelper.floor_double(entity.posY)) - 0.5F, (-MathHelper.floor_double(entity.posZ)) - 0.5F);
+                RenderUtility.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
+                tessellator.setTranslation(0.0D, 0.0D, 0.0D);
+                tessellator.draw();
+            }
+            catch (Exception e)
+            {
+                ICBMClassic.INSTANCE.logger().error("Unexpected error while rendering EntityBlock[" + entity + "] with data [" + block + ":" + entity.metadata + "] forcing to render as stone to prevent additional errors.", e);
+                entity.blockID = Blocks.stone;
+            }
         }
         else
         {
@@ -84,11 +99,13 @@ public class RenderEntityBlock extends Render
         tess.draw();
     }
 
-    /** Actually renders the given argument. This is a synthetic bridge method, always casting down
+    /**
+     * Actually renders the given argument. This is a synthetic bridge method, always casting down
      * its argument and then handing it off to a worker function which does the actual work. In all
      * probabilty, the class Render is generic (Render<T extends Entity) and this method has
      * signature public void doRender(T entity, double d, double d1, double d2, float f, float f1).
-     * But JAD is pre 1.5 so doesn't do that. */
+     * But JAD is pre 1.5 so doesn't do that.
+     */
     @Override
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
