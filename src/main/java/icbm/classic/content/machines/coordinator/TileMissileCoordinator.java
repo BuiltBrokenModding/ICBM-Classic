@@ -51,6 +51,12 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
     }
 
     @Override
+    protected boolean useMetaForFacing()
+    {
+        return true;
+    }
+
+    @Override
     public String getInventoryName()
     {
         return LanguageUtility.getLocal("gui.coordinator.name");

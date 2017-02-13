@@ -96,7 +96,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
     public void mouseClicked(int par1, int par2, int par3)
     {
         super.mouseClicked(par1, par2, par3);
-        this.textFieldX.mouseClicked(par1 - this.height, par2 - containerHeight, par3);
+        this.textFieldX.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.textFieldZ.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.textFieldY.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.textFieldFreq.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);

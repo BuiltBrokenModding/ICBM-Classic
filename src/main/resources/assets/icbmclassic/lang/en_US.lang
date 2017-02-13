@@ -251,11 +251,22 @@ gui.launcherScreen.statusInvalid=Target is invalid!
 gui.launcherScreen.statusClose=Target too close!
 gui.launcherScreen.statusFar=Target too far!
 gui.launcherScreen.statusReady=Ready to launch!
+
+
 gui.launcherCruise.name=Cruise Launcher
+
 gui.launcherCruise.statusNoPower=No Power!
-gui.launcherCruise.statusEmpty=Silo Empty!
+gui.launcherCruise.statusEmpty=No Missile!
+gui.launcherCruise.invalidMissile=Invalid Item!
+gui.launcherCruise.invalidMissileTier=Invalid Missile Tier!
+gui.launcherCruise.notCruiseMissile=Invalid Missile Type!
 gui.launcherCruise.statusInvalid=Invalid Target!
+gui.launcherCruise.targetToClose=Target to close!
+gui.launcherCruise.noRoom=3x3 not clear!
 gui.launcherCruise.statusReady=Ready!
+## Chat warning if user tries to fire by hand, %1 is status message from GUI
+chat.launcherCruise.status=Status: %1
+chat.launcherCruise.failedToFire=Warning can not fire missile due to status error!
 
 gui.coordinator.name=Missile Coordinator
 gui.coordinator.sim=Path Simulator

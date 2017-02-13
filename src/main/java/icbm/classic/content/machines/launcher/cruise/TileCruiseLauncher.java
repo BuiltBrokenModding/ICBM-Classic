@@ -10,37 +10,33 @@ import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.api.explosion.*;
+import resonant.api.explosion.ILauncherContainer;
+import resonant.api.explosion.ILauncherController;
+import resonant.api.explosion.LauncherType;
 
 import java.util.List;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer, IGuiTile
 {
-    // The missile that this launcher is holding
-    public EntityMissile daoDan = null;
-
     public float rotationYaw = 0;
-
     public float rotationPitch = 0;
 
     public TileCruiseLauncher()
@@ -76,26 +72,53 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public String getStatus()
     {
         String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
+        String status;
 
         if (!this.checkExtract())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusNoPower");
         }
-        else if (this.daoDan == null)
+        else if (this.getStackInSlot(0) == null)
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (this.getTarget() == null)
+        else if (this.getStackInSlot(0).getItem() != ICBMClassic.itemMissile)
         {
-            status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
+            status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
         }
         else
         {
-            color = "\u00a72";
-            status = LanguageUtility.getLocal("gui.launcherCruise.statusReady");
+            final Explosion missile = (Explosion) Explosives.get(this.getStackInSlot(0).getItemDamage()).handler;
+            if (missile == null)
+            {
+                status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
+            }
+            else if (!missile.isCruise())
+            {
+                status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
+            }
+            else if (missile.getTier() > 3)
+            {
+                status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissileTier");
+            }
+            else if (this.getTarget() == null || getTarget().isZero())
+            {
+                status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
+            }
+            else if (this.isTooClose(getTarget()))
+            {
+                status = LanguageUtility.getLocal("gui.launcherCruise.targetToClose");
+            }
+            else if(!canSpawnMissileWithNoCollision())
+            {
+                status = LanguageUtility.getLocal("gui.launcherCruise.noRoom");
+            }
+            else
+            {
+                color = "\u00a72";
+                status = LanguageUtility.getLocal("gui.launcherCruise.statusReady");
+            }
         }
-
         return color + status;
     }
 
@@ -131,9 +154,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
         if (!this.worldObj.isRemote)
         {
-            this.setMissile();
-
-            if (this.ticks % 100 == 0 && this.worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+            if (this.ticks % 40 == 0 && this.worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
             {
                 this.launch();
             }
@@ -146,63 +167,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         setInventorySlotContents(0, itemStack);
     }
 
-    public void setMissile()
-    {
-        if (!this.worldObj.isRemote)
-        {
-            if (this.getStackInSlot(0) != null)
-            {
-                if (this.getStackInSlot(0).getItem() instanceof ItemMissile)
-                {
-                    int haoMa = this.getStackInSlot(0).getItemDamage();
-
-                    if (Explosives.get(haoMa).handler instanceof Missile)
-                    {
-                        Missile missile = (Missile) Explosives.get(haoMa).handler;
-
-                        ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ExplosiveType.AIR, missile);
-                        MinecraftForge.EVENT_BUS.post(evt);
-
-                        if (!evt.isCanceled())
-                        {
-                            if (this.daoDan == null)
-                            {
-
-                                if (missile.isCruise() && missile.getTier() <= 3)
-                                {
-                                    Pos startingPosition = new Pos((this.xCoord + 0.5f), (this.yCoord + 1f), (this.zCoord + 0.5f));
-                                    this.daoDan = new EntityMissile(this.worldObj);
-                                    this.daoDan.setPosition(startingPosition.x(), startingPosition.y(), startingPosition.z());
-                                    this.daoDan.launcherPos = new Pos(this);
-                                    this.daoDan.explosiveID = Explosives.get(haoMa);
-                                    this.worldObj.spawnEntityInWorld((Entity) this.daoDan);
-                                    return;
-                                }
-                            }
-
-                            if (this.daoDan != null)
-                            {
-                                if (this.daoDan.explosiveID == Explosives.get(haoMa))
-                                {
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (this.daoDan != null)
-            {
-                ((Entity) this.daoDan).setDead();
-            }
-
-            this.daoDan = null;
-        }
-    }
-
     @Override
-    public PacketTile getDescPacket()
+    public PacketTile getGUIPacket()
     {
         return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
@@ -210,27 +176,29 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType type)
     {
-        switch (id)
+        if(!super.read(data, id, player, type))
         {
-            case 0:
+            if (isServer())
             {
-                this.energy = data.readInt();
-                this.setFrequency(data.readInt());
-                this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
-                return true;
+                switch (id)
+                {
+                    //set frequency packet from GUI
+                    case 1:
+                    {
+                        this.setFrequency(data.readInt());
+                        return true;
+                    }
+                    //Set target packet from GUI
+                    case 2:
+                    {
+                        this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                        return true;
+                    }
+                }
             }
-            case 1:
-            {
-                this.setFrequency(data.readInt());
-                return true;
-            }
-            case 2:
-            {
-                this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
-                return true;
-            }
+            return false;
         }
-        return false;
+        return true;
     }
 
     private float getPitchFromTarget()
@@ -249,23 +217,46 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public boolean canLaunch()
     {
-        if (this.daoDan != null && this.getStackInSlot(0) != null)
+        if(getTarget() != null && !getTarget().isZero())
         {
-            Explosion missile = (Explosion) Explosives.get(this.getStackInSlot(0).getItemDamage()).handler;
-
-            if (missile != null && missile.getID() == daoDan.getExplosiveType().getID() && missile.isCruise() && missile.getTier() <= 3)
+            //Validate if we have an item and a target
+            if (this.getStackInSlot(0) != null && this.getStackInSlot(0).getItem() == ICBMClassic.itemMissile)
             {
-                if (this.checkExtract())
+                //Validate that the item in the slot is a missile we can fire
+                final Explosion missile = (Explosion) Explosives.get(this.getStackInSlot(0).getItemDamage()).handler;
+                if (missile != null && missile.isCruise() && missile.getTier() <= 3)
                 {
-                    if (!this.isTooClose(this.getTarget()))
+                    //Make sure we have enough energy
+                    if (this.checkExtract())
                     {
-                        return true;
+                        //Make sure we are not going to blow ourselves up
+                        //TODO check range by missile type
+                        if (!this.isTooClose(this.getTarget()))
+                        {
+                            //Make sure we can safely spawn the missile
+                            return canSpawnMissileWithNoCollision();
+                        }
                     }
                 }
             }
         }
-
         return false;
+    }
+
+    protected boolean canSpawnMissileWithNoCollision()
+    {
+        //Make sure there is noting above us to hit when spawning the missile
+        for (int x = -1; x < 2; x++)
+        {
+            for (int z = -1; z < 2; z++)
+            {
+                if (!world().getBlock(xi() + x, yi() + 1, zi() + z).isAir(world(), xi() + x, yi() + 1, zi() + z))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -282,76 +273,67 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         if (this.canLaunch())
         {
-            this.decrStackSize(0, 1);
             this.extractEnergy();
-            this.daoDan.launch(this.getTarget());
-            this.daoDan = null;
+            this.decrStackSize(0, 1);
+
+            EntityMissile missile = new EntityMissile(world());
+            missile.launcherPos = new Pos(this);
+            missile.setPositionAndRotation(xi(), yi() + 1, zi(), rotationYaw, rotationPitch);
+            missile.launch(getTarget(), 0);
+            world().spawnEntityInWorld(missile);
         }
     }
 
     // Is the target too close?
     public boolean isTooClose(Pos target)
     {
-        return new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z())) < 8;
+        return new Pos(this.xCoord + .5, this.yCoord + .5, this.zCoord + .5).distance(new Pos(target.x() + .5, target.z() + .5, target.z() + .5)) < 20;
     }
 
-    /** Reads a tile entity from NBT. */
     @Override
-    public void readFromNBT(NBTTagCompound nbt)
+    public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
     {
-        super.readFromNBT(nbt);
-
-        NBTTagList var2 = nbt.getTagList("Items", 10);
+        if (slot == 0)
+        {
+            updateClient = true;
+        }
     }
 
-    /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public void writeDescPacket(ByteBuf buf)
     {
-        super.writeToNBT(nbt);
-
-        NBTTagList var2 = new NBTTagList();
-
-        nbt.setTag("Items", var2);
+        super.writeDescPacket(buf);
+        buf.writeBoolean(getStackInSlot(0) != null);
+        if (getStackInSlot(0) != null)
+        {
+            ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
+        }
     }
 
     @Override
     public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
     {
-        if (player.inventory.getCurrentItem() != null)
+        if (isServer())
         {
-            if (player.inventory.getCurrentItem().getItem() instanceof ItemMissile)
+            if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.redstone)
             {
-                if (this.getStackInSlot(0) == null)
+                if (canLaunch())
                 {
-
-                    this.setInventorySlotContents(0, player.inventory.getCurrentItem());
-                    if (!player.capabilities.isCreativeMode)
-                    {
-                        player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                    }
-                    return true;
+                    launch();
                 }
                 else
                 {
-                    ItemStack player_held = player.inventory.getCurrentItem();
-                    if (!player.capabilities.isCreativeMode)
-                    {
-                        player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
-                    }
-                    this.setInventorySlotContents(0, player_held);
-                    return true;
+                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.failedToFire")));
+                    String translation = LanguageUtility.getLocal("chat.launcherCruise.status");
+                    translation = translation.replace("%1", getStatus());
+                    player.addChatComponentMessage(new ChatComponentText(translation));
                 }
             }
+            else
+            {
+                player.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+            }
         }
-        else if (this.getStackInSlot(0) != null)
-        {
-            player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
-            this.setInventorySlotContents(0, null);
-            return true;
-        }
-
-        player.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
         return true;
     }
 
@@ -379,7 +361,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                 }
             }
         }
-
         return false;
     }
 
