@@ -1,12 +1,17 @@
 package icbm.classic.content.machines.launcher.cruise;
 
+import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.IGuiTile;
+import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
+import com.builtbroken.mc.core.network.packet.PacketSpawnParticleStream;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import com.builtbroken.mc.lib.transform.rotation.EulerAngle;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
@@ -36,8 +41,17 @@ import java.util.List;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer, IGuiTile
 {
-    public float rotationYaw = 0;
-    public float rotationPitch = 0;
+    /** Desired aim angle, updated every tick if target != null */
+    protected final EulerAngle aim = new EulerAngle(0, 0, 0);
+    /** Current aim angle, updated each tick */
+    protected final EulerAngle currentAim = new EulerAngle(0, 0, 0);
+
+    protected static double ROTATION_SPEED = 10.0;
+
+    /** Last time rotation was updated, used in {@link EulerAngle#lerp(EulerAngle, double)} function for smooth rotation */
+    protected long lastRotationUpdate = System.nanoTime();
+    /** Percent of time that passed since last tick, should be 1.0 on a stable server */
+    protected double deltaTime;
 
     public TileCruiseLauncher()
     {
@@ -109,7 +123,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.targetToClose");
             }
-            else if(!canSpawnMissileWithNoCollision())
+            else if (!canSpawnMissileWithNoCollision())
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.noRoom");
             }
@@ -140,23 +154,29 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         super.update();
 
+        deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
+        lastRotationUpdate = System.nanoTime();
+
         //this.discharge(this.containingItems[1]);
 
-        // Rotate the yaw
-        if (this.getYawFromTarget() - this.rotationYaw != 0)
+        if (getTarget() != null && !getTarget().isZero())
         {
-            this.rotationYaw += (this.getYawFromTarget() - this.rotationYaw) * 0.1;
-        }
-        if (this.getPitchFromTarget() - this.rotationPitch != 0)
-        {
-            this.rotationPitch += (this.getPitchFromTarget() - this.rotationPitch) * 0.1;
-        }
-
-        if (!this.worldObj.isRemote)
-        {
-            if (this.ticks % 40 == 0 && this.worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+            Pos aimPoint = getTarget();
+            Pos center = toPos().add(0.5);
+            if (Engine.runningAsDev)
             {
-                this.launch();
+                sendPacket(new PacketSpawnParticleStream(world().provider.dimensionId, center, aimPoint));
+            }
+            aim.set(center.toEulerAngle(aimPoint).clampTo360());
+
+            currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
+
+            if (!this.worldObj.isRemote)
+            {
+                if (this.ticks % 40 == 0 && this.worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+                {
+                    this.launch();
+                }
             }
         }
     }
@@ -176,7 +196,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType type)
     {
-        if(!super.read(data, id, player, type))
+        if (!super.read(data, id, player, type))
         {
             if (isServer())
             {
@@ -201,23 +221,24 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return true;
     }
 
-    private float getPitchFromTarget()
+    @Override
+    public void writeDescPacket(ByteBuf buf)
     {
-        double distance = Math.sqrt((this.getTarget().x() - this.xCoord) * (this.getTarget().x() - this.xCoord) + (this.getTarget().z() - this.zCoord) * (this.getTarget().z() - this.zCoord));
-        return (float) Math.toDegrees(Math.atan((this.getTarget().y() - (this.yCoord + 0.5F)) / distance));
-    }
-
-    private float getYawFromTarget()
-    {
-        double xDifference = this.getTarget().x() - (this.xCoord + 0.5F);
-        double yDifference = this.getTarget().z() - (this.zCoord + 0.5F);
-        return (float) Math.toDegrees(Math.atan2(yDifference, xDifference));
+        super.writeDescPacket(buf);
+        buf.writeBoolean(getStackInSlot(0) != null);
+        if (getStackInSlot(0) != null)
+        {
+            ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
+        }
+        buf.writeInt(getTarget().xi());
+        buf.writeInt(getTarget().yi());
+        buf.writeInt(getTarget().zi());
     }
 
     @Override
     public boolean canLaunch()
     {
-        if(getTarget() != null && !getTarget().isZero())
+        if (getTarget() != null && !getTarget().isZero())
         {
             //Validate if we have an item and a target
             if (this.getStackInSlot(0) != null && this.getStackInSlot(0).getItem() == ICBMClassic.itemMissile)
@@ -274,13 +295,16 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         if (this.canLaunch())
         {
             this.extractEnergy();
-            this.decrStackSize(0, 1);
 
-            EntityMissile missile = new EntityMissile(world());
-            missile.launcherPos = new Pos(this);
-            missile.setPositionAndRotation(xi(), yi() + 1, zi(), rotationYaw, rotationPitch);
-            missile.launch(getTarget(), 0);
-            world().spawnEntityInWorld(missile);
+            EntityMissile entityMissile = new EntityMissile(world(), xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() -180, -(float) currentAim.pitch(), 2);
+            entityMissile.missileType = EntityMissile.MissileType.CruiseMissile;
+            entityMissile.explosiveID = Explosives.get(this.getStackInSlot(0).getItemDamage());
+            entityMissile.acceleration = 1;
+            entityMissile.launch(null);
+            world().spawnEntityInWorld(entityMissile);
+
+            //Clear slot last so we can still access data as needed or roll back changes if a crash happens
+            this.decrStackSize(0, 1);
         }
     }
 
@@ -300,22 +324,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
-    public void writeDescPacket(ByteBuf buf)
-    {
-        super.writeDescPacket(buf);
-        buf.writeBoolean(getStackInSlot(0) != null);
-        if (getStackInSlot(0) != null)
-        {
-            ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
-        }
-    }
-
-    @Override
     public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
     {
         if (isServer())
         {
-            if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.redstone)
+            boolean notNull = player.getHeldItem() != null;
+            if (notNull && player.getHeldItem().getItem() == Items.redstone)
             {
                 if (canLaunch())
                 {
@@ -327,6 +341,26 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                     String translation = LanguageUtility.getLocal("chat.launcherCruise.status");
                     translation = translation.replace("%1", getStatus());
                     player.addChatComponentMessage(new ChatComponentText(translation));
+                }
+            }
+            else if (notNull && player.getHeldItem().getItem() instanceof IWorldPosItem)
+            {
+                IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
+                if (location != null)
+                {
+                    if (location.world() == world())
+                    {
+                        setTarget(new Pos(location.x(), location.y(), location.z()));
+                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.toolTargetSet")));
+                    }
+                    else
+                    {
+                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.toolWorldNotMatch")));
+                    }
+                }
+                else
+                {
+                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.noTargetInTool")));
                 }
             }
             else

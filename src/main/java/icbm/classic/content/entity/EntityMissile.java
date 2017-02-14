@@ -90,6 +90,17 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.ignoreFrustumCheck = true;
     }
 
+    public EntityMissile(World w, double x, double y, double z, float yaw, float pitch, float speed)
+    {
+        super(w, x, y, z, yaw, pitch, speed, 1);
+        this.setSize(.5F, .5F);
+        this.inAirKillTime = 144000 /* 2 hours */;
+        this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
+        this.renderDistanceWeight = 3;
+        this.isImmuneToFire = true;
+        this.ignoreFrustumCheck = true;
+    }
+
     public EntityMissile(EntityLivingBase entity)
     {
         super(entity.worldObj, entity, 2);
@@ -132,7 +143,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             ((Explosion) explosiveID.handler).launch(this);
         }
-        this.ticksInAir = 1;
+        this.ticksInAir = 2;
 
         //Trigger code
         this.recalculatePath();

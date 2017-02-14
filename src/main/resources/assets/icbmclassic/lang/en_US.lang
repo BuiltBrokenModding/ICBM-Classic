@@ -267,6 +267,9 @@ gui.launcherCruise.statusReady=Ready!
 ## Chat warning if user tries to fire by hand, %1 is status message from GUI
 chat.launcherCruise.status=Status: %1
 chat.launcherCruise.failedToFire=Warning can not fire missile due to status error!
+chat.launcherCruise.toolTargetSet=Target data transferred from tool.
+chat.launcherCruise.toolWorldNotMatch=Target data's world is not the same as this one!
+chat.launcherCruise.noTargetInTool=Tool does not contain any target data!
 
 gui.coordinator.name=Missile Coordinator
 gui.coordinator.sim=Path Simulator
