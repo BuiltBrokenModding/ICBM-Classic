@@ -30,6 +30,9 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
     public TileMissileCoordinator()
     {
         super("missileCoordinator", Material.iron);
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override

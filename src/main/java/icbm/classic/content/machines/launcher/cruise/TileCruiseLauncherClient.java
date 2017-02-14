@@ -16,7 +16,9 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -141,5 +143,11 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
             return false;
         }
         return true;
+    }
+
+    @Override
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

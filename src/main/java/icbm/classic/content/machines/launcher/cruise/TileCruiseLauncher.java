@@ -57,6 +57,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         super("cruiseLauncher", Material.iron);
         this.setTarget(new Pos());
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override
@@ -302,7 +305,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             entityMissile.acceleration = 1;
             entityMissile.launch(null);
             world().spawnEntityInWorld(entityMissile);
-
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens
             this.decrStackSize(0, 1);
         }

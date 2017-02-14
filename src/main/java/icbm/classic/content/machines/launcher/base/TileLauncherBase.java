@@ -80,6 +80,9 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         super("launcherBase", Material.iron);
         this.itemBlock = ItemBlockMetadata.class;
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override

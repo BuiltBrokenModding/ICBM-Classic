@@ -61,6 +61,9 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     public TileEMPTower()
     {
         super("empTower", Material.iron);
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override

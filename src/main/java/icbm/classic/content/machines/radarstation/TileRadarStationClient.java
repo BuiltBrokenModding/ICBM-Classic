@@ -3,7 +3,6 @@ package icbm.classic.content.machines.radarstation;
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -11,7 +10,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelRadarStation;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -80,14 +81,14 @@ public class TileRadarStationClient extends TileRadarStation implements ISimpleI
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player)
-    {
-        return new ContainerDummy();
-    }
-
-    @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiRadarStation(this);
+    }
+
+    @Override
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

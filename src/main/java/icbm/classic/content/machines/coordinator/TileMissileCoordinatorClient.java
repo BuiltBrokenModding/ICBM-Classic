@@ -9,8 +9,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelMissileCoordinator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -125,5 +127,11 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiMissileCoordinator(player, this);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

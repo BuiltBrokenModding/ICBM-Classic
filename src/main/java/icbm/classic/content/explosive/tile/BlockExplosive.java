@@ -54,7 +54,7 @@ public class BlockExplosive extends BlockContainer implements IPostInit
         super(Material.tnt);
         this.setBlockName(ICBMClassic.PREFIX + "explosives");
         this.setBlockTextureName(ICBMClassic.PREFIX + "explosives");
-        setHardness(0.0F);
+        setHardness(2);
         setStepSound(soundTypeGrass);
     }
 

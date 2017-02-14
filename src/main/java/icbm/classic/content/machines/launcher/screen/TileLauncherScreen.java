@@ -58,6 +58,9 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     {
         super("launcherScreen", Material.iron);
         this.itemBlock = ItemBlockMetadata.class;
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override
