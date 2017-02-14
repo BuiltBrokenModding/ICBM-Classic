@@ -341,8 +341,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                 }
                 else
                 {
-                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.failedToFire")));
-                    String translation = LanguageUtility.getLocal("chat.launcherCruise.status");
+                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.failedToFire")));
+                    String translation = LanguageUtility.getLocal("chat.launcher.status");
                     translation = translation.replace("%1", getStatus());
                     player.addChatComponentMessage(new ChatComponentText(translation));
                 }
@@ -355,16 +355,16 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                     if (location.world() == world())
                     {
                         setTarget(new Pos(location.x(), location.y(), location.z()));
-                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.toolTargetSet")));
+                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
                     }
                     else
                     {
-                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.toolWorldNotMatch")));
+                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
                     }
                 }
                 else
                 {
-                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcherCruise.noTargetInTool")));
+                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
                 }
             }
             else

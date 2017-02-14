@@ -44,7 +44,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     public static final MFaSheDi2 modelBase2 = new MFaSheDi2();
     public static final MFaSheDiRail2 modelRail2 = new MFaSheDiRail2();
 
-    private ItemStack cachedMissileStack;
+    public ItemStack cachedMissileStack;
 
     public TileLauncherBaseClient()
     {

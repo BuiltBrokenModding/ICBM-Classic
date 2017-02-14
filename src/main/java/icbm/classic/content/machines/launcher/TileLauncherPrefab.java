@@ -114,7 +114,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     @Override
     public Cube getRadioReceiverRange()
     {
-        return new Cube();
+        return RadioRegistry.INFINITE;
     }
 
     @Override
