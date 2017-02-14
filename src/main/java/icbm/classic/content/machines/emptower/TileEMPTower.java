@@ -47,7 +47,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     }
 
     public float rotation = 0;
-    private float rotationDelta, prevXuanZhuanLu = 0;
+    private float rotationDelta;
 
     // The EMP mode. 0 = All, 1 = Missiles Only, 2 = Electricity Only
     public byte empMode = 0;
@@ -97,6 +97,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         if (ticks % 20 == 0 && getEnergyStored(ForgeDirection.UNKNOWN) > 0)
         {
             worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN));
+            sendDescPacket();
         }
 
         rotationDelta = (float) (Math.pow(getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN), 2) * 0.5);
@@ -105,8 +106,6 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         {
             rotation = 0;
         }
-
-        prevXuanZhuanLu = rotationDelta;
     }
 
     @Override
@@ -142,7 +141,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public int getMaxEnergyStored(ForgeDirection from)
     {
-        return Math.max(300000000 * (this.empRadius / MAX_RADIUS), 1000000000);
+        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
     }
 
     @Override
@@ -157,8 +156,8 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     {
         super.readFromNBT(par1NBTTagCompound);
 
-        this.empRadius = par1NBTTagCompound.getInteger("banJing");
-        this.empMode = par1NBTTagCompound.getByte("muoShi");
+        this.empRadius = par1NBTTagCompound.getInteger("empRadius");
+        this.empMode = par1NBTTagCompound.getByte("empMode");
     }
 
     /** Writes a tile entity to NBT. */
@@ -167,8 +166,8 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     {
         super.writeToNBT(par1NBTTagCompound);
 
-        par1NBTTagCompound.setInteger("banJing", this.empRadius);
-        par1NBTTagCompound.setByte("muoShi", this.empMode);
+        par1NBTTagCompound.setInteger("empRadius", this.empRadius);
+        par1NBTTagCompound.setByte("empMode", this.empMode);
     }
 
     //@Callback(limit = 1)
@@ -212,73 +211,6 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
-    }
-
-    //==========================================
-    //==== Open Computers code
-    //=========================================
-    //@Override
-    public String getComponentName()
-    {
-        return "emptower";
-    }
-
-    //@Callback
-    public byte getEmpMode()
-    {
-        return empMode;
-    }
-
-    //@Callback
-    public void setEmpMode(byte empMode)
-    {
-        if (empMode >= 0 && empMode <= 2)
-        {
-            this.empMode = empMode;
-        }
-    }
-
-    //@Callback
-    public void empMissiles()
-    {
-        this.empMode = 1;
-    }
-
-    //@Callback
-    public void empAll()
-    {
-        this.empMode = 0;
-    }
-
-    //@Callback
-    public void empElectronics()
-    {
-        this.empMode = 2;
-    }
-
-    //@Callback
-    public int getEmpRadius()
-    {
-        return empRadius;
-    }
-
-    //@Callback
-    public int getMaxEmpRadius()
-    {
-        return MAX_RADIUS;
-    }
-
-    //@Callback
-    public void setEmpRadius(int empRadius)
-    {
-        int prev = getEmpRadius();
-        this.empRadius = Math.min(Math.max(empRadius, 0), MAX_RADIUS);
-    }
-
-    //@Callback
-    public static int getMaxRadius()
-    {
-        return MAX_RADIUS;
     }
 
     //@Callback
