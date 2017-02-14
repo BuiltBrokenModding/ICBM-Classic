@@ -8,7 +8,8 @@ import com.builtbroken.mc.lib.mod.AbstractProxy;
 import com.builtbroken.mc.lib.mod.ModCreativeTab;
 import com.builtbroken.mc.lib.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
+import com.builtbroken.mc.prefab.items.ItemBlockBase;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -142,13 +143,13 @@ public final class ICBMClassic extends AbstractMod
     @Override
     protected void loadBlocks(ModManager manager)
     {
-        blockGlassPlate = manager.newBlock("icbmCGlassPlate", BlockGlassPressurePlate.class);
-        blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class);
-        blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockMetadata.class);
+        blockGlassPlate = manager.newBlock("icbmCGlassPlate", BlockGlassPressurePlate.class, ItemBlockBase.class);
+        blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class, ItemBlockBase.class);
+        blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockSubTypes.class);
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
-        blockConcrete = manager.newBlock("icbmCConcrete", BlockConcrete.class, ItemBlockMetadata.class);
-        blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class);
-        blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class);
+        blockConcrete = manager.newBlock("icbmCConcrete", BlockConcrete.class, ItemBlockSubTypes.class);
+        blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class, ItemBlockBase.class);
+        blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class, ItemBlockBase.class);
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
     }
 

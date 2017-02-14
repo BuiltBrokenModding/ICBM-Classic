@@ -1,9 +1,12 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRailBase;
@@ -79,5 +82,19 @@ public class ItemBombCart extends ItemICBMBase
                 par3List.add(new ItemStack(par1, 1, zhaPin.ordinal()));
             }
         }
+    }
+
+    @Override
+    protected boolean hasDetailedInfo(ItemStack stack, EntityPlayer player)
+    {
+        return true;
+    }
+
+    @Override
+    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    {
+        ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+        int tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
+        list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata);
     }
 }

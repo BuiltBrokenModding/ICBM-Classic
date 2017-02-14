@@ -11,6 +11,7 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
@@ -61,6 +62,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     public TileEMPTower()
     {
         super("empTower", Material.iron);
+        this.itemBlock = ItemBlockBase.class;
         this.hardness = 10f;
         this.resistance = 10f;
         this.isOpaque = false;

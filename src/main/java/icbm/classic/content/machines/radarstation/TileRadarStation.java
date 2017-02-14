@@ -16,6 +16,7 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -59,6 +60,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     public TileRadarStation()
     {
         super("radarStation", Material.iron);
+        this.itemBlock = ItemBlockBase.class;
         this.hardness = 10f;
         this.resistance = 10f;
         this.isOpaque = false;

@@ -8,37 +8,69 @@ potion.radiation=Radiation
 
 ## Items
 item.icbmclassic:sulfurDust.name=Sulfur
+item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
+
 item.icbmclassic:saltpeter.name=Saltpeter
+item.icbmclassic:saltpeter.info=Used in the creation of gunpowder
+
 item.icbmclassic:poisonPowder.name=Poison Powder
+item.icbmclassic:poisonPowder.info=Used in the creation of explosives
+
 item.icbmclassic:antidote.name=Antidote
+item.icbmclassic:antidote.info=Cures all affects
+
 item.icbmclassic:radarGun.name=Radar Gun
+item.icbmclassic:radarGun.info=Stores GPS data
+
 item.icbmclassic:remoteDetonator.name=Remote Detonator
+item.icbmclassic:radarGun.info.info=Remotely fire a missile
+
 item.icbmclassic:defuser.name=Defuser
+item.icbmclassic:defuser.info=Remove explosives safely, even after they have gone off
+
 item.icbmclassic:laserDetonator.name=Laser Designator
+item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
+
 item.icbmclassic:tracker.name=Tracker
+item.icbmclassic:tracker.info=Track entities and, set homing missiles
+
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
-item.icbmclassic:computer.name=Tactical Interface
+item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection, or missile launches
+
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
+item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %s rockets
 
 ## ICBM Machines
 tile.icbmclassic:launcherBase.0.name=Launcher Platform T1
 tile.icbmclassic:launcherBase.1.name=Launcher Platform T2
 tile.icbmclassic:launcherBase.2.name=Launcher Platform T3
+tile.icbmclassic:launcherBase.info=Used to store missiles for launch
+
 tile.icbmclassic:launcherScreen.0.name=Launcher Control Panel T1
 tile.icbmclassic:launcherScreen.1.name=Launcher Control Panel T2
 tile.icbmclassic:launcherScreen.2.name=Launcher Control Panel T3
+tile.icbmclassic:launcherScreen.info=Used to fire missiles from launchers
+
 tile.icbmclassic:launcherFrame.0.name=Launcher Support Frame T1
 tile.icbmclassic:launcherFrame.1.name=Launcher Support Frame T2
 tile.icbmclassic:launcherFrame.2.name=Launcher Support Frame T3
+tile.icbmclassic:launcherFrame.info=Improves accuracy of missiles
+
 tile.icbmclassic:radarStation.name=Radar Station
+tile.icbmclassic:radarStation.info=Detects missiles in flight
+
 tile.icbmclassic:empTower.name=EMP Tower
+tile.icbmclassic:empTower.info=Drains energy from tiles, entities and devices
+
 tile.icbmclassic:cruiseLauncher.name=Cruise Launcher
+tile.icbmclassic:cruiseLauncher.info=Fires missiles in a strait line
+
 tile.icbmclassic:missileCoordinator.name=Missile Coordinator
+tile.icbmclassic:missileCoordinator.info=Over sized calculator, calculates flight paths
 
 ## Blocks
-tile.icbmclassic:sulfurOre.name=Sulfur Ore
-tile.icbmclassic:missileAssembler.name=Missile Assembler
 tile.icbmclassic:reinforcedRail.name=Reinforced Rail
+tile.icbmclassic:reinforcedRail.info=Hardened against explosives
 
 ## ICBM Explosives
 
@@ -322,14 +354,5 @@ info.radarGun.meters=Meters
 info.detonator.linked=Linked Explosive:
 info.detonator.noLink=No Linked Explosive
 info.misc.tier=Explosive Tier
-info.rocketlauncher.tooltip=This rocket launcher can fire up to Tier %s rockets
 info.tracker.tooltip=Left Click on a mob (players aswell), and I Will point to it.
 
-info.upgrade.range=Upgrades the targeting range of the sentry gun.
-info.upgrade.collect=Allows the sentry to collect ejected shell casings.
-info.upgrade.sentry=A modification for sentry guns
-info.upgrade.silencer=Turns down sound effects for sentry guns
-##info.upgrade.targetspeed=Increases targeting speed for sentry guns
-info.upgrade.targetspeed=Not implemented
-
-info.turretdenied.waila=Entry not found for %u

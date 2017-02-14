@@ -118,11 +118,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean par4)
+    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
     {
-        String str = LanguageUtility.getLocal("info.rocketlauncher.tooltip").replaceAll("%s", String.valueOf(Settings.MAX_ROCKET_LAUCNHER_TIER));
-        list.add(str);
-
-        super.addInformation(itemStack, entityPlayer, list, par4);
+        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(Settings.MAX_ROCKET_LAUCNHER_TIER));
+        lines.add(str);
     }
 }

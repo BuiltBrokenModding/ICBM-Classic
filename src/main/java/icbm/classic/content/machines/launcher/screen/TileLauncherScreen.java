@@ -9,8 +9,8 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
@@ -57,7 +57,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public TileLauncherScreen()
     {
         super("launcherScreen", Material.iron);
-        this.itemBlock = ItemBlockMetadata.class;
+        this.itemBlock = ItemBlockSubTypes.class;
         this.hardness = 10f;
         this.resistance = 10f;
         this.isOpaque = false;

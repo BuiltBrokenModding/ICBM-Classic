@@ -6,6 +6,7 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
@@ -30,6 +31,7 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
     public TileMissileCoordinator()
     {
         super("missileCoordinator", Material.iron);
+        this.itemBlock = ItemBlockBase.class;
         this.hardness = 10f;
         this.resistance = 10f;
         this.isOpaque = false;

@@ -24,12 +24,11 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
         setMaxStackSize(1);
     }
 
-    /** Allows items to add custom lines of information to the mouseover description */
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4)
+    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        super.addInformation(itemStack, par2EntityPlayer, par3List, par4);
-        par3List.add(LanguageUtility.getLocal("info.misc.freq") + " " + this.getBroadCastHz(itemStack));
+        super.getDetailedInfo(stack, player, list);
+        list.add(LanguageUtility.getLocal("info.misc.freq") + " " + this.getBroadCastHz(stack));
     }
 
     @Override

@@ -10,9 +10,9 @@ import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileEnt;
-import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
 import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -56,7 +56,7 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     public TileLauncherFrame()
     {
         super("launcherFrame", Material.iron);
-        this.itemBlock = ItemBlockMetadata.class;
+        this.itemBlock = ItemBlockSubTypes.class;
         this.hardness = 10f;
         this.resistance = 10f;
         this.isOpaque = false;

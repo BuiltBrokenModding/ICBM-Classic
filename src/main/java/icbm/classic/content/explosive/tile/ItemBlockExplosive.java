@@ -29,7 +29,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     }
 
     @Override
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    public void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
         ///Shhh!!! tell no one this exists, tss a surprise
         if (stack.getItemDamage() == Explosives.REDMATTER.ordinal())
