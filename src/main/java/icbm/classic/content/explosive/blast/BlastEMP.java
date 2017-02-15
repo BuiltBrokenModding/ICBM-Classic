@@ -71,7 +71,8 @@ public class BlastEMP extends Blast
 
                         Block block = searchPosition.getBlock(world());
                         TileEntity tileEntity = searchPosition.getTileEntity(world());
-
+                        //TODO fire EMP event
+                        //TODO more EMP effect to UniversalEnergySystem to better support cross mod support
                         if (block != null)
                         {
                             //if (block instanceof IForceFieldBlock)

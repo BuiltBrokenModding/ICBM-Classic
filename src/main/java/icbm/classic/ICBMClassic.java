@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.registry.ModManager;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
@@ -417,6 +418,8 @@ public final class ICBMClassic extends AbstractMod
     public void preInit(FMLPreInitializationEvent event)
     {
         super.preInit(event);
+        Engine.requestBaseModules();
+        Engine.requestMultiBlock();
     }
 
     @EventHandler
