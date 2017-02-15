@@ -18,7 +18,7 @@ public class BlockReinforcedGlass extends BlockICBM
 
     public BlockReinforcedGlass()
     {
-        super("glassReinforced", Material.glass);
+        super("reinforcedGlass", Material.glass);
         this.setHardness(10);
         this.setResistance(48);
     }

@@ -63,7 +63,7 @@ tile.icbmclassic:empTower.name=EMP Tower
 tile.icbmclassic:empTower.info=Drains energy from tiles, entities and devices
 
 tile.icbmclassic:cruiseLauncher.name=Cruise Launcher
-tile.icbmclassic:cruiseLauncher.info=Fires missiles in a strait line
+tile.icbmclassic:cruiseLauncher.info=Dummy fires a missile, without target data
 
 tile.icbmclassic:missileCoordinator.name=Missile Coordinator
 tile.icbmclassic:missileCoordinator.info=Over sized calculator, calculates flight paths
@@ -146,7 +146,7 @@ icbm.explosive.redMatter.info.9=Yogscast? You guys the bomb...
 icbm.explosive.redMatter.info.10=Oh? You think you can escape
 icbm.explosive.redMatter.info.10=Oh baby come back
 
-icbm.explosive.sMine.info=Bouncing betty with, the kick of a titian
+icbm.explosive.sMine.info=Bouncing betty with, the kick of a fat guy
 
 ## Missile Form
 icbm.missile.condensed.name=Conventional Missile
