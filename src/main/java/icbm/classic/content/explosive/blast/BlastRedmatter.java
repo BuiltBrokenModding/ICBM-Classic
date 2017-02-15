@@ -109,30 +109,34 @@ public class BlastRedmatter extends Blast
                         if (dist < currentRadius && dist > currentRadius - 2)
                         {
                             final Block block = currentPos.getBlock();
-                            int meta = currentPos.getBlockMetadata();
-                            //Ignore air blocks and unbreakable blocks
-                            if (!block.isAir(world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) && block.getBlockHardness(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0)
+                            //Null if call was made on an unloaded chunk
+                            if (block != null)
                             {
-                                //TODO handle multi-blocks
-                                final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
-                                currentPos.setBlock(Blocks.air, 0, isFluid ? 0 : 3);
-                                //TODO: render fluid streams moving into hole
-                                if (!isFluid && doFlyingBlocks)
+                                int meta = currentPos.getBlockMetadata();
+                                //Ignore air blocks and unbreakable blocks
+                                if (!block.isAir(world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) && block.getBlockHardness(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0)
                                 {
-                                    //Convert a random amount of destroyed blocks into flying blocks for visuals
-                                    if (this.world().rand.nextFloat() > 0.8)
+                                    //TODO handle multi-blocks
+                                    final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
+                                    currentPos.setBlock(Blocks.air, 0, isFluid ? 0 : 3);
+                                    //TODO: render fluid streams moving into hole
+                                    if (!isFluid && doFlyingBlocks)
                                     {
-                                        EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), currentPos.add(0.5D), block, meta);
-                                        entity.yawChange = 50 * this.world().rand.nextFloat();
-                                        entity.pitchChange = 50 * this.world().rand.nextFloat();
-                                        this.world().spawnEntityInWorld(entity);
+                                        //Convert a random amount of destroyed blocks into flying blocks for visuals
+                                        if (this.world().rand.nextFloat() > 0.8)
+                                        {
+                                            EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), currentPos.add(0.5D), block, meta);
+                                            entity.yawChange = 50 * this.world().rand.nextFloat();
+                                            entity.pitchChange = 50 * this.world().rand.nextFloat();
+                                            this.world().spawnEntityInWorld(entity);
+                                        }
                                     }
-                                }
-                                //Keep track of blocks removed to keep from lagging the game
-                                blocksDestroyed++;
-                                if (blocksDestroyed > this.MAX_BLOCKS_REMOVED_PER_TICK)
-                                {
-                                    return;
+                                    //Keep track of blocks removed to keep from lagging the game
+                                    blocksDestroyed++;
+                                    if (blocksDestroyed > this.MAX_BLOCKS_REMOVED_PER_TICK)
+                                    {
+                                        return;
+                                    }
                                 }
                             }
                         }
