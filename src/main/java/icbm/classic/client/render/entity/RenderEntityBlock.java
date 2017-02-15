@@ -27,44 +27,54 @@ public class RenderEntityBlock extends Render
     /** The actual render method that is used in doRender */
     public void doRenderGravityBlock(EntityFlyingBlock entity, double x, double y, double z, float par8, float par9)
     {
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) x, (float) y, (float) z);
-        RenderUtility.setTerrainTexture();
-
         Block block = entity.blockID;
         if (block == null || block.getMaterial() == Material.air)
         {
             block = Blocks.stone;
         }
-        GL11.glDisable(GL11.GL_LIGHTING);
 
-        GL11.glRotatef(entity.rotationPitch, 0.0F, 0.0F, 1.0F);
-        GL11.glRotatef(entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-
-
-        if (block.getRenderType() != 0)
+        GL11.glPushMatrix();
+        try
         {
-            try
+            GL11.glTranslatef((float) x, (float) y, (float) z);
+            RenderUtility.setTerrainTexture();
+
+
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glRotatef(entity.rotationPitch, 0.0F, 0.0F, 1.0F);
+            GL11.glRotatef(entity.rotationYaw, 0.0F, 1.0F, 0.0F);
+
+
+            if (block.getRenderType() != 0)
             {
                 Tessellator tessellator = Tessellator.instance;
                 tessellator.startDrawingQuads();
-                tessellator.setTranslation((-MathHelper.floor_double(entity.posX)) - 0.5F, (-MathHelper.floor_double(entity.posY)) - 0.5F, (-MathHelper.floor_double(entity.posZ)) - 0.5F);
-                RenderUtility.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
-                tessellator.setTranslation(0.0D, 0.0D, 0.0D);
+                try
+                {
+                    tessellator.setTranslation((-MathHelper.floor_double(entity.posX)) - 0.5F, (-MathHelper.floor_double(entity.posY)) - 0.5F, (-MathHelper.floor_double(entity.posZ)) - 0.5F);
+                    RenderUtility.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
+                    tessellator.setTranslation(0.0D, 0.0D, 0.0D);
+                }
+                catch (Exception e)
+                {
+                    ICBMClassic.INSTANCE.logger().error("Unexpected error while rendering EntityBlock[" + entity + "] with data [" + block + ":" + entity.metadata + "] forcing to render as stone to prevent additional errors.", e);
+                    entity.blockID = Blocks.stone;
+                }
                 tessellator.draw();
             }
-            catch (Exception e)
+            else
             {
-                ICBMClassic.INSTANCE.logger().error("Unexpected error while rendering EntityBlock[" + entity + "] with data [" + block + ":" + entity.metadata + "] forcing to render as stone to prevent additional errors.", e);
-                entity.blockID = Blocks.stone;
-            }
-        }
-        else
-        {
-            this.renderBlockGravity(block, entity.metadata, RenderUtility.renderBlocks);
-        }
 
-        GL11.glEnable(GL11.GL_LIGHTING);
+                this.renderBlockGravity(block, entity.metadata, RenderUtility.renderBlocks);
+
+            }
+            GL11.glEnable(GL11.GL_LIGHTING);
+
+        }
+        catch (Exception e)
+        {
+            ICBMClassic.INSTANCE.logger().error("Unexpected error while rendering EntityBlock[" + entity + "] with data [" + block + ":" + entity.metadata + "]", e);
+        }
         GL11.glPopMatrix();
     }
 

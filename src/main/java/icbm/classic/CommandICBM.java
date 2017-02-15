@@ -20,13 +20,13 @@ public class CommandICBM extends CommandBase
     @Override
     public String getCommandName()
     {
-        return "icbm";
+        return "icbmc";
     }
 
     @Override
     public String getCommandUsage(ICommandSender par1ICommandSender)
     {
-        return "/icbm help";
+        return "/icbmc help";
     }
 
     @Override
@@ -38,10 +38,10 @@ public class CommandICBM extends CommandBase
             int dimension = entityPlayer.worldObj.provider.dimensionId;
             if (args == null || args.length == 0 || args[0].equalsIgnoreCase("help"))
             {
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM help"));
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM lag <radius>"));
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM remove <All/Missile/Explosion> <radius>"));
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/ICBM emp <radius>"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc help"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc lag <radius>"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc remove <All/Missile/Explosion> <radius>"));
+                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc emp <radius>"));
                 return;
             }
             else if (args.length >= 2 && args[0].equalsIgnoreCase("lag"))

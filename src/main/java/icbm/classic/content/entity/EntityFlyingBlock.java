@@ -5,6 +5,7 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -140,6 +141,17 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         }
 
         this.ticksExisted++;
+
+        if(worldObj.isRemote && (motionX > 0.001 || motionZ > 0.001 || motionY > 0.001))
+        {
+            if (ICBMClassic.proxy.getParticleSetting() == 0)
+            {
+                if (worldObj.rand.nextInt(5) == 0)
+                {
+                    ICBMClassic.proxy.spawnParticle("digging", worldObj, new Pos(this), -motionZ, -motionY, -motionZ, Block.getIdFromBlock(blockID), 0, metadata, 2, 1);
+                }
+            }
+        }
     }
 
     public void setBlock()
