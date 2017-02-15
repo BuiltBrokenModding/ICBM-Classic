@@ -180,13 +180,13 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
                 switch (this.empMode)
                 {
                     default:
-                        new BlastEMP(this.worldObj, null, this.xCoord, this.yCoord, this.zCoord, this.empRadius).setEffectBlocks().setEffectEntities().explode();
+                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().setEffectEntities().explode();
                         break;
                     case 1:
-                        new BlastEMP(this.worldObj, null, this.xCoord, this.yCoord, this.zCoord, this.empRadius).setEffectEntities().explode();
+                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectEntities().explode();
                         break;
                     case 2:
-                        new BlastEMP(this.worldObj, null, this.xCoord, this.yCoord, this.zCoord, this.empRadius).setEffectBlocks().explode();
+                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().explode();
                         break;
                 }
                 this.extractEnergy();
