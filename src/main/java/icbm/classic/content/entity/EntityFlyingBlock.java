@@ -3,11 +3,13 @@ package icbm.classic.content.entity;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
+import net.minecraft.client.particle.EntityDiggingFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
@@ -21,7 +23,7 @@ import net.minecraftforge.fluids.IFluidBlock;
 /** @author Calclavia */
 public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnData
 {
-    public Block blockID = null;
+    public Block block = null;
     public int metadata = 0;
 
     public float yawChange = 0;
@@ -35,21 +37,18 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         this.ticksExisted = 0;
         this.preventEntitySpawning = true;
         this.isImmuneToFire = true;
-        this.setSize(1F, 1F);
+        this.yOffset = height / 2.0F;
+        this.setSize(0.98F, 0.98F);
     }
 
     public EntityFlyingBlock(World world, IPos3D position, Block blockID, int metadata)
     {
-        super(world);
-        this.isImmuneToFire = true;
-        this.ticksExisted = 0;
-        setSize(0.98F, 0.98F);
-        yOffset = height / 2.0F;
-        setPosition(position.x() + 0.5, position.y(), position.z() + 0.5);
-        motionX = 0D;
-        motionY = 0D;
-        motionZ = 0D;
-        this.blockID = blockID;
+        this(world);
+        this.setPosition(position.x() + 0.5, position.y(), position.z() + 0.5);
+        this.motionX = 0D;
+        this.motionY = 0D;
+        this.motionZ = 0D;
+        this.block = blockID;
         this.metadata = metadata;
     }
 
@@ -62,13 +61,13 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     @Override
     public String getCommandSenderName()
     {
-        return "Flying Block [" + (blockID != null ? blockID.getUnlocalizedName() : "null") + ", " + metadata + ", " + hashCode() + "]";
+        return "Flying Block [" + (block != null ? block.getUnlocalizedName() : "null") + ", " + metadata + ", " + hashCode() + "]";
     }
 
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        ByteBufUtils.writeUTF8String(data, this.blockID != null ? Block.blockRegistry.getNameForObject(blockID) : "");
+        ByteBufUtils.writeUTF8String(data, this.block != null ? Block.blockRegistry.getNameForObject(block) : "");
         data.writeInt(this.metadata);
         data.writeFloat(this.gravity);
         data.writeFloat(yawChange);
@@ -81,11 +80,11 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         String name = ByteBufUtils.readUTF8String(data);
         if(!name.isEmpty())
         {
-            blockID = (Block) Block.blockRegistry.getObject(name);
+            block = (Block) Block.blockRegistry.getObject(name);
         }
         else
         {
-            blockID = null;
+            block = Blocks.stone;
         }
         metadata = data.readInt();
         gravity = data.readFloat();
@@ -101,13 +100,14 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     @Override
     public void onUpdate()
     {
-        if (this.blockID == null)
+        if (this.block == null)
         {
             this.setDead();
             return;
         }
 
-        if (this.posY > 400 || this.blockID == Engine.multiBlock || this.blockID == Blocks.piston_extension || this.blockID instanceof IFluidBlock)
+        //TODO make a black list of blocks that shouldn't be a flying entity block
+        if (this.posY > 400 || this.block == Engine.multiBlock || this.block == Blocks.piston_extension || this.block instanceof IFluidBlock)
         {
             this.setDead();
             return;
@@ -148,7 +148,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
             {
                 if (worldObj.rand.nextInt(5) == 0)
                 {
-                    ICBMClassic.proxy.spawnParticle("digging", worldObj, new Pos(this), -motionZ, -motionY, -motionZ, Block.getIdFromBlock(blockID), 0, metadata, 2, 1);
+                    FMLClientHandler.instance().getClient().effectRenderer.addEffect(new EntityDiggingFX(worldObj, posX, posY, posZ, motionX, motionY, motionZ, block, 0, metadata));
                 }
             }
         }
@@ -162,7 +162,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
             int j = MathHelper.floor_double(posY);
             int k = MathHelper.floor_double(posZ);
 
-            this.worldObj.setBlock(i, j, k, this.blockID, this.metadata, 2);
+            this.worldObj.setBlock(i, j, k, this.block, this.metadata, 2);
         }
 
         this.setDead();
@@ -176,9 +176,9 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         // Make sure the entity is not an item
         if (par1Entity instanceof EntityLiving)
         {
-            if (blockID != null)
+            if (block != null)
             {
-                if (!(blockID instanceof IFluidBlock) && (this.motionX > 2 || this.motionY > 2 || this.motionZ > 2))
+                if (!(block instanceof IFluidBlock) && (this.motionX > 2 || this.motionY > 2 || this.motionZ > 2))
                 {
                     int damage = (int) (1.2 * (Math.abs(this.motionX) + Math.abs(this.motionY) + Math.abs(this.motionZ)));
                     ((EntityLiving) par1Entity).attackEntityFrom(DamageSource.fallingBlock, damage);
@@ -193,9 +193,9 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     protected void writeEntityToNBT(NBTTagCompound nbttagcompound)
     {
         nbttagcompound.setInteger("metadata", this.metadata);
-        if(blockID != null)
+        if(block != null)
         {
-            nbttagcompound.setString("block", Block.blockRegistry.getNameForObject(blockID));
+            nbttagcompound.setString("block", Block.blockRegistry.getNameForObject(block));
         }
         nbttagcompound.setFloat("gravity", this.gravity);
     }
@@ -204,9 +204,9 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     protected void readEntityFromNBT(NBTTagCompound nbttagcompound)
     {
         this.metadata = nbttagcompound.getInteger("metadata");
-        if(nbttagcompound.hasKey("blockID"))
+        if(nbttagcompound.hasKey("block"))
         {
-            this.blockID = (Block) Block.blockRegistry.getObject(nbttagcompound.getString("block"));
+            this.block = (Block) Block.blockRegistry.getObject(nbttagcompound.getString("block"));
         }
         this.gravity = nbttagcompound.getFloat("gravity");
     }

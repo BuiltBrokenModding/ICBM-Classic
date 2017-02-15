@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.core.References;
-import com.builtbroken.mc.lib.transform.sorting.Vector3DistanceComparator;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
@@ -10,10 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class BlastAntiGravitational extends Blast
 {
@@ -46,7 +43,7 @@ public class BlastAntiGravitational extends Blast
         {
             if (r == 0)
             {
-                Collections.sort(this.thread.results, new Vector3DistanceComparator(position, true));
+                Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
             }
             int blocksToTake = 20;
 
@@ -113,7 +110,7 @@ public class BlastAntiGravitational extends Blast
     @Override
     protected void doPostExplode()
     {
-        for(EntityFlyingBlock entity : flyingBlocks)
+        for (EntityFlyingBlock entity : flyingBlocks)
         {
             entity.gravity = 0.045f;
         }
@@ -140,5 +137,27 @@ public class BlastAntiGravitational extends Blast
     public long getEnergy()
     {
         return 10000;
+    }
+
+    public class GravitationalBlockSorter implements Comparator<IPos3D>
+    {
+        final IPos3D center;
+
+        public GravitationalBlockSorter(IPos3D center)
+        {
+            this.center = center;
+        }
+
+        @Override
+        public int compare(IPos3D o1, IPos3D o2)
+        {
+            if ((int) o1.y() == (int) o2.y())
+            {
+                double d = new Pos(o1).distance(center);
+                double d2 = new Pos(o2).distance(center);
+                return d > d2 ? 1 : d == d2 ? 0 : -1;
+            }
+            return Integer.compare((int) o1.y(), (int) o2.y());
+        }
     }
 }

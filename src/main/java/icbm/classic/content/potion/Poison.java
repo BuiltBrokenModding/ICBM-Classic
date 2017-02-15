@@ -127,13 +127,13 @@ public abstract class Poison
         {
             while (targetPosition.distance(endingPosition) <= totalDistance)
             {
-                int blockID = targetPosition.getBlockID(world);
+                int block = targetPosition.getBlockID(world);
 
-                if (blockID > 0)
+                if (block > 0)
                 {
-                    if (Block.blocksList[blockID] instanceof IAntiPoisonBlock)
+                    if (Block.blocksList[block] instanceof IAntiPoisonBlock)
                     {
-                        if (((IAntiPoisonBlock) Block.blocksList[blockID]).isPoisonPrevention(world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), this.getName()))
+                        if (((IAntiPoisonBlock) Block.blocksList[block]).isPoisonPrevention(world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), this.getName()))
                         {
                             count++;
                         }

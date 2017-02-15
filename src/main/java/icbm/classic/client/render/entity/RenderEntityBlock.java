@@ -27,7 +27,7 @@ public class RenderEntityBlock extends Render
     /** The actual render method that is used in doRender */
     public void doRenderGravityBlock(EntityFlyingBlock entity, double x, double y, double z, float par8, float par9)
     {
-        Block block = entity.blockID;
+        Block block = entity.block;
         if (block == null || block.getMaterial() == Material.air)
         {
             block = Blocks.stone;
@@ -36,7 +36,7 @@ public class RenderEntityBlock extends Render
         GL11.glPushMatrix();
         try
         {
-            GL11.glTranslatef((float) x, (float) y, (float) z);
+            GL11.glTranslatef((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
             RenderUtility.setTerrainTexture();
 
 
@@ -58,15 +58,13 @@ public class RenderEntityBlock extends Render
                 catch (Exception e)
                 {
                     ICBMClassic.INSTANCE.logger().error("Unexpected error while rendering EntityBlock[" + entity + "] with data [" + block + ":" + entity.metadata + "] forcing to render as stone to prevent additional errors.", e);
-                    entity.blockID = Blocks.stone;
+                    entity.block = Blocks.stone;
                 }
                 tessellator.draw();
             }
             else
             {
-
-                this.renderBlockGravity(block, entity.metadata, RenderUtility.renderBlocks);
-
+                RenderUtility.renderCube(0, 0, 0, 1, 1, 1, block, null, entity.metadata);
             }
             GL11.glEnable(GL11.GL_LIGHTING);
 
