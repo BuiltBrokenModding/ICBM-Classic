@@ -122,8 +122,11 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
 
             int prevDetectedEntities = this.detectedEntities.size();
 
-            // Do a radar scan
-            this.doScan();
+            if(isServer())
+            {
+                // Do a radar scan
+                this.doScan();
+            }
 
             if (prevDetectedEntities != this.detectedEntities.size())
             {
