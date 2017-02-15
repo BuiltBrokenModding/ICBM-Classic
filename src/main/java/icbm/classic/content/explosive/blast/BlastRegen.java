@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -26,10 +27,9 @@ public class BlastRegen extends Blast
 
                 if (world() instanceof WorldServer)
                 {
-                    WorldServer worldServer = (WorldServer) world();
-                    ChunkProviderServer chunkProviderServer = worldServer.theChunkProviderServer;
-                    IChunkProvider chunkProviderGenerate = chunkProviderServer.currentChunkProvider;
-                    Chunk newChunk = chunkProviderGenerate.provideChunk(oldChunk.xPosition, oldChunk.zPosition);
+
+                    IChunkProvider provider = world().getChunkProvider();
+                    Chunk newChunk = ((ChunkProviderServer) provider).currentChunkProvider.provideChunk(oldChunk.xPosition, oldChunk.zPosition);
 
                     for (int x = 0; x < 16; x++)
                     {
@@ -39,20 +39,19 @@ public class BlastRegen extends Blast
                             {
                                 Block blockID = newChunk.getBlock(x, y, z);
                                 int metadata = newChunk.getBlockMetadata(x, y, z);
-
-                                worldServer.setBlock(x + oldChunk.xPosition * 16, y, z + oldChunk.zPosition * 16, blockID, metadata, 2);
+                                world().setBlock(x + oldChunk.xPosition * 16, y, z + oldChunk.zPosition * 16, blockID, metadata, 3);
                             }
                         }
                     }
 
                     oldChunk.isTerrainPopulated = false;
-                    chunkProviderGenerate.populate(chunkProviderGenerate, oldChunk.xPosition, oldChunk.zPosition);
+                    provider.populate(provider, oldChunk.xPosition, oldChunk.zPosition);
+                    oldChunk.isModified = true;
                 }
             }
             catch (Exception e)
             {
-                System.out.println("ICBM Rejuvenation Failed!");
-                e.printStackTrace();
+                ICBMClassic.INSTANCE.logger().error("ICBM Rejuvenation Failed!", e);
             }
         }
     }
