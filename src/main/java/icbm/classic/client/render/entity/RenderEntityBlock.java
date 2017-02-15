@@ -1,6 +1,8 @@
 package icbm.classic.client.render.entity;
 
 import com.builtbroken.mc.lib.render.RenderUtility;
+import com.builtbroken.mc.lib.transform.rotation.EulerAngle;
+import com.builtbroken.mc.lib.transform.vector.Pos;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
@@ -38,9 +40,11 @@ public class RenderEntityBlock extends Render
         {
             GL11.glTranslatef((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
             RenderUtility.setTerrainTexture();
+            EulerAngle rotation = new EulerAngle(entity.rotationYaw, entity.rotationPitch);
+            Pos translation = rotation.toPos();
+            GL11.glTranslated(translation.x(), translation.y(), translation.z());
 
-
-            GL11.glDisable(GL11.GL_LIGHTING);
+            //GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glRotatef(entity.rotationPitch, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(entity.rotationYaw, 0.0F, 1.0F, 0.0F);
 
@@ -52,21 +56,25 @@ public class RenderEntityBlock extends Render
                 try
                 {
                     tessellator.setTranslation((-MathHelper.floor_double(entity.posX)) - 0.5F, (-MathHelper.floor_double(entity.posY)) - 0.5F, (-MathHelper.floor_double(entity.posZ)) - 0.5F);
-                    RenderUtility.renderBlocks.renderBlockByRenderType(block, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
+                    RenderUtility.getBlockRenderer().renderBlockByRenderType(block, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
                     tessellator.setTranslation(0.0D, 0.0D, 0.0D);
+                    tessellator.draw();
                 }
                 catch (Exception e)
                 {
                     ICBMClassic.INSTANCE.logger().error("Unexpected error while rendering EntityBlock[" + entity + "] with data [" + block + ":" + entity.metadata + "] forcing to render as stone to prevent additional errors.", e);
                     entity.block = Blocks.stone;
+                    //Hacky way of clearing current draw state
+                    tessellator.isDrawing = false;
+                    tessellator.startDrawingQuads();
+                    tessellator.isDrawing = false;
                 }
-                tessellator.draw();
             }
             else
             {
                 RenderUtility.renderCube(0, 0, 0, 1, 1, 1, block, null, entity.metadata);
             }
-            GL11.glEnable(GL11.GL_LIGHTING);
+            //GL11.glEnable(GL11.GL_LIGHTING);
 
         }
         catch (Exception e)
