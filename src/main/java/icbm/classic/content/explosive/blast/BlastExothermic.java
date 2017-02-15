@@ -43,7 +43,6 @@ public class BlastExothermic extends BlastBeam
                 for (Pos targetPosition : this.thread.results)
                 {
                     double distance = targetPosition.distance(position);
-
                     double distanceFromCenter = position.distance(targetPosition);
 
                     if (distanceFromCenter > this.getRadius())
@@ -69,10 +68,16 @@ public class BlastExothermic extends BlastBeam
                             this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                         }
 
+                        if(blockID.blockMaterial == Material.rock && this.world().rand.nextFloat() > 0.8)
+                        {
+                            this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
+                        }
+
                         Block blockBellow = world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+
                         if ((blockID.isReplaceable(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(world(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
                         {
-                            if (this.world().rand.nextFloat() > 0.999)
+                            if (this.world().rand.nextFloat() > 0.99)
                             {
                                 this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
                             }
@@ -88,10 +93,6 @@ public class BlastExothermic extends BlastBeam
                                 }
                             }
                         }
-                        else if (blockID == Blocks.ice)
-                    {
-                        this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
-                    }
                     }
                 }
 
