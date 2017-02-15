@@ -77,6 +77,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     public void setTarget(Pos target)
     {
         this._targetPos = target.floor();
+        updateClient = true;
     }
 
     @Override
@@ -113,7 +114,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     @Override
     public Cube getRadioReceiverRange()
     {
-        return new Cube();
+        return RadioRegistry.INFINITE;
     }
 
     @Override

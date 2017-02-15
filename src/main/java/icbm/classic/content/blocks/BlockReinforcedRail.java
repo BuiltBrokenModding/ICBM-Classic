@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks;
 
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockRail;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.world.World;
@@ -9,6 +10,8 @@ public class BlockReinforcedRail extends BlockRail
 {
     public BlockReinforcedRail()
     {
+        setBlockName(ICBMClassic.PREFIX + "reinforcedRail");
+        setBlockTextureName(ICBMClassic.PREFIX + "reinforcedRail");
         setHardness(10F);
         setResistance(10F);
         setStepSound(soundTypeMetal);

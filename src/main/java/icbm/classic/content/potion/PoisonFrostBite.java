@@ -17,29 +17,25 @@ public class PoisonFrostBite extends CustomPotion
     }
 
     @Override
-    public void performEffect(EntityLivingBase par1EntityLiving, int amplifier)
+    public void performEffect(EntityLivingBase entity, int amplifier)
     {
-        if (par1EntityLiving instanceof EntityPlayer)
+        if (entity.isBurning())
         {
-            ((EntityPlayer) par1EntityLiving).addExhaustion(3F * (amplifier + 1));
+            entity.extinguish();
         }
 
-        if (par1EntityLiving.isBurning())
+        if(!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode)
         {
-            par1EntityLiving.extinguish();
-            par1EntityLiving.removePotionEffect(this.id);
-        }
+            if (entity instanceof EntityPlayer)
+            {
+                ((EntityPlayer) entity).addExhaustion(3F * (amplifier + 1));
+            }
 
-        // Check to see if it's on ice
-        if (par1EntityLiving.worldObj.getBlock(MathHelper.floor_double(par1EntityLiving.posX), MathHelper.floor_double(par1EntityLiving.posY) - 1, MathHelper.floor_double(par1EntityLiving.posZ)) == Blocks.ice)
-        {
-            par1EntityLiving.attackEntityFrom(DamageSource.magic, 2);
-        }
-
-        // Shatter enemy if health is too low
-        if (par1EntityLiving.getHealth() < 6)
-        {
-            par1EntityLiving.attackEntityFrom(DamageSource.magic, 999999999);
+            // Check to see if it's on ice
+            if (entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY) - 1, MathHelper.floor_double(entity.posZ)) == Blocks.ice)
+            {
+                entity.attackEntityFrom(DamageSource.magic, 2);
+            }
         }
     }
 
@@ -50,7 +46,6 @@ public class PoisonFrostBite extends CustomPotion
         {
             return true;
         }
-
         return false;
     }
 }

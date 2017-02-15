@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
@@ -75,7 +76,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (((Explosion) ex.handler) != null && !evt.isCanceled())
                             {
                                 // Limit the missile to tier two.
-                                if (((Explosion) ex.handler).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER && ((Explosion) ex.handler).isCruise())
+                                if ((((Explosion) ex.handler).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
                                 {
                                     EntityMissile entityMissile = new EntityMissile(player);
                                     entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
@@ -118,11 +119,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     }
 
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean par4)
+    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
     {
-        String str = LanguageUtility.getLocal("info.rocketlauncher.tooltip").replaceAll("%s", String.valueOf(Settings.MAX_ROCKET_LAUCNHER_TIER));
-        list.add(str);
-
-        super.addInformation(itemStack, entityPlayer, list, par4);
+        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(Settings.MAX_ROCKET_LAUCNHER_TIER));
+        lines.add(str);
     }
 }

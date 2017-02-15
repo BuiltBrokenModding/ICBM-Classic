@@ -7,14 +7,15 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.gui.GuiLauncherScreen;
 import icbm.classic.client.models.MFaSheShiMuo0;
 import icbm.classic.client.models.MFaSheShiMuo1;
 import icbm.classic.client.models.MFaSheShiMuo2;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -128,5 +129,11 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
         list.add(new ItemStack(item, 1, 0));
         list.add(new ItemStack(item, 1, 1));
         list.add(new ItemStack(item, 1, 2));
+    }
+
+    @Override
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

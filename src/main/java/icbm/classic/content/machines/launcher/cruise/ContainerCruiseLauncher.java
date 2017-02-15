@@ -1,41 +1,23 @@
-package icbm.classic.content.container;
+package icbm.classic.content.machines.launcher.cruise;
 
-import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
+import com.builtbroken.mc.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerCruiseLauncher extends Container
+public class ContainerCruiseLauncher extends ContainerBase
 {
     private TileCruiseLauncher tileEntity;
 
-    public ContainerCruiseLauncher(InventoryPlayer inventoryPlayer, TileCruiseLauncher tileEntity)
+    public ContainerCruiseLauncher(EntityPlayer player, TileCruiseLauncher tileEntity)
     {
+        super(tileEntity);
         this.tileEntity = tileEntity;
         // Missile Slot
         this.addSlotToContainer(new Slot(tileEntity, 0, 151, 23));
         // Battery Slot
         this.addSlotToContainer(new Slot(tileEntity, 1, 151, 47));
-
-        int var3;
-
-        for (var3 = 0; var3 < 3; ++var3)
-        {
-            for (int var4 = 0; var4 < 9; ++var4)
-            {
-                this.addSlotToContainer(new Slot(inventoryPlayer, var4 + var3 * 9 + 9, 8 + var4 * 18, 84 + var3 * 18));
-            }
-        }
-
-        for (var3 = 0; var3 < 9; ++var3)
-        {
-            this.addSlotToContainer(new Slot(inventoryPlayer, var3, 8 + var3 * 18, 142));
-        }
-
-        tileEntity.getPlayersUsing().add(inventoryPlayer.player);
-
+        addPlayerInventory(player);
     }
 
     @Override

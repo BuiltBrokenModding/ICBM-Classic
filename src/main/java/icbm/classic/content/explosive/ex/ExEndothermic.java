@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.blast.BlastSky;
+import icbm.classic.content.explosive.blast.BlastEndothermic;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,7 +33,7 @@ public class ExEndothermic extends Explosion
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
-        new BlastSky(world, entity, x, y, z, 50).explode();
+        new BlastEndothermic(world, entity, x, y, z, 50).explode();
     }
 
     @Override

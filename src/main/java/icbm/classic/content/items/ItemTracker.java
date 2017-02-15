@@ -23,6 +23,7 @@ public class ItemTracker extends ItemICBMElectrical
     public ItemTracker()
     {
         super("tracker");
+        this.setMaxStackSize(1);
         //FlagRegistry.registerFlag("ban_Tracker");
     }
 
@@ -39,11 +40,9 @@ public class ItemTracker extends ItemICBMElectrical
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void addInformation(ItemStack itemStack, EntityPlayer player, List lines, boolean par4)
+    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
     {
-        super.addInformation(itemStack, player, lines, par4);
-
-        Entity trackingEntity = getTrackingEntity(FMLClientHandler.instance().getClient().theWorld, itemStack);
+        Entity trackingEntity = getTrackingEntity(FMLClientHandler.instance().getClient().theWorld, stack);
 
         if (trackingEntity != null)
         {

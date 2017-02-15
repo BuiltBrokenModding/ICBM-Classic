@@ -4,9 +4,9 @@ import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
@@ -16,21 +16,11 @@ import java.util.HashMap;
  */
 public abstract class Poison
 {
-    public enum ArmorType
-    {
-        HELM,
-        BODY,
-        LEGGINGS,
-        BOOTS
-    }
-
     static HashMap<String, Poison> poisons = new HashMap();
     static BiMap<String, Integer> poisonIDs = HashBiMap.create();
     private static int maxID = 0;
 
     protected String name;
-    protected EnumSet<ArmorType> armorRequired = EnumSet.range(ArmorType.HELM, ArmorType.BOOTS);
-    protected boolean isDisabled = false;
 
     public static Poison getPoison(String name)
     {
@@ -57,7 +47,6 @@ public abstract class Poison
         this.name = name;
         poisons.put(name, this);
         poisonIDs.put(name, ++maxID);
-        //isDisabled = References.CONFIGURATION.get("Disable Poison", "Disable " + this.name, false).getBoolean(false);
     }
 
     public String getName()
@@ -68,11 +57,6 @@ public abstract class Poison
     public final int getID()
     {
         return getID(this.getName());
-    }
-
-    public EnumSet<ArmorType> getArmorRequired()
-    {
-        return this.armorRequired;
     }
 
     /**
@@ -97,6 +81,10 @@ public abstract class Poison
 
     public boolean isEntityProtected(Pos emitPosition, EntityLivingBase entity, int amplifier)
     {
+        if(entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isCreativeMode)
+        {
+            return true;
+        }
         /* EnumSet<ArmorType> armorWorn = EnumSet.noneOf(ArmorType.class);
 
         if (entity instanceof EntityPlayer)
@@ -139,13 +127,13 @@ public abstract class Poison
         {
             while (targetPosition.distance(endingPosition) <= totalDistance)
             {
-                int blockID = targetPosition.getBlockID(world);
+                int block = targetPosition.getBlockID(world);
 
-                if (blockID > 0)
+                if (block > 0)
                 {
-                    if (Block.blocksList[blockID] instanceof IAntiPoisonBlock)
+                    if (Block.blocksList[block] instanceof IAntiPoisonBlock)
                     {
-                        if (((IAntiPoisonBlock) Block.blocksList[blockID]).isPoisonPrevention(world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), this.getName()))
+                        if (((IAntiPoisonBlock) Block.blocksList[block]).isPoisonPrevention(world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), this.getName()))
                         {
                             count++;
                         }

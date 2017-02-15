@@ -1,5 +1,8 @@
 package icbm.classic.content.machines.launcher.screen;
 
+import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.api.items.tools.IWorldPosItem;
+import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
@@ -9,10 +12,12 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.hz.FakeRadioSender;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import io.netty.buffer.ByteBuf;
@@ -28,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.ITier;
@@ -54,10 +60,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     /** Detonation height of the missile. */
     public short targetHeight = 3;
 
+    private boolean hasMissile = false;
+
     public TileLauncherScreen()
     {
         super("launcherScreen", Material.iron);
-        this.itemBlock = ItemBlockMetadata.class;
+        this.itemBlock = ItemBlockSubTypes.class;
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override
@@ -104,19 +115,76 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             {
                 this.launch();
             }
+            if (ticks % 3 == 0)
+            {
+                sendDescPacket();
+            }
         }
+    }
+
+    @Override
+    public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
+    {
+        if (isServer())
+        {
+            boolean notNull = player.getHeldItem() != null;
+            if (notNull && player.getHeldItem().getItem() == Items.redstone)
+            {
+                if (canLaunch())
+                {
+                    launch();
+                }
+                else
+                {
+                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.failedToFire")));
+                    String translation = LanguageUtility.getLocal("chat.launcher.status");
+                    translation = translation.replace("%1", getStatus());
+                    player.addChatComponentMessage(new ChatComponentText(translation));
+                }
+            }
+            else if (notNull && player.getHeldItem().getItem() instanceof ItemRemoteDetonator)
+            {
+                ((ItemRemoteDetonator) player.getHeldItem().getItem()).setBroadCastHz(player.getHeldItem(), getFrequency());
+                player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + getFrequency())));
+            }
+            else if (notNull && player.getHeldItem().getItem() instanceof IWorldPosItem)
+            {
+                IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
+                if (location != null)
+                {
+                    if (location.world() == world())
+                    {
+                        setTarget(new Pos(location.x(), location.y(), location.z()));
+                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
+                    }
+                    else
+                    {
+                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
+                    }
+                }
+                else
+                {
+                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
+                }
+            }
+            else
+            {
+                player.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+            }
+        }
+        return true;
     }
 
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.tier, this.getFrequency(), this.targetHeight);
+        return new PacketTile(this, 0, this.tier, energy, this.getFrequency(), this.targetHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi(), laucherBase != null && laucherBase.getStackInSlot(0) != null);
     }
 
     @Override
@@ -141,8 +209,10 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 case 0:
                 {
                     this.tier = data.readInt();
+                    this.energy = data.readInt();
                     this.setFrequency(data.readInt());
                     this.targetHeight = data.readShort();
+                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
                 case 1:
@@ -164,6 +234,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 {
                     this.energy = data.readInt();
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                    this.hasMissile = data.readBoolean();
                     return true;
                 }
             }
@@ -217,7 +288,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusNoPower");
         }
-        else if (this.laucherBase.getStackInSlot(0) == null)
+        else if (this.laucherBase.getStackInSlot(0) == null && !hasMissile)
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusEmpty");
         }
@@ -295,16 +366,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
-    {
-        if (isServer())
-        {
-            openGui(player, ICBMClassic.INSTANCE);
-        }
-        return true;
-    }
-
-    @Override
     public LauncherType getLauncherType()
     {
         return LauncherType.TRADITIONAL;
@@ -360,5 +421,29 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return null;
+    }
+
+    @Override
+    public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data)
+    {
+        int frequency = (int) Math.floor(hz);
+        if (getTier() == 2 && frequency == getFrequency() && laucherBase != null)
+        {
+            if (messageHeader.equals("activateLauncherWithTarget"))
+            {
+                Pos pos = (Pos) data[0];
+                if (toPos().distance(pos) < this.laucherBase.getRange())
+                {
+                    setTarget(pos);
+                    launch();
+                    ((FakeRadioSender) sender).player.addChatComponentMessage(new ChatComponentText("Firing missile at " + pos));
+                }
+            }
+            else if (messageHeader.equals("activateLauncher"))
+            {
+                ((FakeRadioSender) sender).player.addChatComponentMessage(new ChatComponentText("Firing missile at " + getTarget()));
+                launch();
+            }
+        }
     }
 }

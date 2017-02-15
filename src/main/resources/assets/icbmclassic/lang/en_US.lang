@@ -8,37 +8,69 @@ potion.radiation=Radiation
 
 ## Items
 item.icbmclassic:sulfurDust.name=Sulfur
+item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
+
 item.icbmclassic:saltpeter.name=Saltpeter
+item.icbmclassic:saltpeter.info=Used in the creation of gunpowder
+
 item.icbmclassic:poisonPowder.name=Poison Powder
+item.icbmclassic:poisonPowder.info=Used in the creation of explosives
+
 item.icbmclassic:antidote.name=Antidote
+item.icbmclassic:antidote.info=Cures all affects
+
 item.icbmclassic:radarGun.name=Radar Gun
+item.icbmclassic:radarGun.info=Stores GPS data
+
 item.icbmclassic:remoteDetonator.name=Remote Detonator
+item.icbmclassic:radarGun.info.info=Remotely fire a missile
+
 item.icbmclassic:defuser.name=Defuser
-item.icbmclassic:laserDesignator.name=Laser Designator
+item.icbmclassic:defuser.info=Remove explosives safely, even after they have gone off
+
+item.icbmclassic:laserDetonator.name=Laser Designator
+item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
+
 item.icbmclassic:tracker.name=Tracker
+item.icbmclassic:tracker.info=Track entities and, set homing missiles
+
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
-item.icbmclassic:computer.name=Tactical Interface
+item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection, or missile launches
+
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
+item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %s rockets
 
 ## ICBM Machines
-icbm.machine.0.name=Launcher Platform T1
-icbm.machine.1.name=Launcher Platform T2
-icbm.machine.2.name=Launcher Platform T3
-icbm.machine.3.name=Launcher Control Panel T1
-icbm.machine.4.name=Launcher Control Panel T2
-icbm.machine.5.name=Launcher Control Panel T3
-icbm.machine.6.name=Launcher Support Frame T1
-icbm.machine.7.name=Launcher Support Frame T2
-icbm.machine.8.name=Launcher Support Frame T3
-icbm.machine.9.name=Radar Station
-icbm.machine.10.name=EMP Tower
-icbm.machine.11.name=Cruise Launcher
-icbm.machine.12.name=Missile Coordinator
+tile.icbmclassic:launcherBase.0.name=Launcher Platform T1
+tile.icbmclassic:launcherBase.1.name=Launcher Platform T2
+tile.icbmclassic:launcherBase.2.name=Launcher Platform T3
+tile.icbmclassic:launcherBase.info=Used to store missiles for launch
+
+tile.icbmclassic:launcherScreen.0.name=Launcher Control Panel T1
+tile.icbmclassic:launcherScreen.1.name=Launcher Control Panel T2
+tile.icbmclassic:launcherScreen.2.name=Launcher Control Panel T3
+tile.icbmclassic:launcherScreen.info=Used to fire missiles from launchers
+
+tile.icbmclassic:launcherFrame.0.name=Launcher Support Frame T1
+tile.icbmclassic:launcherFrame.1.name=Launcher Support Frame T2
+tile.icbmclassic:launcherFrame.2.name=Launcher Support Frame T3
+tile.icbmclassic:launcherFrame.info=Improves accuracy of missiles
+
+tile.icbmclassic:radarStation.name=Radar Station
+tile.icbmclassic:radarStation.info=Detects missiles in flight
+
+tile.icbmclassic:empTower.name=EMP Tower
+tile.icbmclassic:empTower.info=Drains energy from tiles, entities and devices
+
+tile.icbmclassic:cruiseLauncher.name=Cruise Launcher
+tile.icbmclassic:cruiseLauncher.info=Dummy fires a missile, without target data
+
+tile.icbmclassic:missileCoordinator.name=Missile Coordinator
+tile.icbmclassic:missileCoordinator.info=Over sized calculator, calculates flight paths
 
 ## Blocks
-tile.icbmclassic:sulfurOre.name=Sulfur Ore
-tile.icbmclassic:missileAssembler.name=Missile Assembler
 tile.icbmclassic:reinforcedRail.name=Reinforced Rail
+tile.icbmclassic:reinforcedRail.info=Hardened against explosives
 
 ## ICBM Explosives
 
@@ -71,6 +103,50 @@ icbm.explosive.antimatter.name=Antimatter Explosives
 icbm.explosive.redMatter.name=Red Matter Explosives
 
 icbm.explosive.sMine.name=S-Mine
+
+## Explosive Info
+icbm.explosive.condensed.info=Slightly more destructive version of TNT
+icbm.explosive.shrapnel.info=Erupts in a barrage of metal fragments
+icbm.explosive.incendiary.info=Catches the place on fire
+icbm.explosive.debilitation.info=Confusion and disorientation for all around
+icbm.explosive.chemical.info=Can't fight if you can't breath
+icbm.explosive.anvil.info=Whats up doc
+icbm.explosive.repulsive.info=Pushes everyone away
+icbm.explosive.attractive.info=Pulls everyone in
+
+icbm.explosive.fragmentation.info=Devastates the landscape, with high velocity fragments
+icbm.explosive.contagious.info=You ever heard of the plague?
+icbm.explosive.sonic.info=You don't need to be a ninja, to sneak past your enemies after, setting one of these off
+icbm.explosive.breaching.info=It makes a hole....
+icbm.explosive.rejuvenation.info=can't be blamed for damage, if these is none to find
+icbm.explosive.thermobaric.info=Mini-nuke in a can, or at least as close, as north korea can get
+
+icbm.explosive.nuclear.info=Nuclear Explosives
+icbm.explosive.emp.info=Over 9000? Not anymore
+icbm.explosive.exothermic.info=You thought the sun was hot
+icbm.explosive.endothermic.info=They call me Mr.Freeze
+icbm.explosive.antiGravitational.info=I think your base looks better floating
+icbm.explosive.ender.info=Lets relocate that base of yours
+icbm.explosive.hypersonic.info=I feel bad for your ears
+
+icbm.explosive.antimatter.info=matter + antimatter = no matter
+
+##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
+icbm.explosive.redMatter.info.count=11
+icbm.explosive.redMatter.info.0=Yogscast? Diggy diggy hole
+icbm.explosive.redMatter.info.1=Be a shame if your base was compacted into nothing
+icbm.explosive.redMatter.info.2=Voltz special... The Bomb
+icbm.explosive.redMatter.info.3=The wheels on the bus go round and round
+icbm.explosive.redMatter.info.4=Did a cow just fly by the window?
+icbm.explosive.redMatter.info.5=Oh god it's sucking me in
+icbm.explosive.redMatter.info.6=There is no escape
+icbm.explosive.redMatter.info.7=Not even light....
+icbm.explosive.redMatter.info.8=Into the void
+icbm.explosive.redMatter.info.9=Yogscast? You guys the bomb...
+icbm.explosive.redMatter.info.10=Oh? You think you can escape
+icbm.explosive.redMatter.info.10=Oh baby come back
+
+icbm.explosive.sMine.info=Bouncing betty with, the kick of a fat guy
 
 ## Missile Form
 icbm.missile.condensed.name=Conventional Missile
@@ -135,44 +211,19 @@ icbm.minecart.rejuvenation.name=Rejuvenation Minecart
 icbm.minecart.thermobaric.name=Thermobaric Minecart
 
 ## ICBM Misc Blocks
-tile.icbmclassic:oreSulfur.name=Sulfur Ore
 tile.icbmclassic:concrete.0.name=Concrete
 tile.icbmclassic:concrete.1.name=Compact Concrete
 tile.icbmclassic:concrete.2.name=Reinforced Concrete
+
 tile.icbmclassic:reinforcedGlass.name=Reinforced Glass
 tile.icbmclassic:glassPressurePlate.name=Glass Pressure Plate
 tile.icbmclassic:glassButton.name=Glass Button
 tile.icbmclassic:camouflage.name=Camouflage
 tile.icbmclassic:proximityDetector.name=Proximity Detector
+
 tile.icbmclassic:spikes.0.name=Spikes
 tile.icbmclassic:spikes.1.name=Poison Spikes
 tile.icbmclassic:spikes.2.name=Flammable Spikes
-
-## ICBM Sentry
-## Translated by Calclavia
-tile.icbmclassic:turret.gunTurret.name=Gun Turret
-tile.icbmclassic:turret.railgun.name=Railgun
-tile.icbmclassic:turret.antiAircraftTurret.name=Anti-Aircraft Turret
-tile.icbmclassic:turret.laserTurret.name=Laser Turret
-tile.icbmclassic:turret.autoBow.name=Crossbow Turret
-tile.icbmclassic:turretPlatform.name=Turret Platform
-
-item.icbmclassic:bulletShell.name=Shell Casing
-item.icbmclassic:bullet.name=20mm Shell
-item.icbmclassic:bulletRailgun.name=Railgun Slug
-item.icbmclassic:bulletAntimatter.name=Antimatter Slug
-item.icbmclassic:bulletInfinite.name=Creative Ammo
-
-item.icbmclassic:targetRange.name=Targeting Range Upgrade
-item.icbmclassic:shellCollector.name=Shell Collector
-item.icbmclassic:targetingSpeed.name=Targeting CPU
-item.icbmclassic:silencer.name=Weapon Silencer
-
-entity.turretseat.name=ICBM Turret Seat
-
-## Deaths
-death.attack.bullet=%1$s was shot into a swiss cheese!
-death.attack.laser=%1$s was vaporized by lasers!
 
 ## Chat messages
 message.tracker.nowtrack=Now tracking:
@@ -251,11 +302,27 @@ gui.launcherScreen.statusInvalid=Target is invalid!
 gui.launcherScreen.statusClose=Target too close!
 gui.launcherScreen.statusFar=Target too far!
 gui.launcherScreen.statusReady=Ready to launch!
+
+
 gui.launcherCruise.name=Cruise Launcher
+
 gui.launcherCruise.statusNoPower=No Power!
-gui.launcherCruise.statusEmpty=Silo Empty!
+gui.launcherCruise.statusEmpty=No Missile!
+gui.launcherCruise.invalidMissile=Invalid Item!
+gui.launcherCruise.invalidMissileTier=Invalid Missile Tier!
+gui.launcherCruise.notCruiseMissile=Invalid Missile Type!
 gui.launcherCruise.statusInvalid=Invalid Target!
+gui.launcherCruise.targetToClose=Target to close!
+gui.launcherCruise.noRoom=3x3 not clear!
 gui.launcherCruise.statusReady=Ready!
+
+## Chat warning if user tries to fire by hand, %1 is status message from GUI
+chat.launcher.status=Status: %1
+chat.launcher.failedToFire=Warning can not fire missile due to status error!
+chat.launcher.toolTargetSet=Target data transferred from tool.
+chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
+chat.launcher.noTargetInTool=Tool does not contain any target data!
+chat.launcher.toolFrequencySet=Frequency set to %1
 
 gui.coordinator.name=Missile Coordinator
 gui.coordinator.sim=Path Simulator
@@ -289,14 +356,5 @@ info.radarGun.meters=Meters
 info.detonator.linked=Linked Explosive:
 info.detonator.noLink=No Linked Explosive
 info.misc.tier=Explosive Tier
-info.rocketlauncher.tooltip=This rocket launcher can fire up to Tier %s rockets
 info.tracker.tooltip=Left Click on a mob (players aswell), and I Will point to it.
 
-info.upgrade.range=Upgrades the targeting range of the sentry gun.
-info.upgrade.collect=Allows the sentry to collect ejected shell casings.
-info.upgrade.sentry=A modification for sentry guns
-info.upgrade.silencer=Turns down sound effects for sentry guns
-##info.upgrade.targetspeed=Increases targeting speed for sentry guns
-info.upgrade.targetspeed=Not implemented
-
-info.turretdenied.waila=Entry not found for %u

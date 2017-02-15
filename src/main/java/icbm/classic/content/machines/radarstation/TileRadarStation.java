@@ -2,6 +2,7 @@ package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
+import com.builtbroken.mc.api.tile.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
@@ -14,6 +15,8 @@ import com.builtbroken.mc.lib.transform.vector.Point;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
+import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -37,7 +40,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRadioWaveSender, IRecipeContainer
+public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRadioWaveSender, IRecipeContainer, IGuiTile
 {
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
@@ -57,6 +60,10 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     public TileRadarStation()
     {
         super("radarStation", Material.iron);
+        this.itemBlock = ItemBlockBase.class;
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
         this.renderTileEntity = true;
         this.renderNormalBlock = false;
     }
@@ -115,8 +122,11 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
 
             int prevDetectedEntities = this.detectedEntities.size();
 
-            // Do a radar scan
-            this.doScan();
+            if(isServer())
+            {
+                // Do a radar scan
+                this.doScan();
+            }
 
             if (prevDetectedEntities != this.detectedEntities.size())
             {
@@ -400,5 +410,17 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                 '!', UniversalRecipe.PRIMARY_PLATE.get(),
                 '#', UniversalRecipe.CIRCUIT_T1.get(),
                 '?', Items.gold_ingot));
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player)
+    {
+        return new ContainerDummy();
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return null;
     }
 }

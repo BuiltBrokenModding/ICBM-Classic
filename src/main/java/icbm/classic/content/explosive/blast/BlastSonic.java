@@ -137,7 +137,7 @@ public class BlastSonic extends Blast
                         continue;
                     }
 
-                    //if (blockID instanceof IForceFieldBlock)
+                    //if (block instanceof IForceFieldBlock)
                     //{
                     //    continue;
                     //}

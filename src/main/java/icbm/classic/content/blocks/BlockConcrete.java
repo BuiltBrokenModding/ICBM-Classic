@@ -21,7 +21,7 @@ public class BlockConcrete extends BlockICBM
     public BlockConcrete()
     {
         super("concrete", Material.rock);
-        this.setHardness(3.8f);
+        this.setHardness(10);
         this.setResistance(50);
     }
 

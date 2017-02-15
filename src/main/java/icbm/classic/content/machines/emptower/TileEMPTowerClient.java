@@ -9,7 +9,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelEmpTower;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -66,5 +68,11 @@ public class TileEMPTowerClient extends TileEMPTower implements ISimpleItemRende
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiEMPTower(this);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

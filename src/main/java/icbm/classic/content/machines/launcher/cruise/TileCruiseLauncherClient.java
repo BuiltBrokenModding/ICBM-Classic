@@ -1,15 +1,24 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MXiaoFaSheQi;
 import icbm.classic.client.models.MXiaoFaSheQiJia;
+import icbm.classic.client.render.RenderMissile;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.Explosion;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -24,6 +33,8 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
 
     public static final MXiaoFaSheQi MODEL0 = new MXiaoFaSheQi();
     public static final MXiaoFaSheQiJia MODEL1 = new MXiaoFaSheQiJia();
+
+    private ItemStack cachedMissileStack;
 
     public TileCruiseLauncherClient()
     {
@@ -42,15 +53,39 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Pos pos, float frame, int pass)
     {
+        float yaw = (float)currentAim.yaw();
+        float pitch = (float)currentAim.pitch();
+
         GL11.glPushMatrix();
         GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
         MODEL0.render(0.0625F);
-        GL11.glRotatef(rotationYaw + 90, 0F, 1F, 0F);
-        GL11.glRotatef(-rotationPitch, 1F, 0F, 0F);
+        GL11.glRotatef(-yaw, 0F, 1F, 0F);
+        GL11.glRotatef(-pitch, 1F, 0F, 0F);
         MODEL1.render(0.0625F);
         GL11.glPopMatrix();
+
+        if (cachedMissileStack != null)
+        {
+            GL11.glPushMatrix();
+            GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1, (float) pos.z() + 0.5f);
+            GL11.glRotatef(yaw, 0F, 1F, 0F);
+            GL11.glRotatef(pitch-90, 1F, 0F, 0F);
+
+            Explosives e = Explosives.get(cachedMissileStack.getItemDamage());
+            Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
+            if (missile.missileModelPath.contains("missiles"))
+            {
+                GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
+            }
+            else
+            {
+                GL11.glScalef(0.05f, 0.05f, 0.05f);
+            }
+            RenderMissile.renderMissile(missile);
+            GL11.glPopMatrix();
+        }
     }
 
     @Override
@@ -66,5 +101,53 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
         MODEL0.render(0.0625F);
         MODEL1.render(0.0625F);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return new GuiCruiseLauncher(player, this);
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        if (buf.readBoolean())
+        {
+            cachedMissileStack = ByteBufUtils.readItemStack(buf);
+        }
+        else
+        {
+            cachedMissileStack = null;
+        }
+        setTarget(new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
+    }
+
+    @Override
+    public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType type)
+    {
+        if (!super.read(data, id, player, type))
+        {
+            switch (id)
+            {
+                //GUI description packet
+                case 0:
+                {
+                    this.energy = data.readInt();
+                    this.setFrequency(data.readInt());
+                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

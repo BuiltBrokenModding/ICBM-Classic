@@ -14,8 +14,10 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -42,7 +44,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     public static final MFaSheDi2 modelBase2 = new MFaSheDi2();
     public static final MFaSheDiRail2 modelRail2 = new MFaSheDiRail2();
 
-    private ItemStack cachedMissileStack;
+    public ItemStack cachedMissileStack;
 
     public TileLauncherBaseClient()
     {
@@ -106,7 +108,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
 
             Explosives e = Explosives.get(cachedMissileStack.getItemDamage());
             Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
-            if(missile.missileModelPath.contains("missiles"))
+            if (missile.missileModelPath.contains("missiles"))
             {
                 GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
             }
@@ -174,5 +176,11 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
         {
             cachedMissileStack = null;
         }
+    }
+
+    @Override
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

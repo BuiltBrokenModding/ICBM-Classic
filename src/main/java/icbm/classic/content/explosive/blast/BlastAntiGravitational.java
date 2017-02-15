@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -9,9 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class BlastAntiGravitational extends Blast
 {
@@ -42,6 +41,10 @@ public class BlastAntiGravitational extends Blast
 
         if (!this.world().isRemote && this.thread.isComplete)
         {
+            if (r == 0)
+            {
+                Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
+            }
             int blocksToTake = 20;
 
             for (Pos targetPosition : this.thread.results)
@@ -49,32 +52,36 @@ public class BlastAntiGravitational extends Blast
                 double distance = targetPosition.distance(position);
 
                 if (distance > r || distance < r - 2 || blocksToTake <= 0)
-                    continue;
-
-               Block block = world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
-
-                if (block == null || block.getBlockHardness(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()) < 0)
-                    continue;
-
-                int metadata = world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
-
-                if (distance < r - 1 || world().rand.nextInt(3) > 0)
                 {
-                    this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    continue;
+                }
 
-                    targetPosition = targetPosition.add(0.5D);
-
-                    if (world().rand.nextFloat() < 0.3 * (this.getRadius() - r))
+                final Block block = targetPosition.getBlock(world());
+                if (block != null)
+                {
+                    float hardness = block.getBlockHardness(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    if (hardness >= 0 && hardness < 1000)
                     {
-                        EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, block, metadata, 0);
-                        world().spawnEntityInWorld(entity);
-                        flyingBlocks.add(entity);
-                        entity.yawChange = 50 * world().rand.nextFloat();
-                        entity.pitchChange = 100 * world().rand.nextFloat();
-                        entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
-                    }
+                        int metadata = world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                    blocksToTake--;
+                        if (distance < r - 1 || world().rand.nextInt(3) > 0)
+                        {
+                            //Remove block
+                            this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            blocksToTake--;
+
+                            //Create flying block
+                            EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition.add(0.5D), block, metadata, 0);
+                            entity.yawChange = 50 * world().rand.nextFloat();
+                            entity.pitchChange = 100 * world().rand.nextFloat();
+                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
+                            entity.noClip = true;
+                            world().spawnEntityInWorld(entity);
+
+                            //Track flying block
+                            flyingBlocks.add(entity);
+                        }
+                    }
                 }
             }
         }
@@ -100,9 +107,20 @@ public class BlastAntiGravitational extends Blast
         }
     }
 
-    /** The interval in ticks before the next procedural call of this explosive
+    @Override
+    protected void doPostExplode()
+    {
+        for (EntityFlyingBlock entity : flyingBlocks)
+        {
+            entity.gravity = 0.045f;
+        }
+    }
+
+    /**
+     * The interval in ticks before the next procedural call of this explosive
      *
-     * @return - Return -1 if this explosive does not need proceudral calls */
+     * @return - Return -1 if this explosive does not need proceudral calls
+     */
     @Override
     public int proceduralInterval()
     {
@@ -119,5 +137,27 @@ public class BlastAntiGravitational extends Blast
     public long getEnergy()
     {
         return 10000;
+    }
+
+    public class GravitationalBlockSorter implements Comparator<IPos3D>
+    {
+        final IPos3D center;
+
+        public GravitationalBlockSorter(IPos3D center)
+        {
+            this.center = center;
+        }
+
+        @Override
+        public int compare(IPos3D o1, IPos3D o2)
+        {
+            if ((int) o1.y() == (int) o2.y())
+            {
+                double d = new Pos(o1).distance(center);
+                double d2 = new Pos(o2).distance(center);
+                return d > d2 ? 1 : d == d2 ? 0 : -1;
+            }
+            return Integer.compare((int) o1.y(), (int) o2.y());
+        }
     }
 }

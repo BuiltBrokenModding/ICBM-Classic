@@ -8,6 +8,7 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
@@ -78,6 +79,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public TileLauncherBase()
     {
         super("launcherBase", Material.iron);
+        this.itemBlock = ItemBlockSubTypes.class;
+        this.hardness = 10f;
+        this.resistance = 10f;
+        this.isOpaque = false;
     }
 
     @Override
@@ -195,29 +200,27 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         // Checks if it is greater than the maximum range for the launcher base
         double distance = new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z()));
-        if (this.tier == 0)
-        {
-            if (distance < Settings.DAO_DAN_ZUI_YUAN / 10)
-            {
-                return false;
-            }
-        }
-        else if (this.tier == 1)
-        {
-            if (distance < Settings.DAO_DAN_ZUI_YUAN / 5)
-            {
-                return false;
-            }
-        }
-        else if (this.tier == 2)
-        {
-            if (distance < Settings.DAO_DAN_ZUI_YUAN)
-            {
-                return false;
-            }
-        }
 
-        return true;
+
+        return distance > getRange();
+    }
+
+    public double getRange()
+    {
+        return getRangeForTier(tier);
+    }
+
+    public static double getRangeForTier(int tier)
+    {
+        if (tier == 0)
+        {
+            return Settings.MAX_LAUNCHER_RANGE / 10;
+        }
+        else if (tier == 1)
+        {
+            return Settings.MAX_LAUNCHER_RANGE / 5;
+        }
+        return Settings.MAX_LAUNCHER_RANGE;
     }
 
     /** Reads a tile entity from NBT. */
@@ -249,7 +252,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         super.writeDescPacket(buf);
         buf.writeInt(tier);
         buf.writeBoolean(getStackInSlot(0) != null);
-        if(getStackInSlot(0) != null)
+        if (getStackInSlot(0) != null)
         {
             ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
         }
@@ -276,7 +279,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
             {
                 if (this.getStackInSlot(0) == null)
                 {
-                    if(isServer())
+                    if (isServer())
                     {
                         this.setInventorySlotContents(0, player.inventory.getCurrentItem());
                         if (!player.capabilities.isCreativeMode)
@@ -291,7 +294,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         }
         else if (this.getStackInSlot(0) != null)
         {
-            if(isServer())
+            if (isServer())
             {
                 player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
                 this.setInventorySlotContents(0, null);

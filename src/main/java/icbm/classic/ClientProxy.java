@@ -114,7 +114,7 @@ public class ClientProxy extends CommonProxy
         }
         else if (name.equals("shockwave"))
         {
-            fx = new FXShockWave(world, new Pos(position), red, green, blue, scale, distance);
+            //fx = new FXShockWave(world, new Pos(position), red, green, blue, scale, distance);
         }
 
         if (fx != null)

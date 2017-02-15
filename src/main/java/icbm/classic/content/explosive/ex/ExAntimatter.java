@@ -9,8 +9,10 @@ import icbm.classic.Settings;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExAntimatter extends Explosion
@@ -40,10 +42,20 @@ public class ExAntimatter extends Explosion
     @Override
     public void init()
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTIMATTER.getItemStack(),
-                "AAA", "AEA", "AAA",
-                'E', Explosives.NUCLEAR.getItemStack(),
-                'A', "antimatterGram"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
+        if(OreDictionary.doesOreNameExist("antimatterGram"))
+        {
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTIMATTER.getItemStack(),
+                    "AAA", "AEA", "AAA",
+                    'E', Explosives.NUCLEAR.getItemStack(),
+                    'A', "antimatterGram"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
+        }
+        else
+        {
+            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTIMATTER.getItemStack(),
+                    "AAA", "AEA", "AAA",
+                    'E', Explosives.NUCLEAR.getItemStack(),
+                    'A', Items.nether_star), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
+        }
     }
 
     @Override

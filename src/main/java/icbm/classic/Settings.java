@@ -16,7 +16,7 @@ public class Settings
     //@Config(key = "Allow Chunk Loading", category = Configuration.CATEGORY_GENERAL)
     public static boolean LOAD_CHUNKS = true;
     //@Config(key = "Max Missile Distance", category = Configuration.CATEGORY_GENERAL)
-    public static int DAO_DAN_ZUI_YUAN = 10000;
+    public static int MAX_LAUNCHER_RANGE = 10000;
     //@Config(key = "Antimatter Explosion Size", category = Configuration.CATEGORY_GENERAL)
     public static int ANTIMATTER_SIZE = 55;
     //@Config(key = "Antimatter Destroy Bedrock", category = Configuration.CATEGORY_GENERAL)
@@ -31,7 +31,7 @@ public class Settings
     {
         USE_FUEL = configuration.get(Configuration.CATEGORY_GENERAL, "Use Fuel", Settings.USE_FUEL).getBoolean(Settings.USE_FUEL);
         LOAD_CHUNKS = configuration.get(Configuration.CATEGORY_GENERAL, "Allow Chunk Loading", LOAD_CHUNKS).getBoolean(LOAD_CHUNKS);
-        DAO_DAN_ZUI_YUAN = configuration.get(Configuration.CATEGORY_GENERAL, "Max Missile Distance", Settings.DAO_DAN_ZUI_YUAN).getInt(Settings.DAO_DAN_ZUI_YUAN);
+        MAX_LAUNCHER_RANGE = configuration.get(Configuration.CATEGORY_GENERAL, "Max Missile Distance", Settings.MAX_LAUNCHER_RANGE).getInt(Settings.MAX_LAUNCHER_RANGE);
         ANTIMATTER_SIZE = configuration.get(Configuration.CATEGORY_GENERAL, "Antimatter Explosion Size", ANTIMATTER_SIZE).getInt(ANTIMATTER_SIZE);
         DESTROY_BEDROCK = configuration.get(Configuration.CATEGORY_GENERAL, "Antimatter Destroy Bedrock", DESTROY_BEDROCK).getBoolean(DESTROY_BEDROCK);
         MAX_ROCKET_LAUCNHER_TIER = configuration.get(Configuration.CATEGORY_GENERAL, "Limits the max missile tier for rocket launcher item", MAX_ROCKET_LAUCNHER_TIER).getInt(MAX_ROCKET_LAUCNHER_TIER);

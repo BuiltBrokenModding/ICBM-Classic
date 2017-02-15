@@ -9,8 +9,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelMissileCoordinator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
@@ -90,13 +92,13 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
 
         switch (getDirection().ordinal())
         {
-            case 2:
+            case 3:
                 GL11.glRotatef(180F, 0.0F, 180F, 1.0F);
                 break;
-            case 4:
+            case 5:
                 GL11.glRotatef(90F, 0.0F, 180F, 1.0F);
                 break;
-            case 5:
+            case 4:
                 GL11.glRotatef(-90F, 0.0F, 180F, 1.0F);
                 break;
         }
@@ -119,5 +121,17 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
         MODEL.render(0, 0.0625F);
         GL11.glPopMatrix();
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return new GuiMissileCoordinator(player, this);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon()
+    {
+        return Blocks.anvil.getIcon(0, 0);
     }
 }

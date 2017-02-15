@@ -1,24 +1,22 @@
-package icbm.classic.client.gui;
+package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.container.ContainerCruiseLauncher;
-import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import static java.lang.Integer.parseInt;
 
-public class GuiCruiseLauncher extends GuiContainer
+public class GuiCruiseLauncher extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_cruise_launcher.png");
 
@@ -28,12 +26,9 @@ public class GuiCruiseLauncher extends GuiContainer
     private GuiTextField textFieldY;
     private GuiTextField textFieldFreq;
 
-    private int containerWidth;
-    private int containerHeight;
-
-    public GuiCruiseLauncher(InventoryPlayer par1InventoryPlayer, TileCruiseLauncher tileEntity)
+    public GuiCruiseLauncher(EntityPlayer player, TileCruiseLauncher tileEntity)
     {
-        super(new ContainerCruiseLauncher(par1InventoryPlayer, tileEntity));
+        super(new ContainerCruiseLauncher(player, tileEntity));
         this.tileEntity = tileEntity;
     }
 

@@ -54,7 +54,7 @@ public class BlockExplosive extends BlockContainer implements IPostInit
         super(Material.tnt);
         this.setBlockName(ICBMClassic.PREFIX + "explosives");
         this.setBlockTextureName(ICBMClassic.PREFIX + "explosives");
-        setHardness(0.0F);
+        setHardness(2);
         setStepSound(soundTypeGrass);
     }
 
@@ -286,7 +286,7 @@ public class BlockExplosive extends BlockContainer implements IPostInit
 
     /**
      * Lets the block know when one of its neighbor changes. Doesn't know which neighbor changed
-     * (coordinates passed are their own) Args: x, y, z, neighbor blockID
+     * (coordinates passed are their own) Args: x, y, z, neighbor block
      */
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block blockId)
