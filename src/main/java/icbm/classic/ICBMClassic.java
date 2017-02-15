@@ -48,6 +48,7 @@ import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -86,6 +87,10 @@ public final class ICBMClassic extends AbstractMod
 
     public static final int ENTITY_ID_PREFIX = 50;
 
+    //Mod support
+    public static Block blockRadioactive;
+    public static int blockRadioactiveMeta;
+
     // Blocks
     public static Block blockGlassPlate;
     public static Block blockGlassButton;
@@ -95,8 +100,6 @@ public final class ICBMClassic extends AbstractMod
     public static Block blockConcrete;
     public static Block blockReinforcedGlass;
     public static Block blockExplosive;
-    public static Block blockSulfurOre;
-    public static Block blockRadioactive;
     public static Block blockCombatRail;
 
     public static Block blockLaunchBase;
@@ -204,7 +207,7 @@ public final class ICBMClassic extends AbstractMod
         ArrayList dustCharcoal = OreDictionary.getOres("dustCharcoal");
         ArrayList dustCoal = OreDictionary.getOres("dustCoal");
         // Sulfur
-        GameRegistry.addSmelting(blockSulfurOre, new ItemStack(itemSulfurDust, 4), 0.8f);
+        //GameRegistry.addSmelting(blockSulfurOre, new ItemStack(itemSulfurDust, 4), 0.8f);
         GameRegistry.addSmelting(Items.reeds, new ItemStack(itemSulfurDust, 4, 1), 0f);
         GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.gunpowder, 2), "dustSulfur", "dustSaltpeter", Items.coal));
         GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.gunpowder, 2), "dustSulfur", "dustSaltpeter", new ItemStack(Items.coal, 1, 1)));
@@ -434,8 +437,21 @@ public final class ICBMClassic extends AbstractMod
         /** Check for existence of radioactive block. If it does not exist, then create it. */
         if (OreDictionary.getOres("blockRadioactive").size() > 0)
         {
-            //blockRadioactive = Blocks.blocksList[OreDictionary.getOres("blockRadioactive").get(0).itemID];
-            logger().info("Detected radioative block from another mod, utilizing it.");
+            ArrayList<ItemStack> stacks = OreDictionary.getOres("blockRadioactive");
+            for(ItemStack stack : stacks)
+            {
+                if(stack != null && stack.getItem() instanceof ItemBlock)
+                {
+                    //TODO add code to handle this from the ItemStack or test if this block is valid
+                    //      As assuming the metadata is valid may not be a good idea, and the block may not be valid as well
+                    //TODO add config to force block that is used
+                    //TODO add error checking
+                    blockRadioactive = ((ItemBlock) stack.getItem()).field_150939_a;
+                    blockRadioactiveMeta = ((ItemBlock) stack.getItem()).getMetadata(stack.getItemDamage());
+                    logger().info("Detected radioative block from another mod.");
+                    logger().info("Radioactive explosives will use: " + blockRadioactive);
+                }
+            }
         }
 
         if (blockRadioactive == null)
