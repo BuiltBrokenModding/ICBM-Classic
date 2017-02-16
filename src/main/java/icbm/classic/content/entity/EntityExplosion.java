@@ -13,12 +13,16 @@ import net.minecraft.world.World;
 
 import java.lang.reflect.Constructor;
 
-/** The Entity handler responsible for entity explosions.
+/**
+ * The Entity handler responsible for entity explosions.
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData, IWorldPosition
 {
+    /** Current running blast */
     public Blast blast;
+    public double blastYOffset = 0;
 
     private boolean endExplosion = false;
 
@@ -26,6 +30,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
         super(world);
         this.preventEntitySpawning = true;
+        this.noClip = true;
         this.setSize(0.98F, 0.98F);
         this.yOffset = this.height / 2.0F;
         this.renderDistanceWeight = 2f;
@@ -37,7 +42,9 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
         this(blast.world());
         this.blast = blast;
-        this.setPosition(blast.position.x(), blast.position.y(), blast.position.z());
+        //Non-movable blasts are moved to the bottom of the map to allow players to place blocks at the location
+        this.setPosition(blast.position.x(), !blast.isMovable() ? -1 : blast.y(), blast.position.z());
+        blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
     }
 
     @Override
@@ -79,8 +86,10 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
     }
 
-    /** returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
-     * spiders and wolves to prevent them from trampling crops */
+    /**
+     * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
+     * spiders and wolves to prevent them from trampling crops
+     */
     @Override
     protected boolean canTriggerWalking()
     {
@@ -111,6 +120,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (this.blast.isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            blast.onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
         if (this.ticksExisted == 1)
@@ -144,12 +154,13 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         try
         {
             NBTTagCompound blastSave = nbt.getCompoundTag("blast");
-
+            this.blastYOffset = nbt.getDouble("blastPosY");
             if (this.blast == null)
             {
                 Class clazz = Class.forName(blastSave.getString("class"));
                 Constructor constructor = clazz.getConstructor(World.class, Entity.class, double.class, double.class, double.class, float.class);
-                this.blast = (Blast) constructor.newInstance(this.worldObj, null, this.posX, this.posY, this.posZ, 0);
+                //TODO save person who triggered the explosion
+                this.blast = (Blast) constructor.newInstance(this.worldObj, null, posX, posY + blastYOffset, posZ, 0);
             }
 
             this.blast.readFromNBT(blastSave);
@@ -165,6 +176,8 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
+        nbt.setDouble("blastPosY", blastYOffset);
+
         NBTTagCompound baoZhaNBT = new NBTTagCompound();
         baoZhaNBT.setString("class", this.blast.getClass().getCanonicalName());
         this.blast.writeToNBT(baoZhaNBT);

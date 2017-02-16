@@ -167,7 +167,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         this.decrStackSize(0, 1);
 
         EntityMissile missile = new EntityMissile(world());
-        missile.launcherPos = new Pos(this);
+        missile.launcherPos = new Pos((TileEntity)this);
         missile.setPosition(xi(), yi() + 3, zi());
         missile.launch(target, gaoDu);
         world().spawnEntityInWorld(missile);
@@ -323,7 +323,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         for (byte i = 2; i < 6; i++)
         {
-            Pos position = new Pos(this).add(ForgeDirection.getOrientation(i));
+            Pos position = new Pos((TileEntity)this).add(ForgeDirection.getOrientation(i));
 
             TileEntity tileEntity = position.getTileEntity(this.worldObj);
 
@@ -352,7 +352,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (northSouthMultiBlockCache.containsKey(new Pos(this).sub(new Pos((TileEntity) tileMulti))))
+            if (northSouthMultiBlockCache.containsKey(new Pos((TileEntity)this).sub(new Pos((TileEntity) tileMulti))))
             {
                 tileMulti.setHost(this);
             }
@@ -364,7 +364,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos(this));
+            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity)this));
 
             if (northSouthMultiBlockCache.containsKey(pos))
             {

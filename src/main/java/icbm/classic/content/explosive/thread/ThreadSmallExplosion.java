@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.thread;
 
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -12,7 +13,7 @@ import net.minecraft.entity.Entity;
  */
 public class ThreadSmallExplosion extends ThreadExplosion
 {
-    public ThreadSmallExplosion(Location position, int banJing, Entity source)
+    public ThreadSmallExplosion(IWorldPosition position, int banJing, Entity source)
     {
         super(position, banJing, 0, source);
     }

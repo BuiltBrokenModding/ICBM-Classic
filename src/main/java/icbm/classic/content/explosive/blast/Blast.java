@@ -24,6 +24,7 @@ import java.util.List;
 
 public abstract class Blast extends Explosion implements IExplosion, IWorldPosition
 {
+    //TODO remove position as we are double storing location data
     public Location position;
     public EntityExplosion controller = null;
 
@@ -93,6 +94,21 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
         {
             this.doPostExplode();
         }
+    }
+
+    /**
+     * Called each tick the blast has moved
+     *
+     * @param posX
+     * @param posY
+     * @param posZ
+     */
+    public void onPositionUpdate(double posX, double posY, double posZ)
+    {
+        this.explosionX = posX;
+        this.explosionY = posY;
+        this.explosionZ = posZ;
+        position = new Location(world(), posX, posY, posZ);
     }
 
     /** Make the default functions useless. */
@@ -261,7 +277,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     @Override
     public World world()
     {
-        return this.position.world;
+        return this.position.world();
     }
 
     @Override
@@ -281,5 +297,4 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     {
         return this.position.z();
     }
-
 }

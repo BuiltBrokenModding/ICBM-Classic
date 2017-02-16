@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.thread;
 
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -26,13 +27,13 @@ public class ThreadSky extends ThreadExplosion
 
     public IThreadCallBack callBack;
 
-    public ThreadSky(Location position, int banJing, float nengLiang, Entity source, IThreadCallBack callBack)
+    public ThreadSky(IWorldPosition position, int banJing, float nengLiang, Entity source, IThreadCallBack callBack)
     {
         super(position, banJing, nengLiang, source);
         this.callBack = callBack;
     }
 
-    public ThreadSky(Location position, int banJing, float nengLiang, Entity source)
+    public ThreadSky(IWorldPosition position, int banJing, float nengLiang, Entity source)
     {
         this(position, banJing, nengLiang, source, new IThreadCallBack()
         {

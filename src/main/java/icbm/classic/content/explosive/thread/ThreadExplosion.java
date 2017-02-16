@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.thread;
 
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
@@ -21,9 +22,9 @@ public abstract class ThreadExplosion extends Thread
     public final HashSet<Pos> deltaSet = new HashSet<Pos>();
     public final List<Pos> results = new ArrayList();
 
-    public ThreadExplosion(Location position, int radius, float energy, Entity source)
+    public ThreadExplosion(IWorldPosition position, int radius, float energy, Entity source)
     {
-        this.position = position;
+        this.position = new Location(position);
         this.radius = radius;
         this.energy = energy;
         this.source = source;

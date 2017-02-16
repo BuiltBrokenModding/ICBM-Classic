@@ -32,6 +32,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -183,13 +184,13 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                         if (this.incomingMissiles.size() > 0)
                         {
                             /** Sort in order of distance */
-                            double dist = new Pos(this).distance(new Pos(entity));
+                            double dist = new Pos((TileEntity)this).distance(new Pos(entity));
 
                             for (int i = 0; i < this.incomingMissiles.size(); i++)
                             {
                                 EntityMissile daoDan = this.incomingMissiles.get(i);
 
-                                if (dist < new Pos(this).distance(new Pos(daoDan)))
+                                if (dist < new Pos((TileEntity)this).distance(new Pos(daoDan)))
                                 {
                                     this.incomingMissiles.add(i, (EntityMissile) entity);
                                     break;

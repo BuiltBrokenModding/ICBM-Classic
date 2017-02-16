@@ -1,6 +1,7 @@
 package icbm.classic.content.explosive.thread;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.lib.transform.vector.Location;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -26,13 +27,13 @@ public class ThreadLargeExplosion extends ThreadExplosion
 
     public IThreadCallBack callBack;
 
-    public ThreadLargeExplosion(Location position, int range, float energy, Entity source, IThreadCallBack callBack)
+    public ThreadLargeExplosion(IWorldPosition position, int range, float energy, Entity source, IThreadCallBack callBack)
     {
         super(position, range, energy, source);
         this.callBack = callBack;
     }
 
-    public ThreadLargeExplosion(Location position, int range, float energy, Entity source)
+    public ThreadLargeExplosion(IWorldPosition position, int range, float energy, Entity source)
     {
         this(position, range, energy, source, new IThreadCallBack()
         {
