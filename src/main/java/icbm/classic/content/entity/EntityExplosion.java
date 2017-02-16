@@ -1,7 +1,5 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.lib.transform.vector.Location;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
@@ -18,11 +16,10 @@ import java.lang.reflect.Constructor;
  *
  * @author Calclavia
  */
-public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData, IWorldPosition
+public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData
 {
-    /** Current running blast */
-    public Blast blast;
-    public double blastYOffset = 0;
+    private Blast blast;
+    private double blastYOffset = 0;
 
     private boolean endExplosion = false;
 
@@ -41,16 +38,13 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     public EntityExplosion(Blast blast)
     {
         this(blast.world());
-        this.blast = blast;
-        //Non-movable blasts are moved to the bottom of the map to allow players to place blocks at the location
-        this.setPosition(blast.position.x(), !blast.isMovable() ? -1 : blast.y(), blast.position.z());
-        blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
+        this.setBlast(blast);
     }
 
     @Override
     public String getCommandSenderName()
     {
-        return "Explosion";
+        return "Explosion[" + blast + "]";
     }
 
     @Override
@@ -107,35 +101,32 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void onUpdate()
     {
-        if (this.blast == null)
+        if (this.getBlast() == null || this.getBlast().controller != this)
         {
             this.setDead();
             ICBMClassic.INSTANCE.logger().error("Procedural explosion ended due to null! This is a bug!");
             return;
         }
 
-        this.blast.controller = this;
-        this.blast.position = new Location((IWorldPosition) this);
-
-        if (this.blast.isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
+        if (this.getBlast().isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            blast.onPositionUpdate(posX, posY + blastYOffset, posZ);
+            getBlast().onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
         if (this.ticksExisted == 1)
         {
-            this.blast.preExplode();
+            this.getBlast().preExplode();
         }
-        else if (this.ticksExisted % this.blast.proceduralInterval() == 0)
+        else if (this.ticksExisted % this.getBlast().proceduralInterval() == 0)
         {
             if (!this.endExplosion)
             {
-                this.blast.onExplode();
+                this.getBlast().onExplode();
             }
             else
             {
-                this.blast.postExplode();
+                this.getBlast().postExplode();
                 this.setDead();
             }
         }
@@ -155,15 +146,15 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         {
             NBTTagCompound blastSave = nbt.getCompoundTag("blast");
             this.blastYOffset = nbt.getDouble("blastPosY");
-            if (this.blast == null)
+            if (this.getBlast() == null)
             {
                 Class clazz = Class.forName(blastSave.getString("class"));
                 Constructor constructor = clazz.getConstructor(World.class, Entity.class, double.class, double.class, double.class, float.class);
                 //TODO save person who triggered the explosion
-                this.blast = (Blast) constructor.newInstance(this.worldObj, null, posX, posY + blastYOffset, posZ, 0);
+                this.setBlast((Blast) constructor.newInstance(this.worldObj, null, posX, posY + blastYOffset, posZ, 0));
             }
 
-            this.blast.readFromNBT(blastSave);
+            this.getBlast().readFromNBT(blastSave);
         }
         catch (Exception e)
         {
@@ -179,38 +170,24 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         nbt.setDouble("blastPosY", blastYOffset);
 
         NBTTagCompound baoZhaNBT = new NBTTagCompound();
-        baoZhaNBT.setString("class", this.blast.getClass().getCanonicalName());
-        this.blast.writeToNBT(baoZhaNBT);
+        baoZhaNBT.setString("class", this.getBlast().getClass().getCanonicalName());
+        this.getBlast().writeToNBT(baoZhaNBT);
         nbt.setTag("blast", baoZhaNBT);
     }
 
-    @Override
-    public float getShadowSize()
+    public Blast getBlast()
     {
-        return 0F;
+        return blast;
     }
 
-    @Override
-    public double x()
+    public void setBlast(Blast blast)
     {
-        return this.posX;
-    }
-
-    @Override
-    public double y()
-    {
-        return this.posY;
-    }
-
-    @Override
-    public double z()
-    {
-        return this.posZ;
-    }
-
-    @Override
-    public World world()
-    {
-        return this.worldObj;
+        this.blast = blast;
+        if (blast != null)
+        {
+            this.blast.controller = this;
+            this.setPosition(blast.position.x(), !blast.isMovable() ? -1 : blast.y(), blast.position.z());
+            blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
+        }
     }
 }

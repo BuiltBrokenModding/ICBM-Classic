@@ -59,7 +59,7 @@ public class BlastRedmatter extends Blast
             {
                 EntityExplosion explosion = (EntityExplosion) obj;
 
-                if (explosion.blast instanceof BlastRedmatter)
+                if (explosion.getBlast() instanceof BlastRedmatter)
                 {
                     explosion.setDead();
                 }
@@ -231,7 +231,7 @@ public class BlastRedmatter extends Blast
             {
                 if (entity instanceof EntityExplosion)
                 {
-                    if (((EntityExplosion) entity).blast instanceof BlastAntimatter || ((EntityExplosion) entity).blast instanceof BlastRedmatter)
+                    if (((EntityExplosion) entity).getBlast() instanceof BlastAntimatter || ((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
                     {
                         if (doAudio)
                         {
