@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
 import resonant.api.explosion.IExplosiveIgnore;
@@ -23,6 +24,9 @@ import java.util.List;
 
 public class BlastRedmatter extends Blast
 {
+    public static final float NORMAL_RADIUS = 35;
+    public static final float ENTITY_DESTROY_RADIUS = 6;
+
     private static int MAX_BLOCKS_REMOVED_PER_TICK = 10;
     public static int MAX_LIFESPAN = 36000; // 30 minutes
     public static boolean DO_DESPAWN = true;
@@ -59,7 +63,7 @@ public class BlastRedmatter extends Blast
             {
                 EntityExplosion explosion = (EntityExplosion) obj;
 
-                if (explosion.getBlast() instanceof BlastRedmatter)
+                if (explosion.getBlast() == this)
                 {
                     explosion.setDead();
                 }
@@ -210,48 +214,60 @@ public class BlastRedmatter extends Blast
 
         boolean explosionCreated = false;
 
-        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < 4)
+        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < (ENTITY_DESTROY_RADIUS * (getRadius() / NORMAL_RADIUS)))
         {
-            if (doExplosion && !explosionCreated && callCount % 5 == 0)
+            if (entity instanceof EntityExplosion)
             {
-                /** Inject velocities to prevent this explosion to move RedMatter. */
-                Pos tempMotion = new Pos(this.controller.motionX, this.controller.motionY, this.controller.motionZ);
-                this.world().createExplosion(this.exploder, entity.posX, entity.posY, entity.posZ, 3.0F, true);
-                this.controller.motionX = tempMotion.x();
-                this.controller.motionY = tempMotion.y();
-                this.controller.motionZ = tempMotion.z();
-                explosionCreated = true;
-            }
+                if (((EntityExplosion) entity).getBlast() instanceof BlastAntimatter)
+                {
+                    if (doAudio)
+                    {
+                        this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+                    }
+                    if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
+                    {
+                        entity.setDead();
+                        return explosionCreated;
+                    }
+                }
+                else if (((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
+                {
+                    //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
 
-            if (entity instanceof EntityLiving)
+                    //We are going to merge both blasts together
+                    double sizeA = this.getRadius();
+                    sizeA = sizeA * sizeA * sizeA;
+                    double sizeB = ((EntityExplosion) entity).getBlast().getRadius();
+                    sizeB = sizeB * sizeB * sizeB;
+                    float radiusNew = (float) Math.cbrt(sizeA + sizeB);
+
+                    //Average out timer
+                    this.callCount = (callCount + ((EntityExplosion) entity).getBlast().callCount) / 2;
+
+                    //Destroy current instance
+                    this.isAlive = false;
+                    this.controller.setDead();
+
+                    //Create new to avoid doing packet syncing
+                    new BlastRedmatter(world(), entity, position.x(), position.y(), position.z(), radiusNew).explode();
+                }
+                //Kill explosion entity
+                ((EntityExplosion) entity).getBlast().isAlive = false;
+                //Kill entity in the center of the ball
+                entity.setDead();
+            }
+            else if (entity instanceof EntityExplosive)
             {
-                entity.fallDistance = 0;
+                ((EntityExplosive) entity).explode();
+            }
+            else if(entity instanceof EntityLiving)
+            {
+                ((EntityLiving)entity).attackEntityFrom(DamageSource.outOfWorld, 99999999);
             }
             else
             {
-                if (entity instanceof EntityExplosion)
-                {
-                    if (((EntityExplosion) entity).getBlast() instanceof BlastAntimatter || ((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
-                    {
-                        if (doAudio)
-                        {
-                            this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
-                        }
-                        if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
-                        {
-                            entity.setDead();
-                            return explosionCreated;
-                        }
-                    }
-                }
-                else if (entity instanceof EntityExplosive)
-                {
-                    ((EntityExplosive) entity).explode();
-                }
-                else
-                {
-                    entity.setDead();
-                }
+                //Kill entity in the center of the ball
+                entity.setDead();
             }
         }
 
@@ -278,6 +294,6 @@ public class BlastRedmatter extends Blast
     @Override
     public boolean isMovable()
     {
-        return this.callCount > 1;
+        return true;
     }
 }

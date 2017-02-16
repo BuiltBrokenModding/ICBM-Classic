@@ -43,7 +43,7 @@ public class ExRedMatter extends Explosion
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
-        new BlastRedmatter(world, entity, x, y, z, 35).explode();
+        new BlastRedmatter(world, entity, x, y, z, BlastRedmatter.NORMAL_RADIUS).explode();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package icbm.classic.client.render.entity;
 
+import com.builtbroken.mc.client.SharedAssets;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.lib.render.RenderUtility;
 import cpw.mods.fml.relauncher.Side;
@@ -27,26 +28,28 @@ public class RenderExplosion extends Render
     @Override
     public void doRender(Entity entity, double x, double y, double z, float par8, float par9)
     {
-        EntityExplosion eZhaPin = (EntityExplosion) entity;
+        EntityExplosion entityExplosion = (EntityExplosion) entity;
 
-        if (eZhaPin.getBlast() != null)
+        if (entityExplosion.getBlast() != null)
         {
             // RedM atter Render
-            if (eZhaPin.getBlast() instanceof BlastRedmatter)
+            if (entityExplosion.getBlast() instanceof BlastRedmatter)
             {
                 Tessellator tessellator = Tessellator.instance;
 
                 /** Draw Sphere */
                 GL11.glPushMatrix();
-                GL11.glTranslatef((float) x, (float) y, (float) z);
+                GL11.glTranslatef((float) x, (float) y + entityExplosion.yOffset, (float) z);
 
                 RenderUtility.enableBlending();
                 RenderUtility.disableLighting();
 
                 GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.9f);
 
+                bindTexture(SharedAssets.GREY_TEXTURE);
                 Sphere sphere = new Sphere();
-                sphere.draw(5, 32, 32);
+                float radius = Math.max((BlastRedmatter.ENTITY_DESTROY_RADIUS * (entityExplosion.getBlast().getRadius() / BlastRedmatter.NORMAL_RADIUS)), 6);
+                sphere.draw(radius, 32, 32);
 
                 // Enable Lighting/Glow Off
                 RenderUtility.enableLighting();
@@ -150,13 +153,13 @@ public class RenderExplosion extends Render
             }
             else
             {
-                if (eZhaPin.getBlast().getRenderModel() != null && eZhaPin.getBlast().getRenderResource() != null)
+                if (entityExplosion.getBlast().getRenderModel() != null && entityExplosion.getBlast().getRenderResource() != null)
                 {
                     GL11.glPushMatrix();
                     GL11.glTranslatef((float) x, (float) y + 1F, (float) z);
-                    GL11.glRotatef(eZhaPin.rotationPitch, 0.0F, 0.0F, 1.0F);
-                    this.bindTexture(eZhaPin.getBlast().getRenderResource());
-                    eZhaPin.getBlast().getRenderModel().render(eZhaPin, (float) x, (float) y, (float) z, par8, par9, 0.0625F);
+                    GL11.glRotatef(entityExplosion.rotationPitch, 0.0F, 0.0F, 1.0F);
+                    this.bindTexture(entityExplosion.getBlast().getRenderResource());
+                    entityExplosion.getBlast().getRenderModel().render(entityExplosion, (float) x, (float) y, (float) z, par8, par9, 0.0625F);
                     GL11.glPopMatrix();
                 }
             }

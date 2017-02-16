@@ -28,6 +28,8 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     public Location position;
     public EntityExplosion controller = null;
 
+    public boolean isAlive = true;
+
     /** The amount of times the explosion has been called */
     protected int callCount = 0;
 

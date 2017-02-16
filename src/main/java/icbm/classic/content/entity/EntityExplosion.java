@@ -101,7 +101,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void onUpdate()
     {
-        if (this.getBlast() == null || this.getBlast().controller != this)
+        if (this.getBlast() == null || this.getBlast().controller != this || !this.getBlast().isAlive)
         {
             this.setDead();
             ICBMClassic.INSTANCE.logger().error("Procedural explosion ended due to null! This is a bug!");
