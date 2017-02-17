@@ -362,7 +362,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (northSouthMultiBlockCache.containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
+            if (getLayoutOfMultiBlock().containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
             {
                 tileMulti.setHost(this);
             }
@@ -376,7 +376,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         {
             Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
 
-            if (northSouthMultiBlockCache.containsKey(pos))
+            if (getLayoutOfMultiBlock().containsKey(pos))
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;
@@ -400,6 +400,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     @Override
     public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
     {
+        _destroyingStructure = true;
         MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
         return super.removeByPlayer(player, willHarvest);
     }

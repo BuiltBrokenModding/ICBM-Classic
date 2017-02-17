@@ -6,7 +6,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
@@ -22,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 /** Handles missile rendering for all object types. This
  * includes entity, item, inventory, and tiles.
  *
- * @author Calclavia, DarkCow 
+ * @author Calclavia, DarkCow
  * */
 public class RenderMissile extends Render implements IItemRenderer
 {
@@ -51,14 +50,7 @@ public class RenderMissile extends Render implements IItemRenderer
         GL11.glTranslated(x, y, z);
         GL11.glRotatef(entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * f1 - 90.0F, 0.0F, 1.0F, 0.0F);
         float pitch = entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * f1 - 90;
-        if (entityMissile.missileType == MissileType.MISSILE)
-        {
-            GL11.glRotatef(pitch - 180, 0.0F, 0.0F, 1.0F);
-        }
-        else
-        {
-            GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
-        }
+        GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
         if (missile.missileModelPath.contains("missiles"))
         {
             GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
