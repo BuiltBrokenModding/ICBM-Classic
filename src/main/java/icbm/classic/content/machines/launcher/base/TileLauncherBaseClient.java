@@ -44,6 +44,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     public static final MFaSheDi2 modelBase2 = new MFaSheDi2();
     public static final MFaSheDiRail2 modelRail2 = new MFaSheDiRail2();
 
+    /** Client's render cached object, used in place of inventory to avoid affecting GUIs */
     public ItemStack cachedMissileStack;
 
     public TileLauncherBaseClient()
@@ -168,6 +169,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
+        this.tier = buf.readInt();
         if (buf.readBoolean())
         {
             cachedMissileStack = ByteBufUtils.readItemStack(buf);
@@ -176,6 +178,15 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
         {
             cachedMissileStack = null;
         }
+    }
+
+    public ItemStack getMissileStack()
+    {
+        if (cachedMissileStack != null)
+        {
+            return cachedMissileStack;
+        }
+        return getStackInSlot(0);
     }
 
     @Override

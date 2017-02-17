@@ -21,7 +21,6 @@ import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.VectorHelper;
@@ -75,8 +74,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public TileLauncherFrame supportFrame = null;
 
     // The tier of this launcher base
-    private int tier = 0;
-
+    protected int tier = 0;
     private boolean _destroyingStructure = false;
 
     public TileLauncherBase()
@@ -151,11 +149,11 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
      */
     public boolean launchMissile(Pos target, int gaoDu)
     {
-        final ItemStack stack = getStackInSlot(0);
+        final ItemStack stack = getMissileStack();
         if (stack != null && stack.getItem() == ICBMClassic.itemMissile)
         {
             Explosive ex = Explosives.get(stack.getItemDamage()).handler;
-            if (ex instanceof Missile)
+            if (ex.hasMissileForm())
             {
                 // Apply inaccuracy
                 float inaccuracy;
@@ -254,22 +252,20 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public void readDescPacket(ByteBuf buf)
-    {
-        super.readDescPacket(buf);
-        this.tier = buf.readInt();
-    }
-
-    @Override
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
         buf.writeInt(tier);
-        buf.writeBoolean(getStackInSlot(0) != null);
-        if (getStackInSlot(0) != null)
+        buf.writeBoolean(getMissileStack() != null);
+        if (getMissileStack() != null)
         {
-            ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
+            ByteBufUtils.writeItemStack(buf, getMissileStack());
         }
+    }
+
+    public ItemStack getMissileStack()
+    {
+        return getMissileStack();
     }
 
     @Override
@@ -291,7 +287,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         {
             if (player.inventory.getCurrentItem().getItem() instanceof ItemMissile)
             {
-                if (this.getStackInSlot(0) == null)
+                if (this.getMissileStack() == null)
                 {
                     if (isServer())
                     {
@@ -306,11 +302,11 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 }
             }
         }
-        else if (this.getStackInSlot(0) != null)
+        else if (this.getMissileStack() != null)
         {
             if (isServer())
             {
-                player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getStackInSlot(0));
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getMissileStack());
                 this.setInventorySlotContents(0, null);
                 player.inventoryContainer.detectAndSendChanges();
             }

@@ -19,7 +19,11 @@ import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-/** @author Calclavia */
+/** Handles missile rendering for all object types. This
+ * includes entity, item, inventory, and tiles.
+ *
+ * @author Calclavia, DarkCow 
+ * */
 public class RenderMissile extends Render implements IItemRenderer
 {
     private static IModelCustom TIER1_BASE;
@@ -55,7 +59,7 @@ public class RenderMissile extends Render implements IItemRenderer
         {
             GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
         }
-        if(missile.missileModelPath.contains("missiles"))
+        if (missile.missileModelPath.contains("missiles"))
         {
             GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
         }

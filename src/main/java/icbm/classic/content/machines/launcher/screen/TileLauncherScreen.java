@@ -49,7 +49,6 @@ import java.util.List;
  */
 public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IRecipeContainer, IGuiTile
 {
-
     // The tier of this screen
     private int tier = 0;
 
@@ -59,8 +58,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
 
     /** Detonation height of the missile. */
     public short targetHeight = 3;
-
-    private boolean hasMissile = false;
 
     public TileLauncherScreen()
     {
@@ -92,10 +89,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             this.laucherBase = null;
             for (byte i = 2; i < 6; i++)
             {
-                Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
-
-                TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
-
+                final Pos position = toPos().add(ForgeDirection.getOrientation(i));
+                final TileEntity tileEntity = position.getTileEntity(world());
                 if (tileEntity != null)
                 {
                     if (tileEntity instanceof TileLauncherBase)
@@ -104,6 +99,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                         if (isServer())
                         {
                             this.setFacing(ForgeDirection.getOrientation(i));
+                            updateClient = true;
                         }
                     }
                 }
@@ -184,7 +180,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi(), laucherBase != null && laucherBase.getStackInSlot(0) != null);
+        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -234,7 +230,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 {
                     this.energy = data.readInt();
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
-                    this.hasMissile = data.readBoolean();
                     return true;
                 }
             }
@@ -247,7 +242,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public boolean canLaunch()
     {
-        if (this.laucherBase != null && this.laucherBase.getStackInSlot(0) != null)
+        if (this.laucherBase != null && this.laucherBase.getMissileStack() != null)
         {
             if (this.checkExtract())
             {
@@ -287,7 +282,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusNoPower");
         }
-        else if (this.laucherBase.getStackInSlot(0) == null && !hasMissile)
+        else if (this.laucherBase.getMissileStack() == null)
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusEmpty");
         }
@@ -425,9 +420,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data)
     {
+        //Floor frequency as we do not care about sub ranges
         int frequency = (int) Math.floor(hz);
+        //Only tier 3 (2 for tier value) can be remotely fired
         if (getTier() == 2 && frequency == getFrequency() && laucherBase != null)
         {
+            //Laser detonator signal
             if (messageHeader.equals("activateLauncherWithTarget"))
             {
                 Pos pos = (Pos) data[0];
@@ -438,6 +436,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                     ((FakeRadioSender) sender).player.addChatComponentMessage(new ChatComponentText("Firing missile at " + pos));
                 }
             }
+            //Remote detonator signal
             else if (messageHeader.equals("activateLauncher"))
             {
                 ((FakeRadioSender) sender).player.addChatComponentMessage(new ChatComponentText("Firing missile at " + getTarget()));
