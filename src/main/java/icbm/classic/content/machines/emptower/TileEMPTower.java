@@ -43,7 +43,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
 
     static
     {
-        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getName());
+        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getTileName());
     }
 
     public float rotation = 0;

@@ -43,8 +43,8 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
 
     static
     {
-        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getName());
-        tileMapCache.put(new Pos(0, 2, 0), EnumMultiblock.TILE.getName());
+        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getTileName());
+        tileMapCache.put(new Pos(0, 2, 0), EnumMultiblock.TILE.getTileName());
     }
 
     // The tier of this screen

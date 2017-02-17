@@ -55,19 +55,19 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
     static
     {
-        northSouthMultiBlockCache.put(new Pos(1, 0, 0), EnumMultiblock.TILE.getName());
-        northSouthMultiBlockCache.put(new Pos(1, 1, 0), EnumMultiblock.TILE.getName());
-        northSouthMultiBlockCache.put(new Pos(1, 2, 0), EnumMultiblock.TILE.getName());
-        northSouthMultiBlockCache.put(new Pos(-1, 0, 0), EnumMultiblock.TILE.getName());
-        northSouthMultiBlockCache.put(new Pos(-1, 1, 0), EnumMultiblock.TILE.getName());
-        northSouthMultiBlockCache.put(new Pos(-1, 2, 0), EnumMultiblock.TILE.getName());
+        northSouthMultiBlockCache.put(new Pos(1, 0, 0), EnumMultiblock.INV_ENERGY.getTileName());
+        northSouthMultiBlockCache.put(new Pos(1, 1, 0), EnumMultiblock.INV_ENERGY.getTileName());
+        northSouthMultiBlockCache.put(new Pos(1, 2, 0), EnumMultiblock.INV_ENERGY.getTileName());
+        northSouthMultiBlockCache.put(new Pos(-1, 0, 0), EnumMultiblock.INV_ENERGY.getTileName());
+        northSouthMultiBlockCache.put(new Pos(-1, 1, 0), EnumMultiblock.INV_ENERGY.getTileName());
+        northSouthMultiBlockCache.put(new Pos(-1, 2, 0), EnumMultiblock.INV_ENERGY.getTileName());
 
-        eastWestMultiBlockCache.put(new Pos(0, 0, 1), EnumMultiblock.TILE.getName());
-        eastWestMultiBlockCache.put(new Pos(0, 1, 1), EnumMultiblock.TILE.getName());
-        eastWestMultiBlockCache.put(new Pos(0, 2, 1), EnumMultiblock.TILE.getName());
-        eastWestMultiBlockCache.put(new Pos(0, 0, -1), EnumMultiblock.TILE.getName());
-        eastWestMultiBlockCache.put(new Pos(0, 1, -1), EnumMultiblock.TILE.getName());
-        eastWestMultiBlockCache.put(new Pos(0, 2, -1), EnumMultiblock.TILE.getName());
+        eastWestMultiBlockCache.put(new Pos(0, 0, 1), EnumMultiblock.INV_ENERGY.getTileName());
+        eastWestMultiBlockCache.put(new Pos(0, 1, 1), EnumMultiblock.INV_ENERGY.getTileName());
+        eastWestMultiBlockCache.put(new Pos(0, 2, 1), EnumMultiblock.INV_ENERGY.getTileName());
+        eastWestMultiBlockCache.put(new Pos(0, 0, -1), EnumMultiblock.INV_ENERGY.getTileName());
+        eastWestMultiBlockCache.put(new Pos(0, 1, -1), EnumMultiblock.INV_ENERGY.getTileName());
+        eastWestMultiBlockCache.put(new Pos(0, 2, -1), EnumMultiblock.INV_ENERGY.getTileName());
     }
 
     // The connected missile launcher frame
@@ -134,6 +134,18 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         {
             sendDescPacket();
         }
+    }
+
+    @Override
+    public boolean canStore(ItemStack stack, ForgeDirection side)
+    {
+        return stack != null && stack.getItem() == ICBMClassic.itemMissile;
+    }
+
+    @Override
+    public boolean canRemove(ItemStack stack, ForgeDirection side)
+    {
+        return true;
     }
 
     @Override
