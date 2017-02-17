@@ -98,7 +98,10 @@ public class BlastExothermic extends BlastBeam
                 this.world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
             }
 
-            this.world().setWorldTime(18000);
+            if(!world().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
+            {
+                this.world().setWorldTime(18000);
+            }
         }
     }
 
