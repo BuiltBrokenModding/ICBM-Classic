@@ -19,6 +19,9 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.VectorHelper;
@@ -146,31 +149,42 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
      *
      * @param target - The target in which the missile will land in
      */
-    public void launchMissile(Pos target, int gaoDu)
+    public boolean launchMissile(Pos target, int gaoDu)
     {
-        // Apply inaccuracy
-        float inaccuracy;
-
-        if (this.supportFrame != null)
+        final ItemStack stack = getStackInSlot(0);
+        if (stack != null && stack.getItem() == ICBMClassic.itemMissile)
         {
-            inaccuracy = this.supportFrame.getInaccuracy();
+            Explosive ex = Explosives.get(stack.getItemDamage()).handler;
+            if (ex instanceof Missile)
+            {
+                // Apply inaccuracy
+                float inaccuracy;
+
+                if (this.supportFrame != null)
+                {
+                    inaccuracy = this.supportFrame.getInaccuracy();
+                }
+                else
+                {
+                    inaccuracy = 30f;
+                }
+
+                inaccuracy *= (float) Math.random() * 2 - 1;
+                target = target.add(inaccuracy, 0, inaccuracy);
+
+
+                EntityMissile missile = new EntityMissile(world());
+                missile.explosiveID = Explosives.get(stack.getItemDamage());
+                missile.launcherPos = new Pos((TileEntity) this);
+                missile.setPosition(xi(), yi() + 3, zi());
+                missile.launch(target, gaoDu);
+                world().spawnEntityInWorld(missile);
+
+                this.decrStackSize(0, 1);
+                return true;
+            }
         }
-        else
-        {
-            inaccuracy = 30f;
-        }
-
-        inaccuracy *= (float) Math.random() * 2 - 1;
-
-        target = target.add(inaccuracy, 0, inaccuracy);
-
-        this.decrStackSize(0, 1);
-
-        EntityMissile missile = new EntityMissile(world());
-        missile.launcherPos = new Pos((TileEntity)this);
-        missile.setPosition(xi(), yi() + 3, zi());
-        missile.launch(target, gaoDu);
-        world().spawnEntityInWorld(missile);
+        return false;
     }
 
     // Checks if the missile target is in range
@@ -323,7 +337,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         for (byte i = 2; i < 6; i++)
         {
-            Pos position = new Pos((TileEntity)this).add(ForgeDirection.getOrientation(i));
+            Pos position = new Pos((TileEntity) this).add(ForgeDirection.getOrientation(i));
 
             TileEntity tileEntity = position.getTileEntity(this.worldObj);
 
@@ -352,7 +366,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (northSouthMultiBlockCache.containsKey(new Pos((TileEntity)this).sub(new Pos((TileEntity) tileMulti))))
+            if (northSouthMultiBlockCache.containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
             {
                 tileMulti.setHost(this);
             }
@@ -364,7 +378,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity)this));
+            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
 
             if (northSouthMultiBlockCache.containsKey(pos))
             {

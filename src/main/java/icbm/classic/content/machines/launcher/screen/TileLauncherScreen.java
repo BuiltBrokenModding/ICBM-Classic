@@ -261,10 +261,9 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public void launch()
     {
-        if (this.canLaunch())
+        if (this.canLaunch() && this.laucherBase.launchMissile(this.getTarget(), this.targetHeight))
         {
             this.extractEnergy();
-            this.laucherBase.launchMissile(this.getTarget(), this.targetHeight);
             updateClient = true;
         }
     }
