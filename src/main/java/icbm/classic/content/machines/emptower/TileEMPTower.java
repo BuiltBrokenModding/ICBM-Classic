@@ -25,6 +25,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -319,7 +320,19 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public void genRecipes(List<IRecipe> recipes)
     {
-        Object[] items = {"batteryBox", "cellBasic", InventoryUtility.getItem("IC2:blockElectric")};
+        ItemStack basicCellStack = null;
+        ItemStack basicEnergyCubeStack = null;
+        Item basicCell = InventoryUtility.getItem("ThermalExpansion:Frame");
+        Item energyCube = InventoryUtility.getItem("Mekanism:EnergyCube");
+        if(basicCell != null)
+        {
+            basicCellStack = new ItemStack(basicCell, 1, 5);
+        }
+        if(basicCell != null)
+        {
+            basicEnergyCubeStack = new ItemStack(energyCube, 1, 0);
+        }
+        Object[] items = {"batteryBox", "cellBasic", InventoryUtility.getItem("IC2:blockElectric"), basicCellStack, basicEnergyCubeStack};
         boolean registered = false;
         for (Object object : items)
         {

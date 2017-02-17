@@ -3,12 +3,15 @@ package icbm.classic.content.explosive.ex;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
@@ -32,16 +35,19 @@ public class ExEMP extends Explosion
     public void init()
     {
         boolean registered = false;
-        Object[] items = {"battery", "reBattery", "capacitorBasic"};
+        //IC2:itemAdvBat
+
+        Object[] items = {"battery", InventoryUtility.getItem("IC2:itemBatRE"), "capacitorBasic"};
         for (Object object : items)
         {
-            if (!(object instanceof String) || OreDictionary.doesOreNameExist((String) object))
+            if (object != null && (!(object instanceof String) || OreDictionary.doesOreNameExist((String) object)))
             {
                 RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.EMP.getItemStack(),
                         "RBR", "BTB", "RBR",
                         'T', Explosives.REPLUSIVE.getItemStack(),
                         'R', Blocks.redstone_block,
                         'B', object), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
+                registered = true;
             }
         }
         if (!registered)
