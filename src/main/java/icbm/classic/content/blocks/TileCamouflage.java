@@ -4,6 +4,7 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
@@ -20,15 +21,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileCamouflage extends Tile implements IPacketReceiver
+public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeContainer
 {
     @SideOnly(Side.CLIENT)
     public static IIcon icon;
@@ -368,5 +372,14 @@ public class TileCamouflage extends Tile implements IPacketReceiver
     public boolean shouldSideBeRendered(int side)
     {
         return true;
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockCamo, 12),
+                "WGW", "G G", "WGW",
+                'G', Blocks.vine,
+                'W', Blocks.wool));
     }
 }

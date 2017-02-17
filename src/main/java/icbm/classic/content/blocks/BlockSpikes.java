@@ -1,25 +1,31 @@
 package icbm.classic.content.blocks;
 
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.List;
 
-public class BlockSpikes extends BlockICBM
+public class BlockSpikes extends BlockICBM implements IRecipeContainer
 {
     @SideOnly(Side.CLIENT)
     private IIcon iconPoison, iconFlammable;
@@ -123,5 +129,22 @@ public class BlockSpikes extends BlockICBM
         {
             par3List.add(new ItemStack(this, 1, i));
         }
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        recipes.add(new ShapedOreRecipe(new ItemStack(this, 6),
+                "CCC", "BBB",
+                'C', Blocks.cactus,
+                'B', Items.iron_ingot));
+        recipes.add(new ShapedOreRecipe(new ItemStack(this, 1, 1),
+                "E", "S",
+                'E', ICBMClassic.itemPoisonPowder,
+                'S', this));
+        recipes.add(new ShapedOreRecipe(new ItemStack(this, 1, 2),
+                "E", "S",
+                'E', "dustSulfur",
+                'S', this));
     }
 }

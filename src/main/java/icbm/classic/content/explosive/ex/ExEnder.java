@@ -14,6 +14,7 @@ import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -89,8 +90,9 @@ public class ExEnder extends Explosion
     public void init()
     {
         RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ENDER.getItemStack(),
-                "PPP", "PTP", "PPP",
-                'P', Items.ender_pearl,
+                "SPS", "PTP", "SPS",
+                'P', Items.ender_eye,
+                'S', Blocks.end_stone,
                 'T', Explosives.ATTRACTIVE.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 

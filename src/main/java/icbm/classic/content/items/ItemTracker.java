@@ -1,7 +1,10 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -9,14 +12,17 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.List;
 
-public class ItemTracker extends ItemICBMElectrical
+public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
 {
     private static final long ENERGY_PER_TICK = 1;
 
@@ -155,6 +161,17 @@ public class ItemTracker extends ItemICBMElectrical
         }
 
         return false;
+    }
+
+    @Override
+    public void genRecipes(List<IRecipe> recipes)
+    {
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this),
+                " Z ", "SBS", "SCS",
+                'Z', Items.compass,
+                'C', UniversalRecipe.CIRCUIT_T1.get(),
+                'B', UniversalRecipe.BATTERY.get(),
+                'S', Items.iron_ingot));
     }
 
     //@Override

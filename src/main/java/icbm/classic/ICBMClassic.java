@@ -228,40 +228,6 @@ public final class ICBMClassic extends AbstractMod
 
         // Poison Powder
         GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(itemPoisonPowder, 3), Items.spider_eye, Items.rotten_flesh));
-        /** Add all Recipes */
-        // Spikes
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockSpikes, 6),
-                "CCC", "BBB",
-                'C', Blocks.cactus,
-                'B', Items.iron_ingot));
-        GameRegistry.addRecipe(new ItemStack(blockSpikes, 1, 1),
-                "E", "S",
-                'E', itemPoisonPowder,
-                'S', blockSpikes);
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockSpikes, 1, 2),
-                "E", "S",
-                'E', itemSulfurDust,
-                'S', blockSpikes));
-
-        // Camouflage
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockCamo, 12),
-                "WGW", "G G", "WGW",
-                'G', Blocks.vine,
-                'W', Blocks.wool));
-
-        // Tracker
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemTracker),
-                " Z ", "SBS", "SCS",
-                'Z', Items.compass,
-                'C', UniversalRecipe.CIRCUIT_T1.get(),
-                'B', UniversalRecipe.BATTERY.get(),
-                'S', Items.iron_ingot));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemTracker),
-                " Z ", "SBS", "SCS",
-                'Z', Items.compass,
-                'C', UniversalRecipe.CIRCUIT_T1.get(),
-                'B', Items.ender_pearl,
-                'S', Items.iron_ingot));
 
         // Glass Pressure Plate
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockGlassPlate, 1, 0), "##", '#', Blocks.glass));

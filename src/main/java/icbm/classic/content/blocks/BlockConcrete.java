@@ -84,16 +84,16 @@ public class BlockConcrete extends BlockICBM implements IRecipeContainer
     @Override
     public void genRecipes(List<IRecipe> recipes)
     {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 8, 0),
+        recipes.add(new ShapedOreRecipe(new ItemStack(this, 8, 0),
                 "SGS", "GWG", "SGS",
                 'G', Blocks.gravel,
                 'S', Blocks.sand,
                 'W', Items.water_bucket));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 8, 1),
+        recipes.add(new ShapedOreRecipe(new ItemStack(this, 8, 1),
                 "COC", "OCO", "COC",
                 'C', new ItemStack(this, 1, 0),
                 'O', Blocks.obsidian));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this, 8, 2),
+        recipes.add(new ShapedOreRecipe(new ItemStack(this, 8, 2),
                 "COC", "OCO", "COC",
                 'C', new ItemStack(this, 1, 1),
                 'O', "ingotSteel"));

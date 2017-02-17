@@ -27,7 +27,7 @@ public class ExRejuvenation extends Explosion
         RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.REJUVENATION.getItemStack(),
                 "ICI", "CDC", "ICI",
                 'D', Blocks.diamond_block,
-                'C', Items.saddle,
+                'C', Items.clock,
                 'I', Blocks.iron_block), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }
 
