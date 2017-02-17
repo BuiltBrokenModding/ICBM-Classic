@@ -290,20 +290,6 @@ public final class ICBMClassic extends AbstractMod
                 "@@@", "@@@", "@@@",
                 '@', "seeds"));
 
-        // Concrete
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockConcrete, 8, 0),
-                "SGS", "GWG", "SGS",
-                'G', Blocks.gravel,
-                'S', Blocks.sand,
-                'W', Items.water_bucket));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockConcrete, 8, 1),
-                "COC", "OCO", "COC",
-                'C', new ItemStack(blockConcrete, 1, 0),
-                'O', Blocks.obsidian));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockConcrete, 8, 2),
-                "COC", "OCO", "COC",
-                'C', new ItemStack(blockConcrete, 1, 1),
-                'O', Items.iron_ingot));
 
         // Reinforced rails
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockCombatRail, 16, 0), new Object[]{"C C", "CIC", "C C", 'I', new ItemStack(blockConcrete, 1, 0), 'C', Items.iron_ingot}));
