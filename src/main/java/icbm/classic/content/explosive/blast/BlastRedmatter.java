@@ -200,17 +200,17 @@ public class BlastRedmatter extends Blast
         double xPercentage = 1 - (xDifference / radius);
         double yPercentage = 1 - (yDifference / radius);
         double zPercentage = 1 - (zDifference / radius);
-        double distancePercentage = (this.position.distance(new Pos(entity)) / radius);
+        double distancePercentage = this.position.distance(entity) / radius;
 
         Pos entityPosition = new Pos(entity);
-        Pos centeredPosition = entityPosition.clone().subtract(this.position);
+        Pos centeredPosition = entityPosition.subtract(this.position);
         centeredPosition = (Pos) centeredPosition.transform(new EulerAngle(1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random()));
 
         Location newPosition = this.position.add(centeredPosition);
         // Orbit Velocity
         entity.addVelocity(newPosition.x() - entityPosition.x(), 0, newPosition.z() - entityPosition.z());
-        // Gravity Velocity
-        entity.addVelocity(-xDifference * 0.010 * xPercentage, -yDifference * 0.010 * yPercentage, -zDifference * 0.010 * zPercentage);
+        // Gravity Velocity (0.015 is barely enough to overcome y gravity so do not lower)
+        entity.addVelocity(-xDifference * 0.015 * xPercentage, -yDifference * 0.015 * yPercentage, -zDifference * 0.015 * zPercentage);
 
         boolean explosionCreated = false;
 
