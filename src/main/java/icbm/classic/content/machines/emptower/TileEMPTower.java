@@ -11,12 +11,14 @@ import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
 import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import icbm.classic.prefab.TileICBMMachine;
 import io.netty.buffer.ByteBuf;
@@ -29,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.HashMap;
@@ -247,7 +250,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (tileMapCache.containsKey(new Pos((TileEntity)this).sub(new Pos((TileEntity) tileMulti))))
+            if (tileMapCache.containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
             {
                 tileMulti.setHost(this);
             }
@@ -259,7 +262,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity)this));
+            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
 
             if (tileMapCache.containsKey(pos))
             {
@@ -316,13 +319,32 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public void genRecipes(List<IRecipe> recipes)
     {
-        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
-                "?W?", "@!@", "?#?",
-                '?', UniversalRecipe.PRIMARY_PLATE.get(),
-                '!', UniversalRecipe.CIRCUIT_T3.get(),
-                '@', UniversalRecipe.BATTERY_BOX.get(),
-                '#', UniversalRecipe.MOTOR.get(),
-                'W', UniversalRecipe.WIRE.get()));
+        Object[] items = {"batteryBox", "cellBasic", InventoryUtility.getItem("IC2:blockElectric")};
+        boolean registered = false;
+        for (Object object : items)
+        {
+            if (object != null && (!(object instanceof String) || OreDictionary.doesOreNameExist((String) object)))
+            {
+                recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
+                        "?W?", "@!@", "?#?",
+                        '?', UniversalRecipe.PRIMARY_PLATE.get(),
+                        '!', UniversalRecipe.CIRCUIT_T3.get(),
+                        '@', object,
+                        '#', UniversalRecipe.MOTOR.get(),
+                        'W', UniversalRecipe.WIRE.get()));
+                registered = true;
+            }
+        }
+        if(!registered)
+        {
+            recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
+                    "?W?", "@!@", "?#?",
+                    '?', UniversalRecipe.PRIMARY_PLATE.get(),
+                    '!', UniversalRecipe.CIRCUIT_T3.get(),
+                    '@', Explosives.EMP.getItemStack(),
+                    '#', UniversalRecipe.MOTOR.get(),
+                    'W', UniversalRecipe.WIRE.get()));
+        }
     }
 
     @Override
