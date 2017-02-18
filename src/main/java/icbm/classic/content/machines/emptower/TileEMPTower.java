@@ -25,7 +25,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
@@ -320,19 +319,11 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public void genRecipes(List<IRecipe> recipes)
     {
-        ItemStack basicCellStack = null;
-        ItemStack basicEnergyCubeStack = null;
-        Item basicCell = InventoryUtility.getItem("ThermalExpansion:Frame");
-        Item energyCube = InventoryUtility.getItem("Mekanism:EnergyCube");
-        if(basicCell != null)
-        {
-            basicCellStack = new ItemStack(basicCell, 1, 5);
-        }
-        if(basicCell != null)
-        {
-            basicEnergyCubeStack = new ItemStack(energyCube, 1, 0);
-        }
-        Object[] items = {"batteryBox", "cellBasic", InventoryUtility.getItem("IC2:blockElectric"), basicCellStack, basicEnergyCubeStack};
+        Object[] items = {"batteryBox",
+                InventoryUtility.getItemStack("IC2:blockElectric", 0),
+                InventoryUtility.getItemStack("ThermalExpansion:Frame", 5),
+                InventoryUtility.getItemStack("Mekanism:EnergyCube", 0)};
+        
         boolean registered = false;
         for (Object object : items)
         {
@@ -348,7 +339,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
                 registered = true;
             }
         }
-        if(!registered)
+        if (!registered)
         {
             recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
                     "?W?", "@!@", "?#?",
