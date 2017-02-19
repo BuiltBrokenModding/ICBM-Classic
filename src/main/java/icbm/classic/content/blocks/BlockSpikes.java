@@ -9,7 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -114,7 +113,7 @@ public class BlockSpikes extends BlockICBM implements IRecipeContainer
 
             if (world.getBlockMetadata(x, y, z) == 1)
             {
-                ((EntityLiving) entity).addPotionEffect(new PotionEffect(Potion.poison.id, 7 * 20, 0));
+                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.poison.id, 7 * 20, 0));
             }
             else if (world.getBlockMetadata(x, y, z) == 2)
             {

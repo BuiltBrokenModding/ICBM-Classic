@@ -5,6 +5,7 @@ import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.lib.render.block.BlockRenderHandler;
 import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
@@ -16,6 +17,7 @@ import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,6 +51,9 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
     {
         super("camouflage", Material.grass);
         this.itemBlock = ItemBlockBase.class;
+        this.renderType = BlockRenderHandler.ID;
+        this.renderNormalBlock = false;
+        this.renderTileEntity = false;
     }
 
     @Override
@@ -228,6 +233,32 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
             }
         }
         return icon;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean renderStatic(RenderBlocks renderer, Pos pos, int pass)
+    {
+        Block block = getMimicBlock() != null ? getMimicBlock() : getBlockType();
+        BlockWrapper wrapper = new BlockWrapper(block);
+        for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+        {
+            wrapper.setRenderSide(dir, !canRenderSide(dir));
+        }
+        boolean rendered = renderer.renderStandardBlock(wrapper, xi(), yi(), zi());
+        if (renderSides != 0)
+        {
+            wrapper = new BlockWrapper(Blocks.glass);
+            for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+            {
+                wrapper.setRenderSide(dir, canRenderSide(dir));
+            }
+            if (renderer.renderStandardBlock(wrapper, xi(), yi(), zi()))
+            {
+                rendered = true;
+            }
+        }
+        return rendered;
     }
 
     @Override
