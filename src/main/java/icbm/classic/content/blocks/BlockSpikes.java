@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -104,20 +105,20 @@ public class BlockSpikes extends BlockICBM implements IRecipeContainer
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World par1World, int par2, int par3, int par4, Entity par5Entity)
+    public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity)
     {
         // If the entity is a living entity
-        if (par5Entity instanceof EntityLiving)
+        if (entity instanceof EntityLivingBase)
         {
-            par5Entity.attackEntityFrom(DamageSource.cactus, 1);
+            entity.attackEntityFrom(DamageSource.cactus, 1);
 
-            if (par1World.getBlockMetadata(par2, par3, par4) == 1)
+            if (world.getBlockMetadata(x, y, z) == 1)
             {
-                ((EntityLiving) par5Entity).addPotionEffect(new PotionEffect(Potion.poison.id, 7 * 20, 0));
+                ((EntityLiving) entity).addPotionEffect(new PotionEffect(Potion.poison.id, 7 * 20, 0));
             }
-            else if (par1World.getBlockMetadata(par2, par3, par4) == 2)
+            else if (world.getBlockMetadata(x, y, z) == 2)
             {
-                ((EntityLiving) par5Entity).setFire(7);
+                entity.setFire(7);
             }
         }
     }

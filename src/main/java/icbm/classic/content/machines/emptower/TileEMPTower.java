@@ -323,7 +323,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
                 InventoryUtility.getItemStack("IC2:blockElectric", 0),
                 InventoryUtility.getItemStack("ThermalExpansion:Frame", 5),
                 InventoryUtility.getItemStack("Mekanism:EnergyCube", 0)};
-        
+
         boolean registered = false;
         for (Object object : items)
         {
