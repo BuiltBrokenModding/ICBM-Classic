@@ -1,35 +1,35 @@
 {
- "icbm.airstrike":{
+ "airstrike":{
       "category":"neutral",
       "sounds":[
          "airstrike"
       ]
    },
-  "icbm.alarm":{
+  "alarm":{
     "category":"neutral",
     "sounds":[
       "alarm"
     ]
   },
-  "icbm.antigravity":{
+  "antigravity":{
     "category":"neutral",
     "sounds":[
       "antigravity"
     ]
   },
-  "icbm.antimatter":{
+  "antimatter":{
     "category":"neutral",
     "sounds":[
       "antimatter"
     ]
   },
-  "icbm.beamcharging":{
+  "beamcharging":{
     "category":"neutral",
     "sounds":[
       "beamcharging"
     ]
   },
-  "icbm.collapse":{
+  "collapse":{
     "category":"neutral",
     "sounds":[
       "collapse1",
@@ -42,104 +42,104 @@
       "collapse8"
     ]
   },
-  "icbm.debilitation":{
+  "debilitation":{
     "category":"neutral",
     "sounds":[
       "debilitation"
     ]
   },
-  "icbm.emp":{
+  "emp":{
     "category":"neutral",
     "sounds":[
       "emp"
     ]
   },
-  "icbm.explosion":{
+  "explosion":{
     "category":"neutral",
     "sounds":[
       "explosion1"
     ]
   },
-  "icbm.explosionfire":{
+  "explosionfire":{
     "category":"neutral",
     "sounds":[
       "explosionfire"
     ]
   },
-  "icbm.gasleak":{
+  "gasleak":{
     "category":"neutral",
     "sounds":[
       "gasleak"
     ]
   },
-  "icbm.hypersonic":{
+  "hypersonic":{
     "category":"neutral",
     "sounds":[
       "hypersonic"
     ]
   },
-  "icbm.interface":{
+  "interface":{
     "category":"neutral",
     "sounds":[
       "interface1"
     ]
   },
-  "icbm.laser":{
+  "laser":{
     "category":"neutral",
     "sounds":[
       "laser1"
     ]
   },
-  "icbm.lasershot":{
+  "lasershot":{
     "category":"neutral",
     "sounds":[
       "lasershot"
     ]
   },
-  "icbm.machinehum":{
+  "machinehum":{
     "category":"neutral",
     "sounds":[
       "machinehum"
     ]
   },
-  "icbm.missileinair":{
+  "missileinair":{
     "category":"neutral",
     "sounds":[
       "missileinair"
     ]
   },
-  "icbm.missilelaunch":{
+  "missilelaunch":{
     "category":"neutral",
     "sounds":[
       "missilelaunch1",
       "missilelaunch2"
     ]
   },
-  "icbm.powerdown":{
+  "powerdown":{
     "category":"neutral",
     "sounds":[
       "powerdown"
     ]
   },
-  "icbm.radaralarm":{
+  "radaralarm":{
     "category":"neutral",
     "sounds":[
       "radaralarm"
     ]
   },
-  "icbm.redmatter":{
+  "redmatter":{
     "category":"neutral",
     "sounds":[
       "redmatter"
     ]
   },
-  "icbm.sonicwave":{
+  "sonicwave":{
     "category":"neutral",
     "sounds":[
       "sonicwave"
     ]
   },
-  "icbm.targetlocked":{
+  "targetlocked":{
     "category":"neutral",
     "sounds":[
       "targetlocked"
