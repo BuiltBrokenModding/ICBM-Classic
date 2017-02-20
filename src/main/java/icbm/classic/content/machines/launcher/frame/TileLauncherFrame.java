@@ -257,4 +257,10 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
         super.onPlaced(entityLiving, itemStack);
         this.tier = itemStack.getItemDamage();
     }
+
+    @Override
+    public int metadataDropped(int meta, int fortune)
+    {
+        return tier;
+    }
 }

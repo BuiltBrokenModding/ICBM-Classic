@@ -444,4 +444,10 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             }
         }
     }
+
+    @Override
+    public int metadataDropped(int meta, int fortune)
+    {
+        return tier;
+    }
 }

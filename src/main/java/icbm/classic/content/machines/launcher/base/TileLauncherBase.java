@@ -483,4 +483,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         super.onPlaced(entityLiving, itemStack);
         this.tier = itemStack.getItemDamage();
     }
+
+    @Override
+    public int metadataDropped(int meta, int fortune)
+    {
+        return tier;
+    }
 }

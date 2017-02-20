@@ -36,6 +36,8 @@ import java.util.List;
 
 public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeContainer
 {
+    public static boolean useGlassRender = false; //TODO client side config
+
     @SideOnly(Side.CLIENT)
     public static IIcon icon;
 
@@ -240,15 +242,20 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
     public boolean renderStatic(RenderBlocks renderer, Pos pos, int pass)
     {
         Block block = getMimicBlock() != null ? getMimicBlock() : getBlockType();
+
+        //Render mimic block
         BlockWrapper wrapper = new BlockWrapper(block);
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
         {
             wrapper.setRenderSide(dir, !canRenderSide(dir));
         }
         boolean rendered = renderer.renderStandardBlock(wrapper, xi(), yi(), zi());
+
+        //Render see though sides
         if (renderSides != 0)
         {
-            wrapper = new BlockWrapper(Blocks.glass);
+            //Render outside
+            wrapper = new BlockWrapper(useGlassRender ? Blocks.glass : Blocks.vine);
             for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
             {
                 wrapper.setRenderSide(dir, canRenderSide(dir));
@@ -257,7 +264,24 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
             {
                 rendered = true;
             }
+
+            //Render inside
+            renderer.renderFromInside = true;
+            renderer.setRenderBounds(.01, .01, .01, .99, .99, .99);
+            wrapper = new BlockWrapper(useGlassRender ? Blocks.glass : Blocks.vine);
+            for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+            {
+                wrapper.setRenderSide(dir, true);
+            }
+            if (renderer.renderStandardBlock(wrapper, xi(), yi(), zi()))
+            {
+                rendered = true;
+            }
+            renderer.renderFromInside = false;
+
+            //TODO add border frame
         }
+
         return rendered;
     }
 
