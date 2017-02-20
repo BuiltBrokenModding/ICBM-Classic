@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.launcher.frame;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -8,10 +9,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MFaSheJia;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -40,6 +43,13 @@ public class TileLauncherFrameClient extends TileLauncherFrame implements ISimpl
     public Tile newTile()
     {
         return new TileLauncherFrameClient();
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        this.setTier(buf.readInt());
     }
 
     @Override
@@ -90,5 +100,11 @@ public class TileLauncherFrameClient extends TileLauncherFrame implements ISimpl
     public IIcon getIcon()
     {
         return Blocks.anvil.getIcon(0, 0);
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return new Cube(-1, 0, -1, 1, 3, 1).add(toPos()).toAABB();
     }
 }

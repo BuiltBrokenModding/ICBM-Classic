@@ -98,7 +98,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                         this.laucherBase = (TileLauncherBase) tileEntity;
                         if (isServer())
                         {
-                            this.setFacing(ForgeDirection.getOrientation(i));
+                            this.setFacing(ForgeDirection.getOrientation(i).getOpposite());
                             updateClient = true;
                         }
                     }
@@ -449,5 +449,11 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public int metadataDropped(int meta, int fortune)
     {
         return tier;
+    }
+
+    @Override
+    protected boolean useMetaForFacing()
+    {
+        return true;
     }
 }

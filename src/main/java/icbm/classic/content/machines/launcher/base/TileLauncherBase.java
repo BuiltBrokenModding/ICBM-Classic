@@ -23,7 +23,6 @@ import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
-import icbm.classic.prefab.VectorHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -120,7 +119,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                     if (tileEntity instanceof TileLauncherFrame)
                     {
                         this.supportFrame = (TileLauncherFrame) tileEntity;
-                        this.supportFrame.setDirection(VectorHelper.getOrientationFromSide(ForgeDirection.getOrientation(i), ForgeDirection.NORTH));
+                        this.supportFrame.setFacing(getDirection());
                     }
                 }
             }
@@ -260,14 +259,14 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public void writeToNBT(NBTTagCompound nbt)
     {
         super.writeToNBT(nbt);
-        nbt.setInteger("tier", this.tier);
+        nbt.setInteger("tier", getTier());
     }
 
     @Override
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeInt(tier);
+        buf.writeInt(getTier());
         buf.writeBoolean(getMissileStack() != null);
         if (getMissileStack() != null)
         {
@@ -277,7 +276,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
     public ItemStack getMissileStack()
     {
-        return getMissileStack();
+        return getStackInSlot(0);
     }
 
     @Override
@@ -450,10 +449,16 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (facingDirection != getDirection())
         {
-            MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
+            if(isServer())
+            {
+                MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
+            }
             super.setFacing(facingDirection);
-            MultiBlockHelper.buildMultiBlock(world(), this, true, true);
-            markDirty();
+            if(isServer())
+            {
+                MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+                markDirty();
+            }
         }
     }
 
@@ -481,12 +486,18 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
     {
         super.onPlaced(entityLiving, itemStack);
-        this.tier = itemStack.getItemDamage();
+        setTier(itemStack.getItemDamage());
     }
 
     @Override
     public int metadataDropped(int meta, int fortune)
     {
-        return tier;
+        return getTier();
+    }
+
+    @Override
+    protected boolean useMetaForFacing()
+    {
+        return true;
     }
 }

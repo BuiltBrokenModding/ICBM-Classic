@@ -1,18 +1,15 @@
 package icbm.classic.content.machines.launcher.frame;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
-import com.builtbroken.mc.core.network.IPacketReceiver;
-import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.TileEnt;
+import com.builtbroken.mc.prefab.tile.TileMachine;
 import com.builtbroken.mc.prefab.tile.multiblock.EnumMultiblock;
 import com.builtbroken.mc.prefab.tile.multiblock.MultiBlockHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -25,7 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -37,7 +33,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMultiTileHost, IRotatable, IRecipeContainer
+public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver, IMultiTileHost, IRecipeContainer
 {
     public static HashMap<IPos3D, String> tileMapCache = new HashMap();
 
@@ -49,7 +45,6 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
 
     // The tier of this screen
     private int tier = 0;
-    private byte orientation = 3;
 
     private boolean _destroyingStructure = false;
 
@@ -63,15 +58,16 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     }
 
     @Override
-    public Tile newTile()
+    public void writeDescPacket(ByteBuf buf)
     {
-        return new TileLauncherFrame();
+        super.writeDescPacket(buf);
+        buf.writeInt(tier);
     }
 
     @Override
-    public PacketTile getDescPacket()
+    public Tile newTile()
     {
-        return new PacketTile(this, this.orientation, this.getTier());
+        return new TileLauncherFrame();
     }
 
     /** Gets the inaccuracy of the missile based on the launcher support frame's tier */
@@ -86,17 +82,6 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
             case 2:
                 return 0;
         }
-    }
-
-    /**
-     * Determines if this TileEntity requires update calls.
-     *
-     * @return True if you want updateEntity() to be called, false if not
-     */
-    @Override
-    public boolean canUpdate()
-    {
-        return false;
     }
 
     /** Reads a tile entity from NBT. */
@@ -127,24 +112,6 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
         this.tier = tier;
     }
 
-    @Override
-    public ForgeDirection getDirection()
-    {
-        return ForgeDirection.getOrientation(this.orientation);
-    }
-
-    @Override
-    public void setDirection(ForgeDirection facingDirection)
-    {
-        this.orientation = (byte) facingDirection.ordinal();
-    }
-
-    @Override
-    public AxisAlignedBB getRenderBoundingBox()
-    {
-        return INFINITE_EXTENT_AABB;
-    }
-
     //==========================================
     //==== Multi-Block code
     //=========================================
@@ -161,7 +128,7 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (tileMapCache.containsKey(new Pos((TileEntity)this).sub(new Pos((TileEntity) tileMulti))))
+            if (tileMapCache.containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
             {
                 tileMulti.setHost(this);
             }
@@ -173,7 +140,7 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity)this));
+            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
 
             if (tileMapCache.containsKey(pos))
             {
@@ -228,13 +195,6 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     }
 
     @Override
-    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
-    {
-        this.orientation = data.readByte();
-        this.tier = data.readInt();
-    }
-
-    @Override
     public void genRecipes(List<IRecipe> recipes)
     {
         // Missile Launcher Support Frame
@@ -262,5 +222,11 @@ public class TileLauncherFrame extends TileEnt implements IPacketReceiver, IMult
     public int metadataDropped(int meta, int fortune)
     {
         return tier;
+    }
+
+    @Override
+    protected boolean useMetaForFacing()
+    {
+        return true;
     }
 }

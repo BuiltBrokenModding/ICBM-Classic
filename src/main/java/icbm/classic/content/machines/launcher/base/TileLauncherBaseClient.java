@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.launcher.base;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
+import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -17,6 +18,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -193,5 +195,11 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     public IIcon getIcon()
     {
         return Blocks.anvil.getIcon(0, 0);
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return new Cube(-2, 0, -2, 2, 4, 2).add(toPos()).toAABB();
     }
 }

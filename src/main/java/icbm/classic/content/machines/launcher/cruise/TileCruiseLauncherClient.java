@@ -2,6 +2,7 @@ package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.lib.transform.region.Cube;
 import com.builtbroken.mc.lib.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -18,6 +19,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -149,5 +151,11 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
     public IIcon getIcon()
     {
         return Blocks.anvil.getIcon(0, 0);
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return new Cube(-1, 0, -1, 1, 3, 1).add(toPos()).toAABB();
     }
 }
