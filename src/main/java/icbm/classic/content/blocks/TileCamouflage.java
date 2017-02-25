@@ -247,7 +247,8 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
         BlockWrapper wrapper = new BlockWrapper(block);
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
         {
-            wrapper.setRenderSide(dir, !canRenderSide(dir));
+            Block block2 = world().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
+            wrapper.setRenderSide(dir, block2 != getBlockType() && !canRenderSide(dir));
         }
         boolean rendered = renderer.renderStandardBlock(wrapper, xi(), yi(), zi());
 
@@ -271,7 +272,8 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
             wrapper = new BlockWrapper(useGlassRender ? Blocks.glass : Blocks.vine);
             for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
             {
-                wrapper.setRenderSide(dir, true);
+                Block block2 = world().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
+                wrapper.setRenderSide(dir, block2 != getBlockType());
             }
             if (renderer.renderStandardBlock(wrapper, xi(), yi(), zi()))
             {
