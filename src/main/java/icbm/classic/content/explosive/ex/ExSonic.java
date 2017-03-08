@@ -20,7 +20,7 @@ public class ExSonic extends Explosion
         super(mingZi, tier);
         if (this.getTier() == 3)
         {
-            this.missileModelPath = "missile_sonic.tcn";
+            this.missileModelPath = "missiles/tier3/missile_head_sonic.obj";
         }
         else
         {
