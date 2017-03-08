@@ -181,15 +181,16 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 inaccuracy *= (float) Math.random() * 2 - 1;
                 target = target.add(inaccuracy, 0, inaccuracy);
 
-
-                EntityMissile missile = new EntityMissile(world());
-                missile.explosiveID = Explosives.get(stack.getItemDamage());
-                missile.launcherPos = new Pos((TileEntity) this);
-                missile.setPosition(xi(), yi() + 3, zi());
-                missile.launch(target, gaoDu);
-                world().spawnEntityInWorld(missile);
-
-                this.decrStackSize(0, 1);
+                if(isServer())
+                {
+                    EntityMissile missile = new EntityMissile(world());
+                    missile.explosiveID = Explosives.get(stack.getItemDamage());
+                    missile.launcherPos = new Pos((TileEntity) this);
+                    missile.setPosition(xi(), yi() + 3, zi());
+                    missile.launch(target, gaoDu);
+                    world().spawnEntityInWorld(missile);
+                    this.decrStackSize(0, 1);
+                }
                 return true;
             }
         }
