@@ -12,9 +12,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModelCustom;
+import resonant.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive extends AbstractExplosiveHandler
+public abstract class Explosive extends AbstractExplosiveHandler implements IExplosive
 {
     /** The unique identification name for this explosive. */
     private String nameID;

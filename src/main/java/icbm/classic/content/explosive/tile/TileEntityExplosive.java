@@ -6,7 +6,6 @@ import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import io.netty.buffer.ByteBuf;
@@ -16,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import resonant.api.explosion.IExplosive;
 import resonant.api.explosion.IExplosiveContainer;
 
 public class TileEntityExplosive extends TileEntity implements IExplosiveContainer, IPacketReceiver, IRotatable
@@ -99,7 +99,7 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
     }
 
     @Override
-    public Explosive getExplosiveType()
+    public IExplosive getExplosiveType()
     {
         return this.explosive.handler;
     }
