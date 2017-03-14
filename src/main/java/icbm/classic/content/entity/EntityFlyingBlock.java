@@ -3,13 +3,10 @@ package icbm.classic.content.entity;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.lib.transform.vector.Pos;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
-import net.minecraft.client.particle.EntityDiggingFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
@@ -142,6 +139,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 
         this.ticksExisted++;
 
+        /*
         if(worldObj.isRemote && (motionX > 0.001 || motionZ > 0.001 || motionY > 0.001))
         {
             if (ICBMClassic.proxy.getParticleSetting() == 0)
@@ -152,6 +150,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
                 }
             }
         }
+        */
     }
 
     public void setBlock()
