@@ -135,17 +135,6 @@ public abstract class Explosive extends AbstractExplosiveHandler implements IExp
         world.spawnParticle("smoke", position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
 
-    /**
-     * Called when the block for of this explosive is destroy by an explosion
-     *
-     * @return - Fuse left
-     */
-    public int onBeiZha()
-    {
-        return (int) (this.fuseTime / 2 + Math.random() * this.fuseTime / 4);
-    }
-
-
     @SideOnly(Side.CLIENT)
     public ModelICBM getBlockModel()
     {
