@@ -2,7 +2,7 @@ package icbm.classic;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.mod.AbstractProxy;
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.gui.IUpdatePlayerListBox;

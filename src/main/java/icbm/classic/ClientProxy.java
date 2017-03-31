@@ -2,7 +2,7 @@ package icbm.classic;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.lib.render.fx.*;
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.ReflectionHelper;

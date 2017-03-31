@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.potion.CustomPotionEffect;
 import net.minecraft.entity.Entity;

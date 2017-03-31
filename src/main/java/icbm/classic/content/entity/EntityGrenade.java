@@ -1,6 +1,6 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;

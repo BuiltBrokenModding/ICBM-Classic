@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.lib.transform.vector.Location;
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.imp.transform.vector.Location;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.content.explosive.thread.ThreadExplosion;

@@ -3,7 +3,7 @@ package icbm.classic.content.machines.coordinator;
 import com.builtbroken.jlib.data.science.units.UnitDisplay;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.transform.vector.Location;
+import com.builtbroken.mc.imp.transform.vector.Location;
 import icbm.classic.content.gui.GuiICBMContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Direction;

@@ -2,8 +2,8 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.client.effects.providers.VEProviderShockWave;
 import com.builtbroken.mc.lib.energy.UniversalEnergySystem;
-import com.builtbroken.mc.lib.transform.region.Cube;
-import com.builtbroken.mc.lib.transform.vector.Pos;
+import com.builtbroken.mc.imp.transform.region.Cube;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
