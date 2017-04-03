@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.mc.api.items.ISimpleItemRenderer;
-import com.builtbroken.mc.api.tile.IGuiTile;
+import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.client.FMLClientHandler;

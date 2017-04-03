@@ -2,7 +2,7 @@ package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.api.tile.IGuiTile;
+import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketSpawnParticleStream;

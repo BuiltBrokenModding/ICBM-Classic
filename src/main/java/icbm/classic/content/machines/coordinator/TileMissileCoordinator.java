@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.api.tile.IGuiTile;
+import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;

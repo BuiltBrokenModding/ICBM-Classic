@@ -1,7 +1,7 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
-import com.builtbroken.mc.api.tile.IGuiTile;
+import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.lib.helper.LanguageUtility;

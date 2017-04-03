@@ -2,7 +2,7 @@ package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
-import com.builtbroken.mc.api.tile.IGuiTile;
+import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
