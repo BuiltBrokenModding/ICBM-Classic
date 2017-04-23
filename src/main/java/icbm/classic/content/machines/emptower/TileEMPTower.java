@@ -299,9 +299,9 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     }
 
     @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, IPos3D hit)
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, float xHit, float yHit, float zHit)
     {
-        return this.onPlayerRightClick(player, side, new Pos(hit));
+        return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
     }
 
     @Override
