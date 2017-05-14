@@ -190,7 +190,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                             {
                                 EntityMissile daoDan = this.incomingMissiles.get(i);
 
-                                if (dist < new Pos((TileEntity)this).distance(new Pos(daoDan)))
+                                if (dist < new Pos((TileEntity)this).distance(daoDan.toPos()))
                                 {
                                     this.incomingMissiles.add(i, (EntityMissile) entity);
                                     break;
@@ -257,7 +257,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         {
             return false;
         }
-        return (new Pos(missile).toVector2().distance(new Point(this.xCoord, this.zCoord)) < this.alarmRange && missile.targetVector.toVector2().distance(new Point(this.xCoord, this.zCoord)) < this.safetyRange);
+        return (missile.toPos().toVector2().distance(new Point(this.xCoord, this.zCoord)) < this.alarmRange && missile.targetVector.toVector2().distance(new Point(this.xCoord, this.zCoord)) < this.safetyRange);
     }
 
     private PacketTile getDescriptionPacket2()
@@ -326,7 +326,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
 
             for (EntityMissile incomingMissile : this.incomingMissiles)
             {
-                Point position = new Pos(incomingMissile).toVector2();
+                Point position = incomingMissile.toPos().toVector2();
                 ForgeDirection missileTravelDirection = ForgeDirection.UNKNOWN;
                 double closest = -1;
 

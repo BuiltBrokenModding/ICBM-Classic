@@ -1,5 +1,7 @@
 package icbm.classic.content.entity;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.data.EnumProjectileTypes;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.prefab.entity.EntityProjectile;
@@ -136,7 +138,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void launch(Pos target)
     {
         //Update data
-        this.sourceOfProjectile = new Pos(this);
+        this.sourceOfProjectile = toPos();
         this.targetVector = target;
         this.targetHeight = this.targetVector != null ? this.targetVector.yi() : 0;
         if(explosiveID != null && explosiveID.handler instanceof Explosion)
@@ -347,7 +349,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         if (this.worldObj.isRemote)
         {
-            Pos position = new Pos(this);
+            Pos position = new Pos((IPos3D) this);
             // The distance of the smoke relative
             // to the missile.
             double distance = -this.daoDanGaoDu - 0.2f;
@@ -397,7 +399,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public Pos getPredictedPosition(int t)
     {
-        Pos guJiDiDian = new Pos(this);
+        Pos guJiDiDian = toPos();
         double tempMotionY = this.motionY;
 
         if (this.ticksInAir > 20)
@@ -572,6 +574,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public NBTTagCompound getTagCompound()
     {
         return this.nbtData;
+    }
+
+    @Override
+    public EnumProjectileTypes getProjectileType()
+    {
+        return EnumProjectileTypes.ROCKET;
     }
 
     public enum MissileType
