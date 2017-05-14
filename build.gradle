@@ -47,25 +47,6 @@ dependencies
     compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
     compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
     compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
-    /*if (project.hasProperty("bambooshortPlanName") && project.getProperty("bambooshortPlanName") == "BBM-Dev")
-        {
-            compile "dev.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf-dev"
-            compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
-            compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
-            compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
-            compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
-            compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
-        }
-    else
-        {
-            compile "com.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf"
-            compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
-            compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
-            compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
-            compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
-            compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
-            }*/
-
 }
 
 def currentJvm = org.gradle.internal.jvm.Jvm.current()
