@@ -50,7 +50,7 @@ dependencies
 }
 
 def currentJvm = org.gradle.internal.jvm.Jvm.current()
-println "Current Java version = " + currentJvm
+//println "Current Java version = " + currentJvm
 
 import org.ajoberstar.grgit.*
 
