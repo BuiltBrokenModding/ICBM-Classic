@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.jlib.data.science.units.UnitDisplay;
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Location;
@@ -34,8 +35,8 @@ public class GuiMissileCoordinator extends GuiICBMContainer
         {
             if (this.tileEntity.getStackInSlot(0).getItem() instanceof IWorldPosItem && this.tileEntity.getStackInSlot(1).getItem() instanceof IWorldPosItem)
             {
-                Location pos1 = new Location(((IWorldPosItem) this.tileEntity.getStackInSlot(0).getItem()).getLocation(this.tileEntity.getStackInSlot(0)));
-                Location pos2 = new Location(((IWorldPosItem) this.tileEntity.getStackInSlot(1).getItem()).getLocation(this.tileEntity.getStackInSlot(1)));
+                Location pos1 = new Location((IWorldPosition) ((IWorldPosItem) this.tileEntity.getStackInSlot(0).getItem()).getLocation(this.tileEntity.getStackInSlot(0)));
+                Location pos2 = new Location((IWorldPosition) ((IWorldPosItem) this.tileEntity.getStackInSlot(1).getItem()).getLocation(this.tileEntity.getStackInSlot(1)));
 
                 double displacement = pos1.distance(pos2);
 

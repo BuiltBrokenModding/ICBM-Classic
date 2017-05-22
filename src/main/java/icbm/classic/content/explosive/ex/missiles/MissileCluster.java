@@ -33,7 +33,7 @@ public class MissileCluster extends Missile
             {
                 if (!missileObj.worldObj.isRemote)
                 {
-                    Pos position = new Pos(missileObj);
+                    Pos position = missileObj.toPos();
                     EntityMissile missile = new EntityMissile(missileObj.worldObj);
                     missile.setPosition(position.x(), position.y(), position.z()); //TODO spread to avoid collision
                     missile.launcherPos = position;
