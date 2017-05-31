@@ -7,7 +7,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.MDiLei;
+import icbm.classic.client.models.ModelSMine;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
@@ -36,7 +36,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
                 GL11.glTranslatef(0.0F, 1.5F, 0.0F);
                 GL11.glRotatef(180f, 0f, 0f, 1f);
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
-                MDiLei.INSTANCE.render(0.0625F);
+                ModelSMine.INSTANCE.render(0.0625F);
                 GL11.glPopMatrix();
             }
             else

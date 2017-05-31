@@ -9,9 +9,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
 @SideOnly(Side.CLIENT)
-public class MDiLei extends ModelICBM
+public class ModelSMine extends ModelICBM
 {
-    public static final MDiLei INSTANCE = new MDiLei();
+    public static final ModelSMine INSTANCE = new ModelSMine();
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "s-mine.png");
 
     // fields
@@ -19,7 +19,7 @@ public class MDiLei extends ModelICBM
     ModelRenderer B;
     ModelRenderer C;
 
-    public MDiLei()
+    public ModelSMine()
     {
         textureWidth = 45;
         textureHeight = 26;

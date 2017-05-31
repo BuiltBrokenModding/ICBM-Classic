@@ -1,9 +1,13 @@
 package icbm.classic;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.lib.render.fx.*;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.render.fx.FXElectricBolt;
+import com.builtbroken.mc.lib.render.fx.FXElectricBoltSpawner;
+import com.builtbroken.mc.lib.render.fx.FXEnderPortalPartical;
+import com.builtbroken.mc.lib.render.fx.FXSmoke;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -15,6 +19,7 @@ import icbm.classic.client.render.item.RenderRocketLauncher;
 import icbm.classic.client.render.tile.RenderBombBlock;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.ex.missiles.MissilePlayerHandler;
+import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import icbm.classic.content.machines.coordinator.TileMissileCoordinatorClient;
 import icbm.classic.content.machines.emptower.TileEMPTowerClient;
 import icbm.classic.content.machines.launcher.base.TileLauncherBaseClient;
@@ -64,7 +69,9 @@ public class ClientProxy extends CommonProxy
         RenderMissile renderMissile = new RenderMissile(0.5F);
         MinecraftForgeClient.registerItemRenderer(ICBMClassic.itemMissile, renderMissile);
 
-        RenderingRegistry.registerBlockHandler(new RenderBombBlock());
+        RenderBombBlock bombRender = new RenderBombBlock();
+        RenderingRegistry.registerBlockHandler(bombRender);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityExplosive.class, bombRender);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, new RenderEntityExplosive());
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, renderMissile);

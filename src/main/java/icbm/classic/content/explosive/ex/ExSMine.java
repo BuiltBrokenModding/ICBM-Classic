@@ -7,7 +7,7 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.MDiLei;
+import icbm.classic.client.models.ModelSMine;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastMine;
@@ -49,14 +49,14 @@ public class ExSMine extends Explosive
     @Override
     public ModelICBM getBlockModel()
     {
-        return MDiLei.INSTANCE;
+        return ModelSMine.INSTANCE;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public ResourceLocation getBlockResource()
     {
-        return MDiLei.TEXTURE;
+        return ModelSMine.TEXTURE;
     }
 
     @Override

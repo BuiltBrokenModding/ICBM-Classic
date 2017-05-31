@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.prefab.ModelICBM;
-import icbm.classic.client.models.MDiLei;
+import icbm.classic.client.models.ModelSMine;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -75,14 +75,14 @@ public class BlastMine extends Blast
     @Override
     public ModelICBM getRenderModel()
     {
-        return MDiLei.INSTANCE;
+        return ModelSMine.INSTANCE;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public ResourceLocation getRenderResource()
     {
-        return MDiLei.TEXTURE;
+        return ModelSMine.TEXTURE;
     }
 
 }
