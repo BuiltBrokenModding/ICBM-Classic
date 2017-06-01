@@ -2,8 +2,8 @@ package icbm.classic.content.explosive.tile;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.registry.implement.IPostInit;
-import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -41,6 +41,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -431,20 +432,29 @@ public class BlockExplosive extends BlockContainer implements IPostInit
     }
 
     @Override
-    public void breakBlock(World world, int x, int y, int z, Block par5, int par6)
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest)
     {
-        TileEntity tileEntity = world.getTileEntity(x, y, z);
+        if (willHarvest)
+        {
+            InventoryUtility.dropBlockAsItem(world, x, y, z, false);
+        }
+        return world.setBlockToAir(x, y, z);
+    }
 
+    @Override
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
+    {
+        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
+        TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (tileEntity instanceof TileEntityExplosive)
         {
             if (!((TileEntityExplosive) tileEntity).exploding)
             {
                 int explosiveID = ((TileEntityExplosive) tileEntity).explosive.ordinal();
-                InventoryUtility.dropItemStack(world, x, y, z, new ItemStack(ICBMClassic.blockExplosive, 1, explosiveID), 10, 0);
+                ret.add(new ItemStack(ICBMClassic.blockExplosive, 1, explosiveID));
             }
         }
-
-        super.breakBlock(world, x, y, z, par5, par6);
+        return ret;
     }
 
     @Override
