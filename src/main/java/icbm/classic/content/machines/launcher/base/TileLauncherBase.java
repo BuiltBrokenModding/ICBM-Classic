@@ -5,15 +5,16 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
+import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
+import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
-import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
@@ -51,6 +52,8 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 {
     public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
     public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
+
+    private static EulerAngle angle = new EulerAngle(0, 0, 0);
 
     static
     {
@@ -167,21 +170,26 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
             if (ex.hasMissileForm())
             {
                 // Apply inaccuracy
-                float inaccuracy;
+                int inaccuracy = 30;
 
+                //Get value from support frame
                 if (this.supportFrame != null)
                 {
                     inaccuracy = this.supportFrame.getInaccuracy();
                 }
-                else
-                {
-                    inaccuracy = 30f;
-                }
 
-                inaccuracy *= (float) Math.random() * 2 - 1;
-                target = target.add(inaccuracy, 0, inaccuracy);
+                //Randomize distance
+                inaccuracy = world().rand.nextInt(inaccuracy);
 
-                if(isServer())
+                //Randomize radius drop
+                angle.setYaw(world().rand.nextFloat() * 360);
+
+                //Update target
+                target = target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
+
+                //TODO add distance check? --- something seems to be missing
+
+                if (isServer())
                 {
                     EntityMissile missile = new EntityMissile(world());
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
@@ -450,12 +458,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (facingDirection != getDirection())
         {
-            if(isServer())
+            if (isServer())
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
             }
             super.setFacing(facingDirection);
-            if(isServer())
+            if (isServer())
             {
                 MultiBlockHelper.buildMultiBlock(world(), this, true, true);
                 markDirty();
