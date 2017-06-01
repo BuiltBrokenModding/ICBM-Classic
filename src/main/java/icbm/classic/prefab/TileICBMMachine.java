@@ -3,7 +3,6 @@ package icbm.classic.prefab;
 import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.lib.energy.UniversalEnergySystem;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
@@ -71,46 +70,6 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     protected PacketTile getGUIPacket()
     {
         return null;
-    }
-
-    @Override
-    public final int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
-    {
-        return (int) Math.ceil(UniversalEnergySystem.RF_HANDLER.receiveEnergy(toPos().add(from).getTileEntity(world()), from, maxReceive, !simulate));
-    }
-
-    @Override
-    public final int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
-    {
-        return 0;
-    }
-
-    @Override
-    public final int getEnergyStored(ForgeDirection from)
-    {
-        IEnergyBuffer buffer = getEnergyBuffer(from);
-        if (buffer != null)
-        {
-            return (int) Math.floor(UniversalEnergySystem.RF_HANDLER.toForeignEnergy(buffer.getEnergyStored()));
-        }
-        return 0;
-    }
-
-    @Override
-    public final int getMaxEnergyStored(ForgeDirection from)
-    {
-        IEnergyBuffer buffer = getEnergyBuffer(from);
-        if (buffer != null)
-        {
-            return (int) Math.floor(UniversalEnergySystem.RF_HANDLER.toForeignEnergy(buffer.getMaxBufferSize()));
-        }
-        return 0;
-    }
-
-    @Override
-    public boolean canConnectEnergy(ForgeDirection from)
-    {
-        return true;
     }
 
     @Override
