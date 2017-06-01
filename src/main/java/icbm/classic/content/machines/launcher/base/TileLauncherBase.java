@@ -1,5 +1,6 @@
 package icbm.classic.content.machines.launcher.base;
 
+import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
@@ -11,6 +12,7 @@ import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import com.builtbroken.mc.prefab.energy.EnergyBuffer;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
@@ -24,6 +26,7 @@ import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -48,7 +51,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketIDReceiver, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer
+public class TileLauncherBase extends TileModuleMachine implements IPacketIDReceiver, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer, IEnergyHandler
 {
     public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
     public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
@@ -74,6 +77,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
     // The connected missile launcher frame
     public TileLauncherFrame supportFrame = null;
+    public TileLauncherScreen launchScreen = null;
 
     // The tier of this launcher base
     protected int tier = 0;
@@ -100,6 +104,17 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
         return new TileLauncherBase();
     }
 
+
+    @Override
+    public EnergyBuffer getEnergyBuffer(ForgeDirection side)
+    {
+        if (launchScreen != null)
+        {
+            return launchScreen.getEnergyBuffer(ForgeDirection.UNKNOWN);
+        }
+        return null;
+    }
+
     /**
      * Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
      * uses this to count ticks and creates a new spawn inside its implementation.
@@ -108,11 +123,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public void update()
     {
         super.update();
-        if (!isServer())
+        if (ticks % 20 == 0)
         {
-            if (this.supportFrame == null || this.supportFrame.isInvalid())
+            if (this.supportFrame == null || launchScreen == null || launchScreen.isInvalid() || this.supportFrame.isInvalid())
             {
                 this.supportFrame = null;
+                this.launchScreen = null;
                 for (byte i = 2; i < 6; i++)
                 {
                     Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
@@ -122,7 +138,14 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                     if (tileEntity instanceof TileLauncherFrame)
                     {
                         this.supportFrame = (TileLauncherFrame) tileEntity;
-                        this.supportFrame.setFacing(getDirection());
+                        if (isServer())
+                        {
+                            this.supportFrame.setFacing(getDirection());
+                        }
+                    }
+                    else if (tileEntity instanceof TileLauncherScreen)
+                    {
+                        this.launchScreen = (TileLauncherScreen) tileEntity;
                     }
                 }
             }
@@ -188,6 +211,8 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 target = target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
 
                 //TODO add distance check? --- something seems to be missing
+                //TODO add distance based inaccuracy addition
+                //TODO add tier based inaccuracy, higher tier missiles have a high chance of hitting
 
                 if (isServer())
                 {
