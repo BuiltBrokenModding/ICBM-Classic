@@ -136,7 +136,7 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
                 //GUI description packet
                 case 0:
                 {
-                    this.energy = data.readInt();
+                    setEnergy(data.readInt());
                     this.setFrequency(data.readInt());
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;

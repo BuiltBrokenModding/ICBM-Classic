@@ -8,9 +8,9 @@ import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
@@ -174,13 +174,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.tier, energy, this.getFrequency(), this.targetHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile(this, 0, this.tier, getEnergy(), this.getFrequency(), this.targetHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, this.getEnergyStored(ForgeDirection.UNKNOWN), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile(this, 4, getEnergy(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -205,7 +205,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 case 0:
                 {
                     this.tier = data.readInt();
-                    this.energy = data.readInt();
+                    setEnergy(data.readInt());
                     this.setFrequency(data.readInt());
                     this.targetHeight = data.readShort();
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
@@ -228,7 +228,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 }
                 case 4:
                 {
-                    this.energy = data.readInt();
+                    setEnergy(data.readInt());
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
@@ -354,7 +354,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    public int getMaxEnergyStored(ForgeDirection from)
+    public int getEnergyBufferSize()
     {
         return getEnergyConsumption() * 2;
     }

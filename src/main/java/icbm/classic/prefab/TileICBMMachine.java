@@ -1,7 +1,9 @@
 package icbm.classic.prefab;
 
 import cofh.api.energy.IEnergyHandler;
+import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.lib.energy.UniversalEnergySystem;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,8 +15,6 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
 {
-    /** Energy stored by the machine. */
-    protected int energy = 0;
     /**
      * Toggle to send a {@link #getDescPacket()} on the next tick, keep in mind only do this for render data.
      * if the data is not used by the renderer then send it at the time it is needed. For example, GUI data
@@ -74,58 +74,37 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     @Override
-    public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
+    public final int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
     {
-        int space = getMaxEnergyStored(from) - getEnergyStored(from);
-        if (space >= maxReceive)
-        {
-            if (!simulate)
-            {
-                energy += maxReceive;
-            }
-            return maxReceive;
-        }
-        else
-        {
-            if (!simulate)
-            {
-                energy += space;
-            }
-            return space;
-        }
+        return (int) Math.ceil(UniversalEnergySystem.RF_HANDLER.receiveEnergy(toPos().add(from).getTileEntity(world()), from, maxReceive, !simulate));
     }
 
     @Override
-    public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
+    public final int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
     {
-        if (maxExtract >= energy)
-        {
-            if (!simulate)
-            {
-                energy = 0;
-            }
-            return energy;
-        }
-        else
-        {
-            if (!simulate)
-            {
-                energy -= maxExtract;
-            }
-            return maxExtract;
-        }
+        return 0;
     }
 
     @Override
-    public int getEnergyStored(ForgeDirection from)
+    public final int getEnergyStored(ForgeDirection from)
     {
-        return energy;
+        IEnergyBuffer buffer = getEnergyBuffer(from);
+        if (buffer != null)
+        {
+            return (int) Math.floor(UniversalEnergySystem.RF_HANDLER.toForeignEnergy(buffer.getEnergyStored()));
+        }
+        return 0;
     }
 
     @Override
-    public int getMaxEnergyStored(ForgeDirection from)
+    public final int getMaxEnergyStored(ForgeDirection from)
     {
-        return 10000;
+        IEnergyBuffer buffer = getEnergyBuffer(from);
+        if (buffer != null)
+        {
+            return (int) Math.floor(UniversalEnergySystem.RF_HANDLER.toForeignEnergy(buffer.getMaxBufferSize()));
+        }
+        return 0;
     }
 
     @Override
@@ -138,14 +117,12 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        energy = nbt.getInteger("energy");
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt)
     {
         super.writeToNBT(nbt);
-        nbt.setInteger("energy", energy);
     }
 
     @Override
@@ -154,12 +131,35 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
         return true;
     }
 
+    public int getEnergy()
+    {
+        IEnergyBuffer buffer = getEnergyBuffer(ForgeDirection.UNKNOWN);
+        if (buffer != null)
+        {
+            return buffer.getEnergyStored();
+        }
+        return 0;
+    }
+
+    public void setEnergy(int energy)
+    {
+        IEnergyBuffer buffer = getEnergyBuffer(ForgeDirection.UNKNOWN);
+        if (buffer != null)
+        {
+            buffer.setEnergyStored(energy);
+        }
+    }
+
     /**
      * Called to extract the amount of energy the machine needs to use per operation
      */
     public void extractEnergy()
     {
-        extractEnergy(ForgeDirection.UNKNOWN, getEnergyConsumption(), false);
+        IEnergyBuffer buffer = getEnergyBuffer(ForgeDirection.UNKNOWN);
+        if (buffer != null)
+        {
+            buffer.removeEnergyFromStorage(getEnergyConsumption(), true);
+        }
     }
 
     /**
@@ -169,7 +169,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
      */
     public boolean checkExtract()
     {
-        return getEnergyStored(ForgeDirection.UNKNOWN) >= getEnergyConsumption();
+        return getEnergy() >= getEnergyConsumption();
     }
 
     /**
@@ -179,7 +179,13 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
      */
     public int getEnergyConsumption()
     {
-        return (int) (getMaxEnergyStored(ForgeDirection.UNKNOWN) * .9);
+        return 10000;
+    }
+
+    @Override
+    public int getEnergyBufferSize()
+    {
+        return getEnergyConsumption() * 2;
     }
 
     /**
@@ -189,6 +195,6 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
      */
     public boolean hasPower()
     {
-        return getEnergyStored(ForgeDirection.UNKNOWN) > 0;
+        return getEnergy() > 0;
     }
 }

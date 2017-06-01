@@ -9,10 +9,10 @@ import com.builtbroken.mc.core.network.packet.PacketSpawnParticleStream;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
@@ -32,7 +32,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
@@ -77,7 +76,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
-    public int getMaxEnergyStored(ForgeDirection from)
+    public int getEnergyBufferSize()
     {
         return 100000000;
     }
@@ -195,7 +194,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile(this, 0, getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override

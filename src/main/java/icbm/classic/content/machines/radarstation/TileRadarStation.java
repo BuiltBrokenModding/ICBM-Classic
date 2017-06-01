@@ -268,7 +268,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 4, getEnergyStored(ForgeDirection.UNKNOWN));
+        return new PacketTile(this, 4, getEnergy());
     }
 
     @Override
@@ -289,7 +289,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                 else if (ID == 4)
                 {
                     //this.fangXiang = data.readByte();
-                    this.energy = data.readInt();
+                    setEnergy(data.readInt());
                 }
             }
             else if (!this.worldObj.isRemote)

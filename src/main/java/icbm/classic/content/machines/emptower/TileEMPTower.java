@@ -97,13 +97,13 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
             fire();
         }
 
-        if (ticks % 20 == 0 && getEnergyStored(ForgeDirection.UNKNOWN) > 0)
+        if (ticks % 20 == 0 && getEnergy() > 0)
         {
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN));
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getEnergy() / getEnergyBufferSize());
             sendDescPacket();
         }
 
-        rotationDelta = (float) (Math.pow(getEnergyStored(ForgeDirection.UNKNOWN) / getMaxEnergyStored(ForgeDirection.UNKNOWN), 2) * 0.5);
+        rotationDelta = (float) (Math.pow(getEnergy() / getEnergyBufferSize(), 2) * 0.5);
         rotation += rotationDelta;
         if (rotation > 360)
         {
@@ -120,7 +120,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
             {
                 case 0:
                 {
-                    energy = data.readInt();
+                    setEnergy(data.readInt());
                     empRadius = data.readInt();
                     empMode = data.readByte();
                     return true;
@@ -142,7 +142,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     }
 
     @Override
-    public int getMaxEnergyStored(ForgeDirection from)
+    public int getEnergyBufferSize()
     {
         return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
     }
@@ -150,7 +150,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, getEnergyStored(ForgeDirection.UNKNOWN), this.empRadius, this.empMode);
+        return new PacketTile(this, 0, getEnergy(), this.empRadius, this.empMode);
     }
 
     /** Reads a tile entity from NBT. */
