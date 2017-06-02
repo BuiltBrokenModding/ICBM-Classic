@@ -346,6 +346,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                     return true;
                 }
             }
+            else if (launchScreen != null)
+            {
+                return launchScreen.onPlayerActivated(player, side, hit);
+            }
         }
         else if (this.getMissileStack() != null)
         {
