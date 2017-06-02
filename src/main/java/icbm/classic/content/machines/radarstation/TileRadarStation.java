@@ -3,16 +3,16 @@ package icbm.classic.content.machines.radarstation;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
-import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.WrenchUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Point;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.helper.WrenchUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.world.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
@@ -41,10 +41,14 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketReceiver, IRadioWaveSender, IRecipeContainer, IGuiTile
+public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IRecipeContainer, IGuiTile
 {
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
+
+    public final static int GUI_PACKET_ID = 1;
+
+
     /** Energy used per tick */
     public static final int WATTS = 2;
 
@@ -67,6 +71,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         this.isOpaque = false;
         this.renderTileEntity = true;
         this.renderNormalBlock = false;
+        this.canEmmitRedstone = true;
     }
 
     @Override
@@ -99,10 +104,6 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
             if (this.ticks % 40 == 0)
             {
                 sendDescPacket();
-            }//Send packets to users with the gui open
-            else if (this.ticks % 3 == 0)
-            {
-                sendPacketToGuiUsers(this.getDescriptionPacket2());
             }
         }
 
@@ -123,7 +124,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
 
             int prevDetectedEntities = this.detectedEntities.size();
 
-            if(isServer())
+            if (isServer())
             {
                 // Do a radar scan
                 this.doScan();
@@ -184,13 +185,13 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                         if (this.incomingMissiles.size() > 0)
                         {
                             /** Sort in order of distance */
-                            double dist = new Pos((TileEntity)this).distance(new Pos(entity));
+                            double dist = new Pos((TileEntity) this).distance(new Pos(entity));
 
                             for (int i = 0; i < this.incomingMissiles.size(); i++)
                             {
                                 EntityMissile daoDan = this.incomingMissiles.get(i);
 
-                                if (dist < new Pos((TileEntity)this).distance(daoDan.toPos()))
+                                if (dist < new Pos((TileEntity) this).distance(daoDan.toPos()))
                                 {
                                     this.incomingMissiles.add(i, (EntityMissile) entity);
                                     break;
@@ -260,36 +261,70 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
         return (missile.toPos().toVector2().distance(new Point(this.xCoord, this.zCoord)) < this.alarmRange && missile.targetVector.toVector2().distance(new Point(this.xCoord, this.zCoord)) < this.safetyRange);
     }
 
-    private PacketTile getDescriptionPacket2()
-    {
-        return new PacketTile(this, 1, this.alarmRange, this.safetyRange, this.getFrequency());
-    }
-
     @Override
-    public PacketTile getDescPacket()
+    protected PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, getEnergy());
-    }
-
-    @Override
-    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
-    {
-        try
+        PacketTile packet = new PacketTile(this, GUI_PACKET_ID, this.alarmRange, this.safetyRange, this.getFrequency());
+        packet.write(detectedEntities.size());
+        if (detectedEntities.size() > 0)
         {
-            final int ID = data.readInt();
+            for (Entity entity : detectedEntities)
+            {
+                if (entity != null && entity.isEntityAlive())
+                {
+                    packet.write(entity.getEntityId());
+                }
+                else
+                {
+                    packet.write(-1);
+                }
+            }
+        }
+        return packet;
+    }
 
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        setEnergy(buf.readInt());
+    }
+
+    @Override
+    public void writeDescPacket(ByteBuf buf)
+    {
+        super.writeDescPacket(buf);
+        buf.writeInt(getEnergy());
+    }
+
+    @Override
+    public boolean read(ByteBuf data, int ID, EntityPlayer player, PacketType type)
+    {
+        if (!super.read(data, ID, player, type))
+        {
             if (this.worldObj.isRemote)
             {
-                if (ID == 1)
+                if (ID == GUI_PACKET_ID)
                 {
                     this.alarmRange = data.readInt();
                     this.safetyRange = data.readInt();
                     this.setFrequency(data.readInt());
-                }
-                else if (ID == 4)
-                {
-                    //this.fangXiang = data.readByte();
-                    setEnergy(data.readInt());
+
+                    detectedEntities.clear();
+                    int entityListSize = data.readInt();
+                    for (int i = 0; i < entityListSize; i++)
+                    {
+                        int id = data.readInt();
+                        if (id != -1)
+                        {
+                            Entity entity = world().getEntityByID(id);
+                            if (entity != null)
+                            {
+                                detectedEntities.add(entity);
+                            }
+                        }
+                    }
+                    return true;
                 }
             }
             else if (!this.worldObj.isRemote)
@@ -297,31 +332,32 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                 if (ID == 2)
                 {
                     this.safetyRange = data.readInt();
+                    return true;
                 }
                 else if (ID == 3)
                 {
                     this.alarmRange = data.readInt();
+                    return true;
                 }
                 else if (ID == 4)
                 {
                     this.setFrequency(data.readInt());
+                    return true;
                 }
             }
+            return false;
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        return true;
     }
 
-
-    public boolean isPoweringTo(ForgeDirection side)
+    @Override
+    public int getStrongRedstonePower(int side)
     {
         if (incomingMissiles.size() > 0)
         {
             if (this.emitAll)
             {
-                return true;
+                return Math.min(15, 5 + incomingMissiles.size());
             }
 
             for (EntityMissile incomingMissile : this.incomingMissiles)
@@ -341,14 +377,14 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
                     }
                 }
 
-                if (missileTravelDirection.getOpposite() == side)
+                if (missileTravelDirection.getOpposite().ordinal() == side)
                 {
-                    return true;
+                    return Math.min(15, 5 + incomingMissiles.size());
                 }
             }
         }
 
-        return false;
+        return 0;
     }
 
     /** Reads a tile entity from NBT. */
@@ -422,7 +458,7 @@ public class TileRadarStation extends TileFrequency implements IPacketReceiver, 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
-        return new ContainerDummy();
+        return new ContainerDummy(player, this);
     }
 
     @Override

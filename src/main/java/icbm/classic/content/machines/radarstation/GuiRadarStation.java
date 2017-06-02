@@ -3,9 +3,9 @@ package icbm.classic.content.machines.radarstation;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.region.Rectangle;
 import com.builtbroken.mc.imp.transform.vector.Point;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
@@ -16,9 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GuiRadarStation extends GuiICBM
 {
@@ -34,8 +31,6 @@ public class GuiRadarStation extends GuiICBM
     private GuiTextField textFieldAlarmRange;
     private GuiTextField textFieldSafetyZone;
     private GuiTextField textFieldFrequency;
-
-    private List<Point> missileCoords = new ArrayList<Point>();
 
     private Point mouseOverCoords = new Point();
     private Point mousePosition = new Point();
@@ -215,7 +210,7 @@ public class GuiRadarStation extends GuiICBM
                 }
                 else
                 {
-                    FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_YELLOW_DOT);
+                    FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_WHITE_DOT);
                 }
 
                 this.drawTexturedModalRect(position.xi(), position.yi(), 0, 0, 2, 2);
