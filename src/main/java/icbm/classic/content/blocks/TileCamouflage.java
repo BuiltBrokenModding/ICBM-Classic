@@ -5,9 +5,10 @@ import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.render.block.BlockRenderHandler;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.render.RenderUtility;
+import com.builtbroken.mc.lib.render.block.BlockRenderHandler;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -143,6 +144,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
         {
             this._blockToMimic = block;
             this.metaToMimic = Math.max(Math.min(metadata, 15), 0);
+            world().setBlockMetadataWithNotify(xi(), yi(), zi(), metaToMimic, 2);
             if (isServer())
             {
                 markDirty();
@@ -190,7 +192,10 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this._blockToMimic = (Block) Block.blockRegistry.getObject(nbt.getString("blockToMimic"));
+        if (nbt.hasKey("blockToMimic"))
+        {
+            this._blockToMimic = (Block) Block.blockRegistry.getObject(nbt.getString("blockToMimic"));
+        }
         this.metaToMimic = nbt.getInteger("metaToMimic");
         this.renderSides = nbt.getByte("renderSides");
         this.isSolid = nbt.getBoolean("isSold");
@@ -289,6 +294,13 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
 
     @Override
     @SideOnly(Side.CLIENT)
+    public void renderInventory(ItemStack itemStack)
+    {
+        RenderUtility.renderCube(0, 0, 0, 1, 1, 1, getBlockType(), icon);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIcon()
     {
         return icon;
@@ -312,32 +324,39 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
                 //TODO ensure there is a permission flag for editing in global list so its not an (eta all)
                 if (owner == null || owner.equals(player.getGameProfile().getId()))
                 {
-
                     Block block = Block.getBlockFromItem(player.getCurrentEquippedItem().getItem());
+                    int meta = player.getCurrentEquippedItem().getItemDamage();
 
-                    if (block != getMimicBlock() && block != getBlockType())
+                    if (block != getBlockType())
                     {
-                        if (block.isNormalCube() && (block.getRenderType() == 0 || block.getRenderType() == 31))
+                        if ((block != getMimicBlock() || meta != blockMetadata))
                         {
-                            if (isServer())
+                            if (block.isNormalCube() && (block.getRenderType() == 0 || block.getRenderType() == 31))
                             {
-                                setMimicBlock(block, player.getCurrentEquippedItem().getItemDamage());
-                                if (Engine.runningAsDev)
+                                if (isServer())
                                 {
-                                    player.addChatComponentMessage(new ChatComponentText("Camo block set to " + block.getUnlocalizedName()));
+                                    setMimicBlock(block, meta);
+                                    if (Engine.runningAsDev)
+                                    {
+                                        player.addChatComponentMessage(new ChatComponentText("Camouflage material set to " + block.getUnlocalizedName()));
+                                    }
                                 }
                             }
-                            return true;
+                            else if (Engine.runningAsDev && isServer())
+                            {
+                                player.addChatComponentMessage(new ChatComponentText("Not normal cube or invalid render type"));
+                            }
                         }
                         else if (Engine.runningAsDev && isServer())
                         {
-                            player.addChatComponentMessage(new ChatComponentText("Not normal cube or invalid render type"));
+                            player.addChatComponentMessage(new ChatComponentText("Same block"));
                         }
                     }
                     else if (Engine.runningAsDev && isServer())
                     {
-                        player.addChatComponentMessage(new ChatComponentText("Same block"));
+                        player.addChatComponentMessage(new ChatComponentText("Can't be used as a camouflage"));
                     }
+
                 }
                 else if (Engine.runningAsDev && isServer())
                 {
@@ -353,7 +372,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
         {
             player.addChatComponentMessage(new ChatComponentText("Empty hand or can not edit"));
         }
-        return false;
+        return true;
     }
 
     @Override
