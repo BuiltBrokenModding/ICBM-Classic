@@ -80,7 +80,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
             case 1:
                 return 7;
             case 2:
-                return 0;
+                return 1;
         }
     }
 
