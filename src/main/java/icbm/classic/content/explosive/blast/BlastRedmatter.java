@@ -98,7 +98,7 @@ public class BlastRedmatter extends Blast
     {
         // Try to find and grab some blocks to orbit
         int blocksDestroyed = 0;
-        for (int currentRadius = 1; currentRadius < getRadius(); currentRadius++)
+        for (int currentRadius = 1; currentRadius < getRadius(); currentRadius++) //TODO recode as it can stall the main thread
         {
             for (int xr = -currentRadius; xr < currentRadius; xr++)
             {
@@ -138,12 +138,14 @@ public class BlastRedmatter extends Blast
                                     }
                                     //Keep track of blocks removed to keep from lagging the game
                                     blocksDestroyed++;
-                                    if (blocksDestroyed > this.MAX_BLOCKS_REMOVED_PER_TICK)
-                                    {
-                                        return;
-                                    }
                                 }
                             }
+                        }
+
+                        //Exit conditions, make sure stays at bottom of loop
+                        if (blocksDestroyed > this.MAX_BLOCKS_REMOVED_PER_TICK || !isAlive)
+                        {
+                            return;
                         }
                     }
                 }
