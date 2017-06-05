@@ -116,13 +116,14 @@ public class BlastRedmatter extends Blast
                             //Null if call was made on an unloaded chunk
                             if (block != null)
                             {
+                                final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
                                 int meta = currentPos.getBlockMetadata();
                                 //Ignore air blocks and unbreakable blocks
-                                if (!block.isAir(world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) && block.getBlockHardness(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0)
+                                if (!block.isAir(world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) && (isFluid || block.getBlockHardness(this.world(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0))
                                 {
                                     //TODO handle multi-blocks
-                                    final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
-                                    currentPos.setBlock(Blocks.air, 0, isFluid ? 0 : 3);
+
+                                    currentPos.setBlock(Blocks.air, 0, isFluid ? 2 : 3);
                                     //TODO: render fluid streams moving into hole
                                     if (!isFluid && doFlyingBlocks)
                                     {
