@@ -1,7 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -12,7 +11,6 @@ import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
@@ -24,20 +22,19 @@ import java.util.List;
 
 public class BlastSonic extends Blast
 {
-    private float nengLiang;
+    private float energy;
     private ThreadLargeExplosion thread;
     private boolean hasShockWave = false;
-    ;
 
     public BlastSonic(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
     }
 
-    public BlastSonic(World world, Entity entity, double x, double y, double z, float size, float nengLiang)
+    public BlastSonic(World world, Entity entity, double x, double y, double z, float size, float energy)
     {
         this(world, entity, x, y, z, size);
-        this.nengLiang = nengLiang;
+        this.energy = energy;
     }
 
     public Blast setShockWave()
@@ -51,6 +48,7 @@ public class BlastSonic extends Blast
     {
         if (!this.world().isRemote)
         {
+            /*
             if (this.hasShockWave)
             {
                 for (int x = (int) (-this.getRadius() * 2); x < this.getRadius() * 2; ++x)
@@ -66,7 +64,7 @@ public class BlastSonic extends Blast
                             {
                                 Material material = blockID.getMaterial();
 
-                                if (blockID != Blocks.bedrock && !(material.isLiquid()) && (blockID.getExplosionResistance(this.exploder, world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) > this.nengLiang || material == Material.glass))
+                                if (blockID != Blocks.bedrock && !(material.isLiquid()) && (blockID.getExplosionResistance(this.exploder, world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) > this.energy || material == Material.glass))
                                 {
                                     targetPosition.setBlock(world(), Blocks.air);
                                 }
@@ -74,9 +72,9 @@ public class BlastSonic extends Blast
                         }
                     }
                 }
-            }
+            } */
 
-            this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.nengLiang, this.exploder, new IThreadCallBack()
+            this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.energy, this.exploder, new IThreadCallBack()
             {
                 @Override
                 public float getResistance(World world, IPos3D explosionPosition, IPos3D targetPosition, Entity source, Block block)

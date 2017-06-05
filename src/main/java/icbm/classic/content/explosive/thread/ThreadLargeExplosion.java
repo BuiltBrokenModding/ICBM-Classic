@@ -94,7 +94,6 @@ public class ThreadLargeExplosion extends ThreadExplosion
                             {
                                 this.results.add(t.toPos());
                             }
-
                         }
                     }
                     t = t.add(delta);
