@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.blast.BlastRepulsive;
+import icbm.classic.content.explosive.blast.BlastTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -49,11 +49,11 @@ public class ExRepulsive extends Explosion
     {
         if (this == Explosives.ATTRACTIVE.handler)
         {
-            new BlastRepulsive(world, entity, x, y, z, 2f).setDestroyItems().setPushType(1).explode();
+            new BlastTNT(world, entity, x, y, z, 2f).setDestroyItems().setPushType(1).explode();
         }
         else
         {
-            new BlastRepulsive(world, entity, x, y, z, 2f).setDestroyItems().setPushType(2).explode();
+            new BlastTNT(world, entity, x, y, z, 2f).setDestroyItems().setPushType(2).explode();
 
         }
     }

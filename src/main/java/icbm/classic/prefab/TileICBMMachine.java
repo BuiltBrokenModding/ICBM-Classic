@@ -110,7 +110,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     /**
-     * Called to extract the amount of energy the machine needs to use per operation
+     * Called to extract the amount of power the machine needs to use per operation
      */
     public void extractEnergy()
     {
@@ -122,7 +122,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     /**
-     * Called to check if the machine has enough energy to operate
+     * Called to check if the machine has enough power to operate
      *
      * @return true if yes
      */
@@ -132,7 +132,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     /**
-     * How much energy does this machine consume per operation
+     * How much power does this machine consume per operation
      *
      * @return
      */

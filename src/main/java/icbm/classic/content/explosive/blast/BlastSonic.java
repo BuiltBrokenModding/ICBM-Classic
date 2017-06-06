@@ -64,7 +64,7 @@ public class BlastSonic extends Blast
                             {
                                 Material material = blockID.getMaterial();
 
-                                if (blockID != Blocks.bedrock && !(material.isLiquid()) && (blockID.getExplosionResistance(this.exploder, world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) > this.energy || material == Material.glass))
+                                if (blockID != Blocks.bedrock && !(material.isLiquid()) && (blockID.getExplosionResistance(this.exploder, world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) > this.power || material == Material.glass))
                                 {
                                     targetPosition.setBlock(world(), Blocks.air);
                                 }

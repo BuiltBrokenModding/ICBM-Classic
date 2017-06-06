@@ -13,29 +13,29 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlastRepulsive extends Blast
+public class BlastTNT extends Blast
 {
-    private int checkBanJing = 16;
-    protected float nengLiang = 10F;
+    public static final int rays = 16;
+    public static float power = 10F;
 
-    private List<Pos> blownBlocks = new ArrayList<Pos>();
+    protected List<Pos> blownBlocks = new ArrayList<Pos>();
 
     /** 0- No push, 1 - Attract, 2 - Repel */
     private int pushType = 0;
     private boolean destroyItem = false;
 
-    public BlastRepulsive(World world, Entity entity, double x, double y, double z, float size)
+    public BlastTNT(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
     }
 
-    public BlastRepulsive setPushType(int type)
+    public BlastTNT setPushType(int type)
     {
         this.pushType = type;
         return this;
     }
 
-    public BlastRepulsive setDestroyItems()
+    public BlastTNT setDestroyItems()
     {
         this.destroyItem = true;
         return this;
@@ -44,45 +44,78 @@ public class BlastRepulsive extends Blast
     @Override
     public void doExplode()
     {
+        calculateDamage();
+        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), "random.explode", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+
+        switch (this.pushType)
+        {
+            case 0:
+                this.doDamageEntities(this.getRadius(), power, this.destroyItem);
+                break;
+            default:
+                this.pushEntities(12, this.getRadius() * 4, this.pushType);
+                break;
+        }
+
+        doDestroyBlocks();
+    }
+
+    protected void calculateDamage()
+    {
         if (!this.world().isRemote)
         {
-            for (int x = 0; x < this.checkBanJing; ++x)
+            for (int x = 0; x < this.rays; ++x)
             {
-                for (int y = 0; y < this.checkBanJing; ++y)
+                for (int y = 0; y < this.rays; ++y)
                 {
-                    for (int z = 0; z < this.checkBanJing; ++z)
+                    for (int z = 0; z < this.rays; ++z)
                     {
-                        if (x == 0 || x == this.checkBanJing - 1 || y == 0 || y == this.checkBanJing - 1 || z == 0 || z == this.checkBanJing - 1)
+                        if (x == 0 || x == this.rays - 1 || y == 0 || y == this.rays - 1 || z == 0 || z == this.rays - 1)
                         {
-                            double xStep = x / (this.checkBanJing - 1.0F) * 2.0F - 1.0F;
-                            double yStep = y / (this.checkBanJing - 1.0F) * 2.0F - 1.0F;
-                            double zStep = z / (this.checkBanJing - 1.0F) * 2.0F - 1.0F;
+                            //Delta distance
+                            double xStep = x / (this.rays - 1.0F) * 2.0F - 1.0F;
+                            double yStep = y / (this.rays - 1.0F) * 2.0F - 1.0F;
+                            double zStep = z / (this.rays - 1.0F) * 2.0F - 1.0F;
+
+                            //Distance
                             double diagonalDistance = Math.sqrt(xStep * xStep + yStep * yStep + zStep * zStep);
+
+                            //normalize
                             xStep /= diagonalDistance;
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
-                            float var14 = this.getRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
+
+
+                            float radialEnergy = this.getRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
+
                             double var15 = this.position.x();
                             double var17 = this.position.y();
                             double var19 = this.position.z();
 
-                            for (float var21 = 0.3F; var14 > 0.0F; var14 -= var21 * 0.75F)
+                            for (float var21 = 0.3F; radialEnergy > 0.0F; radialEnergy -= var21 * 0.75F)
                             {
+                                //Get block
                                 int var22 = MathHelper.floor_double(var15);
                                 int var23 = MathHelper.floor_double(var17);
                                 int var24 = MathHelper.floor_double(var19);
-                                Block var25 = this.world().getBlock(var22, var23, var24);
+                                Block var25 = this.world().getBlock(var22, var23,  var24);
 
+                                //Get resistance
                                 if (var25 != Blocks.air)
                                 {
-                                    var14 -= (var25.getExplosionResistance(this.exploder, this.world(), var22, var23, var24, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * var21;
+                                    radialEnergy -= (var25.getExplosionResistance(this.exploder, this.world(), var22, var23, var24, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * var21;
                                 }
 
-                                if (var14 > 0.0F)
+                                if (radialEnergy > 0.0F)
                                 {
-                                    blownBlocks.add(new Pos(var22, var23, var24));
+                                    Pos pos = new Pos(var22, var23, var24);
+                                    if(!blownBlocks.contains(pos))
+                                    {
+                                        blownBlocks.add(pos);
+                                    }
                                 }
 
+                                //Iterate location
                                 var15 += xStep * var21;
                                 var17 += yStep * var21;
                                 var19 += zStep * var21;
@@ -93,19 +126,10 @@ public class BlastRepulsive extends Blast
             }
 
         }
+    }
 
-        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), "random.explode", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
-
-        switch (this.pushType)
-        {
-            case 0:
-                this.doDamageEntities(this.getRadius(), nengLiang, this.destroyItem);
-                break;
-            default:
-                this.pushEntities(12, this.getRadius() * 4, this.pushType);
-                break;
-        }
-
+    protected void doDestroyBlocks()
+    {
         if (!this.world().isRemote)
         {
             int var3;

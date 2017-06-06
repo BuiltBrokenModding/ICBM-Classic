@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.blast.BlastRepulsive;
+import icbm.classic.content.explosive.blast.BlastTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -34,7 +34,7 @@ public class ExCondensed extends Explosion
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
-        new BlastRepulsive(world, entity, x, y, z, 2.5f).explode();
+        new BlastTNT(world, entity, x, y, z, 6).explode();
     }
 
     @Override

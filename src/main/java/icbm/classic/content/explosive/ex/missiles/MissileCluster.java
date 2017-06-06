@@ -6,7 +6,7 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.blast.BlastRepulsive;
+import icbm.classic.content.explosive.blast.BlastTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -76,7 +76,7 @@ public class MissileCluster extends Missile
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
-        new BlastRepulsive(world, entity, x, y, z, 6).setDestroyItems().explode();
+        new BlastTNT(world, entity, x, y, z, 6).setDestroyItems().explode();
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
-import icbm.classic.content.explosive.blast.BlastRepulsive;
+import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.items.ItemTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -125,7 +125,7 @@ public class MissileHoming extends Missile
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
-        new BlastRepulsive(world, entity, x, y, z, 4).setDestroyItems().explode();
+        new BlastTNT(world, entity, x, y, z, 4).setDestroyItems().explode();
     }
 
     @Override
