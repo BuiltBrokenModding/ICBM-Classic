@@ -265,7 +265,7 @@ public class BlastRedmatter extends Blast
             }
             else if(entity instanceof EntityLiving)
             {
-                ((EntityLiving)entity).attackEntityFrom(DamageSource.outOfWorld, 99999999);
+                ((EntityLiving)entity).attackEntityFrom(DamageSource.outOfWorld, 2000);
             }
             else
             {
