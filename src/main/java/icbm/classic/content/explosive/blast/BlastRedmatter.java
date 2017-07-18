@@ -265,7 +265,7 @@ public class BlastRedmatter extends Blast
             }
             else if(entity instanceof EntityLiving)
             {
-                ((EntityLiving)entity).attackEntityFrom(DamageSource.outOfWorld, 2000);
+                entity.attackEntityFrom(new DamageSourceRedmatter(this), 2000);
             }
             else
             {
@@ -275,6 +275,17 @@ public class BlastRedmatter extends Blast
         }
 
         return explosionCreated;
+    }
+
+    public static class DamageSourceRedmatter extends DamageSource
+    {
+        public final BlastRedmatter blastRedmatter;
+
+        public DamageSourceRedmatter(BlastRedmatter blastRedmatter)
+        {
+            super("icbm.redmatter");
+            this.blastRedmatter = blastRedmatter;
+        }
     }
 
     /**
