@@ -74,7 +74,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         {
             Pos newTarget = new Pos(parseInt(this.textFieldX.getText()), parseInt(this.textFieldY.getText()), parseInt(this.textFieldZ.getText()));
             this.tileEntity.setTarget(newTarget);
-            Engine.instance.packetHandler.sendToServer(new PacketTile(tileEntity, 2, tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            Engine.packetHandler.sendToServer(new PacketTile(tileEntity, 2, tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -84,7 +84,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         {
             short newFrequency = (short) Math.max(Short.parseShort(this.textFieldFreq.getText()), 0);
             this.tileEntity.setFrequency(newFrequency);
-            Engine.instance.packetHandler.sendToServer(new PacketTile(tileEntity, 1, tileEntity.getFrequency()));
+            Engine.packetHandler.sendToServer(new PacketTile(tileEntity, 1, tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {

@@ -83,7 +83,7 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
     @Override
     public Packet getDescriptionPacket()
     {
-        return Engine.instance.packetHandler.toMCPacket(new PacketTile(this, (byte) 1, this.explosive.ordinal()));
+        return Engine.packetHandler.toMCPacket(new PacketTile(this, (byte) 1, this.explosive.ordinal()));
     }
 
     @Override

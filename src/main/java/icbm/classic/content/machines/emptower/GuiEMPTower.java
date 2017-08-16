@@ -63,7 +63,7 @@ public class GuiEMPTower extends GuiICBM
                 break;
         }
 
-        Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.empMode));
+        Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.empMode));
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
@@ -77,7 +77,7 @@ public class GuiEMPTower extends GuiICBM
         {
             int radius = Math.min(Math.max(Integer.parseInt(this.textFieldBanJing.getText()), 10), TileEMPTower.MAX_RADIUS);
             this.tileEntity.empRadius = radius;
-            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 1, this.tileEntity.empRadius));
+            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 1, this.tileEntity.empRadius));
         }
         catch (NumberFormatException e)
         {

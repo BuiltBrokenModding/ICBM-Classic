@@ -169,7 +169,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             Pos center = toPos().add(0.5);
             if (Engine.runningAsDev)
             {
-                sendPacket(new PacketSpawnParticleStream(world().provider.dimensionId, center, aimPoint));
+                sendPacket(new PacketSpawnParticleStream(oldWorld().provider.dimensionId, center, aimPoint));
             }
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
 
@@ -275,7 +275,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             for (int z = -1; z < 2; z++)
             {
-                if (!world().getBlock(xi() + x, yi() + 1, zi() + z).isAir(world(), xi() + x, yi() + 1, zi() + z))
+                if (!oldWorld().getBlock(xi() + x, yi() + 1, zi() + z).isAir(oldWorld(), xi() + x, yi() + 1, zi() + z))
                 {
                     return false;
                 }
@@ -300,12 +300,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             this.extractEnergy();
 
-            EntityMissile entityMissile = new EntityMissile(world(), xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() -180, -(float) currentAim.pitch(), 2);
+            EntityMissile entityMissile = new EntityMissile(oldWorld(), xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() -180, -(float) currentAim.pitch(), 2);
             entityMissile.missileType = EntityMissile.MissileType.CruiseMissile;
             entityMissile.explosiveID = Explosives.get(this.getStackInSlot(0).getItemDamage());
             entityMissile.acceleration = 1;
             entityMissile.launch(null);
-            world().spawnEntityInWorld(entityMissile);
+            oldWorld().spawnEntityInWorld(entityMissile);
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens
             this.decrStackSize(0, 1);
         }
@@ -351,7 +351,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
                 IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
                 if (location != null)
                 {
-                    if (location.world() == world())
+                    if (location.oldWorld() == oldWorld())
                     {
                         setTarget(new Pos(location.x(), location.y(), location.z()));
                         player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));

@@ -20,7 +20,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
     @Override
     public void run()
     {
-        if (!this.position.world().isRemote)
+        if (!this.position.oldWorld().isRemote)
         {
             for (int x = 0; x < this.radius; ++x)
             {
@@ -37,7 +37,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                             xStep /= diagonalDistance;
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
-                            float power = this.radius * (0.7F + this.position.world().rand.nextFloat() * 0.6F);
+                            float power = this.radius * (0.7F + this.position.oldWorld().rand.nextFloat() * 0.6F);
                             double var15 = position.x();
                             double var17 = position.y();
                             double var19 = position.z();
@@ -46,7 +46,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                             {
                                 Pos targetPosition = new Pos(var15, var17, var19);
                                 double distanceFromCenter = position.distance(targetPosition);
-                                Block blockID = this.position.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                                Block blockID = this.position.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                                 if (blockID != null)
                                 {
@@ -58,7 +58,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                                     }
                                     else
                                     {
-                                        resistance = blockID.getExplosionResistance(this.source, this.position.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi());
+                                        resistance = blockID.getExplosionResistance(this.source, this.position.oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi());
                                     }
                                     // TODO rather than remove power divert a percentage to the
                                     // sides, and then calculate how much is absorbed by the block

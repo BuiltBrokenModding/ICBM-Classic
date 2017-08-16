@@ -144,7 +144,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
         {
             this._blockToMimic = block;
             this.metaToMimic = Math.max(Math.min(metadata, 15), 0);
-            world().setBlockMetadataWithNotify(xi(), yi(), zi(), metaToMimic, 2);
+            oldWorld().setBlockMetadataWithNotify(xi(), yi(), zi(), metaToMimic, 2);
             if (isServer())
             {
                 markDirty();
@@ -252,7 +252,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
         BlockWrapper wrapper = new BlockWrapper(block);
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
         {
-            Block block2 = world().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
+            Block block2 = oldWorld().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
             wrapper.setRenderSide(dir, block2 != getBlockType() && !canRenderSide(dir));
         }
         boolean rendered = renderer.renderStandardBlock(wrapper, xi(), yi(), zi());
@@ -277,7 +277,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
             wrapper = new BlockWrapper(useGlassRender ? Blocks.glass : Blocks.vine);
             for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
             {
-                Block block2 = world().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
+                Block block2 = oldWorld().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
                 wrapper.setRenderSide(dir, block2 != getBlockType());
             }
             if (renderer.renderStandardBlock(wrapper, xi(), yi(), zi()))
@@ -422,7 +422,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
         {
             if (getMimicBlock() != null)
             {
-                return getMimicBlock().colorMultiplier(world(), xi(), yi(), xi());
+                return getMimicBlock().colorMultiplier(oldWorld(), xi(), yi(), xi());
             }
         }
         catch (Exception e)

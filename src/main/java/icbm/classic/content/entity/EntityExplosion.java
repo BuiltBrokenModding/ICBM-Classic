@@ -37,7 +37,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
 
     public EntityExplosion(Blast blast)
     {
-        this(blast.world());
+        this(blast.oldWorld());
         this.setBlast(blast);
     }
 

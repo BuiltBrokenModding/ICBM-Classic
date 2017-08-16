@@ -28,14 +28,14 @@ public class BlastAntimatter extends Blast
     public void doPreExplode()
     {
         super.doPreExplode();
-        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), References.PREFIX + "antimatter", 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F));
+        this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), References.PREFIX + "antimatter", 7F, (float) (this.oldWorld().rand.nextFloat() * 0.1 + 0.9F));
         this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
     }
 
     @Override
     public void doExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             for (int x = (int) -this.getRadius(); x < this.getRadius(); x++)
             {
@@ -49,16 +49,16 @@ public class BlastAntimatter extends Blast
 
                         if (dist < this.getRadius())
                         {
-                            Block block = targetPosition.getBlock(world());
+                            Block block = targetPosition.getBlock(oldWorld());
 
-                            if (block != null && !block.isAir(this.world(), x, y, x))
+                            if (block != null && !block.isAir(this.oldWorld(), x, y, x))
                             {
-                                if (!this.destroyBedrock && block.getBlockHardness(this.world(), x, y, x) < 0)
+                                if (!this.destroyBedrock && block.getBlockHardness(this.oldWorld(), x, y, x) < 0)
                                 {
                                     continue;
                                 }
 
-                                if (dist < this.getRadius() - 1 || world().rand.nextFloat() > 0.7)
+                                if (dist < this.getRadius() - 1 || oldWorld().rand.nextFloat() > 0.7)
                                 {
                                     targetPosition.setBlockToAir();
                                 }

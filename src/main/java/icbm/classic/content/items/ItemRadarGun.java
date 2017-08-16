@@ -72,7 +72,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPostIn
             TileEntity tileEntity = world.getTileEntity(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
             if (!(tileEntity instanceof ILauncherController))
             {
-                Engine.instance.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
+                Engine.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
             }
         }
         return stack;

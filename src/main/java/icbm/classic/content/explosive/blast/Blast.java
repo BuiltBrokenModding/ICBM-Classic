@@ -41,7 +41,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
 
     public Blast(Location pos, Entity entity, float size)
     {
-        super(pos.world(), entity, pos.x(), pos.y(), pos.z(), size);
+        super(pos.oldWorld(), entity, pos.x(), pos.y(), pos.z(), size);
         this.position = pos;
     }
 
@@ -58,7 +58,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     /** Called before an explosion happens. */
     public final void preExplode()
     {
-        PreExplosionEvent evt = new PreExplosionEvent(this.world(), this);
+        PreExplosionEvent evt = new PreExplosionEvent(this.oldWorld(), this);
         MinecraftForge.EVENT_BUS.post(evt);
 
         if (!evt.isCanceled())
@@ -72,7 +72,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
 
     public final void onExplode()
     {
-        DoExplosionEvent evt = new DoExplosionEvent(this.world(), this);
+        DoExplosionEvent evt = new DoExplosionEvent(this.oldWorld(), this);
         MinecraftForge.EVENT_BUS.post(evt);
 
         if (!evt.isCanceled())
@@ -89,7 +89,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     /** Called after the explosion is completed. */
     public final void postExplode()
     {
-        PostExplosionEvent evt = new PostExplosionEvent(this.world(), this);
+        PostExplosionEvent evt = new PostExplosionEvent(this.oldWorld(), this);
         MinecraftForge.EVENT_BUS.post(evt);
 
         if (!evt.isCanceled())
@@ -110,7 +110,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
         this.explosionX = posX;
         this.explosionY = posY;
         this.explosionZ = posZ;
-        position = new Location(world(), posX, posY, posZ);
+        position = new Location(oldWorld(), posX, posY, posZ);
     }
 
     /** Make the default functions useless. */
@@ -128,16 +128,16 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     @Override
     public void explode()
     {
-        ExplosionConstructionEvent evt = new ExplosionConstructionEvent(this.world(), this);
+        ExplosionConstructionEvent evt = new ExplosionConstructionEvent(this.oldWorld(), this);
         MinecraftForge.EVENT_BUS.post(evt);
 
         if (!evt.isCanceled())
         {
             if (this.proceduralInterval() > 0)
             {
-                if (!this.world().isRemote)
+                if (!this.oldWorld().isRemote)
                 {
-                    this.world().spawnEntityInWorld(new EntityExplosion(this));
+                    this.oldWorld().spawnEntityInWorld(new EntityExplosion(this));
                 }
             }
             else
@@ -187,7 +187,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
         radius *= 2.0F;
         Location minCoord = position.add(-radius - 1);
         Location maxCoord = position.add(radius + 1);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
+        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
         Vec3 var31 = Vec3.createVectorHelper(position.x(), position.y(), position.z());
 
         for (int i = 0; i < allEntities.size(); ++i)
@@ -221,7 +221,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
                 xDifference /= var35;
                 yDifference /= var35;
                 zDifference /= var35;
-                double var34 = world().getBlockDensity(var31, entity.boundingBox);
+                double var34 = oldWorld().getBlockDensity(var31, entity.boundingBox);
                 double var36 = (1.0D - distance) * var34;
                 int damage = 0;
 
@@ -277,9 +277,9 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     }
 
     @Override
-    public World world()
+    public World oldWorld()
     {
-        return this.position.world();
+        return this.position.oldWorld();
     }
 
     @Override

@@ -242,7 +242,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     public void firstTick()
     {
         super.firstTick();
-        MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+        MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
     }
 
     @Override
@@ -276,7 +276,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public boolean canPlaceBlockAt()
     {
-        return super.canPlaceBlockAt() && world().getBlock(xi(), yi() + 1, zi()).isReplaceable(world(), xi(), yi() + 1, zi());
+        return super.canPlaceBlockAt() && oldWorld().getBlock(xi(), yi() + 1, zi()).isReplaceable(oldWorld(), xi(), yi() + 1, zi());
     }
 
     @Override

@@ -73,7 +73,7 @@ public class GuiFrequency extends GuiICBM
     public void syncHzSettingToServer(EntityPlayer player, float value)
     {
         PacketPlayerItem packetPlayerItem = new PacketPlayerItem(player, player.inventory.currentItem, value);
-        Engine.instance.packetHandler.sendToServer(packetPlayerItem);
+        Engine.packetHandler.sendToServer(packetPlayerItem);
     }
 
     /** Args: x, y, buttonClicked */

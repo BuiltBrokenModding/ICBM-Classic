@@ -32,7 +32,7 @@ public class BlastRot extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.nengLiang, this.exploder);
             this.thread.start();
@@ -42,57 +42,57 @@ public class BlastRot extends Blast
     @Override
     public void doExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             if (this.thread.isComplete)
             {
                 for (Pos targetPosition : this.thread.results)
                 {
                     /** Decay the blocks. */
-                    Block blockID = targetPosition.getBlock(this.world());
+                    Block blockID = targetPosition.getBlock(this.oldWorld());
 
                     if (blockID != blockID)
                     {
                         if (blockID == Blocks.grass || blockID == Blocks.sand)
                         {
-                            if (this.world().rand.nextFloat() > 0.96)
+                            if (this.oldWorld().rand.nextFloat() > 0.96)
                             {
-                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive);
+                                targetPosition.setBlock(this.oldWorld(), ICBMClassic.blockRadioactive);
                             }
                         }
 
                         if (blockID == Blocks.stone)
                         {
-                            if (this.world().rand.nextFloat() > 0.99)
+                            if (this.oldWorld().rand.nextFloat() > 0.99)
                             {
-                                targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive);
+                                targetPosition.setBlock(this.oldWorld(), ICBMClassic.blockRadioactive);
                             }
                         }
 
                         else if (blockID == Blocks.leaves)
                         {
-                            targetPosition.setBlock(this.world(), Blocks.air);
+                            targetPosition.setBlock(this.oldWorld(), Blocks.air);
                         }
                         else if (blockID == Blocks.tallgrass)
                         {
                             if (Math.random() * 100 > 50)
                             {
-                                targetPosition.setBlock(this.world(), Blocks.cobblestone);
+                                targetPosition.setBlock(this.oldWorld(), Blocks.cobblestone);
                             }
                             else
                             {
-                                targetPosition.setBlock(this.world(), Blocks.air);
+                                targetPosition.setBlock(this.oldWorld(), Blocks.air);
                             }
                         }
                         else if (blockID == Blocks.farmland)
                         {
-                            targetPosition.setBlock(this.world(), ICBMClassic.blockRadioactive);
+                            targetPosition.setBlock(this.oldWorld(), ICBMClassic.blockRadioactive);
                         }
                         else if (blockID.getMaterial() == Material.water)
                         {
                             if (FluidRegistry.getFluid("toxicwaste") != null)
                             {
-                                targetPosition.setBlock(this.world(), FluidRegistry.getFluid("toxicwaste").getBlock());
+                                targetPosition.setBlock(this.oldWorld(), FluidRegistry.getFluid("toxicwaste").getBlock());
                             }
                         }
                     }

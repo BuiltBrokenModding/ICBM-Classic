@@ -35,12 +35,12 @@ public abstract class BlastBeam extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
-            this.world().createExplosion(this.exploder, position.x(), position.y(), position.z(), 4F, true);
+            this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), 4F, true);
 
-            this.lightBeam = new EntityLightBeam(this.world(), position, 20 * 20, this.red, this.green, this.blue);
-            this.world().spawnEntityInWorld(this.lightBeam);
+            this.lightBeam = new EntityLightBeam(this.oldWorld(), position, 20 * 20, this.red, this.green, this.blue);
+            this.oldWorld().spawnEntityInWorld(this.lightBeam);
 
             this.thread = new ThreadSky(this.position, (int) this.getRadius(), 50, this.exploder);
             this.thread.start();
@@ -50,14 +50,14 @@ public abstract class BlastBeam extends Blast
     @Override
     public void doExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             if (this.callCount > 100 / this.proceduralInterval() && this.thread.isComplete)
             {
                 this.controller.endExplosion();
             }
 
-            if (this.canFocusBeam(this.world(), position))
+            if (this.canFocusBeam(this.oldWorld(), position))
             {
                 Pos currentPos;
                 int blockID;
@@ -79,23 +79,23 @@ public abstract class BlastBeam extends Blast
                                 continue;
                             }
                             currentPos = new Pos(position.x() + x, position.y() + y, position.z() + z);
-                            Block block = currentPos.getBlock(world());
-                            if (block == null || block.isAir(this.world(), x, y, z) || block.getBlockHardness(this.world(), x, y, x) < 0)
+                            Block block = currentPos.getBlock(oldWorld());
+                            if (block == null || block.isAir(this.oldWorld(), x, y, z) || block.getBlockHardness(this.oldWorld(), x, y, x) < 0)
                             {
                                 continue;
                             }
 
-                            metadata = this.world().getBlockMetadata(currentPos.xi(), currentPos.yi(), currentPos.zi());
+                            metadata = this.oldWorld().getBlockMetadata(currentPos.xi(), currentPos.yi(), currentPos.zi());
 
-                            if (this.world().rand.nextInt(2) > 0)
+                            if (this.oldWorld().rand.nextInt(2) > 0)
                             {
-                                this.world().setBlockToAir(currentPos.xi(), currentPos.yi(), currentPos.zi());
+                                this.oldWorld().setBlockToAir(currentPos.xi(), currentPos.yi(), currentPos.zi());
 
                                 currentPos = currentPos.add(0.5D);
-                                EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), currentPos, block, metadata);
-                                this.world().spawnEntityInWorld(entity);
+                                EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), currentPos, block, metadata);
+                                this.oldWorld().spawnEntityInWorld(entity);
                                 this.feiBlocks.add(entity);
-                                entity.pitchChange = 50 * this.world().rand.nextFloat();
+                                entity.pitchChange = 50 * this.oldWorld().rand.nextFloat();
                             }
                         }
                     }
@@ -116,7 +116,7 @@ public abstract class BlastBeam extends Blast
                 entity.motionY /= 3;
                 entity.motionZ /= 3;
                 entity.addVelocity((newPosition.x() - entityPosition.x()) * 0.5 * this.proceduralInterval(), 0.09 * this.proceduralInterval(), (newPosition.z() - entityPosition.z()) * 0.5 * this.proceduralInterval());
-                entity.yawChange += 3 * this.world().rand.nextFloat();
+                entity.yawChange += 3 * this.oldWorld().rand.nextFloat();
             }
         }
     }
@@ -124,7 +124,7 @@ public abstract class BlastBeam extends Blast
     @Override
     public void doPostExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             if (this.lightBeam != null)
             {

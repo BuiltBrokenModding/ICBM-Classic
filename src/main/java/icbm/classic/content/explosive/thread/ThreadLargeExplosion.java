@@ -71,7 +71,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
                 double theta = Math.PI / steps * theta_n;
 
                 Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
-                float power = this.energy - (this.energy * this.position.world().rand.nextFloat() / 2);
+                float power = this.energy - (this.energy * this.position.oldWorld().rand.nextFloat() / 2);
 
                 Location t = position;
 
@@ -86,9 +86,9 @@ public class ThreadLargeExplosion extends ThreadExplosion
 
                     if (block != null)
                     {
-                        if (block.getBlockHardness(this.position.world(), t.xi(), t.yi(), t.zi()) >= 0)
+                        if (block.getBlockHardness(this.position.oldWorld(), t.xi(), t.yi(), t.zi()) >= 0)
                         {
-                            power -= this.callBack.getResistance(this.position.world(), position, t, source, block);
+                            power -= this.callBack.getResistance(this.position.oldWorld(), position, t, source, block);
 
                             if (power > 0f)
                             {

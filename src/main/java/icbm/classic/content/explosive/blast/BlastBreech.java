@@ -27,7 +27,7 @@ public class BlastBreech extends BlastTNT
     @Override
     protected void calculateDamage()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             ForgeDirection direction = ForgeDirection.DOWN;
             if (this.exploder instanceof IRotatable)
@@ -35,7 +35,7 @@ public class BlastBreech extends BlastTNT
                 direction = ((IRotatable) this.exploder).getDirection();
             }
 
-            this.world().playSoundEffect(position.x(), position.y(), position.z(), "random.explode", 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), "random.explode", 5.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
 
             float energy = 40 * 2 + depth * 3; //TODO do not hard
             for (int i = 0; i < this.depth; i++)
@@ -66,10 +66,10 @@ public class BlastBreech extends BlastTNT
                         //Translate by center
                         p = toPos().add(p);
 
-                        Block block = p.getBlock(world());
+                        Block block = p.getBlock(oldWorld());
                         if (block != Blocks.air)
                         {
-                            float e = block.getExplosionResistance(this.exploder, world(), p.xi(), p.yi(), p.zi(), position.x(), position.y(), position.z());
+                            float e = block.getExplosionResistance(this.exploder, oldWorld(), p.xi(), p.yi(), p.zi(), position.x(), position.y(), position.z());
                             if (e < 40)
                             {
                                 energy -= e;

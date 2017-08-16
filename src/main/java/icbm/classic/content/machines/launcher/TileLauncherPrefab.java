@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.world.radio.RadioRegistry;
+import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
 import icbm.classic.prefab.TileFrequency;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;

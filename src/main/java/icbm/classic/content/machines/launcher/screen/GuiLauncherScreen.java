@@ -94,7 +94,7 @@ public class GuiLauncherScreen extends GuiICBM
             Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
-            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -106,7 +106,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newFrequency = (short) Math.max(Short.parseShort(this.target_freq_field.getText()), 0);
 
             this.tileEntity.setFrequency(newFrequency);
-            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 1, this.tileEntity.getFrequency()));
+            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 1, this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {
@@ -118,7 +118,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.target_height_field.getText()), Short.MAX_VALUE), 3);
 
             this.tileEntity.targetHeight = newGaoDu;
-            Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.targetHeight));
+            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.targetHeight));
         }
         catch (NumberFormatException e)
         {

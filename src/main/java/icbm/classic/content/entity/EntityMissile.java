@@ -3,7 +3,7 @@ package icbm.classic.content.entity;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.data.EnumProjectileTypes;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.world.radar.RadarRegistry;
+import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
 import com.builtbroken.mc.prefab.entity.EntityProjectile;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
