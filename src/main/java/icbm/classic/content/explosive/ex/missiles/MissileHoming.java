@@ -48,8 +48,8 @@ public class MissileHoming extends Missile
     {
         if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileType.MISSILE)
         {
-            WorldServer worldServer = (WorldServer) missileObj.worldObj;
-            Entity trackingEntity = worldServer.getEntityByID(missileObj.trackingVar);
+            World world = missileObj.worldObj;
+            Entity trackingEntity = world.getEntityByID(missileObj.trackingVar);
 
             if (trackingEntity != null)
             {
