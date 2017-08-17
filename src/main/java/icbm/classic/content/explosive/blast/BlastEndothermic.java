@@ -34,7 +34,7 @@ public class BlastEndothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "redmatter", 4.0F, 0.8F);
+        this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "redmatter", 4.0F, 0.8F);
     }
 
     @Override
@@ -42,14 +42,14 @@ public class BlastEndothermic extends BlastBeam
     {
         super.doPostExplode();
 
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
-            if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
+            if (this.canFocusBeam(this.oldWorld(), position) && this.thread.isComplete)
             {
                 /*
                  * Freeze all nearby entities.
                  */
-                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
+                List<EntityLiving> livingEntities = oldWorld().getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
 
                 if (livingEntities != null && !livingEntities.isEmpty())
                 {
@@ -87,40 +87,40 @@ public class BlastEndothermic extends BlastBeam
                         /*
                          * Place down ice blocks.
                          */
-                        Block blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                        Block blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                         if (blockID.blockMaterial == Material.water)
                         {
-                            this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 3);
+                            this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 3);
                         }
                         else if (blockID == Blocks.fire || blockID == Blocks.flowing_lava || blockID == Blocks.lava)
                         {
-                            this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 3);
+                            this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 3);
                         }
                         else
                         {
-                            Block blockBellow = world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                            Block blockBellow = oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
 
-                            if ((blockID.isReplaceable(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(world(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
+                            if ((blockID.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(oldWorld(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
                             {
                                 if (MathUtility.rand.nextBoolean())
                                 {
-                                    this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 3);
+                                    this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 3);
                                 }
                                 else
                                 {
-                                    this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 3);
+                                    this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 3);
                                 }
                             }
                         }
                     }
                 }
 
-                this.world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "redmatter", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+                this.oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "redmatter", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
             }
-            if(!world().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
+            if(!oldWorld().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
             {
-                this.world().setWorldTime(1200);
+                this.oldWorld().setWorldTime(1200);
             }
         }
     }

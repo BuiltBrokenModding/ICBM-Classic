@@ -25,13 +25,13 @@ public class BlastAntiGravitational extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             this.thread = new ThreadSmallExplosion(this.position, (int) this.getRadius(), this.exploder);
             this.thread.start();
         }
 
-        this.world().playSoundEffect(position.x(), position.y(), position.z(), References.PREFIX + "antigravity", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), References.PREFIX + "antigravity", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class BlastAntiGravitational extends Blast
     {
         int r = this.callCount;
 
-        if (!this.world().isRemote && this.thread.isComplete)
+        if (!this.oldWorld().isRemote && this.thread.isComplete)
         {
             if (r == 0)
             {
@@ -56,27 +56,27 @@ public class BlastAntiGravitational extends Blast
                     continue;
                 }
 
-                final Block block = targetPosition.getBlock(world());
+                final Block block = targetPosition.getBlock(oldWorld());
                 if (block != null)
                 {
-                    float hardness = block.getBlockHardness(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    float hardness = block.getBlockHardness(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                     if (hardness >= 0 && hardness < 1000)
                     {
-                        int metadata = world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                        int metadata = oldWorld().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                        if (distance < r - 1 || world().rand.nextInt(3) > 0)
+                        if (distance < r - 1 || oldWorld().rand.nextInt(3) > 0)
                         {
                             //Remove block
-                            this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                             blocksToTake--;
 
                             //Create flying block
-                            EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition.add(0.5D), block, metadata, 0);
-                            entity.yawChange = 50 * world().rand.nextFloat();
-                            entity.pitchChange = 100 * world().rand.nextFloat();
-                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
+                            EntityFlyingBlock entity = new EntityFlyingBlock(oldWorld(), targetPosition.add(0.5D), block, metadata, 0);
+                            entity.yawChange = 50 * oldWorld().rand.nextFloat();
+                            entity.pitchChange = 100 * oldWorld().rand.nextFloat();
+                            entity.motionY += Math.max(0.15 * oldWorld().rand.nextFloat(), 0.1);
                             entity.noClip = true;
-                            world().spawnEntityInWorld(entity);
+                            oldWorld().spawnEntityInWorld(entity);
 
                             //Track flying block
                             flyingBlocks.add(entity);
@@ -88,7 +88,7 @@ public class BlastAntiGravitational extends Blast
 
         int radius = (int) this.getRadius();
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities)
         {

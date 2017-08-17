@@ -31,7 +31,7 @@ public class BlastEnderman extends Blast
     @Override
     public void doExplode()
     {
-        if (this.world().isRemote)
+        if (this.oldWorld().isRemote)
         {
             int r = (int) (this.getRadius() - ((double) this.callCount / (double) this.duration) * this.getRadius());
 
@@ -47,16 +47,16 @@ public class BlastEnderman extends Blast
 
                         if (distance < r && distance > r - 1)
                         {
-                            if (targetPosition.getBlock(world()) != Blocks.air)
+                            if (targetPosition.getBlock(oldWorld()) != Blocks.air)
                                 continue;
 
-                            if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.01))
+                            if (this.oldWorld().rand.nextFloat() < Math.max(0.001 * r, 0.01))
                             {
                                 float velX = (float) ((targetPosition.x() - position.x()) * 0.6);
                                 float velY = (float) ((targetPosition.y() - position.y()) * 0.6);
                                 float velZ = (float) ((targetPosition.z() - position.z()) * 0.6);
 
-                                ICBMClassic.proxy.spawnParticle("portal", world(), targetPosition, velX, velY, velZ, 5f, 1);
+                                ICBMClassic.proxy.spawnParticle("portal", oldWorld(), targetPosition, velX, velY, velZ, 5f, 1);
                             }
                         }
                     }
@@ -66,7 +66,7 @@ public class BlastEnderman extends Blast
 
         int radius = (int) this.getRadius();
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
         boolean explosionCreated = false;
 
         for (Entity entity : allEntities)
@@ -99,7 +99,7 @@ public class BlastEnderman extends Blast
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {
-                        world().spawnParticle("hugeexplosion", entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
+                        oldWorld().spawnParticle("hugeexplosion", entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
                         explosionCreated = true;
                     }
 
@@ -110,10 +110,10 @@ public class BlastEnderman extends Blast
                         if (this.teleportTarget == null)
                         {
                             int checkY;
-                            int checkX = this.world().rand.nextInt(300) - 150 + (int) this.controller.posX;
-                            int checkZ = this.world().rand.nextInt(300) - 150 + (int) this.controller.posZ;
+                            int checkX = this.oldWorld().rand.nextInt(300) - 150 + (int) this.controller.posX;
+                            int checkZ = this.oldWorld().rand.nextInt(300) - 150 + (int) this.controller.posZ;
 
-                            for (checkY = 63; !this.world().isAirBlock(checkX, checkY, checkZ) && !this.world().isAirBlock(checkX, checkY + 1, checkZ); ++checkY)
+                            for (checkY = 63; !this.oldWorld().isAirBlock(checkX, checkY, checkZ) && !this.oldWorld().isAirBlock(checkX, checkY + 1, checkZ); ++checkY)
                             {
                                 ;
                             }
@@ -121,7 +121,7 @@ public class BlastEnderman extends Blast
                             this.teleportTarget = new Pos(checkX, checkY, checkZ);
                         }
 
-                        this.world().playSoundAtEntity(entity, "mob.endermen.portal", 1.0F, 1.0F);
+                        this.oldWorld().playSoundAtEntity(entity, "mob.endermen.portal", 1.0F, 1.0F);
 
                         if (entity instanceof EntityPlayerMP)
                         {
@@ -141,7 +141,7 @@ public class BlastEnderman extends Blast
             }
         }
 
-        this.world().playSound(this.position.x(), this.position.y(), this.position.z(), "portal.portal", 2F, world().rand.nextFloat() * 0.4F + 0.8F, false);
+        this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), "portal.portal", 2F, oldWorld().rand.nextFloat() * 0.4F + 0.8F, false);
 
         if (this.callCount > this.duration)
         {
@@ -154,13 +154,13 @@ public class BlastEnderman extends Blast
     {
         super.doPostExplode();
 
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             for (int i = 0; i < 8; i++)
             {
-                EntityEnderman enderman = new EntityEnderman(world());
+                EntityEnderman enderman = new EntityEnderman(oldWorld());
                 enderman.setPosition(this.position.x(), this.position.y(), this.position.z());
-                this.world().spawnEntityInWorld(enderman);
+                this.oldWorld().spawnEntityInWorld(enderman);
             }
         }
     }

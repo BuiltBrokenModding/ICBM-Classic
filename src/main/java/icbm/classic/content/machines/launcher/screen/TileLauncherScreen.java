@@ -90,7 +90,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             for (byte i = 2; i < 6; i++)
             {
                 final Pos position = toPos().add(ForgeDirection.getOrientation(i));
-                final TileEntity tileEntity = position.getTileEntity(world());
+                final TileEntity tileEntity = position.getTileEntity(oldWorld());
                 if (tileEntity != null)
                 {
                     if (tileEntity instanceof TileLauncherBase)
@@ -148,7 +148,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
                 if (location != null)
                 {
-                    if (location.world() == world())
+                    if (location.oldWorld() == oldWorld())
                     {
                         setTarget(new Pos(location.x(), location.y(), location.z()));
                         player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));

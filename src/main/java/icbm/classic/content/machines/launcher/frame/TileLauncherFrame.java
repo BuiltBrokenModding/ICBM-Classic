@@ -120,7 +120,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     public void firstTick()
     {
         super.firstTick();
-        MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+        MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     @Override
     public boolean canPlaceBlockAt()
     {
-        return super.canPlaceBlockAt() && world().getBlock(xi(), yi() + 1, zi()).isReplaceable(world(), xi(), yi() + 1, zi()) && world().getBlock(xi(), yi() + 2, zi()).isReplaceable(world(), xi(), yi() + 2, zi());
+        return super.canPlaceBlockAt() && oldWorld().getBlock(xi(), yi() + 1, zi()).isReplaceable(oldWorld(), xi(), yi() + 1, zi()) && oldWorld().getBlock(xi(), yi() + 2, zi()).isReplaceable(oldWorld(), xi(), yi() + 2, zi());
     }
 
     @Override

@@ -52,7 +52,7 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
         GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
 
         int radius = 4;
-        List players = world().getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(xCoord - radius, yCoord - radius, zCoord - radius, xCoord + radius, yCoord + radius, zCoord + radius));
+        List players = oldWorld().getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(xCoord - radius, yCoord - radius, zCoord - radius, xCoord + radius, yCoord + radius, zCoord + radius));
 
         // CalclaviaRenderHelper.disableLighting();
         // CalclaviaRenderHelper.enableBlending();

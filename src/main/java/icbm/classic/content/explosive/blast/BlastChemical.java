@@ -67,7 +67,7 @@ public class BlastChemical extends Blast
         super.doPreExplode();
         if (!this.playShortSoundFX)
         {
-            this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "debilitation", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "debilitation", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 
@@ -76,7 +76,7 @@ public class BlastChemical extends Blast
     {
         float radius = this.getRadius();
 
-        if (this.world().isRemote)
+        if (this.oldWorld().isRemote)
         {
             for (int i = 0; i < 200; i++)
             {
@@ -86,13 +86,13 @@ public class BlastChemical extends Blast
                 if (diDian.magnitude() <= radius)
                 {
                     diDian = diDian.add(this.position);
-                    ICBMClassic.proxy.spawnParticle("smoke", this.world(), diDian, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, this.red, this.green, this.blue, 7.0F, 8);
+                    ICBMClassic.proxy.spawnParticle("smoke", this.oldWorld(), diDian, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, this.red, this.green, this.blue, 7.0F, 8);
                 }
             }
         }
 
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
-        List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
+        List<EntityLivingBase> allEntities = oldWorld().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
 
         for (EntityLivingBase entity : allEntities)
         {
@@ -116,12 +116,12 @@ public class BlastChemical extends Blast
 
         if (this.isMutate)
         {
-            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
+            new BlastMutation(oldWorld(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
         }
 
         if (this.playShortSoundFX)
         {
-            world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "gasleak", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+            oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "gasleak", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
         }
 
         if (this.callCount > this.duration)

@@ -2,7 +2,7 @@ package icbm.classic.content.explosive;
 
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.explosive.AbstractExplosiveHandler;
+import com.builtbroken.mc.framework.explosive.handler.ExplosiveHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.prefab.ModelICBM;
@@ -15,7 +15,7 @@ import net.minecraftforge.client.model.IModelCustom;
 import resonant.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive extends AbstractExplosiveHandler implements IExplosive
+public abstract class Explosive extends ExplosiveHandler implements IExplosive
 {
     /** The unique identification name for this explosive. */
     private String nameID;

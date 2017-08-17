@@ -71,7 +71,7 @@ public class ThreadSky extends ThreadExplosion
                 double theta = Math.PI / steps * theta_n;
 
                 Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
-                float power = this.energy - (this.energy * this.position.world().rand.nextFloat() / 2);
+                float power = this.energy - (this.energy * this.position.oldWorld().rand.nextFloat() / 2);
 
                 Location targetPosition = this.position;
 
@@ -82,7 +82,7 @@ public class ThreadSky extends ThreadExplosion
                         break;
                     }
 
-                    Block blockID = this.position.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    Block blockID = this.position.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                     if (blockID != Blocks.air)
                     {
@@ -91,7 +91,7 @@ public class ThreadSky extends ThreadExplosion
                             break;
                         }
 
-                        float resistance = this.callBack.getResistance(this.position.world(), position.toPos(), targetPosition.toPos(), source, blockID);
+                        float resistance = this.callBack.getResistance(this.position.oldWorld(), position.toPos(), targetPosition.toPos(), source, blockID);
 
                         power -= resistance;
 

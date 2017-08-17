@@ -22,23 +22,23 @@ public class BlastMutation extends Blast
     public void doExplode()
     {
 
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(), position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
-            List<EntityLiving> entitiesNearby = world().getEntitiesWithinAABB(EntityLiving.class, bounds);
+            List<EntityLiving> entitiesNearby = oldWorld().getEntitiesWithinAABB(EntityLiving.class, bounds);
 
             for (EntityLiving entity : entitiesNearby)
             {
                 if (entity instanceof EntityPig)
                 {
-                    EntityPigZombie newEntity = new EntityPigZombie(world());
+                    EntityPigZombie newEntity = new EntityPigZombie(oldWorld());
                     newEntity.preventEntitySpawning = true;
                     newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
                     entity.setDead();
                 }
                 else if (entity instanceof EntityVillager)
                 {
-                    EntityZombie newEntity = new EntityZombie(world());
+                    EntityZombie newEntity = new EntityZombie(oldWorld());
                     newEntity.preventEntitySpawning = true;
                     newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
                     entity.setDead();

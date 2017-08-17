@@ -17,7 +17,7 @@ public class BlastFire extends Blast
     @Override
     public void doExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             int radius = (int) this.getRadius();
 
@@ -36,7 +36,7 @@ public class BlastFire extends Blast
                             xStep /= diagonalDistance;
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
-                            float var14 = radius * (0.7F + world().rand.nextFloat() * 0.6F);
+                            float var14 = radius * (0.7F + oldWorld().rand.nextFloat() * 0.6F);
                             double var15 = position.x();
                             double var17 = position.y();
                             double var19 = position.z();
@@ -45,11 +45,11 @@ public class BlastFire extends Blast
                             {
                                 Pos targetPosition = new Pos(var15, var17, var19);
                                 double distanceFromCenter = position.distance(targetPosition);
-                                Block var25 = world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                                Block var25 = oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                                 if (var25 != Blocks.air)
                                 {
-                                    var14 -= (var25.getExplosionResistance(this.exploder, world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) + 0.3F) * var21;
+                                    var14 -= (var25.getExplosionResistance(this.exploder, oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) + 0.3F) * var21;
                                 }
 
                                 if (var14 > 0.0F)
@@ -63,18 +63,18 @@ public class BlastFire extends Blast
                                          * Check to see if the block is an air block and there is a
                                          * block below it to support the fire.
                                          */
-                                        Block block = world().getBlock((int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
+                                        Block block = oldWorld().getBlock((int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
 
-                                        boolean canReplace = block.isReplaceable(world(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z())
-                                                || block.isAir(world(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
+                                        boolean canReplace = block.isReplaceable(oldWorld(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z())
+                                                || block.isAir(oldWorld(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
 
-                                        if (canReplace && Blocks.fire.canPlaceBlockAt(world(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z()))
+                                        if (canReplace && Blocks.fire.canPlaceBlockAt(oldWorld(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z()))
                                         {
-                                            targetPosition.setBlock(world(), Blocks.fire);
+                                            targetPosition.setBlock(oldWorld(), Blocks.fire);
                                         }
                                         else if (block == Blocks.ice)
                                         {
-                                            targetPosition.setBlockToAir(world());
+                                            targetPosition.setBlockToAir(oldWorld());
                                         }
                                     }
                                 }
@@ -89,7 +89,7 @@ public class BlastFire extends Blast
             }
         }
 
-        world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+        oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
     }
 
     @Override

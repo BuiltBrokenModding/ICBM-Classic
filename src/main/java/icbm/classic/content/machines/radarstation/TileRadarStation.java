@@ -13,8 +13,8 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.lib.world.radar.RadarRegistry;
-import com.builtbroken.mc.lib.world.radio.RadioRegistry;
+import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
+import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
@@ -137,7 +137,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             //Check for incoming and launch anti-missiles if
             if (this.ticks % 20 == 0 && this.incomingMissiles.size() > 0)
             {
-                RadioRegistry.popMessage(world(), this, getFrequency(), "fireAntiMissile", this.incomingMissiles.get(0));
+                RadioRegistry.popMessage(oldWorld(), this, getFrequency(), "fireAntiMissile", this.incomingMissiles.get(0));
             }
         }
         else
@@ -167,7 +167,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.incomingMissiles.clear();
         this.detectedEntities.clear();
 
-        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world(), xi() + 1.5, yi() + 0.5, zi() + 0.5, MAX_DETECTION_RANGE, null);
+        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(oldWorld(), xi() + 1.5, yi() + 0.5, zi() + 0.5, MAX_DETECTION_RANGE, null);
 
         for (Entity entity : entities)
         {
@@ -317,7 +317,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                         int id = data.readInt();
                         if (id != -1)
                         {
-                            Entity entity = world().getEntityByID(id);
+                            Entity entity = oldWorld().getEntityByID(id);
                             if (entity != null)
                             {
                                 detectedEntities.add(entity);
@@ -434,7 +434,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     @Override
     public void sendRadioMessage(float hz, String header, Object... data)
     {
-        RadioRegistry.popMessage(world(), this, hz, header, data);
+        RadioRegistry.popMessage(oldWorld(), this, hz, header, data);
     }
 
     @Override

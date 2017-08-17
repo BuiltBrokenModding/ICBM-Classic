@@ -45,7 +45,7 @@ public class BlastTNT extends Blast
     public void doExplode()
     {
         calculateDamage();
-        this.world().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), "random.explode", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), "random.explode", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
 
         switch (this.pushType)
         {
@@ -62,7 +62,7 @@ public class BlastTNT extends Blast
 
     protected void calculateDamage()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             for (int x = 0; x < this.rays; ++x)
             {
@@ -86,7 +86,7 @@ public class BlastTNT extends Blast
                             zStep /= diagonalDistance;
 
 
-                            float radialEnergy = this.getRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
+                            float radialEnergy = this.getRadius() * (0.7F + this.oldWorld().rand.nextFloat() * 0.6F);
 
                             double var15 = this.position.x();
                             double var17 = this.position.y();
@@ -98,12 +98,12 @@ public class BlastTNT extends Blast
                                 int var22 = MathHelper.floor_double(var15);
                                 int var23 = MathHelper.floor_double(var17);
                                 int var24 = MathHelper.floor_double(var19);
-                                Block var25 = this.world().getBlock(var22, var23,  var24);
+                                Block var25 = this.oldWorld().getBlock(var22, var23,  var24);
 
                                 //Get resistance
                                 if (var25 != Blocks.air)
                                 {
-                                    radialEnergy -= (var25.getExplosionResistance(this.exploder, this.world(), var22, var23, var24, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * var21;
+                                    radialEnergy -= (var25.getExplosionResistance(this.exploder, this.oldWorld(), var22, var23, var24, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * var21;
                                 }
 
                                 if (radialEnergy > 0.0F)
@@ -130,7 +130,7 @@ public class BlastTNT extends Blast
 
     protected void doDestroyBlocks()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             int var3;
             Pos blownPosition;
@@ -146,12 +146,12 @@ public class BlastTNT extends Blast
                 var5 = blownPosition.xi();
                 var6 = blownPosition.yi();
                 var7 = blownPosition.zi();
-                block = this.world().getBlock(var5, var6, var7);
-                metadata = this.world().getBlockMetadata(var5, var6, var7);
+                block = this.oldWorld().getBlock(var5, var6, var7);
+                metadata = this.oldWorld().getBlockMetadata(var5, var6, var7);
 
-                double var9 = (var5 + this.world().rand.nextFloat());
-                double var11 = (var6 + this.world().rand.nextFloat());
-                double var13 = (var7 + this.world().rand.nextFloat());
+                double var9 = (var5 + this.oldWorld().rand.nextFloat());
+                double var11 = (var6 + this.oldWorld().rand.nextFloat());
+                double var13 = (var7 + this.oldWorld().rand.nextFloat());
                 double var151 = var9 - this.position.y();
                 double var171 = var11 - this.position.y();
                 double var191 = var13 - this.position.z();
@@ -160,12 +160,12 @@ public class BlastTNT extends Blast
                 var171 /= var211;
                 var191 /= var211;
                 double var23 = 0.5D / (var211 / this.getRadius() + 0.1D);
-                var23 *= (this.world().rand.nextFloat() * this.world().rand.nextFloat() + 0.3F);
+                var23 *= (this.oldWorld().rand.nextFloat() * this.oldWorld().rand.nextFloat() + 0.3F);
                 var151 *= var23;
                 var171 *= var23;
                 var191 *= var23;
-                this.world().spawnParticle("explode", (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
-                this.world().spawnParticle("smoke", var9, var11, var13, var151, var171, var191);
+                this.oldWorld().spawnParticle("explode", (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
+                this.oldWorld().spawnParticle("smoke", var9, var11, var13, var151, var171, var191);
 
                 if (block != Blocks.air)
                 {
@@ -174,10 +174,10 @@ public class BlastTNT extends Blast
 
                         if (block.canDropFromExplosion(null))
                         {
-                            block.dropBlockAsItemWithChance(this.world(), var5, var6, var7, this.world().getBlockMetadata(var5, var6, var7), 1F, 0);
+                            block.dropBlockAsItemWithChance(this.oldWorld(), var5, var6, var7, this.oldWorld().getBlockMetadata(var5, var6, var7), 1F, 0);
                         }
 
-                        block.onBlockExploded(this.world(), var5, var6, var7, this);
+                        block.onBlockExploded(this.oldWorld(), var5, var6, var7, this);
                     }
                     catch (Exception e)
                     {
@@ -197,7 +197,7 @@ public class BlastTNT extends Blast
         maxCoord = maxCoord.add(radius + 1);
 
         Cube region = new Cube(minCoord, maxCoord);
-        List<Entity> entities = region.getEntities(this.world(), Entity.class);
+        List<Entity> entities = region.getEntities(this.oldWorld(), Entity.class);
 
         for (Entity entity : entities)
         {

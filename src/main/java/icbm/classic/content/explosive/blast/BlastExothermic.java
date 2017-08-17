@@ -26,7 +26,7 @@ public class BlastExothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "beamcharging", 4.0F, 0.8F);
+        this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "beamcharging", 4.0F, 0.8F);
     }
 
     @Override
@@ -34,11 +34,11 @@ public class BlastExothermic extends BlastBeam
     {
         super.doPostExplode();
 
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
-            this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "powerdown", 4.0F, 0.8F);
+            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "powerdown", 4.0F, 0.8F);
 
-            if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
+            if (this.canFocusBeam(this.oldWorld(), position) && this.thread.isComplete)
             {
                 for (Pos targetPosition : this.thread.results)
                 {
@@ -60,47 +60,47 @@ public class BlastExothermic extends BlastBeam
                          * Check to see if the block is an air block and there is a block below it
                          * to support the fire.
                          */
-                        Block blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                        Block blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                         if (blockID.getMaterial() == Material.water || blockID == Blocks.ice)
                         {
-                            this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                         }
 
-                        if (blockID.blockMaterial == Material.rock && this.world().rand.nextFloat() > 0.8)
+                        if (blockID.blockMaterial == Material.rock && this.oldWorld().rand.nextFloat() > 0.8)
                         {
-                            this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
+                            this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
                         }
 
-                        Block blockBellow = world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                        Block blockBellow = oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
 
-                        if ((blockID.isReplaceable(world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(world(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
+                        if ((blockID.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(oldWorld(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
                         {
-                            if (this.world().rand.nextFloat() > 0.99)
+                            if (this.oldWorld().rand.nextFloat() > 0.99)
                             {
-                                this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
+                                this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
                             }
                             else
                             {
-                                this.world().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.fire, 0, 2);
+                                this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.fire, 0, 2);
 
-                                blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                                blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
 
-                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (blockID == Blocks.stone || blockID == Blocks.grass || blockID == Blocks.dirt) && this.world().rand.nextFloat() > 0.75)
+                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (blockID == Blocks.stone || blockID == Blocks.grass || blockID == Blocks.dirt) && this.oldWorld().rand.nextFloat() > 0.75)
                                 {
-                                    this.world().setBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), Blocks.netherrack, 0, 2);
+                                    this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), Blocks.netherrack, 0, 2);
                                 }
                             }
                         }
                     }
                 }
 
-                this.world().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F);
+                this.oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
             }
 
-            if(!world().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
+            if(!oldWorld().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
             {
-                this.world().setWorldTime(18000);
+                this.oldWorld().setWorldTime(18000);
             }
         }
     }

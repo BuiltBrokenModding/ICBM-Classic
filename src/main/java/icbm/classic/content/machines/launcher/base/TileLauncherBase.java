@@ -12,7 +12,7 @@ import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.prefab.energy.EnergyBuffer;
+import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
@@ -202,10 +202,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 }
 
                 //Randomize distance
-                inaccuracy = world().rand.nextInt(inaccuracy);
+                inaccuracy = oldWorld().rand.nextInt(inaccuracy);
 
                 //Randomize radius drop
-                angle.setYaw(world().rand.nextFloat() * 360);
+                angle.setYaw(oldWorld().rand.nextFloat() * 360);
 
                 //Update target
                 target = target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
@@ -216,12 +216,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
                 if (isServer())
                 {
-                    EntityMissile missile = new EntityMissile(world());
+                    EntityMissile missile = new EntityMissile(oldWorld());
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
                     missile.launcherPos = new Pos((TileEntity) this);
                     missile.setPosition(xi(), yi() + 3, zi());
                     missile.launch(target, gaoDu);
-                    world().spawnEntityInWorld(missile);
+                    oldWorld().spawnEntityInWorld(missile);
                     this.decrStackSize(0, 1);
                 }
                 return true;
@@ -403,7 +403,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public void firstTick()
     {
         super.firstTick();
-        MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+        MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
     }
 
     @Override
@@ -437,7 +437,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     @Override
     public boolean canPlaceBlockAt()
     {
-        return super.canPlaceBlockAt() && world().getBlock(xi(), yi() + 1, zi()).isReplaceable(world(), xi(), yi() + 1, zi()) && world().getBlock(xi(), yi() + 2, zi()).isReplaceable(world(), xi(), yi() + 2, zi());
+        return super.canPlaceBlockAt() && oldWorld().getBlock(xi(), yi() + 1, zi()).isReplaceable(oldWorld(), xi(), yi() + 1, zi()) && oldWorld().getBlock(xi(), yi() + 2, zi()).isReplaceable(oldWorld(), xi(), yi() + 2, zi());
     }
 
     @Override
@@ -494,7 +494,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
             super.setFacing(facingDirection);
             if (isServer())
             {
-                MultiBlockHelper.buildMultiBlock(world(), this, true, true);
+                MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
                 markDirty();
             }
         }

@@ -46,7 +46,7 @@ public class BlastSonic extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             /*
             if (this.hasShockWave)
@@ -99,11 +99,11 @@ public class BlastSonic extends Blast
 
         if (this.hasShockWave)
         {
-            this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "hypersonic", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "hypersonic", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
         }
         else
         {
-            this.world().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "sonicwave", 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "sonicwave", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 
@@ -112,7 +112,7 @@ public class BlastSonic extends Blast
     {
         int r = this.callCount;
 
-        if (!this.world().isRemote)
+        if (!this.oldWorld().isRemote)
         {
             if (this.thread != null && this.thread.isComplete)
             {
@@ -128,7 +128,7 @@ public class BlastSonic extends Blast
                         continue;
                     }
 
-                    Block blockID = this.world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    Block blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
                     if (blockID == Blocks.air || blockID.blockHardness < 0)
                     {
@@ -140,27 +140,27 @@ public class BlastSonic extends Blast
                     //    continue;
                     //}
 
-                    int metadata = this.world().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    int metadata = this.oldWorld().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                    if (distance < r - 1 || this.world().rand.nextInt(3) > 0)
+                    if (distance < r - 1 || this.oldWorld().rand.nextInt(3) > 0)
                     {
                         if (blockID == ICBMClassic.blockExplosive)
                         {
-                            BlockExplosive.triggerExplosive(this.world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileEntityExplosive) this.world().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).explosive, 1);
+                            BlockExplosive.triggerExplosive(this.oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileEntityExplosive) this.oldWorld().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).explosive, 1);
                         }
                         else
                         {
-                            this.world().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                         }
 
                         targetPosition = targetPosition.add(0.5D);
 
-                        if (this.world().rand.nextFloat() < 0.3 * (this.getRadius() - r))
+                        if (this.oldWorld().rand.nextFloat() < 0.3 * (this.getRadius() - r))
                         {
-                            EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockID, metadata);
-                            this.world().spawnEntityInWorld(entity);
-                            entity.yawChange = 50 * this.world().rand.nextFloat();
-                            entity.pitchChange = 100 * this.world().rand.nextFloat();
+                            EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), targetPosition, blockID, metadata);
+                            this.oldWorld().spawnEntityInWorld(entity);
+                            entity.yawChange = 50 * this.oldWorld().rand.nextFloat();
+                            entity.pitchChange = 100 * this.oldWorld().rand.nextFloat();
                         }
 
                         it.remove();
@@ -171,7 +171,7 @@ public class BlastSonic extends Blast
 
         int radius = 2 * this.callCount;
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
-        List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> allEntities = this.oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
         synchronized (allEntities)
         {
@@ -195,8 +195,8 @@ public class BlastSonic extends Blast
                         r = (int) -this.getRadius();
                     }
 
-                    entity.motionX += (r - xDifference) * 0.02 * this.world().rand.nextFloat();
-                    entity.motionY += 3 * this.world().rand.nextFloat();
+                    entity.motionX += (r - xDifference) * 0.02 * this.oldWorld().rand.nextFloat();
+                    entity.motionY += 3 * this.oldWorld().rand.nextFloat();
 
                     r = (int) this.getRadius();
                     if (zDifference < 0)
@@ -204,7 +204,7 @@ public class BlastSonic extends Blast
                         r = (int) -this.getRadius();
                     }
 
-                    entity.motionZ += (r - zDifference) * 0.02 * this.world().rand.nextFloat();
+                    entity.motionZ += (r - zDifference) * 0.02 * this.oldWorld().rand.nextFloat();
                 }
             }
         }
