@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import com.builtbroken.mc.core.Engine;
 import cpw.mods.fml.common.ModMetadata;
 import net.minecraftforge.common.config.Configuration;
 
@@ -26,6 +27,8 @@ public class Settings
 
     public static boolean POLLUTIVE_NUCLEAR = true;
 
+    public static boolean FORCE_ENABLE_NIGHTMARE = Engine.runningAsDev;
+
 
     public static void initiate(Configuration configuration)
     {
@@ -37,6 +40,8 @@ public class Settings
         MAX_ROCKET_LAUCNHER_TIER = configuration.get(Configuration.CATEGORY_GENERAL, "Limits the max missile tier for rocket launcher item", MAX_ROCKET_LAUCNHER_TIER).getInt(MAX_ROCKET_LAUCNHER_TIER);
 
         POLLUTIVE_NUCLEAR = configuration.get(Configuration.CATEGORY_GENERAL, "Pollutive Nuclear", POLLUTIVE_NUCLEAR).getBoolean(POLLUTIVE_NUCLEAR);
+
+        FORCE_ENABLE_NIGHTMARE = configuration.get(Configuration.CATEGORY_GENERAL, "Force_Enable_Nightmare", false).getBoolean(false);
     }
 
     public static void setModMetadata(String id, String name, ModMetadata metadata)

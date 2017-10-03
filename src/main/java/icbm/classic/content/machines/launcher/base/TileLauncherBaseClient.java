@@ -101,6 +101,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
         }
         GL11.glPopMatrix();
 
+        //TODO move to missile render class
         if (cachedMissileStack != null)
         {
             GL11.glPushMatrix();
@@ -111,11 +112,11 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
 
             Explosives e = Explosives.get(cachedMissileStack.getItemDamage());
             Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
-            if (missile.missileModelPath.contains("missiles"))
+            if (missile.missileModelPath != null && missile.missileModelPath.contains("missiles"))
             {
                 GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
             }
-            else
+            else if(e != Explosives.NIGHTMARE)
             {
                 GL11.glScalef(0.05f, 0.05f, 0.05f);
             }

@@ -65,18 +65,22 @@ public abstract class Explosion extends Explosive
     @Override
     public IModelCustom getMissileModel()
     {
-        try
+        if(missileModelPath != null)
         {
-            if (this.model == null)
+            try
             {
-                model = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + this.missileModelPath));
+                if (this.model == null)
+                {
+                    model = EngineModelLoader.loadModel(new ResourceLocation(ICBMClassic.DOMAIN, "models/" + this.missileModelPath));
+                }
             }
-        }
-        catch (Exception e)
-        {
-            ICBMClassic.INSTANCE.logger().error("Unexpected error while loading missile Model[ " + this.missileModelPath + "]", e);
-        }
+            catch (Exception e)
+            {
+                ICBMClassic.INSTANCE.logger().error("Unexpected error while loading missile Model[ " + this.missileModelPath + "]", e);
+            }
 
-        return model;
+            return model;
+        }
+        return null;
     }
 }

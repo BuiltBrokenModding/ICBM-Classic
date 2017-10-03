@@ -1,5 +1,6 @@
 package icbm.classic.client.render;
 
+import com.builtbroken.mc.lib.render.RenderUtility;
 import com.builtbroken.mc.lib.render.model.loader.EngineModelLoader;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -8,10 +9,14 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.ExNightmare;
 import icbm.classic.content.explosive.ex.Explosion;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.IModelCustom;
@@ -51,11 +56,11 @@ public class RenderMissile extends Render implements IItemRenderer
         GL11.glRotatef(entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * f1 - 90.0F, 0.0F, 1.0F, 0.0F);
         float pitch = entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * f1 - 90;
         GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
-        if (missile.missileModelPath.contains("missiles"))
+        if (missile.missileModelPath != null && missile.missileModelPath.contains("missiles"))
         {
             GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
         }
-        else
+        else if (!(missile instanceof ExNightmare))
         {
             GL11.glScalef(0.07f, 0.07f, 0.07f);
         }
@@ -66,7 +71,26 @@ public class RenderMissile extends Render implements IItemRenderer
 
     public static void renderMissile(Explosion missile)
     {
-        if (missile.getMissileModel() != null)
+        if (missile instanceof ExNightmare)
+        {
+            //Render body
+            GL11.glPushMatrix();
+            GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(((Explosion) Explosives.ANVIL.handler).getMissileResource());
+            TIER1_BASE.renderAll();
+            GL11.glPopMatrix();
+
+            //Render head
+            GL11.glPushMatrix();
+            GL11.glScalef(0.5f, 0.5f, 0.5f);
+            GL11.glTranslated(-0.5, 3.8, -0.5);
+
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+            IIcon side = Blocks.lit_pumpkin.getIcon(1, 2);
+            RenderUtility.renderCubeWithOverrides(0, 0, 0, 1, 1, 1, Blocks.lit_pumpkin, new IIcon[]{side, Blocks.lit_pumpkin.getIcon(2, 2), side, side, side, side}, 0);
+            GL11.glPopMatrix();
+        }
+        else if (missile.getMissileModel() != null)
         {
             if (missile.missileModelPath.contains("missiles"))
             {
@@ -128,16 +152,18 @@ public class RenderMissile extends Render implements IItemRenderer
         if (ex.handler instanceof Explosion)
         {
             Explosion missile = (Explosion) ex.handler;
+            final boolean doMissileSizeFix = missile.missileModelPath != null && missile.missileModelPath.contains("missiles");
+
             float yaw = 0;
             float pitch = -90;
-            float scale = missile.missileModelPath.contains("missiles") ? 0.00625f : 0.7f;
+            float scale = doMissileSizeFix ? 0.00625f : 0.7f;
 
 
             switch (type)
             {
                 case INVENTORY:
 
-                    scale = missile.missileModelPath.contains("missiles") ? 0.0035f : 0.5f;
+                    scale = doMissileSizeFix ? 0.0035f : 0.5f;
 
                     if (missile.getTier() == 2 || !missile.hasBlockForm())
                     {

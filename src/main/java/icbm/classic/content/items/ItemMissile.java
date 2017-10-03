@@ -1,8 +1,11 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.lib.Holiday;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.ICBMClassic;
+import icbm.classic.Settings;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ex.ExNightmare;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
@@ -43,11 +46,11 @@ public class ItemMissile extends ItemICBMBase
     @Override
     public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
-        for (Explosives zhaPin : Explosives.values())
+        for (Explosives explosive : Explosives.values())
         {
-            if (zhaPin.handler.hasMissileForm())
+            if (explosive.handler.hasMissileForm() && (!(explosive.handler instanceof ExNightmare) || Settings.FORCE_ENABLE_NIGHTMARE || Holiday.isHalloween()))
             {
-                par3List.add(new ItemStack(par1, 1, zhaPin.ordinal()));
+                par3List.add(new ItemStack(par1, 1, explosive.ordinal()));
             }
         }
     }
