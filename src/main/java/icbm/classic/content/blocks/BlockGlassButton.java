@@ -16,6 +16,7 @@ public class BlockGlassButton extends BlockButton
         this.setTickRandomly(true);
         this.setBlockName(ICBMClassic.PREFIX + "glassButton");
         this.setStepSound(soundTypeGlass);
+        this.setHardness(0.5F);
     }
 
     @SideOnly(Side.CLIENT)
