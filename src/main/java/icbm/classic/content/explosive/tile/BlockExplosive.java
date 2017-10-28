@@ -5,7 +5,6 @@ import com.builtbroken.mc.core.registry.implement.IPostInit;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.WrenchUtility;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
-import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -180,7 +179,7 @@ public class BlockExplosive extends BlockContainer implements IPostInit
 
             if (entityLiving != null)
             {
-                FMLLog.fine(entityLiving.getCommandSenderName() + " placed " + ex.handler.getExplosiveName() + " in: " + x + ", " + y + ", " + z + ".");
+                ICBMClassic.INSTANCE.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getCommandSenderName() + " placed " + ex.handler.getExplosiveName() + " in: " + x + ", " + y + ", " + z + ".");
             }
         }
     }
