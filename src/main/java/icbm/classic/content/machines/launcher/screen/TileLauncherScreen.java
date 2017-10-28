@@ -56,8 +56,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     // screen is connected with
     public TileLauncherBase laucherBase = null;
 
-    /** Detonation height of the missile. */
-    public short targetHeight = 3;
+    /** Height to wait before missile curves */
+    public short lockHeight = 3;
 
     public TileLauncherScreen()
     {
@@ -174,7 +174,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.tier, getEnergy(), this.getFrequency(), this.targetHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile(this, 0, this.tier, getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -207,7 +207,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                     this.tier = data.readInt();
                     setEnergy(data.readInt());
                     this.setFrequency(data.readInt());
-                    this.targetHeight = data.readShort();
+                    this.lockHeight = data.readShort();
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
@@ -223,7 +223,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 }
                 case 3:
                 {
-                    this.targetHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
+                    this.lockHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
                     return true;
                 }
                 case 4:
@@ -256,7 +256,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public void launch()
     {
-        if (this.canLaunch() && this.laucherBase.launchMissile(this.getTarget(), this.targetHeight))
+        if (this.canLaunch() && this.laucherBase.launchMissile(this.getTarget(), this.lockHeight))
         {
             this.extractEnergy();
             updateClient = true;
@@ -314,7 +314,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         super.readFromNBT(par1NBTTagCompound);
 
         this.tier = par1NBTTagCompound.getInteger("tier");
-        this.targetHeight = par1NBTTagCompound.getShort("targetHeight");
+        this.lockHeight = par1NBTTagCompound.getShort("targetHeight");
     }
 
     /** Writes a tile entity to NBT. */
@@ -324,7 +324,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         super.writeToNBT(par1NBTTagCompound);
 
         par1NBTTagCompound.setInteger("tier", this.tier);
-        par1NBTTagCompound.setShort("targetHeight", this.targetHeight);
+        par1NBTTagCompound.setShort("targetHeight", this.lockHeight);
     }
 
     @Override

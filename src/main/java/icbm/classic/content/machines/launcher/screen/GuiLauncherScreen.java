@@ -24,7 +24,7 @@ public class GuiLauncherScreen extends GuiICBM
     private GuiTextField target_yCoord_field;
     private GuiTextField target_zCoord_field;
     private GuiTextField target_freq_field;
-    private GuiTextField target_height_field;
+    private GuiTextField lock_height_field;
 
     private int containerWidth;
     private int containerHeight;
@@ -44,17 +44,17 @@ public class GuiLauncherScreen extends GuiICBM
         this.target_xCoord_field = new GuiTextField(fontRendererObj, 110, 37, 45, 12);
         this.target_zCoord_field = new GuiTextField(fontRendererObj, 110, 52, 45, 12);
         this.target_yCoord_field = new GuiTextField(fontRendererObj, 110, 67, 45, 12);
-        this.target_height_field = new GuiTextField(fontRendererObj, 110, 82, 45, 12);
+        this.lock_height_field = new GuiTextField(fontRendererObj, 110, 82, 45, 12);
         this.target_freq_field = new GuiTextField(fontRendererObj, 110, 97, 45, 12);
 
         this.target_freq_field.setMaxStringLength(4);
         this.target_xCoord_field.setMaxStringLength(6);
         this.target_zCoord_field.setMaxStringLength(6);
         this.target_yCoord_field.setMaxStringLength(3);
-        this.target_height_field.setMaxStringLength(3);
+        this.lock_height_field.setMaxStringLength(3);
 
         this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
-        this.target_height_field.setText(this.tileEntity.targetHeight + "");
+        this.lock_height_field.setText(this.tileEntity.lockHeight + "");
 
         if (this.tileEntity.getTarget() == null)
         {
@@ -81,7 +81,7 @@ public class GuiLauncherScreen extends GuiICBM
         if (tileEntity.getTier() >= 1)
         {
             this.target_yCoord_field.textboxKeyTyped(par1, par2);
-            this.target_height_field.textboxKeyTyped(par1, par2);
+            this.lock_height_field.textboxKeyTyped(par1, par2);
 
             if (tileEntity.getTier() > 1)
             {
@@ -115,10 +115,10 @@ public class GuiLauncherScreen extends GuiICBM
 
         try
         {
-            short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.target_height_field.getText()), Short.MAX_VALUE), 3);
+            short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.lock_height_field.getText()), Short.MAX_VALUE), 3);
 
-            this.tileEntity.targetHeight = newGaoDu;
-            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.targetHeight));
+            this.tileEntity.lockHeight = newGaoDu;
+            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.lockHeight));
         }
         catch (NumberFormatException e)
         {
@@ -137,7 +137,7 @@ public class GuiLauncherScreen extends GuiICBM
         if (tileEntity.getTier() >= 1)
         {
             this.target_yCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
-            this.target_height_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
+            this.lock_height_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
 
             if (tileEntity.getTier() > 1)
             {
@@ -160,7 +160,7 @@ public class GuiLauncherScreen extends GuiICBM
             this.target_yCoord_field.drawTextBox();
             this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.detHeight"), 12, 68, 4210752);
 
-            this.target_height_field.drawTextBox();
+            this.lock_height_field.drawTextBox();
             this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.lockHeight"), 12, 83, 4210752);
 
             if (tileEntity.getTier() > 1)
@@ -218,8 +218,8 @@ public class GuiLauncherScreen extends GuiICBM
         if (!this.target_yCoord_field.isFocused())
             this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
 
-        if (!this.target_height_field.isFocused())
-            this.target_height_field.setText(this.tileEntity.targetHeight + "");
+        if (!this.lock_height_field.isFocused())
+            this.lock_height_field.setText(this.tileEntity.lockHeight + "");
 
         if (!this.target_freq_field.isFocused())
             this.target_freq_field.setText(this.tileEntity.getFrequency() + "");

@@ -6,13 +6,13 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
@@ -182,9 +182,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     /**
      * Launches the missile
      *
-     * @param target - The target in which the missile will land in
+     * @param target     - The target in which the missile will land in
+     * @param lockHeight - height to wait before curving the missile
      */
-    public boolean launchMissile(Pos target, int gaoDu)
+    public boolean launchMissile(Pos target, int lockHeight)
     {
         final ItemStack stack = getMissileStack();
         if (stack != null && stack.getItem() == ICBMClassic.itemMissile)
@@ -220,7 +221,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
                     missile.launcherPos = new Pos((TileEntity) this);
                     missile.setPosition(xi(), yi() + 3, zi());
-                    missile.launch(target, gaoDu);
+                    missile.launch(target, lockHeight);
                     oldWorld().spawnEntityInWorld(missile);
                     this.decrStackSize(0, 1);
                 }

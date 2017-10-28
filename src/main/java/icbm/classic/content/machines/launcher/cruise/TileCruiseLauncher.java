@@ -75,12 +75,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return new TileModuleInventory(this, 2);
     }
 
-    @Override
-    public int getEnergyBufferSize()
-    {
-        return 100000000;
-    }
-
     /**
      * Gets the display status of the missile launcher
      *
