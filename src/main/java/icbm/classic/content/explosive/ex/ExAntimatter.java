@@ -20,7 +20,7 @@ public class ExAntimatter extends Explosion
     public ExAntimatter()
     {
         super("antimatter", 4);
-        this.setYinXin(300);
+        this.setFuseTime(300);
         this.missileModelPath = "missiles/tier4/missile_head_antimatter.obj";
     }
 

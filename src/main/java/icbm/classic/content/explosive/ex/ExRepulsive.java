@@ -16,7 +16,7 @@ public class ExRepulsive extends Explosion
     public ExRepulsive(String name, int tier)
     {
         super(name, tier);
-        this.setYinXin(120);
+        this.setFuseTime(120);
         if (name.equalsIgnoreCase("attractive"))
         {
             this.missileModelPath = "missiles/tier1/missile_head_attraction.obj";

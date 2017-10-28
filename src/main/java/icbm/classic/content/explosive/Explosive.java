@@ -98,7 +98,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
         this.tier = tier;
     }
 
-    public Explosive setYinXin(int fuse)
+    public Explosive setFuseTime(int fuse)
     {
         this.fuseTime = fuse;
         return this;

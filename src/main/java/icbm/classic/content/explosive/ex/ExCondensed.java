@@ -18,7 +18,7 @@ public class ExCondensed extends Explosion
     public ExCondensed(String mingZi, int tier)
     {
         super(mingZi, tier);
-        this.setYinXin(1);
+        this.setFuseTime(1);
         this.missileModelPath = "missiles/tier1/missile_head_concussion.obj";
     }
 

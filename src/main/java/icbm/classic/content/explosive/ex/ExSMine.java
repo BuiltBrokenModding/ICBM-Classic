@@ -23,7 +23,7 @@ public class ExSMine extends Explosive
     public ExSMine(String mingZi, int tier)
     {
         super(mingZi, tier);
-        this.setYinXin(20);
+        this.setFuseTime(20);
         this.hasGrenade = false;
         this.hasMinecart = false;
         this.hasMissile = false;

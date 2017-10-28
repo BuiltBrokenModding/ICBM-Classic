@@ -17,7 +17,7 @@ public class ExBreaching extends Explosion
     public ExBreaching()
     {
         super("breaching", 2);
-        this.setYinXin(40);
+        this.setFuseTime(40);
         this.missileModelPath = "missiles/tier2/missile_head_breaching.obj";
     }
 
