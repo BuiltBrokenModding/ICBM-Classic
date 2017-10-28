@@ -12,7 +12,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import icbm.classic.client.fx.FXAntimatterPartical;
+import icbm.classic.client.fx.FXAntimatterParticle;
 import icbm.classic.client.render.RenderMissile;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.client.render.item.RenderRocketLauncher;
@@ -112,7 +112,7 @@ public class ClientProxy extends CommonProxy
         }
         else if (name.equals("antimatter"))
         {
-            fx = new FXAntimatterPartical(world, new Pos(position), red, green, blue, scale, distance);
+            fx = new FXAntimatterParticle(world, new Pos(position), red, green, blue, scale, distance);
         }
         else if (name.equals("digging"))
         {

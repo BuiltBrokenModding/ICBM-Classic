@@ -14,18 +14,18 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class FXAntimatterPartical extends EntityFX
+public class FXAntimatterParticle extends EntityFX
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.TEXTURE_DIRECTORY + "antimatter.png");
 
     float antimatterParticleScale;
 
-    public FXAntimatterPartical(World par1World, Pos position, double par8, double par10, double par12, double distance)
+    public FXAntimatterParticle(World par1World, Pos position, double par8, double par10, double par12, double distance)
     {
         this(par1World, position, par8, par10, par12, 1.0F, distance);
     }
 
-    public FXAntimatterPartical(World par1World, Pos position, double par8, double par10, double par12, float par14, double distance)
+    public FXAntimatterParticle(World par1World, Pos position, double par8, double par10, double par12, float par14, double distance)
     {
         super(par1World, position.x(), position.y(), position.z(), 0.0D, 0.0D, 0.0D);
         this.motionX *= 0.10000000149011612D;
