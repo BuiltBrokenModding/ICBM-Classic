@@ -21,7 +21,7 @@ public class BlastBreech extends BlastTNT
     public BlastBreech(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
-        this.power = 13;
+        this.damageToEntities = 13;
     }
 
     @Override

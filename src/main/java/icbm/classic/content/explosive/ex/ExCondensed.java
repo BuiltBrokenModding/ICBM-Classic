@@ -26,7 +26,7 @@ public class ExCondensed extends Explosion
     public void init()
     {
         RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.CONDENSED.getItemStack(3),
-                "@?@",
+                "@?@", "?@?", "@?@",
                 '@', Blocks.tnt,
                 '?', Items.redstone), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
     }

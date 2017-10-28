@@ -13,28 +13,56 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Custom version of Minecraft TNT style blast for use
+ * in basic explosives.
+ */
 public class BlastTNT extends Blast
 {
-    public static final int rays = 16;
-    public static float power = 10F;
-
+    /** List of blocks to break */
     protected List<Pos> blownBlocks = new ArrayList<Pos>();
 
     /** 0- No push, 1 - Attract, 2 - Repel */
-    private int pushType = 0;
+    private int pushType = 0; //TODO change to enum
+    /** Do destroy items */
     private boolean destroyItem = false;
 
-    public BlastTNT(World world, Entity entity, double x, double y, double z, float size)
+    /** Amount of damage to do to an entity */
+    public float damageToEntities = 10F;
+
+    /** Number of rays (or steps) to use for blast per axis (x, y, z) */
+    public int raysPerAxis = 16;
+
+    /**
+     * @param world  - location
+     * @param entity - cause
+     * @param x      - location
+     * @param y      - location
+     * @param z      - location
+     * @param power  - Modifies power
+     */
+    public BlastTNT(World world, Entity entity, double x, double y, double z, float power)
     {
-        super(world, entity, x, y, z, size);
+        super(world, entity, x, y, z, power);
     }
 
+    /**
+     * Sets push type, defaults to damage entity
+     *
+     * @param type
+     * @return this
+     */
     public BlastTNT setPushType(int type)
     {
         this.pushType = type;
         return this;
     }
 
+    /**
+     * Sets items to be destroyed
+     *
+     * @return this
+     */
     public BlastTNT setDestroyItems()
     {
         this.destroyItem = true;
@@ -45,80 +73,92 @@ public class BlastTNT extends Blast
     public void doExplode()
     {
         calculateDamage();
+
+        //TODO fire event to allow editing list of blocks
+
+        //TODO move effect to Effect handler
         this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), "random.explode", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
 
         switch (this.pushType)
         {
             case 0:
-                this.doDamageEntities(this.getRadius(), power, this.destroyItem);
+                this.doDamageEntities(this.getRadius(), damageToEntities, this.destroyItem);
                 break;
             default:
                 this.pushEntities(12, this.getRadius() * 4, this.pushType);
                 break;
         }
 
-        doDestroyBlocks();
+        doDestroyBlocks(); //TODO fire event per block being destroyed
     }
 
-    protected void calculateDamage()
+    /**
+     * Pre-calculates all blocks to be destroyed
+     */
+    protected void calculateDamage() //TODO thread
     {
         if (!this.oldWorld().isRemote)
         {
-            for (int x = 0; x < this.rays; ++x)
+            for (int xs = 0; xs < this.raysPerAxis; ++xs)
             {
-                for (int y = 0; y < this.rays; ++y)
+                for (int ys = 0; ys < this.raysPerAxis; ++ys)
                 {
-                    for (int z = 0; z < this.rays; ++z)
+                    for (int zs = 0; zs < this.raysPerAxis; ++zs)
                     {
-                        if (x == 0 || x == this.rays - 1 || y == 0 || y == this.rays - 1 || z == 0 || z == this.rays - 1)
+                        if (xs == 0 || xs == this.raysPerAxis - 1 || ys == 0 || ys == this.raysPerAxis - 1 || zs == 0 || zs == this.raysPerAxis - 1)
                         {
                             //Delta distance
-                            double xStep = x / (this.rays - 1.0F) * 2.0F - 1.0F;
-                            double yStep = y / (this.rays - 1.0F) * 2.0F - 1.0F;
-                            double zStep = z / (this.rays - 1.0F) * 2.0F - 1.0F;
+                            double xStep = xs / (this.raysPerAxis - 1.0F) * 2.0F - 1.0F;
+                            double yStep = ys / (this.raysPerAxis - 1.0F) * 2.0F - 1.0F;
+                            double zStep = zs / (this.raysPerAxis - 1.0F) * 2.0F - 1.0F;
 
                             //Distance
-                            double diagonalDistance = Math.sqrt(xStep * xStep + yStep * yStep + zStep * zStep);
+                            final double diagonalDistance = Math.sqrt(xStep * xStep + yStep * yStep + zStep * zStep);
 
                             //normalize
                             xStep /= diagonalDistance;
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
 
-
+                            //Get energy
                             float radialEnergy = this.getRadius() * (0.7F + this.oldWorld().rand.nextFloat() * 0.6F);
 
-                            double var15 = this.position.x();
-                            double var17 = this.position.y();
-                            double var19 = this.position.z();
+                            //Get starting point for ray
+                            double x = this.position.x();
+                            double y = this.position.y();
+                            double z = this.position.z();
 
-                            for (float var21 = 0.3F; radialEnergy > 0.0F; radialEnergy -= var21 * 0.75F)
+                            for (float step = 0.3F; radialEnergy > 0.0F; radialEnergy -= step * 0.75F)
                             {
+                                //Convert position to int
+                                int xi = MathHelper.floor_double(x);
+                                int yi = MathHelper.floor_double(y);
+                                int zi = MathHelper.floor_double(z);
+
                                 //Get block
-                                int var22 = MathHelper.floor_double(var15);
-                                int var23 = MathHelper.floor_double(var17);
-                                int var24 = MathHelper.floor_double(var19);
-                                Block var25 = this.oldWorld().getBlock(var22, var23,  var24);
+                                Block block = this.oldWorld().getBlock(xi, yi, zi);
 
-                                //Get resistance
-                                if (var25 != Blocks.air)
+                                //Only act on non-air blocks
+                                if (block != Blocks.air)
                                 {
-                                    radialEnergy -= (var25.getExplosionResistance(this.exploder, this.oldWorld(), var22, var23, var24, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * var21;
-                                }
+                                    //Decrease energy based on resistance
+                                    radialEnergy -= (block.getExplosionResistance(this.exploder, this.oldWorld(), xi, yi, zi, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * step;
 
-                                if (radialEnergy > 0.0F)
-                                {
-                                    Pos pos = new Pos(var22, var23, var24);
-                                    if(!blownBlocks.contains(pos))
+                                    //Track blocks to destroy
+                                    if (radialEnergy > 0.0F)
                                     {
-                                        blownBlocks.add(pos);
+                                        Pos pos = new Pos(xi, yi, zi);
+                                        if (!blownBlocks.contains(pos))
+                                        {
+                                            blownBlocks.add(pos);
+                                        }
                                     }
                                 }
 
                                 //Iterate location
-                                var15 += xStep * var21;
-                                var17 += yStep * var21;
-                                var19 += zStep * var21;
+                                x += xStep * step;
+                                y += yStep * step;
+                                z += zStep * step;
                             }
                         }
                     }
@@ -128,56 +168,62 @@ public class BlastTNT extends Blast
         }
     }
 
-    protected void doDestroyBlocks()
+    /**
+     * Removes the blocks from the world
+     */
+    protected void doDestroyBlocks() //TODO convert to change action
     {
         if (!this.oldWorld().isRemote)
         {
-            int var3;
-            Pos blownPosition;
-            int var5;
-            int var6;
-            int var7;
-            Block block;
-            int metadata;
-
-            for (var3 = blownBlocks.size() - 1; var3 >= 0; --var3)
+            for (Pos blownPosition : blownBlocks) //TODO convert block positions to block edits to track prev and current blocks
             {
-                blownPosition = blownBlocks.get(var3);
-                var5 = blownPosition.xi();
-                var6 = blownPosition.yi();
-                var7 = blownPosition.zi();
-                block = this.oldWorld().getBlock(var5, var6, var7);
-                metadata = this.oldWorld().getBlockMetadata(var5, var6, var7);
+                //Get position
+                int xi = blownPosition.xi();
+                int yi = blownPosition.yi();
+                int zi = blownPosition.zi();
 
-                double var9 = (var5 + this.oldWorld().rand.nextFloat());
-                double var11 = (var6 + this.oldWorld().rand.nextFloat());
-                double var13 = (var7 + this.oldWorld().rand.nextFloat());
+                //Get block
+                Block block = this.oldWorld().getBlock(xi, yi, zi);
+                int metadata = this.oldWorld().getBlockMetadata(xi, yi, zi);
+
+                ///Generate effect TODO move to effect handler
+                ///---------------------------------------------
+                double var9 = (xi + this.oldWorld().rand.nextFloat());
+                double var11 = (yi + this.oldWorld().rand.nextFloat());
+                double var13 = (zi + this.oldWorld().rand.nextFloat());
+
                 double var151 = var9 - this.position.y();
                 double var171 = var11 - this.position.y();
                 double var191 = var13 - this.position.z();
+
                 double var211 = MathHelper.sqrt_double(var151 * var151 + var171 * var171 + var191 * var191);
                 var151 /= var211;
                 var171 /= var211;
                 var191 /= var211;
+
                 double var23 = 0.5D / (var211 / this.getRadius() + 0.1D);
                 var23 *= (this.oldWorld().rand.nextFloat() * this.oldWorld().rand.nextFloat() + 0.3F);
                 var151 *= var23;
                 var171 *= var23;
                 var191 *= var23;
+
                 this.oldWorld().spawnParticle("explode", (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
                 this.oldWorld().spawnParticle("smoke", var9, var11, var13, var151, var171, var191);
+                ///---------------------------------------------
 
+                //Only edit block if not air TODO see if we need to check for modded air
                 if (block != Blocks.air)
                 {
                     try
                     {
-
+                        //Do drops
                         if (block.canDropFromExplosion(null))
                         {
-                            block.dropBlockAsItemWithChance(this.oldWorld(), var5, var6, var7, this.oldWorld().getBlockMetadata(var5, var6, var7), 1F, 0);
+                            block.dropBlockAsItemWithChance(this.oldWorld(), xi, yi, zi, this.oldWorld().getBlockMetadata(xi, yi, zi), 1F, 0);
                         }
 
-                        block.onBlockExploded(this.oldWorld(), var5, var6, var7, this);
+                        //Break block
+                        block.onBlockExploded(this.oldWorld(), xi, yi, zi, this);
                     }
                     catch (Exception e)
                     {
@@ -188,7 +234,7 @@ public class BlastTNT extends Blast
         }
     }
 
-    public void pushEntities(float radius, float force, int type)
+    public void pushEntities(float radius, float force, int type) //TODO convert to delay action
     {
         // Step 2: Damage all entities
         Pos minCoord = position.toPos();
@@ -230,7 +276,7 @@ public class BlastTNT extends Blast
     @Override
     public long getEnergy()
     {
-        return 418000;
+        return 418000; //TODO check what this number means?
     }
 
     @Override
