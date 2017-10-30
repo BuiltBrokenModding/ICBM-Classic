@@ -21,5 +21,8 @@ public class WailaLoader extends AbstractLoadable
     public static void onWailaCall(IWailaRegistrar registrar)
     {
         registrar.registerStackProvider(new WailaCamoBlockHandler(), BlockTile.class);
+        registrar.registerStackProvider(new WailaLauncherFrameHandler(), BlockTile.class);
+        registrar.registerStackProvider(new WailaLauncherScreenHandler(), BlockTile.class);
+        registrar.registerStackProvider(new WailaLauncherBaseHandler(), BlockTile.class);
     }
 }
