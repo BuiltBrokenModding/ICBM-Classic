@@ -2,6 +2,7 @@ package icbm.classic;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.registry.ModManager;
+import com.builtbroken.mc.framework.mod.Mods;
 import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.framework.mod.AbstractMod;
@@ -36,6 +37,7 @@ import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.mod.waila.WailaLoader;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
@@ -141,7 +143,7 @@ public final class ICBMClassic extends AbstractMod
     @Override
     public void loadHandlers(LoadableHandler loader)
     {
-
+        loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded());
     }
 
     @Override
