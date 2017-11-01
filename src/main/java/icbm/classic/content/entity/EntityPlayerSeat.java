@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import com.builtbroken.mc.imp.transform.vector.Pos;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnData
 {
     public TileEntity host;
+    public Pos rideOffset;
 
     public EntityPlayerSeat(World world)
     {
@@ -64,6 +66,17 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
+    public void updateRiderPosition()
+    {
+        if (this.riddenByEntity != null)
+        {
+            this.riddenByEntity.setPosition(this.posX + (rideOffset != null ? rideOffset.x() : 0),
+                    this.posY + this.riddenByEntity.getYOffset() + this.getMountedYOffset(),
+                    this.posZ + (rideOffset != null ? rideOffset.z() : 0));
+        }
+    }
+
+    @Override
     public AxisAlignedBB getBoundingBox()
     {
         return boundingBox;
@@ -84,6 +97,10 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     public double getMountedYOffset()
     {
+        if (rideOffset != null)
+        {
+            return rideOffset.y();
+        }
         return super.getMountedYOffset();
     }
 
@@ -132,6 +149,11 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     {
         buffer.writeFloat(height);
         buffer.writeFloat(width);
+        buffer.writeBoolean(rideOffset != null);
+        if (rideOffset != null)
+        {
+            rideOffset.writeByteBuf(buffer);
+        }
     }
 
     @Override
@@ -140,5 +162,9 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         height = additionalData.readFloat();
         width = additionalData.readFloat();
         setSize(width, height);
+        if (additionalData.readBoolean())
+        {
+            rideOffset = new Pos(additionalData);
+        }
     }
 }

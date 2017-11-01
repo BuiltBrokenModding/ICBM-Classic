@@ -143,6 +143,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 {
                     seat = new EntityPlayerSeat(worldObj);
                     seat.host = this;
+                    seat.rideOffset = new Pos(getFacing().offsetX * 0.5, 1, getFacing().offsetZ * 0.5);
                     seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5);
                     seat.setSize(0.5f, 2.5f);
                     worldObj.spawnEntityInWorld(seat);
@@ -267,6 +268,12 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                     missile.launcherPos = new Pos((TileEntity) this);
                     missile.setPosition(xi(), yi() + 3, zi());
 
+                    //Trigger launch event
+                    missile.launch(target, lockHeight);
+
+                    //Spawn entity
+                    oldWorld().spawnEntityInWorld(missile);
+
                     //Grab rider
                     if (seat != null && seat.riddenByEntity != null)
                     {
@@ -274,12 +281,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                         seat.riddenByEntity.mountEntity(null);
                         entity.mountEntity(missile);
                     }
-
-                    //Trigger launch event
-                    missile.launch(target, lockHeight);
-
-                    //Spawn entity
-                    oldWorld().spawnEntityInWorld(missile);
 
                     //Remove item
                     this.decrStackSize(0, 1);
