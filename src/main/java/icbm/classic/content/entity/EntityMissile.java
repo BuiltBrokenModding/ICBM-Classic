@@ -141,7 +141,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.sourceOfProjectile = toPos();
         this.targetVector = target;
         this.targetHeight = this.targetVector != null ? this.targetVector.yi() : 0;
-        if(explosiveID != null && explosiveID.handler instanceof Explosion)
+        if (explosiveID != null && explosiveID.handler instanceof Explosion)
         {
             ((Explosion) explosiveID.handler).launch(this);
         }
@@ -259,7 +259,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             this.spawnMissileSmoke();
             this.protectionTime--;
         }
-        if(this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
+        if (this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
         {
             ((Explosion) this.explosiveID.handler).update(this);
         }
@@ -284,7 +284,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        if(!worldObj.isRemote)
+        if (!worldObj.isRemote)
         {
             super.onImpactEntity(entityHit, velocity);
             explode();
@@ -313,14 +313,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public boolean interactFirst(EntityPlayer entityPlayer)
     {
-        if (this.explosiveID != null)
+        //Allow missile to override interaction
+        if (this.explosiveID != null && ((Explosion) this.explosiveID.handler).onInteract(this, entityPlayer))
         {
-            if (((Explosion) this.explosiveID.handler).onInteract(this, entityPlayer))
-            {
-                return true;
-            }
+            return true;
         }
 
+        //Handle player riding missile
         if (!this.worldObj.isRemote && (this.riddenByEntity == null || this.riddenByEntity == entityPlayer))
         {
             entityPlayer.mountEntity(this);

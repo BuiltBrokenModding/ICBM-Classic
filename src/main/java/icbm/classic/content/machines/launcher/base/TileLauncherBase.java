@@ -22,6 +22,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
@@ -29,6 +30,7 @@ import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -79,6 +81,9 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public TileLauncherFrame supportFrame = null;
     public TileLauncherScreen launchScreen = null;
 
+    /** Fake entity to allow player to mount the missile without using the missile entity itself */
+    public EntityPlayerSeat seat;
+
     // The tier of this launcher base
     protected int tier = 0;
     private boolean _destroyingStructure = false;
@@ -123,18 +128,55 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public void update()
     {
         super.update();
+        if (isServer())
+        {
+            if (ticks % 3 == 0)
+            {
+                //Update seat position
+                if (seat != null)
+                {
+                    seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5);
+                }
+
+                //Create seat if missile
+                if (getMissileStack() != null && seat == null)
+                {
+                    seat = new EntityPlayerSeat(worldObj);
+                    seat.host = this;
+                    seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5);
+                    seat.setSize(0.5f, 2.5f);
+                    worldObj.spawnEntityInWorld(seat);
+                }
+                //Destroy seat if no missile
+                else if (getMissileStack() == null && seat != null)
+                {
+                    if (seat.riddenByEntity != null)
+                    {
+                        seat.riddenByEntity.mountEntity(null);
+                    }
+                    seat.setDead();
+                    seat = null;
+                }
+            }
+        }
+        //1 second update
         if (ticks % 20 == 0)
         {
+            //Only update if frame or screen is invalid
             if (this.supportFrame == null || launchScreen == null || launchScreen.isInvalid() || this.supportFrame.isInvalid())
             {
+                //Reset data
                 this.supportFrame = null;
                 this.launchScreen = null;
+
+                //Check on all 4 sides
                 for (byte i = 2; i < 6; i++)
                 {
+                    //Get tile entity on side
                     Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
-
                     TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
 
+                    //If frame update rotation
                     if (tileEntity instanceof TileLauncherFrame)
                     {
                         this.supportFrame = (TileLauncherFrame) tileEntity;
@@ -143,6 +185,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                             this.supportFrame.setFacing(getDirection());
                         }
                     }
+                    //If screen, tell the screen the base exists
                     else if (tileEntity instanceof TileLauncherScreen)
                     {
                         this.launchScreen = (TileLauncherScreen) tileEntity;
@@ -218,11 +261,27 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 if (isServer())
                 {
                     EntityMissile missile = new EntityMissile(oldWorld());
+
+                    //Set data
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
                     missile.launcherPos = new Pos((TileEntity) this);
                     missile.setPosition(xi(), yi() + 3, zi());
+
+                    //Grab rider
+                    if (seat != null && seat.riddenByEntity != null)
+                    {
+                        Entity entity = seat.riddenByEntity;
+                        seat.riddenByEntity.mountEntity(null);
+                        entity.mountEntity(missile);
+                    }
+
+                    //Trigger launch event
                     missile.launch(target, lockHeight);
+
+                    //Spawn entity
                     oldWorld().spawnEntityInWorld(missile);
+
+                    //Remove item
                     this.decrStackSize(0, 1);
                 }
                 return true;

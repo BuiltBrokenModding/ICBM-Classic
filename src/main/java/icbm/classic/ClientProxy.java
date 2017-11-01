@@ -79,6 +79,7 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, new RenderLightBeam());
         RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, new RenderGrenade());
         RenderingRegistry.registerEntityRenderingHandler(EntityBombCart.class, new RenderMinecart());
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, new RenderSeat());
     }
 
     @Override

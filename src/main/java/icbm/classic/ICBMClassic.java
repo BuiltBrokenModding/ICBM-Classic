@@ -199,7 +199,8 @@ public final class ICBMClassic extends AbstractMod
         EntityRegistry.registerModEntity(EntityExplosion.class, "ICBMProceduralExplosion", nextID++, this, 100, 5, true);
         EntityRegistry.registerModEntity(EntityLightBeam.class, "ICBMLightBeam", nextID++, this, 80, 5, true);
         EntityRegistry.registerModEntity(EntityGrenade.class, "ICBMGrenade", nextID++, this, 50, 5, true);
-        EntityRegistry.registerModEntity(EntityBombCart.class, "ICBMChe", nextID++, this, 50, 4, true);
+        EntityRegistry.registerModEntity(EntityBombCart.class, "ICBMChe", nextID++, this, 50, 2, true);
+        EntityRegistry.registerModEntity(EntityPlayerSeat.class, "ICBMSeat", nextID++, this, 50, 2, true);
     }
 
     @Override
