@@ -77,7 +77,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
 
     // Client side
-    protected final IUpdatePlayerListBox shengYin;
+    protected final IUpdatePlayerListBox shengYin; //TODO find out what this was used for
 
     public NBTTagCompound nbtData = new NBTTagCompound();
 
