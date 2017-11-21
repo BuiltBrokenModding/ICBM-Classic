@@ -8,12 +8,12 @@ If this is a problem, use exact build numbers to track changes. As each build lo
 ### Runtime Changes
 Added: Waila support for camo blocks
 Added: Waila support for launcher parts
-Added: Nightmare missile - halloween themed entity spawn explosive
-Fixed: Missile mounting on luanchers (aka fixed missing riding)
+Added: Nightmare missile - Halloween themed entity spawn explosive
+Fixed: Missile mounting on launchers (aka fixed missing riding)
 Fixed: button hardness
 Changed: cruise launcher energy cost from 100M UE to 10K UE (20k RF)
 
-### Develoment Changes
-Renamed: a few fields and methods (removing chineese left overs from calclavia's time)
+### Development Changes
+Renamed: a few fields and methods (removing Chinese leftovers from calclavia's time)
 
 //TODO update change log for older versions

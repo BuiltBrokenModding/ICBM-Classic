@@ -10,7 +10,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlastExothermic extends BlastBeam
 {
@@ -72,9 +71,8 @@ public class BlastExothermic extends BlastBeam
                             this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
                         }
 
-                        Block blockBellow = oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
-
-                        if ((blockID.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(oldWorld(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
+                        if ((blockID.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
+                                && Blocks.fire.canPlaceBlockAt(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
                         {
                             if (this.oldWorld().rand.nextFloat() > 0.99)
                             {
