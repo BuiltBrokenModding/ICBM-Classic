@@ -59,19 +59,19 @@ public class BlastExothermic extends BlastBeam
                          * Check to see if the block is an air block and there is a block below it
                          * to support the fire.
                          */
-                        Block blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                        Block block = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
 
-                        if (blockID.getMaterial() == Material.water || blockID == Blocks.ice)
+                        if (block.getMaterial() == Material.water || block == Blocks.ice)
                         {
                             this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
                         }
 
-                        if (blockID.blockMaterial == Material.rock && this.oldWorld().rand.nextFloat() > 0.8)
+                        if (block.blockMaterial == Material.rock && this.oldWorld().rand.nextFloat() > 0.8)
                         {
                             this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
                         }
 
-                        if ((blockID.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
+                        if ((block.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
                                 && Blocks.fire.canPlaceBlockAt(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
                         {
                             if (this.oldWorld().rand.nextFloat() > 0.99)
@@ -82,9 +82,9 @@ public class BlastExothermic extends BlastBeam
                             {
                                 this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.fire, 0, 2);
 
-                                blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                                block = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
 
-                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (blockID == Blocks.stone || blockID == Blocks.grass || blockID == Blocks.dirt) && this.oldWorld().rand.nextFloat() > 0.75)
+                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (block == Blocks.stone || block == Blocks.grass || block == Blocks.dirt) && this.oldWorld().rand.nextFloat() > 0.75)
                                 {
                                     this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), Blocks.netherrack, 0, 2);
                                 }
@@ -96,7 +96,7 @@ public class BlastExothermic extends BlastBeam
                 this.oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
             }
 
-            if(!oldWorld().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
+            if(!oldWorld().getGameRules().getGameRuleBooleanValue("doDaylightCycle")) //TODO add config
             {
                 this.oldWorld().setWorldTime(18000);
             }

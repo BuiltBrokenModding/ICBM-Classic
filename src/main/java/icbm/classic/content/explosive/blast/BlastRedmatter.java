@@ -24,7 +24,7 @@ import java.util.List;
 
 public class BlastRedmatter extends Blast
 {
-    public static final float NORMAL_RADIUS = 35;
+    public static final float NORMAL_RADIUS = 70;
     public static final float ENTITY_DESTROY_RADIUS = 6;
 
     private static int MAX_BLOCKS_REMOVED_PER_TICK = 10;
@@ -119,7 +119,8 @@ public class BlastRedmatter extends Blast
                                 final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
                                 int meta = currentPos.getBlockMetadata();
                                 //Ignore air blocks and unbreakable blocks
-                                if (!block.isAir(oldWorld(), currentPos.xi(), currentPos.yi(), currentPos.zi()) && (isFluid || block.getBlockHardness(this.oldWorld(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0))
+                                if (!block.isAir(oldWorld(), currentPos.xi(), currentPos.yi(), currentPos.zi())
+                                        && (isFluid || block.getBlockHardness(this.oldWorld(), currentPos.xi(), currentPos.yi(), currentPos.zi()) >= 0))
                                 {
                                     //TODO handle multi-blocks
 
@@ -213,7 +214,7 @@ public class BlastRedmatter extends Blast
         // Orbit Velocity
         entity.addVelocity(newPosition.x() - entityPosition.x(), 0, newPosition.z() - entityPosition.z());
         // Gravity Velocity (0.015 is barely enough to overcome y gravity so do not lower)
-        entity.addVelocity(-xDifference * 0.015 * xPercentage, -yDifference * 0.015 * yPercentage, -zDifference * 0.015 * zPercentage);
+        entity.addVelocity(-xDifference * 0.02 * xPercentage, -yDifference * 0.02 * yPercentage, -zDifference * 0.02 * zPercentage);
 
         boolean explosionCreated = false;
 
