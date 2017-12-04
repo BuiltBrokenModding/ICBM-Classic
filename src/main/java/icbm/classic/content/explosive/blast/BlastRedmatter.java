@@ -36,10 +36,16 @@ public class BlastRedmatter extends Blast
 
     private AxisAlignedBB bounds;
     private float entityRadius;
+    public int lifeSpan = MAX_LIFESPAN;
 
     public BlastRedmatter(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
+    }
+
+    public float getScaleFactor()
+    {
+        return explosionSize / NORMAL_RADIUS;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class BlastRedmatter extends Blast
     {
         if (!this.oldWorld().isRemote)
         {
-            this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), 15.0F, true);
+            this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), 15.0F * getScaleFactor(), true);
         }
     }
 
@@ -77,7 +83,7 @@ public class BlastRedmatter extends Blast
         if (!this.oldWorld().isRemote)
         {
             //Limit life span of the blast
-            if (DO_DESPAWN && callCount >= MAX_LIFESPAN)
+            if (DO_DESPAWN && callCount >= lifeSpan)
             {
                 this.postExplode();
             }
@@ -218,7 +224,7 @@ public class BlastRedmatter extends Blast
 
         boolean explosionCreated = false;
 
-        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < (ENTITY_DESTROY_RADIUS * (getRadius() / NORMAL_RADIUS)))
+        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
         {
             if (entity instanceof EntityExplosion)
             {
@@ -264,7 +270,7 @@ public class BlastRedmatter extends Blast
             {
                 ((EntityExplosive) entity).explode();
             }
-            else if(entity instanceof EntityLiving)
+            else if (entity instanceof EntityLiving)
             {
                 entity.attackEntityFrom(new DamageSourceRedmatter(this), 2000);
             }

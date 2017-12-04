@@ -35,11 +35,15 @@ public class RenderExplosion extends Render
             // RedM atter Render
             if (entityExplosion.getBlast() instanceof BlastRedmatter)
             {
+                final BlastRedmatter redmatter = (BlastRedmatter) entityExplosion.getBlast();
+                final float scale = redmatter.getScaleFactor();
+
                 Tessellator tessellator = Tessellator.instance;
 
-                /** Draw Sphere */
+                //=======================================================
+                //Draw Sphere
                 GL11.glPushMatrix();
-                GL11.glTranslatef((float) x, (float) y + entityExplosion.yOffset, (float) z);
+                GL11.glTranslatef((float) x, (float) y, (float) z);
 
                 RenderUtility.enableBlending();
                 RenderUtility.disableLighting();
@@ -48,7 +52,8 @@ public class RenderExplosion extends Render
 
                 bindTexture(SharedAssets.GREY_TEXTURE);
                 Sphere sphere = new Sphere();
-                float radius = Math.max((BlastRedmatter.ENTITY_DESTROY_RADIUS * (entityExplosion.getBlast().getRadius() / BlastRedmatter.NORMAL_RADIUS)), 6);
+
+                float radius = Math.max(BlastRedmatter.ENTITY_DESTROY_RADIUS * scale, 0.1f);
                 sphere.draw(radius, 32, 32);
 
                 // Enable Lighting/Glow Off
@@ -58,8 +63,9 @@ public class RenderExplosion extends Render
                 RenderUtility.disableBlending();
                 GL11.glPopMatrix();
 
-                //Draw Vortex
 
+                //=======================================================
+                //Draw Vortex
                 GL11.glPushMatrix();
                 GL11.glDepthMask(false);
 
@@ -69,26 +75,29 @@ public class RenderExplosion extends Render
                 GL11.glTranslated(x, y, z);
                 GL11.glRotatef(-entity.ticksExisted, 0, 1, 0);
 
-                float size = 10;
-
-                int textureSize = 50; //TODO this might need to be adjusted?
-                float size4 = size * 5; //TODO what is 5? a scale factor maybe?
-                float float_sizeMinus0_01 = textureSize - 0.01F;
-
-                //UV
-                float x0 = (textureSize + 0.0F) / size4;
-                float x1 = (textureSize + float_sizeMinus0_01) / size4;
-                float x2 = (textureSize + 0.0F) / size4;
-                float x3 = (textureSize + float_sizeMinus0_01) / size4;
+                float size = BlastRedmatter.ENTITY_DESTROY_RADIUS * scale * 2;
 
                 this.bindTexture(TEXTURE_FILE);
+
+                //top render
                 tessellator.startDrawingQuads();
                 tessellator.setBrightness(240);
                 tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
-                tessellator.addVertexWithUV(-size, 0, -size, x1, x3);
-                tessellator.addVertexWithUV(-size, 0, +size, x1, x2);
-                tessellator.addVertexWithUV(+size, 0, +size, x0, x2);
-                tessellator.addVertexWithUV(+size, 0, -size, x0, x3);
+                tessellator.addVertexWithUV(-size, 0, -size, 0, 0);
+                tessellator.addVertexWithUV(-size, 0, +size, 0, 1);
+                tessellator.addVertexWithUV(+size, 0, +size, 1, 1);
+                tessellator.addVertexWithUV(+size, 0, -size, 1, 0);
+                tessellator.draw();
+
+                //bottom render
+                GL11.glRotatef(180, 1, 0, 0);
+                tessellator.startDrawingQuads();
+                tessellator.setBrightness(240);
+                tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
+                tessellator.addVertexWithUV(-size, 0, -size, 1, 1);
+                tessellator.addVertexWithUV(-size, 0, +size, 1, 0);
+                tessellator.addVertexWithUV(+size, 0, +size, 0, 0);
+                tessellator.addVertexWithUV(+size, 0, -size, 0, 1);
                 tessellator.draw();
 
                 // Enable Lighting/Glow Off
@@ -100,22 +109,26 @@ public class RenderExplosion extends Render
                 GL11.glDepthMask(true);
                 GL11.glPopMatrix();
 
-                /** Enderdragon Light */
-                float par2 = (entity.ticksExisted);
 
-                while (par2 > 200)
+                //=======================================================
+
+                /** Enderdragon Light */
+                float ticks = entity.ticksExisted;
+
+                while (ticks > 200)
                 {
-                    par2 -= 100;
+                    ticks -= 100;
                 }
 
                 RenderHelper.disableStandardItemLighting();
-                float var41 = (5 + par2) / 200.0F;
+                float var41 = (5 + ticks) / 200.0F;
                 float var51 = 0.0F;
 
                 if (var41 > 0.8F)
                 {
                     var51 = (var41 - 0.8F) / 0.2F;
                 }
+
 
                 Random rand = new Random(432L);
 
@@ -128,31 +141,43 @@ public class RenderExplosion extends Render
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 GL11.glEnable(GL11.GL_CULL_FACE);
                 GL11.glDepthMask(false);
-                GL11.glPushMatrix();
-                GL11.glTranslatef(0.0F, -1.0F, -2.0F);
 
-                for (int i1 = 0; i1 < (var41 + var41 * var41) / 2.0F * 60.0F; ++i1)
+
+                GL11.glPushMatrix();
+                GL11.glTranslatef(0.0F, 0, 0);
+                int beamCount = (int) ((var41 + var41 * var41) / 2.0F * 60.0F);
+                for (int i1 = 0; i1 < beamCount; ++i1)
                 {
+                    float beamLength = (rand.nextFloat() * 20.0F + 5.0F + var51 * 10.0F) * scale;
+                    float beamWidth = (rand.nextFloat() * 2.0F + 1.0F + var51 * 2.0F) * scale;
+
+                    //Random rotations TODO see if we need to rotate so much
                     GL11.glRotatef(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
                     GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
                     GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
                     GL11.glRotatef(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
                     GL11.glRotatef(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
                     GL11.glRotatef(rand.nextFloat() * 360.0F + var41 * 90.0F, 0.0F, 0.0F, 1.0F);
+
+                    //Draw spike shape
                     tessellator.startDrawing(6);
-                    float var81 = rand.nextFloat() * 20.0F + 5.0F + var51 * 10.0F;
-                    float var91 = rand.nextFloat() * 2.0F + 1.0F + var51 * 2.0F;
+
+                    //center
                     tessellator.setColorRGBA_I(16777215, (int) (255.0F * (1.0F - var51)));
                     tessellator.addVertex(0.0D, 0.0D, 0.0D);
+
+                    //Outside
                     tessellator.setColorRGBA_I(0, 0);
-                    tessellator.addVertex(-0.866D * var91, var81, -0.5F * var91);
-                    tessellator.addVertex(0.866D * var91, var81, -0.5F * var91);
-                    tessellator.addVertex(0.0D, var81, 1.0F * var91);
-                    tessellator.addVertex(-0.866D * var91, var81, -0.5F * var91);
+                    tessellator.addVertex(-0.866D * beamWidth, beamLength, -0.5F * beamWidth);
+                    tessellator.addVertex(0.866D * beamWidth, beamLength, -0.5F * beamWidth);
+                    tessellator.addVertex(0.0D, beamLength, 1.0F * beamWidth);
+                    tessellator.addVertex(-0.866D * beamWidth, beamLength, -0.5F * beamWidth);
+
                     tessellator.draw();
                 }
-
                 GL11.glPopMatrix();
+
+
                 GL11.glDepthMask(true);
                 GL11.glDisable(GL11.GL_CULL_FACE);
                 GL11.glDisable(GL11.GL_BLEND);

@@ -157,7 +157,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     @Override
     public float getRadius()
     {
-        return this.explosionSize;
+        return Math.max(3, this.explosionSize);
     }
 
     @Override

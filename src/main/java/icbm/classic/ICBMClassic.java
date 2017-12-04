@@ -2,16 +2,17 @@ package icbm.classic;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.registry.ModManager;
-import com.builtbroken.mc.framework.mod.Mods;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.framework.mod.AbstractMod;
 import com.builtbroken.mc.framework.mod.AbstractProxy;
 import com.builtbroken.mc.framework.mod.ModCreativeTab;
+import com.builtbroken.mc.framework.mod.Mods;
 import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
+import com.builtbroken.mc.seven.framework.block.json.JsonBlockListenerProcessor;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -38,6 +39,7 @@ import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
 import icbm.classic.mod.waila.WailaLoader;
+import icbm.classic.prefab.ListenerExplosiveBreakTrigger;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
@@ -138,6 +140,13 @@ public final class ICBMClassic extends AbstractMod
         super(ICBMClassic.DOMAIN);
         CREATIVE_TAB = new ModCreativeTab(DOMAIN);
         getManager().setTab(CREATIVE_TAB);
+    }
+
+    @Override
+    public void loadJsonContentHandlers()
+    {
+        super.loadJsonContentHandlers();
+        JsonBlockListenerProcessor.addBuilder(new ListenerExplosiveBreakTrigger.Builder());
     }
 
     @Override
@@ -393,9 +402,9 @@ public final class ICBMClassic extends AbstractMod
         if (OreDictionary.getOres("blockRadioactive").size() > 0)
         {
             ArrayList<ItemStack> stacks = OreDictionary.getOres("blockRadioactive");
-            for(ItemStack stack : stacks)
+            for (ItemStack stack : stacks)
             {
-                if(stack != null && stack.getItem() instanceof ItemBlock)
+                if (stack != null && stack.getItem() instanceof ItemBlock)
                 {
                     //TODO add code to handle this from the ItemStack or test if this block is valid
                     //      As assuming the metadata is valid may not be a good idea, and the block may not be valid as well

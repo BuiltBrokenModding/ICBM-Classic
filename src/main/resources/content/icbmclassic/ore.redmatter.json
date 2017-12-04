@@ -1,0 +1,38 @@
+{
+  "author": {
+    "name": "icbmclassic"
+  },
+  "block": {
+    "name": "ore.redmatter",
+    "id": "oreRedmatter",
+    "hardness": 1.5,
+    "resistance": 10,
+    "mod": "icbmclassic",
+    "material": "rock",
+    "listeners": [
+      {
+        "_comment": "switch to VE ex system later",
+        "id": "explosiveCBreakTrigger",
+        "ex": "redmatter",
+        "size": 0.3,
+        "timer": 6000
+      }
+    ]
+  },
+  "render": {
+    "contentID": "icbmclassic:ore.redmatter",
+    "type": "block",
+    "states": [
+      {
+        "id": "block",
+        "texture": "icbmclassic:ore.redmatter"
+      }
+    ]
+  },
+  "texture": {
+    "key": "icbmclassic:ore.redmatter",
+    "domain": "minecraft",
+    "name": "redstone_ore",
+    "type": "block"
+  }
+}
