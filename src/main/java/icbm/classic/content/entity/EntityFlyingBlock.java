@@ -75,7 +75,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     public void readSpawnData(ByteBuf data)
     {
         String name = ByteBufUtils.readUTF8String(data);
-        if(!name.isEmpty())
+        if (!name.isEmpty())
         {
             block = (Block) Block.blockRegistry.getObject(name);
         }
@@ -104,7 +104,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         }
 
         //TODO make a black list of blocks that shouldn't be a flying entity block
-        if (this.posY > 400 || this.block == Engine.multiBlock || this.block == Blocks.piston_extension || this.block instanceof IFluidBlock)
+        if (this.posY > 400 || this.posY < -40 || this.block == Engine.multiBlock || this.block == Blocks.piston_extension || this.block instanceof IFluidBlock)
         {
             this.setDead();
             return;
@@ -131,7 +131,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
             this.pitchChange -= 2;
         }
 
-        if ((this.onGround && this.ticksExisted > 20) || this.ticksExisted > 20 * 120)
+        if ((this.onGround && this.ticksExisted > 40))
         {
             this.setBlock();
             return;
@@ -192,7 +192,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     protected void writeEntityToNBT(NBTTagCompound nbttagcompound)
     {
         nbttagcompound.setInteger("metadata", this.metadata);
-        if(block != null)
+        if (block != null)
         {
             nbttagcompound.setString("block", Block.blockRegistry.getNameForObject(block));
         }
@@ -203,7 +203,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     protected void readEntityFromNBT(NBTTagCompound nbttagcompound)
     {
         this.metadata = nbttagcompound.getInteger("metadata");
-        if(nbttagcompound.hasKey("block"))
+        if (nbttagcompound.hasKey("block"))
         {
             this.block = (Block) Block.blockRegistry.getObject(nbttagcompound.getString("block"));
         }
