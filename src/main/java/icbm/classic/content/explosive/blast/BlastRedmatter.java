@@ -153,6 +153,7 @@ public class BlastRedmatter extends Blast
                                             entity.yawChange = 50 * this.oldWorld().rand.nextFloat();
                                             entity.pitchChange = 50 * this.oldWorld().rand.nextFloat();
                                             this.oldWorld().spawnEntityInWorld(entity);
+                                            this.affectEntity(this.getRadius() * 2, entity, false);
                                         }
                                     }
                                     //Keep track of blocks removed to keep from lagging the game
@@ -176,7 +177,7 @@ public class BlastRedmatter extends Blast
     {
         float entityRadius = this.getRadius() * 2;
         Cube cube = new Cube(position.add(0.5).sub(entityRadius), position.add(0.5).add(entityRadius));
-        AxisAlignedBB bounds = cube.toAABB();
+        AxisAlignedBB bounds = cube.getAABB();
         List<Entity> allEntities = this.oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
         boolean doExplosion = true;
         for (Entity entity : allEntities)
