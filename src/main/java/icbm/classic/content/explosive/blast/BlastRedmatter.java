@@ -34,8 +34,6 @@ public class BlastRedmatter extends Blast
     public static boolean doAudio = true;
     public static boolean doFlyingBlocks = true;
 
-    private AxisAlignedBB bounds;
-    private float entityRadius;
     public int lifeSpan = MAX_LIFESPAN;
 
     public BlastRedmatter(World world, Entity entity, double x, double y, double z, float size)
@@ -53,7 +51,7 @@ public class BlastRedmatter extends Blast
     {
         if (!this.oldWorld().isRemote)
         {
-            this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), 15.0F * getScaleFactor(), true);
+            //this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), Math.max(2, 15.0F * getScaleFactor()), true);
         }
     }
 
@@ -164,7 +162,7 @@ public class BlastRedmatter extends Blast
     {
         float entityRadius = this.getRadius() * 2;
         Cube cube = new Cube(position.add(0.5).sub(entityRadius), position.add(0.5).add(entityRadius));
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(cube.min().x(), cube.min().y(), cube.min().z(), cube.max().x(), cube.max().y(), cube.max().z());
+        AxisAlignedBB bounds = cube.toAABB();
         List<Entity> allEntities = this.oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
         boolean doExplosion = true;
         for (Entity entity : allEntities)

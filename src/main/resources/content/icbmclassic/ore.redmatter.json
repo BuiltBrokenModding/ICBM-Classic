@@ -3,8 +3,8 @@
     "name": "icbmclassic"
   },
   "block": {
-    "name": "ore.redmatter",
-    "id": "oreRedmatter",
+    "name": "redmatter.ore",
+    "id": "oreredmatter",
     "hardness": 1.5,
     "resistance": 10,
     "mod": "icbmclassic",
@@ -20,18 +20,18 @@
     ]
   },
   "render": {
-    "contentID": "icbmclassic:ore.redmatter",
+    "contentID": "icbmclassic:oreredmatter",
     "type": "block",
     "states": [
       {
         "id": "block",
-        "texture": "icbmclassic:ore.redmatter"
+        "texture": "icbmclassic:redstone_ore"
       }
     ]
   },
   "texture": {
-    "key": "icbmclassic:ore.redmatter",
-    "domain": "minecraft",
+    "key": "icbmclassic:redstone_ore",
+    "domain": "icbmclassic",
     "name": "redstone_ore",
     "type": "block"
   }

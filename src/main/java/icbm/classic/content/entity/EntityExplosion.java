@@ -4,6 +4,7 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.content.explosive.blast.BlastRedmatter;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -80,6 +81,16 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
     }
 
+    @Override
+    protected boolean func_145771_j(double p_145771_1_, double p_145771_3_, double p_145771_5_)
+    {
+        if (!(blast instanceof BlastRedmatter))
+        {
+            return super.func_145771_j(p_145771_1_, p_145771_3_, p_145771_5_);
+        }
+        return false;
+    }
+
     /**
      * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
      * spiders and wolves to prevent them from trampling crops
@@ -110,7 +121,10 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.getBlast().isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            this.boundingBox.offset(motionX, motionY, motionZ);
+            this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
+            this.posY = this.boundingBox.minY + (double) this.yOffset - (double) this.ySize;
+            this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
             getBlast().onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
@@ -130,6 +144,12 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
                 this.setDead();
             }
         }
+    }
+
+    @Override
+    public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_)
+    {
+        //Remove default movement
     }
 
 

@@ -27,7 +27,7 @@ public class ListenerExplosiveBreakTrigger extends TileListener implements IDest
     public String explosiveID;
 
     @JsonProcessorData(value = "timer", type = "int")
-    public int timer;
+    public int timer = 1000;
 
     @Override
     public void onDestroyedByExplosion(Explosion ex)
@@ -51,11 +51,11 @@ public class ListenerExplosiveBreakTrigger extends TileListener implements IDest
 
     protected void trigger(Entity entity)
     {
-        if(explosiveID != null)
+        if(isServer() && explosiveID != null)
         {
             if (explosiveID.equalsIgnoreCase("redmatter"))
             {
-                BlastRedmatter blast = new BlastRedmatter(world().unwrap(), entity, x(), y(), z(), size);
+                BlastRedmatter blast = new BlastRedmatter(world().unwrap(), entity, x() + 0.5, y() + 0.5, z() + 0.5, size);
                 blast.lifeSpan = timer;
                 blast.explode();
             }

@@ -72,6 +72,9 @@ tile.icbmclassic:missileCoordinator.info=Over sized calculator, calculates fligh
 tile.icbmclassic:reinforcedRail.name=Reinforced Rail
 tile.icbmclassic:reinforcedRail.info=Hardened against explosives
 
+tile.icbmclassic:redmatter.ore.name=Redmatter ore
+tile.icbmclassic:redmatter.ore.info=On Shiz, How did you get that!, Put it down, it could explode!
+
 ## ICBM Explosives
 
 ## Block Form
