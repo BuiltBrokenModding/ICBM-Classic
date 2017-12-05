@@ -24,17 +24,22 @@ import java.util.List;
 
 public class BlastRedmatter extends Blast
 {
+    //Constants, do not change as they modify render and effect scales
     public static final float NORMAL_RADIUS = 70;
     public static final float ENTITY_DESTROY_RADIUS = 6;
 
-    private static int MAX_BLOCKS_REMOVED_PER_TICK = 10;
+    //Config settings
+    public static int MAX_BLOCKS_EDITS_PER_TICK = 100;
+    public static int DEFAULT_BLOCK_EDITS_PER_TICK = 20;
     public static int MAX_LIFESPAN = 36000; // 30 minutes
+    public static float CHANCE_FOR_FLYING_BLOCK = 0.8f;
     public static boolean DO_DESPAWN = true;
-
     public static boolean doAudio = true;
     public static boolean doFlyingBlocks = true;
 
+    //Blast Settings
     public int lifeSpan = MAX_LIFESPAN;
+    public int blocksEditsPerTick = -1;
 
     public BlastRedmatter(World world, Entity entity, double x, double y, double z, float size)
     {
@@ -44,6 +49,15 @@ public class BlastRedmatter extends Blast
     public float getScaleFactor()
     {
         return explosionSize / NORMAL_RADIUS;
+    }
+
+    public int getBlocksPerTick()
+    {
+        if (blocksEditsPerTick == -1)
+        {
+            blocksEditsPerTick = (int) Math.min(MAX_BLOCKS_EDITS_PER_TICK, DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
+        }
+        return blocksEditsPerTick;
     }
 
     @Override
@@ -133,7 +147,7 @@ public class BlastRedmatter extends Blast
                                     if (!isFluid && doFlyingBlocks)
                                     {
                                         //Convert a random amount of destroyed blocks into flying blocks for visuals
-                                        if (this.oldWorld().rand.nextFloat() > 0.8)
+                                        if (this.oldWorld().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
                                         {
                                             EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), currentPos.add(0.5D), block, meta);
                                             entity.yawChange = 50 * this.oldWorld().rand.nextFloat();
@@ -148,7 +162,7 @@ public class BlastRedmatter extends Blast
                         }
 
                         //Exit conditions, make sure stays at bottom of loop
-                        if (blocksDestroyed > this.MAX_BLOCKS_REMOVED_PER_TICK || !isAlive)
+                        if (blocksDestroyed > getBlocksPerTick() || !isAlive)
                         {
                             return;
                         }

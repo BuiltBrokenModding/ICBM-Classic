@@ -8,6 +8,7 @@ import icbm.classic.content.explosive.blast.BlastRedmatter;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Constructor;
@@ -121,10 +122,32 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.getBlast().isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
+            //Slow entity down
+            this.motionX *= .98;
+            this.motionY *= .98;
+            this.motionZ *= .98;
+
+            //Normalize
+            float speed = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
+            this.motionX /= (double) speed;
+            this.motionY /= (double) speed;
+            this.motionZ /= (double) speed;
+
+            //Apply Speed
+            speed = Math.min(speed, 0.5f);
+            this.motionX *= (double) speed;
+            this.motionY *= (double) speed;
+            this.motionZ *= (double) speed;
+
+            //Move box
             this.boundingBox.offset(motionX, motionY, motionZ);
+
+            //Reset position based on box
             this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
             this.posY = this.boundingBox.minY + (double) this.yOffset - (double) this.ySize;
             this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
+
+            //Update blast
             getBlast().onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
