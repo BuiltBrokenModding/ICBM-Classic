@@ -13,9 +13,14 @@
       {
         "_comment": "switch to VE ex system later",
         "id": "explosiveCBreakTrigger",
+        "triggerOnSilkTouch": false,
         "ex": "redmatter",
         "size": 0.3,
         "timer": 6000
+      },
+      {
+        "id": "silkHarvest",
+        "canHarvestNormal": false
       }
     ]
   },
