@@ -35,6 +35,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
                 GL11.glPushMatrix();
                 GL11.glTranslatef(0.0F, 1.5F, 0.0F);
                 GL11.glRotatef(180f, 0f, 0f, 1f);
+                //GL11.glScalef(1.3f, 1.3f, 1.3f); Don't change scale, moves item position
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
                 ModelSMine.INSTANCE.render(0.0625F);
                 GL11.glPopMatrix();
@@ -44,7 +45,7 @@ public class RenderBombBlock extends TileEntitySpecialRenderer implements ISimpl
                 try
                 {
                     RenderUtility.renderNormalBlockAsItem(block, metadata, renderer);
-                }
+            }
                 catch (Exception e)
                 {
                     ICBMClassic.INSTANCE.logger().error("ICBM Explosive Rendering Crash with: " + block + " and metadata: " + metadata);

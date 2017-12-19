@@ -47,6 +47,7 @@ public class ExRepulsive extends Explosion
     @Override
     public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
     {
+        //TODO recode
         if (this == Explosives.ATTRACTIVE.handler)
         {
             new BlastTNT(world, entity, x, y, z, 2f).setDestroyItems().setPushType(1).explode();

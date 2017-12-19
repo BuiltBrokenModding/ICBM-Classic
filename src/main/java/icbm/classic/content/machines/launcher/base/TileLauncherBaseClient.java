@@ -116,7 +116,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
             {
                 GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
             }
-            else if(e != Explosives.NIGHTMARE)
+            else if (e != Explosives.NIGHTMARE)
             {
                 GL11.glScalef(0.05f, 0.05f, 0.05f);
             }
@@ -128,11 +128,35 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     @Override
     public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
     {
-        GL11.glPushMatrix();
-        int tier = itemStack.getItemDamage();
+        final int tier = itemStack.getItemDamage();
 
+        GL11.glPushMatrix();
         GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glScalef(0.4f, 0.4f, 0.4f);
+        if (type == IItemRenderer.ItemRenderType.INVENTORY)
+        {
+            GL11.glTranslatef(0, -0.05f, 0);
+            final float scale = 0.38f;
+            GL11.glScalef(scale, scale, scale);
+        }
+        else if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON)
+        {
+            final float scale = 0.5f;
+            GL11.glScalef(scale, scale, scale);
+            GL11.glTranslatef(-0.7f, -2.5f, 0.7f);
+            GL11.glRotatef(-90f, 0f, 1f, 0f);
+        }
+        else if (type == IItemRenderer.ItemRenderType.EQUIPPED)
+        {
+            final float scale = 0.5f;
+            GL11.glScalef(scale, scale, scale);
+            GL11.glRotatef(-45f, 0f, 1f, 0f);
+            GL11.glTranslatef(0f, -2.5f, 1.7f);
+
+        }
+        else if (type == IItemRenderer.ItemRenderType.ENTITY)
+        {
+            GL11.glTranslatef(0, -1, 0);
+        }
 
         if (tier == 0)
         {

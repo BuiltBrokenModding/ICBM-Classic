@@ -77,13 +77,32 @@ public class TileLauncherFrameClient extends TileLauncherFrame implements ISimpl
     public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
     {
         GL11.glPushMatrix();
-        //int tier = itemStack.getItemDamage();
-        GL11.glTranslatef(0f, -0.1f, 0f);
         GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glScalef(0.8f, 0.4f, 0.8f);
+
+        if (type == IItemRenderer.ItemRenderType.INVENTORY)
+        {
+            GL11.glTranslatef(0f, 0.05f, 0f);
+            GL11.glScalef(0.8f, 0.38f, 0.8f);
+        }
+        else if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON)
+        {
+            GL11.glTranslatef(-0.5f, -0.3f, 0.5f);
+            GL11.glRotatef(20f, 0f, 1f, 0f);
+        }
+        else if (type == IItemRenderer.ItemRenderType.EQUIPPED)
+        {
+            final float scale = 0.5f;
+            GL11.glScalef(scale, scale, scale);
+            GL11.glRotatef(-45f, 0f, 1f, 0f);
+            GL11.glTranslatef(0f, -2.5f, 1.7f);
+        }
+        else if (type == IItemRenderer.ItemRenderType.ENTITY)
+        {
+            GL11.glTranslatef(0, -1, 0);
+        }
+
 
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
-
         MODEL.render(0.0625F);
         GL11.glPopMatrix();
     }
