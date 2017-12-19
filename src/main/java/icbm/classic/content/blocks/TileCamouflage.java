@@ -31,6 +31,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -296,6 +297,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
     @SideOnly(Side.CLIENT)
     public void renderInventory(ItemStack itemStack)
     {
+        GL11.glTranslated(0, -.1, 0);
         RenderUtility.renderCube(0, 0, 0, 1, 1, 1, getBlockType(), icon);
     }
 
