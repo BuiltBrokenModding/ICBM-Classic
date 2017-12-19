@@ -51,6 +51,7 @@ icbm.explosive.chemical.name=Chemischer Sprengstoff
 icbm.explosive.anvil.name=Amboss-Sprengstoff
 icbm.explosive.repulsive.name=Absto\u00DFender Sprengstoff
 icbm.explosive.attractive.name=Anziehener Sprengstoff
+icbm.explosive.nightmare.name=Albtraum Sprengstoff
 
 icbm.explosive.fragmentation.name=Splitternder Sprengstoff
 icbm.explosive.contagious.name=Ansteckender Sprengstoff
@@ -126,6 +127,7 @@ icbm.minecart.chemical.name=Chemische Lore
 icbm.minecart.anvil.name=Amboss-Lore
 icbm.minecart.repulsive.name=Absto\u00DFende Lore
 icbm.minecart.attractive.name=Anziehende Lore
+icbm.minecart.nightmare.name=Albtraum Lore
 
 icbm.minecart.fragmentation.name=Splitterlore
 icbm.minecart.contagious.name=Ansteckede Lore

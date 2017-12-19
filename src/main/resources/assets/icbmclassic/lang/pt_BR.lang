@@ -49,6 +49,7 @@ icbm.explosive.chemical.name=Explosivo Químico
 icbm.explosive.anvil.name=Explosivo de Bigorna
 icbm.explosive.repulsive.name=Explosivo Repulsivo
 icbm.explosive.attractive.name=Explosivo Atrativo
+icbm.explosive.nightmare.name=Explosivo Pesadelo
 
 icbm.explosive.fragmentation.name=Explosivo de Fragmentação
 icbm.explosive.contagious.name=Explosivo Infeccioso
@@ -124,6 +125,7 @@ icbm.minecart.chemical.name=Carrinho Químico
 icbm.minecart.anvil.name=Carrinho de Bigorna
 icbm.minecart.repulsive.name=Carrinho Repulsivo
 icbm.minecart.attractive.name=Carrinho Atrativo
+icbm.minecart.nightmare.name=Carrinho Pesadelo
 
 icbm.minecart.fragmentation.name=Carrinho de Fragmentação
 icbm.minecart.contagious.name=Carrinho Infeccioso

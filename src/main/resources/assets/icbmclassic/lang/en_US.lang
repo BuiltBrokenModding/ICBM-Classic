@@ -86,6 +86,7 @@ icbm.explosive.chemical.name=Chemical Explosives
 icbm.explosive.anvil.name=Anvil Explosives
 icbm.explosive.repulsive.name=Repulsive Explosives
 icbm.explosive.attractive.name=Attractive Explosives
+icbm.explosive.nightmare.name=Nightmare Explosives
 
 icbm.explosive.fragmentation.name=Fragmentation Explosives
 icbm.explosive.contagious.name=Contagious Explosives
@@ -204,6 +205,7 @@ icbm.minecart.chemical.name=Chemical Minecart
 icbm.minecart.anvil.name=Anvil Minecart
 icbm.minecart.repulsive.name=Repulsive Minecart
 icbm.minecart.attractive.name=Attractive Minecart
+icbm.minecart.nightmare.name=Nightmare Minecart
 
 icbm.minecart.fragmentation.name=Fragmentation Minecart
 icbm.minecart.contagious.name=Contagious Minecart

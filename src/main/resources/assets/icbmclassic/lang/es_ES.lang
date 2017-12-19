@@ -42,6 +42,7 @@ icbm.explosive.chemical.name=Explosivo Qu\u00EDmico
 icbm.explosive.anvil.name=Explosivo de Yunques
 icbm.explosive.repulsive.name=Explosivo Repulsivo
 icbm.explosive.attractive.name=Explosivo Atractivo
+icbm.explosive.nightmare.name=Explosivo Pesadilla
 
 icbm.explosive.fragmentation.name=Explosivo de Fragmentaci\u00F3n
 icbm.explosive.contagious.name=Explosivo Contagioso
@@ -114,6 +115,7 @@ icbm.minecart.chemical.name=Carro Minero Qu\u00EDmico
 icbm.minecart.anvil.name=Carro Minero de Yunques
 icbm.minecart.repulsive.name=Carro Minero Repulsivo
 icbm.minecart.attractive.name=Carro Minero Atractivo
+icbm.minecart.nightmare.name Carro Minero Pesadilla
 
 icbm.minecart.fragmentation.name=Carro Minero de Fragmentacion
 icbm.minecart.contagious.name=Carro Minero Contagioso
