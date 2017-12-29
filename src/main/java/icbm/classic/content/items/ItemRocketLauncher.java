@@ -76,7 +76,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (((Explosion) ex.handler) != null && !evt.isCanceled())
                             {
                                 // Limit the missile to tier two.
-                                if ((((Explosion) ex.handler).getTier() <= Settings.MAX_ROCKET_LAUCNHER_TIER || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
+                                if ((((Explosion) ex.handler).getTier() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
                                 {
                                     EntityMissile entityMissile = new EntityMissile(player);
                                     entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
@@ -121,7 +121,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
     {
-        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(Settings.MAX_ROCKET_LAUCNHER_TIER));
+        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
         lines.add(str);
     }
 }

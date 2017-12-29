@@ -332,13 +332,13 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         if (tier == 0)
         {
-            return Settings.MAX_LAUNCHER_RANGE / 10;
+            return Settings.LAUNCHER_RANGE_TIER1;
         }
         else if (tier == 1)
         {
-            return Settings.MAX_LAUNCHER_RANGE / 5;
+            return Settings.LAUNCHER_RANGE_TIER2;
         }
-        return Settings.MAX_LAUNCHER_RANGE;
+        return Settings.LAUNCHER_RANGE_TIER3;
     }
 
     /** Reads a tile entity from NBT. */
