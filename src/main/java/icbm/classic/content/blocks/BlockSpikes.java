@@ -1,8 +1,7 @@
 package icbm.classic.content.blocks;
 
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.material.Material;

@@ -2,8 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.imp.transform.vector.Location;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.ModelICBM;

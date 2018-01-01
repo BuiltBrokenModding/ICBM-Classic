@@ -1,7 +1,6 @@
 package icbm.classic.content.items;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.explosive.Explosive;

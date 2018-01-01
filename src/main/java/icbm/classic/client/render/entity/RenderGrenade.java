@@ -1,8 +1,8 @@
 package icbm.classic.client.render.entity;
 
 import com.builtbroken.mc.lib.render.RenderUtility;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,6 +17,11 @@ import org.lwjgl.opengl.GL12;
 @SideOnly(Side.CLIENT)
 public class RenderGrenade extends Render
 {
+    protected RenderGrenade(RenderManager renderManager)
+    {
+        super(renderManager);
+    }
+
     @Override
     public void doRender(Entity entity, double x, double y, double z, float par8, float par9)
     {
