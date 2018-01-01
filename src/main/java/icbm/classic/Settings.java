@@ -47,6 +47,6 @@ public class Settings
 
         //Nightmare
         FORCE_ENABLE_NIGHTMARE = configuration.getBoolean("force_enable_nightmare_missile","holiday",
-                false, "Force enables the nightmare missile outside of halloween holiday");
+                FORCE_ENABLE_NIGHTMARE, "Force enables the nightmare missile outside of halloween holiday");
     }
 }
