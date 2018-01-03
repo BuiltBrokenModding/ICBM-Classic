@@ -30,18 +30,4 @@ public class BlockICBM extends Block
     {
         return metadata;
     }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerBlockIcons(IIconRegister iconRegister)
-    {
-        super.registerBlockIcons(iconRegister);
-
-        if (this.requireSidedTextures)
-        {
-            this.iconTop = iconRegister.registerIcon(this.getUnlocalizedName().replace("tile.", "") + "_top");
-            this.iconSide = iconRegister.registerIcon(this.getUnlocalizedName().replace("tile.", "") + "_side");
-            this.iconBottom = iconRegister.registerIcon(this.getUnlocalizedName().replace("tile.", "") + "_bottom");
-        }
-    }
 }

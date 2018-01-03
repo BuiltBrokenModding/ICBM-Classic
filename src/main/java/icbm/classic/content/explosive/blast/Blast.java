@@ -2,26 +2,23 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.imp.transform.vector.Location;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosionEvent.DoExplosionEvent;
-import resonant.api.explosion.ExplosionEvent.ExplosionConstructionEvent;
-import resonant.api.explosion.ExplosionEvent.PostExplosionEvent;
-import resonant.api.explosion.ExplosionEvent.PreExplosionEvent;
-import resonant.api.explosion.IExplosion;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public abstract class Blast extends Explosion implements IExplosion, IWorldPosition
+public abstract class Blast extends Explosion implements IWorldPosition
 {
     //TODO remove position as we are double storing location data
     public Location position;
@@ -34,19 +31,19 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
 
     public Blast(World world, Entity entity, double x, double y, double z, float size)
     {
-        super(world, entity, x, y, z, size);
+        super(world, entity, x, y, z, size, false, true);
         this.position = new Location(world, x, y, z);
     }
 
     public Blast(Location pos, Entity entity, float size)
     {
-        super(pos.oldWorld(), entity, pos.x(), pos.y(), pos.z(), size);
+        super(pos.oldWorld(), entity, pos.x(), pos.y(), pos.z(), size, false, true);
         this.position = pos;
     }
 
     public Blast(Entity entity, float size)
     {
-        super(entity.worldObj, entity, entity.posX, entity.posY, entity.posZ, size);
+        super(entity.world, entity, entity.posX, entity.posY, entity.posZ, size, false, true);
         this.position = new Location(entity);
     }
 
@@ -57,13 +54,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     /** Called before an explosion happens. */
     public final void preExplode()
     {
-        PreExplosionEvent evt = new PreExplosionEvent(this.oldWorld(), this);
-        MinecraftForge.EVENT_BUS.post(evt);
-
-        if (!evt.isCanceled())
-        {
-            this.doPreExplode();
-        }
+        this.doPreExplode();
     }
 
     /** Called every tick when this explosive is being progressed. */
@@ -71,14 +62,8 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
 
     public final void onExplode()
     {
-        DoExplosionEvent evt = new DoExplosionEvent(this.oldWorld(), this);
-        MinecraftForge.EVENT_BUS.post(evt);
-
-        if (!evt.isCanceled())
-        {
-            this.doExplode();
-            this.callCount++;
-        }
+        this.doExplode();
+        this.callCount++;
     }
 
     protected void doPostExplode()
@@ -88,13 +73,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     /** Called after the explosion is completed. */
     public final void postExplode()
     {
-        PostExplosionEvent evt = new PostExplosionEvent(this.oldWorld(), this);
-        MinecraftForge.EVENT_BUS.post(evt);
-
-        if (!evt.isCanceled())
-        {
-            this.doPostExplode();
-        }
+        this.doPostExplode();
     }
 
     /**
@@ -106,7 +85,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
      */
     public void onPositionUpdate(double posX, double posY, double posZ)
     {
-        this.explosionX = posX;
+        this.pos = posX;
         this.explosionY = posY;
         this.explosionZ = posZ;
         position = new Location(oldWorld(), posX, posY, posZ);
@@ -124,27 +103,20 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
     }
 
     /** All outside classes should call this. */
-    @Override
     public void explode()
     {
-        ExplosionConstructionEvent evt = new ExplosionConstructionEvent(this.oldWorld(), this);
-        MinecraftForge.EVENT_BUS.post(evt);
-
-        if (!evt.isCanceled())
+        if (this.proceduralInterval() > 0)
         {
-            if (this.proceduralInterval() > 0)
+            if (!this.oldWorld().isRemote)
             {
-                if (!this.oldWorld().isRemote)
-                {
-                    this.oldWorld().spawnEntityInWorld(new EntityExplosion(this));
-                }
+                this.oldWorld().spawnEntityInWorld(new EntityExplosion(this));
             }
-            else
-            {
-                this.doPreExplode();
-                this.doExplode();
-                this.doPostExplode();
-            }
+        }
+        else
+        {
+            this.doPreExplode();
+            this.doExplode();
+            this.doPostExplode();
         }
     }
 
@@ -153,13 +125,13 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
         return 1;
     }
 
-    @Override
+
     public float getRadius()
     {
         return Math.max(3, this.explosionSize);
     }
 
-    @Override
+
     public long getEnergy()
     {
         return 0;
@@ -187,7 +159,7 @@ public abstract class Blast extends Explosion implements IExplosion, IWorldPosit
         Location minCoord = position.add(-radius - 1);
         Location maxCoord = position.add(radius + 1);
         List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
-        Vec3 var31 = Vec3.createVectorHelper(position.x(), position.y(), position.z());
+        Vec3d var31 = new Vec3d(position.x(), position.y(), position.z());
 
         for (int i = 0; i < allEntities.size(); ++i)
         {

@@ -1,15 +1,13 @@
 package icbm.classic.content.entity;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import java.lang.reflect.Constructor;
 

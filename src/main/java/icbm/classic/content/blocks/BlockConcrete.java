@@ -8,7 +8,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class BlockConcrete extends BlockICBM
 {
@@ -21,10 +24,10 @@ public class BlockConcrete extends BlockICBM
     }
 
     @Override
-    public float getExplosionResistance(Entity par1Entity, World world, BlockPos pos, double explosionX, double explosionY, double explosionZ)
+    public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion)
     {
         IBlockState blockState = world.getBlockState(pos);
-
+    /*
         switch (metadata)
         {
             case 1:
@@ -32,8 +35,8 @@ public class BlockConcrete extends BlockICBM
             case 2:
                 return 48;
         }
-
-        return this.getExplosionResistance(par1Entity);
+*/
+        return this.getExplosionResistance(exploder);
     }
 
     @Override

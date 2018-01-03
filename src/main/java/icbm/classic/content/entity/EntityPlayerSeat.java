@@ -1,15 +1,19 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 /**
  * Used a placeholder to move riding entities around
@@ -36,49 +40,32 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     public void onEntityUpdate()
     {
-        if (!worldObj.isRemote && host == null || this.posY < -64.0D)
+        if (!world.isRemote && host == null || this.posY < -64.0D)
         {
-            this.kill();
+            this.setDead();
         }
     }
 
     @Override
-    public boolean interactFirst(EntityPlayer entityPlayer)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
-        //Handle player riding missile
-        if (this.riddenByEntity != null && this.riddenByEntity instanceof EntityPlayer && this.riddenByEntity != entityPlayer)
-        {
-            return true;
-        }
-        else if (this.riddenByEntity != null && this.riddenByEntity != entityPlayer)
+        if (player.isSneaking())
         {
             return false;
         }
-        else
+        else if (this.isBeingRidden())
         {
-            if (!this.worldObj.isRemote)
-            {
-                entityPlayer.mountEntity(this);
-            }
             return true;
         }
-    }
-
-    @Override
-    public void updateRiderPosition()
-    {
-        if (this.riddenByEntity != null)
+        else
         {
-            this.riddenByEntity.setPosition(this.posX + (rideOffset != null ? rideOffset.x() : 0),
-                    this.posY + this.riddenByEntity.getYOffset() + this.getMountedYOffset(),
-                    this.posZ + (rideOffset != null ? rideOffset.z() : 0));
-        }
-    }
+            if (!this.world.isRemote)
+            {
+                player.startRiding(this);
+            }
 
-    @Override
-    public AxisAlignedBB getBoundingBox()
-    {
-        return boundingBox;
+            return true;
+        }
     }
 
     @Override
@@ -104,31 +91,31 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
+    @Nullable
+    public AxisAlignedBB getCollisionBox(Entity entityIn)
+    {
+        return null; //TODO might be needed for interaction
+    }
+
+    @Override
+    public void updatePassenger(Entity passenger)
+    {
+        if (this.isPassenger(passenger))
+        {
+            passenger.setPosition(this.posX, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ); //TODO add rotation and position math
+        }
+    }
+
+    @Override
     public void applyEntityCollision(Entity p_70108_1_)
     {
         //disable collision
     }
 
     @Override
-    protected boolean func_145771_j(double p_145771_1_, double p_145771_3_, double p_145771_5_)
-    {
-        //Disable collision
-        return false;
-    }
-
-    @Override
     public void addVelocity(double p_70024_1_, double p_70024_3_, double p_70024_5_)
     {
         //disable velocity
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double p_70056_1_, double p_70056_3_, double p_70056_5_, float p_70056_7_, float p_70056_8_, int p_70056_9_)
-    {
-        this.setPosition(p_70056_1_, p_70056_3_, p_70056_5_);
-        this.setRotation(p_70056_7_, p_70056_8_);
-        //Removed collision update
     }
 
     @Override
@@ -165,5 +152,19 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         {
             rideOffset = new Pos(additionalData);
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isInRangeToRender3d(double x, double y, double z)
+    {
+        return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isInRangeToRenderDist(double distance)
+    {
+        return false;
     }
 }

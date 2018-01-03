@@ -3,18 +3,16 @@ package icbm.classic.content.explosive;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.framework.explosive.handler.ExplosiveHandler;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.IModelCustom;
-import resonant.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive extends ExplosiveHandler implements IExplosive
+public abstract class Explosive extends ExplosiveHandler
 {
     /** The unique identification name for this explosive. */
     private String nameID;
@@ -121,7 +119,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
      */
     public void yinZhaQian(World world, Entity entity)
     {
-        world.playSoundAtEntity(entity, "random.fuse", 1.0F, 1.0F);
+        world.playSound(entity, entity"random.fuse", 1.0F, 1.0F);
     }
 
     /**
@@ -131,7 +129,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
      */
     public void onYinZha(World world, Pos position, int fuseTicks)
     {
-        world.spawnParticle("smoke", position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
+        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
 
     @SideOnly(Side.CLIENT)
@@ -142,18 +140,6 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
 
     @SideOnly(Side.CLIENT)
     public ResourceLocation getBlockResource()
-    {
-        return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon()
-    {
-        return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public IModelCustom getMissileModel()
     {
         return null;
     }

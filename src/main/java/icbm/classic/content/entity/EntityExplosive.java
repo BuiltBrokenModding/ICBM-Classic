@@ -8,6 +8,7 @@ import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -71,19 +72,6 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     public void onUpdate()
     {
-        if (!this.worldObj.isRemote)
-        {
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(worldObj, posX, posY, posZ, ExplosiveType.BLOCK, explosiveID.handler);
-            MinecraftForge.EVENT_BUS.post(evt);
-
-            if (evt.isCanceled())
-            {
-                ICBMClassic.blockExplosive.dropBlockAsItem(this.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ, this.explosiveID.ordinal(), 0);
-                this.setDead();
-                return;
-            }
-        }
-
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
@@ -92,7 +80,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.motionY -= 0.045D;
         this.motionZ *= 0.95;
 
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 
         if (this.fuse < 1)
         {
@@ -100,7 +88,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         }
         else
         {
-            this.explosiveID.handler.onYinZha(this.worldObj, new Pos(this.posX, this.posY, this.posZ), this.fuse);
+            this.explosiveID.handler.onYinZha(this.world, new Pos(this.posX, this.posY, this.posZ), this.fuse);
         }
 
         this.fuse--;

@@ -5,7 +5,6 @@ import com.builtbroken.mc.api.data.EnumProjectileTypes;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
 import com.builtbroken.mc.prefab.entity.EntityProjectile;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
@@ -17,10 +16,9 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.IMissile;
 
@@ -76,9 +74,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     // Used for the rocket launcher preventing the players from killing themselves.
     private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
 
-    // Client side
-    protected final IUpdatePlayerListBox shengYin; //TODO find out what this was used for
-
     public NBTTagCompound nbtData = new NBTTagCompound();
 
     public EntityMissile(World w)
@@ -86,8 +81,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         super(w);
         this.setSize(.5F, .5F);
         this.inAirKillTime = 144000 /* 2 hours */;
-        this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
-        this.renderDistanceWeight = 3;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
     }
@@ -97,20 +90,16 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         super(w, x, y, z, yaw, pitch, speed, 1);
         this.setSize(.5F, .5F);
         this.inAirKillTime = 144000 /* 2 hours */;
-        this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
-        this.renderDistanceWeight = 3;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
     }
 
     public EntityMissile(EntityLivingBase entity)
     {
-        super(entity.worldObj, entity, 2);
+        super(entity.world, entity, 2);
         this.setSize(.5F, .5F);
         this.launcherPos = new Pos(entity);
         this.inAirKillTime = 144000 /* 2 hours */;
-        this.shengYin = this.worldObj != null ? ICBMClassic.proxy.getDaoDanShengYin(this) : null;
-        this.renderDistanceWeight = 3;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
     }
@@ -152,7 +141,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.updateMotion();
 
         //Play audio
-        this.worldObj.playSoundAtEntity(this, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world.playSoundAtEntity(this, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
 
         //Trigger events
         // TODO add an event system here
@@ -219,7 +208,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void updateMotion()
     {
-        if (!this.worldObj.isRemote)
+        if (!this.world.isRemote)
         {
             if (this.ticksInAir >= 0)
             {
@@ -284,7 +273,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             super.onImpactEntity(entityHit, velocity);
             explode();
@@ -296,7 +285,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         if (this.launcherPos != null)
         {
-            TileEntity tileEntity = this.launcherPos.getTileEntity(this.worldObj);
+            TileEntity tileEntity = this.launcherPos.getTileEntity(this.world);
 
             if (tileEntity != null && tileEntity instanceof ILauncherContainer)
             {
@@ -320,7 +309,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         //Handle player riding missile
-        if (!this.worldObj.isRemote && (this.riddenByEntity == null || this.riddenByEntity == entityPlayer))
+        if (!this.world.isRemote && (this.riddenByEntity == null || this.riddenByEntity == entityPlayer))
         {
             entityPlayer.mountEntity(this);
             return true;
@@ -346,7 +335,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     private void spawnMissileSmoke()
     {
-        if (this.worldObj.isRemote)
+        if (this.world.isRemote)
         {
             Pos position = new Pos((IPos3D) this);
             // The distance of the smoke relative
@@ -362,14 +351,14 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
 
             position = position.add(x, y, z);
-            this.worldObj.spawnParticle("flame", position.x(), position.y(), position.z(), 0, 0, 0);
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            this.world.spawnParticle("flame", position.x(), position.y(), position.z(), 0, 0, 0);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.worldObj, position, 4, 2);
+            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
         }
     }
 
@@ -436,7 +425,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void setDead()
     {
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
             RadarRegistry.remove(this);
         }
@@ -459,14 +448,14 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             {
                 if (this.explosiveID == null)
                 {
-                    if (!this.worldObj.isRemote)
+                    if (!this.world.isRemote)
                     {
-                        this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
+                        this.world.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
                     }
                 }
                 else
                 {
-                    ((Explosion) this.explosiveID.handler).createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
+                    ((Explosion) this.explosiveID.handler).createExplosion(this.world, this.posX, this.posY, this.posZ, this);
                 }
 
                 this.isExpoding = true;
@@ -490,9 +479,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             isExpoding = true;
 
-            if (!this.worldObj.isRemote)
+            if (!this.world.isRemote)
             {
-                worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
+                world.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
             }
 
             setDead();
@@ -502,16 +491,16 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void dropMissileAsItem()
     {
-        if (!this.isExpoding && !this.worldObj.isRemote)
+        if (!this.isExpoding && !this.world.isRemote)
         {
-            EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID.ordinal()));
+            EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID.ordinal()));
 
             float var13 = 0.05F;
             Random random = new Random();
             entityItem.motionX = ((float) random.nextGaussian() * var13);
             entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
             entityItem.motionZ = ((float) random.nextGaussian() * var13);
-            this.worldObj.spawnEntityInWorld(entityItem);
+            this.world.spawnEntityInWorld(entityItem);
         }
 
         this.setDead();

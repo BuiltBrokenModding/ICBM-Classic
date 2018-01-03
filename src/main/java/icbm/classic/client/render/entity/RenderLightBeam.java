@@ -14,14 +14,14 @@ import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.rela
 @SideOnly(Side.CLIENT)
 public class RenderLightBeam extends Render
 {
+    protected RenderLightBeam(RenderManager renderManager)
+    {
+        super(renderManager);
+    }
+
     @Override
     public void doRender(Entity par1Entity, double x, double y, double z, float f, float f1)
     {
-        if (this.renderManager == null)
-        {
-            this.setRenderManager(RenderManager.instance);
-        }
-
         EntityLightBeam entity = ((EntityLightBeam) par1Entity);
 
         Tessellator tessellator = Tessellator.instance;

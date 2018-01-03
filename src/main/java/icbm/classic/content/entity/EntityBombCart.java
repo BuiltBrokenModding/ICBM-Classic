@@ -1,17 +1,19 @@
 package icbm.classic.content.entity;
 
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecartTNT;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
@@ -44,28 +46,15 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     protected void explodeCart(double par1)
     {
         // TODO add event
-        this.worldObj.spawnParticle("hugeexplosion", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        explosive.handler.createExplosion(worldObj, posX, posY, posZ, this);
+        this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
+        explosive.handler.createExplosion(world, posX, posY, posZ, this);
         this.setDead();
-    }
-
-    public boolean interact(EntityPlayer player)
-    {
-        if (player.getCurrentEquippedItem() != null)
-        {
-            if (player.getCurrentEquippedItem().getItem() == Items.flint_and_steel)
-            {
-                this.ignite();
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
     public void killMinecart(DamageSource par1DamageSource)
     {
-        if(!worldObj.isRemote)
+        if(!world.isRemote)
         {
             this.setDead();
             double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
@@ -80,6 +69,16 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
                 this.explodeCart(d0);
             }
         }
+    }
+
+    @Override
+    public EntityItem entityDropItem(ItemStack stack, float offsetY)
+    {
+        if(stack.getItem() == Item.getItemFromBlock(Blocks.TNT))
+        {
+            return super.entityDropItem(getCartItem(), offsetY);
+        }
+        return entityDropItem(stack, offsetY);
     }
 
     @Override
@@ -103,8 +102,8 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     }
 
     @Override
-    public Block func_145817_o()
+    public IBlockState getDefaultDisplayTile()
     {
-        return ICBMClassic.blockExplosive;
+        return ICBMClassic.blockExplosive.getDefaultState();
     }
 }
