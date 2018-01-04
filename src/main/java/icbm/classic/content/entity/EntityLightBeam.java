@@ -1,11 +1,11 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnData
 {
@@ -18,7 +18,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.setSize(1F, 1F);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
-        this.renderDistanceWeight = 3;
+        //this.renderDistanceWeight = 3;
     }
 
     public EntityLightBeam(World world, IPos3D position, int life, float red, float green, float blue)
@@ -65,12 +65,6 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         {
             this.setDead();
         }
-    }
-
-    @Override
-    public float getShadowSize()
-    {
-        return 0F;
     }
 
     @Override

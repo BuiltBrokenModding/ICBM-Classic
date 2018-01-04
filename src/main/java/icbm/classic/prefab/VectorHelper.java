@@ -1,9 +1,9 @@
 package icbm.classic.prefab;
 
+import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class VectorHelper
 {
@@ -17,16 +17,16 @@ public class VectorHelper
 	 * @param side - The side you are trying to find. A number between 0 and 5.
 	 * @return The side relative to the facing direction.
 	 */
-	public static ForgeDirection getOrientationFromSide(ForgeDirection front, ForgeDirection side)
+	public static Direction getOrientationFromSide(Direction front, Direction side)
 	{
-		if (front != ForgeDirection.UNKNOWN && side != ForgeDirection.UNKNOWN)
+		if (front != Direction.UNKNOWN && side != Direction.UNKNOWN)
 		{
-			return ForgeDirection.getOrientation(RELATIVE_MATRIX[front.ordinal()][side.ordinal()]);
+			return Direction.getOrientation(RELATIVE_MATRIX[front.ordinal()][side.ordinal()]);
 		}
-		return ForgeDirection.UNKNOWN;
+		return Direction.UNKNOWN;
 	}
 
-	public static TileEntity getTileEntityFromSide(World world, Pos position, ForgeDirection side)
+	public static TileEntity getTileEntityFromSide(World world, Pos position, Direction side)
 	{
 		return position.add(side).getTileEntity(world);
 	}

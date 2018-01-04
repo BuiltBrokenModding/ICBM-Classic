@@ -5,20 +5,19 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.data.Direction;
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
-import resonant.api.explosion.IExplosive;
-import resonant.api.explosion.IExplosiveContainer;
 
-public class TileEntityExplosive extends TileEntity implements IExplosiveContainer, IPacketReceiver, IRotatable
+public class TileEntityExplosive extends TileEntity implements IPacketReceiver, IRotatable
 {
     /** Is the tile currently exploding */
     public boolean exploding = false;
@@ -26,12 +25,6 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
     public Explosives explosive = Explosives.CONDENSED;
     /** Extra explosive data */
     public NBTTagCompound nbtData = new NBTTagCompound();
-
-    @Override
-    public boolean canUpdate()
-    {
-        return false;
-    }
 
     /** Reads a tile entity from NBT. */
     @Override
@@ -44,11 +37,11 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
 
     /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound par1NBTTagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        super.writeToNBT(par1NBTTagCompound);
         par1NBTTagCompound.setInteger("explosiveID", this.explosive.ordinal());
         par1NBTTagCompound.setTag("data", this.nbtData);
+        return super.writeToNBT(par1NBTTagCompound);
     }
 
     @Override
@@ -61,15 +54,15 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
             if (ID == 1)
             {
                 explosive = Explosives.get(data.readInt());
-                worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+                world.markBlockRangeForRenderUpdate(pos, pos);
             }
-            else if (ID == 2 && !this.worldObj.isRemote)
+            else if (ID == 2 && !this.world.isRemote)
             {
                 // Packet explode command
                 if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
                 {
                     ItemStack itemStack = player.inventory.getCurrentItem();
-                    BlockExplosive.triggerExplosive(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.explosive, 0);
+                    BlockExplosive.triggerExplosive(this.world, pos, this.explosive, 0);
                     ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
                 }
             }
@@ -81,30 +74,28 @@ public class TileEntityExplosive extends TileEntity implements IExplosiveContain
     }
 
     @Override
-    public Packet getDescriptionPacket()
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
         return Engine.packetHandler.toMCPacket(new PacketTile(this, (byte) 1, this.explosive.ordinal()));
     }
 
     @Override
-    public ForgeDirection getDirection()
+    public Direction getDirection()
     {
-        return ForgeDirection.getOrientation(this.getBlockMetadata());
+        return Direction.getOrientation(this.getBlockMetadata());
     }
 
     @Override
-    public void setDirection(ForgeDirection facingDirection)
+    public void setDirection(Direction facingDirection)
     {
-        this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, facingDirection.ordinal(), 2);
+        this.world.setBlockState(pos, getBlockType().getDefaultState().withProperty(BlockExplosive.ROTATION_PROP, facingDirection.getEnumFacing()), 2);
     }
 
-    @Override
-    public IExplosive getExplosiveType()
+    public Explosive getExplosiveType()
     {
         return this.explosive.handler;
     }
 
-    @Override
     public NBTTagCompound getTagCompound()
     {
         return this.nbtData;

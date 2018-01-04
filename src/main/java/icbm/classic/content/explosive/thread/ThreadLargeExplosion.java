@@ -1,12 +1,13 @@
 package icbm.classic.content.explosive.thread;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.content.explosive.blast.Blast;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
 
@@ -22,39 +23,29 @@ public class ThreadLargeExplosion extends ThreadExplosion
 {
     public static interface IThreadCallBack
     {
-        public float getResistance(World world, IPos3D position, IPos3D targetPosition, Entity source, Block block);
+        float getResistance(World world, IPos3D blastCenter, BlockPos pos, Entity source, Block block);
     }
 
     public IThreadCallBack callBack;
 
-    public ThreadLargeExplosion(IWorldPosition position, int range, float energy, Entity source, IThreadCallBack callBack)
+    public ThreadLargeExplosion(Blast blast, int range, float energy, Entity source, IThreadCallBack callBack)
     {
-        super(position, range, energy, source);
+        super(blast, range, energy, source);
         this.callBack = callBack;
     }
 
-    public ThreadLargeExplosion(IWorldPosition position, int range, float energy, Entity source)
+    public ThreadLargeExplosion(Blast blast, int range, float energy, Entity source)
     {
-        this(position, range, energy, source, new IThreadCallBack()
-        {
+        this(blast, range, energy, source, (world, blastCenter, pos, source1, block) -> {
 
-            @Override
-            public float getResistance(World world, IPos3D pos, IPos3D targetPosition, Entity source, Block block)
+            if (block instanceof BlockLiquid || block instanceof IFluidBlock)
             {
-                float resistance = 0;
-
-                if (block instanceof BlockLiquid || block instanceof IFluidBlock)
-                {
-                    resistance = 0.25f;
-                }
-                else
-                {
-                    resistance = block.getExplosionResistance(source, world, (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z(), pos.x(), pos.y(), pos.z());
-                }
-
-                return resistance;
+                return 0.25f;
             }
-
+            else
+            {
+                return block.getExplosionResistance(world, pos, source1, blast);
+            }
         });
     }
 
@@ -73,30 +64,32 @@ public class ThreadLargeExplosion extends ThreadExplosion
                 Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
                 float power = this.energy - (this.energy * this.position.oldWorld().rand.nextFloat() / 2);
 
-                Location t = position;
+                BlockPos blockPos = new BlockPos(position.xi(), position.yi(), position.zi());
 
                 for (float d = 0.3F; power > 0f; power -= d * 0.75F * 10)
                 {
-                    if (t.distance(position) > this.radius)
+                    if (position.distance(blockPos) > this.radius)
                     {
                         break;
                     }
 
-                    Block block = t.getBlock();
 
-                    if (block != null)
+                    final IBlockState state = position.world.getBlockState(blockPos);
+                    final Block block = state.getBlock();
+
+                    if (state != null && !block.isAir(state, position.world, blockPos))
                     {
-                        if (block.getBlockHardness(this.position.oldWorld(), t.xi(), t.yi(), t.zi()) >= 0)
+                        if (state.getBlockHardness(position.world, blockPos) >= 0)
                         {
-                            power -= this.callBack.getResistance(this.position.oldWorld(), position, t, source, block);
+                            power -= this.callBack.getResistance(this.position.oldWorld(), position, blockPos, source, block);
 
                             if (power > 0f)
                             {
-                                this.results.add(t.toPos());
+                                this.results.add(blockPos);
                             }
                         }
                     }
-                    t = t.add(delta);
+                    blockPos = blockPos.add(delta.getX(), delta.getY(), delta.getZ());
                 }
             }
         }

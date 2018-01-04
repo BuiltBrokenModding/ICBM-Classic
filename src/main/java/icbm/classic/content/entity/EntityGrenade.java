@@ -1,21 +1,17 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosionEvent;
-import resonant.api.explosion.ExplosiveType;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
 {
@@ -29,7 +25,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     {
         super(par1World);
         this.setSize(0.3F, 0.3F);
-        this.renderDistanceWeight = 8;
+        //this.renderDistanceWeight = 8;
     }
 
     public EntityGrenade(World par1World, Pos position, Explosives explosiveID)
@@ -49,7 +45,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         this.posY -= 0.10000000149011612D;
         this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F;
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.yOffset = 0.0F;
+        //this.yOffset = 0.0F;
         float var3 = 0.4F;
         this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * var3;
         this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * var3;
@@ -59,7 +55,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         if (this.haoMa != null)
         {
@@ -84,7 +80,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction. */
     public void setThrowableHeading(double par1, double par3, double par5, float par7, float par8)
     {
-        float var9 = MathHelper.sqrt_double(par1 * par1 + par3 * par3 + par5 * par5);
+        float var9 = MathHelper.sqrt(par1 * par1 + par3 * par3 + par5 * par5);
         par1 /= var9;
         par3 /= var9;
         par5 /= var9;
@@ -97,7 +93,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         this.motionX = par1;
         this.motionY = par3;
         this.motionZ = par5;
-        float var10 = MathHelper.sqrt_double(par1 * par1 + par5 * par5);
+        float var10 = MathHelper.sqrt(par1 * par1 + par5 * par5);
         this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
         this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var10) * 180.0D / Math.PI);
     }
@@ -112,14 +108,16 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
 
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
-            float var7 = MathHelper.sqrt_double(par1 * par1 + par5 * par5);
+            float var7 = MathHelper.sqrt(par1 * par1 + par5 * par5);
             this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
             this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var7) * 180.0D / Math.PI);
         }
     }
 
-    /** returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
-     * spiders and wolves to prevent them from trampling crops */
+    /**
+     * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
+     * spiders and wolves to prevent them from trampling crops
+     */
     @Override
     protected boolean canTriggerWalking()
     {
@@ -135,32 +133,13 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public void onUpdate()
     {
-        if (!this.worldObj.isRemote)
-        {
-            ExplosionEvent.ExplosivePreDetonationEvent evt = new ExplosionEvent.ExplosivePreDetonationEvent(this.worldObj, this, ExplosiveType.ITEM, this.haoMa.handler);
-            MinecraftForge.EVENT_BUS.post(evt);
-
-            if (evt.isCanceled())
-            {
-                float var6 = 0.7F;
-                double var7 = this.worldObj.rand.nextFloat() * var6 + (1.0F - var6) * 0.5D;
-                double var9 = this.worldObj.rand.nextFloat() * var6 + (1.0F - var6) * 0.5D;
-                double var11 = this.worldObj.rand.nextFloat() * var6 + (1.0F - var6) * 0.5D;
-                EntityItem var13 = new EntityItem(this.worldObj, this.posX + var7, this.posY + var9, this.posZ + var11, new ItemStack(ICBMClassic.itemGrenade, 1, this.haoMa.ordinal()));
-                var13.delayBeforeCanPickup = 10;
-                this.worldObj.spawnEntityInWorld(var13);
-                this.setDead();
-                return;
-            }
-        }
-
         this.lastTickPosX = this.posX;
         this.lastTickPosY = this.posY;
         this.lastTickPosZ = this.posZ;
         super.onUpdate();
 
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        float var16 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+        float var16 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
 
         for (this.rotationPitch = (float) (Math.atan2(this.motionY, var16) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
@@ -193,7 +172,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             for (int var7 = 0; var7 < 4; ++var7)
             {
                 float var19 = 0.25F;
-                this.worldObj.spawnParticle("bubble", this.posX - this.motionX * var19, this.posY - this.motionY * var19, this.posZ - this.motionZ * var19, this.motionX, this.motionY, this.motionZ);
+                this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * var19, this.posY - this.motionY * var19, this.posZ - this.motionZ * var19, this.motionX, this.motionY, this.motionZ);
             }
 
             var17 = 0.8F;
@@ -217,14 +196,14 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
 
         if (this.ticksExisted > Math.max(60, (haoMa.handler.getYinXin())))
         {
-            this.worldObj.spawnParticle("hugeexplosion", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            (haoMa.handler).createExplosion(this.worldObj, this.posX, this.posY + 0.3f, this.posZ, this);
+            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
+            (haoMa.handler).createExplosion(this.world, this.posX, this.posY + 0.3f, this.posZ, this);
             this.setDead();
             return;
         }
         else
         {
-            (haoMa.handler).onYinZha(this.worldObj, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
+            (haoMa.handler).onYinZha(this.world, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
         }
     }
 
@@ -232,7 +211,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public boolean handleWaterMovement()
     {
-        return this.worldObj.handleMaterialAcceleration(this.boundingBox, Material.water, this);
+        return this.world.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.WATER, this);
     }
 
     /** Returns true if other Entities should be prevented from moving through this Entity. */

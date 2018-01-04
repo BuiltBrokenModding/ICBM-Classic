@@ -19,14 +19,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.IMissile;
 
 import java.util.HashSet;
 import java.util.Random;
 
 /** @Author - Calclavia */
-public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IMissile
+public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
 {
     public static final float SPEED = 0.012F;
 
@@ -141,7 +139,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.updateMotion();
 
         //Play audio
-        this.world.playSoundAtEntity(this, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
+        //this.world.playSound(posX, posY, posZ, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
 
         //Trigger events
         // TODO add an event system here
@@ -156,7 +154,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
     }
 
-    @Override
     public void launch(Pos target, int height)
     {
         this.lockHeight = height;
@@ -280,7 +277,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
     }
 
-    @Override
+
     public ILauncherContainer getLauncher()
     {
         if (this.launcherPos != null)

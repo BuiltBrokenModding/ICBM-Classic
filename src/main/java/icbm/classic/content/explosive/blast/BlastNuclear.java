@@ -4,10 +4,11 @@ import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class BlastNuclear extends Blast
@@ -40,7 +41,7 @@ public class BlastNuclear extends Blast
     {
         if (!this.oldWorld().isRemote)
         {
-            this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.energy, this.exploder);
+            this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
 
             this.thread.start();
 
@@ -65,7 +66,7 @@ public class BlastNuclear extends Blast
                 {
                     for (int z = -r; z < r; z++)
                     {
-                        double distance = MathHelper.sqrt_double(x * x + z * z);
+                        double distance = MathHelper.sqrt(x * x + z * z);
 
                         if (r > distance && r - 3 < distance)
                         {
@@ -81,7 +82,7 @@ public class BlastNuclear extends Blast
 
         this.doDamageEntities(this.getRadius(), this.energy * 1000);
 
-        this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+        //this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class BlastNuclear extends Blast
                 {
                     for (int z = -r; z < r; z++)
                     {
-                        double distance = MathHelper.sqrt_double(x * x + z * z);
+                        double distance = MathHelper.sqrt(x * x + z * z);
 
                         if (distance < r && distance > r - 1)
                         {
@@ -135,13 +136,15 @@ public class BlastNuclear extends Blast
     {
         try
         {
-            if (!this.oldWorld().isRemote && this.thread.isComplete)
+            if (!oldWorld().isRemote && this.thread.isComplete)
             {
-                for (Pos p : this.thread.results)
+                for (BlockPos p : this.thread.results)
                 {
-                    Block block = this.oldWorld().getBlock(p.xi(), p.yi(), p.zi());
-                    if (block != null)
-                        block.onBlockExploded(this.oldWorld(), p.xi(), p.yi(), p.zi(), this);
+                    IBlockState state = this.oldWorld().getBlockState(p);
+                    if (state != null && !state.getBlock().isAir(state,  oldWorld(), p))
+                    {
+                        state.getBlock().onBlockExploded(this.oldWorld(), p, this);
+                    }
 
                 }
             }
@@ -164,12 +167,14 @@ public class BlastNuclear extends Blast
             }
         }
 
-        this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 10.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+        //this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 10.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
-    /** The interval in ticks before the next procedural call of this explosive
-     *
-     * return - Return -1 if this explosive does not need procedural calls */
+    /**
+     * The interval in ticks before the next procedural call of this explosive
+     * <p>
+     * return - Return -1 if this explosive does not need procedural calls
+     */
     @Override
     public int proceduralInterval()
     {

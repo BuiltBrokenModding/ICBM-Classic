@@ -1,23 +1,19 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.api.explosion.ExplosiveType;
-import resonant.api.explosion.IExplosiveContainer;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData, IExplosiveContainer
+public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData
 {
     // How long the fuse is (in ticks)
     public int fuse = 90;
@@ -35,7 +31,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.fuse = 0;
         this.preventEntitySpawning = true;
         this.setSize(0.98F, 0.98F);
-        this.yOffset = this.height / 2.0F;
+        //this.yOffset = this.height / 2.0F;
     }
 
     public EntityExplosive(World par1World, Pos position, byte orientation, Explosives explosiveID)
@@ -63,7 +59,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         return "Explosives";
     }
@@ -98,8 +94,8 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
     public void explode()
     {
-        this.worldObj.spawnParticle("hugeexplosion", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        this.getExplosiveType().createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
+        this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
+        this.getExplosiveType().createExplosion(this.world, this.posX, this.posY, this.posZ, this);
         this.setDead();
     }
 
@@ -119,12 +115,6 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         nbt.setByte("Fuse", (byte) this.fuse);
         nbt.setInteger("explosiveID", this.explosiveID.ordinal());
         nbt.setTag("data", this.nbtData);
-    }
-
-    @Override
-    public float getShadowSize()
-    {
-        return 0.5F;
     }
 
     @Override
@@ -155,13 +145,13 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     }
 
     @Override
-    public ForgeDirection getDirection()
+    public Direction getDirection()
     {
-        return ForgeDirection.getOrientation(this.orientation);
+        return Direction.getOrientation(this.orientation);
     }
 
     @Override
-    public void setDirection(ForgeDirection facingDirection)
+    public void setDirection(Direction facingDirection)
     {
         this.orientation = (byte) facingDirection.ordinal();
     }
@@ -182,13 +172,11 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.orientation = data.readByte();
     }
 
-    @Override
     public Explosive getExplosiveType()
     {
         return this.explosiveID.handler;
     }
 
-    @Override
     public NBTTagCompound getTagCompound()
     {
         return this.nbtData;

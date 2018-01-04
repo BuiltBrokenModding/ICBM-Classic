@@ -2,11 +2,13 @@ package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
-import icbm.classic.content.explosive.blast.BlastRedmatter;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import java.lang.reflect.Constructor;
@@ -29,8 +31,8 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         this.preventEntitySpawning = true;
         this.noClip = true;
         this.setSize(0.98F, 0.98F);
-        this.yOffset = this.height / 2.0F;
-        this.renderDistanceWeight = 2f;
+        //this.yOffset = this.height / 2.0F;
+        //this.renderDistanceWeight = 2f;
         this.ignoreFrustumCheck = true;
         this.ticksExisted = 0;
     }
@@ -42,7 +44,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         return "Explosion[" + blast + "]";
     }
@@ -78,16 +80,6 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     protected void entityInit()
     {
-    }
-
-    @Override
-    protected boolean func_145771_j(double p_145771_1_, double p_145771_3_, double p_145771_5_)
-    {
-        if (!(blast instanceof BlastRedmatter))
-        {
-            return super.func_145771_j(p_145771_1_, p_145771_3_, p_145771_5_);
-        }
-        return false;
     }
 
     /**
@@ -126,7 +118,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             this.motionZ *= .98;
 
             //Normalize
-            float speed = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
+            float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
             this.motionX /= (double) speed;
             this.motionY /= (double) speed;
             this.motionZ /= (double) speed;
@@ -138,12 +130,12 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             this.motionZ *= (double) speed;
 
             //Move box
-            this.boundingBox.offset(motionX, motionY, motionZ);
+            this.getEntityBoundingBox().offset(motionX, motionY, motionZ);
 
             //Reset position based on box
-            this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
-            this.posY = this.boundingBox.minY + (double) this.yOffset - (double) this.ySize;
-            this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
+            this.posX = (this.getEntityBoundingBox().minX + this.getEntityBoundingBox().maxX) / 2.0D;
+            this.posY = (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D;
+            this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
 
             //Update blast
             getBlast().onPositionUpdate(posX, posY + blastYOffset, posZ);
@@ -168,7 +160,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public void moveEntity(double p_70091_1_, double p_70091_3_, double p_70091_5_)
+    public void move(MoverType type, double p_70091_1_, double p_70091_3_, double p_70091_5_)
     {
         //Remove default movement
     }
@@ -192,7 +184,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
                 Class clazz = Class.forName(blastSave.getString("class"));
                 Constructor constructor = clazz.getConstructor(World.class, Entity.class, double.class, double.class, double.class, float.class);
                 //TODO save person who triggered the explosion
-                this.setBlast((Blast) constructor.newInstance(this.worldObj, null, posX, posY + blastYOffset, posZ, 0));
+                this.setBlast((Blast) constructor.newInstance(this.world, null, posX, posY + blastYOffset, posZ, 0));
             }
 
             this.getBlast().readFromNBT(blastSave);

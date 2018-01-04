@@ -3,12 +3,13 @@ package icbm.classic.content.explosive;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.framework.explosive.handler.ExplosiveHandler;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 /** The explosive registry class. Used to register explosions. */
@@ -119,7 +120,7 @@ public abstract class Explosive extends ExplosiveHandler
      */
     public void yinZhaQian(World world, Entity entity)
     {
-        world.playSound(entity, entity"random.fuse", 1.0F, 1.0F);
+        world.playSound(entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
     }
 
     /**
@@ -170,18 +171,18 @@ public abstract class Explosive extends ExplosiveHandler
 
     }
 
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9)
+    public boolean onBlockActivated(World world, BlockPos pos, EntityPlayer entityPlayer, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         return false;
     }
 
-    public void createExplosion(World world, double x, double y, double z, Entity entity)
+    public void createExplosion(World world, BlockPos pos, Entity entity)
     {
         if (!this.isDisabled)
         {
-            this.doCreateExplosion(world, x, y, z, entity);
+            this.doCreateExplosion(world, pos, entity);
         }
     }
 
-    public abstract void doCreateExplosion(World world, double x, double y, double z, Entity entity);
+    public abstract void doCreateExplosion(World world, BlockPos pos, Entity entity);
 }
