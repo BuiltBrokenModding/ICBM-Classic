@@ -1,15 +1,11 @@
 package icbm.classic.content.explosive.thread;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.explosive.blast.Blast;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fluids.IFluidBlock;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -21,11 +17,6 @@ import static java.lang.Math.sin;
  */
 public class ThreadLargeExplosion extends ThreadExplosion
 {
-    public static interface IThreadCallBack
-    {
-        float getResistance(World world, IPos3D blastCenter, BlockPos pos, Entity source, Block block);
-    }
-
     public IThreadCallBack callBack;
 
     public ThreadLargeExplosion(Blast blast, int range, float energy, Entity source, IThreadCallBack callBack)
@@ -36,17 +27,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
 
     public ThreadLargeExplosion(Blast blast, int range, float energy, Entity source)
     {
-        this(blast, range, energy, source, (world, blastCenter, pos, source1, block) -> {
-
-            if (block instanceof BlockLiquid || block instanceof IFluidBlock)
-            {
-                return 0.25f;
-            }
-            else
-            {
-                return block.getExplosionResistance(world, pos, source1, blast);
-            }
-        });
+        this(blast, range, energy, source, new BasicResistanceCallBack(blast));
     }
 
     @Override

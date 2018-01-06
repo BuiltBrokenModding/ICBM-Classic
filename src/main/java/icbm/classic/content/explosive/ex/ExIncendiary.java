@@ -2,16 +2,13 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastFire;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExIncendiary extends Explosion
 {
@@ -22,26 +19,16 @@ public class ExIncendiary extends Explosion
     }
 
     @Override
-    public void init()
-    {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.INCENDIARY.getItemStack(),
-                "@@@", "@?@", "@!@",
-                '@', "dustSulfur",
-                '?', Explosives.REPLUSIVE.getItemStack(),
-                '!', Items.lava_bucket), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-    }
-
-    @Override
     public void onYinZha(World worldObj, Pos position, int fuseTicks)
     {
         super.onYinZha(worldObj, position, fuseTicks);
-        worldObj.spawnParticle("lava", position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
+        worldObj.spawnParticle(EnumParticleTypes.LAVA, position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
 
     @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastFire(world, entity, x, y, z, 14).explode();
+        new BlastFire(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 14).explode();
     }
 
     @Override

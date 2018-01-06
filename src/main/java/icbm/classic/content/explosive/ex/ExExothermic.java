@@ -2,17 +2,15 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastExothermic;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExExothermic extends Explosion
 {
@@ -29,22 +27,13 @@ public class ExExothermic extends Explosion
     public void onYinZha(World worldObj, Pos position, int fuseTicks)
     {
         super.onYinZha(worldObj, position, fuseTicks);
-        worldObj.spawnParticle("lava", position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
+        worldObj.spawnParticle(EnumParticleTypes.LAVA, position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
 
     @Override
-    public void init()
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.EXOTHERMIC.getItemStack(),
-                "!!!", "!@!", "!!!",
-                '@', Blocks.glass,
-                '!', Explosives.INCENDIARY.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
-    {
-        new BlastExothermic(world, entity, x, y, z, 50).explode();
+        new BlastExothermic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50).explode();
     }
 
     @Override

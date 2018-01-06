@@ -2,14 +2,12 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExRepulsive extends Explosion
 {
@@ -17,44 +15,19 @@ public class ExRepulsive extends Explosion
     {
         super(name, tier);
         this.setFuseTime(120);
-        if (name.equalsIgnoreCase("attractive"))
-        {
-            this.missileModelPath = "missiles/tier1/missile_head_attraction.obj";
-        }
-        else
-        {
-            this.missileModelPath = "missiles/tier1/missile_head_repulsion.obj";
-        }
     }
 
     @Override
-    public void init()
-    {
-        if (this == Explosives.ATTRACTIVE.handler)
-        {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ATTRACTIVE.getItemStack(),
-                    "YY",
-                    'Y', Explosives.CONDENSED.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-        }
-        else
-        {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.REPLUSIVE.getItemStack(),
-                    "Y", "Y",
-                    'Y', Explosives.CONDENSED.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-        }
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
         //TODO recode
         if (this == Explosives.ATTRACTIVE.handler)
         {
-            new BlastTNT(world, entity, x, y, z, 2f).setDestroyItems().setPushType(1).explode();
+            new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f).setDestroyItems().setPushType(1).explode();
         }
         else
         {
-            new BlastTNT(world, entity, x, y, z, 2f).setDestroyItems().setPushType(2).explode();
+            new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f).setDestroyItems().setPushType(2).explode();
 
         }
     }

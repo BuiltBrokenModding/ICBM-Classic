@@ -2,15 +2,11 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEndothermic;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExEndothermic extends Explosion
 {
@@ -21,19 +17,9 @@ public class ExEndothermic extends Explosion
     }
 
     @Override
-    public void init()
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ENDOTHERMIC.getItemStack(),
-                "?!?", "!@!", "?!?",
-                '@', Explosives.ATTRACTIVE.getItemStack(),
-                '?', Blocks.ice,
-                '!', Blocks.snow), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
-    {
-        new BlastEndothermic(world, entity, x, y, z, 50).explode();
+        new BlastEndothermic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50).explode();
     }
 
     @Override

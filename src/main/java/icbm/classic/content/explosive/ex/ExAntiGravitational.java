@@ -2,15 +2,11 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastAntiGravitational;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExAntiGravitational extends Explosion
 {
@@ -21,19 +17,9 @@ public class ExAntiGravitational extends Explosion
     }
 
     @Override
-    public void init()
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTI_GRAV.getItemStack(),
-                "EEE", "ETE", "EEE",
-                'T', Explosives.REPLUSIVE.getItemStack(),
-                'E', Items.ender_eye),
-                this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
-    {
-        new BlastAntiGravitational(world, entity, x, y, z, 30).explode();
+        new BlastAntiGravitational(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30).explode();
     }
 
     @Override

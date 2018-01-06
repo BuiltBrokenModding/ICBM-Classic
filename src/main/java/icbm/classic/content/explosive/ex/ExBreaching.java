@@ -2,15 +2,11 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastBreech;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExBreaching extends Explosion
 {
@@ -22,18 +18,9 @@ public class ExBreaching extends Explosion
     }
 
     @Override
-    public void init()
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.BREACHING.getItemStack(2),
-                "GCG", "GCG", "GCG",
-                'C', Explosives.CONDENSED.getItemStack(),
-                'G', Items.gunpowder), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
-    {
-        new BlastBreech(world, entity, x, y, z, 2.5f, 7).explode();
+        new BlastBreech(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2.5f, 7).explode();
     }
 
     @Override

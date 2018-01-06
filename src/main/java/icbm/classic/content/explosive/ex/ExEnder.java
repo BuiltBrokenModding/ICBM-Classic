@@ -4,35 +4,31 @@ import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
+import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.api.explosion.IExplosiveContainer;
 
 public class ExEnder extends Explosion
 {
     public ExEnder()
     {
         super("ender", 3);
-        this.missileModelPath = "missiles/tier3/missile_head_ender.obj";
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9)
+    public boolean onBlockActivated(World world, BlockPos pos, EntityPlayer entityPlayer, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (entityPlayer.inventory.getCurrentItem() != null)
         {
@@ -42,7 +38,7 @@ public class ExEnder extends Explosion
 
                 if (link instanceof Location)
                 {
-                    TileEntity tileEntity = world.getTileEntity(x, y, z);
+                    TileEntity tileEntity = world.getTileEntity(pos);
 
                     if (tileEntity instanceof TileEntityExplosive)
                     {
@@ -50,7 +46,7 @@ public class ExEnder extends Explosion
 
                         if (!world.isRemote)
                         {
-                            entityPlayer.addChatMessage(new ChatComponentText("Synced coordinate with " + this.getExplosiveName()));
+                            entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getExplosiveName())); //TODO translate
                         }
 
                         return true;
@@ -74,9 +70,9 @@ public class ExEnder extends Explosion
                 if (link instanceof Location)
                 {
                     ((Location) link).writeIntNBT(missileObj.nbtData);
-                    if (!missileObj.worldObj.isRemote)
+                    if (!missileObj.world.isRemote)
                     {
-                        entityPlayer.addChatMessage(new ChatComponentText("Synced coordinate with " + this.getMissileName()));
+                        entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getMissileName()));
                     }
                     return true;
                 }
@@ -86,31 +82,30 @@ public class ExEnder extends Explosion
         return false;
     }
 
-    @Override
-    public void init()
-    {
-        RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ENDER.getItemStack(),
-                "SPS", "PTP", "SPS",
-                'P', Items.ender_eye,
-                'S', Blocks.end_stone,
-                'T', Explosives.ATTRACTIVE.getItemStack()), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-    }
-
     @SuppressWarnings("deprecation")
     @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
         Pos teleportTarget = null;
 
-        if (entity instanceof IExplosiveContainer)
+        //Get save data
+        NBTTagCompound tag = null;
+        if (entity instanceof EntityExplosive)
         {
-            if (((IExplosiveContainer) entity).getTagCompound().hasKey("x") && ((IExplosiveContainer) entity).getTagCompound().hasKey("y") && ((IExplosiveContainer) entity).getTagCompound().hasKey("z"))
-            {
-                teleportTarget = new Pos(((IExplosiveContainer) entity).getTagCompound());
-            }
+            tag = ((EntityExplosive) entity).getTagCompound();
+        }
+        else if (entity instanceof EntityMissile)
+        {
+            tag = ((EntityMissile) entity).getTagCompound();
         }
 
-        new BlastEnderman(world, entity, x, y, z, 30, teleportTarget).explode();
+        //Get target from data
+        if (tag != null && tag.hasKey("x") && tag.hasKey("y") && tag.hasKey("z"))
+        {
+            teleportTarget = new Pos(tag);
+        }
+
+        new BlastEnderman(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30, teleportTarget).explode();
     }
 
     @Override

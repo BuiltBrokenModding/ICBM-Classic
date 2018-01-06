@@ -5,6 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import icbm.classic.content.explosive.blast.BlastNightmare;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -22,14 +23,9 @@ public class ExNightmare extends Explosion
     }
 
     @Override
-    public void init()
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
-    {
-        new BlastNightmare(world, entity, x, y, z, 50).explode();
+        new BlastNightmare(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50).explode();
     }
 
     @Override

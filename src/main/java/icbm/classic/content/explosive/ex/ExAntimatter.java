@@ -2,18 +2,13 @@ package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ExAntimatter extends Explosion
 {
@@ -21,7 +16,6 @@ public class ExAntimatter extends Explosion
     {
         super("antimatter", 4);
         this.setFuseTime(300);
-        this.missileModelPath = "missiles/tier4/missile_head_antimatter.obj";
     }
 
     /** Called when the explosive is on fuse and going to explode. Called only when the explosive is
@@ -35,33 +29,14 @@ public class ExAntimatter extends Explosion
 
         if (fuseTicks % 25 == 0)
         {
-            worldObj.playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "alarm", 4F, 1F);
+            //worldObj.playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "alarm", 4F, 1F);
         }
     }
 
     @Override
-    public void init()
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        if(OreDictionary.doesOreNameExist("antimatterGram"))
-        {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTIMATTER.getItemStack(),
-                    "AAA", "AEA", "AAA",
-                    'E', Explosives.NUCLEAR.getItemStack(),
-                    'A', "antimatterGram"), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-        }
-        else
-        {
-            RecipeUtility.addRecipe(new ShapedOreRecipe(Explosives.ANTIMATTER.getItemStack(),
-                    "AAA", "AEA", "AAA",
-                    'E', Explosives.NUCLEAR.getItemStack(),
-                    'A', Items.nether_star), this.getUnlocalizedName(), ICBMClassic.INSTANCE.getConfig(), true);
-        }
-    }
-
-    @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
-    {
-        new BlastAntimatter(world, entity, x, y, z, Settings.ANTIMATTER_SIZE, Settings.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).explode();
+        new BlastAntimatter(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, Settings.ANTIMATTER_SIZE, Settings.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).explode();
     }
 
     @Override
