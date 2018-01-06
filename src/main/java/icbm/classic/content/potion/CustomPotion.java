@@ -1,20 +1,23 @@
 package icbm.classic.content.potion;
 
-import com.builtbroken.mc.lib.helper.PotionUtility;
+import icbm.classic.ICBMClassic;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.ResourceLocation;
 
 public abstract class CustomPotion extends Potion
 {
-    /** Creates a new type of potion
+    /**
+     * Creates a new type of potion
      *
      * @param isBadEffect - Is this potion a good potion or a bad one?
-     * @param color - The color of this potion.
-     * @param name - The name of this potion. */
-    public CustomPotion(boolean isBadEffect, int color, String name)
+     * @param color       - The color of this potion.
+     * @param name        - The name of this potion.
+     */
+    public CustomPotion(boolean isBadEffect, int color, int id, String name)
     {
-        super(PotionUtility.getPotionID(name), isBadEffect, color);
+        super(isBadEffect, color);
         this.setPotionName("potion." + name);
-        Potion.potionTypes[this.getId()] = this;
+        REGISTRY.register(id, new ResourceLocation(ICBMClassic.PREFIX + name), this);
     }
 
     @Override

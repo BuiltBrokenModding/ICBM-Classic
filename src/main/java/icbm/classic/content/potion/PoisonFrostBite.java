@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
 
 public class PoisonFrostBite extends CustomPotion
 {
@@ -32,9 +32,9 @@ public class PoisonFrostBite extends CustomPotion
             }
 
             // Check to see if it's on ice
-            if (entity.worldObj.getBlock(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY) - 1, MathHelper.floor_double(entity.posZ)) == Blocks.ice)
+            if (entity.world.getBlockState(new BlockPos(entity)).getBlock() == Blocks.ICE)
             {
-                entity.attackEntityFrom(DamageSource.magic, 2);
+                entity.attackEntityFrom(DamageSource.MAGIC, 2);
             }
         }
     }

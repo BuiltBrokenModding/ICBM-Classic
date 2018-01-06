@@ -11,6 +11,5 @@ public class ItemICBMBase extends ItemAbstract
     public ItemICBMBase(String name)
     {
         this.setUnlocalizedName(ICBMClassic.PREFIX + name);
-        this.setTextureName(ICBMClassic.PREFIX + name);
     }
 }

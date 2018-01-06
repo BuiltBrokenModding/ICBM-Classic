@@ -20,7 +20,7 @@ public class PoisonToxin extends CustomPotion
     {
         if (!(par1EntityLiving instanceof EntityZombie) && !(par1EntityLiving instanceof EntityPigZombie))
         {
-            par1EntityLiving.attackEntityFrom(DamageSource.magic, 1);
+            par1EntityLiving.attackEntityFrom(DamageSource.MAGIC, 1);
         }
     }
 

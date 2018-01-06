@@ -12,7 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
+public abstract class TileICBMMachine extends TileModuleMachine
 {
     /**
      * Toggle to send a {@link #getDescPacket()} on the next tick, keep in mind only do this for render data.

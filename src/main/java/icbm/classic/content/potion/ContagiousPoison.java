@@ -2,7 +2,7 @@ package icbm.classic.content.potion;
 
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.Potion;
+import net.minecraft.init.MobEffects;
 
 public class ContagiousPoison extends Poison
 {
@@ -19,17 +19,17 @@ public class ContagiousPoison extends Poison
     {
         if (this.isContagious)
         {
-            entity.addPotionEffect(new CustomPotionEffect(PoisonContagion.INSTANCE.getId(), 45 * 20, amplifier, null));
-            entity.addPotionEffect(new CustomPotionEffect(Potion.blindness.id, 15 * 20, amplifier));
+            entity.addPotionEffect(new CustomPotionEffect(PoisonContagion.INSTANCE, 45 * 20, amplifier, null));
+            entity.addPotionEffect(new CustomPotionEffect(MobEffects.BLINDNESS, 15 * 20, amplifier));
         }
         else
         {
-            entity.addPotionEffect(new CustomPotionEffect(PoisonToxin.INSTANCE.getId(), 30 * 20, amplifier, null));
-            entity.addPotionEffect(new CustomPotionEffect(Potion.confusion.id, 30 * 20, amplifier));
+            entity.addPotionEffect(new CustomPotionEffect(PoisonToxin.INSTANCE, 30 * 20, amplifier, null));
+            entity.addPotionEffect(new CustomPotionEffect(MobEffects.NAUSEA, 30 * 20, amplifier));
         }
 
-        entity.addPotionEffect(new CustomPotionEffect(Potion.hunger.id, 30 * 20, amplifier));
-        entity.addPotionEffect(new CustomPotionEffect(Potion.weakness.id, 35 * 20, amplifier));
-        entity.addPotionEffect(new CustomPotionEffect(Potion.digSlowdown.id, 60 * 20, amplifier));
+        entity.addPotionEffect(new CustomPotionEffect(MobEffects.HUNGER, 30 * 20, amplifier));
+        entity.addPotionEffect(new CustomPotionEffect(MobEffects.WEAKNESS, 35 * 20, amplifier));
+        entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 60 * 20, amplifier));
     }
 }
