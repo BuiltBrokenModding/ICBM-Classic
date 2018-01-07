@@ -1,29 +1,13 @@
 package icbm.classic.content.machines.coordinator;
 
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.tile.Tile;
-import cpw.mods.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
-import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.ModelMissileCoordinator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
-import org.lwjgl.opengl.GL11;
-
-import java.util.List;
-
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/10/2017.
  */
-public class TileMissileCoordinatorClient extends TileMissileCoordinator implements ISimpleItemRenderer
+@Deprecated
+public class TileMissileCoordinatorClient extends TileMissileCoordinator
 {
+    /*
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "missile_coordinator_off.png");
     public static final ResourceLocation TEXTURE_FILE_ON = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "missile_coordinator_on.png");
     public static final ModelMissileCoordinator MODEL = new ModelMissileCoordinator();
@@ -127,10 +111,5 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
     {
         return new GuiMissileCoordinator(player, this);
     }
-
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon()
-    {
-        return Blocks.anvil.getIcon(0, 0);
-    }
+    */
 }

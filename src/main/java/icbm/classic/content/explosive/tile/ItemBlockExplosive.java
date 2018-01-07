@@ -34,7 +34,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         ///Shhh!!! tell no one this exists, tss a surprise
         if (stack.getItemDamage() == Explosives.REDMATTER.ordinal())
         {
-            boolean taunt = player.getDisplayName().toLowerCase().startsWith("sips_") || player.getDisplayName().toLowerCase().startsWith("sjin");
+            boolean taunt = player.getName().toLowerCase().startsWith("sips_") || player.getName().toLowerCase().startsWith("sjin");
             if (taunt)
             {
                 switch (tauntCount)

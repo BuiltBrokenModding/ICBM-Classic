@@ -7,13 +7,10 @@ import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.prefab.VectorHelper;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,7 +24,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
@@ -36,48 +32,15 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.Random;
 
-public class BlockExplosive extends BlockContainer implements IPostInit
+public class BlockExplosive extends BlockICBM implements IPostInit
 {
-    public static final PropertyDirection ROTATION_PROP = PropertyDirection.create("rotation");
 
     public BlockExplosive()
     {
-        super(Material.TNT);
+        super("explosives", Material.TNT);
         this.setUnlocalizedName(ICBMClassic.PREFIX + "explosives");
         setHardness(2);
         setSoundType(SoundType.CLOTH);
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, ROTATION_PROP);
-    }
-
-    /** gets the way this piston should face for that entity that placed it. */
-    private static byte determineOrientation(World world, BlockPos pos, EntityLivingBase entityLiving)
-    {
-        if (entityLiving != null)
-        {
-            if (MathHelper.abs((float) entityLiving.posX - pos.getX()) < 2.0F && MathHelper.abs((float) entityLiving.posZ - pos.getZ()) < 2.0F)
-            {
-                double var5 = entityLiving.posY + 1.82D - entityLiving.height;
-
-                if (var5 - pos.getY() > 2.0D)
-                {
-                    return 1;
-                }
-
-                if (pos.getY() - var5 > 0.0D)
-                {
-                    return 0;
-                }
-            }
-
-            int rotation = MathHelper.floor(entityLiving.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
-            return (byte) (rotation == 0 ? 2 : (rotation == 1 ? 5 : (rotation == 2 ? 3 : (rotation == 3 ? 4 : 0))));
-        }
-        return 0;
     }
 
     /**
@@ -103,20 +66,6 @@ public class BlockExplosive extends BlockContainer implements IPostInit
         return super.getCollisionBoundingBox(blockState, world, pos);
     }
 
-    @Override
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.getFront(meta));
-    }
-
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
-    {
-        Direction direction = VectorHelper.getOrientationFromSide(Direction.getOrientation(determineOrientation(world, pos, placer)), Direction.NORTH);
-        world.setBlockState(pos, getDefaultState().withProperty(ROTATION_PROP, direction.getEnumFacing()), 2);
-        return getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer);
-    }
-
     /** Called when the block is placed in the world. */
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack)
@@ -126,7 +75,6 @@ public class BlockExplosive extends BlockContainer implements IPostInit
         {
             Explosives ex = Explosives.get(itemStack.getItemDamage());
             ((TileEntityExplosive) tile).explosive = ex;
-
 
 
             if (world.isBlockIndirectlyGettingPowered(pos) > 0)
@@ -299,13 +247,16 @@ public class BlockExplosive extends BlockContainer implements IPostInit
     }
 
     @Override
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
+    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        for (Explosives zhaPin : Explosives.values())
+        if (tab == getCreativeTabToDisplayOn())
         {
-            if (zhaPin.handler.hasBlockForm())
+            for (Explosives zhaPin : Explosives.values())
             {
-                items.add(new ItemStack(this, 1, zhaPin.ordinal()));
+                if (zhaPin.handler.hasBlockForm())
+                {
+                    items.add(new ItemStack(this, 1, zhaPin.ordinal()));
+                }
             }
         }
     }

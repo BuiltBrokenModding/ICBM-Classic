@@ -121,15 +121,14 @@ public final class ICBMClassic extends AbstractMod
     public static Item itemSulfurDust;
     public static Item itemPoisonPowder;
 
-    public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 1, false);
-    public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1);
+    public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
+    public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
-    public final ModCreativeTab CREATIVE_TAB;
+    public static final ModCreativeTab CREATIVE_TAB = new ModCreativeTab(DOMAIN);
 
     public ICBMClassic()
     {
         super(ICBMClassic.DOMAIN, "/bbm/ICBM-Classic");
-        CREATIVE_TAB = new ModCreativeTab(DOMAIN);
     }
 
     @Override

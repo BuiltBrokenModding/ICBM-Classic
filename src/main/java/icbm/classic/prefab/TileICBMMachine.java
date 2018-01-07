@@ -6,13 +6,14 @@ import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileICBMMachine extends TileModuleMachine
+public abstract class TileICBMMachine extends TileEntity
 {
     /**
      * Toggle to send a {@link #getDescPacket()} on the next tick, keep in mind only do this for render data.

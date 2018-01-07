@@ -5,13 +5,15 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
 
 public class GuiFrequency extends GuiICBM
 {
@@ -38,7 +40,7 @@ public class GuiFrequency extends GuiICBM
     {
         super.initGui();
 
-        this.textFieldFrequency = new GuiTextField(fontRendererObj, 80, 50, 40, 12);
+        this.textFieldFrequency = new GuiTextField(0, fontRenderer, 80, 50, 40, 12);
         this.textFieldFrequency.setMaxStringLength(4);
 
         if (itemStack != null)
@@ -49,7 +51,7 @@ public class GuiFrequency extends GuiICBM
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
     @Override
-    public void keyTyped(char par1, int par2)
+    public void keyTyped(char par1, int par2) throws IOException
     {
         super.keyTyped(par1, par2);
         this.textFieldFrequency.textboxKeyTyped(par1, par2);
@@ -78,7 +80,7 @@ public class GuiFrequency extends GuiICBM
 
     /** Args: x, y, buttonClicked */
     @Override
-    public void mouseClicked(int par1, int par2, int par3)
+    public void mouseClicked(int par1, int par2, int par3) throws IOException
     {
         super.mouseClicked(par1, par2, par3);
         this.textFieldFrequency.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
@@ -88,8 +90,8 @@ public class GuiFrequency extends GuiICBM
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRendererObj.drawString("\u00a77" + LanguageUtility.getLocal("gui.tracker.freq"), 62, 6, 4210752);
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.tracker.freq") + ":", 15, 52, 4210752);
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.tracker.freq"), 62, 6, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.tracker.freq") + ":", 15, 52, 4210752);
         this.textFieldFrequency.drawTextBox();
     }
 

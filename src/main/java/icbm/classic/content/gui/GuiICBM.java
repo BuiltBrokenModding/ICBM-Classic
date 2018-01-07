@@ -3,10 +3,10 @@ package icbm.classic.content.gui;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.gui.GuiContainerBase;
-import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 public abstract class GuiICBM extends GuiContainerBase
@@ -16,8 +16,6 @@ public abstract class GuiICBM extends GuiContainerBase
     protected int containerWidth;
     protected int containerHeight;
 
-    private TileEntity tileEntity;
-
     public GuiICBM()
     {
         super(new ContainerDummy());
@@ -26,27 +24,7 @@ public abstract class GuiICBM extends GuiContainerBase
     public GuiICBM(TileEntity tileEntity)
     {
         super(new ContainerDummy(tileEntity));
-        this.tileEntity = tileEntity;
     }
-
-    // TODO: Fix this.
-    /** <pre>
-     * &#064;Override
-     * public void initGui()
-     * {
-     *     super.initGui();
-     *     if (this.tileEntity != null)
-     *         PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, -1, true));
-     * }
-     *
-     * &#064;Override
-     * public void onGuiClosed()
-     * {
-     *     super.onGuiClosed();
-     *     if (this.tileEntity != null)
-     *         PacketDispatcher.sendPacketToServer(ICBMCore.PACKET_TILE.getPacket(this.tileEntity, -1, false));
-     * }
-     * </pre> */
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)

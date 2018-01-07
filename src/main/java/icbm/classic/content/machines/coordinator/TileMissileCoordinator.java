@@ -2,97 +2,42 @@ package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.items.ItemBlockBase;
-import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.TileModuleMachine;
-import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import cpw.mods.fml.common.registry.GameRegistry;
-import icbm.classic.ICBMClassic;
-import net.minecraft.block.material.Material;
+import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
+import com.builtbroken.mc.data.Direction;
+import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
-import java.util.List;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 /**
  * Missile Coordinator, used to calculate paths between two points to better plan missile actions
  *
  * @author Calclavia
  */
-public class TileMissileCoordinator extends TileModuleMachine implements IRecipeContainer, IGuiTile
+public class TileMissileCoordinator extends TileEntity implements IGuiTile, IInventoryProvider<ExternalInventory>
 {
-    public TileMissileCoordinator()
-    {
-        super("missileCoordinator", Material.iron);
-        this.itemBlock = ItemBlockBase.class;
-        this.hardness = 10f;
-        this.resistance = 10f;
-        this.isOpaque = false;
-    }
+    public static final String NBT_INVENTORY = "inventory";
+    public ExternalInventory inventory;
 
     @Override
-    protected IInventory createInventory()
+    public void readFromNBT(NBTTagCompound compound)
     {
-        return new TileModuleInventory(this, 2);
-    }
-
-    @Override
-    public Tile newTile()
-    {
-        return new TileMissileCoordinator();
-    }
-
-    @Override
-    public boolean canUpdate()
-    {
-        return false;
-    }
-
-    @Override
-    protected boolean useMetaForFacing()
-    {
-        return true;
-    }
-
-    @Override
-    public String getInventoryName()
-    {
-        return LanguageUtility.getLocal("gui.coordinator.name");
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int i, ItemStack itemstack)
-    {
-        return itemstack.getItem() instanceof IWorldPosItem;
-    }
-
-    @Override
-    public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
-    {
-        if (isServer())
+        super.readFromNBT(compound);
+        if (compound.hasKey(NBT_INVENTORY))
         {
-            this.worldObj.playSoundEffect(this.xCoord, this.yCoord, this.zCoord, ICBMClassic.PREFIX + "interface", 1, (float) (this.worldObj.rand.nextFloat() * 0.2 + 0.9F));
-            openGui(player, ICBMClassic.INSTANCE);
+            getInventory().load(compound.getCompoundTag(NBT_INVENTORY));
         }
-
-        return true;
     }
 
     @Override
-    public void genRecipes(List<IRecipe> recipes)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockMissileCoordinator, 1),
-                "R R", "SCS", "SSS",
-                'C', UniversalRecipe.CIRCUIT_T2.get(),
-                'S', UniversalRecipe.PRIMARY_PLATE.get(),
-                'R', ICBMClassic.itemRemoteDetonator));
+        if (inventory != null && !inventory.isEmpty())
+        {
+            compound.setTag(NBT_INVENTORY, inventory.save(new NBTTagCompound()));
+        }
+        return super.writeToNBT(compound);
     }
 
     @Override
@@ -104,6 +49,18 @@ public class TileMissileCoordinator extends TileModuleMachine implements IRecipe
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
-        return null;
+        return new GuiMissileCoordinator(player, this);
+    }
+
+    @Override
+    public ExternalInventory getInventory()
+    {
+        return inventory;
+    }
+
+    @Override
+    public boolean canStore(ItemStack stack, int slot, Direction side)
+    {
+        return stack.getItem() instanceof IWorldPosItem;
     }
 }

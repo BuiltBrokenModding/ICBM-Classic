@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks;
 
-import icbm.classic.prefab.BlockICBM;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -13,12 +13,13 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class BlockConcrete extends BlockICBM
+public class BlockConcrete extends Block
 {
 
     public BlockConcrete()
     {
-        super("concrete", Material.ROCK);
+        super(Material.ROCK);
+        //"concrete",
         this.setHardness(10);
         this.setResistance(50);
     }
