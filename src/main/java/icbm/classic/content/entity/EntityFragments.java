@@ -1,14 +1,18 @@
 package icbm.classic.content.entity;
 
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +23,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     private int xTile = -1;
     private int yTile = -1;
     private int zTile = -1;
-    private Block inTile = Blocks.air;
+    private Block inTile = Blocks.AIR;
     private int inData = 0;
     private boolean inGround = false;
     public boolean doesArrowBelongToPlayer = false;
@@ -50,7 +54,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     {
         super(par1World);
         this.setPosition(x, y, z);
-        this.yOffset = 0.0F;
+        //this.yOffset = 0.0F;
         this.isExplosive = isExplosive;
         this.isAnvil = isAnvil;
 
@@ -84,16 +88,18 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public String getCommandSenderName()
+    public String getName()
     {
         return "Fragments";
     }
 
-    /** Uses the provided coordinates as a heading and determines the velocity from it with the set
-     * force and random variance. Args: x, y, z, force, forceVariation */
+    /**
+     * Uses the provided coordinates as a heading and determines the velocity from it with the set
+     * force and random variance. Args: x, y, z, force, forceVariation
+     */
     public void setArrowHeading(double par1, double par3, double par5, float par7, float par8)
     {
-        float var9 = MathHelper.sqrt_double(par1 * par1 + par3 * par3 + par5 * par5);
+        float var9 = MathHelper.sqrt(par1 * par1 + par3 * par3 + par5 * par5);
         par1 /= var9;
         par3 /= var9;
         par5 /= var9;
@@ -106,7 +112,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         this.motionX = par1;
         this.motionY = par3;
         this.motionZ = par5;
-        float var10 = MathHelper.sqrt_double(par1 * par1 + par5 * par5);
+        float var10 = MathHelper.sqrt(par1 * par1 + par5 * par5);
         this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
         this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var10) * 180.0D / Math.PI);
         this.ticksInGround = 0;
@@ -122,7 +128,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
-            float var7 = MathHelper.sqrt_double(par1 * par1 + par5 * par5);
+            float var7 = MathHelper.sqrt(par1 * par1 + par5 * par5);
             this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
             this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var7) * 180.0D / Math.PI);
             this.prevRotationPitch = this.rotationPitch;
@@ -134,10 +140,10 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
     private void explode()
     {
-        if (!this.isExploding && !this.worldObj.isRemote)
+        if (!this.isExploding && !this.world.isRemote)
         {
             this.isExploding = true;
-            this.worldObj.createExplosion(this, this.xTile, this.yTile, this.zTile, this.explosionSize, true);
+            this.world.createExplosion(this, this.xTile, this.yTile, this.zTile, this.explosionSize, true);
             this.setDead();
         }
     }
@@ -150,30 +156,31 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.isAnvil)
         {
-            ArrayList entities = new ArrayList(this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox));
+            ArrayList entities = new ArrayList(this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox()));
 
             Iterator var5 = entities.iterator();
 
             while (var5.hasNext())
             {
                 Entity entity = (Entity) var5.next();
-                entity.attackEntityFrom(DamageSource.anvil, 15);
+                entity.attackEntityFrom(DamageSource.ANVIL, 15);
             }
         }
 
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
-            float var1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            float var1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
             this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(this.motionY, var1) * 180.0D / Math.PI);
         }
 
-        Block var15 = this.worldObj.getBlock(this.xTile, this.yTile, this.zTile);
+        IBlockState blockState = this.world.getBlockState(this.xTile, this.yTile, this.zTile);
+        Block var15 = blockState.getBlock();
 
-        if (var15 != Blocks.air)
+        if (var15 != Blocks.AIR)
         {
-            var15.setBlockBoundsBasedOnState(this.worldObj, this.xTile, this.yTile, this.zTile);
-            AxisAlignedBB var2 = var15.getCollisionBoundingBoxFromPool(this.worldObj, this.xTile, this.yTile, this.zTile);
+            //var15.setBlockBoundsBasedOnState(this.world, this.xTile, this.yTile, this.zTile);
+            AxisAlignedBB var2 = var15.getCollisionBoundingBox(this.world, this.xTile, this.yTile, this.zTile);
 
             if (var2 != null && var2.isVecInside(Vec3.createVectorHelper(this.posX, this.posY, this.posZ)))
             {
@@ -188,8 +195,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.inGround)
         {
-            var15 = this.worldObj.getBlock(this.xTile, this.yTile, this.zTile);
-            int var18 = this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile);
+            var15 = this.world.getBlock(this.xTile, this.yTile, this.zTile);
+            int var18 = this.world.getBlockMetadata(this.xTile, this.yTile, this.zTile);
 
             if (var15 == this.inTile && var18 == this.inData)
             {
@@ -199,9 +206,9 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                 }
                 else
                 {
-                    if (this.isAnvil && this.worldObj.rand.nextFloat() > 0.5f)
+                    if (this.isAnvil && this.world.rand.nextFloat() > 0.5f)
                     {
-                        this.worldObj.playAuxSFX(1022, (int) this.posX, (int) this.posY, (int) this.posZ, 0);
+                        this.world.playAuxSFX(1022, (int) this.posX, (int) this.posY, (int) this.posZ, 0);
                     }
 
                     this.setDead();
@@ -222,7 +229,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             ++this.ticksInAir;
             Vec3 var16 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             Vec3 var17 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            MovingObjectPosition movingObjPos = this.worldObj.rayTraceBlocks(var16, var17, false);
+            MovingObjectPosition movingObjPos = this.world.rayTraceBlocks(var16, var17, false);
             var16 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             var17 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -232,7 +239,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             }
 
             Entity var4 = null;
-            List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
+            List var5 = this.world.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
             double var6 = 0.0D;
             int var8;
             float var10;
@@ -292,7 +299,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                         {
                             EntityLiving var24 = (EntityLiving) movingObjPos.entityHit;
 
-                            if (!this.worldObj.isRemote)
+                            if (!this.world.isRemote)
                             {
                                 var24.setArrowCountInEntity(var24.getArrowCountInEntity() + 1);
                             }
@@ -308,7 +315,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                             }
                         }
 
-                        this.worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                        this.world.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
                         this.setDead();
                     }
                     else
@@ -326,8 +333,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                     this.xTile = movingObjPos.blockX;
                     this.yTile = movingObjPos.blockY;
                     this.zTile = movingObjPos.blockZ;
-                    this.inTile = this.worldObj.getBlock(this.xTile, this.yTile, this.zTile);
-                    this.inData = this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile);
+                    this.inTile = this.world.getBlock(this.xTile, this.yTile, this.zTile);
+                    this.inData = this.world.getBlockMetadata(this.xTile, this.yTile, this.zTile);
                     this.motionX = ((float) (movingObjPos.hitVec.xCoord - this.posX));
                     this.motionY = ((float) (movingObjPos.hitVec.yCoord - this.posY));
                     this.motionZ = ((float) (movingObjPos.hitVec.zCoord - this.posZ));
@@ -335,7 +342,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                     this.posX -= this.motionX / speed * 0.05000000074505806D;
                     this.posY -= this.motionY / speed * 0.05000000074505806D;
                     this.posZ -= this.motionZ / speed * 0.05000000074505806D;
-                    this.worldObj.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                    this.world.playSoundAtEntity(this, "random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
                     this.inGround = true;
                     this.arrowShake = 7;
                     this.arrowCritical = false;
@@ -346,7 +353,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             {
                 for (var8 = 0; var8 < 4; ++var8)
                 {
-                    this.worldObj.spawnParticle("crit", this.posX + this.motionX * var8 / 4.0D, this.posY + this.motionY * var8 / 4.0D, this.posZ + this.motionZ * var8 / 4.0D, -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+                    this.world.spawnParticle("crit", this.posX + this.motionX * var8 / 4.0D, this.posY + this.motionY * var8 / 4.0D, this.posZ + this.motionZ * var8 / 4.0D, -this.motionX, -this.motionY + 0.2D, -this.motionZ);
                 }
             }
 
@@ -386,7 +393,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                 for (int var25 = 0; var25 < 4; ++var25)
                 {
                     float var24 = 0.25F;
-                    this.worldObj.spawnParticle("bubble", this.posX - this.motionX * var24, this.posY - this.motionY * var24, this.posZ - this.motionZ * var24, this.motionX, this.motionY, this.motionZ);
+                    this.world.spawnParticle("bubble", this.posX - this.motionX * var24, this.posY - this.motionY * var24, this.posZ - this.motionZ * var24, this.motionX, this.motionY, this.motionZ);
                 }
 
                 var23 = 0.8F;

@@ -1,4 +1,4 @@
-package icbm.classic.content.gui;
+package icbm.classic.prefab.gui;
 
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;

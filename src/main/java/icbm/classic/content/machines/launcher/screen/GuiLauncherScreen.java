@@ -7,7 +7,7 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.gui.GuiICBM;
+import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;

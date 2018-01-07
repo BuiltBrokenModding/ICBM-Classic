@@ -9,7 +9,7 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.gui.GuiICBM;
+import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

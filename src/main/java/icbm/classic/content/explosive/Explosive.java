@@ -11,9 +11,10 @@ import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import resonant.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive extends ExplosiveHandler
+public abstract class Explosive extends ExplosiveHandler implements IExplosive
 {
     /** The unique identification name for this explosive. */
     private String nameID;

@@ -1,6 +1,5 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.data.EnumProjectileTypes;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
@@ -17,14 +16,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import resonant.api.explosion.IExplosiveContainer;
+import resonant.api.explosion.ILauncherContainer;
+import resonant.api.explosion.IMissile;
 
 import java.util.HashSet;
 import java.util.Random;
 
 /** @Author - Calclavia */
-public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
+public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IExplosiveContainer, IMissile
 {
     public static final float SPEED = 0.012F;
 
@@ -306,9 +310,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         //Handle player riding missile
-        if (!this.world.isRemote && (this.riddenByEntity == null || this.riddenByEntity == entityPlayer))
+        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == entityPlayer))
         {
-            entityPlayer.mountEntity(this);
+            entityPlayer.startRiding(this);
             return true;
         }
 
@@ -334,6 +338,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         if (this.world.isRemote)
         {
+            /*
             Pos position = new Pos((IPos3D) this);
             // The distance of the smoke relative
             // to the missile.
@@ -356,6 +361,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
             position = position.multiply(1 - 0.001 * Math.random());
             ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
+            */
         }
     }
 
@@ -428,11 +434,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         super.setDead();
-
-        if (this.shengYin != null)
-        {
-            this.shengYin.update();
-        }
     }
 
     @Override
@@ -452,7 +453,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 }
                 else
                 {
-                    ((Explosion) this.explosiveID.handler).createExplosion(this.world, this.posX, this.posY, this.posZ, this);
+                    ((Explosion) this.explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this);
                 }
 
                 this.isExpoding = true;
@@ -497,7 +498,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             entityItem.motionX = ((float) random.nextGaussian() * var13);
             entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
             entityItem.motionZ = ((float) random.nextGaussian() * var13);
-            this.world.spawnEntityInWorld(entityItem);
+            this.world.spawnEntity(entityItem);
         }
 
         this.setDead();

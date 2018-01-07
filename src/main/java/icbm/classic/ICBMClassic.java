@@ -14,6 +14,13 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.items.*;
+import icbm.classic.content.machines.coordinator.TileMissileCoordinator;
+import icbm.classic.content.machines.emptower.TileEMPTower;
+import icbm.classic.content.machines.launcher.base.TileLauncherBase;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
+import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
+import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -194,6 +201,13 @@ public final class ICBMClassic extends AbstractMod
         blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class, ItemBlockBase.class);
         blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class, ItemBlockBase.class);
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
+        ICBMClassic.blockRadarStation = ICBMClassic.INSTANCE.getManager().newBlock("icbmCRadarStation", new TileRadarStation());
+        ICBMClassic.blockEmpTower = ICBMClassic.INSTANCE.getManager().newBlock("icbmCEmpTower", new TileEMPTower());
+        ICBMClassic.blockLaunchBase = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherBase", new TileLauncherBase());
+        ICBMClassic.blockLaunchSupport = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherFrame", new TileLauncherFrame());
+        ICBMClassic.blockLaunchScreen = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherScreen", new TileLauncherScreen());
+        ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
+        ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
     }
 
     @SubscribeEvent

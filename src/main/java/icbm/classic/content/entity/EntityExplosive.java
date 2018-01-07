@@ -3,17 +3,19 @@ package icbm.classic.content.entity;
 import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import resonant.api.explosion.IExplosive;
+import resonant.api.explosion.IExplosiveContainer;
 
-public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData
+public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData, IExplosiveContainer
 {
     // How long the fuse is (in ticks)
     public int fuse = 90;
@@ -95,7 +97,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     public void explode()
     {
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        this.getExplosiveType().createExplosion(this.world, this.posX, this.posY, this.posZ, this);
+        this.getExplosiveType().createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this);
         this.setDead();
     }
 
@@ -172,7 +174,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.orientation = data.readByte();
     }
 
-    public Explosive getExplosiveType()
+    public IExplosive getExplosiveType()
     {
         return this.explosiveID.handler;
     }

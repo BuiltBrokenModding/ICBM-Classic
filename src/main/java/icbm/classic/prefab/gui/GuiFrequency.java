@@ -1,4 +1,4 @@
-package icbm.classic.content.gui;
+package icbm.classic.prefab.gui;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.core.Engine;

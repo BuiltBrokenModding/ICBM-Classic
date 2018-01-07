@@ -6,7 +6,7 @@ import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.gui.GuiICBM;
+import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;

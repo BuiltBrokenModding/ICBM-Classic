@@ -14,8 +14,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -41,8 +42,9 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
+        ItemStack stack = player.getHeldItem(handIn);
         if (world.isRemote)
         {
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
@@ -52,7 +54,7 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
                 Engine.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.getBlockPos()));
             }
         }
-        return stack;
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
