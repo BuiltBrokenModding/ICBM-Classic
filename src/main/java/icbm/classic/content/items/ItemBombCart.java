@@ -1,19 +1,23 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockRailBase;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -28,27 +32,46 @@ public class ItemBombCart extends ItemICBMBase
         this.setHasSubtypes(true);
     }
 
-    /** Callback for item usage. If the item does something special on right clicking, he will have
+    /**
+     * Callback for item usage. If the item does something special on right clicking, he will have
      * one of those. Return True if something happen and false if it don't. This is for ITEMS, not
-     * BLOCKS */
+     * BLOCKS
+     */
     @Override
-    public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int par7, float par8, float par9, float par10)
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        Block var11 = world.getBlock(x, y, z);
+        IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (BlockRailBase.func_150051_a(var11))
+        if (!BlockRailBase.isRailBlock(iblockstate))
         {
-            if (!world.isRemote)
-            {
-                world.spawnEntityInWorld(new EntityBombCart(world, x + 0.5F, y + 0.5F, z + 0.5F, Explosives.get(itemStack.getItemDamage())));
-            }
-
-            --itemStack.stackSize;
-            return true;
+            return EnumActionResult.FAIL;
         }
         else
         {
-            return false;
+            ItemStack itemstack = player.getHeldItem(hand);
+
+            if (!worldIn.isRemote)
+            {
+                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(worldIn, pos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                double d0 = 0.0D;
+
+                if (blockrailbase$enumraildirection.isAscending())
+                {
+                    d0 = 0.5D;
+                }
+
+                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, Explosives.get(itemstack.getItemDamage()));
+
+                if (itemstack.hasDisplayName())
+                {
+                    entityminecart.setCustomNameTag(itemstack.getDisplayName());
+                }
+
+                worldIn.spawnEntity(entityminecart);
+            }
+
+            itemstack.shrink(1);
+            return EnumActionResult.SUCCESS;
         }
     }
 
@@ -58,13 +81,6 @@ public class ItemBombCart extends ItemICBMBase
         return damage;
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerIcons(IIconRegister iconRegister)
-    {
-        this.itemIcon = iconRegister.registerIcon("minecart_tnt");
-    }
-
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
@@ -72,13 +88,16 @@ public class ItemBombCart extends ItemICBMBase
     }
 
     @Override
-    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        for (Explosives zhaPin : Explosives.values())
+        if (tab == getCreativeTab())
         {
-            if (zhaPin.handler.hasMinecartForm())
+            for (Explosives zhaPin : Explosives.values())
             {
-                par3List.add(new ItemStack(par1, 1, zhaPin.ordinal()));
+                if (zhaPin.handler.hasMinecartForm())
+                {
+                    items.add(new ItemStack(this, 1, zhaPin.ordinal()));
+                }
             }
         }
     }

@@ -29,14 +29,14 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.item.cart;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemMinecart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -80,6 +80,7 @@ public final class ICBMClassic extends AbstractMod
     public static final String DEPENDENCIES = "required-after:voltzengine;after:OpenComputers";
 
     public static final int ENTITY_ID_PREFIX = 50;
+    private static int nextID = ENTITY_ID_PREFIX;
 
     //Mod support
     public static Block blockRadioactive;
@@ -121,7 +122,7 @@ public final class ICBMClassic extends AbstractMod
     public static Item itemPoisonPowder;
 
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 1, false);
-    public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
+    public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1);
 
     public final ModCreativeTab CREATIVE_TAB;
 
@@ -177,28 +178,9 @@ public final class ICBMClassic extends AbstractMod
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
 
-    @Override
-    public void loadEntities(ModManager manager)
+    private void registerEntity(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)
     {
-        //EntityRegistry.registerGlobalEntityID(EntityFlyingBlock.class, "ICBMGravityBlock", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityFragments.class, "ICBMFragment", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityExplosive.class, "ICBMExplosive", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityMissile.class, "ICBMMissile", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityExplosion.class, "ICBMProceduralExplosion", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityLightBeam.class, "ICBMLightBeam", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityGrenade.class, "ICBMGrenade", EntityRegistry.findGlobalUniqueEntityId());
-        //EntityRegistry.registerGlobalEntityID(EntityBombCart.class, "ICBMChe", EntityRegistry.findGlobalUniqueEntityId());
-
-        int nextID = ENTITY_ID_PREFIX;
-        EntityRegistry.registerModEntity(EntityFlyingBlock.class, "ICBMGravityBlock", nextID++, this, 50, 15, true);
-        EntityRegistry.registerModEntity(EntityFragments.class, "ICBMFragment", nextID++, this, 40, 8, true);
-        EntityRegistry.registerModEntity(EntityExplosive.class, "ICBMExplosive", nextID++, this, 50, 5, true);
-        EntityRegistry.registerModEntity(EntityMissile.class, "ICBMMissile", nextID++, this, 500, 1, true);
-        EntityRegistry.registerModEntity(EntityExplosion.class, "ICBMProceduralExplosion", nextID++, this, 100, 5, true);
-        EntityRegistry.registerModEntity(EntityLightBeam.class, "ICBMLightBeam", nextID++, this, 80, 5, true);
-        EntityRegistry.registerModEntity(EntityGrenade.class, "ICBMGrenade", nextID++, this, 50, 5, true);
-        EntityRegistry.registerModEntity(EntityBombCart.class, "ICBMChe", nextID++, this, 50, 2, true);
-        EntityRegistry.registerModEntity(EntityPlayerSeat.class, "ICBMSeat", nextID++, this, 50, 2, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(DOMAIN, entityName), entityClass, entityName, nextID++, this, trackingRange, updateFrequency, true);
     }
 
     @Override
@@ -207,7 +189,6 @@ public final class ICBMClassic extends AbstractMod
         return proxy;
     }
 
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -215,6 +196,17 @@ public final class ICBMClassic extends AbstractMod
         ICBMSounds.registerAll();
         //Engine.requestMultiBlock(); TODO ?
         Settings.load(getConfig());
+
+        //Register entities
+        registerEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 50, 15);
+        registerEntity(EntityFragments.class, "ICBMFragment", 40, 8);
+        registerEntity(EntityExplosive.class, "ICBMExplosive", 50, 5);
+        registerEntity(EntityMissile.class, "ICBMMissile", 500, 1);
+        registerEntity(EntityExplosion.class, "ICBMProceduralExplosion", 100, 5);
+        registerEntity(EntityLightBeam.class, "ICBMLightBeam", 80, 5);
+        registerEntity(EntityGrenade.class, "ICBMGrenade", 50, 5);
+        registerEntity(EntityBombCart.class, "ICBMChe", 50, 2);
+        registerEntity(EntityPlayerSeat.class, "ICBMSeat", 50, 2);
     }
 
     @Mod.EventHandler
@@ -278,6 +270,7 @@ public final class ICBMClassic extends AbstractMod
             }
         });
 
+        //TODO move to its own class
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemBombCart, new BehaviorDefaultDispenseItem()
         {
             private final BehaviorDefaultDispenseItem behaviourDefaultDispenseItem = new BehaviorDefaultDispenseItem();
@@ -287,15 +280,15 @@ public final class ICBMClassic extends AbstractMod
             {
                 EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
                 World world = source.getWorld();
-                double x = source.getX() + (double)enumfacing.getFrontOffsetX() * 1.125D;
-                double y = Math.floor(source.getY()) + (double)enumfacing.getFrontOffsetY();
-                double z = source.getZ() + (double)enumfacing.getFrontOffsetZ() * 1.125D;
+                double x = source.getX() + (double) enumfacing.getFrontOffsetX() * 1.125D;
+                double y = Math.floor(source.getY()) + (double) enumfacing.getFrontOffsetY();
+                double z = source.getZ() + (double) enumfacing.getFrontOffsetZ() * 1.125D;
                 BlockPos blockpos = source.getBlockPos().offset(enumfacing);
                 IBlockState iblockstate = world.getBlockState(blockpos);
                 BlockRailBase.EnumRailDirection rail =
                         iblockstate.getBlock() instanceof BlockRailBase
-                        ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null)
-                        : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                                ? ((BlockRailBase) iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null)
+                                : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 
                 double heightDelta;
 
@@ -320,7 +313,7 @@ public final class ICBMClassic extends AbstractMod
                     IBlockState blockB = world.getBlockState(blockpos.down());
                     BlockRailBase.EnumRailDirection railB =
                             blockB.getBlock() instanceof BlockRailBase ?
-                                    ((BlockRailBase)blockB.getBlock()).getRailDirection(world, blockpos.down(), blockB, null)
+                                    ((BlockRailBase) blockB.getBlock()).getRailDirection(world, blockpos.down(), blockB, null)
                                     : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 
                     if (enumfacing != EnumFacing.DOWN && railB.isAscending())

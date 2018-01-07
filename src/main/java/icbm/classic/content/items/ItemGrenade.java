@@ -1,32 +1,24 @@
 package icbm.classic.content.items;
 
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import resonant.api.explosion.ExplosionEvent.ExplosivePreDetonationEvent;
-import resonant.api.explosion.ExplosiveType;
 
 import java.util.List;
 
 public class ItemGrenade extends ItemICBMBase
 {
-    @SideOnly(Side.CLIENT)
-    public static IIcon[] ICONS;
-
     public ItemGrenade()
     {
         super("grenade");
@@ -36,15 +28,9 @@ public class ItemGrenade extends ItemICBMBase
     }
 
     @Override
-    public ItemStack onEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
-    {
-        return par1ItemStack;
-    }
-
-    @Override
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
-        return EnumAction.bow;
+        return EnumAction.BOW;
     }
 
     @Override
@@ -54,55 +40,25 @@ public class ItemGrenade extends ItemICBMBase
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        if (itemStack != null)
-        {
-            Explosive zhaPin = Explosives.get(itemStack.getItemDamage()).handler;
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, entityPlayer, ExplosiveType.ITEM, zhaPin);
-            MinecraftForge.EVENT_BUS.post(evt);
-
-            if (!evt.isCanceled())
-            {
-                entityPlayer.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
-            }
-            else
-            {
-                entityPlayer.addChatMessage(new ChatComponentText("Grenades are banned in this region."));
-            }
-        }
-
-        return itemStack;
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        playerIn.setActiveHand(handIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack itemStack, World world, EntityPlayer entityPlayer, int nengLiang)
+    public void onPlayerStoppedUsing(ItemStack itemStack, World world, EntityLivingBase entityLiving, int timeLeft)
     {
         if (!world.isRemote)
         {
             Explosives zhaPin = Explosives.get(itemStack.getItemDamage());
-            ExplosivePreDetonationEvent evt = new ExplosivePreDetonationEvent(world, entityPlayer, ExplosiveType.ITEM, zhaPin.handler);
-            MinecraftForge.EVENT_BUS.post(evt);
 
-            if (!evt.isCanceled())
-            {
-                if (!entityPlayer.capabilities.isCreativeMode)
-                {
-                    itemStack.stackSize--;
 
-                    if (itemStack.stackSize <= 0)
-                    {
-                        entityPlayer.inventory.setInventorySlotContents(entityPlayer.inventory.currentItem, null);
-                    }
-                }
+            world.playSound(entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F), true);
+            world.spawnEntity(new EntityGrenade(world, entityLiving, zhaPin, (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack)));
 
-                world.playSoundAtEntity(entityPlayer, "random.fuse", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-                world.spawnEntityInWorld(new EntityGrenade(world, entityPlayer, zhaPin, (float) (this.getMaxItemUseDuration(itemStack) - nengLiang) / (float) this.getMaxItemUseDuration(itemStack)));
-            }
-            else
-            {
-                entityPlayer.addChatMessage(new ChatComponentText("Grenades are banned in this region."));
-            }
+            itemStack.shrink(1);
         }
     }
 
@@ -136,31 +92,17 @@ public class ItemGrenade extends ItemICBMBase
         ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IIconRegister iconRegister)
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
     {
-        ICONS = new IIcon[Explosives.values().length];
-        for (Explosives ex : Explosives.values())
+        if (tab == getCreativeTab())
         {
-            ICONS[ex.ordinal()] = iconRegister.registerIcon(ICBMClassic.PREFIX + "grenade_" + ex.handler.getUnlocalizedName());
-        }
-    }
-
-    @Override
-    public IIcon getIconFromDamage(int i)
-    {
-        return ICONS[i];
-    }
-
-    @Override
-    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
-    {
-        for (Explosives ex : Explosives.values())
-        {
-            if (ex.handler.hasGrenadeForm())
+            for (Explosives ex : Explosives.values())
             {
-                par3List.add(new ItemStack(par1, 1, ex.ordinal()));
+                if (ex.handler.hasGrenadeForm())
+                {
+                    list.add(new ItemStack(this, 1, ex.ordinal()));
+                }
             }
         }
     }

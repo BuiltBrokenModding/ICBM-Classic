@@ -1,11 +1,13 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMBase;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 public class ItemAntidote extends ItemICBMBase
@@ -16,45 +18,33 @@ public class ItemAntidote extends ItemICBMBase
     }
 
     @Override
-    public ItemStack onEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
+    public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entityLiving)
     {
-        par1ItemStack.stackSize--;
-
-        if (!par2World.isRemote)
+        if (!world.isRemote)
         {
-            par3EntityPlayer.clearActivePotions();
+            entityLiving.clearActivePotions();
         }
-
-        return par1ItemStack;
+        stack.shrink(1);
+        return stack;
     }
 
-    /** How long it takes to use or consume an item */
     @Override
     public int getMaxItemUseDuration(ItemStack par1ItemStack)
     {
         return 32;
     }
 
-    /** returns the action that specifies what animation to play when the items is being used */
     @Override
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
-        return EnumAction.eat;
+        return EnumAction.EAT;
     }
 
     @Override
-    public void registerIcons(IIconRegister iconRegister)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        super.registerIcons(iconRegister);
-        this.itemIcon = iconRegister.registerIcon(ICBMClassic.PREFIX + "antidote");
-    }
-
-    /** Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack,
-     * world, entityPlayer */
-    @Override
-    public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
-    {
-        par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
-        return par1ItemStack;
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        playerIn.setActiveHand(handIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
     }
 }

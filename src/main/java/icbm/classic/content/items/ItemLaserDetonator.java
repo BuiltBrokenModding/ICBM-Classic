@@ -16,6 +16,8 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import resonant.api.explosion.ILauncherController;
 
@@ -35,7 +37,6 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
         this.setMaxStackSize(1);
         this.setNoRepair();
         this.setUnlocalizedName(ICBMClassic.PREFIX + "laserDetonator");
-        this.setTextureName(ICBMClassic.PREFIX + "laserDesignator");
     }
 
     @Override
@@ -43,11 +44,11 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
     {
         if (world.isRemote)
         {
-            MovingObjectPosition objectMouseOver = player.rayTrace(200, 1);
-            TileEntity tileEntity = world.getTileEntity(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
+            RayTraceResult objectMouseOver = player.rayTrace(200, 1);
+            TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
             if (!(tileEntity instanceof ILauncherController))
             {
-                Engine.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ));
+                Engine.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.getBlockPos()));
             }
         }
         return stack;
@@ -64,13 +65,13 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
         ItemStack stack = player.inventory.getCurrentItem();
         if (stack != null && stack.getItem() == this)
         {
-            if (!player.worldObj.isRemote)
+            if (!player.world.isRemote)
             {
-                RadioRegistry.popMessage(player.worldObj, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
+                RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
             }
             else
             {
-                player.addChatComponentMessage(new ChatComponentText("Not encoded with launch data! Right click on launcher screen to encode."));
+                player.sendMessage(new TextComponentString("Not encoded with launch data! Right click on launcher screen to encode."));
             }
         }
     }

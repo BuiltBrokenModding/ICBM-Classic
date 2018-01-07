@@ -11,8 +11,8 @@ import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.Random;
 
@@ -42,36 +42,36 @@ public class ItemDefuser extends ItemICBMElectrical
         {
             if (entity instanceof EntityExplosive)
             {
-                if (!entity.worldObj.isRemote)
+                if (!entity.world.isRemote)
                 {
                     EntityExplosive entityTNT = (EntityExplosive) entity;
-                    EntityItem entityItem = new EntityItem(entity.worldObj, entity.posX, entity.posY, entity.posZ, new ItemStack(ICBMClassic.blockExplosive, 1, entityTNT.explosiveID.ordinal()));
+                    EntityItem entityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ICBMClassic.blockExplosive, 1, entityTNT.explosiveID.ordinal()));
                     float var13 = 0.05F;
                     Random random = new Random();
                     entityItem.motionX = ((float) random.nextGaussian() * var13);
                     entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
                     entityItem.motionZ = ((float) random.nextGaussian() * var13);
-                    entity.worldObj.spawnEntityInWorld(entityItem);
+                    entity.world.spawnEntity(entityItem);
                 }
                 entity.setDead();
             }
             else if (entity instanceof EntityTNTPrimed)
             {
-                if (!entity.worldObj.isRemote)
+                if (!entity.world.isRemote)
                 {
-                    EntityItem entityItem = new EntityItem(entity.worldObj, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.tnt));
+                    EntityItem entityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT));
                     float var13 = 0.05F;
                     Random random = new Random();
                     entityItem.motionX = ((float) random.nextGaussian() * var13);
                     entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
                     entityItem.motionZ = ((float) random.nextGaussian() * var13);
-                    entity.worldObj.spawnEntityInWorld(entityItem);
+                    entity.world.spawnEntity(entityItem);
                 }
                 entity.setDead();
             }
             else if (entity instanceof EntityBombCart)
             {
-                ((EntityBombCart) entity).killMinecart(DamageSource.generic);
+                ((EntityBombCart) entity).killMinecart(DamageSource.GENERIC);
             }
 
             this.discharge(itemStack, ENERGY_COST, true);
@@ -79,7 +79,7 @@ public class ItemDefuser extends ItemICBMElectrical
         }
         else
         {
-            player.addChatMessage(new ChatComponentText(LanguageUtility.getLocal("message.defuser.nopower")));
+            player.sendMessage(new TextComponentString(LanguageUtility.getLocal("message.defuser.nopower")));
         }
 
         return false;
