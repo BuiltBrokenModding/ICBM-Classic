@@ -1,9 +1,12 @@
 package icbm.classic.content.explosive.thread;
 
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.content.explosive.blast.Blast;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * Used for small explosions.
@@ -12,15 +15,17 @@ import net.minecraft.entity.Entity;
  */
 public class ThreadSmallExplosion extends ThreadExplosion
 {
-    public ThreadSmallExplosion(IWorldPosition position, int banJing, Entity source)
+    public ThreadSmallExplosion(Blast blast, int banJing, Entity source)
     {
-        super(position, banJing, 0, source);
+        super(blast, banJing, 0, source);
     }
 
     @Override
     public void run()
     {
-        if (!this.position.oldWorld().isRemote)
+        final World world = position.oldWorld();
+
+        if (!world.isRemote)
         {
             for (int x = 0; x < this.radius; ++x)
             {
@@ -44,21 +49,21 @@ public class ThreadSmallExplosion extends ThreadExplosion
 
                             for (float var21 = 0.3F; power > 0.0F; power -= var21 * 0.75F)
                             {
-                                Pos targetPosition = new Pos(var15, var17, var19);
-                                double distanceFromCenter = position.distance(targetPosition);
-                                Block blockID = this.position.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                                BlockPos targetPosition = new BlockPos(var15, var17, var19);
+                                IBlockState state = this.position.oldWorld().getBlockState(targetPosition);
+                                Block blockID = state.getBlock();
 
-                                if (blockID != null)
+                                if (blockID != Blocks.AIR)
                                 {
                                     float resistance = 0;
 
-                                    if (blockID.blockHardness < 0)
+                                    if (state.getBlockHardness(world, targetPosition) < 0)
                                     {
                                         break;
                                     }
                                     else
                                     {
-                                        resistance = blockID.getExplosionResistance(this.source, this.position.oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi());
+                                        resistance = blockID.getExplosionResistance(world, targetPosition, source, blast);
                                     }
                                     // TODO rather than remove power divert a percentage to the
                                     // sides, and then calculate how much is absorbed by the block
@@ -67,7 +72,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
 
                                 if (power > 0.0F)
                                 {
-                                    this.results.add(targetPosition.clone());
+                                    this.results.add(targetPosition);
                                 }
 
                                 var15 += xStep * var21;

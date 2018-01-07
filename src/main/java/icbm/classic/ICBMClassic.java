@@ -1,36 +1,16 @@
 package icbm.classic;
 
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.registry.ModManager;
 import com.builtbroken.mc.framework.mod.AbstractMod;
 import com.builtbroken.mc.framework.mod.AbstractProxy;
 import com.builtbroken.mc.framework.mod.ModCreativeTab;
-import com.builtbroken.mc.framework.mod.Mods;
 import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.recipe.RecipeUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
-import com.builtbroken.mc.seven.framework.block.json.JsonBlockListenerProcessor;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.Mod.Metadata;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.items.*;
@@ -38,8 +18,6 @@ import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
-import icbm.classic.mod.waila.WailaLoader;
-import icbm.classic.prefab.ListenerExplosiveBreakTrigger;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
@@ -50,17 +28,23 @@ import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -71,10 +55,10 @@ import java.util.Arrays;
 @Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
 public final class ICBMClassic extends AbstractMod
 {
-    @Instance(ICBMClassic.DOMAIN)
+    @Mod.Instance(ICBMClassic.DOMAIN)
     public static ICBMClassic INSTANCE;
 
-    @Metadata(ICBMClassic.DOMAIN)
+    @Mod.Metadata(ICBMClassic.DOMAIN)
     public static ModMetadata metadata;
 
     @SidedProxy(clientSide = "icbm.classic.ClientProxy", serverSide = "icbm.classic.ServerProxy")
@@ -140,20 +124,19 @@ public final class ICBMClassic extends AbstractMod
     {
         super(ICBMClassic.DOMAIN, "/bbm/ICBM-Classic");
         CREATIVE_TAB = new ModCreativeTab(DOMAIN);
-        getManager().setTab(CREATIVE_TAB);
     }
 
     @Override
     public void loadJsonContentHandlers()
     {
         super.loadJsonContentHandlers();
-        JsonBlockListenerProcessor.addBuilder(new ListenerExplosiveBreakTrigger.Builder());
+        //JsonBlockListenerProcessor.addBuilder(new ListenerExplosiveBreakTrigger.Builder()); TODO re-implement redmatter ore
     }
 
     @Override
     public void loadHandlers(LoadableHandler loader)
     {
-        loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded());
+        //loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded()); TODO add waila support back
     }
 
     @Override
@@ -214,178 +197,22 @@ public final class ICBMClassic extends AbstractMod
     }
 
     @Override
-    public void loadRecipes(ModManager manager)
-    {
-/** LOAD. */
-        ArrayList dustCharcoal = OreDictionary.getOres("dustCharcoal");
-        ArrayList dustCoal = OreDictionary.getOres("dustCoal");
-        // Sulfur
-        //GameRegistry.addSmelting(blockSulfurOre, new ItemStack(itemSulfurDust, 4), 0.8f);
-        GameRegistry.addSmelting(Items.reeds, new ItemStack(itemSulfurDust, 4, 1), 0f);
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.gunpowder, 2), "dustSulfur", "dustSaltpeter", Items.coal));
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.gunpowder, 2), "dustSulfur", "dustSaltpeter", new ItemStack(Items.coal, 1, 1)));
-
-        if (dustCharcoal != null && dustCharcoal.size() > 0)
-        {
-            GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.gunpowder, 2), "dustSulfur", "dustSaltpeter", "dustCharcoal"));
-        }
-        if (dustCoal != null && dustCoal.size() > 0)
-        {
-            GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Items.gunpowder, 2), "dustSulfur", "dustSaltpeter", "dustCoal"));
-        }
-
-        GameRegistry.addRecipe(new ShapedOreRecipe(Blocks.tnt,
-                "@@@", "@R@", "@@@",
-                '@', Items.gunpowder,
-                'R', Items.redstone));
-
-        // Poison Powder
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(itemPoisonPowder, 3), Items.spider_eye, Items.rotten_flesh));
-
-        // Glass Pressure Plate
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockGlassPlate, 1, 0), "##", '#', Blocks.glass));
-
-        // Glass Button
-        GameRegistry.addRecipe(new ItemStack(blockGlassButton, 2), "G", "G", 'G', Blocks.glass);
-
-        // Proximity Detector
-        GameRegistry.addRecipe(new ShapedOreRecipe(blockProximityDetector,
-                "SSS", "S?S", "SSS",
-                'S', Items.iron_ingot,
-                '?', itemTracker));
-
-        // Signal Disrupter
-        GameRegistry.addRecipe(new ShapedOreRecipe(itemSignalDisrupter,
-                "WWW", "SCS", "SSS",
-                'S', Items.iron_ingot,
-                'C', UniversalRecipe.CIRCUIT_T1.get(),
-                'W', UniversalRecipe.WIRE.get()));
-
-        // Antidote
-        OreDictionary.registerOre("seeds", Items.wheat_seeds);
-        OreDictionary.registerOre("seeds", Items.pumpkin_seeds);
-        OreDictionary.registerOre("seeds", Items.melon_seeds);
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemAntidote, 6),
-                "@@@", "@@@", "@@@",
-                '@', "seeds"));
-
-
-        // Reinforced rails
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockCombatRail, 16, 0), new Object[]{"C C", "CIC", "C C", 'I', new ItemStack(blockConcrete, 1, 0), 'C', Items.iron_ingot}));
-
-        // Reinforced Glass
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockReinforcedGlass, 8), new Object[]{"IGI", "GIG", "IGI", 'G', Blocks.glass, 'I', Items.iron_ingot}));
-
-        // Rocket Launcher
-        GameRegistry.addRecipe(new ShapedOreRecipe(itemRocketLauncher,
-                "SCR", "SB ",
-                'R', itemRadarGun,
-                'C', new ItemStack(blockCruiseLauncher),
-                'B', Blocks.stone_button,
-                'S', UniversalRecipe.PRIMARY_METAL.get()));
-        // Radar Gun
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemRadarGun),
-                "@#!", " $!", "  !",
-                '@', Blocks.glass,
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                '#', UniversalRecipe.CIRCUIT_T1.get(),
-                '$', Blocks.stone_button));
-        // Remote
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemRemoteDetonator),
-                "?@@", "@#$", "@@@",
-                '@', UniversalRecipe.PRIMARY_METAL.get(),
-                '?', Items.redstone,
-                '#', UniversalRecipe.CIRCUIT_T2.get(),
-                '$', Blocks.stone_button));
-        // Laser Designator
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemLaserDesignator),
-                "!  ", " ? ", "  @",
-                '@', itemRemoteDetonator,
-                '?', UniversalRecipe.CIRCUIT_T3.get(),
-                '!', itemRadarGun));
-        // Defuser
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemDefuser),
-                "I  ", " W ", "  C",
-                'C', UniversalRecipe.CIRCUIT_T2.get(),
-                'W', UniversalRecipe.WRENCH.get(),
-                'I', UniversalRecipe.WIRE.get()));
-
-        // Missile module
-        GameRegistry.addRecipe(new ShapedOreRecipe(Explosives.MISSILE.getItemStack(),
-                " @ ", "@#@", "@?@",
-                '@', UniversalRecipe.PRIMARY_METAL.get(),
-                '?', Items.flint_and_steel,
-                '#', UniversalRecipe.CIRCUIT_T1.get()));
-        // Homing
-        GameRegistry.addRecipe(new ShapedOreRecipe(Explosives.MISSILE_HOMING.getItemStack(),
-                " B ", " C ", "BMB",
-                'M', Explosives.MISSILE.getItemStack(),
-                'C', UniversalRecipe.CIRCUIT_T1.get(),
-                'B', UniversalRecipe.SECONDARY_METAL.get()));
-        // Anti-ballistic
-        GameRegistry.addRecipe(new ShapedOreRecipe(Explosives.MISSILE_ANTI.getItemStack(),
-                "!", "?", "@",
-                '@', Explosives.MISSILE.getItemStack(),
-                '?', new ItemStack(blockExplosive, 1, 0),
-                '!', UniversalRecipe.CIRCUIT_T1.get()));
-        // Cluster
-        GameRegistry.addRecipe(new ShapedOreRecipe(Explosives.MISSILE_CLUSTER.getItemStack(),
-                " ! ", " ? ", "!@!",
-                '@', Explosives.MISSILE.getItemStack(),
-                '?', Explosives.FRAGMENTATION.getItemStack(),
-                '!', new ItemStack(itemMissile, 1, 0)));
-        // Nuclear Cluster
-        GameRegistry.addRecipe(new ShapedOreRecipe(Explosives.MISSILE_CLUSTER_NUKE.getItemStack(),
-                " N ", "NCN",
-                'C', Explosives.MISSILE_CLUSTER.getItemStack(),
-                'N', Explosives.NUCLEAR.getItemStack()));
-
-        for (Explosives ex : Explosives.values())
-        {
-            Explosive explosive = ex.handler;
-            explosive.init();
-
-            if (!(explosive instanceof Missile))
-            {
-                // Missile
-                RecipeUtility.addRecipe(new ShapelessOreRecipe(new ItemStack(itemMissile, 1, ex.ordinal()),
-                        Explosives.MISSILE.getItemStack(),
-                        new ItemStack(blockExplosive, 1, ex.ordinal())), explosive.getUnlocalizedName() + " Missile", getConfig(), true);
-                if (explosive.getTier() < 2)
-                {
-                    // Grenade
-                    RecipeUtility.addRecipe(new ShapedOreRecipe(new ItemStack(itemGrenade, 1, ex.ordinal()),
-                            "?", "@",
-                            '@', new ItemStack(blockExplosive, 1, ex.ordinal()),
-                            '?', Items.string), explosive.getUnlocalizedName() + " Grenade", getConfig(), true);
-                }
-                // Minecart
-                RecipeUtility.addRecipe(new ShapedOreRecipe(new ItemStack(itemBombCart, 1, ex.ordinal()),
-                        "?", "@",
-                        '?', new ItemStack(blockExplosive, 1, ex.ordinal()),
-                        '@', Items.minecart), explosive.getUnlocalizedName() + " Minecart", getConfig(), true);
-
-            }
-        }
-    }
-
-    @Override
     public AbstractProxy getProxy()
     {
         return proxy;
     }
 
 
-    @EventHandler
+    @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
         super.preInit(event);
-        Engine.requestBaseModules();
-        Engine.requestMultiBlock();
+        ICBMSounds.registerAll();
+        //Engine.requestMultiBlock(); TODO ?
         Settings.load(getConfig());
     }
 
-    @EventHandler
+    @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
         super.init(event);
@@ -397,7 +224,7 @@ public final class ICBMClassic extends AbstractMod
         /** Check for existence of radioactive block. If it does not exist, then create it. */
         if (OreDictionary.getOres("blockRadioactive").size() > 0)
         {
-            ArrayList<ItemStack> stacks = OreDictionary.getOres("blockRadioactive");
+            NonNullList<ItemStack> stacks = OreDictionary.getOres("blockRadioactive");
             for (ItemStack stack : stacks)
             {
                 if (stack != null && stack.getItem() instanceof ItemBlock)
@@ -406,8 +233,8 @@ public final class ICBMClassic extends AbstractMod
                     //      As assuming the metadata is valid may not be a good idea, and the block may not be valid as well
                     //TODO add config to force block that is used
                     //TODO add error checking
-                    blockRadioactive = ((ItemBlock) stack.getItem()).field_150939_a;
-                    blockRadioactiveMeta = ((ItemBlock) stack.getItem()).getMetadata(stack.getItemDamage());
+                    blockRadioactive = ((ItemBlock) stack.getItem()).getBlock();
+                    blockRadioactiveMeta = stack.getItem().getMetadata(stack.getItemDamage());
                     logger().info("Detected radioative block from another mod.");
                     logger().info("Radioactive explosives will use: " + blockRadioactive);
                 }
@@ -416,7 +243,7 @@ public final class ICBMClassic extends AbstractMod
 
         if (blockRadioactive == null)
         {
-            blockRadioactive = Blocks.mycelium;
+            blockRadioactive = Blocks.MYCELIUM;
         }
 
         /** Potion Effects */ //TODO move to effect system
@@ -425,7 +252,7 @@ public final class ICBMClassic extends AbstractMod
         PoisonFrostBite.INSTANCE = new PoisonFrostBite(false, 5149489, "frostBite");
 
         /** Dispenser Handler */ //TODO move to its own class
-        BlockDispenser.dispenseBehaviorRegistry.putObject(itemGrenade, new IBehaviorDispenseItem()
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemGrenade, new IBehaviorDispenseItem()
         {
             @Override
             public ItemStack dispense(IBlockSource blockSource, ItemStack itemStack)
@@ -450,7 +277,7 @@ public final class ICBMClassic extends AbstractMod
         });
 
         //TODO move to its own class
-        BlockDispenser.dispenseBehaviorRegistry.putObject(itemBombCart, new IBehaviorDispenseItem()
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemBombCart, new IBehaviorDispenseItem()
         {
             private final BehaviorDefaultDispenseItem defaultItemDispenseBehavior = new BehaviorDefaultDispenseItem();
 
@@ -516,13 +343,13 @@ public final class ICBMClassic extends AbstractMod
         metadata.autogenerated = false;
     }
 
-    @EventHandler
+    @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
         super.postInit(event);
     }
 
-    @EventHandler
+    @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
         // Setup command

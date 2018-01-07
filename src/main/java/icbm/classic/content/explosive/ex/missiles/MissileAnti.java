@@ -3,12 +3,13 @@ package icbm.classic.content.explosive.ex.missiles;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -24,7 +25,6 @@ public class MissileAnti extends Missile
     {
         super("antiBallistic", 2);
         this.hasBlock = false;
-        this.missileModelPath = "missiles/tier2/missile_head_antballistic.obj";
     }
 
     @Override
@@ -52,16 +52,18 @@ public class MissileAnti extends Missile
             return;
         }
 
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(missileObj.posX - ABMRange, missileObj.posY - ABMRange, missileObj.posZ - ABMRange, missileObj.posX + ABMRange, missileObj.posY + ABMRange, missileObj.posZ + ABMRange);
+        AxisAlignedBB bounds = new AxisAlignedBB(
+                missileObj.posX - ABMRange, missileObj.posY - ABMRange, missileObj.posZ - ABMRange,
+                missileObj.posX + ABMRange, missileObj.posY + ABMRange, missileObj.posZ + ABMRange);
         // TODO: Check if this works.
-        Entity nearestEntity = missileObj.worldObj.findNearestEntityWithinAABB(EntityMissile.class, bounds, missileObj);
+        Entity nearestEntity = missileObj.world.findNearestEntityWithinAABB(EntityMissile.class, bounds, missileObj);
 
         if (nearestEntity instanceof EntityMissile)
         {
             // Lock target onto missileObj missile
             missileObj.lockedTarget = nearestEntity;
             missileObj.didTargetLockBefore = true;
-            missileObj.worldObj.playSoundAtEntity(missileObj, ICBMClassic.PREFIX + "targetlocked", 5F, 0.9F);
+            ICBMSounds.TARGET_LOCKED.play(missileObj, 5F, 0.9F, true); //TODO move audio settings to constants attached to configs
         }
         else
         {
@@ -82,9 +84,9 @@ public class MissileAnti extends Missile
     }
 
     @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastTNT(world, entity, x, y, z, 6).setDestroyItems().explode();
+        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6).setDestroyItems().explode();
     }
 
     @Override
