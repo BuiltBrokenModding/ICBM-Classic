@@ -20,7 +20,8 @@ import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEMP;
-import icbm.classic.prefab.TileICBMMachine;
+import icbm.classic.prefab.TileMachine;
+import icbm.classic.prefab.item.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +38,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import java.util.HashMap;
 import java.util.List;
 
-public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPacketIDReceiver, IRecipeContainer, IGuiTile
+public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IRecipeContainer, IGuiTile
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;

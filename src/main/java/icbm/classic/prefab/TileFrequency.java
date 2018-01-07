@@ -1,28 +1,16 @@
 package icbm.classic.prefab;
 
-import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * Prefab for tiles that need to receive or send a signal at a Hz value
  */
-public abstract class TileFrequency extends TileICBMMachine
+public abstract class TileFrequency extends TileMachine
 {
     /**
      * Frequency of the device
      */
     private int frequency = 0;
-
-    /**
-     * Creates a new TileMachine instance
-     *
-     * @param name     - name of the tile
-     * @param material - material of the tile
-     */
-    public TileFrequency(String name, Material material)
-    {
-        super(name, material);
-    }
 
     /**
      * What is the frequency of the device
@@ -54,9 +42,9 @@ public abstract class TileFrequency extends TileICBMMachine
 
     /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
         nbt.setInteger("frequency", this.frequency);
+        return super.writeToNBT(nbt);
     }
 }

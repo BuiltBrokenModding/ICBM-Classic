@@ -37,6 +37,7 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
         this.setMaxStackSize(1);
         this.setNoRepair();
         this.setUnlocalizedName(ICBMClassic.PREFIX + "laserDetonator");
+        this.setRegistryName(ICBMClassic.DOMAIN, "laserDetonator");
     }
 
     @Override

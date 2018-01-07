@@ -11,5 +11,6 @@ public class ItemICBMBase extends ItemAbstract
     public ItemICBMBase(String name)
     {
         this.setUnlocalizedName(ICBMClassic.PREFIX + name);
+        this.setRegistryName(ICBMClassic.PREFIX + name);
     }
 }

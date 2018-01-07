@@ -1,27 +1,20 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.prefab.item.ItemICBMElectrical;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
+public class ItemTracker extends ItemICBMElectrical
 {
     private static final long ENERGY_PER_TICK = 1;
 
@@ -29,51 +22,34 @@ public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
     {
         super("tracker");
         this.setMaxStackSize(1);
-        //FlagRegistry.registerFlag("ban_Tracker");
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void registerIcons(IIconRegister par1IconRegister)
-    {
-        if (par1IconRegister instanceof TextureMap)
-        {
-            ((TextureMap) par1IconRegister).setTextureEntry(this.getUnlocalizedName().replace("item.", ""), new TextureTracker());
-            this.itemIcon = ((TextureMap) par1IconRegister).getTextureExtry(this.getUnlocalizedName().replace("item.", ""));
-        }
+        //TODO use ItemCompass render to aim icon towards target
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
     {
-        Entity trackingEntity = getTrackingEntity(FMLClientHandler.instance().getClient().theWorld, stack);
+        Entity trackingEntity = getTrackingEntity(FMLClientHandler.instance().getClient().world, stack);
 
         if (trackingEntity != null)
         {
-            lines.add(LanguageUtility.getLocal("info.tracker.tracking") + " " + trackingEntity.getCommandSenderName());
+            lines.add(LanguageUtility.getLocal("info.tracker.tracking") + " " + trackingEntity.getName());
         }
 
         lines.add(LanguageUtility.getLocal("info.tracker.tooltip"));
-
-        if (player.getCommandSenderName().equalsIgnoreCase("Biffa2001"))
-        {
-            lines.add("");
-            lines.add("psst use me biffa!!");
-        }
     }
 
 
     public void setTrackingEntity(ItemStack itemStack, Entity entity)
     {
-        if (itemStack.stackTagCompound == null)
+        if (itemStack.getTagCompound() == null)
         {
             itemStack.setTagCompound(new NBTTagCompound());
         }
 
         if (entity != null)
         {
-            itemStack.stackTagCompound.setInteger("trackingEntity", entity.getEntityId());
+            itemStack.getTagCompound().setInteger("trackingEntity", entity.getEntityId());
         }
     }
 
@@ -82,9 +58,9 @@ public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
     {
         if (worldObj != null)
         {
-            if (itemStack.stackTagCompound != null)
+            if (itemStack.getTagCompound() != null)
             {
-                int trackingID = itemStack.stackTagCompound.getInteger("trackingEntity");
+                int trackingID = itemStack.getTagCompound().getInteger("trackingEntity");
                 return worldObj.getEntityByID(trackingID);
             }
         }
@@ -137,7 +113,7 @@ public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
     @Override
     public boolean onLeftClickEntity(ItemStack itemStack, EntityPlayer player, Entity entity)
     {
-        if (!player.worldObj.isRemote)
+        if (!player.world.isRemote)
         {
             boolean flag_ban = false;//FlagRegistry.getModFlag().getFlagWorld(player.worldObj).containsValue("ban_Tracker", "true", new Pos(entity));
             if (!flag_ban)
@@ -145,7 +121,7 @@ public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
                 //if (this.getEnergy(itemStack) > ENERGY_PER_TICK)
                 //{
                 setTrackingEntity(itemStack, entity);
-                player.addChatMessage(new ChatComponentText(LanguageUtility.getLocal("message.tracker.nowtrack") + " " + entity.getCommandSenderName()));
+                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("message.tracker.nowtrack") + " " + entity.getName())); //TODO use injection point for name
                 return true;
                 //}
                 //else
@@ -155,33 +131,10 @@ public class ItemTracker extends ItemICBMElectrical implements IRecipeContainer
             }
             else
             {
-                player.addChatMessage(new ChatComponentText(LanguageUtility.getLocal("message.tracker.banned")));
+                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("message.tracker.banned")));
             }
         }
 
         return false;
     }
-
-    @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this),
-                " Z ", "SBS", "SCS",
-                'Z', Items.compass,
-                'C', UniversalRecipe.CIRCUIT_T1.get(),
-                'B', UniversalRecipe.BATTERY.get(),
-                'S', Items.iron_ingot));
-    }
-
-    //@Override
-    //public long getVoltage(ItemStack itemStack)
-    //{
-    //    return 20;
-    //}
-
-    //@Override
-    //public long getEnergyCapacity(ItemStack itemStack)
-    //{
-    //    return 100000;
-    //}
 }

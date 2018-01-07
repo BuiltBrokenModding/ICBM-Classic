@@ -1,18 +1,18 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.recipe.OreNames;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemRemoteDetonator extends ItemICBMElectrical implements IRecipeContainer, IItemFrequency
+public class ItemRemoteDetonator extends ItemICBMElectrical implements IItemFrequency
 {
     public static final int ENERGY = 1000;
 
@@ -36,17 +36,18 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IRecipeCo
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
+        ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote)
         {
             RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncher");
         }
-        return stack;
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
-    public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player)
+    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
     {
         return true;
     }
@@ -56,11 +57,5 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IRecipeCo
     {
         list.add("Fires missiles remotely");
         list.add("Right click launcher screen to encode");
-    }
-
-    @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        recipes.add(newShapedRecipe(this, "RNP", "RCW", "CTT", 'R', OreNames.ROD_IRON, 'N', OreNames.NUGGET_IRON, 'C', UniversalRecipe.CIRCUIT_T1.get(), 'T', Items.redstone, 'P', OreNames.PLATE_IRON, 'W', OreNames.WIRE_COPPER));
     }
 }

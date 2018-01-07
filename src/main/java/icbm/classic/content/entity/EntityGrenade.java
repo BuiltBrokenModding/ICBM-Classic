@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -197,7 +198,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         if (this.ticksExisted > Math.max(60, (haoMa.handler.getYinXin())))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            (haoMa.handler).createExplosion(this.world, this.posX, this.posY + 0.3f, this.posZ, this);
+            (haoMa.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this);
             this.setDead();
             return;
         }

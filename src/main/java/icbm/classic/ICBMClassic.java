@@ -34,11 +34,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModMetadata;
@@ -47,6 +49,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -58,6 +61,7 @@ import java.util.Arrays;
  * @author Calclavia
  */
 @Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
+@Mod.EventBusSubscriber
 public final class ICBMClassic extends AbstractMod
 {
     @Mod.Instance(ICBMClassic.DOMAIN)
@@ -144,9 +148,44 @@ public final class ICBMClassic extends AbstractMod
         //loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded()); TODO add waila support back
     }
 
-    @Override
-    protected void loadBlocks(ModManager manager)
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event)
     {
+        //TODO add missing mappings for the following
+        //"icbmCPoisonPowder" -> "poisonPowder"
+        //"icbmCSulfurDust" -> "sulfurDust"
+        //"icbmCAntidote" -> "antidote"
+        //"icbmCSignalDisrupter" -> "signalDisrupter"
+        //"icbmCTracker" -> "tracker"
+        //"icbmCMissile", ->"missile"
+        //"icbmCDefuser", -> "defuser"
+        //"icbmCRadarGun", -> "radarGun"
+        //"icbmCRemoteDetonator", -> "remoteDetonator"
+        //"icbmCLaserDetonator", -> "laserDetonator"
+        //"icbmCRocketLauncher", -> "rocketLauncher"
+        //"icbmCGrenade", -> "grenade"
+        //"icbmCBombCart", -> "bombcart"
+        event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
+        event.getRegistry().register(itemSulfurDust = new ItemSulfurDust());
+        event.getRegistry().register(itemAntidote = new ItemAntidote());
+        event.getRegistry().register(itemSignalDisrupter = new ItemSignalDisrupter());
+        event.getRegistry().register(itemTracker = new ItemTracker());
+        event.getRegistry().register(itemMissile = new ItemMissile());
+        event.getRegistry().register(itemDefuser = new ItemDefuser());
+        event.getRegistry().register(itemRadarGun = new ItemRadarGun());
+        event.getRegistry().register(itemRemoteDetonator = new ItemRemoteDetonator());
+        event.getRegistry().register(itemLaserDesignator = new ItemLaserDetonator());
+        event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
+        event.getRegistry().register(itemGrenade = new ItemGrenade());
+        event.getRegistry().register(itemBombCart = new ItemBombCart());
+
+        CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
+    }
+
+    @SubscribeEvent
+    public static void registerBlocks(RegistryEvent.Register<Block> event)
+    {
+        //TODO add conversion for "icbmCGlassPlate" -> "glassPressurePlate"
         blockGlassPlate = manager.newBlock("icbmCGlassPlate", BlockGlassPressurePlate.class, ItemBlockBase.class);
         blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class, ItemBlockBase.class);
         blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockSubTypes.class);
@@ -157,24 +196,10 @@ public final class ICBMClassic extends AbstractMod
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
     }
 
-    @Override
-    public void loadItems(ModManager manager)
+    @SubscribeEvent
+    public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
     {
-        itemPoisonPowder = manager.newItem("icbmCPoisonPowder", new ItemICBMBase("poisonPowder"));
-        itemSulfurDust = manager.newItem("icbmCSulfurDust", ItemSulfurDust.class);
-        itemAntidote = manager.newItem("icbmCAntidote", ItemAntidote.class);
-        itemSignalDisrupter = manager.newItem("icbmCSignalDisrupter", ItemSignalDisrupter.class);
-        itemTracker = manager.newItem("icbmCTracker", ItemTracker.class);
-        itemMissile = manager.newItem("icbmCMissile", ItemMissile.class);
-        itemDefuser = manager.newItem("icbmCDefuser", ItemDefuser.class);
-        itemRadarGun = manager.newItem("icbmCRadarGun", ItemRadarGun.class);
-        itemRemoteDetonator = manager.newItem("icbmCRemoteDetonator", ItemRemoteDetonator.class);
-        itemLaserDesignator = manager.newItem("icbmCLaserDetonator", ItemLaserDetonator.class);
-        itemRocketLauncher = manager.newItem("icbmCRocketLauncher", ItemRocketLauncher.class);
-        itemGrenade = manager.newItem("icbmCGrenade", ItemGrenade.class);
-        itemBombCart = manager.newItem("icbmCBombCart", ItemBombCart.class);
 
-        CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
 
     private void registerEntity(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)

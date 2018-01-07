@@ -176,7 +176,7 @@ public abstract class Explosive extends ExplosiveHandler
         return false;
     }
 
-    public void createExplosion(World world, BlockPos pos, Entity entity)
+    public void createExplosion(World world, BlockPos pos, Entity entity) //TODO switch back to x y z, as this causes all blasts to be centered on the block
     {
         if (!this.isDisabled)
         {

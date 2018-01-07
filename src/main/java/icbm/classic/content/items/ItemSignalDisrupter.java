@@ -12,6 +12,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -44,10 +47,13 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
-        player.openGui(ICBMClassic.INSTANCE, 10002, world, player.inventory.currentItem, 0, 0);
-        return stack;
+        if (!world.isRemote)
+        {
+            player.openGui(ICBMClassic.INSTANCE, 10002, world, player.inventory.currentItem, 0, 0);
+        }
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
     }
 
     @Override
