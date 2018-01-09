@@ -1,24 +1,19 @@
 package icbm.classic.content.machines.launcher.base;
 
-import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.energy.IEnergyBuffer;
+import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
+import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
+import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
-import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.TileModuleMachine;
-import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.registry.GameRegistry;
+import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
@@ -28,32 +23,32 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
+import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.BlockChest;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import resonant.api.ITier;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * This tile entity is for the base of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherBase extends TileModuleMachine implements IPacketIDReceiver, IMultiTileHost, ITier, ILauncherContainer, IRecipeContainer, IEnergyHandler
+public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILauncherContainer, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
 {
     public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
     public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
@@ -88,34 +83,14 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     protected int tier = 0;
     private boolean _destroyingStructure = false;
 
-    public TileLauncherBase()
-    {
-        super("launcherBase", Material.iron);
-        this.itemBlock = ItemBlockSubTypes.class;
-        this.hardness = 10f;
-        this.resistance = 10f;
-        this.isOpaque = false;
-    }
+    ExternalInventory inventory;
 
     @Override
-    protected IInventory createInventory()
-    {
-        return new TileModuleInventory(this, 1);
-    }
-
-    @Override
-    public Tile newTile()
-    {
-        return new TileLauncherBase();
-    }
-
-
-    @Override
-    public EnergyBuffer getEnergyBuffer(ForgeDirection side)
+    public IEnergyBuffer getEnergyBuffer(Direction side)
     {
         if (launchScreen != null)
         {
-            return launchScreen.getEnergyBuffer(ForgeDirection.UNKNOWN);
+            return launchScreen.getEnergyBuffer(Direction.UNKNOWN);
         }
         return null;
     }
@@ -141,19 +116,19 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 //Create seat if missile
                 if (getMissileStack() != null && seat == null)
                 {
-                    seat = new EntityPlayerSeat(worldObj);
+                    seat = new EntityPlayerSeat(world);
                     seat.host = this;
-                    seat.rideOffset = new Pos(getFacing().offsetX * 0.5, 1, getFacing().offsetZ * 0.5);
+                    seat.rideOffset = new Pos(getRotation()).multiply(0.5, 1, 0.5);
                     seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5);
                     seat.setSize(0.5f, 2.5f);
-                    worldObj.spawnEntityInWorld(seat);
+                    world.spawnEntity(seat);
                 }
                 //Destroy seat if no missile
                 else if (getMissileStack() == null && seat != null)
                 {
-                    if (seat.riddenByEntity != null)
+                    if (seat.getRidingEntity() != null)
                     {
-                        seat.riddenByEntity.mountEntity(null);
+                        seat.getRidingEntity().startRiding(null);
                     }
                     seat.setDead();
                     seat = null;
@@ -174,8 +149,8 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 for (byte i = 2; i < 6; i++)
                 {
                     //Get tile entity on side
-                    Pos position = new Pos(this.xCoord, this.yCoord, this.zCoord).add(ForgeDirection.getOrientation(i));
-                    TileEntity tileEntity = this.worldObj.getTileEntity(position.xi(), position.yi(), position.zi());
+                    Pos position = new Pos(getPos()).add(Direction.getOrientation(i));
+                    TileEntity tileEntity = this.world.getTileEntity(position.toBlockPos());
 
                     //If frame update rotation
                     if (tileEntity instanceof TileLauncherFrame)
@@ -183,7 +158,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                         this.supportFrame = (TileLauncherFrame) tileEntity;
                         if (isServer())
                         {
-                            this.supportFrame.setFacing(getDirection());
+                            this.supportFrame.setRotation(getRotation());
                         }
                     }
                     //If screen, tell the screen the base exists
@@ -206,18 +181,18 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public boolean canStore(ItemStack stack, ForgeDirection side)
+    public boolean canStore(ItemStack stack, Direction side)
     {
         return stack != null && stack.getItem() == ICBMClassic.itemMissile;
     }
 
     @Override
-    public boolean canRemove(ItemStack stack, ForgeDirection side)
+    public boolean canRemove(ItemStack stack, Direction side)
     {
         return true;
     }
 
-    @Override
+    //@Override
     public String getInventoryName()
     {
         return LanguageUtility.getLocal("gui.launcherBase.name");
@@ -247,10 +222,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 }
 
                 //Randomize distance
-                inaccuracy = oldWorld().rand.nextInt(inaccuracy);
+                inaccuracy = getWorld().rand.nextInt(inaccuracy);
 
                 //Randomize radius drop
-                angle.setYaw(oldWorld().rand.nextFloat() * 360);
+                angle.setYaw(getWorld().rand.nextFloat() * 360);
 
                 //Update target
                 target = target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
@@ -261,7 +236,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
                 if (isServer())
                 {
-                    EntityMissile missile = new EntityMissile(oldWorld());
+                    EntityMissile missile = new EntityMissile(getWorld());
 
                     //Set data
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
@@ -272,18 +247,18 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                     missile.launch(target, lockHeight);
 
                     //Spawn entity
-                    oldWorld().spawnEntityInWorld(missile);
+                    getWorld().spawnEntity(missile);
 
                     //Grab rider
-                    if (seat != null && seat.riddenByEntity != null)
+                    if (seat != null && seat.getRidingEntity() != null)
                     {
-                        Entity entity = seat.riddenByEntity;
-                        seat.riddenByEntity.mountEntity(null);
-                        entity.mountEntity(missile);
+                        Entity entity = seat.getRidingEntity();
+                        seat.getRidingEntity().startRiding(null);
+                        entity.startRiding(missile);
                     }
 
                     //Remove item
-                    this.decrStackSize(0, 1);
+                    getInventory().decrStackSize(0, 1);
                 }
                 return true;
             }
@@ -310,14 +285,14 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public boolean isTargetTooClose(Pos target)
     {
         // Check if it is greater than the minimum range
-        return new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z())) < 10;
+        return new Pos(this.x(), 0, this.z()).distance(new Pos(target.x(), 0, target.z())) < 10;
     }
 
     // Is the target too far?
     public boolean isTargetTooFar(Pos target)
     {
         // Checks if it is greater than the maximum range for the launcher base
-        double distance = new Pos(this.xCoord, 0, this.zCoord).distance(new Pos(target.x(), 0, target.z()));
+        double distance = new Pos(this.x(), 0, this.z()).distance(new Pos(target.x(), 0, target.z()));
 
 
         return distance > getRange();
@@ -351,10 +326,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
     /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
-        nbt.setInteger("tier", getTier());
+        nbt.setInteger("tier", getTier().ordinal());
+        return super.writeToNBT(nbt);
     }
 
     @Override
@@ -371,19 +346,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
     public ItemStack getMissileStack()
     {
-        return getStackInSlot(0);
-    }
-
-    @Override
-    public int getTier()
-    {
-        return this.tier;
-    }
-
-    @Override
-    public void setTier(int tier)
-    {
-        this.tier = tier;
+        return getInventory().getStackInSlot(0);
     }
 
     @Override
@@ -397,7 +360,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
                 {
                     if (isServer())
                     {
-                        this.setInventorySlotContents(0, player.inventory.getCurrentItem());
+                        getInventory().setInventorySlotContents(0, player.inventory.getCurrentItem());
                         if (!player.capabilities.isCreativeMode)
                         {
                             player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
@@ -417,7 +380,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
             if (isServer())
             {
                 player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getMissileStack());
-                this.setInventorySlotContents(0, null);
+                getInventory().setInventorySlotContents(0, null);
                 player.inventoryContainer.detectAndSendChanges();
             }
             return true;
@@ -433,7 +396,17 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public boolean canStore(ItemStack stack, int slot, ForgeDirection side)
+    public ExternalInventory getInventory()
+    {
+        if (inventory == null)
+        {
+            inventory = new ExternalInventory(this, 1);
+        }
+        return inventory;
+    }
+
+    @Override
+    public boolean canStore(ItemStack stack, int slot, Direction side)
     {
         return slot == 0 && stack.getItem() instanceof ItemMissile;
     }
@@ -443,9 +416,9 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     {
         for (byte i = 2; i < 6; i++)
         {
-            Pos position = new Pos((TileEntity) this).add(ForgeDirection.getOrientation(i));
+            Pos position = new Pos((TileEntity) this).add(Direction.getOrientation(i));
 
-            TileEntity tileEntity = position.getTileEntity(this.worldObj);
+            TileEntity tileEntity = position.getTileEntity(this.world);
 
             if (tileEntity instanceof ILauncherController)
             {
@@ -461,10 +434,10 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     //=========================================
 
     @Override
-    public void firstTick()
+    public void onLoad()
     {
-        super.firstTick();
-        MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
+        super.onLoad();
+        MultiBlockHelper.buildMultiBlock(getWorld(), this, true, true);
     }
 
     @Override
@@ -496,18 +469,6 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public boolean canPlaceBlockAt()
-    {
-        return super.canPlaceBlockAt() && oldWorld().getBlock(xi(), yi() + 1, zi()).isReplaceable(oldWorld(), xi(), yi() + 1, zi()) && oldWorld().getBlock(xi(), yi() + 2, zi()).isReplaceable(oldWorld(), xi(), yi() + 2, zi());
-    }
-
-    @Override
-    public boolean canPlaceBlockOnSide(ForgeDirection side)
-    {
-        return side == ForgeDirection.UP && canPlaceBlockAt();
-    }
-
-    @Override
     public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
     {
         _destroyingStructure = true;
@@ -522,7 +483,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, float xHit, float yHit, float zHit)
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
         return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
     }
@@ -536,7 +497,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     @Override
     public HashMap<IPos3D, String> getLayoutOfMultiBlock()
     {
-        if (getDirection() == ForgeDirection.EAST || getDirection() == ForgeDirection.WEST)
+        if (getRotation() == EnumFacing.EAST || getRotation() == EnumFacing.WEST)
         {
             return eastWestMultiBlockCache;
         }
@@ -544,59 +505,30 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     }
 
     @Override
-    public void setFacing(ForgeDirection facingDirection)
+    public void setRotation(EnumFacing facingDirection)
     {
-        if (facingDirection != getDirection())
+        //Only update if state has changed
+        if (facingDirection != getRotation()
+
+                //Prevent up and down placement
+                && facingDirection != EnumFacing.UP
+                && facingDirection != EnumFacing.DOWN)
         {
+            //Clear old structure
             if (isServer())
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
             }
-            super.setFacing(facingDirection);
+
+            //Update block state
+            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
+
+            //Create new structure
             if (isServer())
             {
-                MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
+                MultiBlockHelper.buildMultiBlock(getWorld(), this, true, true);
                 markDirty();
             }
         }
-    }
-
-    @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        // Missile Launcher Platform
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchBase, 1, 0),
-                "! !", "!C!", "!!!",
-                '!', UniversalRecipe.SECONDARY_METAL.get(),
-                'C', UniversalRecipe.CIRCUIT_T1.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchBase, 1, 1),
-                "! !", "!C!", "!@!",
-                '@', new ItemStack(ICBMClassic.blockLaunchBase, 1, 0),
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                'C', UniversalRecipe.CIRCUIT_T2.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchBase, 1, 2),
-                "! !", "!C!", "!@!",
-                '@', new ItemStack(ICBMClassic.blockLaunchBase, 1, 1),
-                '!', UniversalRecipe.PRIMARY_PLATE.get(),
-                'C', UniversalRecipe.CIRCUIT_T3.get()));
-    }
-
-    @Override
-    public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
-    {
-        super.onPlaced(entityLiving, itemStack);
-        setTier(itemStack.getItemDamage());
-    }
-
-    @Override
-    public int metadataDropped(int meta, int fortune)
-    {
-        return getTier();
-    }
-
-    @Override
-    protected boolean useMetaForFacing()
-    {
-        return true;
     }
 }

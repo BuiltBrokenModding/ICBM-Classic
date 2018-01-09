@@ -48,19 +48,6 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     /** Client's render cached object, used in place of inventory to avoid affecting GUIs */
     public ItemStack cachedMissileStack;
 
-    public TileLauncherBaseClient()
-    {
-        super();
-        renderNormalBlock = false;
-        renderTileEntity = true;
-    }
-
-    @Override
-    public Tile newTile()
-    {
-        return new TileLauncherBaseClient();
-    }
-
     @Override
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Pos pos, float frame, int pass)
@@ -184,14 +171,6 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
     }
 
     @Override
-    public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list)
-    {
-        list.add(new ItemStack(item, 1, 0));
-        list.add(new ItemStack(item, 1, 1));
-        list.add(new ItemStack(item, 1, 2));
-    }
-
-    @Override
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
@@ -213,17 +192,5 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
             return cachedMissileStack;
         }
         return getStackInSlot(0);
-    }
-
-    @Override
-    public IIcon getIcon()
-    {
-        return Blocks.anvil.getIcon(0, 0);
-    }
-
-    @Override
-    public AxisAlignedBB getRenderBoundingBox()
-    {
-        return new Cube(-2, 0, -2, 2, 4, 2).add(toPos()).toAABB();
     }
 }

@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.launcher.screen;
 
 import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
@@ -47,7 +48,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IRecipeContainer, IGuiTile
+public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IGuiTile, IEnergyBufferProvider
 {
     // The tier of this screen
     private int tier = 0;

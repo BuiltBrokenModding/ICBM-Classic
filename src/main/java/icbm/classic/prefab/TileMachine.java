@@ -1,20 +1,24 @@
 package icbm.classic.prefab;
 
+import com.builtbroken.mc.api.abstraction.world.IPosWorld;
+import com.builtbroken.mc.api.abstraction.world.IWorld;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileMachine extends TileEntity implements IPacketIDReceiver
+public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IPosWorld
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -100,5 +104,62 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     public boolean isClient()
     {
         return world.isRemote;
+    }
+
+    public EnumFacing getRotation()
+    {
+        return getBlockState().getValue(BlockICBM.ROTATION_PROP);
+    }
+
+    public void setRotation(EnumFacing facingDirection)
+    {
+        //Only update if state has changed
+        if (facingDirection != getRotation())
+        {
+            //Update block state
+            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
+        }
+    }
+
+    public BlockICBM.EnumTier getTier()
+    {
+        return getBlockState().getValue(BlockICBM.TIER_PROP);
+    }
+
+    public void setTier(BlockICBM.EnumTier tier)
+    {
+        if(tier != getTier())
+        {
+            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.TIER_PROP, tier));
+        }
+    }
+
+    public IBlockState getBlockState()
+    {
+        return world.getBlockState(getPos());
+    }
+
+    @Override
+    public IWorld world()
+    {
+        return Engine.getWorld(world.provider.getDimension());
+    }
+
+    @Override
+    public double z()
+    {
+        return getPos().getZ();
+    }
+
+    @Override
+    public double x()
+    {
+        return getPos().getX();
+    }
+
+    @Override
+    public double y()
+    {
+        return getPos().getY();
     }
 }

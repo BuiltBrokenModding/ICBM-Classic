@@ -5,15 +5,14 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
-import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.TileMachine;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
+import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
+import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -192,23 +191,6 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     public HashMap<IPos3D, String> getLayoutOfMultiBlock()
     {
         return tileMapCache;
-    }
-
-    @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        // Missile Launcher Support Frame
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchSupport, 1, 0),
-                "! !", "!!!", "! !",
-                '!', UniversalRecipe.SECONDARY_METAL.get()));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchSupport, 1, 1),
-                "! !", "!@!", "! !",
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                '@', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 0)));
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchSupport, 1, 2),
-                "! !", "!@!", "! !",
-                '!', UniversalRecipe.PRIMARY_PLATE.get(),
-                '@', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 1)));
     }
 
     @Override
