@@ -452,6 +452,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void explode()
     {
+        setDead();
         try
         {
             // Make sure the missile is not already exploding
@@ -466,16 +467,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 }
                 else
                 {
-                    ((Explosion) this.explosiveID.handler).createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
+                    this.explosiveID.handler.createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
                 }
 
                 this.isExpoding = true;
 
                 ICBMClassic.INSTANCE.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
             }
-
-            setDead();
-
         }
         catch (Exception e)
         {

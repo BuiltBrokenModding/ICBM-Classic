@@ -108,7 +108,7 @@ public class BlastEMP extends Blast
 
                 for (Entity entity : entitiesNearby)
                 {
-                    if (entity instanceof IMissile && !entity.isEntityEqual(this.controller))
+                    if (entity instanceof IMissile && !entity.isEntityEqual(this.controller) && entity.isEntityAlive())
                     {
                         if (((IMissile) entity).getTicksInAir() > -1)
                         {
