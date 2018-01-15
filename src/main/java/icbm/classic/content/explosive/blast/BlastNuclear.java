@@ -3,10 +3,12 @@ package icbm.classic.content.explosive.blast;
 import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -46,7 +48,7 @@ public class BlastNuclear extends Blast
             this.thread.start();
 
         }
-        else if (this.spawnMoreParticles && ICBMClassic.proxy.isGaoQing())
+        else if (this.spawnMoreParticles)
         {
             // Spawn nuclear cloud.
             for (int y = 0; y < 26; y++)
@@ -73,7 +75,8 @@ public class BlastNuclear extends Blast
                             Location spawnPosition = position.add(new Pos(x * 2, (y - 2) * 2, z * 2));
                             float xDiff = (float) (spawnPosition.x() - position.x());
                             float zDiff = (float) (spawnPosition.z() - position.z());
-                            ICBMClassic.proxy.spawnParticle("smoke", oldWorld(), spawnPosition, xDiff * 0.3 * oldWorld().rand.nextFloat(), -oldWorld().rand.nextFloat(), zDiff * 0.3 * oldWorld().rand.nextFloat(), (float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, 0, 8F, 1.2F);
+                            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, spawnPosition.x(), spawnPosition.y(), spawnPosition.z(),
+                                    xDiff * 0.3 * oldWorld().rand.nextFloat(), -oldWorld().rand.nextFloat(), zDiff * 0.3 * oldWorld().rand.nextFloat()); //(float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, //0, 8F, 1.2F);
                         }
                     }
                 }
@@ -82,7 +85,7 @@ public class BlastNuclear extends Blast
 
         this.doDamageEntities(this.getRadius(), this.energy * 1000);
 
-        //this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 7.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(),  7.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     @Override
@@ -92,22 +95,19 @@ public class BlastNuclear extends Blast
 
         if (this.oldWorld().isRemote)
         {
-            if (ICBMClassic.proxy.isGaoQing())
+            for (int x = -r; x < r; x++)
             {
-                for (int x = -r; x < r; x++)
+                for (int z = -r; z < r; z++)
                 {
-                    for (int z = -r; z < r; z++)
+                    double distance = MathHelper.sqrt(x * x + z * z);
+
+                    if (distance < r && distance > r - 1)
                     {
-                        double distance = MathHelper.sqrt(x * x + z * z);
+                        Location targetPosition = this.position.add(new Pos(x, 0, z));
 
-                        if (distance < r && distance > r - 1)
+                        if (this.oldWorld().rand.nextFloat() < Math.max(0.001 * r, 0.05))
                         {
-                            Location targetPosition = this.position.add(new Pos(x, 0, z));
-
-                            if (this.oldWorld().rand.nextFloat() < Math.max(0.001 * r, 0.05))
-                            {
-                                ICBMClassic.proxy.spawnParticle("smoke", this.oldWorld(), targetPosition, 5F, 1F);
-                            }
+                            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, targetPosition.x(), targetPosition.y(), targetPosition.z(), 0, 0, 0); //5F, 1F);
                         }
                     }
                 }
@@ -141,7 +141,7 @@ public class BlastNuclear extends Blast
                 for (BlockPos p : this.thread.results)
                 {
                     IBlockState state = this.oldWorld().getBlockState(p);
-                    if (state != null && !state.getBlock().isAir(state,  oldWorld(), p))
+                    if (state != null && !state.getBlock().isAir(state, oldWorld(), p))
                     {
                         state.getBlock().onBlockExploded(this.oldWorld(), p, this);
                     }
@@ -167,7 +167,7 @@ public class BlastNuclear extends Blast
             }
         }
 
-        //this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "explosion", 10.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     /**

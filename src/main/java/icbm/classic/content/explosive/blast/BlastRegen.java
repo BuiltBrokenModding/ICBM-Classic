@@ -1,13 +1,15 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.ICBMClassic;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.gen.IChunkGenerator;
 
 public class BlastRegen extends Blast
 {
@@ -23,13 +25,14 @@ public class BlastRegen extends Blast
         {
             try
             {
-                Chunk oldChunk = oldWorld().getChunkFromBlockCoords(position.xi(), position.zi());
+                Chunk oldChunk = oldWorld().getChunkFromChunkCoords(position.xi() >> 4, position.zi() >> 4);
 
                 if (oldWorld() instanceof WorldServer)
                 {
 
                     IChunkProvider provider = oldWorld().getChunkProvider();
-                    Chunk newChunk = ((ChunkProviderServer) provider).currentChunkProvider.provideChunk(oldChunk.xPosition, oldChunk.zPosition);
+                    IChunkGenerator generator = ((ChunkProviderServer) provider).chunkGenerator;
+                    Chunk newChunk = generator.generateChunk(oldChunk.x, oldChunk.z);
 
                     for (int x = 0; x < 16; x++)
                     {
@@ -37,16 +40,16 @@ public class BlastRegen extends Blast
                         {
                             for (int y = 0; y < oldWorld().getHeight(); y++)
                             {
-                                Block blockID = newChunk.getBlock(x, y, z);
-                                int metadata = newChunk.getBlockMetadata(x, y, z);
-                                oldWorld().setBlock(x + oldChunk.xPosition * 16, y, z + oldChunk.zPosition * 16, blockID, metadata, 3);
+                                IBlockState state = newChunk.getBlockState(x, y, z);
+                                world.setBlockState(new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16), state, 3);
                             }
                         }
                     }
 
-                    oldChunk.isTerrainPopulated = false;
-                    provider.populate(provider, oldChunk.xPosition, oldChunk.zPosition);
-                    oldChunk.isModified = true;
+                    oldChunk.setTerrainPopulated(false);
+                    generator.populate(oldChunk.x, oldChunk.z);
+                    oldChunk.markDirty();
+                    oldChunk.resetRelightChecks();
                 }
             }
             catch (Exception e)

@@ -1,21 +1,19 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
-import icbm.classic.content.explosive.thread.ThreadLargeExplosion.IThreadCallBack;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.Iterator;
 import java.util.List;
@@ -74,36 +72,17 @@ public class BlastSonic extends Blast
                 }
             } */
 
-            this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.energy, this.exploder, new IThreadCallBack()
-            {
-                @Override
-                public float getResistance(World world, IPos3D explosionPosition, IPos3D targetPosition, Entity source, Block block)
-                {
-                    float resistance = 0;
-
-                    if (block instanceof BlockLiquid || block instanceof IFluidBlock)
-                    {
-                        resistance = 1f;
-                    }
-                    else
-                    {
-                        resistance = block.getExplosionResistance(source, world, (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z(), explosionPosition.x(), explosionPosition.y(), explosionPosition.z());
-                    }
-
-                    return resistance;
-                }
-
-            });
+            this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
             this.thread.start();
         }
 
         if (this.hasShockWave)
         {
-            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "hypersonic", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+            ICBMSounds.HYPERSONIC.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
         else
         {
-            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "sonicwave", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+            ICBMSounds.SONICWAVE.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -116,49 +95,41 @@ public class BlastSonic extends Blast
         {
             if (this.thread != null && this.thread.isComplete)
             {
-                Iterator<Pos> it = this.thread.results.iterator();
+                Iterator<BlockPos> it = this.thread.results.iterator();
 
                 while (it.hasNext())
                 {
-                    Pos targetPosition = it.next();
-                    double distance = targetPosition.distance(position);
+                    BlockPos targetPosition = it.next();
+                    double distance = position.distance(targetPosition);
 
                     if (distance > r || distance < r - 3)
                     {
                         continue;
                     }
 
-                    Block blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    final IBlockState blockState = world.getBlockState(targetPosition);
+                    final Block block = blockState.getBlock();
 
-                    if (blockID == Blocks.air || blockID.blockHardness < 0)
+                    if (block == Blocks.AIR || blockState.getBlockHardness(world, targetPosition) < 0)
                     {
                         continue;
                     }
 
-                    //if (block instanceof IForceFieldBlock)
-                    //{
-                    //    continue;
-                    //}
-
-                    int metadata = this.oldWorld().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
-
                     if (distance < r - 1 || this.oldWorld().rand.nextInt(3) > 0)
                     {
-                        if (blockID == ICBMClassic.blockExplosive)
+                        if (block == ICBMClassic.blockExplosive)
                         {
-                            BlockExplosive.triggerExplosive(this.oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), ((TileEntityExplosive) this.oldWorld().getTileEntity(targetPosition.xi(), targetPosition.yi(), targetPosition.zi())).explosive, 1);
+                            BlockExplosive.triggerExplosive(this.oldWorld(), targetPosition, ((TileEntityExplosive) this.oldWorld().getTileEntity(targetPosition)).explosive, 1);
                         }
                         else
                         {
-                            this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            this.oldWorld().setBlockToAir(targetPosition);
                         }
-
-                        targetPosition = targetPosition.add(0.5D);
 
                         if (this.oldWorld().rand.nextFloat() < 0.3 * (this.getRadius() - r))
                         {
-                            EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), targetPosition, blockID, metadata);
-                            this.oldWorld().spawnEntityInWorld(entity);
+                            EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), targetPosition, blockState);
+                            this.oldWorld().spawnEntity(entity);
                             entity.yawChange = 50 * this.oldWorld().rand.nextFloat();
                             entity.pitchChange = 100 * this.oldWorld().rand.nextFloat();
                         }
@@ -170,7 +141,7 @@ public class BlastSonic extends Blast
         }
 
         int radius = 2 * this.callCount;
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
         List<Entity> allEntities = this.oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
         synchronized (allEntities)

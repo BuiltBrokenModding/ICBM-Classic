@@ -3,11 +3,16 @@ package icbm.classic.content.explosive.blast;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -20,7 +25,7 @@ import java.util.List;
 public class BlastTNT extends Blast
 {
     /** List of blocks to break */
-    protected List<Pos> blownBlocks = new ArrayList<Pos>();
+    protected List<BlockPos> blownBlocks = new ArrayList();
 
     /** 0- No push, 1 - Attract, 2 - Repel */
     private int pushType = 0; //TODO change to enum
@@ -77,7 +82,7 @@ public class BlastTNT extends Blast
         //TODO fire event to allow editing list of blocks
 
         //TODO move effect to Effect handler
-        this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), "random.explode", 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
         switch (this.pushType)
         {
@@ -131,26 +136,27 @@ public class BlastTNT extends Blast
                             for (float step = 0.3F; radialEnergy > 0.0F; radialEnergy -= step * 0.75F)
                             {
                                 //Convert position to int
-                                int xi = MathHelper.floor_double(x);
-                                int yi = MathHelper.floor_double(y);
-                                int zi = MathHelper.floor_double(z);
+                                int xi = MathHelper.floor(x);
+                                int yi = MathHelper.floor(y);
+                                int zi = MathHelper.floor(z);
 
                                 //Get block
-                                Block block = this.oldWorld().getBlock(xi, yi, zi);
+                                BlockPos blockPos = new BlockPos(xi, yi, zi);
+                                IBlockState blockState = world.getBlockState(blockPos);
+                                Block block = blockState.getBlock();
 
                                 //Only act on non-air blocks
-                                if (block != Blocks.air)
+                                if (block != Blocks.AIR)
                                 {
                                     //Decrease energy based on resistance
-                                    radialEnergy -= (block.getExplosionResistance(this.exploder, this.oldWorld(), xi, yi, zi, this.position.xi(), this.position.yi(), this.position.zi()) + 0.3F) * step;
+                                    radialEnergy -= (block.getExplosionResistance(this.oldWorld(), blockPos, this.exploder, this) + 0.3F) * step;
 
                                     //Track blocks to destroy
                                     if (radialEnergy > 0.0F)
                                     {
-                                        Pos pos = new Pos(xi, yi, zi);
-                                        if (!blownBlocks.contains(pos))
+                                        if (!blownBlocks.contains(blockPos))
                                         {
-                                            blownBlocks.add(pos);
+                                            blownBlocks.add(blockPos);
                                         }
                                     }
                                 }
@@ -175,16 +181,16 @@ public class BlastTNT extends Blast
     {
         if (!this.oldWorld().isRemote)
         {
-            for (Pos blownPosition : blownBlocks) //TODO convert block positions to block edits to track prev and current blocks
+            for (BlockPos blownPosition : blownBlocks) //TODO convert block positions to block edits to track prev and current blocks
             {
                 //Get position
-                int xi = blownPosition.xi();
-                int yi = blownPosition.yi();
-                int zi = blownPosition.zi();
+                int xi = blownPosition.getX();
+                int yi = blownPosition.getY();
+                int zi = blownPosition.getZ();
 
                 //Get block
-                Block block = this.oldWorld().getBlock(xi, yi, zi);
-                int metadata = this.oldWorld().getBlockMetadata(xi, yi, zi);
+                IBlockState blockState = world.getBlockState(blownPosition);
+                Block block = blockState.getBlock();
 
                 ///Generate effect TODO move to effect handler
                 ///---------------------------------------------
@@ -196,7 +202,7 @@ public class BlastTNT extends Blast
                 double var171 = var11 - this.position.y();
                 double var191 = var13 - this.position.z();
 
-                double var211 = MathHelper.sqrt_double(var151 * var151 + var171 * var171 + var191 * var191);
+                double var211 = MathHelper.sqrt(var151 * var151 + var171 * var171 + var191 * var191);
                 var151 /= var211;
                 var171 /= var211;
                 var191 /= var211;
@@ -207,23 +213,23 @@ public class BlastTNT extends Blast
                 var171 *= var23;
                 var191 *= var23;
 
-                this.oldWorld().spawnParticle("explode", (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
-                this.oldWorld().spawnParticle("smoke", var9, var11, var13, var151, var171, var191);
+                this.oldWorld().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
+                this.oldWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var9, var11, var13, var151, var171, var191);
                 ///---------------------------------------------
 
                 //Only edit block if not air TODO see if we need to check for modded air
-                if (block != Blocks.air)
+                if (block != Blocks.AIR)
                 {
                     try
                     {
                         //Do drops
                         if (block.canDropFromExplosion(null))
                         {
-                            block.dropBlockAsItemWithChance(this.oldWorld(), xi, yi, zi, this.oldWorld().getBlockMetadata(xi, yi, zi), 1F, 0);
+                            block.dropBlockAsItemWithChance(this.oldWorld(), blownPosition, blockState, 1F, 0);
                         }
 
                         //Break block
-                        block.onBlockExploded(this.oldWorld(), xi, yi, zi, this);
+                        block.onBlockExploded(this.oldWorld(), blownPosition, this);
                     }
                     catch (Exception e)
                     {
@@ -254,7 +260,7 @@ public class BlastTNT extends Blast
                 double xDifference = entity.posX - position.x();
                 double yDifference = entity.posY - position.y();
                 double zDifference = entity.posZ - position.z();
-                double distance = MathHelper.sqrt_double(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+                double distance = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                 xDifference /= distance;
                 yDifference /= distance;
                 zDifference /= distance;

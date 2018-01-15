@@ -1,32 +1,35 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 
-/** Creates radiation spawning
+/**
+ * Creates radiation spawning
  *
- * @author Calclavia */
+ * @author Calclavia
+ */
 public class BlastRot extends Blast
 {
     private ThreadLargeExplosion thread;
-    private float nengLiang;
+    private float energy;
 
     public BlastRot(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
     }
 
-    public BlastRot(World world, Entity entity, double x, double y, double z, float size, float nengLiang)
+    public BlastRot(World world, Entity entity, double x, double y, double z, float size, float energy)
     {
         this(world, entity, x, y, z, size);
-        this.nengLiang = nengLiang;
+        this.energy = energy;
     }
 
     @Override
@@ -34,7 +37,7 @@ public class BlastRot extends Blast
     {
         if (!this.oldWorld().isRemote)
         {
-            this.thread = new ThreadLargeExplosion(this.position, (int) this.getRadius(), this.nengLiang, this.exploder);
+            this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
             this.thread.start();
         }
     }
@@ -46,53 +49,44 @@ public class BlastRot extends Blast
         {
             if (this.thread.isComplete)
             {
-                for (Pos targetPosition : this.thread.results)
+                for (BlockPos targetPosition : this.thread.results)
                 {
                     /** Decay the blocks. */
-                    Block blockID = targetPosition.getBlock(this.oldWorld());
+                    IBlockState blockState = world.getBlockState(targetPosition);
+                    Block block = blockState.getBlock();
 
-                    if (blockID != blockID)
+                    if (block == Blocks.GRASS || block == Blocks.SAND)
                     {
-                        if (blockID == Blocks.grass || blockID == Blocks.sand)
+                        if (this.oldWorld().rand.nextFloat() > 0.96)
                         {
-                            if (this.oldWorld().rand.nextFloat() > 0.96)
-                            {
-                                targetPosition.setBlock(this.oldWorld(), ICBMClassic.blockRadioactive);
-                            }
+                            world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
                         }
+                    }
 
-                        if (blockID == Blocks.stone)
+                    if (block == Blocks.STONE)
+                    {
+                        if (this.oldWorld().rand.nextFloat() > 0.99)
                         {
-                            if (this.oldWorld().rand.nextFloat() > 0.99)
-                            {
-                                targetPosition.setBlock(this.oldWorld(), ICBMClassic.blockRadioactive);
-                            }
+                            world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
                         }
+                    }
 
-                        else if (blockID == Blocks.leaves)
+                    else if (blockState.getMaterial() == Material.LEAVES || blockState.getMaterial() == Material.PLANTS)
+                    {
+                        world.setBlockToAir(targetPosition);
+                    }
+                    else if (block == Blocks.FARMLAND)
+                    {
+                        world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
+                    }
+                    else if (blockState.getMaterial() == Material.WATER)
+                    {
+                        if (FluidRegistry.getFluid("toxicwaste") != null)
                         {
-                            targetPosition.setBlock(this.oldWorld(), Blocks.air);
-                        }
-                        else if (blockID == Blocks.tallgrass)
-                        {
-                            if (Math.random() * 100 > 50)
+                            Block blockToxic = FluidRegistry.getFluid("toxicwaste").getBlock();
+                            if (blockToxic != null)
                             {
-                                targetPosition.setBlock(this.oldWorld(), Blocks.cobblestone);
-                            }
-                            else
-                            {
-                                targetPosition.setBlock(this.oldWorld(), Blocks.air);
-                            }
-                        }
-                        else if (blockID == Blocks.farmland)
-                        {
-                            targetPosition.setBlock(this.oldWorld(), ICBMClassic.blockRadioactive);
-                        }
-                        else if (blockID.getMaterial() == Material.water)
-                        {
-                            if (FluidRegistry.getFluid("toxicwaste") != null)
-                            {
-                                targetPosition.setBlock(this.oldWorld(), FluidRegistry.getFluid("toxicwaste").getBlock());
+                                world.setBlockState(targetPosition, blockToxic.getDefaultState(), 3);
                             }
                         }
                     }

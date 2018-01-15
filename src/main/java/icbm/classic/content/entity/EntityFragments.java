@@ -10,7 +10,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -20,11 +22,8 @@ import java.util.List;
 
 public class EntityFragments extends Entity implements IEntityAdditionalSpawnData
 {
-    private int xTile = -1;
-    private int yTile = -1;
-    private int zTile = -1;
-    private Block inTile = Blocks.AIR;
-    private int inData = 0;
+    private BlockPos tilePos;
+    private IBlockState inTile;
     private boolean inGround = false;
     public boolean doesArrowBelongToPlayer = false;
     public boolean isExplosive;
@@ -143,7 +142,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         if (!this.isExploding && !this.world.isRemote)
         {
             this.isExploding = true;
-            this.world.createExplosion(this, this.xTile, this.yTile, this.zTile, this.explosionSize, true);
+            this.world.createExplosion(this, posX, posY, posZ, this.explosionSize, true);
             this.setDead();
         }
     }
@@ -174,15 +173,15 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(this.motionY, var1) * 180.0D / Math.PI);
         }
 
-        IBlockState blockState = this.world.getBlockState(this.xTile, this.yTile, this.zTile);
-        Block var15 = blockState.getBlock();
+        IBlockState blockState = this.world.getBlockState(tilePos);
+        Block block = blockState.getBlock();
 
-        if (var15 != Blocks.AIR)
+        if (block != Blocks.AIR)
         {
             //var15.setBlockBoundsBasedOnState(this.world, this.xTile, this.yTile, this.zTile);
-            AxisAlignedBB var2 = var15.getCollisionBoundingBox(this.world, this.xTile, this.yTile, this.zTile);
+            AxisAlignedBB var2 = block.getCollisionBoundingBox(blockState, this.world, tilePos);
 
-            if (var2 != null && var2.isVecInside(Vec3.createVectorHelper(this.posX, this.posY, this.posZ)))
+            if (var2 != null && var2.contains(new Vec3d(this.posX, this.posY, this.posZ)))
             {
                 this.inGround = true;
             }
@@ -195,10 +194,9 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.inGround)
         {
-            var15 = this.world.getBlock(this.xTile, this.yTile, this.zTile);
-            int var18 = this.world.getBlockMetadata(this.xTile, this.yTile, this.zTile);
+            blockState = this.world.getBlockState(tilePos);
 
-            if (var15 == this.inTile && var18 == this.inData)
+            if (blockState == inTile)
             {
                 if (this.isExplosive)
                 {

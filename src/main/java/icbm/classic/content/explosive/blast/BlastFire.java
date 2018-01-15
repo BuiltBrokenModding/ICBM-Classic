@@ -1,10 +1,11 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlastFire extends Blast
@@ -43,13 +44,14 @@ public class BlastFire extends Blast
 
                             for (float var21 = 0.3F; var14 > 0.0F; var14 -= var21 * 0.75F)
                             {
-                                Pos targetPosition = new Pos(var15, var17, var19);
+                                BlockPos targetPosition = new BlockPos(var15, var17, var19);
                                 double distanceFromCenter = position.distance(targetPosition);
-                                Block var25 = oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                                IBlockState blockState = oldWorld().getBlockState(targetPosition);
+                                Block block = blockState.getBlock();
 
-                                if (var25 != Blocks.air)
+                                if (block != Blocks.AIR)
                                 {
-                                    var14 -= (var25.getExplosionResistance(this.exploder, oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) + 0.3F) * var21;
+                                    var14 -= (block.getExplosionResistance(oldWorld(), targetPosition, this.exploder, this) + 0.3F) * var21;
                                 }
 
                                 if (var14 > 0.0F)
@@ -59,22 +61,15 @@ public class BlastFire extends Blast
 
                                     if (chance > distanceFromCenter * 0.55)
                                     {
-                                        /*
-                                         * Check to see if the block is an air block and there is a
-                                         * block below it to support the fire.
-                                         */
-                                        Block block = oldWorld().getBlock((int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
+                                        boolean canReplace = block.isReplaceable(oldWorld(), targetPosition) || block.isAir(blockState, oldWorld(), targetPosition);
 
-                                        boolean canReplace = block.isReplaceable(oldWorld(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z())
-                                                || block.isAir(oldWorld(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z());
-
-                                        if (canReplace && Blocks.fire.canPlaceBlockAt(oldWorld(), (int) targetPosition.x(), (int) targetPosition.y(), (int) targetPosition.z()))
+                                        if (canReplace && Blocks.FIRE.canPlaceBlockAt(oldWorld(), targetPosition))
                                         {
-                                            targetPosition.setBlock(oldWorld(), Blocks.fire);
+                                            world.setBlockState(targetPosition, Blocks.FIRE.getDefaultState(), 3);
                                         }
-                                        else if (block == Blocks.ice)
+                                        else if (block == Blocks.ICE)
                                         {
-                                            targetPosition.setBlockToAir(oldWorld());
+                                            world.setBlockToAir(targetPosition);
                                         }
                                     }
                                 }
@@ -89,7 +84,7 @@ public class BlastFire extends Blast
             }
         }
 
-        oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
+        ICBMSounds.EXPLOSION_FIRE.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
     }
 
     @Override

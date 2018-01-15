@@ -1,13 +1,12 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.ExExothermic;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -61,34 +60,36 @@ public class BlastExothermic extends BlastBeam
                          * Check to see if the block is an air block and there is a block below it
                          * to support the fire.
                          */
-                        Block block = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                        IBlockState blockState = world.getBlockState(targetPosition);
+                        Block block = blockState.getBlock();
 
-                        if (block.getMaterial() == Material.water || block == Blocks.ice)
+                        if (blockState.getMaterial() == Material.WATER || block == Blocks.ICE)
                         {
-                            this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            this.oldWorld().setBlockToAir(targetPosition);
                         }
 
-                        if (block.blockMaterial == Material.rock && this.oldWorld().rand.nextFloat() > 0.8)
+                        if (blockState.getMaterial() == Material.ROCK && this.oldWorld().rand.nextFloat() > 0.8)
                         {
-                            this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
+                            this.oldWorld().setBlockState(targetPosition, Blocks.FLOWING_LAVA.getDefaultState(), 3);
                         }
 
-                        if ((block.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
-                                && Blocks.fire.canPlaceBlockAt(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi()))
+                        if ((block.isReplaceable(oldWorld(), targetPosition))
+                                && Blocks.FIRE.canPlaceBlockAt(oldWorld(), targetPosition))
                         {
                             if (this.oldWorld().rand.nextFloat() > 0.99)
                             {
-                                this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.flowing_lava, 0, 2);
+                                this.oldWorld().setBlockState(targetPosition, Blocks.FLOWING_LAVA.getDefaultState(), 3);
                             }
                             else
                             {
-                                this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.fire, 0, 2);
+                                this.oldWorld().setBlockState(targetPosition, Blocks.FIRE.getDefaultState(), 3);
 
-                                block = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                                blockState = this.oldWorld().getBlockState(targetPosition.down());
+                                block = blockState.getBlock();
 
-                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (block == Blocks.stone || block == Blocks.grass || block == Blocks.dirt) && this.oldWorld().rand.nextFloat() > 0.75)
+                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (block == Blocks.STONE || block == Blocks.GRASS || block == Blocks.DIRT) && this.oldWorld().rand.nextFloat() > 0.75)
                                 {
-                                    this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), Blocks.netherrack, 0, 2);
+                                    this.oldWorld().setBlockState(targetPosition.down(), Blocks.NETHERRACK.getDefaultState(), 3);
                                 }
                             }
                         }

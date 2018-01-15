@@ -21,13 +21,17 @@ public enum ICBMSounds
 {
     ANTIMATTER("antimatter"),
     BEAM_CHARGING("beamcharging"),
+    COLLAPSE("collapse"),
     DEBILITATION("debilitation"),
     EMP("emp"),
+    EXPLOSION("explosion"),
     EXPLOSION_FIRE("explosionfire"),
     GAS_LEAK("gasleak"),
+    HYPERSONIC("hypersonic"),
     POWER_DOWN("powerdown"),
     TARGET_LOCKED("targetlocked"),
-    REDMATTER("redmatter");
+    REDMATTER("redmatter"),
+    SONICWAVE("sonicwave");
 
     private final ResourceLocation location;
     private SoundEvent sound;

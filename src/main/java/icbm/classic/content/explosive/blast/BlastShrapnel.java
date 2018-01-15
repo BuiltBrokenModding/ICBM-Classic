@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import icbm.classic.content.entity.EntityFragments;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class BlastShrapnel extends Blast
@@ -13,7 +13,7 @@ public class BlastShrapnel extends Blast
     public BlastShrapnel(World world, Entity entity, double x, double y, double z, float size, boolean isFlaming, boolean isExplosive, boolean isAnvil)
     {
         this(world, entity, x, y, z, size);
-        this.isFlaming = isFlaming;
+        this.causesFire = isFlaming;
         this.isExplosive = isExplosive;
         this.isAnvil = isAnvil;
     }
@@ -39,7 +39,7 @@ public class BlastShrapnel extends Blast
                 {
                     EntityFragments arrow = new EntityFragments(oldWorld(), position.x(), position.y(), position.z(), this.isExplosive, this.isAnvil);
 
-                    if (this.isFlaming)
+                    if (this.causesFire)
                     {
                         arrow.arrowCritical = true;
                         arrow.setFire(100);
@@ -51,12 +51,12 @@ public class BlastShrapnel extends Blast
                     arrow.posY -= 0.10000000149011612D;
                     arrow.posZ -= (MathHelper.sin(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);
                     arrow.setPosition(arrow.posX, arrow.posY, arrow.posZ);
-                    arrow.yOffset = 0.0F;
+                    //arrow.yOffset = 0.0F;
                     arrow.motionX = (-MathHelper.sin(rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float) Math.PI));
                     arrow.motionZ = (MathHelper.cos(rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float) Math.PI));
                     arrow.motionY = (-MathHelper.sin(rotationPitch / 180.0F * (float) Math.PI));
                     arrow.setArrowHeading(arrow.motionX * oldWorld().rand.nextFloat(), arrow.motionY * oldWorld().rand.nextFloat(), arrow.motionZ * oldWorld().rand.nextFloat(), 0.5f + (0.7f * oldWorld().rand.nextFloat()), 1.0F);
-                    oldWorld().spawnEntityInWorld(arrow);
+                    oldWorld().spawnEntity(arrow);
 
                 }
             }
