@@ -3,6 +3,7 @@ package icbm.classic.content.explosive;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.ex.*;
 import icbm.classic.content.explosive.ex.missiles.*;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -13,30 +14,30 @@ import net.minecraft.item.ItemStack;
  */
 public enum Explosives
 {
-    CONDENSED(new ExCondensed("condensed", 1)),
-    SHRAPNEL(new ExShrapnel("shrapnel", 1)),
-    INCENDIARY(new ExIncendiary("incendiary", 1)),
-    DEBLITATION(new ExDebilitation("debilitation", 1)),
-    CHEMICAL(new ExChemical("chemical", 1)),
-    ANVIL(new ExShrapnel("anvil", 1)),
-    REPLUSIVE(new ExRepulsive("repulsive", 1)),
-    ATTRACTIVE(new ExRepulsive("attractive", 1)),
+    CONDENSED(new ExCondensed("condensed", BlockICBM.EnumTier.ONE)),
+    SHRAPNEL(new ExShrapnel("shrapnel", BlockICBM.EnumTier.ONE)),
+    INCENDIARY(new ExIncendiary("incendiary", BlockICBM.EnumTier.ONE)),
+    DEBLITATION(new ExDebilitation("debilitation", BlockICBM.EnumTier.ONE)),
+    CHEMICAL(new ExChemical("chemical", BlockICBM.EnumTier.ONE)),
+    ANVIL(new ExShrapnel("anvil", BlockICBM.EnumTier.ONE)),
+    REPLUSIVE(new ExRepulsive("repulsive", BlockICBM.EnumTier.ONE)),
+    ATTRACTIVE(new ExRepulsive("attractive", BlockICBM.EnumTier.ONE)),
 
-    FRAGMENTATION(new ExShrapnel("fragmentation", 2)),
-    CONTAGIOUS(new ExChemical("contagious", 2)),
-    SONIC(new ExSonic("sonic", 2)),
+    FRAGMENTATION(new ExShrapnel("fragmentation", BlockICBM.EnumTier.TWO)),
+    CONTAGIOUS(new ExChemical("contagious", BlockICBM.EnumTier.TWO)),
+    SONIC(new ExSonic("sonic", BlockICBM.EnumTier.TWO)),
     BREACHING(new ExBreaching()),
     REJUVENATION(new ExRejuvenation()),
-    THERMOBARIC(new ExNuclear("thermobaric", 2)),
-    SMINE(new ExSMine("sMine", 2)),
+    THERMOBARIC(new ExNuclear("thermobaric", BlockICBM.EnumTier.TWO)),
+    SMINE(new ExSMine("sMine", BlockICBM.EnumTier.TWO)),
 
-    NUCLEAR(new ExNuclear("nuclear", 3)),
+    NUCLEAR(new ExNuclear("nuclear", BlockICBM.EnumTier.THREE)),
     EMP(new ExEMP()),
     EXOTHERMIC(new ExExothermic()),
     ENDOTHERMIC(new ExEndothermic()),
     ANTI_GRAV(new ExAntiGravitational()),
     ENDER(new ExEnder()),
-    HYPERSONIC(new ExSonic("hypersonic", 3)), //TODO find Missile model
+    HYPERSONIC(new ExSonic("hypersonic", BlockICBM.EnumTier.THREE)), //TODO find Missile model
 
     ANTIMATTER(new ExAntimatter()),
     REDMATTER(new ExRedMatter()),
@@ -44,7 +45,7 @@ public enum Explosives
     MISSILE(new MissileModule()),
     MISSILE_HOMING(new MissileHoming()),
     MISSILE_ANTI(new MissileAnti()),
-    MISSILE_CLUSTER(new MissileCluster("cluster", 2)),
+    MISSILE_CLUSTER(new MissileCluster("cluster", BlockICBM.EnumTier.TWO)),
     MISSILE_CLUSTER_NUKE(new MissileNuclearCluster()),
 
     NIGHTMARE(new ExNightmare());

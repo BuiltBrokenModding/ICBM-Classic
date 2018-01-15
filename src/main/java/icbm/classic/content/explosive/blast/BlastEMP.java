@@ -5,7 +5,7 @@ import com.builtbroken.mc.framework.energy.UniversalEnergySystem;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
-import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -15,8 +15,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import resonant.api.explosion.IEMPBlock;
 import resonant.api.explosion.IEMPItem;
@@ -49,7 +50,7 @@ public class BlastEMP extends Blast
     @Override
     public void doExplode()
     {
-        if(!oldWorld().isRemote)
+        if (!oldWorld().isRemote)
         {
             if (this.effectBlocks)
             {
@@ -59,7 +60,7 @@ public class BlastEMP extends Blast
                     {
                         for (int z = (int) -this.getRadius(); z < (int) this.getRadius(); z++)
                         {
-                            double dist = MathHelper.sqrt_double((x * x + y * y + z * z));
+                            double dist = MathHelper.sqrt((x * x + y * y + z * z));
 
                             Pos searchPosition = new Pos(x, y, z).add(position);
                             if (dist > this.getRadius())
@@ -69,7 +70,7 @@ public class BlastEMP extends Blast
 
                             if (Math.round(position.x() + y) == position.yi())
                             {
-                                oldWorld().spawnParticle("largesmoke", searchPosition.x(), searchPosition.y(), searchPosition.z(), 0, 0, 0);
+                                oldWorld().spawnParticle(EnumParticleTypes.SMOKE_LARGE, searchPosition.x(), searchPosition.y(), searchPosition.z(), 0, 0, 0);
                             }
 
                             Block block = searchPosition.getBlock(oldWorld());
@@ -118,7 +119,7 @@ public class BlastEMP extends Blast
                 }
 
                 int maxFx = 10;
-                AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(), position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
+                AxisAlignedBB bounds = new AxisAlignedBB(position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(), position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
                 List<Entity> entities = oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
                 for (Entity entity : entities)
@@ -127,7 +128,7 @@ public class BlastEMP extends Blast
                     {
                         if (this.oldWorld().isRemote && maxFx > 0)
                         {
-                            ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
+                            //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
                             maxFx--;
                         }
 
@@ -135,14 +136,7 @@ public class BlastEMP extends Blast
                         {
                             if (!this.oldWorld().isRemote)
                             {
-                                try
-                                {
-                                    ((EntityCreeper) entity).getDataWatcher().updateObject(17, (byte) 1);
-                                }
-                                catch (Exception e)
-                                {
-                                    e.printStackTrace();
-                                }
+                                //TODO ((EntityCreeper) entity).getDataManager().set(EntityCreeper.P);
                             }
                         }
                         if (entity instanceof EntityPlayer)
@@ -174,7 +168,7 @@ public class BlastEMP extends Blast
             VEProviderShockWave.spawnEffect(oldWorld(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 1, 3);
             VEProviderShockWave.spawnEffect(oldWorld(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 3, 3);
             VEProviderShockWave.spawnEffect(oldWorld(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
-            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "emp", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+            ICBMSounds.EMP.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 

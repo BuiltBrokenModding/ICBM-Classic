@@ -3,6 +3,7 @@ package icbm.classic.content.explosive.ex;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import icbm.classic.content.explosive.blast.BlastBreech;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -12,9 +13,9 @@ public class ExBreaching extends Explosion
 {
     public ExBreaching()
     {
-        super("breaching", 2);
+        super("breaching", BlockICBM.EnumTier.ONE);
         this.setFuseTime(40);
-        this.missileModelPath = "missiles/tier2/missile_head_breaching.obj";
+        //this.missileModelPath = "missiles/tier2/missile_head_breaching.obj";
     }
 
     @Override

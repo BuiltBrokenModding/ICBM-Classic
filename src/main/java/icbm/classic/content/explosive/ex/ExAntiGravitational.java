@@ -3,6 +3,7 @@ package icbm.classic.content.explosive.ex;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import icbm.classic.content.explosive.blast.BlastAntiGravitational;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -12,8 +13,8 @@ public class ExAntiGravitational extends Explosion
 {
     public ExAntiGravitational()
     {
-        super("antiGravitational", 3);
-        this.missileModelPath = "missiles/tier3/missile_antigravity.obj";
+        super("antiGravitational", BlockICBM.EnumTier.THREE);
+        //this.missileModelPath = "missiles/tier3/missile_antigravity.obj";
     }
 
     @Override

@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -301,18 +302,18 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
-    public boolean interactFirst(EntityPlayer entityPlayer)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
         //Allow missile to override interaction
-        if (this.explosiveID != null && ((Explosion) this.explosiveID.handler).onInteract(this, entityPlayer))
+        if (this.explosiveID != null && ((Explosion) this.explosiveID.handler).onInteract(this, player, hand))
         {
             return true;
         }
 
         //Handle player riding missile
-        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == entityPlayer))
+        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player))
         {
-            entityPlayer.startRiding(this);
+            player.startRiding(this);
             return true;
         }
 

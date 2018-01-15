@@ -2,11 +2,13 @@ package icbm.classic.content.explosive.ex;
 
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
 
 public abstract class Explosion extends Explosive
 {
-    public Explosion(String name, int tier)
+    public Explosion(String name, BlockICBM.EnumTier tier)
     {
         super(name, tier);
     }
@@ -21,7 +23,7 @@ public abstract class Explosion extends Explosive
     {
     }
 
-    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer)
+    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer, EnumHand hand)
     {
         return false;
     }

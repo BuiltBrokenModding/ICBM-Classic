@@ -10,15 +10,18 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import resonant.api.explosion.IExplosion;
 
 import java.util.List;
 
-public abstract class Blast extends Explosion implements IWorldPosition
+public abstract class Blast extends Explosion implements IWorldPosition, IExplosion
 {
     //TODO remove position as we are double storing location data
     public Location position;
@@ -85,9 +88,9 @@ public abstract class Blast extends Explosion implements IWorldPosition
      */
     public void onPositionUpdate(double posX, double posY, double posZ)
     {
-        this.pos = posX;
-        this.explosionY = posY;
-        this.explosionZ = posZ;
+        this.x = posX;
+        this.y = posY;
+        this.z = posZ;
         position = new Location(oldWorld(), posX, posY, posZ);
     }
 
@@ -109,7 +112,7 @@ public abstract class Blast extends Explosion implements IWorldPosition
         {
             if (!this.oldWorld().isRemote)
             {
-                this.oldWorld().spawnEntityInWorld(new EntityExplosion(this));
+                this.oldWorld().spawnEntity(new EntityExplosion(this));
             }
         }
         else
@@ -128,7 +131,7 @@ public abstract class Blast extends Explosion implements IWorldPosition
 
     public float getRadius()
     {
-        return Math.max(3, this.explosionSize);
+        return Math.max(3, this.size);
     }
 
 
@@ -158,7 +161,7 @@ public abstract class Blast extends Explosion implements IWorldPosition
         radius *= 2.0F;
         Location minCoord = position.add(-radius - 1);
         Location maxCoord = position.add(radius + 1);
-        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
+        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
         Vec3d var31 = new Vec3d(position.x(), position.y(), position.z());
 
         for (int i = 0; i < allEntities.size(); ++i)
@@ -188,17 +191,17 @@ public abstract class Blast extends Explosion implements IWorldPosition
                 double xDifference = entity.posX - position.x();
                 double yDifference = entity.posY - position.y();
                 double zDifference = entity.posZ - position.z();
-                double var35 = MathHelper.sqrt_double(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+                double var35 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                 xDifference /= var35;
                 yDifference /= var35;
                 zDifference /= var35;
-                double var34 = oldWorld().getBlockDensity(var31, entity.boundingBox);
+                double var34 = oldWorld().getBlockDensity(var31, entity.getEntityBoundingBox());
                 double var36 = (1.0D - distance) * var34;
                 int damage = 0;
 
                 damage = (int) ((var36 * var36 + var36) / 2.0D * 8.0D * power + 1.0D);
 
-                entity.attackEntityFrom(DamageSource.setExplosionSource(this), damage);
+                entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), damage);
 
                 entity.motionX += xDifference * var36;
                 entity.motionY += yDifference * var36;
@@ -221,13 +224,13 @@ public abstract class Blast extends Explosion implements IWorldPosition
     public void readFromNBT(NBTTagCompound nbt)
     {
         this.callCount = nbt.getInteger("callCount");
-        this.explosionSize = nbt.getFloat("explosionSize");
+        this.size = nbt.getFloat("explosionSize");
     }
 
     public void writeToNBT(NBTTagCompound nbt)
     {
         nbt.setInteger("callCount", this.callCount);
-        nbt.setFloat("explosionSize", this.explosionSize);
+        nbt.setFloat("explosionSize", this.size);
     }
 
     public boolean isMovable()

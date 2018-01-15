@@ -3,43 +3,39 @@ package icbm.classic.content.machines.launcher.cruise;
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
+import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketSpawnParticleStream;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.data.Direction;
+import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.prefab.items.ItemBlockBase;
-import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import cpw.mods.fml.common.network.ByteBufUtils;
+import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
+import icbm.classic.prefab.BlockICBM;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.LauncherType;
 
-import java.util.List;
-
-public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory, IPacketIDReceiver, ILauncherController, ILauncherContainer, IRecipeContainer, IGuiTile
+public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>
 {
     /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0);
@@ -53,26 +49,16 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     /** Percent of time that passed since last tick, should be 1.0 on a stable server */
     protected double deltaTime;
 
-    public TileCruiseLauncher()
-    {
-        super("cruiseLauncher", Material.iron);
-        this.itemBlock = ItemBlockBase.class;
-        this.setTarget(new Pos());
-        this.hardness = 10f;
-        this.resistance = 10f;
-        this.isOpaque = false;
-    }
+    ExternalInventory inventory;
 
     @Override
-    public Tile newTile()
+    public ExternalInventory getInventory()
     {
-        return new TileCruiseLauncher();
-    }
-
-    @Override
-    protected IInventory createInventory()
-    {
-        return new TileModuleInventory(this, 2);
+        if (inventory == null)
+        {
+            inventory = new ExternalInventory(this, 2);
+        }
+        return inventory;
     }
 
     /**
@@ -90,17 +76,17 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusNoPower");
         }
-        else if (this.getStackInSlot(0) == null)
+        else if (this.getInventory().getStackInSlot(0) == null)
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (this.getStackInSlot(0).getItem() != ICBMClassic.itemMissile)
+        else if (this.getInventory().getStackInSlot(0).getItem() != ICBMClassic.itemMissile)
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
         }
         else
         {
-            final Explosion missile = (Explosion) Explosives.get(this.getStackInSlot(0).getItemDamage()).handler;
+            final Explosion missile = (Explosion) Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage()).handler;
             if (missile == null)
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
@@ -134,19 +120,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return color + status;
     }
 
-    /** Returns the name of the inventory. */
-    @Override
-    public String getInventoryName()
-    {
-        return LanguageUtility.getLocal("gui.launcherCruise.name");
-    }
-
-    @Override
-    public boolean hasCustomInventoryName()
-    {
-        return false;
-    }
-
     @Override
     public void update()
     {
@@ -163,15 +136,15 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             Pos center = toPos().add(0.5);
             if (Engine.runningAsDev)
             {
-                sendPacket(new PacketSpawnParticleStream(oldWorld().provider.dimensionId, center, aimPoint));
+                Engine.packetHandler.sendToAllAround(new PacketSpawnParticleStream(world.provider.getDimension(), center, aimPoint), this);
             }
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
 
             currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
 
-            if (!this.worldObj.isRemote)
+            if (isServer())
             {
-                if (this.ticks % 40 == 0 && this.worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+                if (this.ticks % 40 == 0 && this.world.isBlockIndirectlyGettingPowered(getPos()) > 0)
                 {
                     this.launch();
                 }
@@ -182,7 +155,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     @Override
     public void placeMissile(ItemStack itemStack)
     {
-        setInventorySlotContents(0, itemStack);
+        getInventory().setInventorySlotContents(0, itemStack);
     }
 
     @Override
@@ -223,10 +196,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeBoolean(getStackInSlot(0) != null);
-        if (getStackInSlot(0) != null)
+        buf.writeBoolean(getInventory().getStackInSlot(0) != null);
+        if (getInventory().getStackInSlot(0) != null)
         {
-            ByteBufUtils.writeItemStack(buf, getStackInSlot(0));
+            ByteBufUtils.writeItemStack(buf, getInventory().getStackInSlot(0));
         }
         buf.writeInt(getTarget().xi());
         buf.writeInt(getTarget().yi());
@@ -239,10 +212,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         if (getTarget() != null && !getTarget().isZero())
         {
             //Validate if we have an item and a target
-            if (this.getStackInSlot(0) != null && this.getStackInSlot(0).getItem() == ICBMClassic.itemMissile)
+            if (this.getInventory().getStackInSlot(0) != null && this.getInventory().getStackInSlot(0).getItem() == ICBMClassic.itemMissile)
             {
                 //Validate that the item in the slot is a missile we can fire
-                final Explosion missile = (Explosion) Explosives.get(this.getStackInSlot(0).getItemDamage()).handler;
+                final Explosion missile = (Explosion) Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage()).handler;
                 if (missile != null && missile.isCruise() && missile.getTier() <= 3)
                 {
                     //Make sure we have enough energy
@@ -269,7 +242,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             for (int z = -1; z < 2; z++)
             {
-                if (!oldWorld().getBlock(xi() + x, yi() + 1, zi() + z).isAir(oldWorld(), xi() + x, yi() + 1, zi() + z))
+                BlockPos pos = getPos().add(x, 1, z);
+                IBlockState state = world.getBlockState(pos);
+                Block block = state.getBlock();
+                if (!block.isAir(state, world, pos))
                 {
                     return false;
                 }
@@ -294,21 +270,21 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         {
             this.extractEnergy();
 
-            EntityMissile entityMissile = new EntityMissile(oldWorld(), xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() -180, -(float) currentAim.pitch(), 2);
+            EntityMissile entityMissile = new EntityMissile(world, xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 2);
             entityMissile.missileType = EntityMissile.MissileType.CruiseMissile;
-            entityMissile.explosiveID = Explosives.get(this.getStackInSlot(0).getItemDamage());
+            entityMissile.explosiveID = Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage());
             entityMissile.acceleration = 1;
             entityMissile.launch(null);
-            oldWorld().spawnEntityInWorld(entityMissile);
+            world.spawnEntity(entityMissile);
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens
-            this.decrStackSize(0, 1);
+            this.getInventory().decrStackSize(0, 1);
         }
     }
 
     // Is the target too close?
     public boolean isTooClose(Pos target)
     {
-        return new Pos(this.xCoord + .5, this.yCoord + .5, this.zCoord + .5).distance(new Pos(target.x() + .5, target.z() + .5, target.z() + .5)) < 20;
+        return new Pos(getPos()).add(0.5).distance(new Pos(target.x() + .5, target.z() + .5, target.z() + .5)) < 20;
     }
 
     @Override
@@ -375,20 +351,17 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
-    public boolean isItemValidForSlot(int slotID, ItemStack itemStack)
+    public boolean canStore(ItemStack itemStack, Direction side)
     {
-        if (itemStack != null)
+        if (itemStack != null && itemStack.getItem() instanceof ItemMissile && this.getInventory().getStackInSlot(0) == null)
         {
-            if (itemStack.getItem() instanceof ItemMissile && this.getStackInSlot(slotID) == null)
+            if (Explosives.get(itemStack.getItemDamage()).handler instanceof Explosion)
             {
-                if (Explosives.get(itemStack.getItemDamage()).handler instanceof Explosion)
-                {
-                    Explosion missile = (Explosion) Explosives.get(itemStack.getItemDamage()).handler;
+                Explosion missile = (Explosion) Explosives.get(itemStack.getItemDamage()).handler;
 
-                    if (missile.isCruise() && missile.getTier() <= 3)
-                    {
-                        return true;
-                    }
+                if (missile.isCruise() && missile.getTier() <= BlockICBM.EnumTier.THREE)
+                {
+                    return true;
                 }
             }
         }
@@ -401,20 +374,11 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return this;
     }
 
+
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return AxisAlignedBB.getBoundingBox(xCoord - 1, yCoord, zCoord - 1, xCoord + 1, yCoord + 1, zCoord + 1);
-    }
-
-    @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockCruiseLauncher),
-                "RL ", "PPP",
-                'R', new ItemStack(ICBMClassic.blockLaunchSupport, 1, 2),
-                'L', new ItemStack(ICBMClassic.blockLaunchBase, 1, 2),
-                'P', UniversalRecipe.PRIMARY_METAL.get()));
+        return new Cube(-2, 0, -2, 2, 3, 2).add(toPos()).toAABB();
     }
 
     @Override

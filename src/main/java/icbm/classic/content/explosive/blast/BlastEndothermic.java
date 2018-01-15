@@ -1,21 +1,23 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.lib.helper.MathUtility;
 import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
+import com.builtbroken.mc.lib.helper.MathUtility;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
-import net.minecraft.potion.Potion;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +36,7 @@ public class BlastEndothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "redmatter", 4.0F, 0.8F);
+        ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class BlastEndothermic extends BlastBeam
                 /*
                  * Freeze all nearby entities.
                  */
-                List<EntityLiving> livingEntities = oldWorld().getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
+                List<EntityLiving> livingEntities = oldWorld().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
 
                 if (livingEntities != null && !livingEntities.isEmpty())
                 {
@@ -60,15 +62,15 @@ public class BlastEndothermic extends BlastBeam
                         EntityLiving entity = it.next();
                         if (entity != null && entity.isEntityAlive())
                         {
-                            entity.addPotionEffect(new CustomPotionEffect(PoisonFrostBite.INSTANCE.getId(), 60 * 20, 1, null));
-                            entity.addPotionEffect(new PotionEffect(Potion.confusion.id, 10 * 20, 2));
-                            entity.addPotionEffect(new PotionEffect(Potion.digSlowdown.id, 120 * 20, 2));
-                            entity.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 120 * 20, 4));
+                            entity.addPotionEffect(new CustomPotionEffect(PoisonFrostBite.INSTANCE, 60 * 20, 1, null));
+                            entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 10 * 20, 2));
+                            entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 120 * 20, 2));
+                            entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 120 * 20, 4));
                         }
                     }
                 }
 
-                for (Pos targetPosition : this.thread.results)
+                for (BlockPos targetPosition : this.thread.results)
                 {
                     double distanceFromCenter = position.distance(targetPosition);
 
@@ -87,38 +89,40 @@ public class BlastEndothermic extends BlastBeam
                         /*
                          * Place down ice blocks.
                          */
-                        Block blockID = this.oldWorld().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                        IBlockState blockState = world.getBlockState(targetPosition);
+                        Block block = blockState.getBlock();
 
-                        if (blockID.blockMaterial == Material.water)
+                        if (blockState.getMaterial() == Material.WATER)
                         {
-                            this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 3);
+                            this.oldWorld().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
                         }
-                        else if (blockID == Blocks.fire || blockID == Blocks.flowing_lava || blockID == Blocks.lava)
+                        else if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
                         {
-                            this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 3);
+                            this.oldWorld().setBlockState(targetPosition, Blocks.SNOW.getDefaultState().withProperty(BlockSnow.LAYERS, 8), 3);
                         }
                         else
                         {
-                            Block blockBellow = oldWorld().getBlock(targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi());
+                            BlockPos bellowPos = targetPosition.down();
+                            IBlockState blockState1 = world.getBlockState(bellowPos);
 
-                            if ((blockID.isReplaceable(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi())) && blockBellow.getMaterial().isSolid() && blockBellow.isSideSolid(oldWorld(), targetPosition.xi(), targetPosition.yi() - 1, targetPosition.zi(), ForgeDirection.UP))
+                            if ((block.isReplaceable(oldWorld(), targetPosition)) && blockState1.isSideSolid(world, bellowPos, EnumFacing.UP))
                             {
                                 if (MathUtility.rand.nextBoolean())
                                 {
-                                    this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.ice, 0, 3);
+                                    this.oldWorld().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
                                 }
                                 else
                                 {
-                                    this.oldWorld().setBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), Blocks.snow, 0, 3);
+                                    this.oldWorld().setBlockState(targetPosition, Blocks.SNOW.getDefaultState().withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
                                 }
                             }
                         }
                     }
                 }
 
-                this.oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "redmatter", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
+                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
             }
-            if(!oldWorld().getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
+            if (!oldWorld().getGameRules().getBoolean("doDaylightCycle"))
             {
                 this.oldWorld().setWorldTime(1200);
             }

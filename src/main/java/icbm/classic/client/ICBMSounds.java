@@ -19,7 +19,15 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  */
 public enum ICBMSounds
 {
-    TARGET_LOCKED("targetlocked");
+    ANTIMATTER("antimatter"),
+    BEAM_CHARGING("beamcharging"),
+    DEBILITATION("debilitation"),
+    EMP("emp"),
+    EXPLOSION_FIRE("explosionfire"),
+    GAS_LEAK("gasleak"),
+    POWER_DOWN("powerdown"),
+    TARGET_LOCKED("targetlocked"),
+    REDMATTER("redmatter");
 
     private final ResourceLocation location;
     private SoundEvent sound;

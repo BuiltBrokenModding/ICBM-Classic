@@ -10,8 +10,10 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -24,7 +26,7 @@ public class ExEnder extends Explosion
 {
     public ExEnder()
     {
-        super("ender", 3);
+        super("ender", BlockICBM.EnumTier.FIVE);
     }
 
     @Override
@@ -59,13 +61,14 @@ public class ExEnder extends Explosion
     }
 
     @Override
-    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer)
+    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer, EnumHand hand)
     {
-        if (entityPlayer.inventory.getCurrentItem() != null)
+        ItemStack itemStack = entityPlayer.getHeldItem(hand);
+        if (itemStack != null)
         {
-            if (entityPlayer.inventory.getCurrentItem().getItem() instanceof IWorldPosItem)
+            if (itemStack.getItem() instanceof IWorldPosItem)
             {
-                IWorldPosition link = ((IWorldPosItem) entityPlayer.inventory.getCurrentItem().getItem()).getLocation(entityPlayer.inventory.getCurrentItem());
+                IWorldPosition link = ((IWorldPosItem) itemStack.getItem()).getLocation(itemStack);
 
                 if (link instanceof Location)
                 {

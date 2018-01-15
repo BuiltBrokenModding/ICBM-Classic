@@ -2,12 +2,13 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public class BlastChemical extends Blast
         super.doPreExplode();
         if (!this.playShortSoundFX)
         {
-            this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), ICBMClassic.PREFIX + "debilitation", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+            ICBMSounds.DEBILITATION.play(world, this.position.x(), this.position.y(), this.position.z(), 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -86,12 +87,12 @@ public class BlastChemical extends Blast
                 if (diDian.magnitude() <= radius)
                 {
                     diDian = diDian.add(this.position);
-                    ICBMClassic.proxy.spawnParticle("smoke", this.oldWorld(), diDian, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, this.red, this.green, this.blue, 7.0F, 8);
+                    //ICBMClassic.proxy.spawnParticle("smoke", this.oldWorld(), diDian, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, this.red, this.green, this.blue, 7.0F, 8);
                 }
             }
         }
 
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
         List<EntityLivingBase> allEntities = oldWorld().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
 
         for (EntityLivingBase entity : allEntities)
@@ -108,9 +109,9 @@ public class BlastChemical extends Blast
 
             if (this.isConfuse)
             {
-                entity.addPotionEffect(new CustomPotionEffect(Potion.confusion.id, 18 * 20, 0));
-                entity.addPotionEffect(new CustomPotionEffect(Potion.digSlowdown.id, 20 * 60, 0));
-                entity.addPotionEffect(new CustomPotionEffect(Potion.moveSlowdown.id, 20 * 60, 2));
+                entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
+                entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
+                entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
             }
         }
 
@@ -121,7 +122,7 @@ public class BlastChemical extends Blast
 
         if (this.playShortSoundFX)
         {
-            oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "gasleak", 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
+            ICBMSounds.GAS_LEAK.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
         }
 
         if (this.callCount > this.duration)

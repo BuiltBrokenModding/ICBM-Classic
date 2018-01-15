@@ -1,13 +1,14 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -27,7 +28,7 @@ public class BlastAntiGravitational extends Blast
     {
         if (!this.oldWorld().isRemote)
         {
-            this.thread = new ThreadSmallExplosion(this.position, (int) this.getRadius(), this.exploder);
+            this.thread = new ThreadSmallExplosion(this, (int) this.getRadius(), this.exploder);
             this.thread.start();
         }
 
@@ -47,36 +48,33 @@ public class BlastAntiGravitational extends Blast
             }
             int blocksToTake = 20;
 
-            for (Pos targetPosition : this.thread.results)
+            for (BlockPos targetPosition : this.thread.results)
             {
-                double distance = targetPosition.distance(position);
-
-                if (distance > r || distance < r - 2 || blocksToTake <= 0)
+                final IBlockState blockState = world.getBlockState(targetPosition);
+                if (blockState.getBlock() != Blocks.AIR)
                 {
-                    continue;
-                }
-
-                final Block block = targetPosition.getBlock(oldWorld());
-                if (block != null)
-                {
-                    float hardness = block.getBlockHardness(oldWorld(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                    float hardness = blockState.getBlockHardness(world, targetPosition);
                     if (hardness >= 0 && hardness < 1000)
                     {
-                        int metadata = oldWorld().getBlockMetadata(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
-
-                        if (distance < r - 1 || oldWorld().rand.nextInt(3) > 0)
+                        if (oldWorld().rand.nextInt(3) > 0)
                         {
                             //Remove block
-                            this.oldWorld().setBlockToAir(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
+                            world.setBlockToAir(targetPosition);
+
+                            //Mark blocks taken
                             blocksToTake--;
+                            if (blocksToTake <= 0)
+                            {
+                                break;
+                            }
 
                             //Create flying block
-                            EntityFlyingBlock entity = new EntityFlyingBlock(oldWorld(), targetPosition.add(0.5D), block, metadata, 0);
+                            EntityFlyingBlock entity = new EntityFlyingBlock(oldWorld(), targetPosition, blockState, 0);
                             entity.yawChange = 50 * oldWorld().rand.nextFloat();
                             entity.pitchChange = 100 * oldWorld().rand.nextFloat();
                             entity.motionY += Math.max(0.15 * oldWorld().rand.nextFloat(), 0.1);
                             entity.noClip = true;
-                            oldWorld().spawnEntityInWorld(entity);
+                            oldWorld().spawnEntity(entity);
 
                             //Track flying block
                             flyingBlocks.add(entity);
@@ -87,7 +85,7 @@ public class BlastAntiGravitational extends Blast
         }
 
         int radius = (int) this.getRadius();
-        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
         List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities)
@@ -139,7 +137,7 @@ public class BlastAntiGravitational extends Blast
         return 10000;
     }
 
-    public class GravitationalBlockSorter implements Comparator<IPos3D>
+    public class GravitationalBlockSorter implements Comparator<BlockPos>
     {
         final IPos3D center;
 
@@ -149,15 +147,15 @@ public class BlastAntiGravitational extends Blast
         }
 
         @Override
-        public int compare(IPos3D o1, IPos3D o2)
+        public int compare(BlockPos o1, BlockPos o2)
         {
-            if ((int) o1.y() == (int) o2.y())
+            if (o1.getY() == o2.getY())
             {
                 double d = new Pos(o1).distance(center);
                 double d2 = new Pos(o2).distance(center);
                 return d > d2 ? 1 : d == d2 ? 0 : -1;
             }
-            return Integer.compare((int) o1.y(), (int) o2.y());
+            return Integer.compare(o1.getY(), o2.getY());
         }
     }
 }

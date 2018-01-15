@@ -5,10 +5,12 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.content.explosive.thread.ThreadExplosion;
-import icbm.classic.content.explosive.thread.ThreadSky;
+import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.HashSet;
@@ -40,9 +42,9 @@ public abstract class BlastBeam extends Blast
             this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), 4F, true);
 
             this.lightBeam = new EntityLightBeam(this.oldWorld(), position, 20 * 20, this.red, this.green, this.blue);
-            this.oldWorld().spawnEntityInWorld(this.lightBeam);
+            this.oldWorld().spawnEntity(this.lightBeam);
 
-            this.thread = new ThreadSky(this.position, (int) this.getRadius(), 50, this.exploder);
+            this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), 50, this.exploder);
             this.thread.start();
         }
     }
@@ -59,9 +61,6 @@ public abstract class BlastBeam extends Blast
 
             if (this.canFocusBeam(this.oldWorld(), position))
             {
-                Pos currentPos;
-                int blockID;
-                int metadata;
                 double dist;
 
                 int r = radius;
@@ -72,28 +71,24 @@ public abstract class BlastBeam extends Blast
                     {
                         for (int z = -r; z < r; z++)
                         {
-                            dist = MathHelper.sqrt_double((x * x + y * y + z * z));
+                            dist = MathHelper.sqrt((x * x + y * y + z * z));
 
                             if (dist > r || dist < r - 3)
                             {
                                 continue;
                             }
-                            currentPos = new Pos(position.x() + x, position.y() + y, position.z() + z);
-                            Block block = currentPos.getBlock(oldWorld());
-                            if (block == null || block.isAir(this.oldWorld(), x, y, z) || block.getBlockHardness(this.oldWorld(), x, y, x) < 0)
+                            BlockPos blockPos = new BlockPos(position.x() + x, position.y() + y, position.z() + z);
+                            IBlockState state = world.getBlockState(blockPos);
+                            Block block = state.getBlock();
+                            if (block == null || block.isAir(state, world, blockPos) || state.getBlockHardness(world, blockPos) < 0)
                             {
                                 continue;
                             }
-
-                            metadata = this.oldWorld().getBlockMetadata(currentPos.xi(), currentPos.yi(), currentPos.zi());
-
                             if (this.oldWorld().rand.nextInt(2) > 0)
                             {
-                                this.oldWorld().setBlockToAir(currentPos.xi(), currentPos.yi(), currentPos.zi());
-
-                                currentPos = currentPos.add(0.5D);
-                                EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), currentPos, block, metadata);
-                                this.oldWorld().spawnEntityInWorld(entity);
+                                world.setBlockToAir(blockPos);
+                                EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), blockPos, state);
+                                this.oldWorld().spawnEntity(entity);
                                 this.feiBlocks.add(entity);
                                 entity.pitchChange = 50 * this.oldWorld().rand.nextFloat();
                             }
@@ -136,7 +131,7 @@ public abstract class BlastBeam extends Blast
 
     public boolean canFocusBeam(World worldObj, Location position)
     {
-        return worldObj.canBlockSeeTheSky(position.xi(), position.yi() + 1, position.zi());
+        return position.canSeeSky();
     }
 
     /** The interval in ticks before the next procedural call of this explosive

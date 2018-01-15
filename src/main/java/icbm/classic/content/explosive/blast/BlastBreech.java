@@ -1,12 +1,14 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.api.tile.IRotatable;
+import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlastBreech extends BlastTNT
 {
@@ -29,13 +31,13 @@ public class BlastBreech extends BlastTNT
     {
         if (!this.oldWorld().isRemote)
         {
-            ForgeDirection direction = ForgeDirection.DOWN;
+            Direction direction = Direction.DOWN;
             if (this.exploder instanceof IRotatable)
             {
                 direction = ((IRotatable) this.exploder).getDirection();
             }
 
-            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), "random.explode", 5.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.oldWorld().playSound(position.x(), position.y(), position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
             float energy = 40 * 2 + depth * 3; //TODO do not hard
             for (int i = 0; i < this.depth; i++)
@@ -46,15 +48,15 @@ public class BlastBreech extends BlastTNT
                     for (int w = -1; w < 2; w++)
                     {
                         Pos p;
-                        if (direction == ForgeDirection.DOWN || direction == ForgeDirection.UP)
+                        if (direction == Direction.DOWN || direction == Direction.UP)
                         {
                             p = dir.add(h, 0, w);
                         }
-                        else if (direction == ForgeDirection.EAST || direction == ForgeDirection.WEST)
+                        else if (direction == Direction.EAST || direction == Direction.WEST)
                         {
                             p = dir.add(0, h, w);
                         }
-                        else if (direction == ForgeDirection.NORTH || direction == ForgeDirection.SOUTH)
+                        else if (direction == Direction.NORTH || direction == Direction.SOUTH)
                         {
                             p = dir.add(w, h, 0);
                         }
@@ -67,9 +69,9 @@ public class BlastBreech extends BlastTNT
                         p = toPos().add(p);
 
                         Block block = p.getBlock(oldWorld());
-                        if (block != Blocks.air)
+                        if (block != Blocks.AIR)
                         {
-                            float e = block.getExplosionResistance(this.exploder, oldWorld(), p.xi(), p.yi(), p.zi(), position.x(), position.y(), position.z());
+                            float e = block.getExplosionResistance(oldWorld(), p.toBlockPos(), this.exploder, this);
                             if (e < 40)
                             {
                                 energy -= e;

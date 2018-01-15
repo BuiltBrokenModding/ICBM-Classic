@@ -5,7 +5,9 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastNuclear;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import static java.lang.Math.random;
@@ -14,7 +16,7 @@ public class MissileNuclearCluster extends MissileCluster
 {
     public MissileNuclearCluster()
     {
-        super("nuclearCluster", 3);
+        super("nuclearCluster", BlockICBM.EnumTier.THREE);
         this.hasBlock = false;
     }
 
@@ -27,15 +29,15 @@ public class MissileNuclearCluster extends MissileCluster
         {
             if (missileObj.missileCount < MAX_CLUSTER)
             {
-                if (!missileObj.worldObj.isRemote)
+                if (!missileObj.world.isRemote)
                 {
                     Pos position = missileObj.toPos();
 
-                    EntityMissile clusterMissile = new EntityMissile(missileObj.worldObj);
+                    EntityMissile clusterMissile = new EntityMissile(missileObj.world);
                     clusterMissile.setPosition(position.x(), position.y(), position.z()); //TODO randomize spread to prevent collisions
                     clusterMissile.explosiveID = Explosives.NUCLEAR;
 
-                    missileObj.worldObj.spawnEntityInWorld(clusterMissile);
+                    missileObj.world.spawnEntity(clusterMissile);
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20;
                     clusterMissile.launch(missileObj.targetVector.add(new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
@@ -52,9 +54,9 @@ public class MissileNuclearCluster extends MissileCluster
     }
 
     @Override
-    public void createExplosion(World world, double x, double y, double z, Entity entity)
+    public void createExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastNuclear(world, entity, x, y, z, 30, 50).setNuclear().explode();
+        new BlastNuclear(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 30, 50).setNuclear().explode();
     }
 
     @Override

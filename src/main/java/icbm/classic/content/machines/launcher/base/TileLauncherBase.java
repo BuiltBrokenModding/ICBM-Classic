@@ -6,7 +6,6 @@ import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
-import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
@@ -26,18 +25,15 @@ import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.prefab.BlockICBM;
 import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.BlockChest;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import resonant.api.ITier;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
 
@@ -84,6 +80,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     private boolean _destroyingStructure = false;
 
     ExternalInventory inventory;
+
+    /** Client's render cached object, used in place of inventory to avoid affecting GUIs */
+    public ItemStack cachedMissileStack;
 
     @Override
     public IEnergyBuffer getEnergyBuffer(Direction side)
@@ -336,7 +335,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeInt(getTier());
+        buf.writeInt(getTier().ordinal());
         buf.writeBoolean(getMissileStack() != null);
         if (getMissileStack() != null)
         {
@@ -344,12 +343,31 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         }
     }
 
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        this.tier = buf.readInt();
+        if (buf.readBoolean())
+        {
+            cachedMissileStack = ByteBufUtils.readItemStack(buf);
+        }
+        else
+        {
+            cachedMissileStack = null;
+        }
+    }
+
     public ItemStack getMissileStack()
     {
+        if (isClient() && cachedMissileStack != null)
+        {
+            return cachedMissileStack;
+        }
         return getInventory().getStackInSlot(0);
     }
 
-    @Override
+    //@Override
     protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
     {
         if (player.inventory.getCurrentItem() != null)
@@ -468,12 +486,13 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         return false;
     }
 
-    @Override
+    //TODO @Override
     public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
     {
         _destroyingStructure = true;
         MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
-        return super.removeByPlayer(player, willHarvest);
+        //TODO return super.removeByPlayer(player, willHarvest);
+        return true;
     }
 
     @Override
@@ -485,7 +504,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Override
     public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
-        return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        //TODO return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        return true;
     }
 
     @Override

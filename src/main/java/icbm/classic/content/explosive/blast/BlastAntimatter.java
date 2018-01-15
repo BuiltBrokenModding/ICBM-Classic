@@ -1,11 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.core.References;
-import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosion;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlastAntimatter extends Blast
@@ -28,7 +27,7 @@ public class BlastAntimatter extends Blast
     public void doPreExplode()
     {
         super.doPreExplode();
-        this.oldWorld().playSoundEffect(this.position.x(), this.position.y(), this.position.z(), References.PREFIX + "antimatter", 7F, (float) (this.oldWorld().rand.nextFloat() * 0.1 + 0.9F));
+        ICBMSounds.ANTIMATTER.play(world, this.position.x(), this.position.y(), this.position.z(), 7F, (float) (this.oldWorld().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
     }
 
@@ -43,24 +42,23 @@ public class BlastAntimatter extends Blast
                 {
                     for (int z = (int) -this.getRadius(); z < this.getRadius(); z++)
                     {
-                        Location targetPosition = this.position.add(new Pos(x, y, z));
-
-                        double dist = position.distance(targetPosition);
+                        final BlockPos blockPos = new BlockPos(position.xi() + x, position.yi() + y, position.zi() + z);
+                        final double dist = position.distance(blockPos);
 
                         if (dist < this.getRadius())
                         {
-                            Block block = targetPosition.getBlock(oldWorld());
+                            IBlockState blockState = world.getBlockState(blockPos);
 
-                            if (block != null && !block.isAir(this.oldWorld(), x, y, x))
+                            if (blockState.getBlock().isAir(blockState, world, blockPos))
                             {
-                                if (!this.destroyBedrock && block.getBlockHardness(this.oldWorld(), x, y, x) < 0)
+                                if (!this.destroyBedrock && blockState.getBlockHardness(this.oldWorld(), blockPos) < 0)
                                 {
                                     continue;
                                 }
 
                                 if (dist < this.getRadius() - 1 || oldWorld().rand.nextFloat() > 0.7)
                                 {
-                                    targetPosition.setBlockToAir();
+                                    world.setBlockToAir(blockPos);
                                 }
                             }
                         }

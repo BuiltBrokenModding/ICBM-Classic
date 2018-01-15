@@ -5,6 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.Settings;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +15,7 @@ public class ExAntimatter extends Explosion
 {
     public ExAntimatter()
     {
-        super("antimatter", 4);
+        super("antimatter", BlockICBM.EnumTier.FOUR);
         this.setFuseTime(300);
     }
 

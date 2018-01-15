@@ -72,7 +72,9 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public PacketTile getDescPacket()
     {
-        return null;
+        PacketTile packetTile = new PacketTile(this, DESC_PACKET_ID);
+        writeDescPacket(packetTile.data());
+        return packetTile;
     }
 
     public void sendPacketToGuiUsers(IPacket packet)
@@ -83,7 +85,26 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     @Override
     public boolean read(ByteBuf buf, int id, EntityPlayer player, PacketType type)
     {
+        if(isClient())
+        {
+            if(id == DESC_PACKET_ID)
+            {
+                writeDescPacket(buf);
+                return true;
+            }
+        }
         return false;
+    }
+
+
+    public void writeDescPacket(ByteBuf buf)
+    {
+
+    }
+
+    public void readDescPacket(ByteBuf buf)
+    {
+
     }
 
     /**

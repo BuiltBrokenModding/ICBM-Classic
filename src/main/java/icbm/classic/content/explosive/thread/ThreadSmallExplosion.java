@@ -15,9 +15,9 @@ import net.minecraft.world.World;
  */
 public class ThreadSmallExplosion extends ThreadExplosion
 {
-    public ThreadSmallExplosion(Blast blast, int banJing, Entity source)
+    public ThreadSmallExplosion(Blast blast, int radius, Entity source)
     {
-        super(blast, banJing, 0, source);
+        super(blast, radius, 0, source);
     }
 
     @Override

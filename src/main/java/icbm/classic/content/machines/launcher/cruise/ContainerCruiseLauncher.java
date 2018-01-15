@@ -5,32 +5,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerCruiseLauncher extends ContainerBase
+public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
 {
-    private TileCruiseLauncher tileEntity;
-
     public ContainerCruiseLauncher(EntityPlayer player, TileCruiseLauncher tileEntity)
     {
         super(tileEntity);
-        this.tileEntity = tileEntity;
         // Missile Slot
         this.addSlotToContainer(new Slot(tileEntity, 0, 151, 23));
         // Battery Slot
         this.addSlotToContainer(new Slot(tileEntity, 1, 151, 47));
         addPlayerInventory(player);
-    }
-
-    @Override
-    public void onContainerClosed(EntityPlayer player)
-    {
-        tileEntity.getPlayersUsing().remove(player);
-        super.onContainerClosed(player);
-    }
-
-    @Override
-    public boolean canInteractWith(EntityPlayer player)
-    {
-        return this.tileEntity.isUseableByPlayer(player);
     }
 
     /** Called to transfer a stack from one inventory to the other eg. when shift clicking. */
@@ -67,7 +51,7 @@ public class ContainerCruiseLauncher extends ContainerBase
                 return null;
             }
 
-            if (var4.stackSize == 0)
+            if (var4.getCount() == 0)
             {
                 var3.putStack((ItemStack) null);
             }
@@ -76,12 +60,12 @@ public class ContainerCruiseLauncher extends ContainerBase
                 var3.onSlotChanged();
             }
 
-            if (var4.stackSize == var2.stackSize)
+            if (var4.getCount() == var2.getCount())
             {
                 return null;
             }
 
-            var3.onPickupFromSlot(par1EntityPlayer, var4);
+            var3.onTake(par1EntityPlayer, var4);
         }
 
         return var2;

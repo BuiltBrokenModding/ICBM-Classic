@@ -62,7 +62,8 @@ public abstract class BlockICBM extends BlockContainer
     {
         ONE,
         TWO,
-        THREE;
+        THREE,
+        FOUR;
 
         @Override
         public String toString()

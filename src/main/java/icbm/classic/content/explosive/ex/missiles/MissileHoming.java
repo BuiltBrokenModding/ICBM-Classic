@@ -7,10 +7,14 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.items.ItemTracker;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -18,17 +22,17 @@ public class MissileHoming extends Missile
 {
     public MissileHoming()
     {
-        super("homing", 1);
+        super("homing", BlockICBM.EnumTier.ONE);
         this.hasBlock = false;
-        this.missileModelPath = "missiles/tier1/missile_head_homing.obj";
+        //this.missileModelPath = "missiles/tier1/missile_head_homing.obj";
     }
 
     @Override
     public void launch(EntityMissile missileObj)
     {
-        if (!missileObj.worldObj.isRemote)
+        if (!missileObj.world.isRemote)
         {
-            WorldServer worldServer = (WorldServer) missileObj.worldObj;
+            WorldServer worldServer = (WorldServer) missileObj.world;
             Entity trackingEntity = worldServer.getEntityByID(missileObj.trackingVar);
 
             if (trackingEntity != null)
@@ -48,7 +52,7 @@ public class MissileHoming extends Missile
     {
         if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileType.MISSILE)
         {
-            World world = missileObj.worldObj;
+            World world = missileObj.world;
             Entity trackingEntity = world.getEntityByID(missileObj.trackingVar);
 
             if (trackingEntity != null)
@@ -75,7 +79,7 @@ public class MissileHoming extends Missile
                 {
                     float suDu = 0.3f;
                     missileObj.xiaoDanMotion = new Pos(missileObj.deltaPathX / (missileObj.missileFlightTime * suDu)
-                            ,missileObj.deltaPathY / (missileObj.missileFlightTime * suDu),
+                            , missileObj.deltaPathY / (missileObj.missileFlightTime * suDu),
                             missileObj.deltaPathZ / (missileObj.missileFlightTime * suDu));
                 }
             }
@@ -83,31 +87,29 @@ public class MissileHoming extends Missile
     }
 
     @Override
-    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer)
+    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer, EnumHand hand)
     {
-        if (!missileObj.worldObj.isRemote && missileObj.getTicksInAir() <= 0)
+        if (!missileObj.world.isRemote && missileObj.getTicksInAir() <= 0)
         {
-            if (entityPlayer.getCurrentEquippedItem() != null)
+            final ItemStack heldItem = entityPlayer.getHeldItem(hand);
+            if (heldItem != null && heldItem.getItem() instanceof ItemTracker)
             {
-                if (entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemTracker)
+                Entity trackingEntity = ((ItemTracker) heldItem.getItem()).getTrackingEntity(missileObj.world, heldItem);
+
+                if (trackingEntity != null)
                 {
-                    Entity trackingEntity = ((ItemTracker) entityPlayer.getCurrentEquippedItem().getItem()).getTrackingEntity(missileObj.worldObj, entityPlayer.getCurrentEquippedItem());
-
-                    if (trackingEntity != null)
+                    if (missileObj.trackingVar != trackingEntity.getEntityId())
                     {
-                        if (missileObj.trackingVar != trackingEntity.getEntityId())
+                        missileObj.trackingVar = trackingEntity.getEntityId();
+                        entityPlayer.sendMessage(new TextComponentString("Missile target locked to: " + trackingEntity.getName()));
+
+                        if (missileObj.getLauncher() != null && missileObj.getLauncher().getController() != null)
                         {
-                            missileObj.trackingVar = trackingEntity.getEntityId();
-                            entityPlayer.addChatMessage(new ChatComponentText("Missile target locked to: " + trackingEntity.getCommandSenderName()));
-
-                            if (missileObj.getLauncher() != null && missileObj.getLauncher().getController() != null)
-                            {
-                                Pos newTarget = new Pos(trackingEntity.posX, 0, trackingEntity.posZ);
-                                missileObj.getLauncher().getController().setTarget(newTarget);
-                            }
-
-                            return true;
+                            Pos newTarget = new Pos(trackingEntity.posX, 0, trackingEntity.posZ);
+                            missileObj.getLauncher().getController().setTarget(newTarget);
                         }
+
+                        return true;
                     }
                 }
             }
@@ -123,9 +125,9 @@ public class MissileHoming extends Missile
     }
 
     @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastTNT(world, entity, x, y, z, 4).setDestroyItems().explode();
+        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4).setDestroyItems().explode();
     }
 
     @Override

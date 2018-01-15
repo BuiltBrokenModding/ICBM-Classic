@@ -12,14 +12,11 @@ import com.builtbroken.mc.imp.transform.vector.Point;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.WrenchUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
 import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
-import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import cpw.mods.fml.common.registry.GameRegistry;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.TileFrequency;
@@ -33,15 +30,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IRecipeContainer, IGuiTile
+public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IGuiTile
 {
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
@@ -441,18 +435,6 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public Cube getRadioSenderRange()
     {
         return null;
-    }
-
-    @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        // Radar Station
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockRadarStation),
-                "?@?", " ! ", "!#!",
-                '@', new ItemStack(ICBMClassic.itemRadarGun),
-                '!', UniversalRecipe.PRIMARY_PLATE.get(),
-                '#', UniversalRecipe.CIRCUIT_T1.get(),
-                '?', Items.gold_ingot));
     }
 
     @Override

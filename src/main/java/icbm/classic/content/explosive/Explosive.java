@@ -3,6 +3,7 @@ package icbm.classic.content.explosive;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.framework.explosive.handler.ExplosiveHandler;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +20,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     /** The unique identification name for this explosive. */
     private String nameID;
     /** The tier of this explosive */
-    private int tier;
+    private BlockICBM.EnumTier tier;
     /** The fuse of this explosive */
     private int fuseTime;
     /** Is this explosive disabled? */
@@ -32,7 +33,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     protected boolean hasMinecart;
     protected boolean hasMissile;
 
-    protected Explosive(String name, int tier)
+    protected Explosive(String name, BlockICBM.EnumTier tier)
     {
         super(name);
         this.nameID = name;
@@ -41,8 +42,8 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
 
         this.hasBlock = true;
         this.hasMissile = true;
-        this.hasGrenade = this.tier <= 1;
-        this.hasMinecart = this.tier <= 2;
+        this.hasGrenade = this.tier.ordinal() <= 1;
+        this.hasMinecart = this.tier.ordinal() <= 2;
 
         //this.flagName = //FlagRegistry.registerFlag("ban_" + this.nameID);
         this.isDisabled = false;//Settings.CONFIGURATION.get("Disable_Explosives", "Disable " + this.nameID, false).getBoolean(false);
@@ -86,15 +87,9 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     }
 
 
-    public int getTier()
+    public BlockICBM.EnumTier getTier()
     {
         return this.tier;
-    }
-
-
-    public void setTier(int tier)
-    {
-        this.tier = tier;
     }
 
     public Explosive setFuseTime(int fuse)

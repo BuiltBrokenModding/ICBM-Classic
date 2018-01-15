@@ -7,8 +7,10 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /** @author Calclavia */
@@ -17,11 +19,11 @@ public class MissileCluster extends Missile
     public static final int MAX_CLUSTER = 12;
     protected double spread = 20;
 
-    public MissileCluster(String name, int tier)
+    public MissileCluster(String name, BlockICBM.EnumTier tier)
     {
         super(name, tier);
         this.hasBlock = false;
-        this.missileModelPath = "missiles/tier2/missile_head_cluster.obj";
+        //this.missileModelPath = "missiles/tier2/missile_head_cluster.obj";
     }
 
     @Override
@@ -31,10 +33,10 @@ public class MissileCluster extends Missile
         {
             if (missileObj.missileCount < MAX_CLUSTER)
             {
-                if (!missileObj.worldObj.isRemote)
+                if (!missileObj.world.isRemote)
                 {
                     Pos position = missileObj.toPos();
-                    EntityMissile missile = new EntityMissile(missileObj.worldObj);
+                    EntityMissile missile = new EntityMissile(missileObj.world);
                     missile.setPosition(position.x(), position.y(), position.z()); //TODO spread to avoid collision
                     missile.launcherPos = position;
                     missile.explosiveID = Explosives.CONDENSED;
@@ -61,7 +63,7 @@ public class MissileCluster extends Missile
                     missile.protectionTime = 20 + missileObj.targetHeight - 1;
 
                     missile.launch(missileObj.targetVector.add(new Pos(x, y, z)));
-                    missileObj.worldObj.spawnEntityInWorld(missile);
+                    missileObj.world.spawnEntity(missile);
                 }
                 missileObj.protectionTime = 20;
                 missileObj.missileCount++;
@@ -74,9 +76,9 @@ public class MissileCluster extends Missile
     }
 
     @Override
-    public void doCreateExplosion(World world, double x, double y, double z, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastTNT(world, entity, x, y, z, 6).setDestroyItems().explode();
+        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6).setDestroyItems().explode();
     }
 
     @Override

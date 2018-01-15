@@ -3,6 +3,7 @@ package icbm.classic.content.explosive.ex;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +13,7 @@ public class ExRedMatter extends Explosion
 {
     public ExRedMatter()
     {
-        super("redMatter", 4);
+        super("redMatter", BlockICBM.EnumTier.THREE);
     }
 
     @Override

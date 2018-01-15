@@ -1,16 +1,16 @@
 package resonant.api.explosion;
 
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import resonant.api.ITier;
 
 /**
  * An interface used to find various types of explosive's information.
  *
  * @author Calclavia
  */
-public interface IExplosive extends ITier
+public interface IExplosive
 {
     /** @return The unique name key in the ICBM language file. */
     public String getUnlocalizedName();
@@ -28,8 +28,7 @@ public interface IExplosive extends ITier
     public String getMinecartName();
 
     /** @return The tier of the explosive. */
-    @Override
-    public int getTier();
+    public BlockICBM.EnumTier getTier();
 
     /**
      * Creates a new explosion at a given location.

@@ -13,7 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver
 {
     /** Target position of the launcher */
-    private Pos _targetPos = null;
+    private Pos _targetPos = Pos.zero;
 
     @Override
     public void onLoad()

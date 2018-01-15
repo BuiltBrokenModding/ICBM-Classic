@@ -1,13 +1,8 @@
 package icbm.classic.content.machines.launcher.cruise;
 
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.tile.Tile;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MXiaoFaSheQi;
 import icbm.classic.client.models.MXiaoFaSheQiJia;
@@ -16,19 +11,18 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/10/2017.
  */
-public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISimpleItemRenderer
+public class TileCruiseLauncherClient extends TileCruiseLauncher
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "cruise_launcher.png");
 
@@ -54,8 +48,8 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Pos pos, float frame, int pass)
     {
-        float yaw = (float)currentAim.yaw();
-        float pitch = (float)currentAim.pitch();
+        float yaw = (float) currentAim.yaw();
+        float pitch = (float) currentAim.pitch();
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
@@ -72,7 +66,7 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
             GL11.glPushMatrix();
             GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1, (float) pos.z() + 0.5f);
             GL11.glRotatef(yaw, 0F, 1F, 0F);
-            GL11.glRotatef(pitch-90, 1F, 0F, 0F);
+            GL11.glRotatef(pitch - 90, 1F, 0F, 0F);
 
             Explosives e = Explosives.get(cachedMissileStack.getItemDamage());
             Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
@@ -144,17 +138,5 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
             return false;
         }
         return true;
-    }
-
-    @Override
-    public IIcon getIcon()
-    {
-        return Blocks.anvil.getIcon(0, 0);
-    }
-
-    @Override
-    public AxisAlignedBB getRenderBoundingBox()
-    {
-        return new Cube(-1, 0, -1, 1, 3, 1).add(toPos()).toAABB();
     }
 }

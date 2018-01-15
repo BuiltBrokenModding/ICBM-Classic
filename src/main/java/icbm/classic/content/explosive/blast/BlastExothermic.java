@@ -3,12 +3,14 @@ package icbm.classic.content.explosive.blast;
 import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.ExExothermic;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlastExothermic extends BlastBeam
@@ -25,7 +27,7 @@ public class BlastExothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "beamcharging", 4.0F, 0.8F);
+        ICBMSounds.BEAM_CHARGING.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
     }
 
     @Override
@@ -35,11 +37,11 @@ public class BlastExothermic extends BlastBeam
 
         if (!this.oldWorld().isRemote)
         {
-            this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), ICBMClassic.PREFIX + "powerdown", 4.0F, 0.8F);
+            ICBMSounds.POWER_DOWN.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
 
             if (this.canFocusBeam(this.oldWorld(), position) && this.thread.isComplete)
             {
-                for (Pos targetPosition : this.thread.results)
+                for (BlockPos targetPosition : this.thread.results)
                 {
                     double distanceFromCenter = position.distance(targetPosition);
 
@@ -93,10 +95,10 @@ public class BlastExothermic extends BlastBeam
                     }
                 }
 
-                this.oldWorld().playSoundEffect(position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, ICBMClassic.PREFIX + "explosionfire", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F);
+                ICBMSounds.EXPLOSION_FIRE.play(world,position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
             }
 
-            if(!oldWorld().getGameRules().getGameRuleBooleanValue("doDaylightCycle")) //TODO add config
+            if(!oldWorld().getGameRules().getBoolean("doDaylightCycle")) //TODO add config
             {
                 this.oldWorld().setWorldTime(18000);
             }
