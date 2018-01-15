@@ -150,8 +150,10 @@ public class BlockExplosive extends BlockContainer implements IPostInit
 
                 if (evt.isCanceled())
                 {
-                    this.dropBlockAsItem(world, x, y, z, ex.ordinal(), 0);
-                    world.setBlock(x, y, z, Blocks.air, 0, 2);
+                    if(world.setBlockToAir(x, y, z))
+                    {
+                        this.dropBlockAsItem(world, x, y, z, ex.ordinal(), 0);
+                    }
                     return;
                 }
             }

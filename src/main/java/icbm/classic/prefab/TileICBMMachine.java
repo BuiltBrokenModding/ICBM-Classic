@@ -4,6 +4,7 @@ import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
+import cpw.mods.fml.common.Optional;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -12,6 +13,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
+@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore")
 public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
 {
     /**
