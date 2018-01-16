@@ -28,6 +28,7 @@ public enum ICBMSounds
     EXPLOSION_FIRE("explosionfire"),
     GAS_LEAK("gasleak"),
     HYPERSONIC("hypersonic"),
+    MACHINE_HUM("machinehum"),
     POWER_DOWN("powerdown"),
     TARGET_LOCKED("targetlocked"),
     REDMATTER("redmatter"),

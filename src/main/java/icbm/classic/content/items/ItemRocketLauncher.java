@@ -73,7 +73,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (ex.handler != null)
                             {
                                 // Limit the missile to tier two.
-                                if ((ex.handler.getTier() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
+                                if ((ex.handler.getTier().ordinal() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
                                 {
                                     EntityMissile entityMissile = new EntityMissile(player);
                                     entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;

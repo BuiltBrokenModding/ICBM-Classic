@@ -4,41 +4,30 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
+import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.gui.ContainerDummy;
-import com.builtbroken.mc.prefab.inventory.InventoryUtility;
-import com.builtbroken.mc.prefab.items.ItemBlockBase;
-import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
+import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.prefab.gui.ContainerDummy;
+import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.blast.BlastEMP;
-import icbm.classic.prefab.TileMachine;
 import icbm.classic.prefab.item.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.HashMap;
-import java.util.List;
 
-public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IRecipeContainer, IGuiTile
+public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
@@ -63,25 +52,25 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
 
     private boolean _destroyingStructure = false;
 
+    private ExternalInventory inventory;
+
     public TileEMPTower()
     {
-        super("empTower", Material.iron);
-        this.itemBlock = ItemBlockBase.class;
-        this.hardness = 10f;
-        this.resistance = 10f;
-        this.isOpaque = false;
+        //super("empTower", Material.iron);
+        //this.itemBlock = ItemBlockBase.class;
+        //this.hardness = 10f;
+        //this.resistance = 10f;
+        //this.isOpaque = false;
     }
 
     @Override
-    protected IInventory createInventory()
+    public ExternalInventory getInventory()
     {
-        return new TileModuleInventory(this, 2);
-    }
-
-    @Override
-    public Tile newTile()
-    {
-        return new TileEMPTower();
+        if (inventory == null)
+        {
+            inventory = new ExternalInventory(this, 2);
+        }
+        return inventory;
     }
 
     @Override
@@ -93,14 +82,14 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             cooldownTicks--;
         }
-        else if (isIndirectlyPowered())
+        else if (world.isBlockIndirectlyGettingPowered(getPos()) > 0)
         {
             fire();
         }
 
         if (ticks % 20 == 0 && getEnergy() > 0)
         {
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getEnergy() / getEnergyBufferSize());
+            ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getEnergy() / getEnergyBufferSize(), true);
             sendDescPacket();
         }
 
@@ -166,12 +155,11 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
 
     /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound par1NBTTagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        super.writeToNBT(par1NBTTagCompound);
-
         par1NBTTagCompound.setInteger("empRadius", this.empRadius);
         par1NBTTagCompound.setByte("empMode", this.empMode);
+        return super.writeToNBT(par1NBTTagCompound);
     }
 
     //@Callback(limit = 1)
@@ -184,13 +172,13 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                 switch (this.empMode)
                 {
                     default:
-                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().setEffectEntities().explode();
+                        new BlastEMP(world, null, this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5, this.empRadius).setEffectBlocks().setEffectEntities().explode();
                         break;
                     case 1:
-                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectEntities().explode();
+                        new BlastEMP(world, null, this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5, this.empRadius).setEffectEntities().explode();
                         break;
                     case 2:
-                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().explode();
+                        new BlastEMP(world, null, this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5, this.empRadius).setEffectBlocks().explode();
                         break;
                 }
                 this.extractEnergy();
@@ -201,7 +189,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return false;
     }
 
-    @Override
+    //@Override
     protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
     {
         if (isServer())
@@ -239,11 +227,11 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     //==== Multi-Block code
     //=========================================
 
-    @Override
+    //@Override
     public void firstTick()
     {
-        super.firstTick();
-        MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
+        //super.firstTick();
+        MultiBlockHelper.buildMultiBlock(world, this, true, true);
     }
 
     @Override
@@ -274,6 +262,8 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return false;
     }
 
+    /*
+
     @Override
     public boolean canPlaceBlockAt()
     {
@@ -285,12 +275,14 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         return side == ForgeDirection.UP && canPlaceBlockAt();
     }
+    */
 
-    @Override
+    //@Override
     public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
     {
         MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
-        return super.removeByPlayer(player, willHarvest);
+        //TODO return super.removeByPlayer(player, willHarvest);
+        return true;
     }
 
     @Override
@@ -300,9 +292,10 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     }
 
     @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, float xHit, float yHit, float zHit)
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
-        return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        //TODO return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        return true;
     }
 
     @Override
@@ -318,41 +311,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     }
 
     @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        Object[] items = {"batteryBox",
-                InventoryUtility.getItemStack("IC2:blockElectric", 0),
-                InventoryUtility.getItemStack("ThermalExpansion:Frame", 5),
-                InventoryUtility.getItemStack("Mekanism:EnergyCube", 0)};
-
-        boolean registered = false;
-        for (Object object : items)
-        {
-            if (object != null && (!(object instanceof String) || OreDictionary.doesOreNameExist((String) object)))
-            {
-                recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
-                        "?W?", "@!@", "?#?",
-                        '?', UniversalRecipe.PRIMARY_PLATE.get(),
-                        '!', UniversalRecipe.CIRCUIT_T3.get(),
-                        '@', object,
-                        '#', UniversalRecipe.MOTOR.get(),
-                        'W', UniversalRecipe.WIRE.get()));
-                registered = true;
-            }
-        }
-        if (!registered)
-        {
-            recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockEmpTower, 1, 0),
-                    "?W?", "@!@", "?#?",
-                    '?', UniversalRecipe.PRIMARY_PLATE.get(),
-                    '!', UniversalRecipe.CIRCUIT_T3.get(),
-                    '@', Explosives.EMP.getItemStack(),
-                    '#', UniversalRecipe.MOTOR.get(),
-                    'W', UniversalRecipe.WIRE.get()));
-        }
-    }
-
-    @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
         return new ContainerDummy();
@@ -361,6 +319,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
-        return null;
+        return new GuiEMPTower(this);
     }
 }
