@@ -106,10 +106,6 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
     }
 
     /*
-
-
-
-
     @Override
     @SideOnly(Side.CLIENT)
     public void renderDynamic(Pos pos, float frame, int pass)

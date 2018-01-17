@@ -6,6 +6,7 @@ import com.builtbroken.mc.framework.mod.ModCreativeTab;
 import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.blocks.BlockGlassPressurePlate;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.*;
@@ -177,15 +178,18 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
 
+        event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
+
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
+        event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         //TODO add conversion for "icbmCGlassPlate" -> "glassPressurePlate"
+        //"icbmCGlassPlate"
         /*
-        blockGlassPlate = manager.newBlock("icbmCGlassPlate", BlockGlassPressurePlate.class, ItemBlockBase.class);
         blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class, ItemBlockBase.class);
         blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockSubTypes.class);
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);

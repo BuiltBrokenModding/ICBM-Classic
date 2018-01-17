@@ -1,25 +1,27 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
 import com.builtbroken.mc.core.network.packet.PacketType;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
-import icbm.classic.ICBMClassic;
+import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import resonant.api.explosion.ILauncherController;
 
 import java.util.List;
@@ -30,15 +32,14 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeContainer, IPacketReceiver
+public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketReceiver, IItemFrequency
 {
     public ItemLaserDetonator()
     {
+        super("laserDetonator");
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
         this.setNoRepair();
-        this.setUnlocalizedName(ICBMClassic.PREFIX + "laserDetonator");
-        this.setRegistryName(ICBMClassic.DOMAIN, "laserDetonator");
     }
 
     @Override
@@ -58,11 +59,6 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
     }
 
     @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-    }
-
-    @Override
     public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
     {
         ItemStack stack = player.inventory.getCurrentItem();
@@ -77,5 +73,18 @@ public class ItemLaserDetonator extends ItemRemoteDetonator implements IRecipeCo
                 player.sendMessage(new TextComponentString("Not encoded with launch data! Right click on launcher screen to encode."));
             }
         }
+    }
+
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
+    {
+        return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
+    {
+        list.add("Fires missiles remotely");
+        list.add("Right click launcher screen to encode");
     }
 }

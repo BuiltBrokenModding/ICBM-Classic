@@ -12,5 +12,6 @@ public class ItemICBMBase extends ItemAbstract
     {
         this.setUnlocalizedName(ICBMClassic.PREFIX + name);
         this.setRegistryName(ICBMClassic.PREFIX + name);
+        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 }

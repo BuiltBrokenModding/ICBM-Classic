@@ -1,16 +1,13 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -89,7 +86,7 @@ public class ItemGrenade extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+       //TODO ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 
     @Override

@@ -16,5 +16,6 @@ public class BlockGlassPressurePlate extends BlockPressurePlate
         this.setSoundType(SoundType.GLASS);
         this.setRegistryName(ICBMClassic.PREFIX + "glassPressurePlate");
         this.setUnlocalizedName(ICBMClassic.PREFIX + "glassPressurePlate");
+        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 }
