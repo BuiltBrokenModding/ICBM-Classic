@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -32,6 +33,12 @@ public class BlockSpikes extends Block
         this.setUnlocalizedName(ICBMClassic.PREFIX + "spikes");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(1.0F);
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
+    {
+        return null;
     }
 
     @Override
