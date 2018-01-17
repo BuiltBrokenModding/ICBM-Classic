@@ -1,7 +1,5 @@
 package icbm.classic.content.machines.launcher.cruise;
 
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.Engine;
@@ -26,7 +24,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -95,7 +92,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
             }
-            else if (missile.getTier() > 3)
+            else if (missile.getTier().ordinal() > 3)
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissileTier");
             }
@@ -216,7 +213,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             {
                 //Validate that the item in the slot is a missile we can fire
                 final Explosion missile = (Explosion) Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage()).handler;
-                if (missile != null && missile.isCruise() && missile.getTier() <= 3)
+                if (missile != null && missile.isCruise() && missile.getTier().ordinal() <= 3)
                 {
                     //Make sure we have enough energy
                     if (this.checkExtract())
@@ -297,54 +294,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
-    {
-        if (isServer())
-        {
-            boolean notNull = player.getHeldItem() != null;
-            if (notNull && player.getHeldItem().getItem() == Items.redstone)
-            {
-                if (canLaunch())
-                {
-                    launch();
-                }
-                else
-                {
-                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.failedToFire")));
-                    String translation = LanguageUtility.getLocal("chat.launcher.status");
-                    translation = translation.replace("%1", getStatus());
-                    player.addChatComponentMessage(new ChatComponentText(translation));
-                }
-            }
-            else if (notNull && player.getHeldItem().getItem() instanceof IWorldPosItem)
-            {
-                IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
-                if (location != null)
-                {
-                    if (location.oldWorld() == oldWorld())
-                    {
-                        setTarget(new Pos(location.x(), location.y(), location.z()));
-                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
-                    }
-                    else
-                    {
-                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
-                    }
-                }
-                else
-                {
-                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
-                }
-            }
-            else
-            {
-                player.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-            }
-        }
-        return true;
-    }
-
-    @Override
     public boolean targetWithYValue()
     {
         return true;
@@ -359,7 +308,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             {
                 Explosion missile = (Explosion) Explosives.get(itemStack.getItemDamage()).handler;
 
-                if (missile.isCruise() && missile.getTier() <= BlockICBM.EnumTier.THREE)
+                if (missile.isCruise() && missile.getTier().ordinal() <= BlockICBM.EnumTier.THREE.ordinal())
                 {
                     return true;
                 }

@@ -1,8 +1,6 @@
 package icbm.classic.content.machines.launcher.screen;
 
-import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
-import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
@@ -12,46 +10,29 @@ import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
+import icbm.classic.prefab.BlockICBM;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.TextComponentString;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import resonant.api.ITier;
 import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.LauncherType;
-
-import java.util.List;
 
 /**
  * This tile entity is for the screen of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IGuiTile, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
+public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, IGuiTile, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
 {
-    // The tier of this screen
-    private int tier = 0;
-
     // The missile launcher base in which this
     // screen is connected with
     public TileLauncherBase laucherBase = null;
@@ -110,62 +91,9 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    public boolean onPlayerActivated(EntityPlayer player, int side, Pos hit)
-    {
-        if (isServer())
-        {
-            boolean notNull = player.getHeldItem() != null;
-            if (notNull && player.getHeldItem().getItem() == Items.REDSTONE)
-            {
-                if (canLaunch())
-                {
-                    launch();
-                }
-                else
-                {
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
-                    String translation = LanguageUtility.getLocal("chat.launcher.status");
-                    translation = translation.replace("%1", getStatus());
-                    player.sendMessage(new TextComponentString(translation));
-                }
-            }
-            else if (notNull && player.getHeldItem().getItem() instanceof ItemRemoteDetonator)
-            {
-                ((ItemRemoteDetonator) player.getHeldItem().getItem()).setBroadCastHz(player.getHeldItem(), getFrequency());
-                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + getFrequency())));
-            }
-            else if (notNull && player.getHeldItem().getItem() instanceof IWorldPosItem)
-            {
-                IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
-                if (location != null)
-                {
-                    if (location.oldWorld() == world)
-                    {
-                        setTarget(new Pos(location.x(), location.y(), location.z()));
-                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
-                    }
-                    else
-                    {
-                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
-                    }
-                }
-                else
-                {
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
-                }
-            }
-            else
-            {
-                player.openGui(ICBMClassic.INSTANCE, 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-            }
-        }
-        return true;
-    }
-
-    @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, this.tier, getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile(this, 0, getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -181,7 +109,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         {
             if (!this.laucherBase.isInvalid())
             {
-                this.laucherBase.setInventorySlotContents(0, itemStack);
+                this.laucherBase.getInventory().setInventorySlotContents(0, itemStack);
             }
         }
     }
@@ -195,7 +123,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             {
                 case 0:
                 {
-                    this.tier = data.readInt();
+                    //this.tier = data.readInt();
                     setEnergy(data.readInt());
                     this.setFrequency(data.readInt());
                     this.lockHeight = data.readShort();
@@ -303,32 +231,17 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
     {
         super.readFromNBT(par1NBTTagCompound);
-
-        this.tier = par1NBTTagCompound.getInteger("tier");
+        //this.tier = par1NBTTagCompound.getInteger("tier");
         this.lockHeight = par1NBTTagCompound.getShort("targetHeight");
     }
 
     /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound par1NBTTagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        super.writeToNBT(par1NBTTagCompound);
-
-        par1NBTTagCompound.setInteger("tier", this.tier);
+        //par1NBTTagCompound.setInteger("tier", this.tier);
         par1NBTTagCompound.setShort("targetHeight", this.lockHeight);
-    }
-
-    @Override
-    public int getTier()
-    {
-        return this.tier;
-    }
-
-    @Override
-    public void setTier(int tier)
-    {
-        this.tier = tier;
-        updateClient = true;
+        return  super.writeToNBT(par1NBTTagCompound);
     }
 
     @Override
@@ -336,9 +249,9 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     {
         switch (this.getTier())
         {
-            case 0:
+            case ONE:
                 return 50000;
-            case 1:
+            case TWO:
                 return 80000;
         }
         return 100000;
@@ -357,21 +270,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
-    {
-        super.onPlaced(entityLiving, itemStack);
-        setTier(itemStack.getItemDamage());
-    }
-
-    @Override
-    public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list)
-    {
-        list.add(new ItemStack(item, 1, 0));
-        list.add(new ItemStack(item, 1, 1));
-        list.add(new ItemStack(item, 1, 2));
-    }
-
-    @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
         return new ContainerDummy();
@@ -380,7 +278,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
-        return null;
+        return new GuiLauncherScreen(this);
     }
 
     @Override
@@ -389,7 +287,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         //Floor frequency as we do not care about sub ranges
         int frequency = (int) Math.floor(hz);
         //Only tier 3 (2 for tier value) can be remotely fired
-        if (getTier() == 2 && frequency == getFrequency() && laucherBase != null)
+        if (getTier() == BlockICBM.EnumTier.THREE && frequency == getFrequency() && laucherBase != null)
         {
             //Laser detonator signal
             if (messageHeader.equals("activateLauncherWithTarget"))

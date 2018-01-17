@@ -3,10 +3,12 @@ package icbm.classic.prefab;
 import com.builtbroken.mc.api.abstraction.world.IPosWorld;
 import com.builtbroken.mc.api.abstraction.world.IWorld;
 import com.builtbroken.mc.api.data.IPacket;
+import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.data.Direction;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -197,5 +199,30 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     public int getEnergy()
     {
         return 0;
+    }
+
+    public IEnergyBuffer getEnergyBuffer(Direction side)
+    {
+        return null;
+    }
+
+    public int getEnergyConsumption()
+    {
+        return 100000;
+    }
+
+    public int getEnergyBufferSize()
+    {
+        return getEnergyConsumption() * 2;
+    }
+
+    public boolean checkExtract()
+    {
+        return getEnergy() >= getEnergyConsumption();
+    }
+
+    public void extractEnergy()
+    {
+
     }
 }

@@ -1,31 +1,21 @@
 package icbm.classic.content.machines.launcher.screen;
 
-import com.builtbroken.mc.api.items.ISimpleItemRenderer;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.tile.Tile;
-import cpw.mods.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MFaSheShiMuo0;
 import icbm.classic.client.models.MFaSheShiMuo1;
 import icbm.classic.client.models.MFaSheShiMuo2;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/10/2017.
  */
-public class TileLauncherScreenClient extends TileLauncherScreen implements ISimpleItemRenderer
+public class TileLauncherScreenClient extends TileEntitySpecialRenderer<TileLauncherScreen>
 {
     public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
     public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_1.png");
@@ -35,29 +25,16 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
     public static final MFaSheShiMuo1 model1 = new MFaSheShiMuo1();
     public static final MFaSheShiMuo2 model2 = new MFaSheShiMuo2();
 
-    public TileLauncherScreenClient()
-    {
-        super();
-        this.renderNormalBlock = false;
-        this.renderTileEntity = true;
-    }
-
-    @Override
-    public Tile newTile()
-    {
-        return new TileLauncherScreenClient();
-    }
-
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(Pos pos, float frame, int pass)
+    public void render(TileLauncherScreen te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
         GL11.glPushMatrix();
-        GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
+        GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 
-        switch (getDirection().ordinal())
+        switch (te.getRotation().ordinal())
         {
             case 3:
                 GL11.glRotatef(180F, 0.0F, 180F, 1.0F);
@@ -70,13 +47,13 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
                 break;
         }
 
-        switch (getTier())
+        switch (te.getTier())
         {
-            case 1:
+            case TWO:
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
                 model1.render(0.0625F);
                 break;
-            case 2:
+            case THREE:
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
                 model2.render(0.0625F);
                 break;
@@ -86,40 +63,6 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
                 break;
         }
         GL11.glPopMatrix();
-    }
-
-    @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
-    {
-        GL11.glPushMatrix();
-        int tier = itemStack.getItemDamage();
-
-        GL11.glTranslatef(0f, 0.9f, 0f);
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        GL11.glRotatef(180f, 0f, 180f, 1f);
-
-        if (tier == 0)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
-            model0.render(0.0625F);
-        }
-        else if (tier == 1)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
-            model1.render(0.0625F);
-        }
-        else if (tier == 2)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
-            model2.render(0.0625F);
-        }
-        GL11.glPopMatrix();
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player)
-    {
-        return new GuiLauncherScreen(this);
     }
 
 }
