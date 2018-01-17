@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model":"icbmclassic:spikes",
+    "textures": {
+      "cross": "icbmclassic:blocks/spikes"
+    }
+  },
+  "variants": {
+    "type": {
+      "normal": {
+        "textures": {
+          "cross": "icbmclassic:blocks/spikes"
+        }
+      },
+      "fire": {
+        "textures": {
+          "cross": "icbmclassic:blocks/spikes_fire"
+        }
+      },
+      "poison": {
+        "textures": {
+          "cross": "icbmclassic:blocks/spikes_poison"
+        }
+      }
+    }
+  }
+}
+

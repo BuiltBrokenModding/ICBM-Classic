@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
@@ -12,7 +13,16 @@ public class ClientProxy extends CommonProxy
     @Override
     public void doLoadModels()
     {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockGlassPlate), 0, new ModelResourceLocation(ICBMClassic.blockGlassPlate.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockGlassButton), 0, new ModelResourceLocation(ICBMClassic.blockGlassButton.getRegistryName(), "inventory"));
+        newBlockModel(ICBMClassic.blockGlassPlate, 0, "inventory", "");
+        newBlockModel(ICBMClassic.blockGlassButton, 0, "inventory", "");
+        newBlockModel(ICBMClassic.blockSpikes, 0, "inventory", "");
+        newBlockModel(ICBMClassic.blockSpikes, 1, "inventory", "_poison");
+        newBlockModel(ICBMClassic.blockSpikes, 2, "inventory", "_fire");
+        //SpikeMeshDefinition.init();
+    }
+
+    protected void newBlockModel(Block block, int meta, String varient, String sub)
+    {
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName() + sub, varient));
     }
 }
