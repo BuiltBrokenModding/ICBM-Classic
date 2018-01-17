@@ -5,8 +5,9 @@ import com.builtbroken.mc.framework.mod.AbstractProxy;
 import com.builtbroken.mc.framework.mod.ModCreativeTab;
 import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.tile.item.ItemBlockMetadata;
+import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.blocks.BlockConcrete;
 import icbm.classic.content.blocks.BlockGlassButton;
 import icbm.classic.content.blocks.BlockGlassPressurePlate;
 import icbm.classic.content.blocks.BlockSpikes;
@@ -185,7 +186,8 @@ public final class ICBMClassic extends AbstractMod
 
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockGlassButton).setRegistryName(blockGlassButton.getRegistryName()));
-        event.getRegistry().register(new ItemBlockMetadata(blockSpikes).setRegistryName(blockSpikes.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockSpikes).setRegistryName(blockSpikes.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockConcrete).setRegistryName(blockConcrete.getRegistryName()));
 
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
@@ -197,13 +199,15 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCGlassPlate" -> "glassPressurePlate"
         //"icbmCGlassButton" -> "glassButton"
         //"icbmCSpike" -> "spikes"
+        //"icbmCConcrete" -> "concrete"
 
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         event.getRegistry().register(blockGlassButton = new BlockGlassButton());
         event.getRegistry().register(blockSpikes = new BlockSpikes());
+        event.getRegistry().register(blockConcrete = new BlockConcrete());
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
-        blockConcrete = manager.newBlock("icbmCConcrete", BlockConcrete.class, ItemBlockSubTypes.class);
+
         blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class, ItemBlockBase.class);
         blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class, ItemBlockBase.class);
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);

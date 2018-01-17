@@ -1,0 +1,32 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:concrete",
+    "textures": {
+      "all": "icbmclassic:blocks/concrete"
+    }
+  },
+  "variants": {
+    "type": {
+      "normal": {
+        "model": "icbmclassic:concrete",
+        "textures": {
+          "all": "icbmclassic:blocks/concrete"
+        }
+      },
+      "compact": {
+        "model": "icbmclassic:concrete",
+        "textures": {
+          "all": "icbmclassic:blocks/concrete_compact"
+        }
+      },
+      "reinforced": {
+        "model": "icbmclassic:concrete",
+        "textures": {
+          "all": "icbmclassic:blocks/concrete_reinforced"
+        }
+      }
+    }
+  }
+}
+

@@ -18,6 +18,9 @@ public class ClientProxy extends CommonProxy
         newBlockModel(ICBMClassic.blockSpikes, 0, "inventory", "");
         newBlockModel(ICBMClassic.blockSpikes, 1, "inventory", "_poison");
         newBlockModel(ICBMClassic.blockSpikes, 2, "inventory", "_fire");
+        newBlockModel(ICBMClassic.blockConcrete, 0, "inventory", "");
+        newBlockModel(ICBMClassic.blockConcrete, 1, "inventory", "_compact");
+        newBlockModel(ICBMClassic.blockConcrete, 2, "inventory", "_reinforced");
         //SpikeMeshDefinition.init();
     }
 
