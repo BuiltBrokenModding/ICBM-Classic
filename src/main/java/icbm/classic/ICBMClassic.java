@@ -9,12 +9,10 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.BlockGlassPressurePlate;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.items.*;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
-import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockRailBase;
@@ -164,6 +162,8 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCRocketLauncher", -> "rocketLauncher"
         //"icbmCGrenade", -> "grenade"
         //"icbmCBombCart", -> "bombcart"
+
+        /*
         event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
         event.getRegistry().register(itemSulfurDust = new ItemSulfurDust());
         event.getRegistry().register(itemAntidote = new ItemAntidote());
@@ -177,6 +177,7 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
         event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
+        */
 
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
 
@@ -284,95 +285,101 @@ public final class ICBMClassic extends AbstractMod
         PoisonFrostBite.INSTANCE = MobEffects.POISON;//new PoisonFrostBite(false, 5149489, "frostBite");
 
         /** Dispenser Handler */ //TODO move to its own class
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemGrenade, new IBehaviorDispenseItem()
+        if (itemGrenade != null)
         {
-            @Override
-            public ItemStack dispense(IBlockSource blockSource, ItemStack itemStack)
+            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemGrenade, new IBehaviorDispenseItem()
             {
-                World world = blockSource.getWorld();
-
-                if (!world.isRemote)
+                @Override
+                public ItemStack dispense(IBlockSource blockSource, ItemStack itemStack)
                 {
-                    EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
+                    World world = blockSource.getWorld();
 
-                    EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), Explosives.get(itemStack.getItemDamage()));
-                    entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
-                    world.spawnEntity(entity);
+                    if (!world.isRemote)
+                    {
+                        EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
+
+                        EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), Explosives.get(itemStack.getItemDamage()));
+                        entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
+                        world.spawnEntity(entity);
+                    }
+
+                    itemStack.shrink(1);
+                    return itemStack;
                 }
+            });
+        }
 
-                itemStack.shrink(1);
-                return itemStack;
-            }
-        });
-
-        //TODO move to its own class
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemBombCart, new BehaviorDefaultDispenseItem()
+        if (itemBombCart != null)
         {
-            private final BehaviorDefaultDispenseItem behaviourDefaultDispenseItem = new BehaviorDefaultDispenseItem();
-
-            @Override
-            public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
+            //TODO move to its own class
+            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemBombCart, new BehaviorDefaultDispenseItem()
             {
-                EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
-                World world = source.getWorld();
-                double x = source.getX() + (double) enumfacing.getFrontOffsetX() * 1.125D;
-                double y = Math.floor(source.getY()) + (double) enumfacing.getFrontOffsetY();
-                double z = source.getZ() + (double) enumfacing.getFrontOffsetZ() * 1.125D;
-                BlockPos blockpos = source.getBlockPos().offset(enumfacing);
-                IBlockState iblockstate = world.getBlockState(blockpos);
-                BlockRailBase.EnumRailDirection rail =
-                        iblockstate.getBlock() instanceof BlockRailBase
-                                ? ((BlockRailBase) iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null)
-                                : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                private final BehaviorDefaultDispenseItem behaviourDefaultDispenseItem = new BehaviorDefaultDispenseItem();
 
-                double heightDelta;
-
-                if (BlockRailBase.isRailBlock(iblockstate))
+                @Override
+                public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
                 {
-                    if (rail.isAscending())
-                    {
-                        heightDelta = 0.6D;
-                    }
-                    else
-                    {
-                        heightDelta = 0.1D;
-                    }
-                }
-                else
-                {
-                    if (iblockstate.getMaterial() != Material.AIR || !BlockRailBase.isRailBlock(world.getBlockState(blockpos.down())))
-                    {
-                        return this.behaviourDefaultDispenseItem.dispense(source, stack);
-                    }
-
-                    IBlockState blockB = world.getBlockState(blockpos.down());
-                    BlockRailBase.EnumRailDirection railB =
-                            blockB.getBlock() instanceof BlockRailBase ?
-                                    ((BlockRailBase) blockB.getBlock()).getRailDirection(world, blockpos.down(), blockB, null)
+                    EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
+                    World world = source.getWorld();
+                    double x = source.getX() + (double) enumfacing.getFrontOffsetX() * 1.125D;
+                    double y = Math.floor(source.getY()) + (double) enumfacing.getFrontOffsetY();
+                    double z = source.getZ() + (double) enumfacing.getFrontOffsetZ() * 1.125D;
+                    BlockPos blockpos = source.getBlockPos().offset(enumfacing);
+                    IBlockState iblockstate = world.getBlockState(blockpos);
+                    BlockRailBase.EnumRailDirection rail =
+                            iblockstate.getBlock() instanceof BlockRailBase
+                                    ? ((BlockRailBase) iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null)
                                     : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 
-                    if (enumfacing != EnumFacing.DOWN && railB.isAscending())
+                    double heightDelta;
+
+                    if (BlockRailBase.isRailBlock(iblockstate))
                     {
-                        heightDelta = -0.4D;
+                        if (rail.isAscending())
+                        {
+                            heightDelta = 0.6D;
+                        }
+                        else
+                        {
+                            heightDelta = 0.1D;
+                        }
                     }
                     else
                     {
-                        heightDelta = -0.9D;
+                        if (iblockstate.getMaterial() != Material.AIR || !BlockRailBase.isRailBlock(world.getBlockState(blockpos.down())))
+                        {
+                            return this.behaviourDefaultDispenseItem.dispense(source, stack);
+                        }
+
+                        IBlockState blockB = world.getBlockState(blockpos.down());
+                        BlockRailBase.EnumRailDirection railB =
+                                blockB.getBlock() instanceof BlockRailBase ?
+                                        ((BlockRailBase) blockB.getBlock()).getRailDirection(world, blockpos.down(), blockB, null)
+                                        : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+
+                        if (enumfacing != EnumFacing.DOWN && railB.isAscending())
+                        {
+                            heightDelta = -0.4D;
+                        }
+                        else
+                        {
+                            heightDelta = -0.9D;
+                        }
                     }
+
+                    EntityBombCart cart = new EntityBombCart(world, x, y + heightDelta, z, Explosives.get(stack.getItemDamage()));
+
+                    if (stack.hasDisplayName())
+                    {
+                        cart.setCustomNameTag(stack.getDisplayName());
+                    }
+
+                    world.spawnEntity(cart);
+                    stack.shrink(1);
+                    return stack;
                 }
-
-                EntityBombCart cart = new EntityBombCart(world, x, y + heightDelta, z, Explosives.get(stack.getItemDamage()));
-
-                if (stack.hasDisplayName())
-                {
-                    cart.setCustomNameTag(stack.getDisplayName());
-                }
-
-                world.spawnEntity(cart);
-                stack.shrink(1);
-                return stack;
-            }
-        });
+            });
+        }
         proxy.init();
     }
 

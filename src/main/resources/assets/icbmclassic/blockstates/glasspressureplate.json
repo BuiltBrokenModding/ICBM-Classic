@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "pressure_plate_down",
+    "textures": {
+      "texture": "icbmclassic:blocks/glass_pressure_plate"
+    }
+  },
+  "variants": {
+    "normal": {
+      "model": "pressure_plate_up"
+    },
+    "inventory": {
+      "model": "pressure_plate_up",
+      "transform": "forge:default-block"
+    },
+    "powered": {
+      "false": {
+        "model": "pressure_plate_up"
+      },
+      "true": {
+        "model": "pressure_plate_down"
+      }
+    }
+  }
+}
+
