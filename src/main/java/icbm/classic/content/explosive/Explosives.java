@@ -5,6 +5,7 @@ import icbm.classic.content.explosive.ex.*;
 import icbm.classic.content.explosive.ex.missiles.*;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IStringSerializable;
 
 /**
  * Enum of explosives for use a metadata in items and quick reference of values
@@ -12,7 +13,7 @@ import net.minecraft.item.ItemStack;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/7/2017.
  */
-public enum Explosives
+public enum Explosives implements IStringSerializable
 {
     CONDENSED(new ExCondensed("condensed", BlockICBM.EnumTier.ONE)),
     SHRAPNEL(new ExShrapnel("shrapnel", BlockICBM.EnumTier.ONE)),
@@ -78,5 +79,11 @@ public enum Explosives
             return values()[itemDamage];
         }
         return CONDENSED;
+    }
+
+    @Override
+    public String getName()
+    {
+        return super.name().toLowerCase();
     }
 }

@@ -19,7 +19,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Is the entity that throws this 'thing' (snowball, ender pearl, eye of ender or potion) */
     protected EntityLivingBase thrower;
 
-    public Explosives haoMa;
+    public Explosives explosiveID;
     public NBTTagCompound nbtData = new NBTTagCompound();
 
     public EntityGrenade(World par1World)
@@ -33,7 +33,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     {
         this(par1World);
         this.setPosition(position.x(), position.y(), position.z());
-        this.haoMa = explosiveID;
+        this.explosiveID = explosiveID;
     }
 
     public EntityGrenade(World par1World, EntityLivingBase par2EntityLiving, Explosives explosiveID, float nengLiang)
@@ -52,15 +52,15 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * var3;
         this.motionY = -MathHelper.sin((this.rotationPitch) / 180.0F * (float) Math.PI) * var3;
         this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, 1.8f * nengLiang, 1.0F);
-        this.haoMa = explosiveID;
+        this.explosiveID = explosiveID;
     }
 
     @Override
     public String getName()
     {
-        if (this.haoMa != null)
+        if (this.explosiveID != null)
         {
-            return this.haoMa.handler.getGrenadeName();
+            return this.explosiveID.handler.getGrenadeName();
         }
 
         return "Grenade";
@@ -69,13 +69,13 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.haoMa.ordinal());
+        data.writeInt(this.explosiveID.ordinal());
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        this.haoMa = Explosives.get(data.readInt());
+        this.explosiveID = Explosives.get(data.readInt());
     }
 
     /** Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction. */
@@ -195,16 +195,16 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
-        if (this.ticksExisted > Math.max(60, (haoMa.handler.getYinXin())))
+        if (this.ticksExisted > Math.max(60, (explosiveID.handler.getYinXin())))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            (haoMa.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this);
+            (explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this);
             this.setDead();
             return;
         }
         else
         {
-            (haoMa.handler).onYinZha(this.world, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
+            (explosiveID.handler).onYinZha(this.world, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
         }
     }
 
@@ -232,7 +232,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.haoMa = Explosives.get(nbt.getInteger("haoMa"));
+        this.explosiveID = Explosives.get(nbt.getInteger("haoMa"));
         this.nbtData = nbt.getCompoundTag("data");
 
     }
@@ -240,7 +240,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("haoMa", this.haoMa.ordinal());
+        nbt.setInteger("haoMa", this.explosiveID.ordinal());
         nbt.setTag("data", this.nbtData);
 
     }

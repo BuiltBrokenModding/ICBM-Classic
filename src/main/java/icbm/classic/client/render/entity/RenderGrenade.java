@@ -1,67 +1,48 @@
 package icbm.classic.client.render.entity;
 
-import com.builtbroken.mc.lib.render.RenderUtility;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderEntityItem;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderGrenade extends Render
+public class RenderGrenade extends Render<EntityGrenade>
 {
-    protected RenderGrenade(RenderManager renderManager)
+    private EntityItem entityItem;
+    private RenderEntityItem renderEntityItem;
+
+    public RenderGrenade(RenderManager renderManagerIn, RenderItem itemRender)
     {
-        super(renderManager);
+        super(renderManagerIn);
+        entityItem = new EntityItem(null);
+        renderEntityItem = new RenderEntityItem(renderManagerIn, itemRender);
+        this.shadowSize = 0.15F;
+        this.shadowOpaque = 0.75F;
     }
 
     @Override
-    public void doRender(Entity entity, double x, double y, double z, float par8, float par9)
+    public void doRender(EntityGrenade entity, double x, double y, double z, float par8, float par9)
     {
-        /** Renders the grenade based on the explosive ID. */
-        IIcon icon = ICBMClassic.itemGrenade.getIconFromDamage(((EntityGrenade) entity).haoMa.ordinal());
+        //Set data
+        entityItem.setWorld(entity.world);
+        entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
+        entityItem.setItem(new ItemStack(ICBMClassic.itemGrenade, 1, entity.explosiveID.ordinal()));
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) x, (float) y + 0.4f, (float) z);
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glScalef(0.6F, 0.6F, 0.6F);
-        RenderUtility.setSpriteTexture(new ItemStack(ICBMClassic.itemGrenade));
-        Tessellator tessellator = Tessellator.instance;
-        this.renderIcon(tessellator, icon);
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        GL11.glPopMatrix();
-    }
-
-    private void renderIcon(Tessellator par1Tessellator, IIcon icon)
-    {
-        float f = icon.getMinU();
-        float f1 = icon.getMaxU();
-        float f2 = icon.getMinV();
-        float f3 = icon.getMaxV();
-        float f4 = 1.0F;
-        float f5 = 0.5F;
-        float f6 = 0.25F;
-        GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        par1Tessellator.startDrawingQuads();
-        par1Tessellator.setNormal(0.0F, 1.0F, 0.0F);
-        par1Tessellator.addVertexWithUV(0.0F - f5, 0.0F - f6, 0.0D, f, f3);
-        par1Tessellator.addVertexWithUV(f4 - f5, 0.0F - f6, 0.0D, f1, f3);
-        par1Tessellator.addVertexWithUV(f4 - f5, f4 - f6, 0.0D, f1, f2);
-        par1Tessellator.addVertexWithUV(0.0F - f5, f4 - f6, 0.0D, f, f2);
-        par1Tessellator.draw();
+        //render
+        renderEntityItem.doRender(entityItem, x, y, z, par8, par9);
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(Entity entity)
+    protected ResourceLocation getEntityTexture(EntityGrenade entity)
     {
-        return null;
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 }

@@ -2,33 +2,43 @@ package icbm.classic.client.render.entity;
 
 import com.builtbroken.mc.client.SharedAssets;
 import com.builtbroken.mc.core.References;
-import com.builtbroken.mc.lib.render.RenderUtility;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Sphere;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-public class RenderExplosion extends Render
+public class RenderExplosion extends Render<EntityExplosion>
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.TEXTURE_DIRECTORY + "blackhole.png");
+    public Color colorIn = new Color(16777215);
+    public Color colorOut = new Color(0);
 
     public Random random = new Random();
 
-    @Override
-    public void doRender(Entity entity, double x, double y, double z, float par8, float par9)
+    protected RenderExplosion(RenderManager renderManager)
     {
-        EntityExplosion entityExplosion = (EntityExplosion) entity;
+        super(renderManager);
+    }
 
+    @Override
+    public void doRender(EntityExplosion entityExplosion, double x, double y, double z, float par8, float par9)
+    {
         if (entityExplosion.getBlast() != null)
         {
             // RedM atter Render
@@ -37,15 +47,16 @@ public class RenderExplosion extends Render
                 final BlastRedmatter redmatter = (BlastRedmatter) entityExplosion.getBlast();
                 final float scale = redmatter.getScaleFactor();
 
-                Tessellator tessellator = Tessellator.instance;
+                Tessellator tessellator = Tessellator.getInstance();
+                BufferBuilder bufferbuilder = tessellator.getBuffer();
 
                 //=======================================================
                 //Draw Sphere
                 GL11.glPushMatrix();
                 GL11.glTranslatef((float) x, (float) y, (float) z);
 
-                RenderUtility.enableBlending();
-                RenderUtility.disableLighting();
+                GlStateManager.enableBlend();
+                GlStateManager.disableLighting();
 
                 GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.9f);
 
@@ -56,10 +67,10 @@ public class RenderExplosion extends Render
                 sphere.draw(radius, 32, 32);
 
                 // Enable Lighting/Glow Off
-                RenderUtility.enableLighting();
+                GlStateManager.enableLighting();
 
                 // Disable Blending
-                RenderUtility.disableBlending();
+                GlStateManager.disableBlend();
                 GL11.glPopMatrix();
 
 
@@ -68,42 +79,42 @@ public class RenderExplosion extends Render
                 GL11.glPushMatrix();
                 GL11.glDepthMask(false);
 
-                RenderUtility.enableBlending();
-                RenderUtility.disableLighting();
+                GlStateManager.enableBlend();
+                GlStateManager.disableLighting();
 
                 GL11.glTranslated(x, y, z);
-                GL11.glRotatef(-entity.ticksExisted, 0, 1, 0);
+                GL11.glRotatef(-entityExplosion.ticksExisted, 0, 1, 0);
 
                 float size = BlastRedmatter.ENTITY_DESTROY_RADIUS * scale * 2;
 
                 this.bindTexture(TEXTURE_FILE);
 
                 //top render
-                tessellator.startDrawingQuads();
-                tessellator.setBrightness(240);
-                tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
-                tessellator.addVertexWithUV(-size, 0, -size, 0, 0);
-                tessellator.addVertexWithUV(-size, 0, +size, 0, 1);
-                tessellator.addVertexWithUV(+size, 0, +size, 1, 1);
-                tessellator.addVertexWithUV(+size, 0, -size, 1, 0);
+                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+                //tessellator.setBrightness(240);
+                //tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
+                bufferbuilder.pos(-size, 0, -size).tex( 0, 0).endVertex();
+                bufferbuilder.pos(-size, 0, +size).tex( 0, 1).endVertex();
+                bufferbuilder.pos(+size, 0, +size).tex( 1, 1).endVertex();
+                bufferbuilder.pos(+size, 0, -size).tex( 1, 0).endVertex();
                 tessellator.draw();
 
                 //bottom render
                 GL11.glRotatef(180, 1, 0, 0);
-                tessellator.startDrawingQuads();
-                tessellator.setBrightness(240);
-                tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
-                tessellator.addVertexWithUV(-size, 0, -size, 1, 1);
-                tessellator.addVertexWithUV(-size, 0, +size, 1, 0);
-                tessellator.addVertexWithUV(+size, 0, +size, 0, 0);
-                tessellator.addVertexWithUV(+size, 0, -size, 0, 1);
+                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+                //tessellator.setBrightness(240);
+                //tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
+                bufferbuilder.pos(-size, 0, -size).tex( 1, 1).endVertex();
+                bufferbuilder.pos(-size, 0, +size).tex( 1, 0).endVertex();
+                bufferbuilder.pos(+size, 0, +size).tex( 0, 0).endVertex();
+                bufferbuilder.pos(+size, 0, -size).tex( 0, 1).endVertex();
                 tessellator.draw();
 
                 // Enable Lighting/Glow Off
-                RenderUtility.enableLighting();
+                GlStateManager.enableLighting();
 
                 // Disable Blending
-                RenderUtility.disableBlending();
+                GlStateManager.disableBlend();
 
                 GL11.glDepthMask(true);
                 GL11.glPopMatrix();
@@ -112,7 +123,7 @@ public class RenderExplosion extends Render
                 //=======================================================
 
                 /** Enderdragon Light */
-                float ticks = entity.ticksExisted;
+                float ticks = entityExplosion.ticksExisted;
 
                 while (ticks > 200)
                 {
@@ -159,18 +170,20 @@ public class RenderExplosion extends Render
                     GL11.glRotatef(rand.nextFloat() * 360.0F + var41 * 90.0F, 0.0F, 0.0F, 1.0F);
 
                     //Draw spike shape
-                    tessellator.startDrawing(6);
+                    bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
 
                     //center
-                    tessellator.setColorRGBA_I(16777215, (int) (255.0F * (1.0F - var51)));
-                    tessellator.addVertex(0.0D, 0.0D, 0.0D);
+                    bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(colorIn.getRed() / 255f, colorIn.getGreen() / 255f, colorIn.getBlue() / 255f, colorIn.getAlpha() / 255f);
 
                     //Outside
-                    tessellator.setColorRGBA_I(0, 0);
-                    tessellator.addVertex(-0.866D * beamWidth, beamLength, -0.5F * beamWidth);
-                    tessellator.addVertex(0.866D * beamWidth, beamLength, -0.5F * beamWidth);
-                    tessellator.addVertex(0.0D, beamLength, 1.0F * beamWidth);
-                    tessellator.addVertex(-0.866D * beamWidth, beamLength, -0.5F * beamWidth);
+                    bufferbuilder.pos(-0.866D * beamWidth, beamLength, -0.5F * beamWidth)
+                            .color(colorOut.getRed() / 255f, colorOut.getGreen() / 255f, colorOut.getBlue() / 255f, colorOut.getAlpha() / 255f).endVertex();
+                    bufferbuilder.pos(0.866D * beamWidth, beamLength, -0.5F * beamWidth)
+                            .color(colorOut.getRed() / 255f, colorOut.getGreen() / 255f, colorOut.getBlue() / 255f, colorOut.getAlpha() / 255f).endVertex();
+                    bufferbuilder.pos(0.0D, beamLength, 1.0F * beamWidth)
+                            .color(colorOut.getRed() / 255f, colorOut.getGreen() / 255f, colorOut.getBlue() / 255f, colorOut.getAlpha() / 255f).endVertex();
+                    bufferbuilder.pos(-0.866D * beamWidth, beamLength, -0.5F * beamWidth)
+                            .color(colorOut.getRed() / 255f, colorOut.getGreen() / 255f, colorOut.getBlue() / 255f, colorOut.getAlpha() / 255f).endVertex();
 
                     tessellator.draw();
                 }
@@ -220,10 +233,10 @@ public class RenderExplosion extends Render
         GL11.glEnd();
     }
 
+    @Nullable
     @Override
-    protected ResourceLocation getEntityTexture(Entity entity)
+    protected ResourceLocation getEntityTexture(EntityExplosion entity)
     {
-        return null;
+        return entity.getBlast().getRenderResource();
     }
-
 }

@@ -1,79 +1,62 @@
 package icbm.classic.client.render.entity;
 
-import com.builtbroken.mc.lib.render.RenderUtility;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
-import net.minecraft.client.renderer.RenderBlocks;
+import icbm.classic.content.explosive.tile.BlockExplosive;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-@SideOnly(Side.CLIENT)
-public class RenderEntityExplosive extends Render
-{
-    private RenderBlocks blockRenderer = new RenderBlocks();
+import javax.annotation.Nullable;
 
-    public RenderEntityExplosive()
+@SideOnly(Side.CLIENT)
+public class RenderEntityExplosive extends Render<EntityExplosive>
+{
+    protected RenderEntityExplosive(RenderManager renderManager)
     {
-        this.shadowSize = 0.5F;
+        super(renderManager);
     }
 
     @Override
-    public void doRender(Entity par1Entity, double x, double y, double z, float par8, float par9)
+    public void doRender(EntityExplosive entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        EntityExplosive entityExplosive = (EntityExplosive) par1Entity;
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
         GL11.glPushMatrix();
-        GL11.glTranslatef((float) x, (float) y, (float) z);
-        float f2;
-
-        if (entityExplosive.fuse - par9 + 1.0F < 10.0F)
-        {
-            f2 = 1.0F - (entityExplosive.fuse - par9 + 1.0F) / 10.0F;
-
-            if (f2 < 0.0F)
-            {
-                f2 = 0.0F;
-            }
-
-            if (f2 > 1.0F)
-            {
-                f2 = 1.0F;
-            }
-
-            f2 *= f2;
-            f2 *= f2;
-            float f3 = 1.0F + f2 * 0.3F;
-            GL11.glScalef(f3, f3, f3);
-        }
-
-        f2 = (1.0F - (entityExplosive.fuse - par9 + 1.0F) / 100.0F) * 0.8F;
-        RenderUtility.setTerrainTexture();
-        this.blockRenderer.renderBlockAsItem(ICBMClassic.blockExplosive, entityExplosive.explosiveID.ordinal(), entityExplosive.getBrightness(par9));
-
-        if (entityExplosive.fuse / 5 % 2 == 0)
-        {
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, f2);
-            this.blockRenderer.renderBlockAsItem(ICBMClassic.blockExplosive, entityExplosive.explosiveID.ordinal(), 1.0F);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_BLEND);
-            GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-        }
-
+        renderBlock(entity, x, y, z, entityYaw, partialTicks);
         GL11.glPopMatrix();
     }
 
-    @Override
-    protected ResourceLocation getEntityTexture(Entity entity)
+    public void renderBlock(EntityExplosive entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        return null;
+        final IBlockState blockState = ICBMClassic.blockExplosive.getDefaultState().withProperty(BlockExplosive.EX_PROP, entity.explosiveID);
+        final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x, (float) y + 0.5F, (float) z);
+
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+        GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate(-0.5F, -0.5F, 0.5F);
+        blockrendererdispatcher.renderBlockBrightness(blockState, entity.getBrightness());
+        GlStateManager.translate(0.0F, 0.0F, 1.0F);
+
+        GlStateManager.popMatrix();
     }
 
+    @Nullable
+    @Override
+    protected ResourceLocation getEntityTexture(EntityExplosive entity)
+    {
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+    }
 }

@@ -5,36 +5,35 @@ import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
+import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
+import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
-import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
-import com.builtbroken.mc.prefab.tile.Tile;
-import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
+import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.TextComponentString;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import resonant.api.ITier;
@@ -48,7 +47,7 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IGuiTile, IEnergyBufferProvider
+public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPacketIDReceiver, ILauncherController, IGuiTile, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
 {
     // The tier of this screen
     private int tier = 0;
@@ -60,25 +59,16 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     /** Height to wait before missile curves */
     public short lockHeight = 3;
 
-    public TileLauncherScreen()
-    {
-        super("launcherScreen", Material.iron);
-        this.itemBlock = ItemBlockSubTypes.class;
-        this.hardness = 10f;
-        this.resistance = 10f;
-        this.isOpaque = false;
-    }
+    public ExternalInventory inventory;
 
     @Override
-    protected IInventory createInventory()
+    public ExternalInventory getInventory()
     {
-        return new TileModuleInventory(this, 2);
-    }
-
-    @Override
-    public Tile newTile()
-    {
-        return new TileLauncherScreen();
+        if(inventory == null)
+        {
+            inventory = new ExternalInventory(this, 2);
+        }
+        return inventory;
     }
 
     @Override
@@ -90,8 +80,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             this.laucherBase = null;
             for (byte i = 2; i < 6; i++)
             {
-                final Pos position = toPos().add(ForgeDirection.getOrientation(i));
-                final TileEntity tileEntity = position.getTileEntity(oldWorld());
+                final Pos position = toPos().add(Direction.getOrientation(i));
+                final TileEntity tileEntity = position.getTileEntity(world);
                 if (tileEntity != null)
                 {
                     if (tileEntity instanceof TileLauncherBase)
@@ -99,7 +89,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                         this.laucherBase = (TileLauncherBase) tileEntity;
                         if (isServer())
                         {
-                            this.setFacing(ForgeDirection.getOrientation(i).getOpposite());
+                            setRotation(EnumFacing.getFront(i).getOpposite());
                             updateClient = true;
                         }
                     }
@@ -108,7 +98,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         }
         if (isServer())
         {
-            if (this.ticks % 100 == 0 && this.isIndirectlyPowered())
+            if (this.ticks % 100 == 0 && world.isBlockIndirectlyGettingPowered(getPos()) > 0)
             {
                 this.launch();
             }
@@ -125,7 +115,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         if (isServer())
         {
             boolean notNull = player.getHeldItem() != null;
-            if (notNull && player.getHeldItem().getItem() == Items.redstone)
+            if (notNull && player.getHeldItem().getItem() == Items.REDSTONE)
             {
                 if (canLaunch())
                 {
@@ -133,35 +123,35 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 }
                 else
                 {
-                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.failedToFire")));
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
                     String translation = LanguageUtility.getLocal("chat.launcher.status");
                     translation = translation.replace("%1", getStatus());
-                    player.addChatComponentMessage(new ChatComponentText(translation));
+                    player.sendMessage(new TextComponentString(translation));
                 }
             }
             else if (notNull && player.getHeldItem().getItem() instanceof ItemRemoteDetonator)
             {
                 ((ItemRemoteDetonator) player.getHeldItem().getItem()).setBroadCastHz(player.getHeldItem(), getFrequency());
-                player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + getFrequency())));
+                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + getFrequency())));
             }
             else if (notNull && player.getHeldItem().getItem() instanceof IWorldPosItem)
             {
                 IWorldPosition location = ((IWorldPosItem) player.getHeldItem().getItem()).getLocation(player.getHeldItem());
                 if (location != null)
                 {
-                    if (location.oldWorld() == oldWorld())
+                    if (location.oldWorld() == world)
                     {
                         setTarget(new Pos(location.x(), location.y(), location.z()));
-                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
+                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
                     }
                     else
                     {
-                        player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
+                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
                     }
                 }
                 else
                 {
-                    player.addChatComponentMessage(new ChatComponentText(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
                 }
             }
             else
@@ -367,31 +357,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    public void genRecipes(List<IRecipe> recipes)
-    {
-        // Missile Launcher Panel
-        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchScreen, 1, 0),
-                "!!!", "!#!", "!?!",
-                '#', UniversalRecipe.CIRCUIT_T1.get(),
-                '!', Blocks.glass,
-                '?', UniversalRecipe.WIRE.get()));
-
-        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchScreen, 1, 1),
-                "!$!", "!#!", "!?!",
-                '#', UniversalRecipe.CIRCUIT_T2.get(),
-                '!', UniversalRecipe.PRIMARY_METAL.get(),
-                '?', UniversalRecipe.WIRE.get(),
-                '$', new ItemStack(ICBMClassic.blockLaunchScreen, 1, 0)));
-
-        recipes.add(new ShapedOreRecipe(new ItemStack(ICBMClassic.blockLaunchScreen, 1, 2),
-                "!$!", "!#!", "!?!",
-                '#', UniversalRecipe.CIRCUIT_T3.get(),
-                '!', Items.gold_ingot,
-                '?', UniversalRecipe.WIRE.get(),
-                '$', new ItemStack(ICBMClassic.blockLaunchScreen, 1, 1)));
-    }
-
-    @Override
     public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
     {
         super.onPlaced(entityLiving, itemStack);
@@ -434,27 +399,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
                 {
                     setTarget(pos);
                     launch();
-                    ((FakeRadioSender) sender).player.addChatComponentMessage(new ChatComponentText("Firing missile at " + pos));
+                    ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + pos));
                 }
             }
             //Remote detonator signal
             else if (messageHeader.equals("activateLauncher"))
             {
-                ((FakeRadioSender) sender).player.addChatComponentMessage(new ChatComponentText("Firing missile at " + getTarget()));
+                ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
                 launch();
             }
         }
-    }
-
-    @Override
-    public int metadataDropped(int meta, int fortune)
-    {
-        return tier;
-    }
-
-    @Override
-    protected boolean useMetaForFacing()
-    {
-        return true;
     }
 }

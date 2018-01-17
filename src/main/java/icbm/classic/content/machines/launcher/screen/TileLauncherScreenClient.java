@@ -122,17 +122,4 @@ public class TileLauncherScreenClient extends TileLauncherScreen implements ISim
         return new GuiLauncherScreen(this);
     }
 
-    @Override
-    public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list)
-    {
-        list.add(new ItemStack(item, 1, 0));
-        list.add(new ItemStack(item, 1, 1));
-        list.add(new ItemStack(item, 1, 2));
-    }
-
-    @Override
-    public IIcon getIcon()
-    {
-        return Blocks.anvil.getIcon(0, 0);
-    }
 }

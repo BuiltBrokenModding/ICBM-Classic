@@ -23,6 +23,8 @@ public abstract class BlockICBM extends BlockContainer
     public BlockICBM(String name, Material mat)
     {
         super(mat);
+        blockHardness = 10f;
+        blockResistance = 10f;
         setRegistryName(ICBMClassic.DOMAIN, name.toLowerCase());
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }

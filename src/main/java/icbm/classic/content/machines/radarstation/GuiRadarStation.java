@@ -6,7 +6,6 @@ import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.imp.transform.region.Rectangle;
 import com.builtbroken.mc.imp.transform.vector.Point;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import cpw.mods.fml.client.FMLClientHandler;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.gui.GuiICBM;
@@ -14,8 +13,11 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
 
 public class GuiRadarStation extends GuiICBM
 {
@@ -46,7 +48,7 @@ public class GuiRadarStation extends GuiICBM
     public GuiRadarStation(TileRadarStation tileEntity)
     {
         this.tileEntity = tileEntity;
-        mouseOverCoords = new Point(this.tileEntity.xCoord, this.tileEntity.zCoord);
+        mouseOverCoords = new Point(this.tileEntity.getPos().getX(), this.tileEntity.getPos().getZ());
         ySize = 166;
         xSize = 256;
         radarCenter = new Point(this.containerPosX + this.xSize / 3 - 14, this.containerPosY + this.ySize / 2 + 4);
@@ -58,15 +60,15 @@ public class GuiRadarStation extends GuiICBM
     {
         super.initGui();
 
-        this.textFieldSafetyZone = new GuiTextField(fontRendererObj, 210, 67, 30, 12);
+        this.textFieldSafetyZone = new GuiTextField(0, fontRenderer, 210, 67, 30, 12);
         this.textFieldSafetyZone.setMaxStringLength(3);
         this.textFieldSafetyZone.setText(this.tileEntity.safetyRange + "");
 
-        this.textFieldAlarmRange = new GuiTextField(fontRendererObj, 210, 82, 30, 12);
+        this.textFieldAlarmRange = new GuiTextField(1, fontRenderer, 210, 82, 30, 12);
         this.textFieldAlarmRange.setMaxStringLength(3);
         this.textFieldAlarmRange.setText(this.tileEntity.alarmRange + "");
 
-        this.textFieldFrequency = new GuiTextField(fontRendererObj, 155, 112, 50, 12);
+        this.textFieldFrequency = new GuiTextField(2, fontRenderer, 155, 112, 50, 12);
         this.textFieldFrequency.setMaxStringLength(6);
         this.textFieldFrequency.setText(this.tileEntity.getFrequency() + "");
 
@@ -84,25 +86,25 @@ public class GuiRadarStation extends GuiICBM
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRendererObj.drawString("\u00a77" + LanguageUtility.getLocal("tile.icbmclassic:radarStation.name"), this.xSize / 2 - 30, 6, 4210752);
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("tile.icbmclassic:radarStation.name"), this.xSize / 2 - 30, 6, 4210752);
 
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.radar.coords"), 155, 18, 4210752);
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.x") + " " + (int) Math.round(mouseOverCoords.x()) + " " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) Math.round(mouseOverCoords.y()), 155, 30, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.coords"), 155, 18, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.x") + " " + (int) Math.round(mouseOverCoords.x()) + " " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) Math.round(mouseOverCoords.y()), 155, 30, 4210752);
 
-        this.fontRendererObj.drawString("\u00a76" + this.info, 155, 42, 4210752);
-        this.fontRendererObj.drawString("\u00a74" + this.info2, 155, 54, 4210752);
+        this.fontRenderer.drawString("\u00a76" + this.info, 155, 42, 4210752);
+        this.fontRenderer.drawString("\u00a74" + this.info2, 155, 54, 4210752);
 
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.radar.zoneSafe"), 152, 70, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.zoneSafe"), 152, 70, 4210752);
         this.textFieldSafetyZone.drawTextBox();
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.radar.zoneAlarm"), 150, 85, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.zoneAlarm"), 150, 85, 4210752);
         this.textFieldAlarmRange.drawTextBox();
 
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.freq"), 155, 100, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 155, 100, 4210752);
         this.textFieldFrequency.drawTextBox();
 
-        //this.fontRendererObj.drawString(UnitDisplay.getDisplay(TileRadarStation.WATTS, UnitDisplay.Unit.WATT), 155, 128, 4210752);
+        //this.fontRenderer.drawString(UnitDisplay.getDisplay(TileRadarStation.WATTS, UnitDisplay.Unit.WATT), 155, 128, 4210752);
 
-        //this.fontRendererObj.drawString(UnitDisplay.getDisplay(this.tileEntity.getVoltageInput(null), Unit.VOLTAGE), 155, 138, 4210752);
+        //this.fontRenderer.drawString(UnitDisplay.getDisplay(this.tileEntity.getVoltageInput(null), Unit.VOLTAGE), 155, 138, 4210752);
 
         // Shows the status of the radar
         String color = "\u00a74";
@@ -118,12 +120,12 @@ public class GuiRadarStation extends GuiICBM
             status = LanguageUtility.getLocal("gui.radar.nopower");
         }
 
-        this.fontRendererObj.drawString(color + status, 155, 150, 4210752);
+        this.fontRenderer.drawString(color + status, 155, 150, 4210752);
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
     @Override
-    public void keyTyped(char par1, int par2)
+    public void keyTyped(char par1, int par2) throws IOException
     {
         super.keyTyped(par1, par2);
         this.textFieldSafetyZone.textboxKeyTyped(par1, par2);
@@ -163,7 +165,7 @@ public class GuiRadarStation extends GuiICBM
 
     /** Args: x, y, buttonClicked */
     @Override
-    public void mouseClicked(int par1, int par2, int par3)
+    public void mouseClicked(int par1, int par2, int par3) throws IOException
     {
         super.mouseClicked(par1, par2, par3);
         this.textFieldAlarmRange.mouseClicked(par1 - containerPosX, par2 - containerPosY, par3);
@@ -195,7 +197,7 @@ public class GuiRadarStation extends GuiICBM
 
             for (Entity entity : this.tileEntity.detectedEntities)
             {
-                Point position = new Point(radarCenter.x() + (entity.posX - this.tileEntity.xCoord) / this.radarMapRadius, radarCenter.y() - (entity.posZ - this.tileEntity.zCoord) / this.radarMapRadius);
+                Point position = new Point(radarCenter.x() + (entity.posX - this.tileEntity.getPos().getX()) / this.radarMapRadius, radarCenter.y() - (entity.posZ - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
 
                 if (entity instanceof EntityMissile)
                 {
@@ -223,7 +225,7 @@ public class GuiRadarStation extends GuiICBM
 
                 if (new Rectangle(minPosition, maxPosition).isWithin(this.mousePosition))
                 {
-                    this.info = entity.getCommandSenderName();
+                    this.info = entity.getName();
 
                     if (entity instanceof EntityPlayer)
                     {
@@ -264,7 +266,7 @@ public class GuiRadarStation extends GuiICBM
                     int xBlockDistance = (int) (xDifference * this.radarMapRadius);
                     int yBlockDistance = (int) (yDifference * this.radarMapRadius);
 
-                    this.mouseOverCoords = new Point(this.tileEntity.xCoord + xBlockDistance, this.tileEntity.zCoord - yBlockDistance);
+                    this.mouseOverCoords = new Point(this.tileEntity.getPos().getX() + xBlockDistance, this.tileEntity.getPos().getZ() - yBlockDistance);
                 }
             }
         }

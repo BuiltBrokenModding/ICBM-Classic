@@ -183,4 +183,19 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     {
         return getPos().getY();
     }
+
+    public boolean hasPower()
+    {
+        return true;
+    }
+
+    public void setEnergy(int energy)
+    {
+
+    }
+
+    public int getEnergy()
+    {
+        return 0;
+    }
 }

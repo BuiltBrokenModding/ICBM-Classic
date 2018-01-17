@@ -4,6 +4,7 @@ import com.builtbroken.mc.core.registry.implement.IPostInit;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
+import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
@@ -11,6 +12,7 @@ import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,6 +36,7 @@ import java.util.Random;
 
 public class BlockExplosive extends BlockICBM implements IPostInit
 {
+    public static final PropertyExplosive EX_PROP = new PropertyExplosive(); //TODO filter to block versions only
 
     public BlockExplosive()
     {
@@ -41,6 +44,14 @@ public class BlockExplosive extends BlockICBM implements IPostInit
         this.setUnlocalizedName(ICBMClassic.PREFIX + "explosives");
         setHardness(2);
         setSoundType(SoundType.CLOTH);
+    }
+
+    public static final class PropertyExplosive extends PropertyEnum<Explosives>
+    {
+        public PropertyExplosive()
+        {
+            super("explosive", Explosives.class, Lists.newArrayList(Explosives.values()));
+        }
     }
 
     /**

@@ -1,9 +1,11 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.content.entity.EntityLightBeam;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,7 +26,9 @@ public class RenderLightBeam extends Render
     {
         EntityLightBeam entity = ((EntityLightBeam) par1Entity);
 
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_BLEND);
@@ -68,12 +72,9 @@ public class RenderLightBeam extends Render
                     double d8 = d6;
 
                     // Weird but cool effects
-                    tessellator.startDrawing(5);
+                    bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
 
                     float f2 = 0.5F;
-
-                    // Set color
-                    tessellator.setColorRGBA_F(entity.red, entity.green, entity.blue, 10F);
 
                     double d9 = 0.10000000000000001D + i * 0.20000000000000001D;
 
@@ -116,8 +117,8 @@ public class RenderLightBeam extends Render
                             d14 += d10 * 2D;
                         }
 
-                        tessellator.addVertex(d13 + d5, y + iii * 16, d14 + d6);
-                        tessellator.addVertex(d11 + d7, y + (iii + 1) * 16, d12 + d8);
+                        bufferbuilder.pos(d13 + d5, y + iii * 16, d14 + d6).color(entity.red, entity.green, entity.blue, 10F).endVertex();
+                        bufferbuilder.pos(d11 + d7, y + (iii + 1) * 16, d12 + d8).color(entity.red, entity.green, entity.blue, 10F).endVertex();
                     }
 
                     tessellator.draw();
