@@ -36,6 +36,12 @@ public class BlockConcrete extends Block
     }
 
     @Override
+    public int damageDropped(IBlockState state)
+    {
+        return getMetaFromState(state);
+    }
+
+    @Override
     protected BlockStateContainer createBlockState()
     {
         return new BlockStateContainer(this, TYPE_PROP);
