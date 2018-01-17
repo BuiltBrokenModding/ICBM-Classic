@@ -3,14 +3,17 @@ package icbm.classic.content.blocks;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockButton;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class BlockGlassButton extends BlockButton
 {
@@ -19,14 +22,22 @@ public class BlockGlassButton extends BlockButton
         super(false);
         this.setTickRandomly(true);
         this.setUnlocalizedName(ICBMClassic.PREFIX + "glassButton");
+        this.setRegistryName(ICBMClassic.PREFIX + "glassButton");
         this.setSoundType(SoundType.GLASS);
         this.setHardness(0.5F);
     }
 
     @Override
-    public int quantityDropped(Random par1Random)
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer()
     {
-        return 0;
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
     }
 
     @Override

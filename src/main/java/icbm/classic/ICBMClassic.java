@@ -6,6 +6,7 @@ import com.builtbroken.mc.framework.mod.ModCreativeTab;
 import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.blocks.BlockGlassButton;
 import icbm.classic.content.blocks.BlockGlassPressurePlate;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
@@ -35,6 +36,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -180,6 +182,7 @@ public final class ICBMClassic extends AbstractMod
         */
 
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(blockGlassButton).setRegistryName(blockGlassButton.getRegistryName()));
 
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
@@ -187,11 +190,13 @@ public final class ICBMClassic extends AbstractMod
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
+        //TODO add conversion for
+        //"icbmCGlassPlate" -> "glassPressurePlate"
+        //"icbmCGlassButton" -> "glassButton"
+
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
-        //TODO add conversion for "icbmCGlassPlate" -> "glassPressurePlate"
-        //"icbmCGlassPlate"
+        event.getRegistry().register(blockGlassButton = new BlockGlassButton());
         /*
-        blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class, ItemBlockBase.class);
         blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockSubTypes.class);
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
         blockConcrete = manager.newBlock("icbmCConcrete", BlockConcrete.class, ItemBlockSubTypes.class);
@@ -206,6 +211,12 @@ public final class ICBMClassic extends AbstractMod
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
         */
+    }
+
+    @SubscribeEvent
+    public static void registerAllModels(ModelRegistryEvent event)
+    {
+        proxy.doLoadModels();
     }
 
     @SubscribeEvent

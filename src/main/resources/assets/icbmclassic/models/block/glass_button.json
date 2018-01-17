@@ -1,0 +1,6 @@
+{
+    "parent": "block/button",
+    "textures": {
+        "texture": "icbmclassic:blocks/glass_button"
+    }
+}

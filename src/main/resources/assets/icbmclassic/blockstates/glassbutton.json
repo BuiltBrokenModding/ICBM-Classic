@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "facing=up,powered=false":    { "model": "icbmclassic:glass_button", "uvlock": true },
+    "facing=down,powered=false":  { "model": "icbmclassic:glass_button", "uvlock": true, "x": 180 },
+    "facing=east,powered=false":  { "model": "icbmclassic:glass_button", "uvlock": true, "x": 90, "y": 90 },
+    "facing=west,powered=false":  { "model": "icbmclassic:glass_button", "uvlock": true, "x": 90, "y": 270 },
+    "facing=south,powered=false": { "model": "icbmclassic:glass_button", "uvlock": true, "x": 90, "y": 180 },
+    "facing=north,powered=false": { "model": "icbmclassic:glass_button", "uvlock": true, "x": 90 },
+    "facing=up,powered=true":     { "model": "icbmclassic:glass_button_pressed", "uvlock": true },
+    "facing=down,powered=true":   { "model": "icbmclassic:glass_button_pressed", "uvlock": true, "x": 180 },
+    "facing=east,powered=true":   { "model": "icbmclassic:glass_button_pressed", "uvlock": true, "x": 90, "y": 90 },
+    "facing=west,powered=true":   { "model": "icbmclassic:glass_button_pressed", "uvlock": true, "x": 90, "y": 270 },
+    "facing=south,powered=true":  { "model": "icbmclassic:glass_button_pressed", "uvlock": true, "x": 90, "y": 180 },
+    "facing=north,powered=true":  { "model": "icbmclassic:glass_button_pressed", "uvlock": true, "x": 90 }
+  }
+}
+

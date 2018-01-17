@@ -13,5 +13,6 @@ public class ClientProxy extends CommonProxy
     public void doLoadModels()
     {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockGlassPlate), 0, new ModelResourceLocation(ICBMClassic.blockGlassPlate.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockGlassButton), 0, new ModelResourceLocation(ICBMClassic.blockGlassButton.getRegistryName(), "inventory"));
     }
 }
