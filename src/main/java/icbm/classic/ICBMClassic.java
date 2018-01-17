@@ -5,22 +5,10 @@ import com.builtbroken.mc.framework.mod.AbstractProxy;
 import com.builtbroken.mc.framework.mod.ModCreativeTab;
 import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.items.ItemBlockBase;
-import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.tile.BlockExplosive;
-import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.items.*;
-import icbm.classic.content.machines.coordinator.TileMissileCoordinator;
-import icbm.classic.content.machines.emptower.TileEMPTower;
-import icbm.classic.content.machines.launcher.base.TileLauncherBase;
-import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
-import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -38,6 +26,7 @@ import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -47,6 +36,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -140,6 +130,7 @@ public final class ICBMClassic extends AbstractMod
     public ICBMClassic()
     {
         super(ICBMClassic.DOMAIN, "/bbm/ICBM-Classic");
+        OBJLoader.INSTANCE.addDomain(DOMAIN);
     }
 
     @Override
@@ -193,6 +184,7 @@ public final class ICBMClassic extends AbstractMod
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
         //TODO add conversion for "icbmCGlassPlate" -> "glassPressurePlate"
+        /*
         blockGlassPlate = manager.newBlock("icbmCGlassPlate", BlockGlassPressurePlate.class, ItemBlockBase.class);
         blockGlassButton = manager.newBlock("icbmCGlassButton", BlockGlassButton.class, ItemBlockBase.class);
         blockSpikes = manager.newBlock("icbmCSpike", BlockSpikes.class, ItemBlockSubTypes.class);
@@ -208,6 +200,7 @@ public final class ICBMClassic extends AbstractMod
         ICBMClassic.blockLaunchScreen = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherScreen", new TileLauncherScreen());
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
+        */
     }
 
     @SubscribeEvent
@@ -282,9 +275,9 @@ public final class ICBMClassic extends AbstractMod
         }
 
         /** Potion Effects */ //TODO move to effect system
-        PoisonToxin.INSTANCE = new PoisonToxin(true, 5149489, "toxin");
-        PoisonContagion.INSTANCE = new PoisonContagion(false, 5149489, "virus");
-        PoisonFrostBite.INSTANCE = new PoisonFrostBite(false, 5149489, "frostBite");
+        PoisonToxin.INSTANCE = MobEffects.POISON;//new PoisonToxin(true, 5149489, "toxin");
+        PoisonContagion.INSTANCE = MobEffects.POISON;//new PoisonContagion(false, 5149489, "virus");
+        PoisonFrostBite.INSTANCE = MobEffects.POISON;//new PoisonFrostBite(false, 5149489, "frostBite");
 
         /** Dispenser Handler */ //TODO move to its own class
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemGrenade, new IBehaviorDispenseItem()

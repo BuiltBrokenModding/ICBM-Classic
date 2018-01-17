@@ -48,6 +48,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     ExternalInventory inventory;
 
+
+    protected ItemStack cachedMissileStack;
+
     @Override
     public ExternalInventory getInventory()
     {
@@ -184,6 +187,20 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                     }
                 }
             }
+            else
+            {
+                switch (id)
+                {
+                    //GUI description packet
+                    case 0:
+                    {
+                        setEnergy(data.readInt());
+                        this.setFrequency(data.readInt());
+                        this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                        return true;
+                    }
+                }
+            }
             return false;
         }
         return true;
@@ -201,6 +218,21 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         buf.writeInt(getTarget().xi());
         buf.writeInt(getTarget().yi());
         buf.writeInt(getTarget().zi());
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        if (buf.readBoolean())
+        {
+            cachedMissileStack = ByteBufUtils.readItemStack(buf);
+        }
+        else
+        {
+            cachedMissileStack = null;
+        }
+        setTarget(new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
     }
 
     @Override
@@ -339,6 +371,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
-        return null;
+        return new GuiCruiseLauncher(player, this);
     }
 }

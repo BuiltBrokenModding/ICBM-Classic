@@ -3,14 +3,16 @@ package icbm.classic.content.machines.launcher.screen;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import cpw.mods.fml.client.FMLClientHandler;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
@@ -41,11 +43,11 @@ public class GuiLauncherScreen extends GuiICBM
     public void initGui()
     {
         super.initGui();
-        this.target_xCoord_field = new GuiTextField(fontRendererObj, 110, 37, 45, 12);
-        this.target_zCoord_field = new GuiTextField(fontRendererObj, 110, 52, 45, 12);
-        this.target_yCoord_field = new GuiTextField(fontRendererObj, 110, 67, 45, 12);
-        this.lock_height_field = new GuiTextField(fontRendererObj, 110, 82, 45, 12);
-        this.target_freq_field = new GuiTextField(fontRendererObj, 110, 97, 45, 12);
+        this.target_xCoord_field = new GuiTextField(0, fontRenderer, 110, 37, 45, 12);
+        this.target_zCoord_field = new GuiTextField(1, fontRenderer, 110, 52, 45, 12);
+        this.target_yCoord_field = new GuiTextField(2, fontRenderer, 110, 67, 45, 12);
+        this.lock_height_field = new GuiTextField(3, fontRenderer, 110, 82, 45, 12);
+        this.target_freq_field = new GuiTextField(5, fontRenderer, 110, 97, 45, 12);
 
         this.target_freq_field.setMaxStringLength(4);
         this.target_xCoord_field.setMaxStringLength(6);
@@ -58,8 +60,8 @@ public class GuiLauncherScreen extends GuiICBM
 
         if (this.tileEntity.getTarget() == null)
         {
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.xCoord) + "");
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.zCoord) + "");
+            this.target_xCoord_field.setText(Math.round(this.tileEntity.getPos().getX()) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getPos().getZ()) + "");
             this.target_yCoord_field.setText("0");
         }
         else
@@ -72,18 +74,18 @@ public class GuiLauncherScreen extends GuiICBM
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
     @Override
-    public void keyTyped(char par1, int par2)
+    public void keyTyped(char par1, int par2) throws IOException
     {
         super.keyTyped(par1, par2);
         this.target_xCoord_field.textboxKeyTyped(par1, par2);
         this.target_zCoord_field.textboxKeyTyped(par1, par2);
 
-        if (tileEntity.getTier() >= 1)
+        if (tileEntity.getTier().ordinal() >= 1)
         {
             this.target_yCoord_field.textboxKeyTyped(par1, par2);
             this.lock_height_field.textboxKeyTyped(par1, par2);
 
-            if (tileEntity.getTier() > 1)
+            if (tileEntity.getTier().ordinal() > 1)
             {
                 this.target_freq_field.textboxKeyTyped(par1, par2);
             }
@@ -128,18 +130,18 @@ public class GuiLauncherScreen extends GuiICBM
 
     /** Args: x, y, buttonClicked */
     @Override
-    public void mouseClicked(int par1, int par2, int par3)
+    public void mouseClicked(int par1, int par2, int par3) throws IOException
     {
         super.mouseClicked(par1, par2, par3);
         this.target_xCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.target_zCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
 
-        if (tileEntity.getTier() >= 1)
+        if (tileEntity.getTier().ordinal() >= 1)
         {
             this.target_yCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
             this.lock_height_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
 
-            if (tileEntity.getTier() > 1)
+            if (tileEntity.getTier().ordinal() > 1)
             {
                 this.target_freq_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
             }
@@ -155,27 +157,27 @@ public class GuiLauncherScreen extends GuiICBM
         this.target_zCoord_field.drawTextBox();
 
         // Draw the air detonation GUI
-        if (tileEntity.getTier() >= 1)
+        if (tileEntity.getTier().ordinal() >= 1)
         {
             this.target_yCoord_field.drawTextBox();
-            this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.detHeight"), 12, 68, 4210752);
+            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.detHeight"), 12, 68, 4210752);
 
             this.lock_height_field.drawTextBox();
-            this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.lockHeight"), 12, 83, 4210752);
+            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.lockHeight"), 12, 83, 4210752);
 
-            if (tileEntity.getTier() > 1)
+            if (tileEntity.getTier().ordinal() > 1)
             {
                 this.target_freq_field.drawTextBox();
-                this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.freq"), 12, 98, 4210752);
+                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 12, 98, 4210752);
             }
         }
 
-        this.fontRendererObj.drawString("", 45, 6, 4210752);
-        this.fontRendererObj.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherScreen.name"), 30, 6, 4210752);
+        this.fontRenderer.drawString("", 45, 6, 4210752);
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherScreen.name"), 30, 6, 4210752);
 
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.target"), 12, 25, 4210752);
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.XCoord"), 25, 40, 4210752);
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.ZCoord"), 25, 55, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.target"), 12, 25, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.XCoord"), 25, 40, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.ZCoord"), 25, 55, 4210752);
 
         int inaccuracy = 30;
 
@@ -187,12 +189,12 @@ public class GuiLauncherScreen extends GuiICBM
             }
         }
 
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.launcherScreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
 
         // Shows the status of the missile launcher
-        this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);
-        //this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.voltage") + " " + this.tileEntity.getVoltageInput(null) + "v", 12, 137, 4210752);
-        //this.fontRendererObj.drawString(UnitDisplay.getDisplayShort(this.tileEntity.getEnergyHandler().getEnergy(), Unit.JOULES) + "/" + UnitDisplay.getDisplay(this.tileEntity.getEnergyHandler().getEnergyCapacity(), Unit.JOULES), 12, 150, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);
+        //this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.voltage") + " " + this.tileEntity.getVoltageInput(null) + "v", 12, 137, 4210752);
+        //this.fontRenderer.drawString(UnitDisplay.getDisplayShort(this.tileEntity.getEnergyHandler().getEnergy(), Unit.JOULES) + "/" + UnitDisplay.getDisplay(this.tileEntity.getEnergyHandler().getEnergyCapacity(), Unit.JOULES), 12, 150, 4210752);
     }
 
     @Override
@@ -212,16 +214,26 @@ public class GuiLauncherScreen extends GuiICBM
         super.updateScreen();
 
         if (!this.target_xCoord_field.isFocused())
+        {
             this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x()) + "");
+        }
         if (!this.target_zCoord_field.isFocused())
+        {
             this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z()) + "");
+        }
         if (!this.target_yCoord_field.isFocused())
+        {
             this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
+        }
 
         if (!this.lock_height_field.isFocused())
+        {
             this.lock_height_field.setText(this.tileEntity.lockHeight + "");
+        }
 
         if (!this.target_freq_field.isFocused())
+        {
             this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
+        }
     }
 }

@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/10/2017.
  */
-public class TileLauncherScreenClient extends TileEntitySpecialRenderer<TileLauncherScreen>
+public class TESRLauncherScreen extends TileEntitySpecialRenderer<TileLauncherScreen>
 {
     public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
     public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_1.png");

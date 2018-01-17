@@ -8,9 +8,9 @@ public class ContainerMissileCoordinator extends ContainerBase
 {
     public ContainerMissileCoordinator(EntityPlayer player, TileMissileCoordinator tileEntity)
     {
-        super(tileEntity);
-        this.addSlotToContainer(new Slot(tileEntity, 0, 16, 41));
-        this.addSlotToContainer(new Slot(tileEntity, 1, 136, 41));
+        super(player, tileEntity);
+        this.addSlotToContainer(new Slot(tileEntity.getInventory(), 0, 16, 41));
+        this.addSlotToContainer(new Slot(tileEntity.getInventory(), 1, 136, 41));
         this.addPlayerInventory(player, 8 , 135);
     }
 }

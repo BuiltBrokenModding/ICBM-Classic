@@ -9,11 +9,11 @@ public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
 {
     public ContainerCruiseLauncher(EntityPlayer player, TileCruiseLauncher tileEntity)
     {
-        super(tileEntity);
+        super(player, tileEntity);
         // Missile Slot
-        this.addSlotToContainer(new Slot(tileEntity, 0, 151, 23));
+        this.addSlotToContainer(new Slot(tileEntity.getInventory(), 0, 151, 23));
         // Battery Slot
-        this.addSlotToContainer(new Slot(tileEntity, 1, 151, 47));
+        this.addSlotToContainer(new Slot(tileEntity.getInventory(), 1, 151, 47));
         addPlayerInventory(player);
     }
 

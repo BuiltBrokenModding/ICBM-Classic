@@ -3,15 +3,16 @@ package icbm.classic.content.potion;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 
 public class PoisonToxin extends CustomPotion
 {
-    public static PoisonToxin INSTANCE;
+    public static Potion INSTANCE;
 
-    public PoisonToxin(boolean isBadEffect, int color, String name)
+    public PoisonToxin(boolean isBadEffect, int color, int id, String name)
     {
-        super(isBadEffect, color, name);
+        super(isBadEffect, color, id, name);
         this.setIconIndex(6, 0);
     }
 

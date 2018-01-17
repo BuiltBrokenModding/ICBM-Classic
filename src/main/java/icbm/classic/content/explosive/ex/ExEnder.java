@@ -26,7 +26,7 @@ public class ExEnder extends Explosion
 {
     public ExEnder()
     {
-        super("ender", BlockICBM.EnumTier.FIVE);
+        super("ender", BlockICBM.EnumTier.FOUR);
     }
 
     @Override

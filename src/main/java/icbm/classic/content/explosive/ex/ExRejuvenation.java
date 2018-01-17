@@ -3,6 +3,7 @@ package icbm.classic.content.explosive.ex;
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import icbm.classic.content.explosive.blast.BlastRegen;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +13,7 @@ public class ExRejuvenation extends Explosion
 {
     public ExRejuvenation()
     {
-        super("rejuvenation", 2);
+        super("rejuvenation", BlockICBM.EnumTier.TWO);
     }
 
     @Override

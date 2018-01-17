@@ -4,35 +4,27 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
+import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
-import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
-import cpw.mods.fml.common.registry.GameRegistry;
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * This tile entity is for the screen of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver, IMultiTileHost, IRecipeContainer
+public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver, IMultiTileHost
 {
     public static HashMap<IPos3D, String> tileMapCache = new HashMap();
 
@@ -47,26 +39,18 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
 
     private boolean _destroyingStructure = false;
 
-    public TileLauncherFrame()
-    {
-        super("launcherFrame", Material.iron);
-        this.itemBlock = ItemBlockSubTypes.class;
-        this.hardness = 10f;
-        this.resistance = 10f;
-        this.isOpaque = false;
-    }
-
     @Override
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeInt(tier);
+        //buf.writeInt(tier);
     }
 
     @Override
-    public Tile newTile()
+    public void readDescPacket(ByteBuf buf)
     {
-        return new TileLauncherFrame();
+        super.readDescPacket(buf);
+       // this.setTier(buf.readInt());
     }
 
     /** Gets the inaccuracy of the missile based on the launcher support frame's tier */
@@ -93,33 +77,21 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
 
     /** Writes a tile entity to NBT. */
     @Override
-    public void writeToNBT(NBTTagCompound par1NBTTagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        super.writeToNBT(par1NBTTagCompound);
         par1NBTTagCompound.setInteger("tier", this.tier);
-    }
-
-
-    public int getTier()
-    {
-        return this.tier;
-    }
-
-
-    public void setTier(int tier)
-    {
-        this.tier = tier;
+        return super.writeToNBT(par1NBTTagCompound);
     }
 
     //==========================================
     //==== Multi-Block code
     //=========================================
 
-    @Override
+    //@Override
     public void firstTick()
     {
-        super.firstTick();
-        MultiBlockHelper.buildMultiBlock(oldWorld(), this, true, true);
+        //super.firstTick();
+        MultiBlockHelper.buildMultiBlock(world, this, true, true);
     }
 
     @Override
@@ -151,6 +123,13 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     }
 
     @Override
+    public void onTileInvalidate(IMultiTile tileMulti)
+    {
+
+    }
+
+    /* TODO
+    @Override
     public boolean canPlaceBlockAt()
     {
         return super.canPlaceBlockAt() && oldWorld().getBlock(xi(), yi() + 1, zi()).isReplaceable(oldWorld(), xi(), yi() + 1, zi()) && oldWorld().getBlock(xi(), yi() + 2, zi()).isReplaceable(oldWorld(), xi(), yi() + 2, zi());
@@ -168,17 +147,13 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
         MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
         return super.removeByPlayer(player, willHarvest);
     }
+    */
 
     @Override
-    public void onTileInvalidate(IMultiTile tileMulti)
+    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
-
-    }
-
-    @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, int side, float xHit, float yHit, float zHit)
-    {
-        return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        //TODO return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        return true;
     }
 
     @Override
@@ -193,22 +168,11 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
         return tileMapCache;
     }
 
-    @Override
-    public void onPlaced(EntityLivingBase entityLiving, ItemStack itemStack)
-    {
-        super.onPlaced(entityLiving, itemStack);
-        this.tier = itemStack.getItemDamage();
-    }
 
     @Override
-    public int metadataDropped(int meta, int fortune)
+    public AxisAlignedBB getRenderBoundingBox()
     {
-        return tier;
-    }
-
-    @Override
-    protected boolean useMetaForFacing()
-    {
-        return true;
+        return new Cube(-1, 0, -1, 1, 3, 1).add(toPos()).toAABB();
     }
 }
+

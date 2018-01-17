@@ -93,7 +93,14 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
              GL11.glScalef(0.05f, 0.05f, 0.05f);
              }
              */
-            RenderMissile.renderMissile(missile);
+            try
+            {
+                RenderMissile.renderMissile(missile);
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+            }
             GlStateManager.popMatrix();
         }
     }

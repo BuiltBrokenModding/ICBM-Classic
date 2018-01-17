@@ -390,7 +390,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
             }
             else if (launchScreen != null)
             {
-                return launchScreen.onPlayerActivated(player, side, hit);
+                //ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player)
+                //return launchScreen.onPlayerActivated(player, side, hit);
             }
         }
         else if (this.getMissileStack() != null)

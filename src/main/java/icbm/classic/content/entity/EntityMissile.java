@@ -197,8 +197,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void entityInit()
     {
-        this.dataWatcher.addObject(16, -1);
-        this.dataWatcher.addObject(17, 0);
+        //this.dataWatcher.addObject(16, -1);
+        //this.dataWatcher.addObject(17, 0);
     }
 
     @Override
@@ -376,7 +376,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         // Make sure the entity is not an item
-        if (!(entity instanceof EntityItem) && entity != this.riddenByEntity && this.protectionTime <= 0)
+        if (!(entity instanceof EntityItem) && entity != this.getRidingEntity() && this.protectionTime <= 0)
         {
             if (entity instanceof EntityMissile)
             {
@@ -416,14 +416,14 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void setNormalExplode()
     {
         setNormalExplode = true;
-        dataWatcher.updateObject(17, 1);
+        //dataWatcher.updateObject(17, 1);
     }
 
     @Override
     public void setExplode()
     {
         setExplode = true;
-        dataWatcher.updateObject(17, 2);
+        //dataWatcher.updateObject(17, 2);
     }
 
     @Override

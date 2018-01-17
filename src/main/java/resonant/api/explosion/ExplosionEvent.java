@@ -1,11 +1,11 @@
 package resonant.api.explosion;
 
 import com.builtbroken.mc.api.explosive.IExplosiveHandler;
-import cpw.mods.fml.common.eventhandler.Cancelable;
-import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 /** Use ForgeSubscribe to subscribe to this event. This event is called every single time when an
  * ICBM explosion happens.
@@ -27,9 +27,9 @@ public class ExplosionEvent extends Event
     {
         this.world = world;
         this.iExplosion = iExplosion;
-        this.x = ((Explosion) iExplosion).explosionX;
-        this.y = ((Explosion) iExplosion).explosionY;
-        this.z = ((Explosion) iExplosion).explosionZ;
+        this.x = ((Explosion) iExplosion).getPosition().x;
+        this.y = ((Explosion) iExplosion).getPosition().y;
+        this.z = ((Explosion) iExplosion).getPosition().z;
 
         if (this.iExplosion instanceof Explosion)
         {

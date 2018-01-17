@@ -33,6 +33,11 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     protected boolean hasMinecart;
     protected boolean hasMissile;
 
+    public ResourceLocation missileModel;
+    public ResourceLocation missileTexture;
+    public boolean renderBodyForMissilTier = true;
+    public float missileRenderScale = 1f; //0.00625f
+
     protected Explosive(String name, BlockICBM.EnumTier tier)
     {
         super(name);

@@ -3,16 +3,17 @@ package icbm.classic.content.potion;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 
 public class PoisonFrostBite extends CustomPotion
 {
-    public static PoisonFrostBite INSTANCE;
+    public static Potion INSTANCE;
 
-    public PoisonFrostBite(boolean isBadEffect, int color, String name)
+    public PoisonFrostBite(boolean isBadEffect, int color, int id, String name)
     {
-        super(isBadEffect, color, name);
+        super(isBadEffect, color, id, name);
         this.setIconIndex(6, 0);
     }
 
@@ -24,7 +25,7 @@ public class PoisonFrostBite extends CustomPotion
             entity.extinguish();
         }
 
-        if(!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode)
+        if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode)
         {
             if (entity instanceof EntityPlayer)
             {

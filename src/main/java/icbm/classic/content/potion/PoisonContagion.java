@@ -9,6 +9,7 @@ import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -19,11 +20,11 @@ import java.util.List;
 
 public class PoisonContagion extends CustomPotion
 {
-    public static PoisonContagion INSTANCE;
+    public static Potion INSTANCE;
 
-    public PoisonContagion(boolean isBadEffect, int color, String name)
+    public PoisonContagion(boolean isBadEffect, int color, int id, String name)
     {
-        super(isBadEffect, color, name);
+        super(isBadEffect, color, id, name);
         this.setIconIndex(6, 0);
     }
 
@@ -62,7 +63,7 @@ public class PoisonContagion extends CustomPotion
                         if ((world.getDifficulty() == EnumDifficulty.NORMAL || world.getDifficulty() == EnumDifficulty.HARD))
                         {
 
-                            EntityVillager entityvillager = (EntityVillager)entity;
+                            EntityVillager entityvillager = (EntityVillager) entity;
                             EntityZombieVillager entityzombievillager = new EntityZombieVillager(world);
                             entityzombievillager.copyLocationAndAnglesFrom(entityvillager);
                             world.removeEntity(entityvillager);
@@ -78,7 +79,7 @@ public class PoisonContagion extends CustomPotion
                             }
 
                             world.spawnEntity(entityzombievillager);
-                            world.playEvent((EntityPlayer)null, 1026, new BlockPos(entity), 0);
+                            world.playEvent((EntityPlayer) null, 1026, new BlockPos(entity), 0);
                         }
                         entity.setDead();
                     }

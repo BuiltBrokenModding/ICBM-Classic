@@ -4,55 +4,55 @@ import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEMP;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
+import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class CommandICBM extends CommandBase
 {
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "icbmc";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender par1ICommandSender)
+    public String getUsage(ICommandSender sender)
     {
         return "/icbmc help";
     }
 
+
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         try
         {
             EntityPlayer entityPlayer = (EntityPlayer) sender;
-            int dimension = entityPlayer.worldObj.provider.dimensionId;
+            int dimension = entityPlayer.world.provider.getDimension();
             if (args == null || args.length == 0 || args[0].equalsIgnoreCase("help"))
             {
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc help"));
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc lag <radius>"));
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc remove <All/Missile/Explosion> <radius>"));
-                ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("/icbmc emp <radius>"));
+                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc help"));
+                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc lag <radius>"));
+                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc remove <All/Missile/Explosion> <radius>"));
+                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc emp <radius>"));
                 return;
             }
             else if (args.length >= 2 && args[0].equalsIgnoreCase("lag"))
             {
-                int radius = parseInt(sender, args[1]);
+                int radius = parseInt(args[1]);
 
                 if (radius > 0)
                 {
-
-                    AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(entityPlayer.posX - radius, entityPlayer.posY - radius, entityPlayer.posZ - radius, entityPlayer.posX + radius, entityPlayer.posY + radius, entityPlayer.posZ + radius);
-                    List<Entity> entitiesNearby = entityPlayer.worldObj.getEntitiesWithinAABB(Entity.class, bounds);
+                    AxisAlignedBB bounds = new AxisAlignedBB(entityPlayer.posX - radius, entityPlayer.posY - radius, entityPlayer.posZ - radius, entityPlayer.posX + radius, entityPlayer.posY + radius, entityPlayer.posZ + radius);
+                    List<Entity> entitiesNearby = entityPlayer.world.getEntitiesWithinAABB(Entity.class, bounds);
 
                     for (Entity entity : entitiesNearby)
                     {
@@ -70,7 +70,7 @@ public class CommandICBM extends CommandBase
                         }
                     }
 
-                    ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Removed all ICBM lag sources within " + radius + " radius."));
+                    ((EntityPlayer) sender).sendMessage(new TextComponentString("Removed all ICBM lag sources within " + radius + " radius."));
                     return;
                 }
                 else
@@ -80,7 +80,7 @@ public class CommandICBM extends CommandBase
             }
             else if (args.length >= 3 && args[0].equalsIgnoreCase("remove"))
             {
-                int radius = parseInt(sender, args[2]);
+                int radius = parseInt(args[2]);
                 boolean all = args[1].equalsIgnoreCase("all");
                 boolean missile = args[1].equalsIgnoreCase("missiles");
                 boolean explosion = args[1].equalsIgnoreCase("explosion");
@@ -98,8 +98,8 @@ public class CommandICBM extends CommandBase
                 {
                     EntityPlayer player = (EntityPlayer) sender;
 
-                    AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius);
-                    List<Entity> entitiesNearby = player.worldObj.getEntitiesWithinAABB(Entity.class, bounds);
+                    AxisAlignedBB bounds = new AxisAlignedBB(player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius);
+                    List<Entity> entitiesNearby = player.world.getEntitiesWithinAABB(Entity.class, bounds);
 
                     for (Entity entity : entitiesNearby)
                     {
@@ -117,7 +117,7 @@ public class CommandICBM extends CommandBase
                         }
                     }
 
-                    ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Removed all ICBM " + str + " within " + radius + " radius."));
+                    ((EntityPlayer) sender).sendMessage(new TextComponentString("Removed all ICBM " + str + " within " + radius + " radius."));
                     return;
                 }
                 else
@@ -127,29 +127,29 @@ public class CommandICBM extends CommandBase
             }
             else if (args.length >= 2 && args[0].equalsIgnoreCase("emp"))
             {
-                int radius = parseInt(sender, args[1]);
+                int radius = parseInt(args[1]);
                 if (radius > 0)
                 {
-                    new BlastEMP(entityPlayer.worldObj, null, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, radius).setEffectBlocks().setEffectEntities().doExplode();
-                    switch (entityPlayer.worldObj.rand.nextInt(20))
+                    new BlastEMP(entityPlayer.world, null, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, radius).setEffectBlocks().setEffectEntities().doExplode();
+                    switch (entityPlayer.world.rand.nextInt(20))
                     {
                         case 0:
-                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Did you pay the power bill?"));
+                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Did you pay the power bill?"));
                             return;
                         case 1:
-                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("See them power their toys now!"));
+                            ((EntityPlayer) sender).sendMessage(new TextComponentString("See them power their toys now!"));
                             return;
                         case 2:
-                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Hey who turned the lights out."));
+                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Hey who turned the lights out."));
                             return;
                         case 3:
-                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Ha! I run on steam power!"));
+                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Ha! I run on steam power!"));
                             return;
                         case 4:
-                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("The power of lighting at my finger tips!"));
+                            ((EntityPlayer) sender).sendMessage(new TextComponentString("The power of lighting at my finger tips!"));
                             return;
                         default:
-                            ((EntityPlayer) sender).addChatComponentMessage(new ChatComponentText("Zap!"));
+                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Zap!"));
                             return;
                     }
                 }
@@ -163,7 +163,7 @@ public class CommandICBM extends CommandBase
         {
         }
 
-        throw new WrongUsageException(this.getCommandUsage(sender));
+        throw new WrongUsageException(this.getUsage(sender));
     }
 
     @Override
@@ -173,14 +173,14 @@ public class CommandICBM extends CommandBase
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args)
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] { "lag" }) : null;
     }
 
     @Override
-    public int compareTo(Object par1Obj)
+    public int compareTo(ICommand par1Obj)
     {
-        return this.compareTo((ICommand) par1Obj);
+        return this.compareTo(par1Obj);
     }
 }
