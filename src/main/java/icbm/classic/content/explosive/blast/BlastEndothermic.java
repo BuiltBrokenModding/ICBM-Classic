@@ -113,7 +113,7 @@ public class BlastEndothermic extends BlastBeam
                                 }
                                 else
                                 {
-                                    this.oldWorld().setBlockState(targetPosition, Blocks.SNOW.getDefaultState().withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
+                                    this.oldWorld().setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
                                 }
                             }
                         }
