@@ -49,7 +49,7 @@ public class BlastAntimatter extends Blast
                         {
                             IBlockState blockState = world.getBlockState(blockPos);
 
-                            if (blockState.getBlock().isAir(blockState, world, blockPos))
+                            if (!blockState.getBlock().isAir(blockState, world, blockPos))
                             {
                                 if (!this.destroyBedrock && blockState.getBlockHardness(this.oldWorld(), blockPos) < 0)
                                 {
