@@ -34,7 +34,7 @@ public class BlastBreech extends BlastTNT
             Direction direction = Direction.DOWN;
             if (this.exploder instanceof IRotatable)
             {
-                direction = ((IRotatable) this.exploder).getDirection();
+                direction = ((IRotatable) this.exploder).getDirection().getOpposite();
             }
 
             this.oldWorld().playSound(position.x(), position.y(), position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);

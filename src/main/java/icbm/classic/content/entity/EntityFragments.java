@@ -22,7 +22,7 @@ import java.util.List;
 
 public class EntityFragments extends Entity implements IEntityAdditionalSpawnData
 {
-    private BlockPos inTilePosition;
+    private BlockPos inTilePosition = new BlockPos(0, 0, 0);
     private IBlockState inTile;
     private boolean inGround = false;
     public boolean isExplosive;
@@ -168,17 +168,20 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(this.motionY, var1) * 180.0D / Math.PI);
         }
 
-        IBlockState blockState = this.world.getBlockState(inTilePosition);
-        Block block = blockState.getBlock();
-
-        if (block != Blocks.AIR)
+        if (inTilePosition != null)
         {
-            //var15.setBlockBoundsBasedOnState(this.world, this.xTile, this.yTile, this.zTile);
-            AxisAlignedBB var2 = block.getCollisionBoundingBox(blockState, this.world, inTilePosition);
+            IBlockState blockState = this.world.getBlockState(inTilePosition);
+            Block block = blockState.getBlock();
 
-            if (var2 != null && var2.contains(new Vec3d(this.posX, this.posY, this.posZ)))
+            if (block != Blocks.AIR)
             {
-                this.inGround = true;
+                //var15.setBlockBoundsBasedOnState(this.world, this.xTile, this.yTile, this.zTile);
+                AxisAlignedBB var2 = block.getCollisionBoundingBox(blockState, this.world, inTilePosition);
+
+                if (var2 != null && var2.contains(new Vec3d(this.posX, this.posY, this.posZ)))
+                {
+                    this.inGround = true;
+                }
             }
         }
 
@@ -189,7 +192,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.inGround)
         {
-            blockState = this.world.getBlockState(inTilePosition);
+            IBlockState blockState = inTilePosition != null ? this.world.getBlockState(inTilePosition) : Blocks.AIR.getDefaultState();
 
             if (blockState == inTile)
             {
@@ -297,7 +300,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                             }
                         }
 
-                        this.world.playSound(posX, posY, posZ, SoundEvents.ENTITY_ARROW_HIT , SoundCategory.BLOCKS, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F), true);
+                        this.world.playSound(posX, posY, posZ, SoundEvents.ENTITY_ARROW_HIT, SoundCategory.BLOCKS, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F), true);
                         this.setDead();
                     }
                     else
@@ -321,7 +324,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                     this.posX -= this.motionX / speed * 0.05000000074505806D;
                     this.posY -= this.motionY / speed * 0.05000000074505806D;
                     this.posZ -= this.motionZ / speed * 0.05000000074505806D;
-                    this.world.playSound(posX, posY, posZ, SoundEvents.ENTITY_ARROW_HIT , SoundCategory.BLOCKS, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F), true);
+                    this.world.playSound(posX, posY, posZ, SoundEvents.ENTITY_ARROW_HIT, SoundCategory.BLOCKS, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F), true);
                     this.inGround = true;
                     this.arrowShake = 7;
                     this.arrowCritical = false;
