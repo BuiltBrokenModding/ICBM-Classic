@@ -26,6 +26,7 @@ public abstract class BlockICBM extends BlockContainer
         blockHardness = 10f;
         blockResistance = 10f;
         setRegistryName(ICBMClassic.DOMAIN, name.toLowerCase());
+        setUnlocalizedName(ICBMClassic.PREFIX + name.toLowerCase());
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 
@@ -44,6 +45,12 @@ public abstract class BlockICBM extends BlockContainer
     public IBlockState getStateFromMeta(int meta)
     {
         return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.getFront(meta));
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        return state.getValue(ROTATION_PROP).ordinal();
     }
 
     @Override

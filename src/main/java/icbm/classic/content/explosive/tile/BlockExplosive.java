@@ -1,6 +1,5 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.core.registry.implement.IPostInit;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
@@ -13,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,6 +21,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -30,20 +31,43 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.Random;
 
-public class BlockExplosive extends BlockICBM implements IPostInit
+public class BlockExplosive extends BlockICBM
 {
     public static final PropertyExplosive EX_PROP = new PropertyExplosive(); //TODO filter to block versions only
 
     public BlockExplosive()
     {
         super("explosives", Material.TNT);
-        this.setUnlocalizedName(ICBMClassic.PREFIX + "explosives");
         setHardness(2);
         setSoundType(SoundType.CLOTH);
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    {
+        Explosives ex = Explosives.CONDENSED;
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if(tile instanceof TileEntityExplosive)
+        {
+            ex = ((TileEntityExplosive) tile).explosive;
+        }
+        return state.withProperty(EX_PROP, ex);
+    }
+
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.MODEL;
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, ROTATION_PROP, EX_PROP);
     }
 
     public static final class PropertyExplosive extends PropertyEnum<Explosives>
@@ -51,6 +75,7 @@ public class BlockExplosive extends BlockICBM implements IPostInit
         public PropertyExplosive()
         {
             super("explosive", Explosives.class, Lists.newArrayList(Explosives.values()));
+            //getAllowedValues().removeIf(e -> !e.handler.hasBlockForm());
         }
     }
 
@@ -75,6 +100,13 @@ public class BlockExplosive extends BlockICBM implements IPostInit
         }
 
         return super.getCollisionBoundingBox(blockState, world, pos);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
+    {
+        ItemStack stack = placer.getHeldItem(hand);
+        return getDefaultState().withProperty(ROTATION_PROP, facing).withProperty(EX_PROP, Explosives.get(stack.getItemDamage()));
     }
 
     /** Called when the block is placed in the world. */
@@ -119,26 +151,28 @@ public class BlockExplosive extends BlockICBM implements IPostInit
      * (coordinates passed are their own) Args: x, y, z, neighbor block
      */
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor)
+    public void neighborChanged(IBlockState thisBlock, World world, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        if (world instanceof World)
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileEntityExplosive)
         {
-            Explosives explosiveID = ((TileEntityExplosive) world.getTileEntity(pos)).explosive;
+            Explosives explosiveID = ((TileEntityExplosive) tile).explosive;
 
-            for (EnumFacing facing : EnumFacing.VALUES)
+            int power = world.isBlockIndirectlyGettingPowered(pos);
+            if (power > 0)
             {
-                if (world.getStrongPower(pos, facing) > 0)
-                {
-                    BlockExplosive.triggerExplosive((World) world, pos, explosiveID, 0);
-                    return;
-                }
-                else
+                BlockExplosive.triggerExplosive(world, pos, explosiveID, 0);
+                return;
+            }
+            else
+            {
+                for (EnumFacing facing : EnumFacing.VALUES) //TODO recode
                 {
                     IBlockState state = world.getBlockState(pos.add(facing.getDirectionVec()));
                     Block block = state.getBlock();
                     if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
                     {
-                        BlockExplosive.triggerExplosive((World) world, pos, explosiveID, 0);
+                        BlockExplosive.triggerExplosive(world, pos, explosiveID, 0);
                         return;
                     }
                 }
@@ -150,6 +184,7 @@ public class BlockExplosive extends BlockICBM implements IPostInit
      * Called to detonate the TNT. Args: world, x, y, z, metaData, CauseOfExplosion (0, intentional,
      * 1, exploded, 2 burned)
      */
+
     public static void triggerExplosive(World world, BlockPos pos, Explosives explosiveID, int causeOfExplosion)
     {
         if (!world.isRemote)
@@ -276,11 +311,5 @@ public class BlockExplosive extends BlockICBM implements IPostInit
     public TileEntity createNewTileEntity(World world, int meta)
     {
         return new TileEntityExplosive();
-    }
-
-    @Override
-    public void onPostInit()
-    {
-        GameRegistry.registerTileEntity(TileEntityExplosive.class, "icbmCTileExplosive");
     }
 }

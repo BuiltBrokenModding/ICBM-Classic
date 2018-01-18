@@ -1,9 +1,7 @@
 package icbm.classic.content.explosive.tile;
 
 import com.builtbroken.mc.api.tile.IRotatable;
-import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketReceiver;
-import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.data.Direction;
 import icbm.classic.ICBMClassic;
@@ -14,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
@@ -76,7 +75,19 @@ public class TileEntityExplosive extends TileEntity implements IPacketReceiver, 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket()
     {
-        return Engine.packetHandler.toMCPacket(new PacketTile(this, (byte) 1, this.explosive.ordinal()));
+        return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag()
+    {
+        return writeToNBT(new NBTTagCompound());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
+    {
+        readFromNBT(pkt.getNbtCompound());
     }
 
     @Override

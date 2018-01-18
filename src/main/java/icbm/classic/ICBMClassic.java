@@ -10,6 +10,9 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.content.explosive.tile.ItemBlockExplosive;
+import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -49,6 +52,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Arrays;
@@ -186,6 +190,7 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(new ItemBlockSubTypes(blockSpikes).setRegistryName(blockSpikes.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockConcrete).setRegistryName(blockConcrete.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockReinforcedGlass).setRegistryName(blockReinforcedGlass.getRegistryName()));
+        event.getRegistry().register(new ItemBlockExplosive(blockExplosive).setRegistryName(blockExplosive.getRegistryName()));
 
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
@@ -199,18 +204,20 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCSpike" -> "spikes"
         //"icbmCConcrete" -> "concrete"
         //"icbmCGlass" -> "reinforcedGlass"
+        //"icbmCRail"
+        //"icbmCExplosive"
 
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         event.getRegistry().register(blockGlassButton = new BlockGlassButton());
         event.getRegistry().register(blockSpikes = new BlockSpikes());
         event.getRegistry().register(blockConcrete = new BlockConcrete());
         event.getRegistry().register(blockReinforcedGlass = new BlockReinforcedGlass());
+        //event.getRegistry().register(blockCombatRail = new BlockReinforcedRail());
+        event.getRegistry().register(blockExplosive = new BlockExplosive());
+
+
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
-
-
-        blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class, ItemBlockBase.class);
-        blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
         ICBMClassic.blockRadarStation = ICBMClassic.INSTANCE.getManager().newBlock("icbmCRadarStation", new TileRadarStation());
         ICBMClassic.blockEmpTower = ICBMClassic.INSTANCE.getManager().newBlock("icbmCEmpTower", new TileEMPTower());
         ICBMClassic.blockLaunchBase = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherBase", new TileLauncherBase());
@@ -219,6 +226,8 @@ public final class ICBMClassic extends AbstractMod
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
         */
+
+        GameRegistry.registerTileEntity(TileEntityExplosive.class, "icbmCTileExplosive");
     }
 
     @SubscribeEvent

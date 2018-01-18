@@ -1,0 +1,288 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "icbmclassic:blocks/explosive_base_1"
+    }
+  },
+  "variants": {
+    "explosive": {
+      "condensed": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_condensed_top",
+          "north": "icbmclassic:blocks/explosive_condensed_side",
+          "east": "icbmclassic:blocks/explosive_condensed_side",
+          "south": "icbmclassic:blocks/explosive_condensed_side",
+          "west": "icbmclassic:blocks/explosive_condensed_side"
+        }
+      },
+      "shrapnel": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_shrapnel_top",
+          "north": "icbmclassic:blocks/explosive_shrapnel_side",
+          "east": "icbmclassic:blocks/explosive_shrapnel_side",
+          "south": "icbmclassic:blocks/explosive_shrapnel_side",
+          "west": "icbmclassic:blocks/explosive_shrapnel_side"
+        }
+      },
+      "incendiary": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_incendiary_top",
+          "north": "icbmclassic:blocks/explosive_incendiary_side",
+          "east": "icbmclassic:blocks/explosive_incendiary_side",
+          "south": "icbmclassic:blocks/explosive_incendiary_side",
+          "west": "icbmclassic:blocks/explosive_incendiary_side"
+        }
+      },
+      "deblitation": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_debilitation_top",
+          "north": "icbmclassic:blocks/explosive_debilitation_side",
+          "east": "icbmclassic:blocks/explosive_debilitation_side",
+          "south": "icbmclassic:blocks/explosive_debilitation_side",
+          "west": "icbmclassic:blocks/explosive_debilitation_side"
+        }
+      },
+      "chemical": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_chemical_top",
+          "north": "icbmclassic:blocks/explosive_chemical_side",
+          "east": "icbmclassic:blocks/explosive_chemical_side",
+          "south": "icbmclassic:blocks/explosive_chemical_side",
+          "west": "icbmclassic:blocks/explosive_chemical_side"
+        }
+      },
+      "anvil": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_anvil_top",
+          "north": "icbmclassic:blocks/explosive_anvil_side",
+          "east": "icbmclassic:blocks/explosive_anvil_side",
+          "south": "icbmclassic:blocks/explosive_anvil_side",
+          "west": "icbmclassic:blocks/explosive_anvil_side"
+        }
+      },
+      "replusive": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_repulsive_top",
+          "north": "icbmclassic:blocks/explosive_repulsive_side",
+          "east": "icbmclassic:blocks/explosive_repulsive_side",
+          "south": "icbmclassic:blocks/explosive_repulsive_side",
+          "west": "icbmclassic:blocks/explosive_repulsive_side"
+        }
+      },
+      "attractive": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_1",
+          "down": "icbmclassic:blocks/explosive_bottom_1",
+          "up": "icbmclassic:blocks/explosive_attractive_top",
+          "north": "icbmclassic:blocks/explosive_attractive_side",
+          "east": "icbmclassic:blocks/explosive_attractive_side",
+          "south": "icbmclassic:blocks/explosive_attractive_side",
+          "west": "icbmclassic:blocks/explosive_attractive_side"
+        }
+      },
+      "fragmentation": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_2",
+          "down": "icbmclassic:blocks/explosive_bottom_2",
+          "up": "icbmclassic:blocks/explosive_fragmentation_top",
+          "north": "icbmclassic:blocks/explosive_fragmentation_side",
+          "east": "icbmclassic:blocks/explosive_fragmentation_side",
+          "south": "icbmclassic:blocks/explosive_fragmentation_side",
+          "west": "icbmclassic:blocks/explosive_fragmentation_side"
+        }
+      },
+      "contagious": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_2",
+          "down": "icbmclassic:blocks/explosive_bottom_2",
+          "up": "icbmclassic:blocks/explosive_contagious_top",
+          "north": "icbmclassic:blocks/explosive_contagious_side",
+          "east": "icbmclassic:blocks/explosive_contagious_side",
+          "south": "icbmclassic:blocks/explosive_contagious_side",
+          "west": "icbmclassic:blocks/explosive_contagious_side"
+        }
+      },
+      "sonic": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_2",
+          "down": "icbmclassic:blocks/explosive_bottom_2",
+          "up": "icbmclassic:blocks/explosive_sonic_top",
+          "north": "icbmclassic:blocks/explosive_sonic_side",
+          "east": "icbmclassic:blocks/explosive_sonic_side",
+          "south": "icbmclassic:blocks/explosive_sonic_side",
+          "west": "icbmclassic:blocks/explosive_sonic_side"
+        }
+      },
+      "breaching": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_2",
+          "down": "icbmclassic:blocks/explosive_bottom_2",
+          "up": "icbmclassic:blocks/explosive_breaching_top",
+          "north": "icbmclassic:blocks/explosive_breaching_side",
+          "east": "icbmclassic:blocks/explosive_breaching_side",
+          "south": "icbmclassic:blocks/explosive_breaching_side",
+          "west": "icbmclassic:blocks/explosive_breaching_side"
+        }
+      },
+      "rejuvenation": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_2",
+          "down": "icbmclassic:blocks/explosive_bottom_2",
+          "up": "icbmclassic:blocks/explosive_rejuvenation_top",
+          "north": "icbmclassic:blocks/explosive_rejuvenation_side",
+          "east": "icbmclassic:blocks/explosive_rejuvenation_side",
+          "south": "icbmclassic:blocks/explosive_rejuvenation_side",
+          "west": "icbmclassic:blocks/explosive_rejuvenation_side"
+        }
+      },
+      "thermobaric": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_2",
+          "down": "icbmclassic:blocks/explosive_bottom_2",
+          "up": "icbmclassic:blocks/explosive_thermobaric_top",
+          "north": "icbmclassic:blocks/explosive_thermobaric_side",
+          "east": "icbmclassic:blocks/explosive_thermobaric_side",
+          "south": "icbmclassic:blocks/explosive_thermobaric_side",
+          "west": "icbmclassic:blocks/explosive_thermobaric_side"
+        }
+      },
+      "smine": {},
+      "nuclear": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_3",
+          "up": "icbmclassic:blocks/explosive_nuclear_top",
+          "north": "icbmclassic:blocks/explosive_nuclear_side",
+          "east": "icbmclassic:blocks/explosive_nuclear_side",
+          "south": "icbmclassic:blocks/explosive_nuclear_side",
+          "west": "icbmclassic:blocks/explosive_nuclear_side"
+        }
+      },
+      "emp": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_3",
+          "up": "icbmclassic:blocks/explosive_emp_top",
+          "north": "icbmclassic:blocks/explosive_emp_side",
+          "east": "icbmclassic:blocks/explosive_emp_side",
+          "south": "icbmclassic:blocks/explosive_emp_side",
+          "west": "icbmclassic:blocks/explosive_emp_side"
+        }
+      },
+      "exothermic": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_3",
+          "up": "icbmclassic:blocks/explosive_exothermic_top",
+          "north": "icbmclassic:blocks/explosive_exothermic_side",
+          "east": "icbmclassic:blocks/explosive_exothermic_side",
+          "south": "icbmclassic:blocks/explosive_exothermic_side",
+          "west": "icbmclassic:blocks/explosive_exothermic_side"
+        }
+      },
+      "endothermic": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_3",
+          "up": "icbmclassic:blocks/explosive_endothermic_top",
+          "north": "icbmclassic:blocks/explosive_endothermic_side",
+          "east": "icbmclassic:blocks/explosive_endothermic_side",
+          "south": "icbmclassic:blocks/explosive_endothermic_side",
+          "west": "icbmclassic:blocks/explosive_endothermic_side"
+        }
+      },
+      "anti_grav": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_anti_gravitational_side",
+          "down": "icbmclassic:blocks/explosive_anti_gravitational_bottom",
+          "up": "icbmclassic:blocks/explosive_anti_gravitational_top",
+          "north": "icbmclassic:blocks/explosive_anti_gravitational_side",
+          "east": "icbmclassic:blocks/explosive_anti_gravitational_side",
+          "south": "icbmclassic:blocks/explosive_anti_gravitational_side",
+          "west": "icbmclassic:blocks/explosive_anti_gravitational_side"
+        }
+      },
+      "ender": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_3",
+          "up": "icbmclassic:blocks/explosive_ender_top",
+          "north": "icbmclassic:blocks/explosive_ender_side",
+          "east": "icbmclassic:blocks/explosive_ender_side",
+          "south": "icbmclassic:blocks/explosive_ender_side",
+          "west": "icbmclassic:blocks/explosive_ender_side"
+        }
+      },
+      "hypersonic": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_3",
+          "up": "icbmclassic:blocks/explosive_hypersonic_top",
+          "north": "icbmclassic:blocks/explosive_hypersonic_side",
+          "east": "icbmclassic:blocks/explosive_hypersonic_side",
+          "south": "icbmclassic:blocks/explosive_hypersonic_side",
+          "west": "icbmclassic:blocks/explosive_hypersonic_side"
+        }
+      },
+      "antimatter": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_4",
+          "up": "icbmclassic:blocks/explosive_antimatter_top",
+          "north": "icbmclassic:blocks/explosive_antimatter_side",
+          "east": "icbmclassic:blocks/explosive_antimatter_side",
+          "south": "icbmclassic:blocks/explosive_antimatter_side",
+          "west": "icbmclassic:blocks/explosive_antimatter_side"
+        }
+      },
+      "redmatter": {
+        "textures": {
+          "particle": "icbmclassic:blocks/explosive_base_3",
+          "down": "icbmclassic:blocks/explosive_bottom_4",
+          "up": "icbmclassic:blocks/explosive_redmatter_top",
+          "north": "icbmclassic:blocks/explosive_redmatter_side",
+          "east": "icbmclassic:blocks/explosive_redmatter_side",
+          "south": "icbmclassic:blocks/explosive_redmatter_side",
+          "west": "icbmclassic:blocks/explosive_redmatter_side"
+        }
+      }
+    },
+    "rotation": {
+      "up": {},
+      "down": {
+        "x": 180
+      },
+      "north": {
+        "x": 90
+      },
+      "south": {
+        "x": 270
+      },
+      "east": {
+        "x": 90,
+        "y": 90
+      },
+      "west": {
+        "x": 90,
+        "y": 270
+      }
+    }
+  }
+}
+
