@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -33,6 +34,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
     @Override
     public void run()
     {
+        final World world = position.world;
         int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.radius));
 
         for (int phi_n = 0; phi_n < 2 * steps; phi_n++)
@@ -43,26 +45,26 @@ public class ThreadLargeExplosion extends ThreadExplosion
                 double theta = Math.PI / steps * theta_n;
 
                 Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
-                float power = this.energy - (this.energy * this.position.oldWorld().rand.nextFloat() / 2);
+                float power = this.energy - (this.energy * world.rand.nextFloat() / 2);
 
-                BlockPos blockPos = new BlockPos(position.xi(), position.yi(), position.zi());
+                Pos pos = new Pos(position.xi(), position.yi(), position.zi());
 
                 for (float d = 0.3F; power > 0f; power -= d * 0.75F * 10)
                 {
-                    if (position.distance(blockPos) > this.radius)
+                    if (position.distance(pos) > this.radius)
                     {
                         break;
                     }
 
-
-                    final IBlockState state = position.world.getBlockState(blockPos);
+                    final BlockPos blockPos = new BlockPos(pos.xi(), pos.yi(), pos.zi());
+                    final IBlockState state = world.getBlockState(blockPos);
                     final Block block = state.getBlock();
 
-                    if (state != null && !block.isAir(state, position.world, blockPos))
+                    if (!block.isAir(state, world, blockPos))
                     {
-                        if (state.getBlockHardness(position.world, blockPos) >= 0)
+                        if (state.getBlockHardness(world, blockPos) >= 0)
                         {
-                            power -= this.callBack.getResistance(this.position.oldWorld(), position, blockPos, source, block);
+                            power -= this.callBack.getResistance(world, position, blockPos, source, block);
 
                             if (power > 0f)
                             {
@@ -70,7 +72,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
                             }
                         }
                     }
-                    blockPos = blockPos.add(delta.getX(), delta.getY(), delta.getZ());
+                    pos = pos.add(delta);
                 }
             }
         }

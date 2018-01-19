@@ -141,11 +141,10 @@ public class BlastNuclear extends Blast
                 for (BlockPos p : this.thread.results)
                 {
                     IBlockState state = this.oldWorld().getBlockState(p);
-                    if (state != null && !state.getBlock().isAir(state, oldWorld(), p))
+                    if (!state.getBlock().isAir(state, oldWorld(), p))
                     {
                         state.getBlock().onBlockExploded(this.oldWorld(), p, this);
                     }
-
                 }
             }
         }
