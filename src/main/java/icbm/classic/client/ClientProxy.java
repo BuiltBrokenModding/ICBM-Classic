@@ -2,8 +2,14 @@ package icbm.classic.client;
 
 import icbm.classic.CommonProxy;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.render.entity.RenderEntityBlock;
 import icbm.classic.client.render.entity.RenderEntityExplosive;
+import icbm.classic.client.render.entity.RenderExplosion;
+import icbm.classic.client.render.entity.RenderShrapnel;
+import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.prefab.BlockICBM;
@@ -68,6 +74,11 @@ public class ClientProxy extends CommonProxy
         //Entity renders
         //---------------------------------------
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderEntityExplosive(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, manager -> new RenderEntityBlock(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, manager -> new RenderExplosion(manager));
+        //RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, manager -> new RenderGrenade(manager));
+        //RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, manager -> new RenderLightBeam(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, manager -> new RenderShrapnel(manager));
     }
 
     protected void newBlockModel(Block block, int meta, String varient, String sub)
