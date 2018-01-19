@@ -72,7 +72,7 @@ public final class ICBMClassic extends AbstractMod
     @Mod.Metadata(ICBMClassic.DOMAIN)
     public static ModMetadata metadata;
 
-    @SidedProxy(clientSide = "icbm.classic.ClientProxy", serverSide = "icbm.classic.ServerProxy")
+    @SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.ServerProxy")
     public static CommonProxy proxy;
 
     public static final String DOMAIN = "icbmclassic";

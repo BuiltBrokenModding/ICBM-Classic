@@ -1,13 +1,11 @@
 package icbm.classic.content.explosive.thread;
 
 import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.explosive.blast.Blast;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /** @author Calclavia */
@@ -21,7 +19,6 @@ public abstract class ThreadExplosion extends Thread
 
     public boolean isComplete = false;
 
-    public final HashSet<Pos> deltaSet = new HashSet<Pos>();
     public final List<BlockPos> results = new ArrayList();
 
     public ThreadExplosion(Blast blast, int radius, float energy, Entity source)

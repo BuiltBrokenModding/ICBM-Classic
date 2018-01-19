@@ -3,6 +3,7 @@ package icbm.classic.client.render.entity;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -20,7 +22,7 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class RenderEntityExplosive extends Render<EntityExplosive>
 {
-    protected RenderEntityExplosive(RenderManager renderManager)
+    public RenderEntityExplosive(RenderManager renderManager)
     {
         super(renderManager);
     }
@@ -37,7 +39,9 @@ public class RenderEntityExplosive extends Render<EntityExplosive>
 
     public void renderBlock(EntityExplosive entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        final IBlockState blockState = ICBMClassic.blockExplosive.getDefaultState().withProperty(BlockExplosive.EX_PROP, entity.explosiveID);
+        final IBlockState blockState = ICBMClassic.blockExplosive.getDefaultState()
+                .withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP) //TODO get direction from rotation
+                .withProperty(BlockExplosive.EX_PROP, entity.explosiveID);
         final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
         GlStateManager.pushMatrix();

@@ -1,5 +1,9 @@
-package icbm.classic;
+package icbm.classic.client;
 
+import icbm.classic.CommonProxy;
+import icbm.classic.ICBMClassic;
+import icbm.classic.client.render.entity.RenderEntityExplosive;
+import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.prefab.BlockICBM;
@@ -13,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -58,6 +63,11 @@ public class ClientProxy extends CommonProxy
                 ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockExplosive), ex.ordinal(), new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties())));
             }
         }
+
+        //---------------------------------------
+        //Entity renders
+        //---------------------------------------
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderEntityExplosive(manager));
     }
 
     protected void newBlockModel(Block block, int meta, String varient, String sub)
