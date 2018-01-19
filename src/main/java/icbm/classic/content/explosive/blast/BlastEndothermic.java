@@ -98,7 +98,7 @@ public class BlastEndothermic extends BlastBeam
                         }
                         else if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
                         {
-                            this.oldWorld().setBlockState(targetPosition, Blocks.SNOW.getDefaultState().withProperty(BlockSnow.LAYERS, 8), 3);
+                            this.oldWorld().setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 8), 3);
                         }
                         else
                         {
