@@ -2,12 +2,19 @@ package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityFragments;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,7 +38,26 @@ public class RenderShrapnel extends Render<EntityFragments>
         this.bindEntityTexture(entity);
         if (entity.isAnvil)
         {
-            //TODO render anvil block
+            final IBlockState blockState = Blocks.ANVIL.getDefaultState()
+                    .withProperty(BlockAnvil.DAMAGE, entity.world.rand.nextInt(2))
+                    .withProperty(BlockAnvil.FACING, EnumFacing.Plane.HORIZONTAL.facings()[entity.world.rand.nextInt(3)]);
+            //TODO store rotation and damage in entity to reduce random nature
+            
+
+            final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate((float) x, (float) y + 0.5F, (float) z);
+
+
+            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+            GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.translate(-0.5F, -0.5F, 0.5F);
+            blockrendererdispatcher.renderBlockBrightness(blockState, entity.getBrightness());
+            GlStateManager.translate(0.0F, 0.0F, 1.0F);
+
+            GlStateManager.popMatrix();
         }
         else
         {
