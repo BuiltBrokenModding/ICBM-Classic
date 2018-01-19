@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.rela
 @SideOnly(Side.CLIENT)
 public class RenderLightBeam extends Render
 {
-    protected RenderLightBeam(RenderManager renderManager)
+    public RenderLightBeam(RenderManager renderManager)
     {
         super(renderManager);
     }
@@ -24,6 +24,8 @@ public class RenderLightBeam extends Render
     @Override
     public void doRender(Entity par1Entity, double x, double y, double z, float f, float f1)
     {
+        y -= 10;
+
         EntityLightBeam entity = ((EntityLightBeam) par1Entity);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -73,8 +75,6 @@ public class RenderLightBeam extends Render
 
                     // Weird but cool effects
                     bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
-
-                    float f2 = 0.5F;
 
                     double d9 = 0.10000000000000001D + i * 0.20000000000000001D;
 

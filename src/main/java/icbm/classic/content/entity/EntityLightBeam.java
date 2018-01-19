@@ -4,8 +4,11 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnData
 {
@@ -18,6 +21,8 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.setSize(1F, 1F);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
+        this.height = 1;
+        this.width = 1;
         //this.renderDistanceWeight = 3;
     }
 
@@ -29,6 +34,13 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.green = green;
         this.blue = blue;
         this.life = life;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return new AxisAlignedBB(posX - 5, -10, posZ - 5, posX + 5, Double.POSITIVE_INFINITY, posZ + 5);
     }
 
     @Override

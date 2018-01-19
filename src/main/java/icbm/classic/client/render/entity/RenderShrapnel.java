@@ -42,7 +42,7 @@ public class RenderShrapnel extends Render<EntityFragments>
                     .withProperty(BlockAnvil.DAMAGE, entity.world.rand.nextInt(2))
                     .withProperty(BlockAnvil.FACING, EnumFacing.Plane.HORIZONTAL.facings()[entity.world.rand.nextInt(3)]);
             //TODO store rotation and damage in entity to reduce random nature
-            
+
 
             final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
