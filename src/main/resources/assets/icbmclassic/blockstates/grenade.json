@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:item/generated",
+    "textures": {
+      "layer0": "icbmclassic:items/grenade_condensed"
+    }
+  },
+  "variants": {
+    "explosive": {
+      "condensed": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_condensed"
+        }
+      },
+      "shrapnel": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_shrapnel"
+        }
+      },
+      "incendiary": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_incendiary"
+        }
+      },
+      "deblitation": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_debilitation"
+        }
+      },
+      "chemical": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_chemical"
+        }
+      },
+      "anvil": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_anvil"
+        }
+      },
+      "replusive": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_repulsive"
+        }
+      },
+      "attractive": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_attractive"
+        }
+      }
+    }
+  }
+}
+

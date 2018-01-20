@@ -169,6 +169,7 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCGrenade", -> "grenade"
         //"icbmCBombCart", -> "bombcart"
 
+        event.getRegistry().register(itemGrenade = new ItemGrenade());
         /*
         event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
         event.getRegistry().register(itemSulfurDust = new ItemSulfurDust());
@@ -181,7 +182,6 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(itemRemoteDetonator = new ItemRemoteDetonator());
         event.getRegistry().register(itemLaserDesignator = new ItemLaserDetonator());
         event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
-        event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
         */
 
