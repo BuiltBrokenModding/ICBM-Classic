@@ -47,9 +47,7 @@ public enum Explosives implements IStringSerializable
     MISSILE_HOMING(new MissileHoming()),
     MISSILE_ANTI(new MissileAnti()),
     MISSILE_CLUSTER(new MissileCluster("cluster", BlockICBM.EnumTier.TWO)),
-    MISSILE_CLUSTER_NUKE(new MissileNuclearCluster()),
-
-    NIGHTMARE(new ExNightmare());
+    MISSILE_CLUSTER_NUKE(new MissileNuclearCluster());
 
     public final Explosive handler;
 

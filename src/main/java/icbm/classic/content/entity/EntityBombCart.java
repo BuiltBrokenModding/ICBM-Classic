@@ -2,6 +2,8 @@ package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.prefab.BlockICBM;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -11,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -18,7 +21,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
-    public Explosives explosive;
+    public Explosives explosive = Explosives.CONDENSED;
 
     public EntityBombCart(World par1World)
     {
@@ -105,6 +108,6 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public IBlockState getDefaultDisplayTile()
     {
-        return ICBMClassic.blockExplosive.getDefaultState();
+        return ICBMClassic.blockExplosive.getDefaultState().withProperty(BlockExplosive.EX_PROP, explosive).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
     }
 }

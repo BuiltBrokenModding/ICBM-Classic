@@ -25,8 +25,7 @@ public class ItemBombCart extends ItemICBMBase
     public ItemBombCart()
     {
         super("bombcart");
-        this.setMaxStackSize(1);
-        this.setMaxDamage(0);
+        this.setMaxStackSize(3);
         this.setHasSubtypes(true);
     }
 

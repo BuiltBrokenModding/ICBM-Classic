@@ -47,6 +47,86 @@
         "textures": {
           "layer0": "items/minecart_tnt"
         }
+      },
+      "fragmentation": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "contagious": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "sonic": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "breaching": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "rejuvenation": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "thermobaric": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "smine": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "nuclear": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "emp": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "exothermic": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "endothermic": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "anti_grav": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "ender": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "hypersonic": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "antimatter": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "redmatter": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
       }
     }
   }

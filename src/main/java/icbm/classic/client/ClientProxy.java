@@ -51,6 +51,9 @@ public class ClientProxy extends CommonProxy
         //Grenade
         registerGrenadeRenders();
 
+        //Bomb cart
+        registerCartRenders();
+
         //---------------------------------------
         //Entity renders
         //---------------------------------------
@@ -94,6 +97,19 @@ public class ClientProxy extends CommonProxy
             {
                 String properties_string = "explosive=" + ex.getName();
                 ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemGrenade, ex.ordinal(), new ModelResourceLocation(resourcePath,  properties_string));
+            }
+        }
+    }
+
+    protected void registerCartRenders()
+    {
+        final String resourcePath = ICBMClassic.itemBombCart.getRegistryName().toString();
+        for (Explosives ex : Explosives.values())
+        {
+            if (ex.handler.hasMinecartForm())
+            {
+                String properties_string = "explosive=" + ex.getName();
+                ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemBombCart, ex.ordinal(), new ModelResourceLocation(resourcePath,  properties_string));
             }
         }
     }
