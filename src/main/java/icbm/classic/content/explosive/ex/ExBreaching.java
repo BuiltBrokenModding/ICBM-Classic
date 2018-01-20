@@ -13,7 +13,7 @@ public class ExBreaching extends Explosion
 {
     public ExBreaching()
     {
-        super("breaching", BlockICBM.EnumTier.ONE);
+        super("breaching", BlockICBM.EnumTier.TWO);
         this.setFuseTime(40);
         //this.missileModelPath = "missiles/tier2/missile_head_breaching.obj";
     }
