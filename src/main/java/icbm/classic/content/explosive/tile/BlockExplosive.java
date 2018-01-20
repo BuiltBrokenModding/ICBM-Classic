@@ -33,6 +33,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class BlockExplosive extends BlockICBM
 {
@@ -50,7 +51,7 @@ public class BlockExplosive extends BlockICBM
     {
         Explosives ex = Explosives.CONDENSED;
         TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof TileEntityExplosive)
+        if (tile instanceof TileEntityExplosive)
         {
             ex = ((TileEntityExplosive) tile).explosive;
         }
@@ -74,7 +75,10 @@ public class BlockExplosive extends BlockICBM
     {
         public PropertyExplosive()
         {
-            super("explosive", Explosives.class, Lists.newArrayList(Explosives.values()));
+            super("explosive", Explosives.class, Lists.newArrayList(Explosives.values())
+                    .stream()
+                    .filter(e -> e.handler.hasBlockForm())
+                    .collect(Collectors.toList()));
             //getAllowedValues().removeIf(e -> !e.handler.hasBlockForm());
         }
     }
