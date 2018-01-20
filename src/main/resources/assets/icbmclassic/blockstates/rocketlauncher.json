@@ -1,0 +1,44 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:rocket_launcher.obj"
+  },
+  "variants": {
+    "inventory": [
+      {
+        "transform": {
+          "thirdperson_lefthand": {
+            "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
+            "translation": [ 0, -0.1, 0.1 ],
+            "scale": 1
+          },
+          "thirdperson_righthand": {
+            "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
+            "translation": [ 0, -0.1, 0.1 ],
+            "scale": 1
+          },
+          "gui": {
+            "rotation": [ { "x": 45 }, { "y": 10 }, { "z": -45 } ],
+            "translation": [ -0.2, -0.2, 0 ],
+            "scale": 1
+          },
+          "firstperson_righthand": {
+            "rotation": [ { "x": 180 }, { "y": 180 }, { "z": 170 } ],
+            "translation": [ 0, -0.1, 0 ],
+            "scale": 1
+          },
+          "firstperson_lefthand": {
+            "rotation": [ { "x": 180 }, { "y": 180 }, { "z": 170 } ],
+            "translation": [ 0, -0.1, 0 ],
+            "scale":1
+          },
+          "ground": {
+            "rotation": [ { "x": 45 }, { "y": 0 }, { "z": 0 } ],
+            "scale": 1
+          }
+        }
+      }
+    ]
+  }
+}
+

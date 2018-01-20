@@ -47,18 +47,21 @@ public class ClientProxy extends CommonProxy
 
         //Explosives
         registerExBlockRenders();
-
-        //Grenade
         registerGrenadeRenders();
-
-        //Bomb cart
         registerCartRenders();
+        registerMissileRenders();
 
         //items
         newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");
         newItemModel(ICBMClassic.itemSulfurDust, 0, "inventory", "");
         newItemModel(ICBMClassic.itemSaltpeterDust, 0, "inventory", "");
         newItemModel(ICBMClassic.itemAntidote, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemSignalDisrupter, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemTracker, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemDefuser, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemRadarGun, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemRemoteDetonator, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemRocketLauncher, 0, "inventory", "");
 
         //---------------------------------------
         //Entity renders
@@ -116,6 +119,19 @@ public class ClientProxy extends CommonProxy
             {
                 String properties_string = "explosive=" + ex.getName();
                 ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemBombCart, ex.ordinal(), new ModelResourceLocation(resourcePath,  properties_string));
+            }
+        }
+    }
+
+    protected void registerMissileRenders()
+    {
+        final String resourcePath = ICBMClassic.itemMissile.getRegistryName().toString();
+        for (Explosives ex : Explosives.values())
+        {
+            if (ex.handler.hasMissileForm())
+            {
+                String properties_string = "explosive=" + ex.getName();
+                ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemMissile, ex.ordinal(), new ModelResourceLocation(resourcePath,  properties_string));
             }
         }
     }

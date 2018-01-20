@@ -1,0 +1,159 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:item/generated",
+    "textures": {
+      "layer0": "icbmclassic:items/missile_module"
+    }
+  },
+  "variants": {
+    "explosive": {
+      "condensed": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "shrapnel": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "incendiary": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "deblitation": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "chemical": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "anvil": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "replusive": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "attractive": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "fragmentation": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "contagious": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "sonic": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "breaching": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "rejuvenation": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "thermobaric": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "smine": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "nuclear": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "emp": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "exothermic": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "endothermic": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "anti_grav": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "ender": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "hypersonic": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "antimatter": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "redmatter": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "missile": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "missile_homing": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "missile_anti": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "missile_cluster": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      },
+      "missile_cluster_nuke": {
+        "textures": {
+          "layer0": "icbmclassic:items/missile_module"
+        }
+      }
+    }
+  }
+}
+
