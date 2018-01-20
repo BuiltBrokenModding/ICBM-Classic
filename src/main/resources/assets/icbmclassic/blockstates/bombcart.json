@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:item/generated",
+    "textures": {
+      "layer0": "items/minecart_tnt"
+    }
+  },
+  "variants": {
+    "explosive": {
+      "condensed": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "shrapnel": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "incendiary": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "deblitation": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "chemical": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "anvil": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "replusive": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "attractive": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      }
+    }
+  }
+}
+

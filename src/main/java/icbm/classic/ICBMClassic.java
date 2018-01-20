@@ -13,6 +13,8 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
+import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.items.ItemGrenade;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -170,6 +172,8 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCBombCart", -> "bombcart"
 
         event.getRegistry().register(itemGrenade = new ItemGrenade());
+        event.getRegistry().register(itemBombCart = new ItemBombCart());
+
         /*
         event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
         event.getRegistry().register(itemSulfurDust = new ItemSulfurDust());
@@ -182,7 +186,8 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(itemRemoteDetonator = new ItemRemoteDetonator());
         event.getRegistry().register(itemLaserDesignator = new ItemLaserDetonator());
         event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
-        event.getRegistry().register(itemBombCart = new ItemBombCart());
+
+
         */
 
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
