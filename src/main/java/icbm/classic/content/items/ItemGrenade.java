@@ -49,13 +49,15 @@ public class ItemGrenade extends ItemICBMBase
     {
         if (!world.isRemote)
         {
-            Explosives zhaPin = Explosives.get(itemStack.getItemDamage());
-
+            final Explosives explosive = Explosives.get(itemStack.getItemDamage());
 
             world.playSound(entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F), true);
-            world.spawnEntity(new EntityGrenade(world, entityLiving, zhaPin, (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack)));
+            world.spawnEntity(new EntityGrenade(world, entityLiving, explosive, (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack)));
 
-            itemStack.shrink(1);
+            if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)
+            {
+                itemStack.shrink(1);
+            }
         }
     }
 
@@ -86,7 +88,7 @@ public class ItemGrenade extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-       //TODO ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+        //TODO ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 
     @Override

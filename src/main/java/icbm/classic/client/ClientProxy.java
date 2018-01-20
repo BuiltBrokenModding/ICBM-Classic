@@ -54,6 +54,12 @@ public class ClientProxy extends CommonProxy
         //Bomb cart
         registerCartRenders();
 
+        //items
+        newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemSulfurDust, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemSaltpeterDust, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemAntidote, 0, "inventory", "");
+
         //---------------------------------------
         //Entity renders
         //---------------------------------------
@@ -117,6 +123,11 @@ public class ClientProxy extends CommonProxy
     protected void newBlockModel(Block block, int meta, String varient, String sub)
     {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName() + sub, varient));
+    }
+
+    protected void newItemModel(Item item, int meta, String varient, String sub)
+    {
+        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName() + sub, varient));
     }
 
     public static void registerWithMapper(Block block)

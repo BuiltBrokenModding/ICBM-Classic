@@ -24,7 +24,10 @@ public class ItemAntidote extends ItemICBMBase
         {
             entityLiving.clearActivePotions();
         }
-        stack.shrink(1);
+        if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)
+        {
+            stack.shrink(1);
+        }
         return stack;
     }
 

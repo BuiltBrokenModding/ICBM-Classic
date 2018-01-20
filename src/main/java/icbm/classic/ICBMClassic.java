@@ -13,12 +13,14 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
+import icbm.classic.content.items.ItemAntidote;
 import icbm.classic.content.items.ItemBombCart;
 import icbm.classic.content.items.ItemGrenade;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockRailBase;
@@ -127,6 +129,7 @@ public final class ICBMClassic extends AbstractMod
     public static Item itemGrenade;
     public static Item itemBombCart;
     public static Item itemSulfurDust;
+    public static Item itemSaltpeterDust;
     public static Item itemPoisonPowder;
 
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
@@ -173,11 +176,15 @@ public final class ICBMClassic extends AbstractMod
 
         event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
+        event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
+        event.getRegistry().register(itemSulfurDust = new ItemICBMBase("sulfurDust"));
+        event.getRegistry().register(itemSaltpeterDust = new ItemICBMBase("saltpeter"));
+        event.getRegistry().register(itemAntidote = new ItemAntidote());
 
         /*
-        event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
-        event.getRegistry().register(itemSulfurDust = new ItemSulfurDust());
-        event.getRegistry().register(itemAntidote = new ItemAntidote());
+
+
+
         event.getRegistry().register(itemSignalDisrupter = new ItemSignalDisrupter());
         event.getRegistry().register(itemTracker = new ItemTracker());
         event.getRegistry().register(itemMissile = new ItemMissile());
