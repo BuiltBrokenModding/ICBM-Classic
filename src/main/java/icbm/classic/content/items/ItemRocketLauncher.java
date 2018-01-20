@@ -7,14 +7,21 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.prefab.item.ItemICBMElectrical;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
+import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +40,26 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     public ItemRocketLauncher()
     {
         super("rocketLauncher");
+        this.addPropertyOverride(new ResourceLocation("pulling"), new IItemPropertyGetter()
+        {
+            @SideOnly(Side.CLIENT)
+            public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
+            {
+                return entityIn != null && entityIn.isHandActive() && entityIn.getActiveItemStack() == stack ? 1.0F : 0.0F;
+            }
+        });
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected)
+    {
+
+    }
+
+    @Override
+    public int getMaxItemUseDuration(ItemStack stack)
+    {
+        return Integer.MAX_VALUE;
     }
 
     @Override
@@ -42,20 +69,11 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
+    public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entityLiving, int timeLeft)
     {
-        ItemStack stack = player.getHeldItem(handIn);
-        if (!world.isRemote)
+        if (entityLiving instanceof EntityPlayer)
         {
-            long clickMs = System.currentTimeMillis();
-            if (clickTimePlayer.containsKey(player.getName()))
-            {
-                if (clickMs - clickTimePlayer.get(player.getName()) < firingDelay)
-                {
-                    //TODO play weapon empty click audio to note the gun is reloading
-                    return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
-                }
-            }
+            EntityPlayer player = (EntityPlayer) entityLiving;
             if (this.getEnergy(stack) >= ENERGY || player.capabilities.isCreativeMode)
             {
                 // Check the player's inventory and look for missiles.
@@ -75,30 +93,31 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                 // Limit the missile to tier two.
                                 if ((ex.handler.getTier().ordinal() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
                                 {
-                                    EntityMissile entityMissile = new EntityMissile(player);
-                                    entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
-                                    entityMissile.explosiveID = ex;
-                                    entityMissile.acceleration = 1;
-                                    entityMissile.launch(null);
-                                    world.spawnEntity(entityMissile);
-
-                                    if (player.isSneaking())
+                                    if(!world.isRemote)
                                     {
-                                        player.startRiding(entityMissile);
-                                        player.setSneaking(false);
-                                    }
+                                        EntityMissile entityMissile = new EntityMissile(player);
+                                        entityMissile.missileType = EntityMissile.MissileType.LAUNCHER;
+                                        entityMissile.explosiveID = ex;
+                                        entityMissile.acceleration = 1;
+                                        entityMissile.launch(null);
+                                        world.spawnEntity(entityMissile);
 
-                                    if (!player.capabilities.isCreativeMode)
-                                    {
-                                        player.inventory.setInventorySlotContents(slot, null);
-                                        player.inventoryContainer.detectAndSendChanges();
-                                        this.discharge(stack, ENERGY, true);
+                                        if (player.isSneaking())
+                                        {
+                                            player.startRiding(entityMissile);
+                                            player.setSneaking(false);
+                                        }
+
+                                        if (!player.capabilities.isCreativeMode)
+                                        {
+                                            player.inventory.setInventorySlotContents(slot, null);
+                                            player.inventoryContainer.detectAndSendChanges();
+                                            this.discharge(stack, ENERGY, true);
+                                        }
                                     }
 
                                     //Store last time player launched a rocket
-                                    clickTimePlayer.put(player.getName(), clickMs);
-
-                                    return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+                                    clickTimePlayer.put(player.getName(), System.currentTimeMillis());
                                 }
                             }
                         }
@@ -106,8 +125,25 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                 }
             }
         }
+    }
 
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer player, EnumHand handIn)
+    {
+        ItemStack itemstack = player.getHeldItem(handIn);
+
+        long clickMs = System.currentTimeMillis();
+        if (clickTimePlayer.containsKey(player.getName()))
+        {
+            if (clickMs - clickTimePlayer.get(player.getName()) < firingDelay)
+            {
+                //TODO play weapon empty click audio to note the gun is reloading
+                return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+            }
+        }
+
+        player.setActiveHand(handIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
     }
 
     @Override

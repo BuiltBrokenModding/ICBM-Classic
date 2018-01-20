@@ -61,6 +61,7 @@ public class ClientProxy extends CommonProxy
         newItemModel(ICBMClassic.itemDefuser, 0, "inventory", "");
         newItemModel(ICBMClassic.itemRadarGun, 0, "inventory", "");
         newItemModel(ICBMClassic.itemRemoteDetonator, 0, "inventory", "");
+        newItemModel(ICBMClassic.itemLaserDesignator, 0, "inventory", "");
         newItemModel(ICBMClassic.itemRocketLauncher, 0, "inventory", "");
 
         //---------------------------------------
