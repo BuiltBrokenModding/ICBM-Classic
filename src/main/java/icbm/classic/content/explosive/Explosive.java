@@ -47,8 +47,8 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
 
         this.hasBlock = true;
         this.hasMissile = true;
-        this.hasGrenade = this.tier.ordinal() <= 1;
-        this.hasMinecart = this.tier.ordinal() <= 2;
+        this.hasGrenade = this.tier.ordinal() <= BlockICBM.EnumTier.ONE.ordinal();
+        this.hasMinecart = this.tier.ordinal() <= BlockICBM.EnumTier.TWO.ordinal();
 
         //this.flagName = //FlagRegistry.registerFlag("ban_" + this.nameID);
         this.isDisabled = false;//Settings.CONFIGURATION.get("Disable_Explosives", "Disable " + this.nameID, false).getBoolean(false);
