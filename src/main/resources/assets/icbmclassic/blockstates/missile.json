@@ -1,187 +1,212 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:missiles/tier1/missile_base_t1.obj",
+    "model": "icbmclassic:missiles/tier1/missile_anvil.obj",
     "transform": {
       "thirdperson_lefthand": {
-        "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
-        "translation": [ 0, 0, 0 ],
-        "scale": 0.00625
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "scale": 1
       },
       "thirdperson_righthand": {
-        "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
-        "translation": [ 0, 0, 0 ],
-        "scale":  0.00625
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "scale": 1
       },
       "gui": {
-        "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
-        "translation": [ 0, 0, 0 ],
-        "scale":  0.00625
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "scale": 0.25
       },
       "firstperson_righthand": {
-        "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
-        "translation": [ 0, 0, 0 ],
-        "scale":  0.00625
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "scale": 1
       },
       "firstperson_lefthand": {
-        "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
-        "translation": [ 0, 0, 0 ],
-        "scale": 0.00625
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "scale": 1
       },
       "ground": {
-        "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
-        "translation": [ 0, 0, 0 ],
-        "scale":  0.00625
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0.1,
+          0,
+          0.1
+        ],
+        "scale": 0.3
       }
     }
   },
   "variants": {
     "explosive": {
       "condensed": {
-        "model": "icbmclassic:missiles/tier1/missile_base_t1.obj",
-        "submodel": {
-          "head": { "model": "icbmclassic:missiles/tier1/missile_head_conventional.obj" }
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "shrapnel": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "incendiary": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "deblitation": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "chemical": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "anvil": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "replusive": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "attractive": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "fragmentation": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "contagious": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "sonic": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "breaching": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "rejuvenation": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "thermobaric": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "smine": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "nuclear": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "emp": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "exothermic": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "endothermic": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "anti_grav": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "ender": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "hypersonic": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "antimatter": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "redmatter": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "missile": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "missile_homing": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "missile_anti": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "missile_cluster": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "missile_cluster_nuke": {
-        "textures": {
-          "layer0": "icbmclassic:items/missile_module"
-        }
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       }
     }
   }
