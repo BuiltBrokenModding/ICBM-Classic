@@ -1,10 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:item/generated",
-    "textures": {
-      "layer0": "icbmclassic:items/missile_module"
-    },
+    "model": "icbmclassic:missiles/tier1/missile_base_t1.obj",
     "transform": {
       "thirdperson_lefthand": {
         "rotation": [ { "x": 0 }, { "y": 0 }, { "z": 0 } ],
