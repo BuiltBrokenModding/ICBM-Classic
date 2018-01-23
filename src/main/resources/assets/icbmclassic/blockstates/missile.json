@@ -44,18 +44,18 @@
       "gui": {
         "rotation": [
           {
-            "x": 0
+            "x": 45
           },
           {
             "y": 0
           },
           {
-            "z": 0
+            "z": 45
           }
         ],
         "translation": [
-          0,
-          0,
+          0.3,
+          -0.2,
           0
         ],
         "scale": 0.25
@@ -122,28 +122,28 @@
   "variants": {
     "explosive": {
       "condensed": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
       },
       "shrapnel": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_shrapnel.obj"
       },
       "incendiary": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_incendiary.obj"
       },
       "deblitation": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_deblitation.obj"
       },
       "chemical": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_chemical.obj"
       },
       "anvil": {
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "replusive": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_repulsion.obj"
       },
       "attractive": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_attraction.obj"
       },
       "fragmentation": {
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
@@ -197,7 +197,7 @@
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "missile_homing": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_homing.obj"
       },
       "missile_anti": {
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"

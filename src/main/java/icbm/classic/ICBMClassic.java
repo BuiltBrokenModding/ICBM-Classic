@@ -180,12 +180,12 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(itemAntidote = new ItemAntidote());
         event.getRegistry().register(itemSignalDisrupter = new ItemSignalDisrupter());
         event.getRegistry().register(itemTracker = new ItemTracker());
-        event.getRegistry().register(itemMissile = new ItemMissile());
         event.getRegistry().register(itemDefuser = new ItemDefuser());
         event.getRegistry().register(itemRadarGun = new ItemRadarGun());
         event.getRegistry().register(itemRemoteDetonator = new ItemRemoteDetonator());
         event.getRegistry().register(itemLaserDesignator = new ItemLaserDetonator());
         event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
+        event.getRegistry().register(itemMissile = new ItemMissile());
 
 
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
