@@ -7,7 +7,6 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketReceiver;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
 import com.builtbroken.mc.core.network.packet.PacketType;
-import com.builtbroken.mc.core.registry.implement.IPostInit;
 import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.prefab.items.ItemWorldPos;
@@ -23,7 +22,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -42,6 +40,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
     {
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
+        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setUnlocalizedName(ICBMClassic.PREFIX + "radarGun");
         this.setRegistryName(ICBMClassic.DOMAIN, "radarGun");
     }
@@ -100,7 +99,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
         {
             stack.setTagCompound(null);
             stack.setItemDamage(0);
-            LanguageUtility.addChatToPlayer(player, "gps.cleared");
+            LanguageUtility.addChatToPlayer(player, "gps.cleared.name");
             player.inventoryContainer.detectAndSendChanges();
             return EnumActionResult.SUCCESS;
         }
@@ -109,13 +108,13 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
             Location storedLocation = getLocation(stack);
             if (storedLocation == null || !storedLocation.isAboveBedrock())
             {
-                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid");
+                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.name");
                 return EnumActionResult.SUCCESS;
             }
             else if (tile instanceof ILauncherController)
             {
                 ((ILauncherController) tile).setTarget(storedLocation.toPos());
-                LanguageUtility.addChatToPlayer(player, "gps.data.transferred");
+                LanguageUtility.addChatToPlayer(player, "gps.data.transferred.name");
                 return EnumActionResult.SUCCESS;
             }
         }
@@ -129,7 +128,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
         if (stack != null && stack.getItem() == this)
         {
             setLocation(stack, new Location(player.world, buf.readInt(), buf.readInt(), buf.readInt()));
-            player.sendMessage(new TextComponentString("GPS data set"));
+            LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
         }
     }
 }
