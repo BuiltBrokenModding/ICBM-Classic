@@ -43,7 +43,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     private float rotationDelta;
 
     // The EMP mode. 0 = All, 1 = Missiles Only, 2 = Electricity Only
-    public byte empMode = 0;
+    public byte empMode = 0; //TODO move to enum
 
     private int cooldownTicks = 0;
 
@@ -53,15 +53,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     private boolean _destroyingStructure = false;
 
     private ExternalInventory inventory;
-
-    public TileEMPTower()
-    {
-        //super("empTower", Material.iron);
-        //this.itemBlock = ItemBlockBase.class;
-        //this.hardness = 10f;
-        //this.resistance = 10f;
-        //this.isOpaque = false;
-    }
 
     @Override
     public ExternalInventory getInventory()
@@ -189,16 +180,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return false;
     }
 
-    //@Override
-    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
-    {
-        if (isServer())
-        {
-            openGui(player, ICBMClassic.INSTANCE);
-        }
-        return true;
-    }
-
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
@@ -227,10 +208,10 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     //==== Multi-Block code
     //=========================================
 
-    //@Override
-    public void firstTick()
+    @Override
+    public void onLoad()
     {
-        //super.firstTick();
+        super.onLoad();
         MultiBlockHelper.buildMultiBlock(world, this, true, true);
     }
 
@@ -262,29 +243,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return false;
     }
 
-    /*
-
-    @Override
-    public boolean canPlaceBlockAt()
-    {
-        return super.canPlaceBlockAt() && oldWorld().getBlock(xi(), yi() + 1, zi()).isReplaceable(oldWorld(), xi(), yi() + 1, zi());
-    }
-
-    @Override
-    public boolean canPlaceBlockOnSide(ForgeDirection side)
-    {
-        return side == ForgeDirection.UP && canPlaceBlockAt();
-    }
-    */
-
-    //@Override
-    public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
-    {
-        MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
-        //TODO return super.removeByPlayer(player, willHarvest);
-        return true;
-    }
-
     @Override
     public void onTileInvalidate(IMultiTile tileMulti)
     {
@@ -294,7 +252,10 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
-        //TODO return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
+        if (isServer())
+        {
+            openGui(player, ICBMClassic.INSTANCE);
+        }
         return true;
     }
 

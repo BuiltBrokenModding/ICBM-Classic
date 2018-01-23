@@ -2,9 +2,8 @@ package icbm.classic.content.machines.launcher.base;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.*;
-import icbm.classic.client.render.RenderMissile;
+import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -82,20 +81,9 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
 
 
             Explosives e = Explosives.get(launcher.getMissileStack().getItemDamage());
-            Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
-            /**
-             if (missile.missileModelPath != null && missile.missileModelPath.contains("missiles"))
-             {
-             GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
-             }
-             else if (e != Explosives.NIGHTMARE)
-             {
-             GL11.glScalef(0.05f, 0.05f, 0.05f);
-             }
-             */
             try
             {
-                RenderMissile.renderMissile(missile);
+                RenderMissile.INSTANCE.renderMissile(e, launcher, 0, 0, 0, 0, partialTicks);
             }
             catch (Exception e1)
             {

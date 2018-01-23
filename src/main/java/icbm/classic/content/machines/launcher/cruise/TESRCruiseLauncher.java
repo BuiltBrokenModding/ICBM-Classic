@@ -3,9 +3,8 @@ package icbm.classic.content.machines.launcher.cruise;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.MXiaoFaSheQi;
 import icbm.classic.client.models.MXiaoFaSheQiJia;
-import icbm.classic.client.render.RenderMissile;
+import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.Explosion;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -49,19 +48,9 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
             GL11.glRotatef(pitch - 90, 1F, 0F, 0F);
 
             Explosives e = Explosives.get(launcher.cachedMissileStack.getItemDamage());
-            Explosion missile = e == null ? (Explosion) Explosives.CONDENSED.handler : (Explosion) e.handler;
-            /*
-            if (missile.missileModelPath.contains("missiles"))
-            {
-                GL11.glScalef(0.00625f, 0.00625f, 0.00625f);
-            }
-            else
-            {
-                GL11.glScalef(0.05f, 0.05f, 0.05f);
-            }*/
             try
             {
-                RenderMissile.renderMissile(missile);
+                RenderMissile.INSTANCE.renderMissile(e, launcher, 0, 0, 0, 0, partialTicks);
             }
             catch (Exception e1)
             {

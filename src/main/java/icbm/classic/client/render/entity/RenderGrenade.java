@@ -2,7 +2,7 @@ package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -19,11 +19,11 @@ public class RenderGrenade extends Render<EntityGrenade>
     private EntityItem entityItem;
     private RenderEntityItem renderEntityItem;
 
-    public RenderGrenade(RenderManager renderManagerIn, RenderItem itemRender)
+    public RenderGrenade(RenderManager renderManagerIn)
     {
         super(renderManagerIn);
         entityItem = new EntityItem(null);
-        renderEntityItem = new RenderEntityItem(renderManagerIn, itemRender);
+        renderEntityItem = new RenderEntityItem(renderManagerIn, Minecraft.getMinecraft().getRenderItem());
         this.shadowSize = 0.15F;
         this.shadowOpaque = 0.75F;
     }

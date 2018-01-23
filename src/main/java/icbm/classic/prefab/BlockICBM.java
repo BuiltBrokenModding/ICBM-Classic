@@ -1,5 +1,8 @@
 package icbm.classic.prefab;
 
+import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
+import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
+import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockContainer;
@@ -9,6 +12,9 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
@@ -59,11 +65,37 @@ public abstract class BlockICBM extends BlockContainer
         return getDefaultState().withProperty(ROTATION_PROP, placer.getHorizontalFacing());
     }
 
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof IMultiTileHost)
+        {
+            MultiBlockHelper.destroyMultiBlockStructure((IMultiTileHost) tile, false, true, false);
+        }
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+    }
+
+    @Override
+    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof IInventoryProvider && ((IInventoryProvider) tile).getInventory() != null)
+        {
+            InventoryHelper.dropInventoryItems(world, pos, ((IInventoryProvider) tile).getInventory());
+        }
+        if (tile instanceof IMultiTileHost)
+        {
+            MultiBlockHelper.destroyMultiBlockStructure((IMultiTileHost) tile, false, true, false);
+        }
+        super.breakBlock(world, pos, state);
+    }
+
     public static final class PropertyTier extends PropertyEnum<EnumTier>
     {
         public PropertyTier()
         {
-            super("tier", EnumTier.class, Lists.newArrayList(EnumTier.values()));
+            super("tier", EnumTier.class, Lists.newArrayList(EnumTier.ONE, EnumTier.TWO, EnumTier.THREE));
         }
     }
 
