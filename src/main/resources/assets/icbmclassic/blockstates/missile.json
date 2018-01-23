@@ -146,25 +146,22 @@
         "model": "icbmclassic:missiles/tier1/missile_attraction.obj"
       },
       "fragmentation": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_fragmentation.obj"
       },
       "contagious": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_contagious.obj"
       },
       "sonic": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_sonic.obj"
       },
       "breaching": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_breaching.obj"
       },
       "rejuvenation": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_regen.obj"
       },
       "thermobaric": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
-      },
-      "smine": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
       },
       "nuclear": {
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
@@ -200,10 +197,10 @@
         "model": "icbmclassic:missiles/tier1/missile_homing.obj"
       },
       "missile_anti": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_anti.obj"
       },
       "missile_cluster": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
       },
       "missile_cluster_nuke": {
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
