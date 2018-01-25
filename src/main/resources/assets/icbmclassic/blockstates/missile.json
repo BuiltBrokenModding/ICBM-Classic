@@ -164,34 +164,34 @@
         "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
       },
       "nuclear": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier3/missile_nuclear.obj"
       },
       "emp": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier3/missile_emp.obj"
       },
       "exothermic": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier3/missile_exothermic.obj"
       },
       "endothermic": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier3/missile_endothermic.obj"
       },
       "anti_grav": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier3/missile_anti_grav.obj"
       },
       "ender": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier3/missile_ender.obj"
       },
       "hypersonic": {
         "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       },
       "antimatter": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier4/missile_antimatter.obj"
       },
       "redmatter": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier4/missile_redmatter.obj"
       },
       "missile": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
       },
       "missile_homing": {
         "model": "icbmclassic:missiles/tier1/missile_homing.obj"
@@ -203,7 +203,7 @@
         "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
       },
       "missile_cluster_nuke": {
-        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
       }
     }
   }
