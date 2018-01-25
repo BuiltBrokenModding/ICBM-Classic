@@ -245,7 +245,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     @Override
     protected PacketTile getGUIPacket()
     {
-        PacketTile packet = new PacketTile(this, GUI_PACKET_ID, this.alarmRange, this.safetyRange, this.getFrequency());
+        PacketTile packet = new PacketTile("gui",this, GUI_PACKET_ID, this.alarmRange, this.safetyRange, this.getFrequency());
         packet.write(detectedEntities.size());
         if (detectedEntities.size() > 0)
         {

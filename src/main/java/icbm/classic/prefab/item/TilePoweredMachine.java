@@ -5,8 +5,11 @@ import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
 import icbm.classic.prefab.TileMachine;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
 
@@ -49,6 +52,34 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
         }
     }
 
+    @Override
+    public void writeDescPacket(ByteBuf buf)
+    {
+        super.writeDescPacket(buf);
+        buf.writeInt(getEnergy());
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        setEnergy(buf.readInt());
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
+        compound.setInteger("energy", getEnergy());
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        setEnergy(compound.getInteger("energy"));
+        return super.writeToNBT(compound);
+    }
+
     /**
      * Called to check if the machine has enough power to operate
      *
@@ -89,16 +120,46 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     {
         if (buffer == null)
         {
-            buffer = new EnergyBuffer(getEnergyBufferSize());
+            buffer = new PowerBuffer(this);
         }
         return buffer;
+    }
+
+    public static class PowerBuffer extends EnergyBuffer
+    {
+        TilePoweredMachine machine;
+
+        public PowerBuffer(TilePoweredMachine machine)
+        {
+            super(machine.getEnergyBufferSize());
+            this.machine = machine;
+        }
+
+        @Override
+        public int getMaxBufferSize()
+        {
+            return machine.getEnergyBufferSize();
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        //TODO wrapper CapabilityEnergy.ENERGY to IEnergyBuffer
+        if (capability == CapabilityEnergy.ENERGY)
+        {
+            return (T) getEnergyBuffer(Direction.getOrientation(facing));
+        }
         return super.getCapability(capability, facing);
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityEnergy.ENERGY)
+        {
+            return true;
+        }
+        return super.hasCapability(capability, facing);
     }
 }

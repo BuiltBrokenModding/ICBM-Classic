@@ -4,6 +4,7 @@ import com.builtbroken.mc.api.abstraction.world.IPosWorld;
 import com.builtbroken.mc.api.abstraction.world.IWorld;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
+import com.builtbroken.mc.api.tile.IPlayerUsing;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
@@ -12,17 +13,23 @@ import com.builtbroken.mc.data.Direction;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IPosWorld
+public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IPosWorld, IPlayerUsing, ITickable
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -34,14 +41,16 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     protected int ticks = 0;
 
+    List<EntityPlayer> playersWithGUI = new ArrayList();
+
+    @Override
     public void update()
     {
         ticks++;
-        if (ticks == Integer.MAX_VALUE - 1)
+        if (ticks >= Integer.MAX_VALUE - 1)
         {
             ticks = 0;
         }
-
 
         if (isServer())
         {
@@ -52,7 +61,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
                 sendDescPacket();
             }
             //Sync GUI data to client(s)
-            if (ticks % 3 == 0)
+            if (ticks % 3 == 0 && getPlayersUsing().size() > 0)
             {
                 PacketTile packet = getGUIPacket();
                 if (packet != null)
@@ -65,7 +74,11 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public void sendDescPacket()
     {
-
+        PacketTile packetTile = getDescPacket();
+        if (packetTile != null)
+        {
+            Engine.packetHandler.sendToAllAround(packetTile, this);
+        }
     }
 
     @Override
@@ -88,24 +101,51 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public PacketTile getDescPacket()
     {
-        PacketTile packetTile = new PacketTile(this, DESC_PACKET_ID);
+        PacketTile packetTile = new PacketTile("desc",this);
+        packetTile.data().writeInt(DESC_PACKET_ID);
         writeDescPacket(packetTile.data());
         return packetTile;
     }
 
     public void sendPacketToGuiUsers(IPacket packet)
     {
+        if (packet != null)
+        {
+            Iterator<EntityPlayer> it = getPlayersUsing().iterator();
+            while (it.hasNext())
+            {
+                final EntityPlayer player = it.next();
+                if (player instanceof EntityPlayerMP && isValidGuiUser(player))
+                {
+                    Engine.packetHandler.sendToPlayer(packet, (EntityPlayerMP) player);
+                }
+                else
+                {
+                    it.remove();
+                }
+            }
+        }
+    }
 
+    protected boolean isValidGuiUser(EntityPlayer player)
+    {
+        return player.openContainer != null;
+    }
+
+    @Override
+    public final List<EntityPlayer> getPlayersUsing()
+    {
+        return playersWithGUI;
     }
 
     @Override
     public boolean read(ByteBuf buf, int id, EntityPlayer player, PacketType type)
     {
-        if(isClient())
+        if (isClient())
         {
-            if(id == DESC_PACKET_ID)
+            if (id == DESC_PACKET_ID)
             {
-                writeDescPacket(buf);
+                readDescPacket(buf);
                 return true;
             }
         }
@@ -130,7 +170,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
      */
     protected PacketTile getGUIPacket()
     {
-        return null;
+        return getDescPacket();
     }
 
     public boolean isServer()
@@ -165,7 +205,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public void setTier(BlockICBM.EnumTier tier)
     {
-        if(tier != getTier())
+        if (tier != getTier())
         {
             world.setBlockState(pos, getBlockState().withProperty(BlockICBM.TIER_PROP, tier));
         }

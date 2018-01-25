@@ -6,12 +6,10 @@ import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
@@ -68,27 +66,32 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public void update()
     {
         super.update();
+        if (isServer())
+        {
+            if (!isReady())
+            {
+                cooldownTicks--;
+            }
+            else if (world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+            {
+                fire();
+            }
 
-        if (!isReady())
-        {
-            cooldownTicks--;
+            if (ticks % 20 == 0 && getEnergy() > 0)
+            {
+                ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getEnergy() / getEnergyBufferSize(), true);
+                sendDescPacket();
+            }
         }
-        else if (world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+        else
         {
-            fire();
-        }
-
-        if (ticks % 20 == 0 && getEnergy() > 0)
-        {
-            ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getEnergy() / getEnergyBufferSize(), true);
-            sendDescPacket();
-        }
-
-        rotationDelta = (float) (Math.pow(getEnergy() / getEnergyBufferSize(), 2) * 0.5);
-        rotation += rotationDelta;
-        if (rotation > 360)
-        {
-            rotation = 0;
+            double ratio = Math.min(getEnergy(), getEnergyConsumption()) / (double) getEnergyConsumption();
+            rotationDelta = (float) (ratio * ratio * 0.5);
+            rotation += rotationDelta;
+            if (rotation > 360)
+            {
+                rotation = 0;
+            }
         }
     }
 
@@ -99,19 +102,12 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             switch (id)
             {
-                case 0:
-                {
-                    setEnergy(data.readInt());
-                    empRadius = data.readInt();
-                    empMode = data.readByte();
-                    return true;
-                }
-                case 1:
+                case 1: //TODO constant
                 {
                     empRadius = data.readInt();
                     return true;
                 }
-                case 2:
+                case 2://TODO constant
                 {
                     empMode = data.readByte();
                     return true;
@@ -123,15 +119,25 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     }
 
     @Override
-    public int getEnergyBufferSize()
+    public void writeDescPacket(ByteBuf buf)
     {
-        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
+        super.writeDescPacket(buf);
+        buf.writeInt(empRadius);
+        buf.writeByte(empMode);
     }
 
     @Override
-    public PacketTile getDescPacket()
+    public void readDescPacket(ByteBuf buf)
     {
-        return new PacketTile(this, 0, getEnergy(), this.empRadius, this.empMode);
+        super.readDescPacket(buf);
+        empRadius = buf.readInt();
+        empMode = buf.readByte();
+    }
+
+    @Override
+    public int getEnergyBufferSize()
+    {
+        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
     }
 
     /** Reads a tile entity from NBT. */
@@ -274,12 +280,12 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
-        return new ContainerDummy();
+        return new ContainerEMPTower(player, this);
     }
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
-        return new GuiEMPTower(this);
+        return new GuiEMPTower(player, this);
     }
 }

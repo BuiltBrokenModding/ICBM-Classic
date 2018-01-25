@@ -161,7 +161,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 0, getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("gui", this, 0, getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override

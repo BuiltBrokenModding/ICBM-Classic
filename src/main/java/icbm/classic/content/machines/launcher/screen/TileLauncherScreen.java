@@ -45,7 +45,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public ExternalInventory getInventory()
     {
-        if(inventory == null)
+        if (inventory == null)
         {
             inventory = new ExternalInventory(this, 2);
         }
@@ -93,13 +93,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile(this, 0, getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("desc", this, 0, getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile(this, 4, getEnergy(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("gui", this, 4, getEnergy(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -241,7 +241,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     {
         //par1NBTTagCompound.setInteger("tier", this.tier);
         par1NBTTagCompound.setShort("targetHeight", this.lockHeight);
-        return  super.writeToNBT(par1NBTTagCompound);
+        return super.writeToNBT(par1NBTTagCompound);
     }
 
     @Override

@@ -4,17 +4,18 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
-public class GuiEMPTower extends GuiICBM
+public class GuiEMPTower extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
 
@@ -24,9 +25,9 @@ public class GuiEMPTower extends GuiICBM
     private int containerWidth;
     private int containerHeight;
 
-    public GuiEMPTower(TileEMPTower tileEntity)
+    public GuiEMPTower(EntityPlayer player, TileEMPTower tileEntity)
     {
-        super(tileEntity);
+        super(new ContainerEMPTower(player, tileEntity));
         this.tileEntity = tileEntity;
         this.ySize = 166;
     }
@@ -47,8 +48,10 @@ public class GuiEMPTower extends GuiICBM
         this.textFieldBanJing.setText(this.tileEntity.empRadius + "");
     }
 
-    /** Fired when a control is clicked. This is the equivalent of
-     * ActionListener.actionPerformed(ActionEvent e). */
+    /**
+     * Fired when a control is clicked. This is the equivalent of
+     * ActionListener.actionPerformed(ActionEvent e).
+     */
     @Override
     protected void actionPerformed(GuiButton par1GuiButton)
     {
@@ -65,7 +68,7 @@ public class GuiEMPTower extends GuiICBM
                 break;
         }
 
-        Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.empMode));
+        Engine.packetHandler.sendToServer(new PacketTile("mode_C>S",this.tileEntity, 2, this.tileEntity.empMode));
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
@@ -79,7 +82,7 @@ public class GuiEMPTower extends GuiICBM
         {
             int radius = Math.min(Math.max(Integer.parseInt(this.textFieldBanJing.getText()), 10), TileEMPTower.MAX_RADIUS);
             this.tileEntity.empRadius = radius;
-            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 1, this.tileEntity.empRadius));
+            Engine.packetHandler.sendToServer(new PacketTile("range_C>S", this.tileEntity, 1, this.tileEntity.empRadius));
         }
         catch (NumberFormatException e)
         {
@@ -135,8 +138,7 @@ public class GuiEMPTower extends GuiICBM
         }
 
         this.fontRenderer.drawString(color + LanguageUtility.getLocal("gui.misc.status") + " " + status, 12, 120, 4210752);
-        //this.fontRendererObj.drawString(LanguageUtility.getLocal("gui.misc.voltage") + " " + UnitDisplay.getDisplay(this.tileEntity.getVoltageInput(null), Unit.VOLTAGE), 12, 135, 4210752);
-        //this.fontRendererObj.drawString(UnitDisplay.getDisplayShort(this.tileEntity.getEnergyHandler().getEnergy(), Unit.JOULES) + "/" + UnitDisplay.getDisplay(this.tileEntity.getEnergyHandler().getEnergyCapacity(), Unit.JOULES), 12, 150, 4210752);
+        this.fontRenderer.drawString("Energy: " + this.tileEntity.getEnergy() + "/" + this.tileEntity.getEnergyBufferSize(), 12, 150, 4210752);
     }
 
     /** Draw the background layer for the GuiContainer (everything behind the items) */
@@ -158,6 +160,8 @@ public class GuiEMPTower extends GuiICBM
         super.updateScreen();
 
         if (!this.textFieldBanJing.isFocused())
+        {
             this.textFieldBanJing.setText(this.tileEntity.empRadius + "");
+        }
     }
 }

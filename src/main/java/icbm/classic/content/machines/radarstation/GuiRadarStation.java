@@ -136,7 +136,7 @@ public class GuiRadarStation extends GuiICBM
         {
             int newSafetyRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldSafetyZone.getText())));
             this.tileEntity.safetyRange = newSafetyRadius;
-            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 2, this.tileEntity.safetyRange));
+            Engine.packetHandler.sendToServer(new PacketTile("safeRange_C>S",this.tileEntity, 2, this.tileEntity.safetyRange));
         }
         catch (NumberFormatException e)
         {
@@ -146,7 +146,7 @@ public class GuiRadarStation extends GuiICBM
         {
             int newAlarmRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldAlarmRange.getText())));
             this.tileEntity.alarmRange = newAlarmRadius;
-            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 3, this.tileEntity.alarmRange));
+            Engine.packetHandler.sendToServer(new PacketTile("alarmRange_C>S", this.tileEntity, 3, this.tileEntity.alarmRange));
         }
         catch (NumberFormatException e)
         {
@@ -155,7 +155,7 @@ public class GuiRadarStation extends GuiICBM
         try
         {
             this.tileEntity.setFrequency(Integer.parseInt(this.textFieldFrequency.getText()));
-            Engine.packetHandler.sendToServer(new PacketTile(this.tileEntity, 4, this.tileEntity.getFrequency()));
+            Engine.packetHandler.sendToServer(new PacketTile("frequency_C>S", this.tileEntity, 4, this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {
