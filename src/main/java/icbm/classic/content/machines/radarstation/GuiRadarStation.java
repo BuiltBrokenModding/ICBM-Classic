@@ -6,9 +6,9 @@ import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.imp.transform.region.Rectangle;
 import com.builtbroken.mc.imp.transform.vector.Point;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
-public class GuiRadarStation extends GuiICBM
+public class GuiRadarStation extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_radar.png");
     public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "reddot.png");
@@ -45,8 +45,9 @@ public class GuiRadarStation extends GuiICBM
 
     private String info2;
 
-    public GuiRadarStation(TileRadarStation tileEntity)
+    public GuiRadarStation(EntityPlayer player, TileRadarStation tileEntity)
     {
+        super(new ContainerRadarStation(player, tileEntity));
         this.tileEntity = tileEntity;
         mouseOverCoords = new Point(this.tileEntity.getPos().getX(), this.tileEntity.getPos().getZ());
         ySize = 166;

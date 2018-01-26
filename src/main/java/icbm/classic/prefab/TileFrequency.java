@@ -1,11 +1,12 @@
 package icbm.classic.prefab;
 
+import icbm.classic.prefab.item.TilePoweredMachine;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * Prefab for tiles that need to receive or send a signal at a Hz value
  */
-public abstract class TileFrequency extends TileMachine
+public abstract class TileFrequency extends TilePoweredMachine
 {
     /**
      * Frequency of the device

@@ -2,7 +2,9 @@ package icbm.classic.content.machines.radarstation;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModelRadarStation;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,9 +26,13 @@ public class TESRRadarStation extends TileEntitySpecialRenderer<TileRadarStation
     @SideOnly(Side.CLIENT)
     public void render(TileRadarStation te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
-        GL11.glPushMatrix();
-        GL11.glTranslated(te.xf() + 0.5f, te.yf() + 1.5f, te.zf() + 0.5f);
+        GlStateManager.pushMatrix();
 
+        //Fix techne translation and rotation
+        GlStateManager.translate(x + 0.5F, y + 1.5F, z + 0.5F);
+        GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+
+        //Assign texture
         if (te.hasPower())
         {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
@@ -36,21 +42,20 @@ public class TESRRadarStation extends TileEntitySpecialRenderer<TileRadarStation
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_OFF);
         }
 
-        GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        switch (te.getRotation().ordinal())
+        if(te.getRotation() == EnumFacing.NORTH)
         {
-            case 3:
-                GL11.glRotatef(180F, 0.0F, 180F, 1.0F);
-                break;
-            case 5:
-                GL11.glRotatef(90F, 0.0F, 180F, 1.0F);
-                break;
-            case 4:
-                GL11.glRotatef(-90F, 0.0F, 180F, 1.0F);
-                break;
+            GlStateManager.rotate(180F, 0.0F, 1F, 0);
+        }
+        else if(te.getRotation() == EnumFacing.WEST)
+        {
+            GlStateManager.rotate(90F, 0.0F, 1F, 0);
+        }
+        else if(te.getRotation() == EnumFacing.EAST)
+        {
+            GlStateManager.rotate(-90F, 0.0F, 1F, 0);
         }
 
         MODEL.render(0.0625f, 0f, te.rotation);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 }

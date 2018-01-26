@@ -44,7 +44,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     List<EntityPlayer> playersWithGUI = new ArrayList();
 
     @Override
-    public void update()
+    public void  update()
     {
         ticks++;
         if (ticks >= Integer.MAX_VALUE - 1)

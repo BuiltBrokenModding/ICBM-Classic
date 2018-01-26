@@ -251,7 +251,8 @@ message.radarGun.noCoords=You must scan a coordinate!
 message.launcher.protected=Region is being protected.
 message.detonator.locked=Remote Locked to: X:%x, Y:%y, Z:%z
 message.detonator.nopower=Remote out of electricity!
-message.radar.redstone=Radar redstone all side emission:
+message.radar.redstone.on=Radar set to emit redstone
+message.radar.redstone.off=Radar set to not emit redstone
 
 ## GUI stuff
 gui.misc.nopower=Insufficient electricity!

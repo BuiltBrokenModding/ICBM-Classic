@@ -8,6 +8,8 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.machines.emptower.TESREMPTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
+import icbm.classic.content.machines.radarstation.TESRRadarStation;
+import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -78,6 +80,7 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
     }
 
     protected void registerExBlockRenders()
