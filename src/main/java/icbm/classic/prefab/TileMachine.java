@@ -41,10 +41,13 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     protected int ticks = 0;
 
+    // Cache until block state can be updated
+    public BlockICBM.EnumTier _tier = BlockICBM.EnumTier.ONE;
+
     List<EntityPlayer> playersWithGUI = new ArrayList();
 
     @Override
-    public void  update()
+    public void update()
     {
         ticks++;
         if (ticks >= Integer.MAX_VALUE - 1)
@@ -82,6 +85,20 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     }
 
     @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
+        _tier = BlockICBM.EnumTier.get(compound.getInteger("tier"));
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        compound.setInteger("tier", _tier.ordinal());
+        return super.writeToNBT(compound);
+    }
+
+    @Override
     public SPacketUpdateTileEntity getUpdatePacket()
     {
         return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
@@ -101,7 +118,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public PacketTile getDescPacket()
     {
-        PacketTile packetTile = new PacketTile("desc",this);
+        PacketTile packetTile = new PacketTile("desc", this);
         packetTile.data().writeInt(DESC_PACKET_ID);
         writeDescPacket(packetTile.data());
         return packetTile;
@@ -155,12 +172,12 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public void writeDescPacket(ByteBuf buf)
     {
-
+        buf.writeInt(_tier.ordinal());
     }
 
     public void readDescPacket(ByteBuf buf)
     {
-
+        _tier = BlockICBM.EnumTier.get(buf.readInt());
     }
 
     /**
@@ -200,13 +217,14 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public BlockICBM.EnumTier getTier()
     {
-        return getBlockState().getValue(BlockICBM.TIER_PROP);
+        return _tier;
     }
 
     public void setTier(BlockICBM.EnumTier tier)
     {
         if (tier != getTier())
         {
+            this._tier = tier;
             world.setBlockState(pos, getBlockState().withProperty(BlockICBM.TIER_PROP, tier));
         }
     }

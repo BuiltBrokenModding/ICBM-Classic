@@ -40,16 +40,6 @@ public class BlockLauncherBase extends BlockICBM
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
-    {
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof TileLauncherBase)
-        {
-            ((TileLauncherBase)tile).setTier(EnumTier.get(stack.getItemDamage()));
-        }
-    }
-
-    @Override
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
     {
         return side == EnumFacing.UP && this.canPlaceBlockAt(worldIn, pos);

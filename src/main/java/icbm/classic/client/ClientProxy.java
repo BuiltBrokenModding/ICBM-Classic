@@ -8,6 +8,8 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.machines.emptower.TESREMPTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
+import icbm.classic.content.machines.launcher.frame.TESRLauncherFrame;
+import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.radarstation.TESRRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.prefab.BlockICBM;
@@ -81,6 +83,7 @@ public class ClientProxy extends CommonProxy
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new TESRLauncherFrame());
     }
 
     protected void registerExBlockRenders()
