@@ -118,6 +118,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
                                     //Store last time player launched a rocket
                                     clickTimePlayer.put(player.getName(), System.currentTimeMillis());
+                                    return;
                                 }
                             }
                         }
