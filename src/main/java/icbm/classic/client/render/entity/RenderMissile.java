@@ -3,10 +3,10 @@ package icbm.classic.client.render.entity;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.prefab.RenderEntityItem2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 public class RenderMissile extends Render<EntityMissile>
 {
     private EntityItem entityItem;
-    private RenderEntityItem renderEntityItem;
+    private RenderEntityItem2 renderEntityItem;
 
     public static RenderMissile INSTANCE;
 
@@ -35,7 +35,7 @@ public class RenderMissile extends Render<EntityMissile>
     {
         super(renderManager);
         entityItem = new EntityItem(null);
-        renderEntityItem = new RenderEntityItem(renderManager, Minecraft.getMinecraft().getRenderItem());
+        renderEntityItem = new RenderEntityItem2(renderManager, Minecraft.getMinecraft().getRenderItem());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class RenderMissile extends Render<EntityMissile>
     }
 
     public void renderMissile(Explosives ex, TileEntity tileEntity,
-                              double x, double y, double z, float entityYaw, float partialTicks) throws Exception
+                              double x, double y, double z, float entityYaw, float partialTicks)
     {
         renderMissile(ex, tileEntity.getWorld(), tileEntity.getPos().getX() + 0.5, tileEntity.getPos().getY() + 0.5, tileEntity.getPos().getZ() + 0.5,
                 x, y, z, entityYaw, partialTicks);
@@ -84,6 +84,7 @@ public class RenderMissile extends Render<EntityMissile>
     {
         //Set data for fake entity
         entityItem.setWorld(world);
+        entityItem.rotationYaw = 0;
         entityItem.setPosition(wx, wy, wz);
         entityItem.setItem(new ItemStack(ICBMClassic.itemMissile, 1, ex.ordinal()));
 

@@ -27,6 +27,7 @@ import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -335,27 +336,14 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeInt(getTier().ordinal());
-        buf.writeBoolean(getMissileStack() != null);
-        if (getMissileStack() != null)
-        {
-            ByteBufUtils.writeItemStack(buf, getMissileStack());
-        }
+        ByteBufUtils.writeItemStack(buf, getMissileStack());
     }
 
     @Override
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
-        this.tier = buf.readInt();
-        if (buf.readBoolean())
-        {
-            cachedMissileStack = ByteBufUtils.readItemStack(buf);
-        }
-        else
-        {
-            cachedMissileStack = null;
-        }
+        cachedMissileStack = ByteBufUtils.readItemStack(buf);
     }
 
     public ItemStack getMissileStack()
@@ -367,21 +355,20 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         return getInventory().getStackInSlot(0);
     }
 
-    //@Override
-    protected boolean onPlayerRightClick(EntityPlayer player, int side, Pos hit)
+    protected boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack itemStack)
     {
-        if (player.inventory.getCurrentItem() != null)
+        if (!itemStack.isEmpty())
         {
-            if (player.inventory.getCurrentItem().getItem() instanceof ItemMissile)
+            if (itemStack.getItem() instanceof ItemMissile)
             {
-                if (this.getMissileStack() == null)
+                if (this.getMissileStack().isEmpty())
                 {
                     if (isServer())
                     {
-                        getInventory().setInventorySlotContents(0, player.inventory.getCurrentItem());
+                        getInventory().setInventorySlotContents(0, itemStack);
                         if (!player.capabilities.isCreativeMode)
                         {
-                            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+                            player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
                             player.inventoryContainer.detectAndSendChanges();
                         }
                     }
@@ -398,8 +385,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         {
             if (isServer())
             {
-                player.inventory.setInventorySlotContents(player.inventory.currentItem, this.getMissileStack());
-                getInventory().setInventorySlotContents(0, null);
+
+                player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, this.getMissileStack());
+                getInventory().setInventorySlotContents(0, ItemStack.EMPTY);
                 player.inventoryContainer.detectAndSendChanges();
             }
             return true;
@@ -505,8 +493,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Override
     public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
-        //TODO return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
-        return true;
+        return this.onPlayerRightClick(player, hand, player.getHeldItem(hand));
     }
 
     @Override

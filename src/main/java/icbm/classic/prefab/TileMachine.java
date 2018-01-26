@@ -202,7 +202,12 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public EnumFacing getRotation()
     {
-        return getBlockState().getValue(BlockICBM.ROTATION_PROP);
+        IBlockState state = getBlockState();
+        if(state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
+        {
+            return state.getValue(BlockICBM.ROTATION_PROP);
+        }
+        return EnumFacing.NORTH;
     }
 
     public void setRotation(EnumFacing facingDirection)

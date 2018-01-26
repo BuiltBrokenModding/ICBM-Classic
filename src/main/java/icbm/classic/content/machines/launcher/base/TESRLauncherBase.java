@@ -72,92 +72,30 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
         GlStateManager.popMatrix();
 
         //TODO move to missile render class
-        if (launcher.getMissileStack() != null)
+        if (!launcher.getMissileStack().isEmpty())
         {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5F, y + 0.5F, z + 0.5F);
-
-            //GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.translate(x + 0.5F, y + 0.3f, z + 0.5F);
+            if (launcher.getRotation() == EnumFacing.SOUTH)
+            {
+                GlStateManager.rotate(180F, 0.0F, 1F, 0);
+            }
+            else if (launcher.getRotation() == EnumFacing.WEST)
+            {
+                GlStateManager.rotate(90F, 0.0F, 1F, 0);
+            }
+            else if (launcher.getRotation() == EnumFacing.EAST)
+            {
+                GlStateManager.rotate(-90F, 0.0F, 1F, 0);
+            }
+            GlStateManager.translate(0, 0, .13);
+            GlStateManager.scale(2, 2, 2);
 
 
             Explosives e = Explosives.get(launcher.getMissileStack().getItemDamage());
-            try
-            {
-                RenderMissile.INSTANCE.renderMissile(e, launcher, 0, 0, 0, 0, partialTicks);
-            }
-            catch (Exception e1)
-            {
-                e1.printStackTrace();
-            }
+
+            RenderMissile.INSTANCE.renderMissile(e, launcher, 0, 0, 0, 0, 0);
             GlStateManager.popMatrix();
         }
     }
-
-    /*
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void renderDynamic(Pos pos, float frame, int pass)
-    {
-
-    }
-
-    @Override
-    public void renderInventoryItem(IItemRenderer.ItemRenderType type, ItemStack itemStack, Object... data)
-    {
-        final int tier = itemStack.getItemDamage();
-
-        GL11.glPushMatrix();
-        GL11.glRotatef(180f, 0f, 0f, 1f);
-        if (type == IItemRenderer.ItemRenderType.INVENTORY)
-        {
-            GL11.glTranslatef(0, -0.05f, 0);
-            final float scale = 0.38f;
-            GL11.glScalef(scale, scale, scale);
-        }
-        else if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON)
-        {
-            final float scale = 0.5f;
-            GL11.glScalef(scale, scale, scale);
-            GL11.glTranslatef(-0.7f, -2.5f, 0.7f);
-            GL11.glRotatef(-90f, 0f, 1f, 0f);
-        }
-        else if (type == IItemRenderer.ItemRenderType.EQUIPPED)
-        {
-            final float scale = 0.5f;
-            GL11.glScalef(scale, scale, scale);
-            GL11.glRotatef(-45f, 0f, 1f, 0f);
-            GL11.glTranslatef(0f, -2.5f, 1.7f);
-
-        }
-        else if (type == IItemRenderer.ItemRenderType.ENTITY)
-        {
-            GL11.glTranslatef(0, -1, 0);
-        }
-
-        if (tier == 0)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
-            modelBase0.render(0.0625F);
-            modelRail0.render(0.0625F);
-        }
-        else if (tier == 1)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
-
-            modelBase1.render(0.0625F);
-            modelRail1.render(0.0625F);
-            GL11.glRotatef(180F, 0F, 180F, 1.0F);
-            modelRail1.render(0.0625F);
-        }
-        else if (tier == 2)
-        {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
-            modelBase2.render(0.0625F);
-            modelRail2.render(0.0625F);
-            GL11.glRotatef(180F, 0F, 180F, 1.0F);
-            modelRail2.render(0.0625F);
-        }
-        GL11.glPopMatrix();
-    }
-    */
 }

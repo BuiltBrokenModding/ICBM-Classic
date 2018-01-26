@@ -16,6 +16,8 @@ import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import icbm.classic.content.items.*;
 import icbm.classic.content.machines.emptower.BlockEmpTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
+import icbm.classic.content.machines.launcher.base.BlockLauncherBase;
+import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.content.machines.launcher.frame.BlockLaunchFrame;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
@@ -202,7 +204,9 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(new ItemBlockExplosive(blockExplosive).setRegistryName(blockExplosive.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockEmpTower).setRegistryName(blockEmpTower.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockRadarStation).setRegistryName(blockRadarStation.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(blockLaunchSupport).setRegistryName(blockLaunchSupport.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport).setRegistryName(blockLaunchSupport.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchBase).setRegistryName(blockLaunchBase.getRegistryName()));
+        //event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen).setRegistryName(blockLaunchScreen.getRegistryName()));
 
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
@@ -221,6 +225,7 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCEmpTower" -> "emptower"
         //"icbmCRadarStation" -> "radarStation"
         //"icbmCLauncherFrame" -> "launcherFrame"
+        //"icbmCLauncherBase" -> "launcherBase"
 
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         event.getRegistry().register(blockGlassButton = new BlockGlassButton());
@@ -233,11 +238,10 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(blockEmpTower = new BlockEmpTower());
         event.getRegistry().register(blockRadarStation = new BlockRadarStation());
         event.getRegistry().register(blockLaunchSupport = new BlockLaunchFrame());
+        event.getRegistry().register(blockLaunchBase = new BlockLauncherBase());
 
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
-
-        ICBMClassic.blockLaunchBase = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherBase", new TileLauncherBase());
         ICBMClassic.blockLaunchScreen = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherScreen", new TileLauncherScreen());
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
@@ -247,6 +251,7 @@ public final class ICBMClassic extends AbstractMod
         GameRegistry.registerTileEntity(TileEMPTower.class, PREFIX + "emptower");
         GameRegistry.registerTileEntity(TileRadarStation.class, PREFIX + "radarstation");
         GameRegistry.registerTileEntity(TileLauncherFrame.class, PREFIX + "launcherframe");
+        GameRegistry.registerTileEntity(TileLauncherBase.class, PREFIX + "launcherbase");
     }
 
     @SubscribeEvent
