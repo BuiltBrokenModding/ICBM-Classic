@@ -6,9 +6,12 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
+import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.BlockICBM;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -18,6 +21,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -99,6 +103,61 @@ public class BlockLaunchScreen extends BlockICBM
         return new TileLauncherScreen();
     }
 
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state)
+    {
+        return false;
+    }
+
+    @Override
+    public int damageDropped(IBlockState state)
+    {
+        return state.getValue(TIER_PROP).ordinal();
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, ROTATION_PROP, TIER_PROP);
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    {
+        EnumTier tier = EnumTier.ONE;
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile instanceof TileLauncherScreen)
+        {
+            tier = ((TileLauncherScreen) tile).getTier();
+        }
+        return state.withProperty(TIER_PROP, tier);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
+    {
+        IBlockState state = super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
+        ItemStack stack = placer.getHeldItem(hand);
+
+        //Set tier
+        return state.withProperty(TIER_PROP, EnumTier.get(stack.getItemDamage()));
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack stack)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileLauncherScreen)
+        {
+            ((TileLauncherScreen) tile)._tier = EnumTier.get(stack.getItemDamage());
+        }
+    }
 
     @Override
     public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)

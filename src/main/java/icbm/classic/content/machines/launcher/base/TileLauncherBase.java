@@ -354,17 +354,17 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         return getInventory().getStackInSlot(0);
     }
 
-    protected boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack itemStack)
+    protected boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
     {
-        if (!itemStack.isEmpty())
+        if (!heldItem.isEmpty())
         {
-            if (itemStack.getItem() instanceof ItemMissile)
+            if (heldItem.getItem() instanceof ItemMissile)
             {
                 if (this.getMissileStack().isEmpty())
                 {
                     if (isServer())
                     {
-                        getInventory().setInventorySlotContents(0, itemStack);
+                        getInventory().setInventorySlotContents(0, heldItem);
                         if (!player.capabilities.isCreativeMode)
                         {
                             player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
@@ -376,11 +376,11 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
             }
             else if (launchScreen != null)
             {
-                //ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player)
+                return ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
                 //return launchScreen.onPlayerActivated(player, side, hit);
             }
         }
-        else if (this.getMissileStack() != null)
+        else if (!this.getMissileStack().isEmpty())
         {
             if (isServer())
             {

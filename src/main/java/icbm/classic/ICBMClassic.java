@@ -20,6 +20,7 @@ import icbm.classic.content.machines.launcher.base.BlockLauncherBase;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.content.machines.launcher.frame.BlockLaunchFrame;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
+import icbm.classic.content.machines.launcher.screen.BlockLaunchScreen;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -206,7 +207,7 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(new ItemBlock(blockRadarStation).setRegistryName(blockRadarStation.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport).setRegistryName(blockLaunchSupport.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchBase).setRegistryName(blockLaunchBase.getRegistryName()));
-        //event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen).setRegistryName(blockLaunchScreen.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen).setRegistryName(blockLaunchScreen.getRegistryName()));
 
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
@@ -226,6 +227,7 @@ public final class ICBMClassic extends AbstractMod
         //"icbmCRadarStation" -> "radarStation"
         //"icbmCLauncherFrame" -> "launcherFrame"
         //"icbmCLauncherBase" -> "launcherBase"
+        //"icbmCLauncherScreen" -> "launcherScreen"
 
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         event.getRegistry().register(blockGlassButton = new BlockGlassButton());
@@ -239,10 +241,10 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(blockRadarStation = new BlockRadarStation());
         event.getRegistry().register(blockLaunchSupport = new BlockLaunchFrame());
         event.getRegistry().register(blockLaunchBase = new BlockLauncherBase());
+        event.getRegistry().register(blockLaunchScreen = new BlockLaunchScreen());
 
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
-        ICBMClassic.blockLaunchScreen = ICBMClassic.INSTANCE.getManager().newBlock("icbmCLauncherScreen", new TileLauncherScreen());
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
         */
