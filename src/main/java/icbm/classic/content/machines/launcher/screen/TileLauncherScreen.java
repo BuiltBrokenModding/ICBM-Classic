@@ -1,16 +1,15 @@
 package icbm.classic.content.machines.launcher.screen;
 
+import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
@@ -47,7 +46,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     {
         if (inventory == null)
         {
-            inventory = new ExternalInventory(this, 2);
+            inventory = new ExternalInventory(this, 2); //TODO figure out what these 2 slots did
         }
         return inventory;
     }
@@ -93,13 +92,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getDescPacket()
     {
-        return new PacketTile("desc", this, 0, getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("desc", 0, this).addData(getEnergy(), this.getFrequency(), this.lockHeight, this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", this, 4, getEnergy(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("gui", 4, this).addData(getEnergy(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -115,7 +114,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType packet)
+    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
     {
         if (!super.read(data, id, player, packet))
         {
@@ -272,13 +271,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
-        return new ContainerDummy();
+        return new ContainerLaunchScreen(player, this);
     }
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
-        return new GuiLauncherScreen(this);
+        return new GuiLauncherScreen(player, this);
     }
 
     @Override

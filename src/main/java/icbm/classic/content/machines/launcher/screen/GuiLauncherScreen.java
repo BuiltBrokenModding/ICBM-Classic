@@ -5,9 +5,10 @@ import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.gui.GuiICBM;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 
-public class GuiLauncherScreen extends GuiICBM
+public class GuiLauncherScreen extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
 
@@ -31,9 +32,9 @@ public class GuiLauncherScreen extends GuiICBM
     private int containerWidth;
     private int containerHeight;
 
-    public GuiLauncherScreen(TileLauncherScreen tileEntity)
+    public GuiLauncherScreen(EntityPlayer player, TileLauncherScreen tileEntity)
     {
-        super(tileEntity);
+        super(new ContainerLaunchScreen(player, tileEntity));
         this.tileEntity = tileEntity;
         ySize = 166;
     }
@@ -96,7 +97,7 @@ public class GuiLauncherScreen extends GuiICBM
             Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
-            Engine.packetHandler.sendToServer(new PacketTile("target_C>S",this.tileEntity, 2, this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            Engine.packetHandler.sendToServer(new PacketTile("target_C>S", 2, this.tileEntity).addData(this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -108,7 +109,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newFrequency = (short) Math.max(Short.parseShort(this.target_freq_field.getText()), 0);
 
             this.tileEntity.setFrequency(newFrequency);
-            Engine.packetHandler.sendToServer(new PacketTile("frequency_C>S", this.tileEntity, 1, this.tileEntity.getFrequency()));
+            Engine.packetHandler.sendToServer(new PacketTile("frequency_C>S", 1, this.tileEntity).addData(this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {
@@ -120,7 +121,7 @@ public class GuiLauncherScreen extends GuiICBM
             short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.lock_height_field.getText()), Short.MAX_VALUE), 3);
 
             this.tileEntity.lockHeight = newGaoDu;
-            Engine.packetHandler.sendToServer(new PacketTile("lock_height_C>S", this.tileEntity, 3, this.tileEntity.lockHeight));
+            Engine.packetHandler.sendToServer(new PacketTile("lock_height_C>S", 3, this.tileEntity).addData(this.tileEntity.lockHeight));
         }
         catch (NumberFormatException e)
         {
@@ -193,8 +194,7 @@ public class GuiLauncherScreen extends GuiICBM
 
         // Shows the status of the missile launcher
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);
-        //this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.voltage") + " " + this.tileEntity.getVoltageInput(null) + "v", 12, 137, 4210752);
-        //this.fontRenderer.drawString(UnitDisplay.getDisplayShort(this.tileEntity.getEnergyHandler().getEnergy(), Unit.JOULES) + "/" + UnitDisplay.getDisplay(this.tileEntity.getEnergyHandler().getEnergyCapacity(), Unit.JOULES), 12, 150, 4210752);
+        this.fontRenderer.drawString("Energy: " + this.tileEntity.getEnergy() + "/" + this.tileEntity.getEnergyBufferSize(), 12, 150, 4210752);
     }
 
     @Override

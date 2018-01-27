@@ -12,6 +12,8 @@ import icbm.classic.content.machines.launcher.base.TESRLauncherBase;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.content.machines.launcher.frame.TESRLauncherFrame;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
+import icbm.classic.content.machines.launcher.screen.TESRLauncherScreen;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.TESRRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.prefab.BlockICBM;
@@ -87,6 +89,7 @@ public class ClientProxy extends CommonProxy
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new TESRLauncherFrame());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherScreen.class, new TESRLauncherScreen());
     }
 
     protected void registerExBlockRenders()

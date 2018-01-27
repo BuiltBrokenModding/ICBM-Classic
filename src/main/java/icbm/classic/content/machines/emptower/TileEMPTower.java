@@ -1,12 +1,12 @@
 package icbm.classic.content.machines.emptower;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.vector.Pos;
@@ -96,7 +96,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     }
 
     @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, PacketType type)
+    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket type)
     {
         if (!super.read(data, id, player, type))
         {

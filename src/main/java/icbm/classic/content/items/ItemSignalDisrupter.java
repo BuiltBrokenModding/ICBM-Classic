@@ -1,9 +1,9 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
-import com.builtbroken.mc.core.network.IPacketReceiver;
-import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFrequency, IPacketReceiver, IGuiTile
+public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFrequency, IPacketIDReceiver, IGuiTile
 {
     public ItemSignalDisrupter()
     {
@@ -57,7 +57,7 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
     }
 
     @Override
-    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
+    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
         int slot = buf.readInt();
         float frequency = buf.readFloat();
@@ -72,6 +72,7 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
                 ((ItemSignalDisrupter) clientItem).setBroadCastHz(itemStack, frequency);
             }
         }
+        return true;
     }
 
     @Override

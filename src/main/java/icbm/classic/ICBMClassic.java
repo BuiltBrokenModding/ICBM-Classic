@@ -21,6 +21,7 @@ import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.content.machines.launcher.frame.BlockLaunchFrame;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.BlockLaunchScreen;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -254,6 +255,7 @@ public final class ICBMClassic extends AbstractMod
         GameRegistry.registerTileEntity(TileRadarStation.class, PREFIX + "radarstation");
         GameRegistry.registerTileEntity(TileLauncherFrame.class, PREFIX + "launcherframe");
         GameRegistry.registerTileEntity(TileLauncherBase.class, PREFIX + "launcherbase");
+        GameRegistry.registerTileEntity(TileLauncherScreen.class, PREFIX + "launcherscreen");
     }
 
     @SubscribeEvent
@@ -305,8 +307,8 @@ public final class ICBMClassic extends AbstractMod
         super.init(event);
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
-        OreDictionary.registerOre("dustSulfur", new ItemStack(itemSulfurDust, 1, 0));
-        OreDictionary.registerOre("dustSaltpeter", new ItemStack(itemSulfurDust, 1, 1));
+        OreDictionary.registerOre("dustSulfur", new ItemStack(itemSulfurDust));
+        OreDictionary.registerOre("dustSaltpeter", new ItemStack(itemSaltpeterDust));
 
         /** Check for existence of radioactive block. If it does not exist, then create it. */
         if (OreDictionary.getOres("blockRadioactive").size() > 0)

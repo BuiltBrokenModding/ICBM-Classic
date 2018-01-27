@@ -1,5 +1,6 @@
 package icbm.classic.prefab;
 
+import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.mc.api.abstraction.world.IPosWorld;
 import com.builtbroken.mc.api.abstraction.world.IWorld;
 import com.builtbroken.mc.api.data.IPacket;
@@ -8,7 +9,6 @@ import com.builtbroken.mc.api.tile.IPlayerUsing;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.data.Direction;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -29,7 +29,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IPosWorld, IPlayerUsing, ITickable
+public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IPosWorld, IPlayerUsing, ITickable, IByteBufWriter
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -118,9 +118,8 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public PacketTile getDescPacket()
     {
-        PacketTile packetTile = new PacketTile("desc", this);
-        packetTile.data().writeInt(DESC_PACKET_ID);
-        writeDescPacket(packetTile.data());
+        PacketTile packetTile = new PacketTile("desc", DESC_PACKET_ID, this);
+        packetTile.addData(this); //Should call back to IByteBufWriter
         return packetTile;
     }
 
@@ -156,7 +155,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     }
 
     @Override
-    public boolean read(ByteBuf buf, int id, EntityPlayer player, PacketType type)
+    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket type)
     {
         if (isClient())
         {
@@ -169,6 +168,13 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         return false;
     }
 
+    @Override
+    public final ByteBuf writeBytes(ByteBuf var1)
+    {
+        //Using this as a redirect for the desc packet
+        writeDescPacket(var1);
+        return var1;
+    }
 
     public void writeDescPacket(ByteBuf buf)
     {
@@ -203,7 +209,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     public EnumFacing getRotation()
     {
         IBlockState state = getBlockState();
-        if(state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
+        if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
         {
             return state.getValue(BlockICBM.ROTATION_PROP);
         }
@@ -222,6 +228,14 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public BlockICBM.EnumTier getTier()
     {
+        if (isClient())
+        {
+            IBlockState state = getBlockState();
+            if (state.getProperties().containsKey(BlockICBM.TIER_PROP))
+            {
+                return state.getValue(BlockICBM.TIER_PROP);
+            }
+        }
         return _tier;
     }
 

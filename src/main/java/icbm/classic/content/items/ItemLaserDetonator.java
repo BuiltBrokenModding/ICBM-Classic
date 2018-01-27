@@ -1,10 +1,10 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
-import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.hz.FakeRadioSender;
@@ -32,7 +32,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketReceiver, IItemFrequency
+public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDReceiver, IItemFrequency
 {
     public ItemLaserDetonator()
     {
@@ -52,14 +52,14 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketRec
             TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
             if (!(tileEntity instanceof ILauncherController))
             {
-                Engine.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.getBlockPos()));
+                Engine.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
             }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
-    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
+    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
         ItemStack stack = player.inventory.getCurrentItem();
         if (stack != null && stack.getItem() == this)
@@ -73,6 +73,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketRec
                 player.sendMessage(new TextComponentString("Not encoded with launch data! Right click on launcher screen to encode."));
             }
         }
+        return true;
     }
 
     @Override

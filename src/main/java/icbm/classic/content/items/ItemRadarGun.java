@@ -1,12 +1,12 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.network.IPacketReceiver;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
-import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.prefab.items.ItemWorldPos;
@@ -34,7 +34,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 6/13/2016.
  */
-public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacketReceiver
+public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacketIDReceiver
 {
     public ItemRadarGun()
     {
@@ -69,7 +69,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
             TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
             if (!(tileEntity instanceof ILauncherController))
             {
-                Engine.packetHandler.sendToServer(new PacketPlayerItem(player, objectMouseOver.getBlockPos()));
+                Engine.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
             }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
@@ -122,7 +122,7 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
     }
 
     @Override
-    public void read(ByteBuf buf, EntityPlayer player, PacketType packet)
+    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
         ItemStack stack = player.inventory.getCurrentItem();
         if (stack != null && stack.getItem() == this)
@@ -130,5 +130,6 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
             setLocation(stack, new Location(player.world, buf.readInt(), buf.readInt(), buf.readInt()));
             LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
         }
+        return true;
     }
 }

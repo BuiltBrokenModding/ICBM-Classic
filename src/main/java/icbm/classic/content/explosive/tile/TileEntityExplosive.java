@@ -1,8 +1,8 @@
 package icbm.classic.content.explosive.tile;
 
+import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.tile.IRotatable;
-import com.builtbroken.mc.core.network.IPacketReceiver;
-import com.builtbroken.mc.core.network.packet.PacketType;
+import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.data.Direction;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
@@ -16,7 +16,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-public class TileEntityExplosive extends TileEntity implements IPacketReceiver, IRotatable
+public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver, IRotatable
 {
     /** Is the tile currently exploding */
     public boolean exploding = false;
@@ -44,32 +44,26 @@ public class TileEntityExplosive extends TileEntity implements IPacketReceiver, 
     }
 
     @Override
-    public void read(ByteBuf data, EntityPlayer player, PacketType packet)
+    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
     {
-        try
+        if (id == 1)
         {
-            final byte ID = data.readByte();
-
-            if (ID == 1)
-            {
-                explosive = Explosives.get(data.readInt());
-                world.markBlockRangeForRenderUpdate(pos, pos);
-            }
-            else if (ID == 2 && !this.world.isRemote)
-            {
-                // Packet explode command
-                if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
-                {
-                    ItemStack itemStack = player.inventory.getCurrentItem();
-                    BlockExplosive.triggerExplosive(this.world, pos, this.explosive, 0);
-                    ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
-                }
-            }
+            explosive = Explosives.get(data.readInt());
+            world.markBlockRangeForRenderUpdate(pos, pos);
+            return true;
         }
-        catch (Exception e)
+        else if (id == 2 && !this.world.isRemote)
         {
-            e.printStackTrace();
+            // Packet explode command
+            if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
+            {
+                ItemStack itemStack = player.inventory.getCurrentItem();
+                BlockExplosive.triggerExplosive(this.world, pos, this.explosive, 0);
+                ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
+            }
+            return true;
         }
+        return false;
     }
 
     @Override
