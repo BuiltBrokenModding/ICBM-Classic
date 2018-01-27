@@ -290,7 +290,7 @@ public final class ICBMClassic extends AbstractMod
         Settings.load(getConfig());
 
         //Register entities
-        registerEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 50, 15);
+        registerEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 128, 15);
         registerEntity(EntityFragments.class, "ICBMFragment", 40, 8);
         registerEntity(EntityExplosive.class, "ICBMExplosive", 50, 5);
         registerEntity(EntityMissile.class, "ICBMMissile", 500, 1);

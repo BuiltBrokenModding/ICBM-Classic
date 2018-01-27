@@ -6,7 +6,6 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
-import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -35,6 +35,12 @@ public class BlockLaunchScreen extends BlockICBM
     public BlockLaunchScreen()
     {
         super("launcherScreen");
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
@@ -134,7 +140,7 @@ public class BlockLaunchScreen extends BlockICBM
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileLauncherScreen)
         {
-            tier = ((TileLauncherScreen) tile).getTier();
+            tier = ((TileLauncherScreen) tile)._tier;
         }
         return state.withProperty(TIER_PROP, tier);
     }
@@ -156,6 +162,7 @@ public class BlockLaunchScreen extends BlockICBM
         if (tile instanceof TileLauncherScreen)
         {
             ((TileLauncherScreen) tile)._tier = EnumTier.get(stack.getItemDamage());
+            ((TileLauncherScreen) tile).sendDescPacket();
         }
     }
 

@@ -21,6 +21,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import resonant.api.explosion.IExplosiveContainer;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.IMissile;
@@ -105,6 +107,20 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.inAirKillTime = 144000 /* 2 hours */;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return this.getEntityBoundingBox().expand(5, 5, 5);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isInRangeToRenderDist(double distance)
+    {
+        return distance < 500;
     }
 
     public String getEntityName()

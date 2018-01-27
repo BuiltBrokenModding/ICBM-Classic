@@ -228,14 +228,6 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public BlockICBM.EnumTier getTier()
     {
-        if (isClient())
-        {
-            IBlockState state = getBlockState();
-            if (state.getProperties().containsKey(BlockICBM.TIER_PROP))
-            {
-                return state.getValue(BlockICBM.TIER_PROP);
-            }
-        }
         return _tier;
     }
 

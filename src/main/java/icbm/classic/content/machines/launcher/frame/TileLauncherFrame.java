@@ -9,11 +9,14 @@ import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.prefab.TileMachine;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 
@@ -34,6 +37,11 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
 
     private boolean _destroyingStructure = false;
 
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    {
+        return false;
+    }
 
     /** Gets the inaccuracy of the missile based on the launcher support frame's tier */
     public int getInaccuracy()

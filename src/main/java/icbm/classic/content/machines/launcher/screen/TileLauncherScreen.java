@@ -16,12 +16,15 @@ import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.prefab.BlockICBM;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import resonant.api.explosion.ILauncherController;
 import resonant.api.explosion.LauncherType;
 
@@ -87,6 +90,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 sendDescPacket();
             }
         }
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    {
+        return false;
     }
 
     @Override
@@ -197,7 +206,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusNoPower");
         }
-        else if (this.laucherBase.getMissileStack() == null)
+        else if (this.laucherBase.getMissileStack().isEmpty())
         {
             status = LanguageUtility.getLocal("gui.launcherScreen.statusEmpty");
         }
@@ -280,27 +289,30 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data)
     {
-        //Floor frequency as we do not care about sub ranges
-        int frequency = (int) Math.floor(hz);
-        //Only tier 3 (2 for tier value) can be remotely fired
-        if (getTier() == BlockICBM.EnumTier.THREE && frequency == getFrequency() && laucherBase != null)
+        if(isServer())
         {
-            //Laser detonator signal
-            if (messageHeader.equals("activateLauncherWithTarget"))
+            //Floor frequency as we do not care about sub ranges
+            int frequency = (int) Math.floor(hz);
+            //Only tier 3 (2 for tier value) can be remotely fired
+            if (getTier() == BlockICBM.EnumTier.THREE && frequency == getFrequency() && laucherBase != null)
             {
-                Pos pos = (Pos) data[0];
-                if (toPos().distance(pos) < this.laucherBase.getRange())
+                //Laser detonator signal
+                if (messageHeader.equals("activateLauncherWithTarget"))
                 {
-                    setTarget(pos);
-                    launch();
-                    ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + pos));
+                    Pos pos = (Pos) data[0];
+                    if (toPos().distance(pos) < this.laucherBase.getRange())
+                    {
+                        setTarget(pos);
+                        launch();
+                        ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + pos));
+                    }
                 }
-            }
-            //Remote detonator signal
-            else if (messageHeader.equals("activateLauncher"))
-            {
-                ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
-                launch();
+                //Remote detonator signal
+                else if (messageHeader.equals("activateLauncher"))
+                {
+                    ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
+                    launch();
+                }
             }
         }
     }

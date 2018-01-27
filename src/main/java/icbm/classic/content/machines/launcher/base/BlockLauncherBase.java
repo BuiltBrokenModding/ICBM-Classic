@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -90,7 +91,7 @@ public class BlockLauncherBase extends BlockICBM
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileLauncherBase)
         {
-            tier = ((TileLauncherBase) tile).getTier();
+            tier = ((TileLauncherBase) tile)._tier;
         }
         return state.withProperty(TIER_PROP, tier);
     }
@@ -121,6 +122,12 @@ public class BlockLauncherBase extends BlockICBM
     public int damageDropped(IBlockState state)
     {
         return state.getValue(TIER_PROP).ordinal();
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Nullable

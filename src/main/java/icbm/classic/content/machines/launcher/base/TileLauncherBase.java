@@ -25,6 +25,7 @@ import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.prefab.BlockICBM;
 import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -34,6 +35,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
@@ -168,6 +171,12 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                 }
             }
         }
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    {
+        return false;
     }
 
     @Override

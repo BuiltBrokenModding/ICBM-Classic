@@ -7,6 +7,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -25,6 +26,12 @@ public class BlockLaunchFrame extends BlockICBM
     public BlockLaunchFrame()
     {
         super("launcherFrame");
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Nullable
@@ -53,7 +60,7 @@ public class BlockLaunchFrame extends BlockICBM
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileLauncherFrame)
         {
-            tier = ((TileLauncherFrame) tile).getTier();
+            tier = ((TileLauncherFrame) tile)._tier;
         }
         return state.withProperty(TIER_PROP, tier);
     }
