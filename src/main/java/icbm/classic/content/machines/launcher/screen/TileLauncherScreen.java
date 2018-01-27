@@ -98,7 +98,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", 4, this).addData(getEnergy(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return getDescPacket();
     }
 
     @Override
@@ -122,12 +122,15 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
             {
                 case 0:
                 {
-                    //this.tier = data.readInt();
-                    setEnergy(data.readInt());
-                    this.setFrequency(data.readInt());
-                    this.lockHeight = data.readShort();
-                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
-                    return true;
+                    if(isClient())
+                    {
+                        //this.tier = data.readInt();
+                        setEnergy(data.readInt());
+                        this.setFrequency(data.readInt());
+                        this.lockHeight = data.readShort();
+                        this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                        return true;
+                    }
                 }
                 case 1:
                 {
@@ -142,12 +145,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 case 3:
                 {
                     this.lockHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
-                    return true;
-                }
-                case 4:
-                {
-                    setEnergy(data.readInt());
-                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
             }
