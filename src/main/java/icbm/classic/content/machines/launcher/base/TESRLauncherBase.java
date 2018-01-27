@@ -71,24 +71,20 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
         }
         GlStateManager.popMatrix();
 
-        //TODO move to missile render class
+        //Render missile
         if (!launcher.getMissileStack().isEmpty())
         {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5F, y + 0.3f, z + 0.5F);
-            if (launcher.getRotation() == EnumFacing.SOUTH)
+            GlStateManager.translate(x + 0.5F, y + 0.7f, z + 0.5F);
+            if (launcher.getRotation() == EnumFacing.NORTH || launcher.getRotation() == EnumFacing.SOUTH)
             {
-                GlStateManager.rotate(180F, 0.0F, 1F, 0);
+                GlStateManager.translate(0.05, 0, -0.1);
+                GlStateManager.rotate(90F, 0F, 1F, 0F);
             }
-            else if (launcher.getRotation() == EnumFacing.WEST)
+            else
             {
-                GlStateManager.rotate(90F, 0.0F, 1F, 0);
+                GlStateManager.translate(0.1, 0, 0.05);
             }
-            else if (launcher.getRotation() == EnumFacing.EAST)
-            {
-                GlStateManager.rotate(-90F, 0.0F, 1F, 0);
-            }
-            GlStateManager.translate(0, 0, .13);
             GlStateManager.scale(2, 2, 2);
 
 

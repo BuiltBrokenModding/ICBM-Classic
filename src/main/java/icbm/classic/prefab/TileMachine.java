@@ -192,12 +192,12 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public boolean isServer()
     {
-        return !world.isRemote;
+        return world != null && !world.isRemote;
     }
 
     public boolean isClient()
     {
-        return world.isRemote;
+        return world != null && world.isRemote;
     }
 
     public EnumFacing getRotation()

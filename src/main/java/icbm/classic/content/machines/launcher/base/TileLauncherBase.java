@@ -77,7 +77,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public EntityPlayerSeat seat;
 
     // The tier of this launcher base
-    protected int tier = 0;
     private boolean _destroyingStructure = false;
 
     ExternalInventory inventory;
@@ -114,7 +113,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                 }
 
                 //Create seat if missile
-                if (getMissileStack() != null && seat == null)
+                if (!getMissileStack().isEmpty() && seat == null)
                 {
                     seat = new EntityPlayerSeat(world);
                     seat.host = this;
@@ -124,7 +123,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     world.spawnEntity(seat);
                 }
                 //Destroy seat if no missile
-                else if (getMissileStack() == null && seat != null)
+                else if (getMissileStack().isEmpty() && seat != null)
                 {
                     if (seat.getRidingEntity() != null)
                     {
@@ -207,7 +206,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public boolean launchMissile(Pos target, int lockHeight)
     {
         final ItemStack stack = getMissileStack();
-        if (stack != null && stack.getItem() == ICBMClassic.itemMissile)
+        if (stack.getItem() == ICBMClassic.itemMissile)
         {
             Explosive ex = Explosives.get(stack.getItemDamage()).handler;
             if (ex.hasMissileForm())
@@ -300,16 +299,16 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
 
     public double getRange()
     {
-        return getRangeForTier(tier);
+        return getRangeForTier(getTier());
     }
 
-    public static double getRangeForTier(int tier)
+    public static double getRangeForTier(BlockICBM.EnumTier tier)
     {
-        if (tier == 0)
+        if (tier == BlockICBM.EnumTier.ONE)
         {
             return Settings.LAUNCHER_RANGE_TIER1;
         }
-        else if (tier == 1)
+        else if (tier == BlockICBM.EnumTier.TWO)
         {
             return Settings.LAUNCHER_RANGE_TIER2;
         }
@@ -321,14 +320,14 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.tier = nbt.getInteger("tier");
+        getInventory().load(nbt.getCompoundTag("inventory"));
     }
 
     /** Writes a tile entity to NBT. */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("tier", getTier().ordinal());
+        nbt.setTag("inventory", getInventory().save(new NBTTagCompound()));
         return super.writeToNBT(nbt);
     }
 
