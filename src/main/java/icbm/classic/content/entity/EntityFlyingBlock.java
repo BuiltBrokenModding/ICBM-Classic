@@ -109,7 +109,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 
         this.motionY -= gravity;
 
-        if (this.isCollided)
+        if (this.collided)
         {
             this.setPosition(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
         }

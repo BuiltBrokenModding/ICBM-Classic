@@ -35,7 +35,7 @@ public class BlastMine extends Blast
 
         if (!this.oldWorld().isRemote)
         {
-            if (this.callCount < 20 * 2 && !this.controller.isCollided)
+            if (this.callCount < 20 * 2 && !this.controller.collided)
             {
                 return;
             }
