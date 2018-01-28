@@ -12,24 +12,27 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-        classpath 'net.saliman:gradle-cobertura-plugin:2.0.0' // cobertura plugin
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
-        classpath 'org.ajoberstar:gradle-git:0.10.1'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
 plugins {
+  //Applies the Build scan plugin so i can upload issues easily and link to gradle devs
+  //id 'com.gradle.build-scan' version '1.4'
+  //applies CurseGradle plugin for uploading to CurseForge
   id "com.matthewprenger.cursegradle" version "1.0.9"
-  id 'net.saliman.cobertura' version '2.2.5'
-  id 'com.github.kt3k.coveralls' version '2.0.1'
-  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
+  // id "net.saliman.cobertura" version "2.5.3"
+  // id "com.github.kt3k.coveralls" version "2.8.2"
+  //id "com.github.johnrengelman.shadow" version "1.2.2"
+  id "net.franz-becker.gradle-lombok" version "1.3"
+  id 'com.jfrog.bintray' version '1.1'
+  //Applies the changelog pluginid 
+  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.55"
+  id "org.ajoberstar.grgit" version "2.1.0"
 }
 
-apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/buildScripts/index/index.gradle'
-apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'jacoco'
-apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/buildScripts/scripts/forge/deps.gradle'
+apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
+apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/scripts/forge/deps.gradle'
 
 minecraft {
     replace "required-after:voltzengine", "required-after:voltzengine@[$voltz_engine_version,)"
@@ -40,7 +43,7 @@ targetCompatibility = 1.8
 
 dependencies
 {
-    compile ("com.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf") { changing = true }
+    compile ("com.builtbroken.voltzengine:VoltzEngine:$minecraft.version-$voltz_engine_version+:deobf") { changing = true }
     compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
     compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
     compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
@@ -55,10 +58,8 @@ import org.ajoberstar.grgit.*
 
 def gitHash = 'unknown'
 if (new File(projectDir, '.git').exists()) {
-    def repo = Grgit.open(project.file('.'))
-    gitHash = repo.log().find().abbreviatedId
-}
-
+    def repo = Grgit.open(currentDir: file('.'))
+  }
 jar {
      manifest.mainAttributes(
             "Built-By": System.getProperty('user.name'),
@@ -87,11 +88,4 @@ sourcesJar {
             "Implementation-Version": project.version,
             "Git-Hash": gitHash,
             "FMLAT": "ICBMClassic_at.cfg")
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
 }
