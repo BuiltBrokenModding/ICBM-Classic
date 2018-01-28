@@ -61,6 +61,9 @@ public class ClientProxy extends CommonProxy
         registerCartRenders();
         registerMissileRenders();
 
+        //Machines
+        newBlockModel(ICBMClassic.blockEmpTower, 0, "inventory", "");
+
         //items
         newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");
         newItemModel(ICBMClassic.itemSulfurDust, 0, "inventory", "");
