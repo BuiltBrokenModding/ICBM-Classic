@@ -105,7 +105,7 @@ public class BlastEMP extends Blast
             if (this.effectEntities)
             {
                 // Drop all missiles
-                List<Entity> entitiesNearby = RadarRegistry.getAllLivingObjectsWithin(oldWorld(), new Cube(position.sub(getRadius()), position.add(getRadius())), null);
+                List<Entity> entitiesNearby = RadarRegistry.getAllLivingObjectsWithin(oldWorld(), new Cube(position.sub(getRadius()), position.add(getRadius())));
 
                 for (Entity entity : entitiesNearby)
                 {
