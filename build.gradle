@@ -43,7 +43,7 @@ targetCompatibility = 1.8
 
 dependencies
 {
-    compile ("com.builtbroken.voltzengine:VoltzEngine:$minecraft.version-$voltz_engine_version+:deobf") { changing = true }
+    compile ("com.builtbroken.voltzengine:VoltzEngine:$voltz_engine_version+:deobf") { changing = true }
 }
 
 def currentJvm = org.gradle.internal.jvm.Jvm.current()
