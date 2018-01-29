@@ -44,11 +44,6 @@ targetCompatibility = 1.8
 dependencies
 {
     compile ("com.builtbroken.voltzengine:VoltzEngine:$minecraft.version-$voltz_engine_version+:deobf") { changing = true }
-    compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
-    compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
-    compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
-    compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
-    compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
 }
 
 def currentJvm = org.gradle.internal.jvm.Jvm.current()
