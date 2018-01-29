@@ -70,9 +70,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.Arrays;
 
 /**
- * Main class for ICBM core to run on. The core will need to be initialized by each ICBM module.
+ * Mod class for ICBM Classic, contains all loading code and references to objects crated by the mod.
  *
- * @author Calclavia
+ * @author DarkGuardsman
+ * Orginal author and creator of the mod: Calclavia
  */
 @Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
 @Mod.EventBusSubscriber
@@ -94,7 +95,8 @@ public final class ICBMClassic extends AbstractMod
     public static final String MINOR_VERSION = "@MINOR@";
     public static final String REVISION_VERSION = "@REVIS@";
     public static final String BUILD_VERSION = "@BUILD@";
-    public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
+    public static final String MC_VERSION = "@MC@";
+    public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
     public static final String DEPENDENCIES = "required-after:voltzengine;after:OpenComputers";
 
     public static final int ENTITY_ID_PREFIX = 50;
