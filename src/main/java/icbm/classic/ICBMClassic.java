@@ -97,7 +97,7 @@ public final class ICBMClassic extends AbstractMod
     public static final String BUILD_VERSION = "@BUILD@";
     public static final String MC_VERSION = "@MC@";
     public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
-    public static final String DEPENDENCIES = "required-after:voltzengine";
+    public static final String DEPENDENCIES = "required-after:voltzengine;";
 
     public static final int ENTITY_ID_PREFIX = 50;
     private static int nextID = ENTITY_ID_PREFIX;
