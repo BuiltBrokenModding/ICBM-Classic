@@ -35,7 +35,7 @@ apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScr
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/scripts/forge/deps.gradle'
 
 minecraft {
-    replace "required-after:voltzengine", "required-after:voltzengine@[$voltz_engine_version,)"
+    //replace "required-after:voltzengine", "required-after:voltzengine@[$voltz_engine_version,)"
 }
 
 sourceCompatibility = 1.8
