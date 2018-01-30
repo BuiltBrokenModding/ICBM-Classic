@@ -25,7 +25,7 @@ public class BlockLaunchFrame extends BlockICBM
 {
     public BlockLaunchFrame()
     {
-        super("launcherFrame");
+        super("launcherframe");
     }
 
     @Override

@@ -41,32 +41,32 @@ item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %s rockets
 
 ## ICBM Machines
-tile.icbmclassic:launcherBase.0.name=Launcher Platform T1
-tile.icbmclassic:launcherBase.1.name=Launcher Platform T2
-tile.icbmclassic:launcherBase.2.name=Launcher Platform T3
-tile.icbmclassic:launcherBase.info=Hold missiles in place before launch
+tile.icbmclassic:launcherbase.0.name=Launcher Platform T1
+tile.icbmclassic:launcherbase.1.name=Launcher Platform T2
+tile.icbmclassic:launcherbase.2.name=Launcher Platform T3
+tile.icbmclassic:launcherbase.info=Hold missiles in place before launch
 
-tile.icbmclassic:launcherScreen.0.name=Launcher Control Panel T1
-tile.icbmclassic:launcherScreen.1.name=Launcher Control Panel T2
-tile.icbmclassic:launcherScreen.2.name=Launcher Control Panel T3
-tile.icbmclassic:launcherScreen.info=Used to fire missiles from launchers
+tile.icbmclassic:launcherscreen.0.name=Launcher Control Panel T1
+tile.icbmclassic:launcherscreen.1.name=Launcher Control Panel T2
+tile.icbmclassic:launcherscreen.2.name=Launcher Control Panel T3
+tile.icbmclassic:launcherscreen.info=Used to fire missiles from launchers
 
-tile.icbmclassic:launcherFrame.0.name=Launcher Support Frame T1
-tile.icbmclassic:launcherFrame.1.name=Launcher Support Frame T2
-tile.icbmclassic:launcherFrame.2.name=Launcher Support Frame T3
-tile.icbmclassic:launcherFrame.info=Improves accuracy of missiles
+tile.icbmclassic:launcherframe.0.name=Launcher Support Frame T1
+tile.icbmclassic:launcherframe.1.name=Launcher Support Frame T2
+tile.icbmclassic:launcherframe.2.name=Launcher Support Frame T3
+tile.icbmclassic:launcherframe.info=Improves accuracy of missiles
 
-tile.icbmclassic:radarStation.name=Radar Station
-tile.icbmclassic:radarStation.info=Detects missiles in flight
+tile.icbmclassic:radarstation.name=Radar Station
+tile.icbmclassic:radarstation.info=Detects missiles in flight
 
-tile.icbmclassic:empTower.name=EMP Tower
-tile.icbmclassic:empTower.info=Drains energy from tiles, entities and devices
+tile.icbmclassic:emptower.name=EMP Tower
+tile.icbmclassic:emptower.info=Drains energy from tiles, entities and devices
 
-tile.icbmclassic:cruiseLauncher.name=Cruise Launcher
-tile.icbmclassic:cruiseLauncher.info=Dummy fires a missile, without target data
+tile.icbmclassic:cruiselauncher.name=Cruise Launcher
+tile.icbmclassic:cruiselauncher.info=Dummy fires a missile, without target data
 
-tile.icbmclassic:missileCoordinator.name=Missile Coordinator
-tile.icbmclassic:missileCoordinator.info=Over sized calculator, calculates flight paths
+tile.icbmclassic:missilecoordinator.name=Missile Coordinator
+tile.icbmclassic:missilecoordinator.info=Over sized calculator, calculates flight paths
 
 ## Blocks
 tile.icbmclassic:reinforcedRail.name=Reinforced Rail
@@ -295,18 +295,18 @@ gui.empTower.ready=Ready to blast!
 
 gui.launcherBase.name=Launcher Platform
 gui.launcherBase.place=Place Missile
-gui.launcherScreen.name=Launcher Control Panel
-gui.launcherScreen.detHeight=Detonation Height:
-gui.launcherScreen.lockHeight=Lock Height:
-gui.launcherScreen.target=Missile Target
-gui.launcherScreen.inaccuracy=Inaccuracy: %p blocks
-gui.launcherScreen.statusMissing=Not connected!
-gui.launcherScreen.statusNoPower=Insufficient electricity!
-gui.launcherScreen.statusEmpty=Missile silo is empty!
-gui.launcherScreen.statusInvalid=Target is invalid!
-gui.launcherScreen.statusClose=Target too close!
-gui.launcherScreen.statusFar=Target too far!
-gui.launcherScreen.statusReady=Ready to launch!
+gui.launcherscreen.name=Launcher Control Panel
+gui.launcherscreen.detHeight=Detonation Height:
+gui.launcherscreen.lockHeight=Lock Height:
+gui.launcherscreen.target=Missile Target
+gui.launcherscreen.inaccuracy=Inaccuracy: %p blocks
+gui.launcherscreen.statusMissing=Not connected!
+gui.launcherscreen.statusNoPower=Insufficient electricity!
+gui.launcherscreen.statusEmpty=Missile silo is empty!
+gui.launcherscreen.statusInvalid=Target is invalid!
+gui.launcherscreen.statusClose=Target too close!
+gui.launcherscreen.statusFar=Target too far!
+gui.launcherscreen.statusReady=Ready to launch!
 
 
 gui.launcherCruise.name=Cruise Launcher

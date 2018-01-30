@@ -202,7 +202,7 @@ public final class ICBMClassic extends AbstractMod
         event.getRegistry().register(new ItemBlock(blockGlassButton).setRegistryName(blockGlassButton.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockSpikes).setRegistryName(blockSpikes.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockConcrete).setRegistryName(blockConcrete.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockReinforcedGlass).setRegistryName(blockReinforcedGlass.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(blockReinforcedGlass).setRegistryName(blockReinforcedGlass.getRegistryName()));
         event.getRegistry().register(new ItemBlockExplosive(blockExplosive).setRegistryName(blockExplosive.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockEmpTower).setRegistryName(blockEmpTower.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockRadarStation).setRegistryName(blockRadarStation.getRegistryName()));

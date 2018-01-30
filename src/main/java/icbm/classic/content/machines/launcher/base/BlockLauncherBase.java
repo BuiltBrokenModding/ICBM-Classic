@@ -27,7 +27,7 @@ public class BlockLauncherBase extends BlockICBM
 {
     public BlockLauncherBase()
     {
-        super("launcherBase", Material.IRON);
+        super("launcherbase", Material.IRON);
         this.setDefaultState(this.blockState.getBaseState().withProperty(ROTATION_PROP, EnumFacing.NORTH).withProperty(TIER_PROP, EnumTier.ONE));
         this.blockHardness = 10f;
         this.blockResistance = 10f;

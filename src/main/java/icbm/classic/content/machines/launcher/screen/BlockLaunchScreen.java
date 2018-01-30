@@ -34,7 +34,7 @@ public class BlockLaunchScreen extends BlockICBM
 {
     public BlockLaunchScreen()
     {
-        super("launcherScreen");
+        super("launcherscreen");
     }
 
     @Override
