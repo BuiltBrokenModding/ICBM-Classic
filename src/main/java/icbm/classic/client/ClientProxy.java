@@ -67,6 +67,7 @@ public class ClientProxy extends CommonProxy
         //Machines
         newBlockModel(ICBMClassic.blockEmpTower, 0, "inventory", "");
         newBlockModel(ICBMClassic.blockRadarStation, 0, "inventory", "");
+        newBlockModel(ICBMClassic.blockLaunchBase, 0, "inventory", "");
 
         //items
         newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");

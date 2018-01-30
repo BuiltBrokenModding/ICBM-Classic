@@ -1,0 +1,128 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:launcher/launcher.obj",
+    "transform": {
+      "thirdperson_lefthand": {
+        "rotation": [
+          {
+            "x": 90
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          -0.25,
+          0,
+          0
+        ],
+        "scale": 0.5
+      },
+      "thirdperson_righthand": {
+        "rotation": [
+          {
+            "x": 90
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0.25,
+          0,
+          0
+        ],
+        "scale": 0.5
+      },
+      "gui": {
+        "rotation": [
+          {
+            "x": 25
+          },
+          {
+            "y": 45
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0.3,
+          -0.2,
+          0
+        ],
+        "scale": 0.4
+      },
+      "firstperson_righthand": {
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0.3,
+          0,
+          0
+        ],
+        "scale": 0.5
+      },
+      "firstperson_lefthand": {
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0,
+          0,
+          0
+        ],
+        "scale": 0.5
+      },
+      "ground": {
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 0
+          }
+        ],
+        "translation": [
+          0.11,
+          0,
+          0.11
+        ],
+        "scale": 0.3
+      }
+    }
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ]
+  }
+}
+
