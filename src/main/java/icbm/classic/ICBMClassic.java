@@ -52,7 +52,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -150,7 +149,6 @@ public final class ICBMClassic extends AbstractMod
     public ICBMClassic()
     {
         super(ICBMClassic.DOMAIN, "/bbm/ICBM-Classic");
-        OBJLoader.INSTANCE.addDomain(DOMAIN);
     }
 
     @Override

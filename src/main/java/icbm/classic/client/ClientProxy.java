@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,6 +41,8 @@ public class ClientProxy extends CommonProxy
     @Override
     public void doLoadModels()
     {
+        OBJLoader.INSTANCE.addDomain(ICBMClassic.DOMAIN);
+
         //Glass
         newBlockModel(ICBMClassic.blockReinforcedGlass, 0, "inventory", "");
         newBlockModel(ICBMClassic.blockGlassPlate, 0, "inventory", "");
