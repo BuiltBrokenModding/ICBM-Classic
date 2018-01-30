@@ -67,7 +67,7 @@ public class ClientProxy extends CommonProxy
         //Machines
         newBlockModel(ICBMClassic.blockEmpTower, 0, "inventory", "");
         newBlockModel(ICBMClassic.blockRadarStation, 0, "inventory", "");
-        newBlockModel(ICBMClassic.blockLaunchBase, 0, "inventory", "");
+        registerLauncherBase();
 
         //items
         newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");
@@ -121,6 +121,26 @@ public class ClientProxy extends CommonProxy
                 String properties_string = getPropertyString(state.getProperties());
                 ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockExplosive), ex.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
             }
+        }
+    }
+
+    protected void registerLauncherBase()
+    {
+        final String resourcePath = ICBMClassic.blockLaunchBase.getRegistryName().toString();
+
+        ModelLoader.setCustomStateMapper(ICBMClassic.blockLaunchBase, new DefaultStateMapper()
+        {
+            @Override
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
+            {
+                return new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties()));
+            }
+        });
+        for (BlockICBM.EnumTier tier : new BlockICBM.EnumTier[]{BlockICBM.EnumTier.ONE, BlockICBM.EnumTier.TWO, BlockICBM.EnumTier.THREE})
+        {
+            IBlockState state = ICBMClassic.blockLaunchBase.getDefaultState().withProperty(BlockICBM.TIER_PROP, tier).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
+            String properties_string = getPropertyString(state.getProperties());
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockLaunchBase), tier.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
         }
     }
 

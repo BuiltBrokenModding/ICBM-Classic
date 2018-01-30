@@ -54,11 +54,11 @@
           }
         ],
         "translation": [
-          0.3,
+          0.15,
           -0.2,
           0
         ],
-        "scale": 0.4
+        "scale": 0.25
       },
       "firstperson_righthand": {
         "rotation": [
@@ -120,9 +120,40 @@
     }
   },
   "variants": {
-    "inventory": [
-      {}
-    ]
+    "tier": {
+      "one" :
+      {
+        "model": "icbmclassic:launcher/launcher.obj"
+      },
+      "two" :
+      {
+        "model": "icbmclassic:launcher/launcher_tier_2.obj"
+      },
+      "three" :
+      {
+        "model": "icbmclassic:launcher/launcher_tier_3.obj"
+      }
+    },
+    "rotation": {
+      "up": {},
+      "down": {
+        "x": 180
+      },
+      "north": {
+        "x": 90
+      },
+      "south": {
+        "x": 270
+      },
+      "east": {
+        "x": 90,
+        "y": 90
+      },
+      "west": {
+        "x": 90,
+        "y": 270
+      }
+    }
   }
 }
 
