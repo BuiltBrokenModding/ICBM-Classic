@@ -7,7 +7,7 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.items.ItemTracker;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,7 +22,7 @@ public class MissileHoming extends Missile
 {
     public MissileHoming()
     {
-        super("homing", BlockICBM.EnumTier.ONE);
+        super("homing", EnumTier.ONE);
         this.hasBlock = false;
         //this.missileModelPath = "missiles/tier1/missile_head_homing.obj";
     }

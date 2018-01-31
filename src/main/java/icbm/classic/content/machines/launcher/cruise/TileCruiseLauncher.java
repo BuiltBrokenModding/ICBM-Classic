@@ -19,7 +19,7 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -340,7 +340,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             {
                 Explosion missile = (Explosion) Explosives.get(itemStack.getItemDamage()).handler;
 
-                if (missile.isCruise() && missile.getTier().ordinal() <= BlockICBM.EnumTier.THREE.ordinal())
+                if (missile.isCruise() && missile.getTier().ordinal() <= EnumTier.THREE.ordinal())
                 {
                     return true;
                 }

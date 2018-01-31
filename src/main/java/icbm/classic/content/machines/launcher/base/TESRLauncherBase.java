@@ -4,7 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.*;
 import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
@@ -47,13 +47,13 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
         }
 
         // The missile launcher screen
-        if (launcher.getTier() == BlockICBM.EnumTier.ONE)
+        if (launcher.getTier() == EnumTier.ONE)
         {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
             modelBase0.render(0.0625F);
             modelRail0.render(0.0625F);
         }
-        else if (launcher.getTier() == BlockICBM.EnumTier.TWO)
+        else if (launcher.getTier() == EnumTier.TWO)
         {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
             modelBase1.render(0.0625F);
@@ -61,7 +61,7 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
             GL11.glRotatef(180F, 0F, 180F, 1.0F);
             modelRail1.render(0.0625F);
         }
-        else if (launcher.getTier() == BlockICBM.EnumTier.THREE)
+        else if (launcher.getTier() == EnumTier.THREE)
         {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
             modelBase2.render(0.0625F);

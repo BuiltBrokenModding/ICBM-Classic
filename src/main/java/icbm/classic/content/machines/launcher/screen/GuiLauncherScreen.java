@@ -11,6 +11,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 
+@SideOnly(Side.CLIENT)
 public class GuiLauncherScreen extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");

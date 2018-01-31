@@ -3,7 +3,7 @@ package icbm.classic.content.explosive;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.framework.explosive.handler.ExplosiveHandler;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +20,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     /** The unique identification name for this explosive. */
     private String nameID;
     /** The tier of this explosive */
-    private BlockICBM.EnumTier tier;
+    private EnumTier tier;
     /** The fuse of this explosive */
     private int fuseTime;
     /** Is this explosive disabled? */
@@ -38,7 +38,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     public boolean renderBodyForMissilTier = true;
     public float missileRenderScale = 1f; //0.00625f
 
-    protected Explosive(String name, BlockICBM.EnumTier tier)
+    protected Explosive(String name, EnumTier tier)
     {
         super(name);
         this.nameID = name;
@@ -47,8 +47,8 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
 
         this.hasBlock = true;
         this.hasMissile = true;
-        this.hasGrenade = this.tier.ordinal() <= BlockICBM.EnumTier.ONE.ordinal();
-        this.hasMinecart = this.tier.ordinal() <= BlockICBM.EnumTier.TWO.ordinal();
+        this.hasGrenade = this.tier.ordinal() <= EnumTier.ONE.ordinal();
+        this.hasMinecart = this.tier.ordinal() <= EnumTier.TWO.ordinal();
 
         //this.flagName = //FlagRegistry.registerFlag("ban_" + this.nameID);
         this.isDisabled = false;//Settings.CONFIGURATION.get("Disable_Explosives", "Disable " + this.nameID, false).getBoolean(false);
@@ -92,7 +92,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
     }
 
 
-    public BlockICBM.EnumTier getTier()
+    public EnumTier getTier()
     {
         return this.tier;
     }

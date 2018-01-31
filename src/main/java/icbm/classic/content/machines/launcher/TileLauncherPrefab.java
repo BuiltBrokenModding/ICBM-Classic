@@ -19,7 +19,10 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     public void onLoad()
     {
         super.onLoad();
-        RadioRegistry.add(this);
+        if (isServer())
+        {
+            RadioRegistry.add(this);
+        }
     }
 
     @Override

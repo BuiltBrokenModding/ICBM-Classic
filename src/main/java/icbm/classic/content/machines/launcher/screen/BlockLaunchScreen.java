@@ -7,6 +7,7 @@ import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -162,7 +163,6 @@ public class BlockLaunchScreen extends BlockICBM
         if (tile instanceof TileLauncherScreen)
         {
             ((TileLauncherScreen) tile)._tier = EnumTier.get(stack.getItemDamage());
-            ((TileLauncherScreen) tile).sendDescPacket();
         }
     }
 

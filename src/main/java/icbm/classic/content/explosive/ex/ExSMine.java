@@ -6,7 +6,7 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.client.models.ModelSMine;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.blast.BlastMine;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ExSMine extends Explosive
 {
-    public ExSMine(String mingZi, BlockICBM.EnumTier tier)
+    public ExSMine(String mingZi, EnumTier tier)
     {
         super(mingZi, tier);
         this.setFuseTime(20);

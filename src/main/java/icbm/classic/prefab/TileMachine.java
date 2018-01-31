@@ -42,7 +42,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     protected int ticks = 0;
 
     // Cache until block state can be updated
-    public BlockICBM.EnumTier _tier = BlockICBM.EnumTier.ONE;
+    public EnumTier _tier = EnumTier.ONE;
 
     List<EntityPlayer> playersWithGUI = new ArrayList();
 
@@ -88,7 +88,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        _tier = BlockICBM.EnumTier.get(compound.getInteger("tier"));
+        _tier = EnumTier.get(compound.getInteger("tier"));
     }
 
     @Override
@@ -183,7 +183,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
 
     public void readDescPacket(ByteBuf buf)
     {
-        _tier = BlockICBM.EnumTier.get(buf.readInt());
+        _tier = EnumTier.get(buf.readInt());
     }
 
     /**
@@ -226,12 +226,12 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         }
     }
 
-    public BlockICBM.EnumTier getTier()
+    public EnumTier getTier()
     {
         return _tier;
     }
 
-    public void setTier(BlockICBM.EnumTier tier)
+    public void setTier(EnumTier tier)
     {
         if (tier != getTier())
         {

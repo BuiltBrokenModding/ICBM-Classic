@@ -10,7 +10,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public class ExEnder extends Explosion
 {
     public ExEnder()
     {
-        super("ender", BlockICBM.EnumTier.FOUR);
+        super("ender", EnumTier.FOUR);
     }
 
     @Override

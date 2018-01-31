@@ -14,7 +14,7 @@ import com.builtbroken.mc.prefab.hz.FakeRadioSender;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -131,7 +131,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
             {
                 case 0:
                 {
-                    if(isClient())
+                    if (isClient())
                     {
                         //this.tier = data.readInt();
                         setEnergy(data.readInt());
@@ -289,12 +289,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data)
     {
-        if(isServer())
+        if (isServer())
         {
             //Floor frequency as we do not care about sub ranges
             int frequency = (int) Math.floor(hz);
             //Only tier 3 (2 for tier value) can be remotely fired
-            if (getTier() == BlockICBM.EnumTier.THREE && frequency == getFrequency() && laucherBase != null)
+            if (getTier() == EnumTier.THREE && frequency == getFrequency() && laucherBase != null)
             {
                 //Laser detonator signal
                 if (messageHeader.equals("activateLauncherWithTarget"))

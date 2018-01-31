@@ -7,7 +7,7 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +19,7 @@ public class MissileCluster extends Missile
     public static final int MAX_CLUSTER = 12;
     protected double spread = 20;
 
-    public MissileCluster(String name, BlockICBM.EnumTier tier)
+    public MissileCluster(String name, EnumTier tier)
     {
         super(name, tier);
         this.hasBlock = false;

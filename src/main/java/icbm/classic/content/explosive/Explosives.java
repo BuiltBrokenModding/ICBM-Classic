@@ -3,9 +3,12 @@ package icbm.classic.content.explosive;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.ex.*;
 import icbm.classic.content.explosive.ex.missiles.*;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Enum of explosives for use a metadata in items and quick reference of values
@@ -15,30 +18,30 @@ import net.minecraft.util.IStringSerializable;
  */
 public enum Explosives implements IStringSerializable
 {
-    CONDENSED(new ExCondensed("condensed", BlockICBM.EnumTier.ONE)),
-    SHRAPNEL(new ExShrapnel("shrapnel", BlockICBM.EnumTier.ONE)),
-    INCENDIARY(new ExIncendiary("incendiary", BlockICBM.EnumTier.ONE)),
-    DEBLITATION(new ExDebilitation("debilitation", BlockICBM.EnumTier.ONE)),
-    CHEMICAL(new ExChemical("chemical", BlockICBM.EnumTier.ONE)),
-    ANVIL(new ExShrapnel("anvil", BlockICBM.EnumTier.ONE)),
-    REPLUSIVE(new ExRepulsive("repulsive", BlockICBM.EnumTier.ONE)),
-    ATTRACTIVE(new ExRepulsive("attractive", BlockICBM.EnumTier.ONE)),
+    CONDENSED(new ExCondensed("condensed", EnumTier.ONE)),
+    SHRAPNEL(new ExShrapnel("shrapnel", EnumTier.ONE)),
+    INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
+    DEBLITATION(new ExDebilitation("debilitation", EnumTier.ONE)),
+    CHEMICAL(new ExChemical("chemical", EnumTier.ONE)),
+    ANVIL(new ExShrapnel("anvil", EnumTier.ONE)),
+    REPLUSIVE(new ExRepulsive("repulsive", EnumTier.ONE)),
+    ATTRACTIVE(new ExRepulsive("attractive", EnumTier.ONE)),
 
-    FRAGMENTATION(new ExShrapnel("fragmentation", BlockICBM.EnumTier.TWO)),
-    CONTAGIOUS(new ExChemical("contagious", BlockICBM.EnumTier.TWO)),
-    SONIC(new ExSonic("sonic", BlockICBM.EnumTier.TWO)),
+    FRAGMENTATION(new ExShrapnel("fragmentation", EnumTier.TWO)),
+    CONTAGIOUS(new ExChemical("contagious", EnumTier.TWO)),
+    SONIC(new ExSonic("sonic", EnumTier.TWO)),
     BREACHING(new ExBreaching()),
     REJUVENATION(new ExRejuvenation()),
-    THERMOBARIC(new ExNuclear("thermobaric", BlockICBM.EnumTier.TWO)),
-    SMINE(new ExSMine("sMine", BlockICBM.EnumTier.TWO)),
+    THERMOBARIC(new ExNuclear("thermobaric", EnumTier.TWO)),
+    SMINE(new ExSMine("sMine", EnumTier.TWO)),
 
-    NUCLEAR(new ExNuclear("nuclear", BlockICBM.EnumTier.THREE)),
+    NUCLEAR(new ExNuclear("nuclear", EnumTier.THREE)),
     EMP(new ExEMP()),
     EXOTHERMIC(new ExExothermic()),
     ENDOTHERMIC(new ExEndothermic()),
     ANTI_GRAV(new ExAntiGravitational()),
     ENDER(new ExEnder()),
-    HYPERSONIC(new ExSonic("hypersonic", BlockICBM.EnumTier.THREE)), //TODO find Missile model
+    HYPERSONIC(new ExSonic("hypersonic", EnumTier.THREE)), //TODO find Missile model
 
     ANTIMATTER(new ExAntimatter()),
     REDMATTER(new ExRedMatter()),
@@ -46,7 +49,7 @@ public enum Explosives implements IStringSerializable
     MISSILE(new MissileModule()),
     MISSILE_HOMING(new MissileHoming()),
     MISSILE_ANTI(new MissileAnti()),
-    MISSILE_CLUSTER(new MissileCluster("cluster", BlockICBM.EnumTier.TWO)),
+    MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO)),
     MISSILE_CLUSTER_NUKE(new MissileNuclearCluster());
 
     public final Explosive handler;
@@ -83,5 +86,18 @@ public enum Explosives implements IStringSerializable
     public String getName()
     {
         return super.name().toLowerCase();
+    }
+
+    public static List<Explosives> getBlocksOnly()
+    {
+        List<Explosives> list = new ArrayList();
+        for (Explosives ex : values())
+        {
+            if (ex.handler.hasBlockForm())
+            {
+                list.add(ex);
+            }
+        }
+        return list;
     }
 }

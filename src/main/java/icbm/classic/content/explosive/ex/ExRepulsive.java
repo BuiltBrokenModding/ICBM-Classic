@@ -4,7 +4,7 @@ import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 public class ExRepulsive extends Explosion
 {
-    public ExRepulsive(String name, BlockICBM.EnumTier tier)
+    public ExRepulsive(String name, EnumTier tier)
     {
         super(name, tier);
         this.setFuseTime(120);

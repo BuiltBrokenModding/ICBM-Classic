@@ -1,14 +1,14 @@
 package icbm.classic.content.explosive.ex.missiles;
 
 import icbm.classic.content.explosive.ex.Explosion;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 
 /** Ex object that are only defined as missiles
  *
  * @author Calclavia */
 public abstract class Missile extends Explosion
 {
-    public Missile(String name, BlockICBM.EnumTier tier)
+    public Missile(String name, EnumTier tier)
     {
         super(name, tier);
         this.hasBlock = false;

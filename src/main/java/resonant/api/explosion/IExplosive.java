@@ -1,6 +1,6 @@
 package resonant.api.explosion;
 
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ public interface IExplosive
     public String getMinecartName();
 
     /** @return The tier of the explosive. */
-    public BlockICBM.EnumTier getTier();
+    public EnumTier getTier();
 
     /**
      * Creates a new explosion at a given location.

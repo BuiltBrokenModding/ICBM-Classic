@@ -3,7 +3,7 @@ package icbm.classic.content.items;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
@@ -109,7 +109,7 @@ public class ItemBombCart extends ItemICBMBase
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
         //TODO ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
-        BlockICBM.EnumTier tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
+        EnumTier tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
         list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.ordinal());
     }
 }

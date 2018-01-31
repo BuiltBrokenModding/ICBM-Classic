@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.ex.missiles;
 
 import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -13,7 +13,7 @@ public class MissileModule extends Missile
 {
     public MissileModule()
     {
-        super("missileModule", BlockICBM.EnumTier.ONE);
+        super("missileModule", EnumTier.ONE);
         this.hasBlock = false;
         //this.missileModelPath = "missiles/tier1/missile_head_conventional.obj";
     }

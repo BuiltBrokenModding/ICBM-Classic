@@ -6,7 +6,7 @@ import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastTNT;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,7 +24,7 @@ public class MissileAnti extends Missile
 
     public MissileAnti()
     {
-        super("antiBallistic", BlockICBM.EnumTier.TWO);
+        super("antiBallistic", EnumTier.TWO);
         this.hasBlock = false;
     }
 

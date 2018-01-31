@@ -264,7 +264,7 @@ public final class ICBMClassic extends AbstractMod
         proxy.doLoadModels();
     }
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
     {
 

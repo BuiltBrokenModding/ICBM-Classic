@@ -5,7 +5,7 @@ import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastNuclear;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -16,7 +16,7 @@ public class MissileNuclearCluster extends MissileCluster
 {
     public MissileNuclearCluster()
     {
-        super("nuclearCluster", BlockICBM.EnumTier.THREE);
+        super("nuclearCluster", EnumTier.THREE);
         this.hasBlock = false;
     }
 

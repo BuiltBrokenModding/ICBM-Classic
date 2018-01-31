@@ -17,6 +17,7 @@ import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.TESRRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -136,7 +137,7 @@ public class ClientProxy extends CommonProxy
                 return new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties()));
             }
         });
-        for (BlockICBM.EnumTier tier : new BlockICBM.EnumTier[]{BlockICBM.EnumTier.ONE, BlockICBM.EnumTier.TWO, BlockICBM.EnumTier.THREE})
+        for (EnumTier tier : new EnumTier[]{EnumTier.ONE, EnumTier.TWO, EnumTier.THREE})
         {
             IBlockState state = ICBMClassic.blockLaunchBase.getDefaultState().withProperty(BlockICBM.TIER_PROP, tier).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
             String properties_string = getPropertyString(state.getProperties());

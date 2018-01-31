@@ -23,6 +23,7 @@ import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -311,13 +312,13 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         return getRangeForTier(getTier());
     }
 
-    public static double getRangeForTier(BlockICBM.EnumTier tier)
+    public static double getRangeForTier(EnumTier tier)
     {
-        if (tier == BlockICBM.EnumTier.ONE)
+        if (tier == EnumTier.ONE)
         {
             return Settings.LAUNCHER_RANGE_TIER1;
         }
-        else if (tier == BlockICBM.EnumTier.TWO)
+        else if (tier == EnumTier.TWO)
         {
             return Settings.LAUNCHER_RANGE_TIER2;
         }

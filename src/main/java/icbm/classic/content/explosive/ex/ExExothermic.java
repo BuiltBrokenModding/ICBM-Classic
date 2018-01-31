@@ -5,7 +5,7 @@ import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.BlastExothermic;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
@@ -17,11 +17,13 @@ public class ExExothermic extends Explosion
 {
     public boolean createNetherrack = true;
 
+
     public ExExothermic()
     {
         super("exothermic", BlockICBM.EnumTier.FOUR);
         this.createNetherrack = ICBMClassic.INSTANCE.getConfig().get(Configuration.CATEGORY_GENERAL, "Exothermic Create Netherrack", createNetherrack).getBoolean(createNetherrack);
         //this.missileModelPath = "missiles/tier3/missile_head_endothermic.obj";
+        super("exothermic", EnumTier.FOUR);
     }
 
     @Override

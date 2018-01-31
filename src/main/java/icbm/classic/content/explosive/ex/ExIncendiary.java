@@ -4,7 +4,7 @@ import com.builtbroken.mc.api.edit.IWorldChangeAction;
 import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.explosive.blast.BlastFire;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class ExIncendiary extends Explosion
 {
-    public ExIncendiary(String mingZi, BlockICBM.EnumTier tier)
+    public ExIncendiary(String mingZi, EnumTier tier)
     {
         super(mingZi, tier);
         //this.missileModelPath = "missiles/tier1/missile_head_incen.obj";

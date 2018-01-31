@@ -3,12 +3,10 @@ package icbm.classic.prefab;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
-import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,7 +15,6 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -91,39 +88,4 @@ public abstract class BlockICBM extends BlockContainer
         super.breakBlock(world, pos, state);
     }
 
-    public static final class PropertyTier extends PropertyEnum<EnumTier>
-    {
-        public PropertyTier()
-        {
-            super("tier", EnumTier.class, Lists.newArrayList(EnumTier.ONE, EnumTier.TWO, EnumTier.THREE));
-        }
-    }
-
-    public static enum EnumTier implements IStringSerializable
-    {
-        ONE,
-        TWO,
-        THREE,
-        FOUR;
-
-        @Override
-        public String toString()
-        {
-            return this.getName();
-        }
-
-        public String getName()
-        {
-            return name().toLowerCase();
-        }
-
-        public static EnumTier get(int itemDamage)
-        {
-            if (itemDamage > 0 && itemDamage < values().length)
-            {
-                return values()[itemDamage];
-            }
-            return ONE;
-        }
-    }
 }

@@ -18,7 +18,10 @@ public interface ILauncherController
     public boolean canLaunch();
 
     /** @return The status of the launcher. */
-    public String getStatus();
+    default String getStatus()
+    {
+        return "";
+    }
 
     /** @return The target of the launcher. */
     public Pos getTarget();

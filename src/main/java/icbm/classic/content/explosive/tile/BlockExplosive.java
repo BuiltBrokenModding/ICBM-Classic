@@ -3,7 +3,6 @@ package icbm.classic.content.explosive.tile;
 import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
-import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
@@ -33,7 +32,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class BlockExplosive extends BlockICBM
 {
@@ -75,11 +73,7 @@ public class BlockExplosive extends BlockICBM
     {
         public PropertyExplosive()
         {
-            super("explosive", Explosives.class, Lists.newArrayList(Explosives.values())
-                    .stream()
-                    .filter(e -> e.handler.hasBlockForm())
-                    .collect(Collectors.toList()));
-            //getAllowedValues().removeIf(e -> !e.handler.hasBlockForm());
+            super("explosive", Explosives.class, Explosives.getBlocksOnly());
         }
     }
 
