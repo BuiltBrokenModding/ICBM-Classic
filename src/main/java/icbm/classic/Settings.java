@@ -21,23 +21,25 @@ public class Settings
     public static boolean ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = true;
     public static int ROCKET_LAUNCHER_TIER_FIRE_LIMIT = 2;
 
+    public static boolean EXOTHERMIC_CREATE_NETHER_RACK = true;
+
     public static boolean FORCE_ENABLE_NIGHTMARE = Engine.runningAsDev;
 
 
     public static void load(Configuration configuration)
     {
         //Launchers
-        LAUNCHER_RANGE_TIER3 = configuration.getInt( "tier_3_range","launcher", Settings.LAUNCHER_RANGE_TIER3,
+        LAUNCHER_RANGE_TIER3 = configuration.getInt("tier_3_range", "launcher", Settings.LAUNCHER_RANGE_TIER3,
                 0, Integer.MAX_VALUE, "Range of tier 3 launcher");
-        LAUNCHER_RANGE_TIER2 = configuration.getInt("tier_2_range","launcher",  Settings.LAUNCHER_RANGE_TIER2,
+        LAUNCHER_RANGE_TIER2 = configuration.getInt("tier_2_range", "launcher", Settings.LAUNCHER_RANGE_TIER2,
                 0, Integer.MAX_VALUE, "Range of tier 2 launcher");
-        LAUNCHER_RANGE_TIER1 = configuration.getInt("tier_1_range","launcher",  Settings.LAUNCHER_RANGE_TIER1,
+        LAUNCHER_RANGE_TIER1 = configuration.getInt("tier_1_range", "launcher", Settings.LAUNCHER_RANGE_TIER1,
                 0, Integer.MAX_VALUE, "Range of tier 1 launcher");
 
         //AntimatterANTIMATTER_SIZE
-        ANTIMATTER_SIZE = configuration.getInt("blast_radius","antimatter",  ANTIMATTER_SIZE, 1, 1000,
+        ANTIMATTER_SIZE = configuration.getInt("blast_radius", "antimatter", ANTIMATTER_SIZE, 1, 1000,
                 "Radius size of the antimatter blast, setting higher will result in more lag.");
-        ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = configuration.getBoolean( "destroy_unbreakable_blocks","antimatter",
+        ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = configuration.getBoolean("destroy_unbreakable_blocks", "antimatter",
                 ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS, "Allows antimatter to destroy unbreakable blocks");
 
         //Hand held
@@ -46,7 +48,11 @@ public class Settings
                 "Limits the max missile tier for the hand held rocket launcher for non-creative mode users.");
 
         //Nightmare
-        FORCE_ENABLE_NIGHTMARE = configuration.getBoolean("force_enable_nightmare_missile","holiday",
+        FORCE_ENABLE_NIGHTMARE = configuration.getBoolean("force_enable_nightmare_missile", "holiday",
                 FORCE_ENABLE_NIGHTMARE, "Force enables the nightmare missile outside of halloween holiday");
+
+        EXOTHERMIC_CREATE_NETHER_RACK = ICBMClassic.INSTANCE.getConfig().getBoolean("create_netherrack", "exothermic",
+                EXOTHERMIC_CREATE_NETHER_RACK,
+                "Allows disabling the creation of netherrack by the explosive.");
     }
 }

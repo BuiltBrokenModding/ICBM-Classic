@@ -1,9 +1,8 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.imp.transform.vector.Location;
+import icbm.classic.Settings;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.ExExothermic;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -87,7 +86,7 @@ public class BlastExothermic extends BlastBeam
                                 blockState = this.oldWorld().getBlockState(targetPosition.down());
                                 block = blockState.getBlock();
 
-                                if (((ExExothermic) Explosives.EXOTHERMIC.handler).createNetherrack && (block == Blocks.STONE || block == Blocks.GRASS || block == Blocks.DIRT) && this.oldWorld().rand.nextFloat() > 0.75)
+                                if (Settings.EXOTHERMIC_CREATE_NETHER_RACK && (block == Blocks.STONE || block == Blocks.GRASS || block == Blocks.DIRT) && this.oldWorld().rand.nextFloat() > 0.75)
                                 {
                                     this.oldWorld().setBlockState(targetPosition.down(), Blocks.NETHERRACK.getDefaultState(), 3);
                                 }
