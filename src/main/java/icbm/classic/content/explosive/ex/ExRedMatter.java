@@ -13,7 +13,7 @@ public class ExRedMatter extends Explosion
 {
     public ExRedMatter()
     {
-        super("redMatter", EnumTier.THREE);
+        super("redMatter", EnumTier.FOUR);
     }
 
     @Override

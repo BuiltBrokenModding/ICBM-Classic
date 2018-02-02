@@ -14,14 +14,6 @@ public class ExNuclear extends Explosion
     public ExNuclear(String mingZi, EnumTier tier)
     {
         super(mingZi, tier);
-        if (this.getTier() == EnumTier.THREE)
-        {
-            //this.missileModelPath = "missiles/tier3/missile_head_nuclear.obj";
-        }
-        else
-        {
-            //this.missileModelPath = "missiles/tier3/missile_head_conflag.obj";
-        }
     }
 
     @Override

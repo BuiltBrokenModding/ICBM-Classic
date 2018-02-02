@@ -14,7 +14,6 @@ public class ExAntiGravitational extends Explosion
     public ExAntiGravitational()
     {
         super("antiGravitational", EnumTier.THREE);
-        //this.missileModelPath = "missiles/tier3/missile_antigravity.obj";
     }
 
     @Override

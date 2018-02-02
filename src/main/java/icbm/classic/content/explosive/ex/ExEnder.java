@@ -26,7 +26,7 @@ public class ExEnder extends Explosion
 {
     public ExEnder()
     {
-        super("ender", EnumTier.FOUR);
+        super("ender", EnumTier.THREE);
     }
 
     @Override

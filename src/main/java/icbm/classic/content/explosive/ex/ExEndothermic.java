@@ -13,8 +13,7 @@ public class ExEndothermic extends Explosion
 {
     public ExEndothermic()
     {
-        super("endothermic", EnumTier.FOUR);
-        //this.missileModelPath = "missiles/tier3/missile_head_endothermic.obj";
+        super("endothermic", EnumTier.THREE);
     }
 
     @Override

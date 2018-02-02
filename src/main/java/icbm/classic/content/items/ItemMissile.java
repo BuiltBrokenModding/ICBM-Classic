@@ -1,11 +1,15 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.lib.helper.LanguageUtility;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.prefab.EnumTier;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -63,8 +67,11 @@ public class ItemMissile extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        //TODO ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
         EnumTier tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
-        list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.ordinal());
+        list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
+        if (ICBMClassic.blockExplosive instanceof BlockExplosive)
+        {
+            ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+        }
     }
 }

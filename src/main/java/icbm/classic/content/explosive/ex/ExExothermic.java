@@ -17,7 +17,7 @@ public class ExExothermic extends Explosion
 
     public ExExothermic()
     {
-        super("exothermic", EnumTier.FOUR);
+        super("exothermic", EnumTier.THREE);
     }
 
     @Override

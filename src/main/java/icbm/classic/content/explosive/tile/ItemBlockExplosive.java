@@ -31,7 +31,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     @Override
     public void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        ///Shhh!!! tell no one this exists, tss a surprise
+        ///Shhh!!! tell no one this exists, tis a surprise
         if (stack.getItemDamage() == Explosives.REDMATTER.ordinal())
         {
             boolean taunt = player.getName().toLowerCase().startsWith("sips_") || player.getName().toLowerCase().startsWith("sjin");
@@ -109,7 +109,6 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         {
             super.getDetailedInfo(stack, player, list);
         }
-
     }
 
     @Override

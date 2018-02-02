@@ -13,8 +13,7 @@ public class ExEMP extends Explosion
 {
     public ExEMP()
     {
-        super("emp", EnumTier.FOUR);
-        //this.missileModelPath = "missiles/tier3/missile_head_emp.obj";
+        super("emp", EnumTier.THREE);
     }
 
     @Override
