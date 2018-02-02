@@ -24,9 +24,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -68,7 +66,9 @@ public class ClientProxy extends CommonProxy
         //Machines
         newBlockModel(ICBMClassic.blockEmpTower, 0, "inventory", "");
         newBlockModel(ICBMClassic.blockRadarStation, 0, "inventory", "");
-        registerLauncherBase();
+        registerLauncherPart(ICBMClassic.blockLaunchBase);
+        registerLauncherPart(ICBMClassic.blockLaunchSupport);
+        registerLauncherPart(ICBMClassic.blockLaunchScreen);
 
         //items
         newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");
@@ -125,11 +125,11 @@ public class ClientProxy extends CommonProxy
         }
     }
 
-    protected void registerLauncherBase()
+    protected void registerLauncherPart(Block block)
     {
-        final String resourcePath = ICBMClassic.blockLaunchBase.getRegistryName().toString();
+        final String resourcePath = block.getRegistryName().toString();
 
-        ModelLoader.setCustomStateMapper(ICBMClassic.blockLaunchBase, new DefaultStateMapper()
+        ModelLoader.setCustomStateMapper(block, new DefaultStateMapper()
         {
             @Override
             protected ModelResourceLocation getModelResourceLocation(IBlockState state)
@@ -139,9 +139,9 @@ public class ClientProxy extends CommonProxy
         });
         for (EnumTier tier : new EnumTier[]{EnumTier.ONE, EnumTier.TWO, EnumTier.THREE})
         {
-            IBlockState state = ICBMClassic.blockLaunchBase.getDefaultState().withProperty(BlockICBM.TIER_PROP, tier).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
+            IBlockState state = block.getDefaultState().withProperty(BlockICBM.TIER_PROP, tier).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
             String properties_string = getPropertyString(state.getProperties());
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ICBMClassic.blockLaunchBase), tier.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), tier.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
         }
     }
 
@@ -192,32 +192,6 @@ public class ClientProxy extends CommonProxy
     protected void newItemModel(Item item, int meta, String varient, String sub)
     {
         ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName() + sub, varient));
-    }
-
-    public static void registerWithMapper(Block block)
-    {
-        if (block != null)
-        {
-            final String resourcePath = block.getRegistryName().toString();
-
-            ModelLoader.setCustomStateMapper(block, new DefaultStateMapper()
-            {
-                @Override
-                protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-                {
-                    return new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties()));
-                }
-            });
-
-            NonNullList<ItemStack> subBlocks = NonNullList.create();
-            block.getSubBlocks(null, subBlocks);
-
-            for (ItemStack stack : subBlocks)
-            {
-                IBlockState state = block.getStateFromMeta(stack.getMetadata()); //TODO check if works correctly with the state system
-                ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), stack.getMetadata(), new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties())));
-            }
-        }
     }
 
     public static String getPropertyString(Map<IProperty<?>, Comparable<?>> values, String... extrasArgs)
