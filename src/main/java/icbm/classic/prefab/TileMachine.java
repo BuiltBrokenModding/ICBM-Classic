@@ -1,8 +1,7 @@
 package icbm.classic.prefab;
 
 import com.builtbroken.jlib.data.network.IByteBufWriter;
-import com.builtbroken.mc.api.abstraction.world.IPosWorld;
-import com.builtbroken.mc.api.abstraction.world.IWorld;
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.IPlayerUsing;
@@ -29,7 +28,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IPosWorld, IPlayerUsing, ITickable, IByteBufWriter
+public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -243,12 +242,6 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     public IBlockState getBlockState()
     {
         return world.getBlockState(getPos());
-    }
-
-    @Override
-    public IWorld world()
-    {
-        return Engine.getWorld(world.provider.getDimension());
     }
 
     @Override
