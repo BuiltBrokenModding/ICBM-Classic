@@ -164,10 +164,10 @@ public class GuiLauncherScreen extends GuiContainerBase
         if (tileEntity.getTier().ordinal() >= 1)
         {
             this.target_yCoord_field.drawTextBox();
-            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.detHeight"), 12, 68, 4210752);
+            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.detHeight"), 12, 68, 4210752);
 
             this.lock_height_field.drawTextBox();
-            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.lockHeight"), 12, 83, 4210752);
+            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.lockHeight"), 12, 83, 4210752);
 
             if (tileEntity.getTier().ordinal() > 1)
             {
@@ -177,9 +177,9 @@ public class GuiLauncherScreen extends GuiContainerBase
         }
 
         this.fontRenderer.drawString("", 45, 6, 4210752);
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherScreen.name"), 30, 6, 4210752);
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherscreen.name"), 30, 6, 4210752);
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.target"), 12, 25, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.target"), 12, 25, 4210752);
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.XCoord"), 25, 40, 4210752);
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.ZCoord"), 25, 55, 4210752);
 
@@ -193,7 +193,7 @@ public class GuiLauncherScreen extends GuiContainerBase
             }
         }
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherScreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
 
         // Shows the status of the missile launcher
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);

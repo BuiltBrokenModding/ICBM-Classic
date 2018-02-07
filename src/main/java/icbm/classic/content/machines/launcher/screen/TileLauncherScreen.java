@@ -200,32 +200,32 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
 
         if (this.laucherBase == null)
         {
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusMissing");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
         }
         else if (!checkExtract())
         {
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusNoPower");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusNoPower");
         }
         else if (this.laucherBase.getMissileStack().isEmpty())
         {
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusEmpty");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusEmpty");
         }
         else if (this.getTarget() == null)
         {
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusInvalid");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusInvalid");
         }
         else if (this.laucherBase.isTargetTooClose(this.getTarget()))
         {
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusClose");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusClose");
         }
         else if (this.laucherBase.isTargetTooFar(this.getTarget()))
         {
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusFar");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusFar");
         }
         else
         {
             color = "\u00a72";
-            status = LanguageUtility.getLocal("gui.launcherScreen.statusReady");
+            status = LanguageUtility.getLocal("gui.launcherscreen.statusReady");
         }
 
         return color + status;
