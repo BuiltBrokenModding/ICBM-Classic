@@ -1,6 +1,6 @@
 package resonant.api.explosion;
 
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

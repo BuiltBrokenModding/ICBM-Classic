@@ -1,6 +1,5 @@
 package icbm.classic.client.render.entity;
 
-import com.builtbroken.mc.core.References;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
@@ -24,8 +23,8 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RenderExplosion extends Render<EntityExplosion>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.TEXTURE_DIRECTORY + "blackhole.png");
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(References.DOMAIN, References.TEXTURE_DIRECTORY + "grey.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "blackhole.png");
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "grey.png");
 
     public Color colorIn = new Color(16777215);
     public Color colorOut = new Color(0);

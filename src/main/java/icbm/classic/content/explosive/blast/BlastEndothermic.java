@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.imp.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;

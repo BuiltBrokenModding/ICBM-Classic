@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.LanguageUtility;
-import icbm.classic.prefab.EnumTier;
-import icbm.classic.prefab.ModelICBM;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.client.models.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;

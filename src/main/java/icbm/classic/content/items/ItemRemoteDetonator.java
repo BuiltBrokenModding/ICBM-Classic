@@ -1,11 +1,11 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.api.items.hz.IItemFrequency;
-import com.builtbroken.mc.framework.radio.RadioRegistry;
-import com.builtbroken.mc.prefab.FakeRadioSender;
+import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -23,7 +23,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemRemoteDetonator extends ItemICBMElectrical implements IItemFrequency
+public class ItemRemoteDetonator extends ItemICBMElectrical
 {
     public static final int ENERGY = 1000;
 
@@ -57,5 +57,35 @@ public class ItemRemoteDetonator extends ItemICBMElectrical implements IItemFreq
     {
         list.add("Fires missiles remotely");
         list.add("Right click launcher screen to encode");
+    }
+
+    /**
+     * Gets the frequency this item broadcasts information on
+     *
+     * @param stack - this item
+     * @return frequency
+     */
+    public float getBroadCastHz(ItemStack stack)
+    {
+        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("hz"))
+        {
+            return stack.getTagCompound().getFloat("hz");
+        }
+        return 0;
+    }
+
+    /**
+     * Sets the frequency of this item
+     *
+     * @param stack - this item
+     * @param hz    - value to set
+     */
+    public void setBroadCastHz(ItemStack stack, float hz)
+    {
+        if (stack.getTagCompound() == null)
+        {
+            stack.setTagCompound(new NBTTagCompound());
+        }
+        stack.getTagCompound().setFloat("hz", hz);
     }
 }

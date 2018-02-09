@@ -1,14 +1,14 @@
 package icbm.classic.content.explosive.ex;
 
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

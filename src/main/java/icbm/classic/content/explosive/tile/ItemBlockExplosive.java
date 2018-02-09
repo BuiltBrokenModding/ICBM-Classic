@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.lib.LanguageUtility;
-import com.builtbroken.mc.prefab.items.ItemBlockAbstract;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.item.ItemBlockAbstract;
 import icbm.classic.content.explosive.Explosives;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

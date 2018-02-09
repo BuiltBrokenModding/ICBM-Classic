@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.coordinator;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

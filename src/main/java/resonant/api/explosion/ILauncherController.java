@@ -1,6 +1,6 @@
 package resonant.api.explosion;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.item.ItemStack;
 
 /** Applied to all launcher TileEntitiies that operates the launching of missiles.

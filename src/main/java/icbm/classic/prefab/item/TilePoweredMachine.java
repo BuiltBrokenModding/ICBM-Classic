@@ -1,9 +1,9 @@
 package icbm.classic.prefab.item;
 
-import com.builtbroken.mc.api.energy.IEnergyBuffer;
-import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
-import com.builtbroken.mc.framework.energy.EnergyBuffer;
-import icbm.classic.prefab.TileMachine;
+import icbm.classic.api.energy.IEnergyBuffer;
+import icbm.classic.api.energy.IEnergyBufferProvider;
+import icbm.classic.lib.energy.EnergyBuffer;
+import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.imp.transform.region.Cube;
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

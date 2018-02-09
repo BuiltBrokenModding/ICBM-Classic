@@ -1,11 +1,11 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.inventory.InventoryUtility;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.inventory.InventoryUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;

@@ -1,10 +1,10 @@
 package icbm.classic.content.explosive.ex.missiles;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastTNT;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

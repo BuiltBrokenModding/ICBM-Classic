@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive.ex;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.Settings;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

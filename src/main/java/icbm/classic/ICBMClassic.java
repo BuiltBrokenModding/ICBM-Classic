@@ -1,11 +1,6 @@
 package icbm.classic;
 
-import com.builtbroken.mc.framework.mod.AbstractMod;
-import com.builtbroken.mc.framework.mod.AbstractProxy;
-import com.builtbroken.mc.framework.mod.ModCreativeTab;
-import com.builtbroken.mc.framework.mod.loadable.LoadableHandler;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
+import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
@@ -28,6 +23,11 @@ import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.lib.mod.ModCreativeTab;
+import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.item.ItemBlockSubTypes;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
@@ -52,6 +52,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -65,8 +66,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Mod class for ICBM Classic, contains all loading code and references to objects crated by the mod.
@@ -76,8 +80,9 @@ import java.util.Arrays;
  */
 @Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
 @Mod.EventBusSubscriber
-public final class ICBMClassic extends AbstractMod
+public final class ICBMClassic
 {
+    public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
     @Mod.Instance(ICBMClassic.DOMAIN)
     public static ICBMClassic INSTANCE;
 
@@ -98,8 +103,17 @@ public final class ICBMClassic extends AbstractMod
     public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
     public static final String DEPENDENCIES = "required-after:voltzengine;";
 
+    public static final String TEXTURE_DIRECTORY = "textures/";
+    public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
+
     public static final int ENTITY_ID_PREFIX = 50;
+    @Deprecated
+
+    protected static Logger logger = LogManager.getLogger("VoltzEngine");
     private static int nextID = ENTITY_ID_PREFIX;
+
+
+    public static final PacketManager packetHandler = new PacketManager(DOMAIN);
 
     //Mod support
     public static Block blockRadioactive;
@@ -124,6 +138,9 @@ public final class ICBMClassic extends AbstractMod
     public static Block blockCruiseLauncher;
     public static Block blockMissileCoordinator;
 
+    @GameRegistry.ObjectHolder(PREFIX + "multiblock")
+    public static Block multiBlock;
+
 
     // Items
     public static Item itemAntidote;
@@ -145,17 +162,6 @@ public final class ICBMClassic extends AbstractMod
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
     public static final ModCreativeTab CREATIVE_TAB = new ModCreativeTab(DOMAIN);
-
-    public ICBMClassic()
-    {
-        super(ICBMClassic.DOMAIN, "/bbm/ICBM-Classic");
-    }
-
-    @Override
-    public void loadHandlers(LoadableHandler loader)
-    {
-        //loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded()); TODO add waila support back
-    }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -268,19 +274,14 @@ public final class ICBMClassic extends AbstractMod
         EntityRegistry.registerModEntity(new ResourceLocation(DOMAIN, entityName), entityClass, entityName, nextID++, this, trackingRange, updateFrequency, true);
     }
 
-    @Override
-    public AbstractProxy getProxy()
-    {
-        return proxy;
-    }
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        super.preInit(event);
+        proxy.preInit();
         ICBMSounds.registerAll();
-        //Engine.requestMultiBlock(); TODO ?
-        Settings.load(getConfig());
+
+        MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
 
         //Register entities
         registerEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 128, 15);
@@ -297,7 +298,9 @@ public final class ICBMClassic extends AbstractMod
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-        super.init(event);
+        proxy.init();
+        packetHandler.init();
+
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
         OreDictionary.registerOre("dustSulfur", new ItemStack(itemSulfurDust));
@@ -432,6 +435,12 @@ public final class ICBMClassic extends AbstractMod
         proxy.init();
     }
 
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        proxy.postInit();
+    }
+
 
     public void setModMetadata(String id, String name, ModMetadata metadata)
     {
@@ -447,17 +456,31 @@ public final class ICBMClassic extends AbstractMod
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        super.postInit(event);
-    }
-
-    @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
         // Setup command
         ICommandManager commandManager = FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager();
         ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
         serverCommandManager.registerCommand(new CommandICBM());
+    }
+
+    public static Logger logger()
+    {
+        return logger;
+    }
+
+    public static boolean isJUnitTest()
+    {
+        //TODO do boolean flag from VoltzTestRunner to simplify solution
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        List<StackTraceElement> list = Arrays.asList(stackTrace);
+        for (StackTraceElement element : list)
+        {
+            if (element.getClassName().startsWith("org.junit.") || element.getClassName().startsWith("com.builtbroken.mc.testing.junit.VoltzTestRunner"))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

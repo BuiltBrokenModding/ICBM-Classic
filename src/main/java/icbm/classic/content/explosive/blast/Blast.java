@@ -1,10 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.imp.transform.vector.Location;
+import icbm.classic.api.IWorldPosition;
+import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.prefab.ModelICBM;
+import icbm.classic.client.models.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;

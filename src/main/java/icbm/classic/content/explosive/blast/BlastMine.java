@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.prefab.ModelICBM;
+import icbm.classic.client.models.ModelICBM;
 import icbm.classic.client.models.ModelSMine;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;

@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.thread;
 
-import com.builtbroken.mc.imp.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.content.explosive.blast.Blast;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;

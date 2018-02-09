@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.thread;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.explosive.blast.Blast;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

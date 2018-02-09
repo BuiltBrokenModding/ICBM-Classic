@@ -1,13 +1,13 @@
 package icbm.classic.content.machines.emptower;
 
-import com.builtbroken.mc.api.data.IPacket;
-import com.builtbroken.mc.api.tile.access.IGuiTile;
-import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
-import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
-import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
-import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
-import com.builtbroken.mc.prefab.inventory.ExternalInventory;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.api.tile.access.IGuiTile;
+import icbm.classic.api.tile.multiblock.IMultiTile;
+import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.api.tile.provider.IInventoryProvider;
+import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.multiblock.MultiBlockHelper;
+import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import icbm.classic.prefab.item.TilePoweredMachine;

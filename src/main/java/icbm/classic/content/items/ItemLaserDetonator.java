@@ -1,17 +1,17 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.api.data.IPacket;
-import com.builtbroken.mc.api.items.hz.IItemFrequency;
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.framework.radio.RadioRegistry;
-import com.builtbroken.mc.prefab.FakeRadioSender;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.network.packet.PacketPlayerItem;
+import icbm.classic.ICBMClassic;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -32,7 +32,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDReceiver, IItemFrequency
+public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDReceiver
 {
     public ItemLaserDetonator()
     {
@@ -52,7 +52,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
             TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
             if (!(tileEntity instanceof ILauncherController))
             {
-                Engine.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
             }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
@@ -87,5 +87,35 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     {
         list.add("Fires missiles remotely");
         list.add("Right click launcher screen to encode");
+    }
+
+    /**
+     * Gets the frequency this item broadcasts information on
+     *
+     * @param stack - this item
+     * @return frequency
+     */
+    public float getBroadCastHz(ItemStack stack)
+    {
+        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("hz"))
+        {
+            return stack.getTagCompound().getFloat("hz");
+        }
+        return 0;
+    }
+
+    /**
+     * Sets the frequency of this item
+     *
+     * @param stack - this item
+     * @param hz    - value to set
+     */
+    public void setBroadCastHz(ItemStack stack, float hz)
+    {
+        if (stack.getTagCompound() == null)
+        {
+            stack.setTagCompound(new NBTTagCompound());
+        }
+        stack.getTagCompound().setFloat("hz", hz);
     }
 }

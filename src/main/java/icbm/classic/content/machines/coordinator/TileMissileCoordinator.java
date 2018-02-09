@@ -1,9 +1,9 @@
 package icbm.classic.content.machines.coordinator;
 
-import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
-import com.builtbroken.mc.prefab.inventory.ExternalInventory;
-import icbm.classic.prefab.TileMachine;
+import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.api.tile.provider.IInventoryProvider;
+import icbm.classic.prefab.inventory.ExternalInventory;
+import icbm.classic.prefab.tile.TileMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

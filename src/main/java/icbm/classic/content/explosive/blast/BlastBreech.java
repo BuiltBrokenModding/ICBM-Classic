@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.api.tile.IRotatable;
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.api.tile.IRotatable;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;

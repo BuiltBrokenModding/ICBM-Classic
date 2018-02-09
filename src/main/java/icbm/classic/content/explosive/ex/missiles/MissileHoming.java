@@ -1,11 +1,11 @@
 package icbm.classic.content.explosive.ex.missiles;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.items.ItemTracker;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

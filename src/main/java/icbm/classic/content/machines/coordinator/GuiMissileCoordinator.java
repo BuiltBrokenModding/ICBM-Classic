@@ -1,11 +1,11 @@
 package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.jlib.data.science.units.UnitDisplay;
-import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.lib.LanguageUtility;
-import com.builtbroken.mc.prefab.gui.GuiContainerBase;
+import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.gui.GuiContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;

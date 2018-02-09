@@ -1,11 +1,9 @@
 package icbm.classic.content.machines.launcher.cruise;
 
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.References;
-import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.LanguageUtility;
-import com.builtbroken.mc.prefab.gui.GuiContainerBase;
+import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +17,7 @@ import static java.lang.Integer.parseInt;
 
 public class GuiCruiseLauncher extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_cruise_launcher.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_cruise_launcher.png");
 
     private TileCruiseLauncher tileEntity;
     private GuiTextField textFieldX;
@@ -75,7 +73,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         {
             Pos newTarget = new Pos(parseInt(this.textFieldX.getText()), parseInt(this.textFieldY.getText()), parseInt(this.textFieldZ.getText()));
             this.tileEntity.setTarget(newTarget);
-            Engine.packetHandler.sendToServer(new PacketTile("target_C>S", 2, tileEntity).addData(tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", 2, tileEntity).addData(tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -85,7 +83,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         {
             short newFrequency = (short) Math.max(Short.parseShort(this.textFieldFreq.getText()), 0);
             this.tileEntity.setFrequency(newFrequency);
-            Engine.packetHandler.sendToServer(new PacketTile("frequency_C>S", 1,tileEntity).addData(tileEntity.getFrequency()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", 1,tileEntity).addData(tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {

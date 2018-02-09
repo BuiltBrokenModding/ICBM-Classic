@@ -1,11 +1,11 @@
 package icbm.classic.content.explosive.ex;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.client.models.ModelSMine;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.blast.BlastMine;
-import icbm.classic.prefab.EnumTier;
-import icbm.classic.prefab.ModelICBM;
+import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.client.models.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;

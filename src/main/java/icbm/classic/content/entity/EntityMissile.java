@@ -1,8 +1,8 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.framework.radar.RadarRegistry;
-import com.builtbroken.mc.prefab.entity.EntityProjectile;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.prefab.entity.EntityProjectile;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;

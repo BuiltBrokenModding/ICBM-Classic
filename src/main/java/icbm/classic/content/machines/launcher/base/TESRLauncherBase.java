@@ -4,7 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.*;
 import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;

@@ -1,7 +1,7 @@
 package resonant.api.explosion;
 
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 
 /** This is an interface applied by all missile entities. You may cast this into an @Entity. The
  * "set" version of the function will make the entity do the action on the next tick.

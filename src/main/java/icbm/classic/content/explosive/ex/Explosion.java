@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.ex;
 
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
 

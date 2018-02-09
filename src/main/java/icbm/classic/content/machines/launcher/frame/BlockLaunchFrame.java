@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.launcher.frame;
 
-import icbm.classic.prefab.BlockICBM;
-import icbm.classic.prefab.EnumTier;
+import icbm.classic.prefab.tile.BlockICBM;
+import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;

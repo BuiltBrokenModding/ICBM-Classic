@@ -1,6 +1,5 @@
 package icbm.classic.client.models;
 
-import icbm.classic.prefab.ModelICBM;
 import net.minecraft.client.model.ModelRenderer;
 
 public class ModelMissileCoordinator extends ModelICBM

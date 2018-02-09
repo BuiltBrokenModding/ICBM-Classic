@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.framework.energy.UniversalEnergySystem;
-import com.builtbroken.mc.imp.transform.region.Cube;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.framework.radar.RadarRegistry;
+import icbm.classic.lib.energy.UniversalEnergySystem;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.block.Block;

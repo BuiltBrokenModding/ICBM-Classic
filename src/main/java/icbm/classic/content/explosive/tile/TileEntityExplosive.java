@@ -1,8 +1,8 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.api.data.IPacket;
-import com.builtbroken.mc.api.tile.IRotatable;
-import com.builtbroken.mc.core.network.IPacketIDReceiver;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.api.tile.IRotatable;
+import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;

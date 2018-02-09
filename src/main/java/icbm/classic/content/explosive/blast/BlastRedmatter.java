@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.imp.transform.region.Cube;
-import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
-import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.lib.transform.rotation.EulerAngle;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;

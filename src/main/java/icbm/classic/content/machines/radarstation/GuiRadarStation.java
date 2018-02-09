@@ -1,12 +1,10 @@
 package icbm.classic.content.machines.radarstation;
 
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.References;
-import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.imp.transform.region.Rectangle;
-import com.builtbroken.mc.imp.transform.vector.Point;
-import com.builtbroken.mc.lib.LanguageUtility;
-import com.builtbroken.mc.prefab.gui.GuiContainerBase;
+import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.transform.region.Rectangle;
+import icbm.classic.lib.transform.vector.Point;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
 import net.minecraft.client.gui.GuiTextField;
@@ -21,10 +19,10 @@ import java.io.IOException;
 
 public class GuiRadarStation extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_radar.png");
-    public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "reddot.png");
-    public static final ResourceLocation TEXTURE_YELLOW_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "yellowdot.png");
-    public static final ResourceLocation TEXTURE_WHITE_DOT = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "whitedot.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_radar.png");
+    public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "reddot.png");
+    public static final ResourceLocation TEXTURE_YELLOW_DOT = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "yellowdot.png");
+    public static final ResourceLocation TEXTURE_WHITE_DOT = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "whitedot.png");
     private TileRadarStation tileEntity;
 
     private int containerPosX;
@@ -137,7 +135,7 @@ public class GuiRadarStation extends GuiContainerBase
         {
             int newSafetyRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldSafetyZone.getText())));
             this.tileEntity.safetyRange = newSafetyRadius;
-            Engine.packetHandler.sendToServer(new PacketTile("safeRange_C>S", 2, this.tileEntity).addData(this.tileEntity.safetyRange));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("safeRange_C>S", 2, this.tileEntity).addData(this.tileEntity.safetyRange));
         }
         catch (NumberFormatException e)
         {
@@ -147,7 +145,7 @@ public class GuiRadarStation extends GuiContainerBase
         {
             int newAlarmRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldAlarmRange.getText())));
             this.tileEntity.alarmRange = newAlarmRadius;
-            Engine.packetHandler.sendToServer(new PacketTile("alarmRange_C>S", 3, this.tileEntity).addData(this.tileEntity.alarmRange));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("alarmRange_C>S", 3, this.tileEntity).addData(this.tileEntity.alarmRange));
         }
         catch (NumberFormatException e)
         {
@@ -156,7 +154,7 @@ public class GuiRadarStation extends GuiContainerBase
         try
         {
             this.tileEntity.setFrequency(Integer.parseInt(this.textFieldFrequency.getText()));
-            Engine.packetHandler.sendToServer(new PacketTile("frequency_C>S", 4, this.tileEntity).addData(this.tileEntity.getFrequency()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", 4, this.tileEntity).addData(this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {

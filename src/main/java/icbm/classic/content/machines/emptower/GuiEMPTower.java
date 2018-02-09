@@ -1,10 +1,8 @@
 package icbm.classic.content.machines.emptower;
 
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.core.References;
-import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.lib.LanguageUtility;
-import com.builtbroken.mc.prefab.gui.GuiContainerBase;
+import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -17,7 +15,7 @@ import java.io.IOException;
 
 public class GuiEMPTower extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "mc_gui_empty_large.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "mc_gui_empty_large.png");
 
     private TileEMPTower tileEntity;
     private GuiTextField textFieldBanJing;
@@ -68,7 +66,7 @@ public class GuiEMPTower extends GuiContainerBase
                 break;
         }
 
-        Engine.packetHandler.sendToServer(new PacketTile("mode_C>S", 2, this.tileEntity).addData(this.tileEntity.empMode));
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("mode_C>S", 2, this.tileEntity).addData(this.tileEntity.empMode));
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
@@ -82,7 +80,7 @@ public class GuiEMPTower extends GuiContainerBase
         {
             int radius = Math.min(Math.max(Integer.parseInt(this.textFieldBanJing.getText()), 10), TileEMPTower.MAX_RADIUS);
             this.tileEntity.empRadius = radius;
-            Engine.packetHandler.sendToServer(new PacketTile("range_C>S", 1, this.tileEntity).addData(this.tileEntity.empRadius));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", 1, this.tileEntity).addData(this.tileEntity.empRadius));
         }
         catch (NumberFormatException e)
         {

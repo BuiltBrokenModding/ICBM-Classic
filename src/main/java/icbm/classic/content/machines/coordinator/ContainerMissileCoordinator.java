@@ -1,6 +1,6 @@
 package icbm.classic.content.machines.coordinator;
 
-import com.builtbroken.mc.prefab.gui.ContainerBase;
+import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 

@@ -1,26 +1,12 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.api.data.IPacket;
-import com.builtbroken.mc.api.items.hz.IItemFrequency;
-import com.builtbroken.mc.api.tile.access.IGuiTile;
-import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.framework.mod.AbstractProxy;
-import com.builtbroken.mc.lib.LanguageUtility;
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFrequency, IPacketIDReceiver, IGuiTile
+public class ItemSignalDisrupter extends ItemICBMElectrical
 {
     public ItemSignalDisrupter()
     {
@@ -32,66 +18,6 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
         super.getDetailedInfo(stack, player, list);
-        list.add(LanguageUtility.getLocal("info.misc.freq") + " " + this.getBroadCastHz(stack));
-    }
-
-    @Override
-    public void onUpdate(ItemStack itemStack, World world, Entity entity, int par4, boolean par5)
-    {
-        if (!world.isRemote)
-        {
-            //if (this.getEnergy(itemStack) > 20 && world.getWorldTime() % 20 == 0)
-            //{
-            //    this.discharge(itemStack, 1 * 20, true);
-            //}
-        }
-    }
-
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
-    {
-        if (!world.isRemote)
-        {
-            player.openGui(ICBMClassic.INSTANCE, 10002, world, player.inventory.currentItem, 0, 0);
-        }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
-    }
-
-    @Override
-    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
-    {
-        int slot = buf.readInt();
-        float frequency = buf.readFloat();
-
-        ItemStack itemStack = player.inventory.getStackInSlot(slot);
-        if (itemStack != null)
-        {
-            Item clientItem = itemStack.getItem();
-
-            if (clientItem instanceof ItemSignalDisrupter)
-            {
-                ((ItemSignalDisrupter) clientItem).setBroadCastHz(itemStack, frequency);
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player)
-    {
-        return null;
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player)
-    {
-        return null;
-    }
-
-    @Override
-    public boolean openGui(EntityPlayer player, int requestedID)
-    {
-        player.openGui(ICBMClassic.INSTANCE, AbstractProxy.GUI_ITEM, player.world, player.inventory.currentItem, requestedID, 0);
-        return false;
+        list.add("Not Implemented");
     }
 }

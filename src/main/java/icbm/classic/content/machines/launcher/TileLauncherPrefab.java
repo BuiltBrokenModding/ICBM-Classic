@@ -1,12 +1,12 @@
 package icbm.classic.content.machines.launcher;
 
-import com.builtbroken.mc.api.map.radio.IRadioWaveReceiver;
-import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
-import com.builtbroken.mc.imp.transform.region.Cube;
-import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.LanguageUtility;
-import com.builtbroken.mc.framework.radio.RadioRegistry;
-import icbm.classic.prefab.TileFrequency;
+import icbm.classic.api.map.radio.IRadioWaveReceiver;
+import icbm.classic.api.map.radio.IRadioWaveSender;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.prefab.tile.TileFrequency;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 

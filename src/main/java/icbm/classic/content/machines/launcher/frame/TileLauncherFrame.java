@@ -1,11 +1,11 @@
 package icbm.classic.content.machines.launcher.frame;
 
-import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
-import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
-import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
-import com.builtbroken.mc.imp.transform.region.Cube;
-import icbm.classic.prefab.TileMachine;
+import icbm.classic.api.tile.multiblock.IMultiTile;
+import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.multiblock.MultiBlockHelper;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.prefab.tile.TileMachine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;

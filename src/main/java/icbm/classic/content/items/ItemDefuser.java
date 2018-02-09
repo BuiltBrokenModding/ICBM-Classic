@@ -1,6 +1,6 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.lib.LanguageUtility;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.entity.EntityExplosive;

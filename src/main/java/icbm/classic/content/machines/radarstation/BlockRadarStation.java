@@ -2,7 +2,7 @@ package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.Colors;
 import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.BlockICBM;
+import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;

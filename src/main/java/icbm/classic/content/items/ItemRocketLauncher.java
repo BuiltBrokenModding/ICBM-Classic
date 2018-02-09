@@ -1,7 +1,7 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.lib.LanguageUtility;
+import icbm.classic.ICBMClassic;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
@@ -91,7 +91,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (ex.handler != null)
                             {
                                 // Limit the missile to tier two.
-                                if ((ex.handler.getTier().ordinal() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || Engine.runningAsDev) && ((Explosion) ex.handler).isCruise())
+                                if ((ex.handler.getTier().ordinal() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || ICBMClassic.runningAsDev) && ((Explosion) ex.handler).isCruise())
                                 {
                                     if(!world.isRemote)
                                     {

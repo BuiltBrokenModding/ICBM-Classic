@@ -1,6 +1,6 @@
 package icbm.classic.content.potion;
 
-import com.builtbroken.mc.imp.transform.vector.Pos;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
 

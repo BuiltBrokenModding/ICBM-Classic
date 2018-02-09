@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.imp.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.Settings;
 import icbm.classic.client.ICBMSounds;
 import net.minecraft.block.Block;

@@ -1,6 +1,5 @@
 package icbm.classic;
 
-import com.builtbroken.mc.core.Engine;
 import net.minecraftforge.common.config.Configuration;
 
 /**
@@ -23,7 +22,7 @@ public class Settings
 
     public static boolean EXOTHERMIC_CREATE_NETHER_RACK = true;
 
-    public static boolean FORCE_ENABLE_NIGHTMARE = Engine.runningAsDev;
+    public static boolean FORCE_ENABLE_NIGHTMARE = ICBMClassic.runningAsDev;
 
 
     public static void load(Configuration configuration)
@@ -51,7 +50,7 @@ public class Settings
         FORCE_ENABLE_NIGHTMARE = configuration.getBoolean("force_enable_nightmare_missile", "holiday",
                 FORCE_ENABLE_NIGHTMARE, "Force enables the nightmare missile outside of halloween holiday");
 
-        EXOTHERMIC_CREATE_NETHER_RACK = ICBMClassic.INSTANCE.getConfig().getBoolean("create_netherrack", "exothermic",
+        EXOTHERMIC_CREATE_NETHER_RACK = configuration.getBoolean("create_netherrack", "exothermic",
                 EXOTHERMIC_CREATE_NETHER_RACK,
                 "Allows disabling the creation of netherrack by the explosive.");
     }
