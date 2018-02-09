@@ -1,6 +1,5 @@
 package icbm.classic.content.machines.radarstation;
 
-import com.builtbroken.jlib.data.Colors;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.properties.PropertyBool;
@@ -84,7 +83,7 @@ public class BlockRadarStation extends BlockICBM
                 }
                 else
                 {
-                    player.sendMessage(new TextComponentString(Colors.RED.code + "Unexpected error: Couldn't access radar station tile"));
+                    player.sendMessage(new TextComponentString("\u00a7cUnexpected error: Couldn't access radar station tile"));
                 }
             }
             else

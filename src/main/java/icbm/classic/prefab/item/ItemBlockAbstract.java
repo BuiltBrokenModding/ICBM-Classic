@@ -1,6 +1,5 @@
 package icbm.classic.prefab.item;
 
-import com.builtbroken.jlib.data.Colors;
 import icbm.classic.lib.LanguageUtility;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -53,7 +52,7 @@ public class ItemBlockAbstract extends ItemBlock
             {
                 if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
                 {
-                    list.add(LanguageUtility.getLocal("info.voltzengine:tooltip.noShift").replace("#0", Colors.AQUA.toString()).replace("#1", Colors.GREY.toString()));
+                    list.add(LanguageUtility.getLocal("info.voltzengine:tooltip.noShift").replace("#0", "\u00a7b").replace("#1", "\u00a77"));
                 }
                 else
                 {

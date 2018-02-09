@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.network.IByteBufReader;
 import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
-import com.builtbroken.jlib.helpers.MathHelper;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -565,10 +564,15 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      */
     public EulerAngle lerp(EulerAngle aim, double deltaTime)
     {
-        this.yaw = MathHelper.lerp(yaw, aim.yaw, deltaTime);
-        this.pitch = MathHelper.lerp(pitch, aim.pitch, deltaTime);
-        this.roll = MathHelper.lerp(roll, aim.roll, deltaTime);
+        this.yaw = lerp(yaw, aim.yaw, deltaTime);
+        this.pitch = lerp(pitch, aim.pitch, deltaTime);
+        this.roll = lerp(roll, aim.roll, deltaTime);
         return this;
+    }
+
+    private final double lerp(double a, double b, double f)
+    {
+        return a + f * (b - a);
     }
 
     /**
@@ -609,11 +613,11 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
 
         if (d < d2)
         {
-            this.yaw = MathHelper.lerp(yaw, yaw + speed, deltaTime);
+            this.yaw = lerp(yaw, yaw + speed, deltaTime);
         }
         else
         {
-            this.yaw = MathHelper.lerp(yaw, yaw - speed, deltaTime);
+            this.yaw = lerp(yaw, yaw - speed, deltaTime);
         }
         return this;
     }
@@ -639,11 +643,11 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
 
         if (d < d2)
         {
-            this.pitch = MathHelper.lerp(pitch, pitch + speed, deltaTime);
+            this.pitch = lerp(pitch, pitch + speed, deltaTime);
         }
         else
         {
-            this.pitch = MathHelper.lerp(pitch, pitch - speed, deltaTime);
+            this.pitch = lerp(pitch, pitch - speed, deltaTime);
         }
         return this;
     }
@@ -669,11 +673,11 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
 
         if (d < d2)
         {
-            this.roll = MathHelper.lerp(roll, roll + speed, deltaTime);
+            this.roll = lerp(roll, roll + speed, deltaTime);
         }
         else
         {
-            this.roll = MathHelper.lerp(roll, roll - speed, deltaTime);
+            this.roll = lerp(roll, roll - speed, deltaTime);
         }
         return this;
     }

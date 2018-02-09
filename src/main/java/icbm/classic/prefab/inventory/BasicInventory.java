@@ -290,7 +290,7 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
 
             for (int i = 0; i < getSizeInventory(); i++)
             {
-                if (InventoryUtility.roomLeftInSlot(this, i) > 0)
+                if (roomLeftInSlot(i) > 0)
                 {
                     isFull = false;
                     return false;
@@ -303,17 +303,51 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
 
     public ArrayList<Integer> getFilledSlots()
     {
-        return InventoryUtility.getFilledSlots(this);
+        ArrayList<Integer> slots = new ArrayList();
+        for (int slot = 0; slot < getSizeInventory(); slot++)
+        {
+            if (!getStackInSlot(slot).isEmpty())
+            {
+                slots.add(slot);
+            }
+        }
+        return slots;
     }
 
     public ArrayList<Integer> getEmptySlots()
     {
-        return InventoryUtility.getEmptySlots(this);
+        ArrayList<Integer> slots = new ArrayList();
+        for (int slot = 0; slot < getSizeInventory(); slot++)
+        {
+            if (getStackInSlot(slot).isEmpty())
+            {
+                slots.add(slot);
+            }
+        }
+        return slots;
     }
 
     public ArrayList<Integer> getSlotsWithSpace()
     {
-        return InventoryUtility.getSlotsWithSpace(this);
+        ArrayList<Integer> slots = new ArrayList();
+        for (int slot = 0; slot < getSizeInventory(); slot++)
+        {
+            if (roomLeftInSlot(slot) > 0)
+            {
+                slots.add(slot);
+            }
+        }
+        return slots;
+    }
+
+    public int roomLeftInSlot(int slot)
+    {
+        if (!getStackInSlot(slot).isEmpty())
+        {
+            int maxSpace = Math.min(getStackInSlot(slot).getMaxStackSize(), getInventoryStackLimit());
+            return maxSpace - getStackInSlot(slot).getCount();
+        }
+        return getInventoryStackLimit();
     }
 
     @Override

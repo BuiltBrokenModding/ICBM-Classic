@@ -1,10 +1,9 @@
 package icbm.classic.content.explosive.tile;
 
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.inventory.InventoryUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -25,12 +24,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import java.util.Random;
 
 public class BlockExplosive extends BlockICBM
 {
@@ -41,6 +37,12 @@ public class BlockExplosive extends BlockICBM
         super("explosives", Material.TNT);
         setHardness(2);
         setSoundType(SoundType.CLOTH);
+    }
+
+    @Override
+    public int damageDropped(IBlockState state)
+    {
+        return state.getValue(EX_PROP).ordinal();
     }
 
     @Override
@@ -246,47 +248,6 @@ public class BlockExplosive extends BlockICBM
         }
 
         return false;
-    }
-
-    @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
-    {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileEntityExplosive && ((TileEntityExplosive) tile).explosive != null)
-        {
-            return new ItemStack(this, 1, ((TileEntityExplosive) tile).explosive.ordinal());
-        }
-        return new ItemStack(this);
-    }
-
-    @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
-    {
-        if (willHarvest)
-        {
-            InventoryUtility.dropBlockAsItem(world, pos, false);
-        }
-        return world.setBlockToAir(pos);
-    }
-
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
-    {
-        TileEntity tileEntity = world.getTileEntity(pos);
-        if (tileEntity instanceof TileEntityExplosive)
-        {
-            if (!((TileEntityExplosive) tileEntity).exploding)
-            {
-                int explosiveID = ((TileEntityExplosive) tileEntity).explosive.ordinal();
-                drops.add(new ItemStack(ICBMClassic.blockExplosive, 1, explosiveID));
-            }
-        }
-    }
-
-    @Override
-    public int quantityDropped(Random par1Random)
-    {
-        return 0;
     }
 
     @Override

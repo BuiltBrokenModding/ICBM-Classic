@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui;
 
-import com.builtbroken.jlib.data.Colors;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.region.Rectangle;
@@ -82,7 +81,7 @@ public class GuiContainerBase extends GuiContainer
 
     protected void drawString(String str, int x, int y, Color color)
     {
-        drawString(str, x, y, Colors.getIntFromColor(color));
+        drawString(str, x, y, color.getRGB());
     }
 
     protected void drawStringCentered(String str, int x, int y)
@@ -92,7 +91,7 @@ public class GuiContainerBase extends GuiContainer
 
     protected void drawStringCentered(String str, int x, int y, Color color)
     {
-        drawStringCentered(str, x, y, Colors.getIntFromColor(color));
+        drawStringCentered(str, x, y, color.getRGB());
     }
 
     protected void drawStringCentered(String str, int x, int y, int color)

@@ -1,6 +1,5 @@
 package icbm.classic.prefab.item;
 
-import com.builtbroken.jlib.data.Colors;
 import icbm.classic.lib.LanguageUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -45,7 +44,7 @@ public abstract class ItemAbstract extends Item
         {
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
             {
-                list.add(LanguageUtility.getLocal("info.voltzengine:tooltip.noShift").replace("#0", Colors.AQUA.toString()).replace("#1", Colors.GREY.toString()));
+                list.add(LanguageUtility.getLocal("info.voltzengine:tooltip.noShift").replace("#0", "\u00a7b").replace("#1", "\u00a77"));
             }
             else
             {
