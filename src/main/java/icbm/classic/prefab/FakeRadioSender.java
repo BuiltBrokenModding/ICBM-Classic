@@ -1,7 +1,7 @@
 package icbm.classic.prefab;
 
-import icbm.classic.api.map.radio.IRadioWaveReceiver;
-import icbm.classic.api.map.radio.IRadioWaveSender;
+import icbm.classic.api.tile.IRadioWaveReceiver;
+import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.radio.RadioRegistry;

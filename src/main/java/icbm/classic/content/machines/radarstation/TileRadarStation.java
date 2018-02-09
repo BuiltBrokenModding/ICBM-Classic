@@ -1,9 +1,9 @@
 package icbm.classic.content.machines.radarstation;
 
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.api.map.radio.IRadioWaveSender;
-import icbm.classic.api.tile.access.IGuiTile;
-import icbm.classic.api.tile.provider.IInventoryProvider;
+import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.lib.IGuiTile;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.region.Cube;

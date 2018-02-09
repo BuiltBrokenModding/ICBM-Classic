@@ -1,4 +1,4 @@
-package icbm.classic.api.map.radio;
+package icbm.classic.api.tile;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.lib.transform.region.Cube;

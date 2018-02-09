@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.coordinator;
 
-import icbm.classic.api.items.tools.IWorldPosItem;
-import icbm.classic.api.tile.provider.IInventoryProvider;
+import icbm.classic.api.items.IWorldPosItem;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.tile.TileMachine;
 import net.minecraft.entity.player.EntityPlayer;

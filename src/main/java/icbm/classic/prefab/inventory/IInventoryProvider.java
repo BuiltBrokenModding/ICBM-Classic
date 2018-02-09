@@ -1,4 +1,4 @@
-package icbm.classic.api.tile.provider;
+package icbm.classic.prefab.inventory;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

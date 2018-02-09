@@ -3,11 +3,7 @@ package icbm.classic.lib.radar;
 import com.builtbroken.jlib.debug.DebugPrinter;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.radar.data.RadarEntity;
-import icbm.classic.lib.radar.data.RadarObject;
-import icbm.classic.lib.radar.data.RadarTile;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
@@ -28,8 +24,8 @@ public class RadarMap
     public final int dimID;
 
     /** Map of chunk coords( converted to long) to radar contacts in that chunk */
-    public final HashMap<ChunkPos, List<RadarObject>> chunk_to_entities = new HashMap();
-    public final List<RadarObject> allEntities = new ArrayList();
+    public final HashMap<ChunkPos, List<RadarEntity>> chunk_to_entities = new HashMap();
+    public final List<RadarEntity> allEntities = new ArrayList();
 
     public int ticks = 0;
 
@@ -81,13 +77,13 @@ public class RadarMap
 
 
             debug.start("Looking for invalid radar objects and updating position data");
-            HashMap<RadarObject, ChunkPos> removeList = new HashMap();
-            List<RadarObject> addList = new ArrayList();
-            for (Map.Entry<ChunkPos, List<RadarObject>> entry : chunk_to_entities.entrySet())
+            HashMap<RadarEntity, ChunkPos> removeList = new HashMap();
+            List<RadarEntity> addList = new ArrayList();
+            for (Map.Entry<ChunkPos, List<RadarEntity>> entry : chunk_to_entities.entrySet())
             {
                 if (entry.getValue() != null)
                 {
-                    for (RadarObject object : entry.getValue())
+                    for (RadarEntity object : entry.getValue())
                     {
                         if (entry.getKey() != object.getChunkPos())
                         {
@@ -106,10 +102,10 @@ public class RadarMap
 
 
             debug.start("Removing objects from map");
-            for (Map.Entry<RadarObject, ChunkPos> entry : removeList.entrySet())
+            for (Map.Entry<RadarEntity, ChunkPos> entry : removeList.entrySet())
             {
                 allEntities.remove(entry.getKey());
-                List<RadarObject> list = chunk_to_entities.get(entry.getValue());
+                List<RadarEntity> list = chunk_to_entities.get(entry.getValue());
                 if (list != null)
                 {
                     list.remove(entry.getKey());
@@ -135,10 +131,10 @@ public class RadarMap
             debug.end();
 
             debug.start("Removing invalid objects");
-            Iterator<RadarObject> it = allEntities.iterator();
+            Iterator<RadarEntity> it = allEntities.iterator();
             while (it.hasNext())
             {
-                RadarObject object = it.next();
+                RadarEntity object = it.next();
                 if (!object.isValid())
                 {
                     debug.log("Removed: " + object);
@@ -155,18 +151,13 @@ public class RadarMap
         return add(new RadarEntity(entity));
     }
 
-    public boolean add(TileEntity tile)
-    {
-        return add(new RadarTile(tile));
-    }
-
-    public boolean add(RadarObject object)
+    public boolean add(RadarEntity object)
     {
         if (!allEntities.contains(object) && object.isValid())
         {
             allEntities.add(object);
             ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
-            List<RadarObject> list;
+            List<RadarEntity> list;
 
             //Get list or make new
             if (chunk_to_entities.containsKey(pair))
@@ -197,18 +188,13 @@ public class RadarMap
         return remove(new RadarEntity(entity));
     }
 
-    public boolean remove(TileEntity tile)
-    {
-        return remove(new RadarTile(tile));
-    }
-
-    public boolean remove(RadarObject object)
+    public boolean remove(RadarEntity object)
     {
         ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
         allEntities.remove(object);
         if (chunk_to_entities.containsKey(pair))
         {
-            List<RadarObject> list = chunk_to_entities.get(pair);
+            List<RadarEntity> list = chunk_to_entities.get(pair);
             boolean b = list.remove(object);
             //TODO fire radar remove event
             //TODO fire map update event
@@ -231,7 +217,7 @@ public class RadarMap
         ChunkPos pair = chunk.getPos();
         if (chunk_to_entities.containsKey(pair))
         {
-            for (RadarObject object : chunk_to_entities.get(pair))
+            for (RadarEntity object : chunk_to_entities.get(pair))
             {
                 //TODO fire remove event
                 allEntities.remove(object);
@@ -258,7 +244,7 @@ public class RadarMap
      * @param distance - distance m
      * @return list of entries
      */
-    public List<RadarObject> getRadarObjects(double x, double z, double distance)
+    public List<RadarEntity> getRadarObjects(double x, double z, double distance)
     {
         return getRadarObjects(new Cube(x - distance, 0, z - distance, x + distance, 255, z + distance).cropToWorld(), true);
     }
@@ -270,9 +256,9 @@ public class RadarMap
      * @param exact - match exact cube size, overrides approximation
      * @return list of entries
      */
-    public List<RadarObject> getRadarObjects(Cube cube, boolean exact)
+    public List<RadarEntity> getRadarObjects(Cube cube, boolean exact)
     {
-        List<RadarObject> list = new ArrayList();
+        List<RadarEntity> list = new ArrayList();
         for (int chunkX = (cube.min().xi() >> 4) - 1; chunkX <= (cube.max().xi() >> 4) + 1; chunkX++)
         {
             for (int chunkZ = (cube.min().zi() >> 4) - 1; chunkZ <= (cube.max().zi() >> 4) + 1; chunkZ++)
@@ -280,12 +266,12 @@ public class RadarMap
                 ChunkPos p = new ChunkPos(chunkX, chunkZ);
                 if (chunk_to_entities.containsKey(p))
                 {
-                    List<RadarObject> objects = chunk_to_entities.get(p);
+                    List<RadarEntity> objects = chunk_to_entities.get(p);
                     if (objects != null)
                     {
                         if (exact)
                         {
-                            for (RadarObject object : objects)
+                            for (RadarEntity object : objects)
                             {
                                 if (object.isValid())
                                 {

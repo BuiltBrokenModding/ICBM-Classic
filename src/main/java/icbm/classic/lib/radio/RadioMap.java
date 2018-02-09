@@ -1,7 +1,7 @@
 package icbm.classic.lib.radio;
 
-import icbm.classic.api.map.radio.IRadioWaveReceiver;
-import icbm.classic.api.map.radio.IRadioWaveSender;
+import icbm.classic.api.tile.IRadioWaveReceiver;
+import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.lib.transform.region.Cube;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;

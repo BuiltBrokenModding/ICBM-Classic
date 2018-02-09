@@ -1,4 +1,4 @@
-package icbm.classic.api.tile;
+package icbm.classic.prefab.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 

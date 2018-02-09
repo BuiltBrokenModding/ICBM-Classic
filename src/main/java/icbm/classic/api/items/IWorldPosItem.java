@@ -1,4 +1,4 @@
-package icbm.classic.api.items.tools;
+package icbm.classic.api.items;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.lib.transform.vector.Location;

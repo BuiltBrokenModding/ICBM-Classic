@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import icbm.classic.api.IWorldPosition;
-import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;

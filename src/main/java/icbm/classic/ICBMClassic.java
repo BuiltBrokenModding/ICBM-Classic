@@ -23,7 +23,6 @@ import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
-import icbm.classic.lib.mod.ModCreativeTab;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
@@ -63,6 +62,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
@@ -101,7 +101,7 @@ public final class ICBMClassic
     public static final String BUILD_VERSION = "@BUILD@";
     public static final String MC_VERSION = "@MC@";
     public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
-    public static final String DEPENDENCIES = "required-after:voltzengine;";
+    public static final String DEPENDENCIES = "";
 
     public static final String TEXTURE_DIRECTORY = "textures/";
     public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
@@ -161,7 +161,7 @@ public final class ICBMClassic
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
-    public static final ModCreativeTab CREATIVE_TAB = new ModCreativeTab(DOMAIN);
+    public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -282,6 +282,7 @@ public final class ICBMClassic
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 
         //Register entities
         registerEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 128, 15);

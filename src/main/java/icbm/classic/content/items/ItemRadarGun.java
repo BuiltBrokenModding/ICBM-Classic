@@ -2,7 +2,7 @@ package icbm.classic.content.items;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.lib.network.IPacketIDReceiver;

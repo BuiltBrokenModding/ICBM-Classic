@@ -1,6 +1,6 @@
 package icbm.classic.api.tile;
 
-import icbm.classic.api.tile.access.IRotation;
+import icbm.classic.api.IRotation;
 import net.minecraft.util.EnumFacing;
 
 /**

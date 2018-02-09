@@ -2,8 +2,8 @@ package icbm.classic.content.machines.launcher.screen;
 
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.api.energy.IEnergyBufferProvider;
-import icbm.classic.api.map.radio.IRadioWaveSender;
-import icbm.classic.api.tile.provider.IInventoryProvider;
+import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.vector.Pos;

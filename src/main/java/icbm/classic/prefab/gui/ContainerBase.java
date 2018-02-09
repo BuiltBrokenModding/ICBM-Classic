@@ -1,7 +1,6 @@
 package icbm.classic.prefab.gui;
 
-import icbm.classic.api.tile.IPlayerUsing;
-import icbm.classic.api.tile.provider.IInventoryProvider;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;

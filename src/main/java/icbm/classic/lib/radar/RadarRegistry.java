@@ -1,12 +1,9 @@
 package icbm.classic.lib.radar;
 
+import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.radar.data.RadarEntity;
-import icbm.classic.lib.radar.data.RadarObject;
-import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -49,22 +46,6 @@ public final class RadarRegistry
     }
 
     /**
-     * Adds an entity to the radar map
-     *
-     * @param tile - entity
-     * @return true if added
-     */
-    public static boolean add(TileEntity tile)
-    {
-        if (tile != null && tile.getWorld() != null && !tile.getWorld().isRemote)
-        {
-            RadarMap map = getRadarMapForWorld(tile.getWorld());
-            return map != null ? getRadarMapForWorld(tile.getWorld()).add(tile) : false;
-        }
-        return false;
-    }
-
-    /**
      * Removes an entity from the radar map
      *
      * @param entity - entity
@@ -76,22 +57,6 @@ public final class RadarRegistry
         {
             RadarMap map = getRadarMapForWorld(entity.world);
             return map != null ? getRadarMapForWorld(entity.world).remove(entity) : false;
-        }
-        return false;
-    }
-
-    /**
-     * Removes an entity from the radar map
-     *
-     * @param tile - entity
-     * @return true if removed
-     */
-    public static boolean remove(TileEntity tile)
-    {
-        if (tile != null && tile.getWorld() != null)
-        {
-            RadarMap map = getRadarMapForWorld(tile.getWorld());
-            return map != null ? getRadarMapForWorld(tile.getWorld()).remove(tile) : false;
         }
         return false;
     }
@@ -171,8 +136,8 @@ public final class RadarRegistry
             RadarMap map = getRadarMapForWorld(world);
             if (map != null)
             {
-                List<RadarObject> objects = map.getRadarObjects(cube, true);
-                for (RadarObject object : objects)
+                List<RadarEntity> objects = map.getRadarObjects(cube, true);
+                for (RadarEntity object : objects)
                 {
                     if (object instanceof RadarEntity && object.isValid())
                     {

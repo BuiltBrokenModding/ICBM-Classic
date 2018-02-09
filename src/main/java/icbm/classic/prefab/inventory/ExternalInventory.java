@@ -1,7 +1,5 @@
 package icbm.classic.prefab.inventory;
 
-import icbm.classic.api.tile.node.IExternalInventory;
-import icbm.classic.api.tile.provider.IInventoryProvider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;

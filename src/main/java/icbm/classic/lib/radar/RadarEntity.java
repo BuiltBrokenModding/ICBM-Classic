@@ -1,13 +1,18 @@
-package icbm.classic.lib.radar.data;
+package icbm.classic.lib.radar;
 
+import icbm.classic.api.IWorldPosition;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 /**
+ * Special type of weak reference used to track radar objects. This prevents the radar system from holding on to
+ * references that should be unloaded from the map.
+ *
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/5/2016.
  */
-public class RadarEntity extends RadarObject<Entity>
+public class RadarEntity implements IWorldPosition
 {
     public Entity entity;
 
@@ -16,7 +21,6 @@ public class RadarEntity extends RadarObject<Entity>
         this.entity = referent;
     }
 
-    @Override
     public boolean isValid()
     {
         return entity != null && entity.isEntityAlive() && entity.world != null;
@@ -64,5 +68,10 @@ public class RadarEntity extends RadarObject<Entity>
             return entity.hashCode();
         }
         return super.hashCode();
+    }
+
+    public ChunkPos getChunkPos()
+    {
+        return new ChunkPos((int) x() >> 4, (int) z() >> 4);
     }
 }

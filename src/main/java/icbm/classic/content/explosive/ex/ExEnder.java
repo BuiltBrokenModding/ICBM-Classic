@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.ex;
 
 import icbm.classic.api.IWorldPosition;
-import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityExplosive;

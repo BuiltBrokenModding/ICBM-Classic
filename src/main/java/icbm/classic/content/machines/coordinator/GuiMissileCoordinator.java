@@ -2,7 +2,7 @@ package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.jlib.data.science.units.UnitDisplay;
 import icbm.classic.api.IWorldPosition;
-import icbm.classic.api.items.tools.IWorldPosItem;
+import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;

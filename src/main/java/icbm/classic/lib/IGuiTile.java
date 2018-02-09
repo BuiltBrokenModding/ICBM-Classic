@@ -1,4 +1,4 @@
-package icbm.classic.api.tile.access;
+package icbm.classic.lib;
 
 import net.minecraft.entity.player.EntityPlayer;
 
