@@ -1,8 +1,6 @@
 package icbm.classic.content.explosive.ex;
 
 import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.api.edit.IWorldChangeAction;
-import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.imp.transform.vector.Location;
 import com.builtbroken.mc.imp.transform.vector.Pos;
@@ -109,11 +107,5 @@ public class ExEnder extends Explosion
         }
 
         new BlastEnderman(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30, teleportTarget).explode();
-    }
-
-    @Override
-    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
-    {
-        return null;
     }
 }

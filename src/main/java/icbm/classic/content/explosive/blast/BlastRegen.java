@@ -21,16 +21,16 @@ public class BlastRegen extends Blast
     @Override
     public void doExplode()
     {
-        if (!oldWorld().isRemote)
+        if (!world().isRemote)
         {
             try
             {
-                Chunk oldChunk = oldWorld().getChunkFromChunkCoords(position.xi() >> 4, position.zi() >> 4);
+                Chunk oldChunk = world().getChunkFromChunkCoords(position.xi() >> 4, position.zi() >> 4);
 
-                if (oldWorld() instanceof WorldServer)
+                if (world() instanceof WorldServer)
                 {
 
-                    IChunkProvider provider = oldWorld().getChunkProvider();
+                    IChunkProvider provider = world().getChunkProvider();
                     IChunkGenerator generator = ((ChunkProviderServer) provider).chunkGenerator;
                     Chunk newChunk = generator.generateChunk(oldChunk.x, oldChunk.z);
 
@@ -38,7 +38,7 @@ public class BlastRegen extends Blast
                     {
                         for (int z = 0; z < 16; z++)
                         {
-                            for (int y = 0; y < oldWorld().getHeight(); y++)
+                            for (int y = 0; y < world().getHeight(); y++)
                             {
                                 IBlockState state = newChunk.getBlockState(x, y, z);
                                 world.setBlockState(new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16), state, 3);

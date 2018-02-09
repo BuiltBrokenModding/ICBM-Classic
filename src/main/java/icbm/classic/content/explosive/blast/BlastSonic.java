@@ -44,7 +44,7 @@ public class BlastSonic extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             /*
             if (this.hasShockWave)
@@ -78,11 +78,11 @@ public class BlastSonic extends Blast
 
         if (this.hasShockWave)
         {
-            ICBMSounds.HYPERSONIC.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.HYPERSONIC.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
         else
         {
-            ICBMSounds.SONICWAVE.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.SONICWAVE.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -91,7 +91,7 @@ public class BlastSonic extends Blast
     {
         int r = this.callCount;
 
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             if (this.thread != null && this.thread.isComplete)
             {
@@ -115,23 +115,23 @@ public class BlastSonic extends Blast
                         continue;
                     }
 
-                    if (distance < r - 1 || this.oldWorld().rand.nextInt(3) > 0)
+                    if (distance < r - 1 || this.world().rand.nextInt(3) > 0)
                     {
                         if (block == ICBMClassic.blockExplosive)
                         {
-                            BlockExplosive.triggerExplosive(this.oldWorld(), targetPosition, ((TileEntityExplosive) this.oldWorld().getTileEntity(targetPosition)).explosive, 1);
+                            BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive, 1);
                         }
                         else
                         {
-                            this.oldWorld().setBlockToAir(targetPosition);
+                            this.world().setBlockToAir(targetPosition);
                         }
 
-                        if (this.oldWorld().rand.nextFloat() < 0.3 * (this.getRadius() - r))
+                        if (this.world().rand.nextFloat() < 0.3 * (this.getRadius() - r))
                         {
-                            EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), targetPosition, blockState);
-                            this.oldWorld().spawnEntity(entity);
-                            entity.yawChange = 50 * this.oldWorld().rand.nextFloat();
-                            entity.pitchChange = 100 * this.oldWorld().rand.nextFloat();
+                            EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
+                            this.world().spawnEntity(entity);
+                            entity.yawChange = 50 * this.world().rand.nextFloat();
+                            entity.pitchChange = 100 * this.world().rand.nextFloat();
                         }
 
                         it.remove();
@@ -142,7 +142,7 @@ public class BlastSonic extends Blast
 
         int radius = 2 * this.callCount;
         AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
-        List<Entity> allEntities = this.oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
 
         synchronized (allEntities)
         {
@@ -166,8 +166,8 @@ public class BlastSonic extends Blast
                         r = (int) -this.getRadius();
                     }
 
-                    entity.motionX += (r - xDifference) * 0.02 * this.oldWorld().rand.nextFloat();
-                    entity.motionY += 3 * this.oldWorld().rand.nextFloat();
+                    entity.motionX += (r - xDifference) * 0.02 * this.world().rand.nextFloat();
+                    entity.motionY += 3 * this.world().rand.nextFloat();
 
                     r = (int) this.getRadius();
                     if (zDifference < 0)
@@ -175,7 +175,7 @@ public class BlastSonic extends Blast
                         r = (int) -this.getRadius();
                     }
 
-                    entity.motionZ += (r - zDifference) * 0.02 * this.oldWorld().rand.nextFloat();
+                    entity.motionZ += (r - zDifference) * 0.02 * this.world().rand.nextFloat();
                 }
             }
         }

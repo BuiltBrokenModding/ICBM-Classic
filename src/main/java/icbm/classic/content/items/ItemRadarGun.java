@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
@@ -8,13 +9,14 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketPlayerItem;
 import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.prefab.items.ItemWorldPos;
+import com.builtbroken.mc.lib.LanguageUtility;
+import com.builtbroken.mc.prefab.items.ItemAbstract;
 import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -34,8 +36,10 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 6/13/2016.
  */
-public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacketIDReceiver
+public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacketIDReceiver
 {
+    public static final String NBT_LINK_POS = "linkPos";
+
     public ItemRadarGun()
     {
         this.setMaxStackSize(1);
@@ -131,5 +135,48 @@ public class ItemRadarGun extends ItemWorldPos implements IWorldPosItem, IPacket
             LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
         }
         return true;
+    }
+
+    @Override
+    public Location getLocation(ItemStack stack)
+    {
+        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBT_LINK_POS))
+        {
+            return new Location(stack.getTagCompound().getCompoundTag(NBT_LINK_POS));
+        }
+        return null;
+    }
+
+    @Override
+    public void setLocation(ItemStack stack, IWorldPosition loc)
+    {
+        if (loc != null)
+        {
+            if (stack.getTagCompound() == null)
+            {
+                stack.setTagCompound(new NBTTagCompound());
+            }
+
+            NBTTagCompound save = new NBTTagCompound();
+            if (loc instanceof Location)
+            {
+                ((Location) loc).writeNBT(save);
+            }
+            else
+            {
+                new Location(loc).writeNBT(save);
+            }
+            stack.getTagCompound().setTag(NBT_LINK_POS, save);
+        }
+        else if (stack.getTagCompound() != null)
+        {
+            stack.getTagCompound().removeTag(NBT_LINK_POS);
+        }
+    }
+
+    @Override
+    public boolean canAccessLocation(ItemStack stack, Object obj)
+    {
+        return false;
     }
 }

@@ -1,10 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.mc.client.effects.providers.VEProviderShockWave;
 import com.builtbroken.mc.framework.energy.UniversalEnergySystem;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
+import com.builtbroken.mc.framework.radar.RadarRegistry;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.block.Block;
@@ -50,7 +49,7 @@ public class BlastEMP extends Blast
     @Override
     public void doExplode()
     {
-        if (!oldWorld().isRemote)
+        if (!world().isRemote)
         {
             if (this.effectBlocks)
             {
@@ -70,11 +69,11 @@ public class BlastEMP extends Blast
 
                             if (Math.round(position.x() + y) == position.yi())
                             {
-                                oldWorld().spawnParticle(EnumParticleTypes.SMOKE_LARGE, searchPosition.x(), searchPosition.y(), searchPosition.z(), 0, 0, 0);
+                                world().spawnParticle(EnumParticleTypes.SMOKE_LARGE, searchPosition.x(), searchPosition.y(), searchPosition.z(), 0, 0, 0);
                             }
 
-                            Block block = searchPosition.getBlock(oldWorld());
-                            TileEntity tileEntity = searchPosition.getTileEntity(oldWorld());
+                            Block block = searchPosition.getBlock(world());
+                            TileEntity tileEntity = searchPosition.getTileEntity(world());
                             //TODO fire EMP event
                             //TODO more EMP effect to UniversalEnergySystem to better support cross mod support
                             if (block != null)
@@ -85,7 +84,7 @@ public class BlastEMP extends Blast
                                 //}
                                 if (block instanceof IEMPBlock)
                                 {
-                                    ((IEMPBlock) block).onEMP(oldWorld(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), this);
+                                    ((IEMPBlock) block).onEMP(world(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), this);
                                 }
                             }
 
@@ -105,7 +104,7 @@ public class BlastEMP extends Blast
             if (this.effectEntities)
             {
                 // Drop all missiles
-                List<Entity> entitiesNearby = RadarRegistry.getAllLivingObjectsWithin(oldWorld(), new Cube(position.sub(getRadius()), position.add(getRadius())));
+                List<Entity> entitiesNearby = RadarRegistry.getAllLivingObjectsWithin(world(), new Cube(position.sub(getRadius()), position.add(getRadius())));
 
                 for (Entity entity : entitiesNearby)
                 {
@@ -120,13 +119,13 @@ public class BlastEMP extends Blast
 
                 int maxFx = 10;
                 AxisAlignedBB bounds = new AxisAlignedBB(position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(), position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
-                List<Entity> entities = oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
+                List<Entity> entities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
                 for (Entity entity : entities)
                 {
                     if (entity instanceof EntityLivingBase)
                     {
-                        if (this.oldWorld().isRemote && maxFx > 0)
+                        if (this.world().isRemote && maxFx > 0)
                         {
                             //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
                             maxFx--;
@@ -134,7 +133,7 @@ public class BlastEMP extends Blast
 
                         if (entity instanceof EntityCreeper)
                         {
-                            if (!this.oldWorld().isRemote)
+                            if (!this.world().isRemote)
                             {
                                 //TODO ((EntityCreeper) entity).getDataManager().set(EntityCreeper.P);
                             }
@@ -165,10 +164,10 @@ public class BlastEMP extends Blast
                 }
             }
 
-            VEProviderShockWave.spawnEffect(oldWorld(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 1, 3);
-            VEProviderShockWave.spawnEffect(oldWorld(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 3, 3);
-            VEProviderShockWave.spawnEffect(oldWorld(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
-            ICBMSounds.EMP.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 1, 3);
+            //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 3, 3);
+            //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
+            ICBMSounds.EMP.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 

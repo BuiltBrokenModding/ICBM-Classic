@@ -27,14 +27,14 @@ public class BlastAntimatter extends Blast
     public void doPreExplode()
     {
         super.doPreExplode();
-        ICBMSounds.ANTIMATTER.play(world, this.position.x(), this.position.y(), this.position.z(), 7F, (float) (this.oldWorld().rand.nextFloat() * 0.1 + 0.9F), true);
+        ICBMSounds.ANTIMATTER.play(world, this.position.x(), this.position.y(), this.position.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
     }
 
     @Override
     public void doExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             for (int x = (int) -this.getRadius(); x < this.getRadius(); x++)
             {
@@ -51,12 +51,12 @@ public class BlastAntimatter extends Blast
 
                             if (!blockState.getBlock().isAir(blockState, world, blockPos))
                             {
-                                if (!this.destroyBedrock && blockState.getBlockHardness(this.oldWorld(), blockPos) < 0)
+                                if (!this.destroyBedrock && blockState.getBlockHardness(this.world(), blockPos) < 0)
                                 {
                                     continue;
                                 }
 
-                                if (dist < this.getRadius() - 1 || oldWorld().rand.nextFloat() > 0.7)
+                                if (dist < this.getRadius() - 1 || world().rand.nextFloat() > 0.7)
                                 {
                                     world.setBlockToAir(blockPos);
                                 }

@@ -1,8 +1,7 @@
 package icbm.classic.content.entity;
 
-import com.builtbroken.mc.api.data.EnumProjectileTypes;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
+import com.builtbroken.mc.framework.radar.RadarRegistry;
 import com.builtbroken.mc.prefab.entity.EntityProjectile;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
@@ -577,12 +576,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public NBTTagCompound getTagCompound()
     {
         return this.nbtData;
-    }
-
-    @Override
-    public EnumProjectileTypes getProjectileType()
-    {
-        return EnumProjectileTypes.ROCKET;
     }
 
     public enum MissileType

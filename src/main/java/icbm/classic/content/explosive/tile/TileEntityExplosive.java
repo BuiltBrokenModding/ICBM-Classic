@@ -3,7 +3,6 @@ package icbm.classic.content.explosive.tile;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.data.Direction;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
@@ -15,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
 public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver, IRotatable
 {
@@ -85,15 +85,15 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     }
 
     @Override
-    public Direction getDirection()
+    public EnumFacing getDirection()
     {
-        return Direction.getOrientation(this.getBlockMetadata());
+        return EnumFacing.getFront(this.getBlockMetadata());
     }
 
     @Override
-    public void setDirection(Direction facingDirection)
+    public void setDirection(EnumFacing facingDirection)
     {
-        this.world.setBlockState(pos, getBlockType().getDefaultState().withProperty(BlockExplosive.ROTATION_PROP, facingDirection.getEnumFacing()), 2);
+        this.world.setBlockState(pos, getBlockType().getDefaultState().withProperty(BlockExplosive.ROTATION_PROP, facingDirection), 2);
     }
 
     public Explosive getExplosiveType()

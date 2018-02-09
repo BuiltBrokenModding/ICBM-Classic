@@ -40,7 +40,7 @@ public abstract class Blast extends Explosion implements IWorldPosition, IExplos
 
     public Blast(Location pos, Entity entity, float size)
     {
-        super(pos.oldWorld(), entity, pos.x(), pos.y(), pos.z(), size, false, true);
+        super(pos.world(), entity, pos.x(), pos.y(), pos.z(), size, false, true);
         this.position = pos;
     }
 
@@ -91,7 +91,7 @@ public abstract class Blast extends Explosion implements IWorldPosition, IExplos
         this.x = posX;
         this.y = posY;
         this.z = posZ;
-        position = new Location(oldWorld(), posX, posY, posZ);
+        position = new Location(world(), posX, posY, posZ);
     }
 
     /** Make the default functions useless. */
@@ -110,9 +110,9 @@ public abstract class Blast extends Explosion implements IWorldPosition, IExplos
     {
         if (this.proceduralInterval() > 0)
         {
-            if (!this.oldWorld().isRemote)
+            if (!this.world().isRemote)
             {
-                this.oldWorld().spawnEntity(new EntityExplosion(this));
+                this.world().spawnEntity(new EntityExplosion(this));
             }
         }
         else
@@ -161,7 +161,7 @@ public abstract class Blast extends Explosion implements IWorldPosition, IExplos
         radius *= 2.0F;
         Location minCoord = position.add(-radius - 1);
         Location maxCoord = position.add(radius + 1);
-        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
+        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
         Vec3d var31 = new Vec3d(position.x(), position.y(), position.z());
 
         for (int i = 0; i < allEntities.size(); ++i)
@@ -195,7 +195,7 @@ public abstract class Blast extends Explosion implements IWorldPosition, IExplos
                 xDifference /= var35;
                 yDifference /= var35;
                 zDifference /= var35;
-                double var34 = oldWorld().getBlockDensity(var31, entity.getEntityBoundingBox());
+                double var34 = world().getBlockDensity(var31, entity.getEntityBoundingBox());
                 double var36 = (1.0D - distance) * var34;
                 int damage = 0;
 
@@ -251,9 +251,9 @@ public abstract class Blast extends Explosion implements IWorldPosition, IExplos
     }
 
     @Override
-    public World oldWorld()
+    public World world()
     {
-        return this.position.oldWorld();
+        return this.position.world();
     }
 
     @Override

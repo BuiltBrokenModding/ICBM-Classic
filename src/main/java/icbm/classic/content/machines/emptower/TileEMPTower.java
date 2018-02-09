@@ -1,17 +1,13 @@
 package icbm.classic.content.machines.emptower;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
-import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import icbm.classic.prefab.item.TilePoweredMachine;
@@ -22,19 +18,21 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
 
-    public static HashMap<IPos3D, String> tileMapCache = new HashMap();
+    public static List<BlockPos> tileMapCache = new ArrayList();
 
     static
     {
-        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getTileName());
+        tileMapCache.add(new BlockPos(0, 1, 0));
     }
 
     public float rotation = 0;
@@ -226,7 +224,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (tileMapCache.containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
+            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
             {
                 tileMulti.setHost(this);
             }
@@ -238,9 +236,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
-
-            if (tileMapCache.containsKey(pos))
+            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;
@@ -260,7 +256,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         if (isServer())
         {
-            openGui(player, ICBMClassic.INSTANCE);
+            openGui(player, 0);
         }
         return true;
     }
@@ -272,7 +268,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     }
 
     @Override
-    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    public List<BlockPos> getLayoutOfMultiBlock()
     {
         return tileMapCache;
     }

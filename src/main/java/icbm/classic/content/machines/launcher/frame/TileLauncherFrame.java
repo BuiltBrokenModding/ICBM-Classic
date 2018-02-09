@@ -1,13 +1,10 @@
 package icbm.classic.content.machines.launcher.frame;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.region.Cube;
-import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.prefab.TileMachine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +15,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This tile entity is for the screen of the missile launcher
@@ -27,12 +25,12 @@ import java.util.HashMap;
  */
 public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver, IMultiTileHost
 {
-    public static HashMap<IPos3D, String> tileMapCache = new HashMap();
+    public static List<BlockPos> tileMapCache = new ArrayList();
 
     static
     {
-        tileMapCache.put(new Pos(0, 1, 0), EnumMultiblock.TILE.getTileName());
-        tileMapCache.put(new Pos(0, 2, 0), EnumMultiblock.TILE.getTileName());
+        tileMapCache.add(new BlockPos(0, 1, 0));
+        tileMapCache.add(new BlockPos(0, 2, 0));
     }
 
     private boolean _destroyingStructure = false;
@@ -73,7 +71,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (tileMapCache.containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
+            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
             {
                 tileMulti.setHost(this);
             }
@@ -85,9 +83,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
-
-            if (tileMapCache.containsKey(pos))
+            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;
@@ -116,7 +112,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     }
 
     @Override
-    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    public List<BlockPos> getLayoutOfMultiBlock()
     {
         return tileMapCache;
     }

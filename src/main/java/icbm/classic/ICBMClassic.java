@@ -152,13 +152,6 @@ public final class ICBMClassic extends AbstractMod
     }
 
     @Override
-    public void loadJsonContentHandlers()
-    {
-        super.loadJsonContentHandlers();
-        //JsonBlockListenerProcessor.addBuilder(new ListenerExplosiveBreakTrigger.Builder()); TODO re-implement redmatter ore
-    }
-
-    @Override
     public void loadHandlers(LoadableHandler loader)
     {
         //loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded()); TODO add waila support back

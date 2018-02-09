@@ -4,7 +4,8 @@ import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.framework.mod.AbstractProxy;
+import com.builtbroken.mc.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
@@ -85,5 +86,12 @@ public class ItemSignalDisrupter extends ItemICBMElectrical implements IItemFreq
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return null;
+    }
+
+    @Override
+    public boolean openGui(EntityPlayer player, int requestedID)
+    {
+        player.openGui(ICBMClassic.INSTANCE, AbstractProxy.GUI_ITEM, player.world, player.inventory.currentItem, requestedID, 0);
+        return false;
     }
 }

@@ -1,21 +1,21 @@
 package icbm.classic.content.explosive;
 
-import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.framework.explosive.handler.ExplosiveHandler;
+import com.builtbroken.mc.lib.LanguageUtility;
 import icbm.classic.prefab.EnumTier;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 import icbm.classic.prefab.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import resonant.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive extends ExplosiveHandler implements IExplosive
+public abstract class Explosive implements IExplosive
 {
     /** The unique identification name for this explosive. */
     private String nameID;
@@ -40,7 +40,6 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
 
     protected Explosive(String name, EnumTier tier)
     {
-        super(name);
         this.nameID = name;
         this.tier = tier;
         this.fuseTime = 100;

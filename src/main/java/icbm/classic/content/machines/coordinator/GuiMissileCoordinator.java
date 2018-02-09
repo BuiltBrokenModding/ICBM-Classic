@@ -3,14 +3,14 @@ package icbm.classic.content.machines.coordinator;
 import com.builtbroken.jlib.data.science.units.UnitDisplay;
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import icbm.classic.prefab.gui.GuiICBMContainer;
+import com.builtbroken.mc.lib.LanguageUtility;
+import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 
-public class GuiMissileCoordinator extends GuiICBMContainer
+public class GuiMissileCoordinator extends GuiContainerBase
 {
     private TileMissileCoordinator tileEntity;
     private float animation = 0;
@@ -54,7 +54,7 @@ public class GuiMissileCoordinator extends GuiICBMContainer
                 double rotation = MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(delta.z(), delta.x()))) - 90;
                 int heading = MathHelper.floor(rotation * 4.0F / 360.0F + 0.5D) & 3;
 
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.direction") + " " + UnitDisplay.roundDecimals(rotation) + " (" + Direction.DIRECTIONS[heading] + ")", 13, 95, 4210752);
+                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.coordinator.direction") + " " + UnitDisplay.roundDecimals(rotation) + " (" + EnumFacing.values()[heading] + ")", 13, 95, 4210752);
             }
         }
 

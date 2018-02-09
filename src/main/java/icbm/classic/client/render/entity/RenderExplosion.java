@@ -1,6 +1,5 @@
 package icbm.classic.client.render.entity;
 
-import com.builtbroken.mc.client.SharedAssets;
 import com.builtbroken.mc.core.References;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityExplosion;
@@ -26,6 +25,8 @@ import java.util.Random;
 public class RenderExplosion extends Render<EntityExplosion>
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, References.TEXTURE_DIRECTORY + "blackhole.png");
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(References.DOMAIN, References.TEXTURE_DIRECTORY + "grey.png");
+
     public Color colorIn = new Color(16777215);
     public Color colorOut = new Color(0);
 
@@ -87,7 +88,7 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.translate((float) x, (float) y, (float) z);
 
         //Assign texture
-        bindTexture(SharedAssets.GREY_TEXTURE);
+        bindTexture(GREY_TEXTURE);
 
         //Assign color
         GlStateManager.color(0.0F, 0.0F, 0.0F, 1);
@@ -117,7 +118,7 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.translate((float) x, (float) y, (float) z);
 
         //Assign texture
-        bindTexture(SharedAssets.GREY_TEXTURE);
+        bindTexture(GREY_TEXTURE);
 
         //Assign color
         GlStateManager.color(0.0F, 0.0F, 0.2F, 0.8f);

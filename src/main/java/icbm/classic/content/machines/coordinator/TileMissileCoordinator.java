@@ -1,21 +1,20 @@
 package icbm.classic.content.machines.coordinator;
 
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
-import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
+import icbm.classic.prefab.TileMachine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Missile Coordinator, used to calculate paths between two points to better plan missile actions
  *
  * @author Calclavia
  */
-public class TileMissileCoordinator extends TileEntity implements IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileMissileCoordinator extends TileMachine implements IInventoryProvider<ExternalInventory>
 {
     public static final String NBT_INVENTORY = "inventory";
     public ExternalInventory inventory;
@@ -59,7 +58,7 @@ public class TileMissileCoordinator extends TileEntity implements IGuiTile, IInv
     }
 
     @Override
-    public boolean canStore(ItemStack stack, int slot, Direction side)
+    public boolean canStore(ItemStack stack, int slot, EnumFacing side)
     {
         return stack.getItem() instanceof IWorldPosItem;
     }

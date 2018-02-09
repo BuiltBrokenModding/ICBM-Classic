@@ -3,7 +3,7 @@ package icbm.classic.content.machines.emptower;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiButton;
@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class GuiEMPTower extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "mc_gui_empty_large.png");
 
     private TileEMPTower tileEntity;
     private GuiTextField textFieldBanJing;

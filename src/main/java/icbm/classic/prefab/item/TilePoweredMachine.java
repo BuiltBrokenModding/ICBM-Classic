@@ -2,8 +2,7 @@ package icbm.classic.prefab.item;
 
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
-import com.builtbroken.mc.data.Direction;
-import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
+import com.builtbroken.mc.framework.energy.EnergyBuffer;
 import icbm.classic.prefab.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,7 +22,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
 
     public int getEnergy()
     {
-        IEnergyBuffer buffer = getEnergyBuffer(Direction.UNKNOWN);
+        IEnergyBuffer buffer = getEnergyBuffer(null);
         if (buffer != null)
         {
             return buffer.getEnergyStored();
@@ -33,7 +32,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
 
     public void setEnergy(int energy)
     {
-        IEnergyBuffer buffer = getEnergyBuffer(Direction.UNKNOWN);
+        IEnergyBuffer buffer = getEnergyBuffer(null);
         if (buffer != null)
         {
             buffer.setEnergyStored(energy);
@@ -45,7 +44,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
      */
     public void extractEnergy()
     {
-        IEnergyBuffer buffer = getEnergyBuffer(Direction.UNKNOWN);
+        IEnergyBuffer buffer = getEnergyBuffer(null);
         if (buffer != null)
         {
             buffer.removeEnergyFromStorage(getEnergyConsumption(), true);
@@ -116,7 +115,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     }
 
     @Override
-    public IEnergyBuffer getEnergyBuffer(Direction side)
+    public IEnergyBuffer getEnergyBuffer(EnumFacing side)
     {
         if (buffer == null)
         {
@@ -148,7 +147,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     {
         if (capability == CapabilityEnergy.ENERGY)
         {
-            return (T) getEnergyBuffer(Direction.getOrientation(facing));
+            return (T) getEnergyBuffer(facing);
         }
         return super.getCapability(capability, facing);
     }

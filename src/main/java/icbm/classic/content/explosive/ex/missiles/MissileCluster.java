@@ -1,7 +1,5 @@
 package icbm.classic.content.explosive.ex.missiles;
 
-import com.builtbroken.mc.api.edit.IWorldChangeAction;
-import com.builtbroken.mc.api.event.TriggerCause;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
@@ -9,7 +7,6 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.prefab.EnumTier;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -85,11 +82,5 @@ public class MissileCluster extends Missile
     public boolean isCruise()
     {
         return false;
-    }
-
-    @Override
-    public IWorldChangeAction createBlastForTrigger(World world, double x, double y, double z, TriggerCause triggerCause, double size, NBTTagCompound tag)
-    {
-        return null;
     }
 }

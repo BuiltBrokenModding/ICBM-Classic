@@ -4,7 +4,7 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiTextField;

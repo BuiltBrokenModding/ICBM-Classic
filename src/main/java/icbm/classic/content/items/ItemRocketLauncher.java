@@ -1,7 +1,7 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.core.Engine;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;

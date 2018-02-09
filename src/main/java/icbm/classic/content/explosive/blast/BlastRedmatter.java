@@ -65,7 +65,7 @@ public class BlastRedmatter extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             //this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), Math.max(2, 15.0F * getScaleFactor()), true);
         }
@@ -75,7 +75,7 @@ public class BlastRedmatter extends Blast
     protected void doPostExplode()
     {
         AxisAlignedBB bounds = new AxisAlignedBB(this.x - this.size, this.y - this.size, this.z - this.size, this.x + this.size, this.y + this.size, this.z + this.size);
-        List<?> list = this.oldWorld().getEntitiesWithinAABB(EntityExplosion.class, bounds);
+        List<?> list = this.world().getEntitiesWithinAABB(EntityExplosion.class, bounds);
 
         for (Object obj : list)
         {
@@ -94,7 +94,7 @@ public class BlastRedmatter extends Blast
     @Override
     public void doExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             //Limit life span of the blast
             if (DO_DESPAWN && callCount >= lifeSpan)
@@ -105,11 +105,11 @@ public class BlastRedmatter extends Blast
             doEntityMovement();
             if (doAudio)
             {
-                if (this.oldWorld().rand.nextInt(8) == 0)
+                if (this.world().rand.nextInt(8) == 0)
                 {
-                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getRadius(), position.y() + (Math.random() - 0.5) * getRadius(), position.z() + (Math.random() - 0.5) * getRadius(),  6.0F - this.oldWorld().rand.nextFloat(), 1.0F - this.oldWorld().rand.nextFloat() * 0.4F, true);
+                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getRadius(), position.y() + (Math.random() - 0.5) * getRadius(), position.z() + (Math.random() - 0.5) * getRadius(),  6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
                 }
-                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 3.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
+                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
         }
     }
@@ -139,7 +139,7 @@ public class BlastRedmatter extends Blast
                             {
                                 final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
                                 //Ignore air blocks and unbreakable blocks
-                                if (!block.isAir(blockState, oldWorld(), blockPos)
+                                if (!block.isAir(blockState, world(), blockPos)
                                         && (isFluid || blockState.getBlockHardness(world, blockPos) >= 0))
                                 {
                                     //TODO handle multi-blocks
@@ -149,12 +149,12 @@ public class BlastRedmatter extends Blast
                                     if (!isFluid && doFlyingBlocks)
                                     {
                                         //Convert a random amount of destroyed blocks into flying blocks for visuals
-                                        if (this.oldWorld().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
+                                        if (this.world().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
                                         {
-                                            EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), blockPos, blockState);
-                                            entity.yawChange = 50 * this.oldWorld().rand.nextFloat();
-                                            entity.pitchChange = 50 * this.oldWorld().rand.nextFloat();
-                                            this.oldWorld().spawnEntity(entity);
+                                            EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, blockState);
+                                            entity.yawChange = 50 * this.world().rand.nextFloat();
+                                            entity.pitchChange = 50 * this.world().rand.nextFloat();
+                                            this.world().spawnEntity(entity);
                                             this.affectEntity(this.getRadius() * 2, entity, false);
                                         }
                                     }
@@ -180,7 +180,7 @@ public class BlastRedmatter extends Blast
         float entityRadius = this.getRadius() * 2;
         Cube cube = new Cube(position.add(0.5).sub(entityRadius), position.add(0.5).add(entityRadius));
         AxisAlignedBB bounds = cube.getAABB();
-        List<Entity> allEntities = this.oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
         boolean doExplosion = true;
         for (Entity entity : allEntities)
         {
@@ -247,9 +247,9 @@ public class BlastRedmatter extends Blast
                 {
                     if (doAudio)
                     {
-                        ICBMSounds.EXPLOSION.play(world, position.x(), position.y(), position.z(), 7.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+                        ICBMSounds.EXPLOSION.play(world, position.x(), position.y(), position.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
                     }
-                    if (this.oldWorld().rand.nextFloat() > 0.85 && !this.oldWorld().isRemote)
+                    if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
                     {
                         entity.setDead();
                         return explosionCreated;
@@ -274,7 +274,7 @@ public class BlastRedmatter extends Blast
                     this.controller.setDead();
 
                     //Create new to avoid doing packet syncing
-                    new BlastRedmatter(oldWorld(), entity, position.x(), position.y(), position.z(), radiusNew).explode();
+                    new BlastRedmatter(world(), entity, position.x(), position.y(), position.z(), radiusNew).explode();
                 }
                 //Kill explosion entity
                 ((EntityExplosion) entity).getBlast().isAlive = false;

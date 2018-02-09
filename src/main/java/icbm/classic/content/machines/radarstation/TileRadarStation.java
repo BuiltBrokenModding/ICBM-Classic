@@ -6,12 +6,11 @@ import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Point;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.world.map.radar.RadarRegistry;
-import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
+import com.builtbroken.mc.framework.radar.RadarRegistry;
+import com.builtbroken.mc.framework.radio.RadioRegistry;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.prefab.TileFrequency;
@@ -304,16 +303,16 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             for (EntityMissile incomingMissile : this.incomingMissiles)
             {
                 Point position = incomingMissile.toPos().toVector2();
-                Direction missileTravelDirection = Direction.UNKNOWN;
+                EnumFacing missileTravelDirection = EnumFacing.DOWN;
                 double closest = -1;
 
-                for (int i = 2; i < 6; i++)
+                for (EnumFacing rotation : EnumFacing.HORIZONTALS)
                 {
-                    double dist = position.distance(new Point(this.getPos().getX() + Direction.getOrientation(i).offsetX, this.getPos().getZ() + Direction.getOrientation(i).offsetZ));
+                    double dist = position.distance(new Point(this.getPos().getX() + rotation.getFrontOffsetX(), this.getPos().getZ() + rotation.getFrontOffsetZ()));
 
                     if (dist < closest || closest < 0)
                     {
-                        missileTravelDirection = Direction.getOrientation(i);
+                        missileTravelDirection = rotation;
                         closest = dist;
                     }
                 }

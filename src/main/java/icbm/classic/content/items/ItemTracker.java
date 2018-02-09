@@ -1,6 +1,6 @@
 package icbm.classic.content.items;
 
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

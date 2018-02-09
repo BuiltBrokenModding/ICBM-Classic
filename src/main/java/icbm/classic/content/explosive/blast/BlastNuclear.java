@@ -41,7 +41,7 @@ public class BlastNuclear extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
 
@@ -76,7 +76,7 @@ public class BlastNuclear extends Blast
                             float xDiff = (float) (spawnPosition.x() - position.x());
                             float zDiff = (float) (spawnPosition.z() - position.z());
                             world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, spawnPosition.x(), spawnPosition.y(), spawnPosition.z(),
-                                    xDiff * 0.3 * oldWorld().rand.nextFloat(), -oldWorld().rand.nextFloat(), zDiff * 0.3 * oldWorld().rand.nextFloat()); //(float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, //0, 8F, 1.2F);
+                                    xDiff * 0.3 * world().rand.nextFloat(), -world().rand.nextFloat(), zDiff * 0.3 * world().rand.nextFloat()); //(float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, //0, 8F, 1.2F);
                         }
                     }
                 }
@@ -85,7 +85,7 @@ public class BlastNuclear extends Blast
 
         this.doDamageEntities(this.getRadius(), this.energy * 1000);
 
-        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(),  7.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(),  7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class BlastNuclear extends Blast
     {
         int r = this.callCount;
 
-        if (this.oldWorld().isRemote)
+        if (this.world().isRemote)
         {
             for (int x = -r; x < r; x++)
             {
@@ -105,7 +105,7 @@ public class BlastNuclear extends Blast
                     {
                         Location targetPosition = this.position.add(new Pos(x, 0, z));
 
-                        if (this.oldWorld().rand.nextFloat() < Math.max(0.001 * r, 0.05))
+                        if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.05))
                         {
                             world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, targetPosition.x(), targetPosition.y(), targetPosition.z(), 0, 0, 0); //5F, 1F);
                         }
@@ -136,14 +136,14 @@ public class BlastNuclear extends Blast
     {
         try
         {
-            if (!oldWorld().isRemote && this.thread.isComplete)
+            if (!world().isRemote && this.thread.isComplete)
             {
                 for (BlockPos p : this.thread.results)
                 {
-                    IBlockState state = this.oldWorld().getBlockState(p);
-                    if (!state.getBlock().isAir(state, oldWorld(), p))
+                    IBlockState state = this.world().getBlockState(p);
+                    if (!state.getBlock().isAir(state, world(), p))
                     {
-                        state.getBlock().onBlockExploded(this.oldWorld(), p, this);
+                        state.getBlock().onBlockExploded(this.world(), p, this);
                     }
                 }
             }
@@ -157,16 +157,16 @@ public class BlastNuclear extends Blast
 
         if (this.isRadioactive)
         {
-            new BlastRot(oldWorld(), this.exploder, position.x(), position.y(), position.z(), this.getRadius(), this.energy).explode();
-            new BlastMutation(oldWorld(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
+            new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getRadius(), this.energy).explode();
+            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
 
-            if (this.oldWorld().rand.nextInt(3) == 0)
+            if (this.world().rand.nextInt(3) == 0)
             {
-                oldWorld().rainingStrength = 1f;
+                world().rainingStrength = 1f;
             }
         }
 
-        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     /**

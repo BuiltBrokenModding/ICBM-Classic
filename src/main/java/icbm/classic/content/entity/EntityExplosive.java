@@ -1,13 +1,13 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.mc.api.tile.IRotatable;
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -147,13 +147,13 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     }
 
     @Override
-    public Direction getDirection()
+    public EnumFacing getDirection()
     {
-        return Direction.getOrientation(this.orientation);
+        return EnumFacing.getFront(this.orientation);
     }
 
     @Override
-    public void setDirection(Direction facingDirection)
+    public void setDirection(EnumFacing facingDirection)
     {
         this.orientation = (byte) facingDirection.ordinal();
     }

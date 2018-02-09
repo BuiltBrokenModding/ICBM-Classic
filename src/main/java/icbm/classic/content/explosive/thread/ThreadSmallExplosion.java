@@ -23,7 +23,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
     @Override
     public void run()
     {
-        final World world = position.oldWorld();
+        final World world = position.world();
 
         if (!world.isRemote)
         {
@@ -42,7 +42,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                             xStep /= diagonalDistance;
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
-                            float power = this.radius * (0.7F + this.position.oldWorld().rand.nextFloat() * 0.6F);
+                            float power = this.radius * (0.7F + this.position.world().rand.nextFloat() * 0.6F);
                             double var15 = position.x();
                             double var17 = position.y();
                             double var19 = position.z();
@@ -50,7 +50,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                             for (float var21 = 0.3F; power > 0.0F; power -= var21 * 0.75F)
                             {
                                 BlockPos targetPosition = new BlockPos(var15, var17, var19);
-                                IBlockState state = this.position.oldWorld().getBlockState(targetPosition);
+                                IBlockState state = this.position.world().getBlockState(targetPosition);
                                 Block blockID = state.getBlock();
 
                                 if (blockID != Blocks.AIR)

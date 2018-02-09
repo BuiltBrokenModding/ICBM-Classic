@@ -1,17 +1,12 @@
 package icbm.classic.content.machines.launcher.base;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.energy.IEnergyBuffer;
-import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
-import com.builtbroken.mc.data.Direction;
-import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
@@ -42,35 +37,36 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This tile entity is for the base of the missile launcher
  *
- * @author Calclavia
+ * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILauncherContainer, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
+public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILauncherContainer, IInventoryProvider<ExternalInventory>
 {
-    public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
-    public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
+    public static List<BlockPos> northSouthMultiBlockCache = new ArrayList();
+    public static List<BlockPos> eastWestMultiBlockCache = new ArrayList();
 
     private static EulerAngle angle = new EulerAngle(0, 0, 0);
 
     static
     {
-        northSouthMultiBlockCache.put(new Pos(1, 0, 0), EnumMultiblock.INV_ENERGY.getTileName());
-        northSouthMultiBlockCache.put(new Pos(1, 1, 0), EnumMultiblock.INV_ENERGY.getTileName());
-        northSouthMultiBlockCache.put(new Pos(1, 2, 0), EnumMultiblock.INV_ENERGY.getTileName());
-        northSouthMultiBlockCache.put(new Pos(-1, 0, 0), EnumMultiblock.INV_ENERGY.getTileName());
-        northSouthMultiBlockCache.put(new Pos(-1, 1, 0), EnumMultiblock.INV_ENERGY.getTileName());
-        northSouthMultiBlockCache.put(new Pos(-1, 2, 0), EnumMultiblock.INV_ENERGY.getTileName());
+        northSouthMultiBlockCache.add(new BlockPos(1, 0, 0));
+        northSouthMultiBlockCache.add(new BlockPos(1, 1, 0));
+        northSouthMultiBlockCache.add(new BlockPos(1, 2, 0));
+        northSouthMultiBlockCache.add(new BlockPos(-1, 0, 0));
+        northSouthMultiBlockCache.add(new BlockPos(-1, 1, 0));
+        northSouthMultiBlockCache.add(new BlockPos(-1, 2, 0));
 
-        eastWestMultiBlockCache.put(new Pos(0, 0, 1), EnumMultiblock.INV_ENERGY.getTileName());
-        eastWestMultiBlockCache.put(new Pos(0, 1, 1), EnumMultiblock.INV_ENERGY.getTileName());
-        eastWestMultiBlockCache.put(new Pos(0, 2, 1), EnumMultiblock.INV_ENERGY.getTileName());
-        eastWestMultiBlockCache.put(new Pos(0, 0, -1), EnumMultiblock.INV_ENERGY.getTileName());
-        eastWestMultiBlockCache.put(new Pos(0, 1, -1), EnumMultiblock.INV_ENERGY.getTileName());
-        eastWestMultiBlockCache.put(new Pos(0, 2, -1), EnumMultiblock.INV_ENERGY.getTileName());
+        eastWestMultiBlockCache.add(new BlockPos(0, 0, 1));
+        eastWestMultiBlockCache.add(new BlockPos(0, 1, 1));
+        eastWestMultiBlockCache.add(new BlockPos(0, 2, 1));
+        eastWestMultiBlockCache.add(new BlockPos(0, 0, -1));
+        eastWestMultiBlockCache.add(new BlockPos(0, 1, -1));
+        eastWestMultiBlockCache.add(new BlockPos(0, 2, -1));
     }
 
     // The connected missile launcher frame
@@ -87,16 +83,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
 
     /** Client's render cached object, used in place of inventory to avoid affecting GUIs */
     public ItemStack cachedMissileStack;
-
-    @Override
-    public IEnergyBuffer getEnergyBuffer(Direction side)
-    {
-        if (launchScreen != null)
-        {
-            return launchScreen.getEnergyBuffer(Direction.UNKNOWN);
-        }
-        return null;
-    }
 
     /**
      * Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
@@ -149,10 +135,10 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                 this.launchScreen = null;
 
                 //Check on all 4 sides
-                for (byte i = 2; i < 6; i++)
+                for (EnumFacing rotation : EnumFacing.HORIZONTALS)
                 {
                     //Get tile entity on side
-                    Pos position = new Pos(getPos()).add(Direction.getOrientation(i));
+                    Pos position = new Pos(getPos()).add(rotation);
                     TileEntity tileEntity = this.world.getTileEntity(position.toBlockPos());
 
                     //If frame update rotation
@@ -190,13 +176,13 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     }
 
     @Override
-    public boolean canStore(ItemStack stack, Direction side)
+    public boolean canStore(ItemStack stack, EnumFacing side)
     {
         return stack != null && stack.getItem() == ICBMClassic.itemMissile;
     }
 
     @Override
-    public boolean canRemove(ItemStack stack, Direction side)
+    public boolean canRemove(ItemStack stack, EnumFacing side)
     {
         return true;
     }
@@ -422,7 +408,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     }
 
     @Override
-    public boolean canStore(ItemStack stack, int slot, Direction side)
+    public boolean canStore(ItemStack stack, int slot, EnumFacing side)
     {
         return slot == 0 && stack.getItem() instanceof ItemMissile;
     }
@@ -430,19 +416,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Override
     public ILauncherController getController()
     {
-        for (byte i = 2; i < 6; i++)
-        {
-            Pos position = new Pos((TileEntity) this).add(Direction.getOrientation(i));
-
-            TileEntity tileEntity = position.getTileEntity(this.world);
-
-            if (tileEntity instanceof ILauncherController)
-            {
-                return (ILauncherController) tileEntity;
-            }
-        }
-
-        return null;
+        return launchScreen;
     }
 
     //==========================================
@@ -461,7 +435,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (getLayoutOfMultiBlock().containsKey(new Pos((TileEntity) this).sub(new Pos((TileEntity) tileMulti))))
+            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
             {
                 tileMulti.setHost(this);
             }
@@ -473,24 +447,13 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            Pos pos = new Pos((TileEntity) tileMulti).sub(new Pos((TileEntity) this));
-
-            if (getLayoutOfMultiBlock().containsKey(pos))
+            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;
             }
         }
         return false;
-    }
-
-    //TODO @Override
-    public boolean removeByPlayer(EntityPlayer player, boolean willHarvest)
-    {
-        _destroyingStructure = true;
-        MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
-        //TODO return super.removeByPlayer(player, willHarvest);
-        return true;
     }
 
     @Override
@@ -512,7 +475,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     }
 
     @Override
-    public HashMap<IPos3D, String> getLayoutOfMultiBlock()
+    public List<BlockPos> getLayoutOfMultiBlock()
     {
         if (getRotation() == EnumFacing.EAST || getRotation() == EnumFacing.WEST)
         {

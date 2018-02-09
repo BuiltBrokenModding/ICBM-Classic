@@ -35,7 +35,7 @@ public class BlastRot extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
             this.thread.start();
@@ -45,7 +45,7 @@ public class BlastRot extends Blast
     @Override
     public void doExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             if (this.thread.isComplete)
             {
@@ -57,7 +57,7 @@ public class BlastRot extends Blast
 
                     if (block == Blocks.GRASS || block == Blocks.SAND)
                     {
-                        if (this.oldWorld().rand.nextFloat() > 0.96)
+                        if (this.world().rand.nextFloat() > 0.96)
                         {
                             world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
                         }
@@ -65,7 +65,7 @@ public class BlastRot extends Blast
 
                     if (block == Blocks.STONE)
                     {
-                        if (this.oldWorld().rand.nextFloat() > 0.99)
+                        if (this.world().rand.nextFloat() > 0.99)
                         {
                             world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
                         }

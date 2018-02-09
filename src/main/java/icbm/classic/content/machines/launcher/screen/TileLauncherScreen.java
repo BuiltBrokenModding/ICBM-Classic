@@ -3,14 +3,12 @@ package icbm.classic.content.machines.launcher.screen;
 import com.builtbroken.mc.api.data.IPacket;
 import com.builtbroken.mc.api.energy.IEnergyBufferProvider;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
-import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.prefab.hz.FakeRadioSender;
+import com.builtbroken.mc.lib.LanguageUtility;
+import com.builtbroken.mc.prefab.FakeRadioSender;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
@@ -33,7 +31,7 @@ import resonant.api.explosion.LauncherType;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, IGuiTile, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
+public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
 {
     // The missile launcher base in which this
     // screen is connected with
@@ -61,9 +59,9 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         if (this.laucherBase == null || this.laucherBase.isInvalid())
         {
             this.laucherBase = null;
-            for (byte i = 2; i < 6; i++)
+            for (EnumFacing rotation : EnumFacing.HORIZONTALS)
             {
-                final Pos position = toPos().add(Direction.getOrientation(i));
+                final Pos position = toPos().add(rotation);
                 final TileEntity tileEntity = position.getTileEntity(world);
                 if (tileEntity != null)
                 {
@@ -72,7 +70,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                         this.laucherBase = (TileLauncherBase) tileEntity;
                         if (isServer())
                         {
-                            setRotation(EnumFacing.getFront(i).getOpposite());
+                            setRotation(rotation.getOpposite());
                             updateClient = true;
                         }
                     }

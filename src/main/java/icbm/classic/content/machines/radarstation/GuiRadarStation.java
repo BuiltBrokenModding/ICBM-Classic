@@ -5,7 +5,7 @@ import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.imp.transform.region.Rectangle;
 import com.builtbroken.mc.imp.transform.vector.Point;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;

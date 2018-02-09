@@ -68,7 +68,7 @@ public class BlastChemical extends Blast
         super.doPreExplode();
         if (!this.playShortSoundFX)
         {
-            ICBMSounds.DEBILITATION.play(world, this.position.x(), this.position.y(), this.position.z(), 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.DEBILITATION.play(world, this.position.x(), this.position.y(), this.position.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -77,7 +77,7 @@ public class BlastChemical extends Blast
     {
         float radius = this.getRadius();
 
-        if (this.oldWorld().isRemote)
+        if (this.world().isRemote)
         {
             for (int i = 0; i < 200; i++)
             {
@@ -93,7 +93,7 @@ public class BlastChemical extends Blast
         }
 
         AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
-        List<EntityLivingBase> allEntities = oldWorld().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
+        List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
 
         for (EntityLivingBase entity : allEntities)
         {
@@ -117,12 +117,12 @@ public class BlastChemical extends Blast
 
         if (this.isMutate)
         {
-            new BlastMutation(oldWorld(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
+            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
         }
 
         if (this.playShortSoundFX)
         {
-            ICBMSounds.GAS_LEAK.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
+            ICBMSounds.GAS_LEAK.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
         }
 
         if (this.callCount > this.duration)

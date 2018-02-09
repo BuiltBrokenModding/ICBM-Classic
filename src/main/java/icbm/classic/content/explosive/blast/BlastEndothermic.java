@@ -1,7 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.mc.imp.transform.vector.Location;
-import com.builtbroken.mc.lib.helper.MathUtility;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -44,14 +43,14 @@ public class BlastEndothermic extends BlastBeam
     {
         super.doPostExplode();
 
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
-            if (this.canFocusBeam(this.oldWorld(), position) && this.thread.isComplete)
+            if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
             {
                 /*
                  * Freeze all nearby entities.
                  */
-                List<EntityLiving> livingEntities = oldWorld().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
+                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
 
                 if (livingEntities != null && !livingEntities.isEmpty())
                 {
@@ -94,37 +93,37 @@ public class BlastEndothermic extends BlastBeam
 
                         if (blockState.getMaterial() == Material.WATER)
                         {
-                            this.oldWorld().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
+                            this.world().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
                         }
                         else if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
                         {
-                            this.oldWorld().setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 8), 3);
+                            this.world().setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 8), 3);
                         }
                         else
                         {
                             BlockPos bellowPos = targetPosition.down();
                             IBlockState blockState1 = world.getBlockState(bellowPos);
 
-                            if ((block.isReplaceable(oldWorld(), targetPosition)) && blockState1.isSideSolid(world, bellowPos, EnumFacing.UP))
+                            if ((block.isReplaceable(world(), targetPosition)) && blockState1.isSideSolid(world, bellowPos, EnumFacing.UP))
                             {
-                                if (MathUtility.rand.nextBoolean())
+                                if (world().rand.nextBoolean())
                                 {
-                                    this.oldWorld().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
+                                    this.world().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
                                 }
                                 else
                                 {
-                                    this.oldWorld().setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
+                                    this.world().setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
                                 }
                             }
                         }
                     }
                 }
 
-                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 1F, true);
+                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
-            if (!oldWorld().getGameRules().getBoolean("doDaylightCycle"))
+            if (!world().getGameRules().getBoolean("doDaylightCycle"))
             {
-                this.oldWorld().setWorldTime(1200);
+                this.world().setWorldTime(1200);
             }
         }
     }

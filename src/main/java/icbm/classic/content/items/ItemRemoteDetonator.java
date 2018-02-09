@@ -1,8 +1,8 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
-import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
-import com.builtbroken.mc.prefab.hz.FakeRadioSender;
+import com.builtbroken.mc.framework.radio.RadioRegistry;
+import com.builtbroken.mc.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

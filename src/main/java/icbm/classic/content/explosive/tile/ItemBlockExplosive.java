@@ -1,7 +1,6 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.lib.helper.LanguageUtility;
-import com.builtbroken.mc.lib.helper.MathUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.items.ItemBlockAbstract;
 import icbm.classic.content.explosive.Explosives;
 import net.minecraft.block.Block;
@@ -97,11 +96,11 @@ public class ItemBlockExplosive extends ItemBlockAbstract
                 lastTranslationChange = System.currentTimeMillis();
                 if(taunt)
                 {
-                    tauntCount = MathUtility.rand.nextInt(7);
+                    tauntCount = player.world.rand.nextInt(7);
                 }
                 else if (redmatterRandomTranslations > 0)
                 {
-                    tauntCount = MathUtility.rand.nextInt(redmatterRandomTranslations);
+                    tauntCount = player.world.rand.nextInt(redmatterRandomTranslations);
                 }
             }
         }

@@ -1,14 +1,10 @@
 package icbm.classic.content.machines.coordinator;
 
-import com.builtbroken.mc.prefab.inventory.ExternalInventory;
-import com.builtbroken.mc.prefab.inventory.InventoryIterator;
-import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -39,24 +35,6 @@ public class BlockMissileCoordinator extends BlockICBM implements ITileEntityPro
             playerIn.openGui(ICBMClassic.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
-    }
-
-    @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof TileMissileCoordinator)
-        {
-            ExternalInventory inventory = ((TileMissileCoordinator) tile).inventory;
-            if (inventory != null)
-            {
-                for (ItemStack stack : new InventoryIterator(inventory, true))
-                {
-                    InventoryUtility.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack, 1, 0);
-                }
-            }
-        }
-        super.breakBlock(worldIn, pos, state);
     }
 
     @Nullable

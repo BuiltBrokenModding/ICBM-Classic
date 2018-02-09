@@ -26,7 +26,7 @@ public class BlastAntiGravitational extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             this.thread = new ThreadSmallExplosion(this, (int) this.getRadius(), this.exploder);
             this.thread.start();
@@ -40,7 +40,7 @@ public class BlastAntiGravitational extends Blast
     {
         int r = this.callCount;
 
-        if (!this.oldWorld().isRemote && this.thread.isComplete)
+        if (!this.world().isRemote && this.thread.isComplete)
         {
             if (r == 0)
             {
@@ -56,7 +56,7 @@ public class BlastAntiGravitational extends Blast
                     float hardness = blockState.getBlockHardness(world, targetPosition);
                     if (hardness >= 0 && hardness < 1000)
                     {
-                        if (oldWorld().rand.nextInt(3) > 0)
+                        if (world().rand.nextInt(3) > 0)
                         {
                             //Remove block
                             world.setBlockToAir(targetPosition);
@@ -69,12 +69,12 @@ public class BlastAntiGravitational extends Blast
                             }
 
                             //Create flying block
-                            EntityFlyingBlock entity = new EntityFlyingBlock(oldWorld(), targetPosition, blockState, 0);
-                            entity.yawChange = 50 * oldWorld().rand.nextFloat();
-                            entity.pitchChange = 100 * oldWorld().rand.nextFloat();
-                            entity.motionY += Math.max(0.15 * oldWorld().rand.nextFloat(), 0.1);
+                            EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
+                            entity.yawChange = 50 * world().rand.nextFloat();
+                            entity.pitchChange = 100 * world().rand.nextFloat();
+                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
                             entity.noClip = true;
-                            oldWorld().spawnEntity(entity);
+                            world().spawnEntity(entity);
 
                             //Track flying block
                             flyingBlocks.add(entity);
@@ -86,7 +86,7 @@ public class BlastAntiGravitational extends Blast
 
         int radius = (int) this.getRadius();
         AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
-        List<Entity> allEntities = oldWorld().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities)
         {

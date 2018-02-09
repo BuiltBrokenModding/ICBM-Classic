@@ -1,13 +1,13 @@
 package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.Colors;
-import com.builtbroken.mc.lib.helper.WrenchUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -61,7 +61,7 @@ public class BlockRadarStation extends BlockICBM
     public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
         TileEntity tile = blockAccess.getTileEntity(pos);
-        if(tile instanceof TileRadarStation)
+        if (tile instanceof TileRadarStation)
         {
             return ((TileRadarStation) tile).getStrongRedstonePower(side);
         }
@@ -73,7 +73,8 @@ public class BlockRadarStation extends BlockICBM
     {
         if (!world.isRemote)
         {
-            if (WrenchUtility.isUsableWrench(player, player.getHeldItem(hand), pos.getX(), pos.getY(), pos.getZ()))
+            //if (WrenchUtility.isUsableWrench(player, player.getHeldItem(hand), pos.getX(), pos.getY(), pos.getZ()))
+            if (player.getHeldItem(hand).getItem() == Items.REDSTONE)
             {
                 final TileEntity tile = world.getTileEntity(pos);
                 if (tile instanceof TileRadarStation)

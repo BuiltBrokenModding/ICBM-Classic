@@ -82,7 +82,7 @@ public class BlastTNT extends Blast
         //TODO fire event to allow editing list of blocks
 
         //TODO move effect to Effect handler
-        this.oldWorld().playSound(this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.oldWorld().rand.nextFloat() - this.oldWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        this.world().playSound(this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
         switch (this.pushType)
         {
@@ -102,7 +102,7 @@ public class BlastTNT extends Blast
      */
     protected void calculateDamage() //TODO thread
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             for (int xs = 0; xs < this.raysPerAxis; ++xs)
             {
@@ -126,7 +126,7 @@ public class BlastTNT extends Blast
                             zStep /= diagonalDistance;
 
                             //Get energy
-                            float radialEnergy = this.getRadius() * (0.7F + this.oldWorld().rand.nextFloat() * 0.6F);
+                            float radialEnergy = this.getRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
 
                             //Get starting point for ray
                             double x = this.position.x();
@@ -149,7 +149,7 @@ public class BlastTNT extends Blast
                                 if (block != Blocks.AIR)
                                 {
                                     //Decrease energy based on resistance
-                                    radialEnergy -= (block.getExplosionResistance(this.oldWorld(), blockPos, this.exploder, this) + 0.3F) * step;
+                                    radialEnergy -= (block.getExplosionResistance(this.world(), blockPos, this.exploder, this) + 0.3F) * step;
 
                                     //Track blocks to destroy
                                     if (radialEnergy > 0.0F)
@@ -179,7 +179,7 @@ public class BlastTNT extends Blast
      */
     protected void doDestroyBlocks() //TODO convert to change action
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             for (BlockPos blownPosition : blownBlocks) //TODO convert block positions to block edits to track prev and current blocks
             {
@@ -194,9 +194,9 @@ public class BlastTNT extends Blast
 
                 ///Generate effect TODO move to effect handler
                 ///---------------------------------------------
-                double var9 = (xi + this.oldWorld().rand.nextFloat());
-                double var11 = (yi + this.oldWorld().rand.nextFloat());
-                double var13 = (zi + this.oldWorld().rand.nextFloat());
+                double var9 = (xi + this.world().rand.nextFloat());
+                double var11 = (yi + this.world().rand.nextFloat());
+                double var13 = (zi + this.world().rand.nextFloat());
 
                 double var151 = var9 - this.position.y();
                 double var171 = var11 - this.position.y();
@@ -208,13 +208,13 @@ public class BlastTNT extends Blast
                 var191 /= var211;
 
                 double var23 = 0.5D / (var211 / this.getRadius() + 0.1D);
-                var23 *= (this.oldWorld().rand.nextFloat() * this.oldWorld().rand.nextFloat() + 0.3F);
+                var23 *= (this.world().rand.nextFloat() * this.world().rand.nextFloat() + 0.3F);
                 var151 *= var23;
                 var171 *= var23;
                 var191 *= var23;
 
-                this.oldWorld().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
-                this.oldWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var9, var11, var13, var151, var171, var191);
+                this.world().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
+                this.world().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var9, var11, var13, var151, var171, var191);
                 ///---------------------------------------------
 
                 //Only edit block if not air TODO see if we need to check for modded air
@@ -225,11 +225,11 @@ public class BlastTNT extends Blast
                         //Do drops
                         if (block.canDropFromExplosion(null))
                         {
-                            block.dropBlockAsItemWithChance(this.oldWorld(), blownPosition, blockState, 1F, 0);
+                            block.dropBlockAsItemWithChance(this.world(), blownPosition, blockState, 1F, 0);
                         }
 
                         //Break block
-                        block.onBlockExploded(this.oldWorld(), blownPosition, this);
+                        block.onBlockExploded(this.world(), blownPosition, this);
                     }
                     catch (Exception e)
                     {
@@ -249,7 +249,7 @@ public class BlastTNT extends Blast
         maxCoord = maxCoord.add(radius + 1);
 
         Cube region = new Cube(minCoord, maxCoord);
-        List<Entity> entities = region.getEntities(this.oldWorld(), Entity.class);
+        List<Entity> entities = region.getEntities(this.world(), Entity.class);
 
         for (Entity entity : entities)
         {

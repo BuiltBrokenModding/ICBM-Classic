@@ -3,12 +3,12 @@ package icbm.classic.prefab;
 import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.data.IPacket;
-import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.IPlayerUsing;
+import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.data.Direction;
+import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +19,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter
+public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -245,6 +246,12 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     }
 
     @Override
+    public World world()
+    {
+        return getWorld();
+    }
+
+    @Override
     public double z()
     {
         return getPos().getZ();
@@ -277,11 +284,6 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         return 0;
     }
 
-    public IEnergyBuffer getEnergyBuffer(Direction side)
-    {
-        return null;
-    }
-
     public int getEnergyConsumption()
     {
         return 100000;
@@ -300,5 +302,12 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     public void extractEnergy()
     {
 
+    }
+
+    @Override
+    public boolean openGui(EntityPlayer player, int requestedID)
+    {
+        player.openGui(ICBMClassic.INSTANCE, requestedID, world, xi(), yi(), zi());
+        return true;
     }
 }

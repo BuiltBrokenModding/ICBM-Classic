@@ -4,7 +4,7 @@ import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.References;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiTextField;
@@ -23,7 +23,7 @@ import static java.lang.Math.max;
 @SideOnly(Side.CLIENT)
 public class GuiLauncherScreen extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, References.GUI_DIRECTORY + "mc_gui_empty_large.png");
 
     private TileLauncherScreen tileEntity;
     private GuiTextField target_xCoord_field;

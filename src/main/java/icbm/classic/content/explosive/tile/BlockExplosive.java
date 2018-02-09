@@ -1,6 +1,5 @@
 package icbm.classic.content.explosive.tile;
 
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import icbm.classic.ICBMClassic;
@@ -125,9 +124,9 @@ public class BlockExplosive extends BlockICBM
 
             // Check to see if there is fire nearby.
             // If so, then detonate.
-            for (byte i = 0; i < 6; i++)
+            for (EnumFacing rotation : EnumFacing.HORIZONTALS)
             {
-                Pos position = new Pos(pos).add(Direction.getOrientation(i));
+                Pos position = new Pos(pos).add(rotation);
                 Block blockId = position.getBlock(world);
 
                 if (blockId == Blocks.FIRE || blockId == Blocks.FLOWING_LAVA || blockId == Blocks.LAVA)

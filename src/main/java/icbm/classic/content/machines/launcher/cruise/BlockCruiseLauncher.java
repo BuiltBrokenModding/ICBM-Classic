@@ -3,7 +3,7 @@ package icbm.classic.content.machines.launcher.cruise;
 import com.builtbroken.mc.api.IWorldPosition;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.BlockICBM;
 import net.minecraft.block.state.IBlockState;
@@ -68,7 +68,7 @@ public class BlockCruiseLauncher extends BlockICBM
                     IWorldPosition location = ((IWorldPosItem) stack.getItem()).getLocation(stack);
                     if (location != null)
                     {
-                        if (location.oldWorld() == world)
+                        if (location.world() == world)
                         {
                             launcher.setTarget(new Pos(location.x(), location.y(), location.z()));
                             player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));

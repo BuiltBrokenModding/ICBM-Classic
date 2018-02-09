@@ -37,12 +37,12 @@ public abstract class BlastBeam extends Blast
     @Override
     public void doPreExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
-            this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), 4F, true);
+            this.world().createExplosion(this.exploder, position.x(), position.y(), position.z(), 4F, true);
 
-            this.lightBeam = new EntityLightBeam(this.oldWorld(), position, 20 * 20, this.red, this.green, this.blue);
-            this.oldWorld().spawnEntity(this.lightBeam);
+            this.lightBeam = new EntityLightBeam(this.world(), position, 20 * 20, this.red, this.green, this.blue);
+            this.world().spawnEntity(this.lightBeam);
 
             this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), 50, this.exploder);
             this.thread.start();
@@ -52,14 +52,14 @@ public abstract class BlastBeam extends Blast
     @Override
     public void doExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             if (this.callCount > 100 / this.proceduralInterval() && this.thread.isComplete)
             {
                 this.controller.endExplosion();
             }
 
-            if (this.canFocusBeam(this.oldWorld(), position))
+            if (this.canFocusBeam(this.world(), position))
             {
                 double dist;
 
@@ -84,13 +84,13 @@ public abstract class BlastBeam extends Blast
                             {
                                 continue;
                             }
-                            if (this.oldWorld().rand.nextInt(2) > 0)
+                            if (this.world().rand.nextInt(2) > 0)
                             {
                                 world.setBlockToAir(blockPos);
-                                EntityFlyingBlock entity = new EntityFlyingBlock(this.oldWorld(), blockPos, state);
-                                this.oldWorld().spawnEntity(entity);
+                                EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
+                                this.world().spawnEntity(entity);
                                 this.feiBlocks.add(entity);
-                                entity.pitchChange = 50 * this.oldWorld().rand.nextFloat();
+                                entity.pitchChange = 50 * this.world().rand.nextFloat();
                             }
                         }
                     }
@@ -111,7 +111,7 @@ public abstract class BlastBeam extends Blast
                 entity.motionY /= 3;
                 entity.motionZ /= 3;
                 entity.addVelocity((newPosition.x() - entityPosition.x()) * 0.5 * this.proceduralInterval(), 0.09 * this.proceduralInterval(), (newPosition.z() - entityPosition.z()) * 0.5 * this.proceduralInterval());
-                entity.yawChange += 3 * this.oldWorld().rand.nextFloat();
+                entity.yawChange += 3 * this.world().rand.nextFloat();
             }
         }
     }
@@ -119,7 +119,7 @@ public abstract class BlastBeam extends Blast
     @Override
     public void doPostExplode()
     {
-        if (!this.oldWorld().isRemote)
+        if (!this.world().isRemote)
         {
             if (this.lightBeam != null)
             {

@@ -5,13 +5,11 @@ import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.provider.IInventoryProvider;
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
-import com.builtbroken.mc.core.network.packet.PacketSpawnParticleStream;
 import com.builtbroken.mc.core.network.packet.PacketTile;
-import com.builtbroken.mc.data.Direction;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
 import com.builtbroken.mc.imp.transform.vector.Pos;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
+import com.builtbroken.mc.lib.LanguageUtility;
 import com.builtbroken.mc.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityMissile;
@@ -25,6 +23,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -136,7 +135,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             Pos center = toPos().add(0.5);
             if (Engine.runningAsDev)
             {
-                Engine.packetHandler.sendToAllAround(new PacketSpawnParticleStream(world.provider.getDimension(), center, aimPoint), this);
+                //Engine.packetHandler.sendToAllAround(new PacketSpawnParticleStream(world.provider.getDimension(), center, aimPoint), this);
             }
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
 
@@ -332,7 +331,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public boolean canStore(ItemStack itemStack, Direction side)
+    public boolean canStore(ItemStack itemStack, EnumFacing side)
     {
         if (itemStack != null && itemStack.getItem() instanceof ItemMissile && this.getInventory().getStackInSlot(0) == null)
         {
