@@ -89,7 +89,7 @@ public final class ICBMClassic
     @Mod.Metadata(ICBMClassic.DOMAIN)
     public static ModMetadata metadata;
 
-    @SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.ServerProxy")
+    @SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.CommonProxy")
     public static CommonProxy proxy;
 
     public static final String DOMAIN = "icbmclassic";
