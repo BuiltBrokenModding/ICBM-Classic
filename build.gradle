@@ -34,34 +34,16 @@ plugins {
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/scripts/forge/deps.gradle'
 
-minecraft {
-    //replace "required-after:voltzengine", "required-after:voltzengine@[$voltz_engine_version,)"
-}
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-dependencies
-{
-    compile ("com.builtbroken.voltzengine:VoltzEngine:$voltz_engine_version+:deobf") { changing = true }
-}
-
-def currentJvm = org.gradle.internal.jvm.Jvm.current()
-//println "Current Java version = " + currentJvm
-
-import org.ajoberstar.grgit.*
-
-def gitHash = 'unknown'
-if (new File(projectDir, '.git').exists()) {
-    def repo = Grgit.open(currentDir: file('.'))
-  }
 jar {
      manifest.mainAttributes(
             "Built-By": System.getProperty('user.name'),
             "Created-By": currentJvm,
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": project.version,
-            "Git-Hash": gitHash,
+            "Git-Hash": ext.GitHash,
             "FMLAT": "ICBMClassic_at.cfg")
 }
 
@@ -71,7 +53,7 @@ deobfJar {
             "Created-By": currentJvm,
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": project.version,
-            "Git-Hash": gitHash,
+            "Git-Hash": ext.GitHash,
             "FMLAT": "ICBMClassic_at.cfg")
 }
 
@@ -81,6 +63,6 @@ sourcesJar {
             "Created-By": currentJvm,
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": project.version,
-            "Git-Hash": gitHash,
+            "Git-Hash": ext.GitHash,
             "FMLAT": "ICBMClassic_at.cfg")
 }
