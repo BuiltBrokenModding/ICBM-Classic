@@ -83,7 +83,7 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
 
     public Pos(EnumFacing dir)
     {
-        this(dir.getFrontOffsetX(), dir.getFrontOffsetY(), dir.getFrontOffsetZ());
+        this(dir.getDirectionVec());
     }
 
     public Pos(Vec3d vec)
