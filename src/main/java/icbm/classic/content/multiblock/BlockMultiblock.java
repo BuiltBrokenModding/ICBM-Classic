@@ -32,6 +32,27 @@ public class BlockMultiblock extends BlockContainer
         this.setRegistryName(ICBMClassic.DOMAIN, "multiblock");
         this.setUnlocalizedName(ICBMClassic.PREFIX + "multiblock");
         this.setHardness(2f);
+        needsRandomTick = true;
+    }
+
+    @Override
+    public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random)
+    {
+        if (!worldIn.isRemote)
+        {
+            TileEntity tile = worldIn.getTileEntity(pos);
+            if (tile instanceof TileMulti)
+            {
+                if (!((TileMulti) tile).hasHost())
+                {
+                    worldIn.setBlockToAir(pos);
+                }
+                else if (((TileMulti) tile).isHostLoaded() && ((TileMulti) tile).getHost() == null)
+                {
+                    worldIn.setBlockToAir(pos);
+                }
+            }
+        }
     }
 
     @Override
@@ -80,7 +101,7 @@ public class BlockMultiblock extends BlockContainer
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
-       //Nothing
+        //Nothing
     }
 
     @Override
@@ -135,17 +156,46 @@ public class BlockMultiblock extends BlockContainer
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        IMultiTile tile = getTile(world, pos);
-        return tile != null && tile.getHost() != null && tile.getHost().onMultiTileActivated(tile, player, hand, side, hitX, hitY, hitZ);
+        TileMulti tile = getTile(world, pos);
+        if (tile != null)
+        {
+            //Kill check
+            if (!world.isRemote)
+            {
+                if (!tile.hasHost() || tile.isHostLoaded() && tile.getHost() == null)
+                {
+                    world.setBlockToAir(pos);
+                    return true;
+                }
+            }
+
+            //Normal click
+            return tile.getHost() != null && tile.getHost().onMultiTileActivated(tile, player, hand, side, hitX, hitY, hitZ);
+        }
+        return true;
     }
 
     @Override
     public void onBlockClicked(World world, BlockPos pos, EntityPlayer player)
     {
-        IMultiTile tile = getTile(world, pos);
-        if (tile != null && tile.getHost() != null)
+        TileMulti tile = getTile(world, pos);
+        if (tile != null)
         {
-            tile.getHost().onMultiTileClicked(tile, player);
+            //Kill check
+            if (!world.isRemote)
+            {
+                if (!tile.hasHost() || tile.isHostLoaded() && tile.getHost() == null)
+                {
+                    world.setBlockToAir(pos);
+                    return;
+                }
+            }
+
+            //Normal click
+            if (tile.getHost() != null)
+            {
+                tile.getHost().onMultiTileClicked(tile, player);
+            }
         }
     }
 
@@ -155,12 +205,12 @@ public class BlockMultiblock extends BlockContainer
         return new TileMulti();
     }
 
-    protected IMultiTile getTile(World world, BlockPos pos)
+    protected TileMulti getTile(World world, BlockPos pos)
     {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof IMultiTile)
+        if (tile instanceof TileMulti)
         {
-            return (IMultiTile) tile;
+            return (TileMulti) tile;
         }
         return null;
     }
