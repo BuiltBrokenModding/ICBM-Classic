@@ -1,8 +1,8 @@
 package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.Settings;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.ex.Explosion;
@@ -91,7 +91,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (ex.handler != null)
                             {
                                 // Limit the missile to tier two.
-                                if ((ex.handler.getTier().ordinal() <= Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || ICBMClassic.runningAsDev) && ((Explosion) ex.handler).isCruise())
+                                if ((ex.handler.getTier().ordinal() <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || ICBMClassic.runningAsDev) && ((Explosion) ex.handler).isCruise())
                                 {
                                     if(!world.isRemote)
                                     {
@@ -150,7 +150,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
     {
-        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(Settings.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
+        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
         lines.add(str);
     }
 }

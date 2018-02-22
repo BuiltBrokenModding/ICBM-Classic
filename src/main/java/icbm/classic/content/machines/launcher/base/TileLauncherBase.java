@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.launcher.base;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.Settings;
+import icbm.classic.config.ConfigLauncher;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.content.entity.EntityMissile;
@@ -339,13 +339,13 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     {
         if (tier == EnumTier.ONE)
         {
-            return Settings.LAUNCHER_RANGE_TIER1;
+            return ConfigLauncher.LAUNCHER_RANGE_TIER1;
         }
         else if (tier == EnumTier.TWO)
         {
-            return Settings.LAUNCHER_RANGE_TIER2;
+            return ConfigLauncher.LAUNCHER_RANGE_TIER2;
         }
-        return Settings.LAUNCHER_RANGE_TIER3;
+        return ConfigLauncher.LAUNCHER_RANGE_TIER3;
     }
 
     /** Reads a tile entity from NBT. */

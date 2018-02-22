@@ -1,6 +1,12 @@
 ## Master language file
 itemGroup.icbmclassic=ICBM-Classic
 
+## Config
+config.icbmclassic:main.title=General
+config.icbmclassic:launcher.title=Launcher
+config.icbmclassic:blast.title=Blast
+
+## Potions
 potion.toxin=Toxin
 potion.virus=Virus
 potion.frostBite=Frost Bite

@@ -1,6 +1,6 @@
 package icbm.classic.prefab.item;
 
-import icbm.classic.Settings;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.lib.energy.EnergyBuffer;
@@ -130,7 +130,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
 
     public boolean needsPower()
     {
-        return Settings.REQUIRES_POWER;
+        return ConfigMain.REQUIRES_POWER;
     }
 
     @Override

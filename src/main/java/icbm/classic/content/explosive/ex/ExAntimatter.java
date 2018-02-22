@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.ex;
 
+import icbm.classic.config.ConfigBlast;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.Settings;
 import icbm.classic.content.explosive.blast.BlastAntimatter;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
@@ -34,6 +34,6 @@ public class ExAntimatter extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastAntimatter(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, Settings.ANTIMATTER_SIZE, Settings.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).explode();
+        new BlastAntimatter(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, ConfigBlast.ANTIMATTER_SIZE, ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).explode();
     }
 }
