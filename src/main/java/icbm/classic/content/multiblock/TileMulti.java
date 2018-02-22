@@ -4,8 +4,11 @@ import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
 /**
@@ -22,17 +25,20 @@ public class TileMulti extends TileEntity implements IMultiTile
     @Override
     public IMultiTileHost getHost()
     {
-        if (hostWeakReference != null && hostWeakReference.get() != null)
+        if (isHostLoaded())
         {
-            return hostWeakReference.get();
-        }
-        else if (hostPosition != null && world.isBlockLoaded(hostPosition))
-        {
-            TileEntity tile = world.getTileEntity(hostPosition);
-            if (tile instanceof IMultiTileHost)
+            if (hostWeakReference != null && hostWeakReference.get() != null)
             {
-                setHost((IMultiTileHost) tile);
-                return (IMultiTileHost) tile;
+                return hostWeakReference.get();
+            }
+            else if (hostPosition != null && world.isBlockLoaded(hostPosition))
+            {
+                TileEntity tile = world.getTileEntity(hostPosition);
+                if (tile instanceof IMultiTileHost)
+                {
+                    setHost((IMultiTileHost) tile);
+                    return (IMultiTileHost) tile;
+                }
             }
         }
         return null;
@@ -93,6 +99,33 @@ public class TileMulti extends TileEntity implements IMultiTile
             getHost().onTileInvalidate(this);
         }
         super.invalidate();
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeToNBT(new NBTTagCompound());
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        if (getHost() instanceof TileEntity)
+        {
+            return ((TileEntity) getHost()).hasCapability(capability, facing);
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (getHost() instanceof TileEntity)
+        {
+            return ((TileEntity) getHost()).getCapability(capability, facing);
+        }
+        return getCapability(capability, facing);
     }
 
     @Override
