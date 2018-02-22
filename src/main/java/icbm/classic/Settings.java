@@ -16,6 +16,8 @@ public class Settings
     /** Max range for the launcher tier 1 */
     public static int LAUNCHER_RANGE_TIER1 = 1000;
 
+    public static boolean REQUIRES_POWER = true;
+
     public static int ANTIMATTER_SIZE = 55;
     public static boolean ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = true;
     public static int ROCKET_LAUNCHER_TIER_FIRE_LIMIT = 2;
@@ -27,6 +29,9 @@ public class Settings
 
     public static void load(Configuration configuration)
     {
+        //General
+        REQUIRES_POWER = configuration.getBoolean("use_energy", Configuration.CATEGORY_GENERAL, true, "Set to false to disable power checks for all machines");
+        
         //Launchers
         LAUNCHER_RANGE_TIER3 = configuration.getInt("tier_3_range", "launcher", Settings.LAUNCHER_RANGE_TIER3,
                 0, Integer.MAX_VALUE, "Range of tier 3 launcher");

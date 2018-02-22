@@ -1,5 +1,6 @@
 package icbm.classic.prefab.item;
 
+import icbm.classic.Settings;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.lib.energy.EnergyBuffer;
@@ -22,6 +23,13 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
 
     public int getEnergy()
     {
+        //override for no power mode
+        if (!needsPower())
+        {
+            return getEnergyBufferSize();
+        }
+
+        //Normal power check
         IEnergyBuffer buffer = getEnergyBuffer(null);
         if (buffer != null)
         {
@@ -32,10 +40,13 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
 
     public void setEnergy(int energy)
     {
-        IEnergyBuffer buffer = getEnergyBuffer(null);
-        if (buffer != null)
+        if (needsPower())
         {
-            buffer.setEnergyStored(energy);
+            IEnergyBuffer buffer = getEnergyBuffer(null);
+            if (buffer != null)
+            {
+                buffer.setEnergyStored(energy);
+            }
         }
     }
 
@@ -44,10 +55,13 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
      */
     public void extractEnergy()
     {
-        IEnergyBuffer buffer = getEnergyBuffer(null);
-        if (buffer != null)
+        if (needsPower())
         {
-            buffer.removeEnergyFromStorage(getEnergyConsumption(), true);
+            IEnergyBuffer buffer = getEnergyBuffer(null);
+            if (buffer != null)
+            {
+                buffer.removeEnergyFromStorage(getEnergyConsumption(), true);
+            }
         }
     }
 
@@ -86,7 +100,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
      */
     public boolean checkExtract()
     {
-        return getEnergy() >= getEnergyConsumption();
+        return !needsPower() || getEnergy() >= getEnergyConsumption();
     }
 
     /**
@@ -111,7 +125,12 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
      */
     public boolean hasPower()
     {
-        return getEnergy() > 0;
+        return !needsPower() || getEnergy() > 0;
+    }
+
+    public boolean needsPower()
+    {
+        return Settings.REQUIRES_POWER;
     }
 
     @Override
@@ -145,7 +164,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (capability == CapabilityEnergy.ENERGY)
+        if (capability == CapabilityEnergy.ENERGY && needsPower())
         {
             return (T) getEnergyBuffer(facing);
         }
@@ -157,7 +176,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     {
         if (capability == CapabilityEnergy.ENERGY)
         {
-            return true;
+            return needsPower();
         }
         return super.hasCapability(capability, facing);
     }
