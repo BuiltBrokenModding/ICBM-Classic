@@ -33,10 +33,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,6 +147,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     if (tileEntity instanceof TileLauncherFrame)
                     {
                         this.supportFrame = (TileLauncherFrame) tileEntity;
+                        this.supportFrame.launcherBase = this;
                         if (isServer())
                         {
                             this.supportFrame.setRotation(getRotation());
@@ -158,6 +161,29 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                 }
             }
         }
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        //TODO add inventory
+        if (launchScreen != null)
+        {
+            return launchScreen.hasCapability(capability, facing);
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        //TODO add inventory
+        if (launchScreen != null)
+        {
+            return launchScreen.getCapability(capability, facing);
+        }
+        return getCapability(capability, facing);
     }
 
     @Override

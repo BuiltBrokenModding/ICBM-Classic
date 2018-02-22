@@ -2,8 +2,9 @@ package icbm.classic.content.machines.launcher.frame;
 
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
-import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.content.multiblock.MultiBlockHelper;
+import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.prefab.tile.TileMachine;
 import net.minecraft.block.state.IBlockState;
@@ -14,7 +15,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,8 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
 
     private boolean _destroyingStructure = false;
 
+    public TileLauncherBase launcherBase;
+
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
     {
@@ -53,6 +58,27 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
             case THREE:
                 return 1;
         }
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        if (launcherBase != null)
+        {
+            return launcherBase.hasCapability(capability, facing);
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (launcherBase != null)
+        {
+            return launcherBase.getCapability(capability, facing);
+        }
+        return getCapability(capability, facing);
     }
 
     //==========================================
