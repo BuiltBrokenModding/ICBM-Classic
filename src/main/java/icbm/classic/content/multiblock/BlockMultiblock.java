@@ -140,7 +140,7 @@ public class BlockMultiblock extends BlockContainer
         {
             tile.getHost().onMultiTileBroken(tile, player, willHarvest);
         }
-        return removedByPlayer(state, world, pos, player, willHarvest);
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
     }
 
     @Override

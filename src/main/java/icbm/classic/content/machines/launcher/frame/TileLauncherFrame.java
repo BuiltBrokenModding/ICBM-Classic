@@ -86,18 +86,12 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     //=========================================
 
     @Override
-    public void onLoad()
-    {
-        super.onLoad();
-        MultiBlockHelper.buildMultiBlock(world, this, true, true);
-    }
-
-    @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
+            BlockPos pos = ((TileEntity) tileMulti).getPos().subtract(getPos());
+            if (getLayoutOfMultiBlock().contains(pos))
             {
                 tileMulti.setHost(this);
             }
@@ -109,7 +103,8 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
+            BlockPos pos = ((TileEntity) tileMulti).getPos().subtract(getPos());
+            if (getLayoutOfMultiBlock().contains(pos))
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;

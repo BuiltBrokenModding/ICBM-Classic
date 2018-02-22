@@ -1,15 +1,9 @@
 package icbm.classic.content.machines.launcher.base;
 
-import icbm.classic.api.tile.multiblock.IMultiTile;
-import icbm.classic.api.tile.multiblock.IMultiTileHost;
-import icbm.classic.prefab.inventory.IInventoryProvider;
-import icbm.classic.content.multiblock.MultiBlockHelper;
-import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.LanguageUtility;
-import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.Settings;
+import icbm.classic.api.tile.multiblock.IMultiTile;
+import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.explosive.Explosive;
@@ -17,6 +11,12 @@ import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
+import icbm.classic.content.multiblock.MultiBlockHelper;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.transform.rotation.EulerAngle;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.inventory.ExternalInventory;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.EnumTier;
 import icbm.classic.prefab.tile.TileMachine;
@@ -35,6 +35,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.items.CapabilityItemHandler;
 import resonant.api.explosion.ILauncherContainer;
 import resonant.api.explosion.ILauncherController;
 
@@ -133,6 +134,10 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
             if (this.supportFrame == null || launchScreen == null || launchScreen.isInvalid() || this.supportFrame.isInvalid())
             {
                 //Reset data
+                if (this.supportFrame != null)
+                {
+                    this.supportFrame.launcherBase = null;
+                }
                 this.supportFrame = null;
                 this.launchScreen = null;
 
@@ -166,8 +171,11 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        //TODO add inventory
-        if (launchScreen != null)
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            return getInventory() != null;
+        }
+        else if (launchScreen != null)
         {
             return launchScreen.hasCapability(capability, facing);
         }
@@ -178,8 +186,11 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        //TODO add inventory
-        if (launchScreen != null)
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            return (T) getInventory();
+        }
+        else if (launchScreen != null)
         {
             return launchScreen.getCapability(capability, facing);
         }
@@ -450,18 +461,12 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     //=========================================
 
     @Override
-    public void onLoad()
-    {
-        super.onLoad();
-        MultiBlockHelper.buildMultiBlock(getWorld(), this, true, true);
-    }
-
-    @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
         if (tileMulti instanceof TileEntity)
         {
-            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
+            BlockPos pos = ((TileEntity) tileMulti).getPos().subtract(getPos());
+            if (getLayoutOfMultiBlock().contains(pos))
             {
                 tileMulti.setHost(this);
             }
@@ -473,7 +478,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            if (getLayoutOfMultiBlock().contains(getPos().subtract(((TileEntity) tileMulti).getPos())))
+            BlockPos pos = ((TileEntity) tileMulti).getPos().subtract(getPos());
+            if (getLayoutOfMultiBlock().contains(pos))
             {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;

@@ -40,7 +40,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     public void onEntityUpdate()
     {
-        if (!world.isRemote && host == null || this.posY < -64.0D)
+        if (!world.isRemote && (host == null || host.isInvalid()) || this.posY < -64.0D)
         {
             this.setDead();
         }

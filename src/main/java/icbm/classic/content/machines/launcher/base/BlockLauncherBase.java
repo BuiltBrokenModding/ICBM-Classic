@@ -1,5 +1,7 @@
 package icbm.classic.content.machines.launcher.base;
 
+import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.block.material.Material;
@@ -38,7 +40,7 @@ public class BlockLauncherBase extends BlockICBM
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof TileLauncherBase)
+        if (tile instanceof TileLauncherBase)
         {
             return ((TileLauncherBase) tile).onPlayerRightClick(playerIn, hand, playerIn.getHeldItem(hand));
         }
@@ -103,8 +105,19 @@ public class BlockLauncherBase extends BlockICBM
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileLauncherBase)
         {
+            //Set tier data
             ((TileLauncherBase) tile)._tier = EnumTier.get(stack.getItemDamage());
+
+            //Build multiblock
+            MultiBlockHelper.buildMultiBlock(world, (IMultiTileHost) tile, true, true);
         }
+    }
+
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    {
+
+
     }
 
     @Override

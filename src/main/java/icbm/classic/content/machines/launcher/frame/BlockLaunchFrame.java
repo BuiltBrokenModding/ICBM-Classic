@@ -1,5 +1,7 @@
 package icbm.classic.content.machines.launcher.frame;
 
+import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.block.state.BlockStateContainer;
@@ -82,7 +84,11 @@ public class BlockLaunchFrame extends BlockICBM
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileLauncherFrame)
         {
+            //Set tier
             ((TileLauncherFrame) tile)._tier = EnumTier.get(stack.getItemDamage());
+
+            //Built multiblock
+            MultiBlockHelper.buildMultiBlock(world, (IMultiTileHost) tile, true, true);
         }
     }
 

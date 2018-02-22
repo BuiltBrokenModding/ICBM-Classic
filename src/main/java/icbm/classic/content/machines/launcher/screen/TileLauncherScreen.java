@@ -1,17 +1,17 @@
 package icbm.classic.content.machines.launcher.screen;
 
-import icbm.classic.lib.network.IPacket;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.prefab.inventory.IInventoryProvider;
+import icbm.classic.content.machines.launcher.TileLauncherPrefab;
+import icbm.classic.content.machines.launcher.base.TileLauncherBase;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.inventory.ExternalInventory;
-import icbm.classic.content.machines.launcher.TileLauncherPrefab;
-import icbm.classic.content.machines.launcher.base.TileLauncherBase;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.EnumTier;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -35,7 +35,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
 {
     // The missile launcher base in which this
     // screen is connected with
-    public TileLauncherBase laucherBase = null;
+    public TileLauncherBase launcherBase = null;
 
     /** Height to wait before missile curves */
     public short lockHeight = 3;
@@ -56,9 +56,9 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     public void update()
     {
         super.update();
-        if (this.laucherBase == null || this.laucherBase.isInvalid())
+        if (this.launcherBase == null || this.launcherBase.isInvalid())
         {
-            this.laucherBase = null;
+            this.launcherBase = null;
             for (EnumFacing rotation : EnumFacing.HORIZONTALS)
             {
                 final Pos position = toPos().add(rotation);
@@ -67,7 +67,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 {
                     if (tileEntity instanceof TileLauncherBase)
                     {
-                        this.laucherBase = (TileLauncherBase) tileEntity;
+                        this.launcherBase = (TileLauncherBase) tileEntity;
                         if (isServer())
                         {
                             setRotation(rotation.getOpposite());
@@ -111,11 +111,11 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public void placeMissile(ItemStack itemStack)
     {
-        if (this.laucherBase != null)
+        if (this.launcherBase != null)
         {
-            if (!this.laucherBase.isInvalid())
+            if (!this.launcherBase.isInvalid())
             {
-                this.laucherBase.getInventory().setInventorySlotContents(0, itemStack);
+                this.launcherBase.getInventory().setInventorySlotContents(0, itemStack);
             }
         }
     }
@@ -164,11 +164,11 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public boolean canLaunch()
     {
-        if (this.laucherBase != null && this.laucherBase.getMissileStack() != null)
+        if (this.launcherBase != null && this.launcherBase.getMissileStack() != null)
         {
             if (this.checkExtract())
             {
-                return this.laucherBase.isInRange(this.getTarget());
+                return this.launcherBase.isInRange(this.getTarget());
             }
         }
         return false;
@@ -178,7 +178,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public void launch()
     {
-        if (this.canLaunch() && this.laucherBase.launchMissile(this.getTarget(), this.lockHeight))
+        if (this.canLaunch() && this.launcherBase.launchMissile(this.getTarget(), this.lockHeight))
         {
             this.extractEnergy();
             updateClient = true;
@@ -196,7 +196,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         String color = "\u00a74";
         String status = LanguageUtility.getLocal("gui.misc.idle");
 
-        if (this.laucherBase == null)
+        if (this.launcherBase == null)
         {
             status = LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
         }
@@ -204,7 +204,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherscreen.statusNoPower");
         }
-        else if (this.laucherBase.getMissileStack().isEmpty())
+        else if (this.launcherBase.getMissileStack().isEmpty())
         {
             status = LanguageUtility.getLocal("gui.launcherscreen.statusEmpty");
         }
@@ -212,11 +212,11 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherscreen.statusInvalid");
         }
-        else if (this.laucherBase.isTargetTooClose(this.getTarget()))
+        else if (this.launcherBase.isTargetTooClose(this.getTarget()))
         {
             status = LanguageUtility.getLocal("gui.launcherscreen.statusClose");
         }
-        else if (this.laucherBase.isTargetTooFar(this.getTarget()))
+        else if (this.launcherBase.isTargetTooFar(this.getTarget()))
         {
             status = LanguageUtility.getLocal("gui.launcherscreen.statusFar");
         }
@@ -292,13 +292,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
             //Floor frequency as we do not care about sub ranges
             int frequency = (int) Math.floor(hz);
             //Only tier 3 (2 for tier value) can be remotely fired
-            if (getTier() == EnumTier.THREE && frequency == getFrequency() && laucherBase != null)
+            if (getTier() == EnumTier.THREE && frequency == getFrequency() && launcherBase != null)
             {
                 //Laser detonator signal
                 if (messageHeader.equals("activateLauncherWithTarget"))
                 {
                     Pos pos = (Pos) data[0];
-                    if (toPos().distance(pos) < this.laucherBase.getRange())
+                    if (toPos().distance(pos) < this.launcherBase.getRange())
                     {
                         setTarget(pos);
                         launch();
