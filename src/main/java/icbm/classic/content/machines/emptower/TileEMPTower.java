@@ -6,7 +6,7 @@ import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.lib.network.IPacketIDReceiver;
-import icbm.classic.lib.multiblock.MultiBlockHelper;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.blast.BlastEMP;

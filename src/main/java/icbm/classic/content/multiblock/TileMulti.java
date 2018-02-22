@@ -1,4 +1,4 @@
-package icbm.classic.lib.multiblock;
+package icbm.classic.content.multiblock;
 
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
@@ -82,7 +82,7 @@ public class TileMulti extends TileEntity implements IMultiTile
         {
             compound.setIntArray(NBT_HOST_POS, new int[]{hostPosition.getX(), hostPosition.getY(), hostPosition.getZ()});
         }
-        return this.writeToNBT(compound);
+        return super.writeToNBT(compound);
     }
 
     @Override

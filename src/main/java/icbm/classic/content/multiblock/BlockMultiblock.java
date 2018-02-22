@@ -1,5 +1,6 @@
-package icbm.classic.lib.multiblock;
+package icbm.classic.content.multiblock;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -8,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -27,18 +29,27 @@ public class BlockMultiblock extends BlockContainer
     public BlockMultiblock()
     {
         super(Material.ROCK);
-        this.setUnlocalizedName("veMultiBlock");
+        this.setRegistryName(ICBMClassic.DOMAIN, "multiblock");
+        this.setUnlocalizedName(ICBMClassic.PREFIX + "multiblock");
         this.setHardness(2f);
     }
 
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor)
+    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos)
     {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileMulti)
-        {
+        return false;
+    }
 
-        }
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.INVISIBLE;
     }
 
     @Override

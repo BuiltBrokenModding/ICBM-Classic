@@ -3,7 +3,7 @@ package icbm.classic.content.machines.launcher.frame;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.lib.network.IPacketIDReceiver;
-import icbm.classic.lib.multiblock.MultiBlockHelper;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.prefab.tile.TileMachine;
 import net.minecraft.block.state.IBlockState;

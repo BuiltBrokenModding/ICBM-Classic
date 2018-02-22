@@ -1,5 +1,7 @@
 package icbm.classic;
 
+import icbm.classic.content.multiblock.BlockMultiblock;
+import icbm.classic.content.multiblock.TileMulti;
 import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.*;
@@ -107,9 +109,8 @@ public final class ICBMClassic
     public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
 
     public static final int ENTITY_ID_PREFIX = 50;
-    @Deprecated
 
-    protected static Logger logger = LogManager.getLogger("VoltzEngine");
+    protected static Logger logger = LogManager.getLogger(DOMAIN);
     private static int nextID = ENTITY_ID_PREFIX;
 
 
@@ -138,7 +139,6 @@ public final class ICBMClassic
     public static Block blockCruiseLauncher;
     public static Block blockMissileCoordinator;
 
-    @GameRegistry.ObjectHolder(PREFIX + "multiblock")
     public static Block multiBlock;
 
 
@@ -242,6 +242,7 @@ public final class ICBMClassic
         event.getRegistry().register(blockLaunchSupport = new BlockLaunchFrame());
         event.getRegistry().register(blockLaunchBase = new BlockLauncherBase());
         event.getRegistry().register(blockLaunchScreen = new BlockLaunchScreen());
+        event.getRegistry().register(multiBlock = new BlockMultiblock());
 
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
@@ -255,6 +256,7 @@ public final class ICBMClassic
         GameRegistry.registerTileEntity(TileLauncherFrame.class, PREFIX + "launcherframe");
         GameRegistry.registerTileEntity(TileLauncherBase.class, PREFIX + "launcherbase");
         GameRegistry.registerTileEntity(TileLauncherScreen.class, PREFIX + "launcherscreen");
+        GameRegistry.registerTileEntity(TileMulti.class, PREFIX + "multiblock");
     }
 
     @SubscribeEvent

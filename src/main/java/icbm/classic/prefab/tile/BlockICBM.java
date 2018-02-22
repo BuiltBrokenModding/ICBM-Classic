@@ -2,7 +2,7 @@ package icbm.classic.prefab.tile;
 
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.prefab.inventory.IInventoryProvider;
-import icbm.classic.lib.multiblock.MultiBlockHelper;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;

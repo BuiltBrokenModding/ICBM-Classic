@@ -1,4 +1,4 @@
-package icbm.classic.lib.multiblock;
+package icbm.classic.content.multiblock;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.tile.multiblock.IMultiTile;

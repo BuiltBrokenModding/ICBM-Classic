@@ -3,7 +3,7 @@ package icbm.classic.content.machines.launcher.base;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.prefab.inventory.IInventoryProvider;
-import icbm.classic.lib.multiblock.MultiBlockHelper;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
