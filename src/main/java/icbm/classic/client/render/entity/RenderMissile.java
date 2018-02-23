@@ -53,7 +53,8 @@ public class RenderMissile extends Render<EntityMissile>
 
         //Render missile
         GlStateManager.translate(0, -3, 0);
-        GlStateManager.scale(4, 4, 4);
+        final float scale = 2;
+        GlStateManager.scale(scale, scale, scale);
         renderMissile(entityMissile.explosiveID,
                 entityMissile.world, entityMissile.posX, entityMissile.posY, entityMissile.posZ,
                 0, 0, 0, entityYaw, partialTicks);
