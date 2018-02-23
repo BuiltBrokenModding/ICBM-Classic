@@ -64,8 +64,11 @@ public class TileMulti extends TileEntity implements IMultiTile
         }
         else
         {
-            hostWeakReference.clear();
-            hostWeakReference = null;
+            if (hostWeakReference != null)
+            {
+                hostWeakReference.clear();
+                hostWeakReference = null;
+            }
             hostPosition = null;
         }
     }
