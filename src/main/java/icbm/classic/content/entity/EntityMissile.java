@@ -119,7 +119,15 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
     {
-        return distance < 500;
+        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
+
+        if (Double.isNaN(d0))
+        {
+            d0 = 1.0D;
+        }
+
+        d0 = d0 * 64.0D * getRenderDistanceWeight();
+        return distance < d0 * d0;
     }
 
     public String getEntityName()
