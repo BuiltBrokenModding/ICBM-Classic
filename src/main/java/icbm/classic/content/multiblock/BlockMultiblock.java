@@ -76,11 +76,13 @@ public class BlockMultiblock extends BlockContainer
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
     {
-        IMultiTile tile = getTile(world, pos);
-        if (tile != null && tile.getHost() != null)
+        IMultiTile multiblock = getTile(world, pos);
+        if (multiblock != null && multiblock.getHost() instanceof TileEntity)
         {
-            IBlockState block = ((TileEntity) tile.getHost()).getWorld().getBlockState(((TileEntity) tile.getHost()).getPos());
-            return block.getBlock().getPickBlock(block, target, ((TileEntity) tile.getHost()).getWorld(), ((TileEntity) tile.getHost()).getPos(), player);
+            TileEntity tileEntity = ((TileEntity) multiblock.getHost());
+            IBlockState block = tileEntity.getWorld().getBlockState(tileEntity.getPos());
+            ItemStack stack = block.getBlock().getPickBlock(block, target, tileEntity.getWorld(), tileEntity.getPos(), player);
+            return stack;
         }
         return null;
     }

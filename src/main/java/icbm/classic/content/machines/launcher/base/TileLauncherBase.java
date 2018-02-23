@@ -1,9 +1,9 @@
 package icbm.classic.content.machines.launcher.base;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.config.ConfigLauncher;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.explosive.Explosive;
@@ -21,7 +21,6 @@ import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.EnumTier;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -32,7 +31,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -195,12 +193,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
             return launchScreen.getCapability(capability, facing);
         }
         return getCapability(capability, facing);
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
-        return false;
     }
 
     @Override

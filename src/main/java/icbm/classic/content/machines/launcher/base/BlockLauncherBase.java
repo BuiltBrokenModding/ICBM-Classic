@@ -117,7 +117,6 @@ public class BlockLauncherBase extends BlockICBM
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
 
-
     }
 
     @Override

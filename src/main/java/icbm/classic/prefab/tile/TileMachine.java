@@ -1,13 +1,13 @@
 package icbm.classic.prefab.tile;
 
 import com.builtbroken.jlib.data.network.IByteBufWriter;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.IWorldPosition;
-import icbm.classic.lib.network.IPacket;
-import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.lib.IGuiTile;
+import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
-import icbm.classic.ICBMClassic;
+import icbm.classic.prefab.gui.IPlayerUsing;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +18,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
      */
     protected boolean updateClient = false;
 
-    protected int ticks = 0;
+    protected int ticks = -1;
 
     // Cache until block state can be updated
     public EnumTier _tier = EnumTier.ONE;
@@ -48,6 +49,13 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     @Override
     public void update()
     {
+        //Trigger first tick
+        if (ticks == -1)
+        {
+            onFirstTick();
+        }
+
+        //Increase tick
         ticks++;
         if (ticks >= Integer.MAX_VALUE - 1)
         {
@@ -72,6 +80,21 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
                 }
             }
         }
+    }
+
+    protected void onFirstTick()
+    {
+        //TODO remove set state hack when Forge patches TE access in get drops
+        if (getBlockState().getProperties().containsKey(BlockICBM.TIER_PROP))
+        {
+            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.TIER_PROP, getTier()));
+        }
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    {
+        return oldState.getBlock() != newSate.getBlock();
     }
 
     public void sendDescPacket()
@@ -221,7 +244,11 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         if (facingDirection != getRotation())
         {
             //Update block state
-            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
+            IBlockState state = getBlockState();
+            if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
+            {
+                world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
+            }
         }
     }
 
@@ -235,7 +262,14 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         if (tier != getTier())
         {
             this._tier = tier;
-            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.TIER_PROP, tier));
+            if(isServer())
+            {
+                IBlockState state = getBlockState();
+                if (state.getProperties().containsKey(BlockICBM.TIER_PROP))
+                {
+                    world.setBlockState(pos, state.withProperty(BlockICBM.TIER_PROP, tier));
+                }
+            }
         }
     }
 
