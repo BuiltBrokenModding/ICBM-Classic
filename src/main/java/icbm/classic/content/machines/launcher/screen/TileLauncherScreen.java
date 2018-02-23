@@ -2,6 +2,7 @@ package icbm.classic.content.machines.launcher.screen;
 
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.lib.LanguageUtility;
@@ -253,17 +254,24 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         switch (this.getTier())
         {
             case ONE:
-                return 50000;
+                return ConfigLauncher.LAUNCHER_POWER_USAGE_TIER1;
             case TWO:
-                return 80000;
+                return ConfigLauncher.LAUNCHER_POWER_USAGE_TIER2;
         }
-        return 100000;
+        return ConfigLauncher.LAUNCHER_POWER_USAGE_TIER3;
     }
 
     @Override
     public int getEnergyBufferSize()
     {
-        return getEnergyConsumption() * 2;
+        switch (this.getTier())
+        {
+            case ONE:
+                return ConfigLauncher.LAUNCHER_POWER_CAP_TIER1;
+            case TWO:
+                return ConfigLauncher.LAUNCHER_POWER_CAP_TIER2;
+        }
+        return ConfigLauncher.LAUNCHER_POWER_CAP_TIER3;
     }
 
     @Override

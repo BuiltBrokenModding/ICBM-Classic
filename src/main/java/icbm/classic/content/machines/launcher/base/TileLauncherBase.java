@@ -273,7 +273,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     //Set data
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
                     missile.launcherPos = new Pos((TileEntity) this);
-                    missile.setPosition(xi(), yi() + 3, zi());
+                    missile.setPosition(xi() + 0.5, yi() + 3, zi()+ 0.5);
 
                     //Trigger launch event
                     missile.launch(target, lockHeight);
