@@ -43,6 +43,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
 
     public ExternalInventory inventory;
 
+    public int launchDelay = 0;
+
     @Override
     public ExternalInventory getInventory()
     {
@@ -80,10 +82,18 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         }
         if (isServer())
         {
-            if (this.ticks % 100 == 0 && world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+            //Delay launch, basically acts as a reload time
+            if (launchDelay > 0)
+            {
+                launchDelay--;
+            }
+            //Only launch if redstone
+            else if (ticks % 10 == 0 && world.isBlockIndirectlyGettingPowered(getPos()) > 0)
             {
                 this.launch();
             }
+
+            //Update packet TODO see if this is needed
             if (ticks % 3 == 0)
             {
                 sendDescPacket();
@@ -181,7 +191,24 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     {
         if (this.canLaunch() && this.launcherBase.launchMissile(this.getTarget(), this.lockHeight))
         {
+            //Reset delay
+            switch (getTier())
+            {
+                case ONE:
+                    launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER1;
+                    break;
+                case TWO:
+                    launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER2;
+                    break;
+                case THREE:
+                    launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER3;
+                    break;
+            }
+
+            //Remove energy
             this.extractEnergy();
+
+            //Mark client for update
             updateClient = true;
         }
     }

@@ -50,4 +50,18 @@ public class ConfigLauncher
     @Config.Name("tier_1_power_per_launch")
     @Config.Comment("Energy consumed per launch for the tier 1 launcher")
     public static int LAUNCHER_POWER_USAGE_TIER1 = 4000;
+
+
+    /** Energy usage for the launcher tier 3 */
+    @Config.Name("tier_3_delay")
+    @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 3 launcher")
+    public static int LAUNCHER_DELAY_TIER3 = 60;
+    /** Energy usage for the launcher tier 2 */
+    @Config.Name("tier_2_delay")
+    @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 2 launcher")
+    public static int LAUNCHER_DELAY_TIER2 = 80;
+    /** Energy usage for the launcher tier 1 */
+    @Config.Name("tier_1_delay")
+    @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 1 launcher")
+    public static int LAUNCHER_DELAY_TIER1 = 100;
 }
