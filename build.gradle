@@ -15,11 +15,9 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-        classpath 'net.saliman:gradle-cobertura-plugin:2.0.0' // cobertura plugin
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
-        classpath 'org.ajoberstar:gradle-git:0.10.1'
-        classpath "org.ajoberstar:grgit:2.1.0"
+      classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+      //allows ability to get things from the git log.
+      classpath "org.ajoberstar:grgit:2.1.0"
     }
 }
 
@@ -27,12 +25,13 @@ plugins {
   id "com.matthewprenger.cursegradle" version "1.0.9"
   id 'net.saliman.cobertura' version '2.2.5'
   id 'com.github.kt3k.coveralls' version '2.0.1'
-  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
+  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.50"
 }
 
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/buildScripts/index/index.gradle'
 apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'jacoco'
+apply plugin: 'org.ajoberstar.grgit'
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/buildScripts/scripts/forge/deps.gradle'
 
 minecraft {
@@ -42,26 +41,19 @@ minecraft {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+
 dependencies
 {
     compile ("com.builtbroken.voltzengine:VoltzEngine:1.7.10-$voltz_engine_version+:deobf") { changing = true }
-    compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
+/*    compile name: 'CoFHLib', version: "${cofhlib_version}", ext: 'jar'
     compile name: 'CoFHCore', version: "${cofhcore_version}", ext: 'jar'
     compile name: 'RedstoneArsenal', version: "${rars_version}", ext: 'jar'
     compile name: 'ThermalExpansion', version: "${texpansion_version}", ext: 'jar'
-    compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'
+    compile name: 'ThermalFoundation', version: "${tfoundation_version}", ext: 'jar'*/
 }
 
 def currentJvm = org.gradle.internal.jvm.Jvm.current()
 //println "Current Java version = " + currentJvm
-
-import org.ajoberstar.grgit.*
-
-def gitHash = 'unknown'
-if (new File(projectDir, '.git').exists()) {
-    def repo = Grgit.open(project.file('.'))
-    gitHash = repo.log().find().abbreviatedId
-}
 
 jar {
      manifest.mainAttributes(
@@ -69,7 +61,7 @@ jar {
             "Created-By": currentJvm,
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": project.version,
-            "Git-Hash": gitHash,
+            "Git-Hash": GitHash,
             "FMLAT": "ICBMClassic_at.cfg")
 }
 
@@ -79,7 +71,7 @@ deobfJar {
             "Created-By": currentJvm,
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": project.version,
-            "Git-Hash": gitHash,
+            "Git-Hash": GitHash,
             "FMLAT": "ICBMClassic_at.cfg")
 }
 
@@ -89,7 +81,7 @@ sourcesJar {
             "Created-By": currentJvm,
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": project.version,
-            "Git-Hash": gitHash,
+            "Git-Hash": GitHash,
             "FMLAT": "ICBMClassic_at.cfg")
 }
 
