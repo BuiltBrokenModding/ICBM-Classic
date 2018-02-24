@@ -2,6 +2,7 @@ package icbm.classic.content.machines.launcher.screen;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
+import icbm.classic.content.items.ItemLaserDetonator;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
@@ -72,6 +73,11 @@ public class BlockLaunchScreen extends BlockICBM
                 else if (stack.getItem() instanceof ItemRemoteDetonator)
                 {
                     ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + screen.getFrequency())));
+                }
+                else if (stack.getItem() instanceof ItemLaserDetonator)
+                {
+                    ((ItemLaserDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
                     player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + screen.getFrequency())));
                 }
                 else if (stack.getItem() instanceof IWorldPosItem)
