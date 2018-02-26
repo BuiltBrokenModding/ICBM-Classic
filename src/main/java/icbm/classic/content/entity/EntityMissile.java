@@ -180,7 +180,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return this;
     }
 
-    /** Recalculates required parabolic path for the missile Registry */
+    /**
+     * Recalculates required parabolic path data.
+     * <p>
+     * Called from {@link #readFromNBT(NBTTagCompound)} as well other plus.
+     * Make sure not to use {@link World } or other data not accessible during load
+     */
     public void recalculatePath()
     {
         if (this.targetVector != null)
@@ -199,7 +204,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             // Flight time
             this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
             // Acceleration
-            this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
+            this.acceleration = (float) (this.maxHeight * 2) / (this.missileFlightTime * this.missileFlightTime);
         }
     }
 
@@ -225,25 +230,37 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             {
                 if (this.missileType == MissileType.MISSILE)
                 {
-                    // Start the launch
+                    // Start the launch, hold to on lock height to prevent hitting silo walls
                     if (this.lockHeight > 0)
                     {
+                        //Move upward
                         this.motionY = SPEED * this.ticksInAir * (this.ticksInAir / 2);
+
+                        //Cancel out motion X and Z to prevent hitting silo walls
                         this.motionX = 0;
                         this.motionZ = 0;
+
+                        //decrease lock height counter by motion
                         this.lockHeight -= this.motionY;
+
+                        //If we hit zero start curving towards target
                         if (this.lockHeight <= 0)
                         {
-                            this.motionY = this.acceleration * (this.missileFlightTime / 2);
+                            //Set upwards motion
+                            this.motionY = this.acceleration * (this.missileFlightTime / 2); //TODO what is 2? meters per tick or ticks per meter
+
+                            //Aim missile vector towards target
                             this.motionX = this.deltaPathX / missileFlightTime;
                             this.motionZ = this.deltaPathZ / missileFlightTime;
                         }
                     }
                     else
                     {
+                        //Decrease motion
                         this.motionY -= this.acceleration;
+
+                        //Update rotation to aim at the next point
                         this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                        // Look at the next point
                         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
 
                     }
@@ -521,7 +538,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         super.readEntityFromNBT(nbt);
         this.targetVector = new Pos(nbt.getCompoundTag("target"));
-        this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi"));
+        this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi")); //TODO change to english
         this.acceleration = nbt.getFloat("acceleration");
         this.targetHeight = nbt.getInteger("targetHeight");
         this.explosiveID = Explosives.get(nbt.getInteger("explosiveID"));
@@ -529,6 +546,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.lockHeight = nbt.getDouble("lockHeight");
         this.missileType = MissileType.values()[nbt.getInteger("missileType")];
         this.nbtData = nbt.getCompoundTag("additionalMissileData");
+
+        recalculatePath();
     }
 
     /** (abstract) Protected helper method to write subclass entity additionalMissileData to NBT. */
