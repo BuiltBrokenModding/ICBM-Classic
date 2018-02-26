@@ -1,0 +1,348 @@
+itemGroup.icbmclassic=ɔᴉssɐꞁƆ-WᗺƆI
+
+potion.toxin=uᴉxo⟘
+potion.virus=snɹᴉᴧ
+potion.frostBite=ǝʇᴉᗺ ʇsoɹℲ
+potion.radiation=uoᴉʇɐᴉpɐᴚ
+
+item.icbmclassic:sulfurDust.name=ɹnɟꞁnS
+item.icbmclassic:sulfurDust.info=ɹǝpʍodunᵷ ɟo uoᴉʇɐǝɹɔ ǝɥʇ uᴉ pǝs∩
+
+item.icbmclassic:saltpeter.name=ɹǝʇǝdʇꞁɐS
+item.icbmclassic:saltpeter.info=ɹǝpʍodunᵷ ɟo uoᴉʇɐǝɹɔ ǝɥʇ uᴉ pǝs∩
+
+item.icbmclassic:poisonPowder.name=ɹǝpʍoԀ uosᴉoԀ
+item.icbmclassic:poisonPowder.info=sǝʌᴉsoꞁdxǝ ɟo uoᴉʇɐǝɹɔ ǝɥʇ uᴉ pǝs∩
+
+item.icbmclassic:antidote.name=ǝʇopᴉʇuⱯ
+item.icbmclassic:antidote.info=sʇɔǝɟɟɐ ꞁꞁɐ sǝɹnƆ
+
+item.icbmclassic:radarGun.name=un⅁ ɹɐpɐᴚ
+item.icbmclassic:radarGun.info=ɐʇɐp SԀ⅁ sǝɹoʇS
+
+item.icbmclassic:remoteDetonator.name=ɹoʇɐuoʇǝᗡ ǝʇoɯǝᴚ
+item.icbmclassic:radarGun.info.info=ǝꞁᴉssᴉɯ ɐ ǝɹᴉɟ ʎꞁǝʇoɯǝᴚ
+
+item.icbmclassic:defuser.name=ɹǝsnɟǝᗡ
+item.icbmclassic:defuser.info=ɟɟo ǝuoᵷ ǝʌɐɥ ʎǝɥʇ ɹǝʇɟɐ uǝʌǝ 'ʎꞁǝɟɐs sǝʌᴉsoꞁdxǝ ǝʌoɯǝᴚ
+
+item.icbmclassic:laserDetonator.name=ɹoʇɐuᵷᴉsǝᗡ ɹǝsɐꞀ
+item.icbmclassic:laserDetonator.info.info=ǝꞁᴉssᴉɯ ɐ ǝɹᴉɟ ʎꞁǝʇoɯǝᴚ
+
+item.icbmclassic:tracker.name=ɹǝʞɔɐɹ⟘
+item.icbmclassic:tracker.info=sǝꞁᴉssᴉɯ ᵷuᴉɯoɥ ʇǝs 'puɐ sǝᴉʇᴉʇuǝ ʞɔɐɹ⟘
+
+item.icbmclassic:signalDisrupter.name=ɹǝʇdnɹsᴉᗡ ꞁɐuᵷᴉS
+item.icbmclassic:signalDisrupter.info=sǝɥɔunɐꞁ ǝꞁᴉssᴉɯ ɹo 'uoᴉʇɔǝʇǝp ʇuǝʌǝɹd oʇ sǝᴉɔuǝnbǝɹɟ ɯɐՐ
+
+item.icbmclassic:rocketLauncher.name=ɹǝɥɔunɐꞀ ʇǝʞɔoᴚ
+item.icbmclassic:rocketLauncher.info=sʇǝʞɔoɹ %s ɹǝᴉ⟘ oʇ dn ǝɹᴉɟ 'uɐɔ ɹǝɥɔunɐꞁ ʇǝʞɔoɹ sᴉɥ⟘
+
+tile.icbmclassic:launcherBase.0.name=⥝⟘ ɯɹoɟʇɐꞁԀ ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherBase.1.name=ᘔ⟘ ɯɹoɟʇɐꞁԀ ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherBase.2.name=Ɛ⟘ ɯɹoɟʇɐꞁԀ ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherBase.info=ɥɔunɐꞁ ǝɹoɟǝq ǝɔɐꞁd uᴉ sǝꞁᴉssᴉɯ pꞁoH
+
+tile.icbmclassic:launcherScreen.0.name=⥝⟘ ꞁǝuɐԀ ꞁoɹʇuoƆ ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherScreen.1.name=ᘔ⟘ ꞁǝuɐԀ ꞁoɹʇuoƆ ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherScreen.2.name=Ɛ⟘ ꞁǝuɐԀ ꞁoɹʇuoƆ ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherScreen.info=sɹǝɥɔunɐꞁ ɯoɹɟ sǝꞁᴉssᴉɯ ǝɹᴉɟ oʇ pǝs∩
+
+tile.icbmclassic:launcherFrame.0.name=⥝⟘ ǝɯɐɹℲ ʇɹoddnS ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherFrame.1.name=ᘔ⟘ ǝɯɐɹℲ ʇɹoddnS ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherFrame.2.name=Ɛ⟘ ǝɯɐɹℲ ʇɹoddnS ɹǝɥɔunɐꞀ
+tile.icbmclassic:launcherFrame.info=sǝꞁᴉssᴉɯ ɟo ʎɔɐɹnɔɔɐ sǝʌoɹdɯI
+
+tile.icbmclassic:radarStation.name=uoᴉʇɐʇS ɹɐpɐᴚ
+tile.icbmclassic:radarStation.info=ʇɥᵷᴉꞁɟ uᴉ sǝꞁᴉssᴉɯ sʇɔǝʇǝᗡ
+
+tile.icbmclassic:empTower.name=ɹǝʍo⟘ ԀWƎ
+tile.icbmclassic:empTower.info=sǝɔᴉʌǝp puɐ sǝᴉʇᴉʇuǝ 'sǝꞁᴉʇ ɯoɹɟ ʎᵷɹǝuǝ suᴉɐɹᗡ
+
+tile.icbmclassic:cruiseLauncher.name=ɹǝɥɔunɐꞀ ǝsᴉnɹƆ
+tile.icbmclassic:cruiseLauncher.info=ɐʇɐp ʇǝᵷɹɐʇ ʇnoɥʇᴉʍ 'ǝꞁᴉssᴉɯ ɐ sǝɹᴉɟ ʎɯɯnᗡ
+
+tile.icbmclassic:missileCoordinator.name=ɹoʇɐuᴉpɹooƆ ǝꞁᴉssᴉW
+tile.icbmclassic:missileCoordinator.info=sɥʇɐd ʇɥᵷᴉꞁɟ sǝʇɐꞁnɔꞁɐɔ 'ɹoʇɐꞁnɔꞁɐɔ pǝzᴉs ɹǝʌO
+
+tile.icbmclassic:reinforcedRail.name=ꞁᴉɐᴚ pǝɔɹoɟuᴉǝᴚ
+tile.icbmclassic:reinforcedRail.info=sǝʌᴉsoꞁdxǝ ʇsuᴉɐᵷɐ pǝuǝpɹɐH
+
+tile.icbmclassic:redmatter.ore.name=ǝɹo ɹǝʇʇɐɯpǝᴚ
+tile.icbmclassic:redmatter.ore.info=¡ǝpoꞁdxǝ pꞁnoɔ ʇᴉ 'uʍop ʇᴉ ʇnԀ '¡ʇɐɥʇ ʇǝᵷ noʎ pᴉp ʍoH 'zᴉɥS uO
+
+
+icbm.explosive.condensed.name=sǝʌᴉsoꞁdxƎ pǝsuǝpuoƆ
+icbm.explosive.shrapnel.name=sǝʌᴉsoꞁdxƎ ꞁǝudɐɹɥS
+icbm.explosive.incendiary.name=sǝʌᴉsoꞁdxƎ ʎɹɐᴉpuǝɔuI
+icbm.explosive.debilitation.name=sǝʌᴉsoꞁdxƎ uoᴉʇɐʇᴉꞁᴉqǝᗡ
+icbm.explosive.chemical.name=sǝʌᴉsoꞁdxƎ ꞁɐɔᴉɯǝɥƆ
+icbm.explosive.anvil.name=sǝʌᴉsoꞁdxƎ ꞁᴉʌuⱯ
+icbm.explosive.repulsive.name=sǝʌᴉsoꞁdxƎ ǝʌᴉsꞁndǝᴚ
+icbm.explosive.attractive.name=sǝʌᴉsoꞁdxƎ ǝʌᴉʇɔɐɹʇʇⱯ
+icbm.explosive.nightmare.name=sǝʌᴉsoꞁdxƎ ǝɹɐɯʇɥᵷᴉN
+
+icbm.explosive.fragmentation.name=sǝʌᴉsoꞁdxƎ uoᴉʇɐʇuǝɯᵷɐɹℲ
+icbm.explosive.contagious.name=sǝʌᴉsoꞁdxƎ snoᴉᵷɐʇuoƆ
+icbm.explosive.sonic.name=sǝʌᴉsoꞁdxƎ ɔᴉuoS
+icbm.explosive.breaching.name=sǝʌᴉsoꞁdxƎ ᵷuᴉɥɔɐǝɹᗺ
+icbm.explosive.rejuvenation.name=sǝʌᴉsoꞁdxƎ uoᴉʇɐuǝʌnɾǝᴚ
+icbm.explosive.thermobaric.name=sǝʌᴉsoꞁdxƎ ɔᴉɹɐqoɯɹǝɥ⟘
+
+icbm.explosive.nuclear.name=sǝʌᴉsoꞁdxƎ ɹɐǝꞁɔnN
+icbm.explosive.emp.name=sǝʌᴉsoꞁdxƎ ԀWƎ
+icbm.explosive.exothermic.name=sǝʌᴉsoꞁdxƎ ɔᴉɯɹǝɥʇoxƎ
+icbm.explosive.endothermic.name=sǝʌᴉsoꞁdxƎ ɔᴉɯɹǝɥʇopuƎ
+icbm.explosive.antiGravitational.name=sǝʌᴉsoꞁdxƎ ꞁɐuoᴉʇɐʇᴉʌɐɹ⅁-ᴉʇuⱯ
+icbm.explosive.ender.name=sǝʌᴉsoꞁdxƎ ɹǝpuƎ
+icbm.explosive.hypersonic.name=sǝʌᴉsoꞁdxƎ ɔᴉuosɹǝdʎH
+
+icbm.explosive.antimatter.name=sǝʌᴉsoꞁdxƎ ɹǝʇʇɐɯᴉʇuⱯ
+icbm.explosive.redMatter.name=sǝʌᴉsoꞁdxƎ ɹǝʇʇɐW pǝᴚ
+
+icbm.explosive.sMine.name=ǝuᴉW-S
+
+icbm.explosive.condensed.info=⟘N⟘ ɟo uoᴉsɹǝʌ ǝʌᴉʇɔnɹʇsǝp ǝɹoɯ ʎꞁʇɥᵷᴉꞁS
+icbm.explosive.shrapnel.info=sʇuǝɯᵷɐɹɟ ꞁɐʇǝɯ ɟo ǝᵷɐɹɹɐq ɐ uᴉ sʇdnɹƎ
+icbm.explosive.incendiary.info=ǝɹᴉɟ uo ǝɔɐꞁd ǝɥʇ sǝɥɔʇɐƆ
+icbm.explosive.debilitation.info=punoɹɐ ꞁꞁɐ ɹoɟ uoᴉʇɐʇuǝᴉɹosᴉp puɐ uoᴉsnɟuoƆ
+icbm.explosive.chemical.info=ǝɥʇɐǝɹq ʇ,uɐɔ noʎ ɟᴉ ʇɥᵷᴉɟ ʇ,uɐƆ
+icbm.explosive.anvil.info=ɔop dn sʇɐɥM
+icbm.explosive.repulsive.info=ʎɐʍɐ ǝuoʎɹǝʌǝ sǝɥsnԀ
+icbm.explosive.attractive.info=uᴉ ǝuoʎɹǝʌǝ sꞁꞁnԀ
+
+icbm.explosive.fragmentation.info=sʇuǝɯᵷɐɹɟ ʎʇᴉɔoꞁǝʌ ɥᵷᴉɥ ɥʇᴉʍ 'ǝdɐɔspuɐꞁ ǝɥʇ sǝʇɐʇsɐʌǝᗡ
+icbm.explosive.contagious.info=¿ǝnᵷɐꞁd ǝɥʇ pɹɐǝɥ ɹǝʌǝ noʎ ǝʌɐH
+icbm.explosive.sonic.info=ǝsᴉou ɥɔnɯ ʇɐɥʇ ɹǝʇɟɐ uᴉ ʞɐǝus 'oʇ ɐɾuᴉu ɐ ǝq oʇ spǝǝu oɥM
+icbm.explosive.breaching.info=ɹoop ɐ pǝǝu noʎ uǝɥM
+icbm.explosive.rejuvenation.info=˙˙˙punoɟ ǝq oʇ ǝuou s,ǝɹǝɥʇ ɟᴉ 'ǝᵷɐɯɐp ɹoɟ pǝɯɐꞁq ǝq ʇ,uɐɔ no⅄
+icbm.explosive.thermobaric.info=ʇǝᵷ uɐɔ ɥʇɹoN ǝɥʇ sɐ 'ǝsoꞁɔ sɐ ʇsɐǝꞁ ʇɐ ɹo 'uɐɔ ɐ uᴉ ǝʞnu-ᴉuᴉW
+
+icbm.explosive.nuclear.info=˙˙ɔᴉꞁoɥɹɐǝꞁɔnu ɐ ɯ,I ¡ᴉH
+icbm.explosive.emp.info=ǝɹoɯʎuɐ ʇoN ¿0006 ɹǝʌO
+icbm.explosive.exothermic.info=ʇoɥ sɐʍ uns ǝɥʇ ʇɥᵷnoɥʇ no⅄
+icbm.explosive.endothermic.info=ǝzǝǝɹℲ˙ɹW ǝɯ ꞁꞁɐɔ ʎǝɥ⟘
+icbm.explosive.antiGravitational.info=ᵷuᴉʇɐoꞁɟ ɹǝʇʇǝq sʞooꞁ ǝsɐq ɹnoʎ ʞuᴉɥʇ I
+icbm.explosive.ender.info=sɹnoʎ ɟo ǝsɐq ʇɐɥʇ ǝʇɐɔoꞁǝɹ sʇǝꞀ
+icbm.explosive.hypersonic.info=sɹɐǝ ɹnoʎ ɹoɟ pɐq ꞁǝǝɟ I
+
+icbm.explosive.antimatter.info=ɹǝʇʇɐɯ ou = ɹǝʇʇɐɯᴉʇuɐ + ɹǝʇʇɐɯ
+
+##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=8ɯʌᴉ⅁ꞁsɥoᘔℲ
+icbm.explosive.redMatter.info.count=⥝⥝
+icbm.explosive.redMatter.info.0=ǝꞁoɥ ʎᵷᵷᴉp ʎᵷᵷᴉᗡ ¿ʇsɐɔsᵷo⅄
+icbm.explosive.redMatter.info.1=ᵷuᴉɥʇou oʇuᴉ pǝʇɔɐdɯoɔ sɐʍ ǝsɐq ɹnoʎ ɟᴉ ǝɯɐɥs ɐ ǝᗺ
+icbm.explosive.redMatter.info.2=qɯoᗺ ǝɥ⟘ ˙˙˙ꞁɐᴉɔǝds zʇꞁoᴧ
+icbm.explosive.redMatter.info.3=punoɹ puɐ punoɹ oᵷ snq ǝɥʇ uo sꞁǝǝɥʍ ǝɥ⟘
+icbm.explosive.redMatter.info.4=¿ʍopuᴉʍ ǝɥʇ ʎq ʎꞁɟ ʇsnɾ ʍoɔ ɐ pᴉᗡ
+icbm.explosive.redMatter.info.5=uᴉ ǝɯ ᵷuᴉʞɔns s,ʇᴉ poᵷ ɥO
+icbm.explosive.redMatter.info.6=ǝdɐɔsǝ ou sᴉ ǝɹǝɥ⟘
+icbm.explosive.redMatter.info.7=˙˙˙˙ʇɥᵷᴉꞁ uǝʌǝ ʇoN
+icbm.explosive.redMatter.info.8=pᴉoʌ ǝɥʇ oʇuI
+icbm.explosive.redMatter.info.9=ǝdɐɔsǝ uɐɔ noʎ ʞuᴉɥʇ no⅄ ¿ɥO
+icbm.explosive.redMatter.info.10=ʞɔɐq ǝɯoɔ ʎqɐq ɥO
+
+icbm.explosive.sMine.info=ʎnᵷ ʇɐɟ ɐ ɟo ʞɔᴉʞ ǝɥʇ 'ɥʇᴉʍ ʎʇʇǝq ᵷuᴉɔunoᗺ
+
+icbm.missile.condensed.name=ǝꞁᴉssᴉW ꞁɐuoᴉʇuǝʌuoƆ
+icbm.missile.shrapnel.name=ǝꞁᴉssᴉW ꞁǝudɐɹɥS
+icbm.missile.incendiary.name=ǝꞁᴉssᴉW ʎɹɐᴉpuǝɔuI
+icbm.missile.debilitation.name=ǝꞁᴉssᴉW uoᴉʇɐʇᴉꞁᴉqǝᗡ
+icbm.missile.chemical.name=ǝꞁᴉssᴉW ꞁɐɔᴉɯǝɥƆ
+icbm.missile.anvil.name=ǝꞁᴉssᴉW ꞁᴉʌuⱯ
+icbm.missile.repulsive.name=ǝꞁᴉssᴉW ǝʌᴉsꞁndǝᴚ
+icbm.missile.attractive.name=ǝꞁᴉssᴉW ǝʌᴉʇɔɐɹʇʇⱯ
+
+icbm.missile.fragmentation.name=ǝꞁᴉssᴉW uoᴉʇɐʇuǝɯᵷɐɹℲ
+icbm.missile.contagious.name=ǝꞁᴉssᴉW snoᴉᵷɐʇuoƆ
+icbm.missile.sonic.name=ǝꞁᴉssᴉW ɔᴉuoS
+icbm.missile.breaching.name=ǝꞁᴉssᴉW ᵷuᴉɥɔɐǝɹᗺ
+icbm.missile.rejuvenation.name=ǝꞁᴉssᴉW uoᴉʇɐuǝʌnɾǝᴚ
+icbm.missile.thermobaric.name=ǝꞁᴉssᴉW ɔᴉɹɐqoɯɹǝɥ⟘
+
+icbm.missile.nuclear.name=ǝꞁᴉssᴉW ɹɐǝꞁɔnN
+icbm.missile.emp.name=ǝꞁᴉssᴉW ԀWƎ
+icbm.missile.exothermic.name=ǝꞁᴉssᴉW ɔᴉɯɹǝɥʇoxƎ
+icbm.missile.endothermic.name=ǝꞁᴉssᴉW ɔᴉɯɹǝɥʇopuƎ
+icbm.missile.antiGravitational.name=ǝꞁᴉssᴉW ꞁɐuoᴉʇɐʇᴉʌɐɹ⅁-ᴉʇuⱯ
+icbm.missile.ender.name=ǝꞁᴉssᴉW ɹǝpuƎ
+icbm.missile.hypersonic.name=ǝꞁᴉssᴉW ɔᴉuosɹǝdʎH
+
+icbm.missile.antimatter.name=ǝꞁᴉssᴉW ɹǝʇʇɐɯᴉʇuⱯ
+icbm.missile.redMatter.name=ǝꞁᴉssᴉW ɹǝʇʇɐW pǝᴚ
+
+icbm.missile.missileModule.name=ǝꞁnpoW ǝꞁᴉssᴉW
+icbm.missile.antiBallistic.name=ǝꞁᴉssᴉW ɔᴉʇsᴉꞁꞁɐq-ᴉʇuⱯ
+icbm.missile.cluster.name=ǝꞁᴉssᴉW ɹǝʇsnꞁƆ
+icbm.missile.nuclearCluster.name=ǝꞁᴉssᴉW ɹǝʇsnꞁƆ ɹɐǝꞁɔnN
+icbm.missile.homing.name=ǝꞁᴉssᴉW ᵷuᴉɯoH
+
+icbm.grenade.condensed.name=ǝpɐuǝɹ⅁ ꞁɐuoᴉʇuǝʌuoƆ
+icbm.grenade.shrapnel.name=ǝpɐuǝɹ⅁ ꞁǝudɐɹɥS
+icbm.grenade.incendiary.name=ǝpɐuǝɹ⅁ ʎɹɐᴉpuǝɔuI
+icbm.grenade.debilitation.name=ǝpɐuǝɹ⅁ uoᴉʇɐʇᴉꞁᴉqǝᗡ
+icbm.grenade.chemical.name=ǝpɐuǝɹ⅁ ꞁɐɔᴉɯǝɥƆ
+icbm.grenade.anvil.name=ǝpɐuǝɹ⅁ ꞁᴉʌuⱯ
+icbm.grenade.repulsive.name=ǝpɐuǝɹ⅁ ǝʌᴉsꞁndǝᴚ
+icbm.grenade.attractive.name=ǝpɐuǝɹ⅁ ǝʌᴉʇɔɐɹʇʇⱯ
+
+icbm.minecart.condensed.name=ʇɹɐƆ ǝʌᴉsoꞁdxƎ
+icbm.minecart.shrapnel.name=ʇɹɐɔǝuᴉW ꞁǝudɐɹɥS
+icbm.minecart.incendiary.name=ʇɹɐɔǝuᴉW ʎɹɐᴉpuǝɔuI
+icbm.minecart.debilitation.name=ʇɹɐɔǝuᴉW uoᴉʇɐʇᴉꞁᴉqǝᗡ
+icbm.minecart.chemical.name=ʇɹɐɔǝuᴉW ꞁɐɔᴉɯǝɥƆ
+icbm.minecart.anvil.name=ʇɹɐɔǝuᴉW ꞁᴉʌuⱯ
+icbm.minecart.repulsive.name=ʇɹɐɔǝuᴉW ǝʌᴉsꞁndǝᴚ
+icbm.minecart.attractive.name=ʇɹɐɔǝuᴉW ǝʌᴉʇɔɐɹʇʇⱯ
+icbm.minecart.nightmare.name=ʇɹɐɔǝuᴉW ǝɹɐɯʇɥᵷᴉN
+
+icbm.minecart.fragmentation.name=ʇɹɐɔǝuᴉW uoᴉʇɐʇuǝɯᵷɐɹℲ
+icbm.minecart.contagious.name=ʇɹɐɔǝuᴉW snoᴉᵷɐʇuoƆ
+icbm.minecart.sonic.name=ʇɹɐɔǝuᴉW ɔᴉuoS
+icbm.minecart.breaching.name=ʇɹɐɔǝuᴉW ᵷuᴉɥɔɐǝɹᗺ
+icbm.minecart.rejuvenation.name=ʇɹɐɔǝuᴉW uoᴉʇɐuǝʌnɾǝᴚ
+icbm.minecart.thermobaric.name=ʇɹɐɔǝuᴉW ɔᴉɹɐqoɯɹǝɥ⟘
+
+tile.icbmclassic:concrete.0.name=ǝʇǝɹɔuoƆ
+tile.icbmclassic:concrete.1.name=ǝʇǝɹɔuoƆ ʇɔɐdɯoƆ
+tile.icbmclassic:concrete.2.name=ǝʇǝɹɔuoƆ pǝɔɹoɟuᴉǝᴚ
+
+tile.icbmclassic:reinforcedGlass.name=ssɐꞁ⅁ pǝɔɹoɟuᴉǝᴚ
+tile.icbmclassic:glassPressurePlate.name=ǝʇɐꞁԀ ǝɹnssǝɹԀ ssɐꞁ⅁
+tile.icbmclassic:glassButton.name=uoʇʇnᗺ ssɐꞁ⅁
+tile.icbmclassic:camouflage.name=ǝᵷɐꞁɟnoɯɐƆ
+tile.icbmclassic:proximityDetector.name=ɹoʇɔǝʇǝᗡ ʎʇᴉɯᴉxoɹԀ
+
+tile.icbmclassic:spikes.0.name=sǝʞᴉdS
+tile.icbmclassic:spikes.1.name=sǝʞᴉdS uosᴉoԀ
+tile.icbmclassic:spikes.2.name=sǝʞᴉdS ǝꞁqɐɯɯɐꞁℲ
+
+message.tracker.nowtrack=:ᵷuᴉʞɔɐɹʇ ʍoN
+message.tracker.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ɟo ʇno ɹǝʞɔɐɹ⟘
+message.tracker.banned=¡ɐǝɹɐ sᴉɥʇ uᴉ pǝuuɐq sᴉ ɹǝʞɔɐɹ⟘
+
+message.defuser.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ɟo ʇno ɹǝsnɟǝᗡ
+
+message.designator.callTime=:uᴉ ǝʞᴉɹʇs ɹᴉɐ ᵷuᴉꞁꞁɐƆ
+message.designator.blast=¡ǝʞᴉɹʇs ɹᴉɐ ᵷuᴉɯoɔuI
+message.designator.setFreq=:ʇǝS ʎɔuǝnbǝɹɟ ɹoʇɐuᵷᴉsǝp ɹǝsɐꞀ
+message.designator.failFreq=˙oɹǝz uɐɥʇ ɹǝʇɐǝɹᵷ ǝq ʇsnɯ ʎɔuǝnbǝɹℲ
+message.designator.callBlast=¡uoᴉʇᴉsod pǝʇɐuᵷᴉsǝp oʇuᴉ ǝʞᴉɹʇs ɹᴉɐ ᵷuᴉꞁꞁɐƆ
+message.designator.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ɟo ʇno ɹoʇɐuᵷᴉsǝp ɹǝsɐꞀ
+message.designator.noFreq=¡ʇǝs ʇou ʎɔuǝnbǝɹɟ ɹoʇɐuᵷᴉsǝp ɹǝsɐꞀ
+
+message.radarGun.scanned=%d :ǝɔuɐʇsᴉᗡ - %z:Z '%y:⅄ '%x:X :sǝʇɐuᴉpɹooƆ pǝuuɐɔS
+message.radarGun.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ɟo ʇno unᵷ ɹɐpɐᴚ
+message.radarGun.transfer=¡pǝɹɹǝɟsuɐɹʇ uoᴉʇɐɯɹoɟuᴉ ǝʇɐuᴉpɹooƆ
+message.radarGun.noCoords=¡ǝʇɐuᴉpɹooɔ ɐ uɐɔs ʇsnɯ no⅄
+message.launcher.protected=˙pǝʇɔǝʇoɹd ᵷuᴉǝq sᴉ uoᴉᵷǝᴚ
+message.detonator.locked=%z:Z '%y:⅄ '%x:X :oʇ pǝʞɔoꞀ ǝʇoɯǝᴚ
+message.detonator.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ɟo ʇno ǝʇoɯǝᴚ
+message.radar.redstone=:uoᴉssᴉɯǝ ǝpᴉs ꞁꞁɐ ǝuoʇspǝɹ ɹɐpɐᴚ
+
+gui.misc.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ʇuǝᴉɔᴉɟɟnsuI
+gui.misc.idle=ǝꞁpI
+gui.misc.freq=:ʎɔuǝnbǝɹℲ
+gui.misc.XCoord=:pɹooƆ-X
+gui.misc.YCoord=:pɹooƆ-⅄
+gui.misc.ZCoord=:pɹooƆ-Z
+gui.misc.x=:X
+gui.misc.y=:⅄
+gui.misc.z=:Z
+gui.misc.status=:snʇɐʇS
+gui.misc.voltage=:ǝᵷɐʇꞁoᴧ
+
+gui.tracker.freq=ʎɔuǝnbǝɹℲ
+gui.detector.name=ɹoʇɔǝʇǝᗡ ʎʇᴉɯᴉxoɹԀ
+gui.detector.all=ꞁꞁⱯ
+gui.detector.players=sɹǝʎɐꞁԀ
+gui.detector.mobs=sqoW
+gui.detector.range=ǝᵷuɐᴚ uoᴉʇɔǝʇǝᗡ
+gui.detector.min=uᴉW
+gui.detector.max=xɐW
+gui.detector.exclude=ǝpnꞁɔxƎ
+gui.detector.include=ǝpnꞁɔuI
+gui.detector.target=:ʇǝᵷɹɐ⟘
+gui.detector.on=uO
+gui.detector.status=:snʇɐʇS
+
+gui.empTower.name=ɹǝʍo⟘ ԀWƎ
+gui.empTower.missiles=sǝꞁᴉssᴉW
+gui.empTower.elec=ʎʇᴉɔᴉɹʇɔǝꞁƎ
+gui.empTower.both=ɥʇoᗺ
+gui.empTower.radius=sʞɔoꞁq %p :snᴉpɐᴚ ԀWƎ
+gui.empTower.effect=:ʇɔǝɟɟƎ ԀWƎ
+gui.empTower.effectDebilitate=sɔᴉuoɹʇɔǝꞁƎ ǝʇɐʇᴉꞁᴉqǝᗡ
+gui.empTower.effectDisrupt=sǝꞁᴉssᴉW ʇdnɹsᴉᗡ
+gui.empTower.effectDeplete=ʎʇᴉɔᴉɹʇɔǝꞁƎ ǝʇǝꞁdǝᗡ
+gui.empTower.mode=:ǝpoW
+gui.empTower.ready=¡ʇsɐꞁq oʇ ʎpɐǝᴚ
+
+gui.launcherBase.name=ɯɹoɟʇɐꞁԀ ɹǝɥɔunɐꞀ
+gui.launcherBase.place=ǝꞁᴉssᴉW ǝɔɐꞁԀ
+gui.launcherScreen.name=ꞁǝuɐԀ ꞁoɹʇuoƆ ɹǝɥɔunɐꞀ
+gui.launcherScreen.detHeight=:ʇɥᵷᴉǝH uoᴉʇɐuoʇǝᗡ
+gui.launcherScreen.lockHeight=:ʇɥᵷᴉǝH ʞɔoꞀ
+gui.launcherScreen.target=ʇǝᵷɹɐ⟘ ǝꞁᴉssᴉW
+gui.launcherScreen.inaccuracy=sʞɔoꞁq %p :ʎɔɐɹnɔɔɐuI
+gui.launcherScreen.statusMissing=¡pǝʇɔǝuuoɔ ʇoN
+gui.launcherScreen.statusNoPower=¡ʎʇᴉɔᴉɹʇɔǝꞁǝ ʇuǝᴉɔᴉɟɟnsuI
+gui.launcherScreen.statusEmpty=¡ʎʇdɯǝ sᴉ oꞁᴉs ǝꞁᴉssᴉW
+gui.launcherScreen.statusInvalid=¡pᴉꞁɐʌuᴉ sᴉ ʇǝᵷɹɐ⟘
+gui.launcherScreen.statusClose=¡ǝsoꞁɔ ooʇ ʇǝᵷɹɐ⟘
+gui.launcherScreen.statusFar=¡ɹɐɟ ooʇ ʇǝᵷɹɐ⟘
+gui.launcherScreen.statusReady=¡ɥɔunɐꞁ oʇ ʎpɐǝᴚ
+
+
+gui.launcherCruise.name=ɹǝɥɔunɐꞀ ǝsᴉnɹƆ
+
+gui.launcherCruise.statusNoPower=¡ɹǝʍoԀ oN
+gui.launcherCruise.statusEmpty=¡ǝꞁᴉssᴉW oN
+gui.launcherCruise.invalidMissile=¡ɯǝʇI pᴉꞁɐʌuI
+gui.launcherCruise.invalidMissileTier=¡ɹǝᴉ⟘ ǝꞁᴉssᴉW pᴉꞁɐʌuI
+gui.launcherCruise.notCruiseMissile=¡ǝdʎ⟘ ǝꞁᴉssᴉW pᴉꞁɐʌuI
+gui.launcherCruise.statusInvalid=¡ʇǝᵷɹɐ⟘ pᴉꞁɐʌuI
+gui.launcherCruise.targetToClose=¡ǝsoꞁɔ oʇ ʇǝᵷɹɐ⟘
+gui.launcherCruise.noRoom=¡ɹɐǝꞁɔ ʇou ƐxƐ
+gui.launcherCruise.statusReady=¡ʎpɐǝᴚ
+
+chat.launcher.status=%1 :snʇɐʇS
+chat.launcher.failedToFire=¡ɹoɹɹǝ snʇɐʇs oʇ ǝnp ǝꞁᴉssᴉɯ ǝɹᴉɟ ʇou uɐɔ ᵷuᴉuɹɐM
+chat.launcher.toolTargetSet=˙ꞁooʇ ɯoɹɟ pǝɹɹǝɟsuɐɹʇ ɐʇɐp ʇǝᵷɹɐ⟘
+chat.launcher.toolWorldNotMatch=¡ǝuo sᴉɥʇ sɐ ǝɯɐs ǝɥʇ ʇou sᴉ pꞁɹoʍ s,ɐʇɐp ʇǝᵷɹɐ⟘
+chat.launcher.noTargetInTool=¡ɐʇɐp ʇǝᵷɹɐʇ ʎuɐ uᴉɐʇuoɔ ʇou sǝop ꞁoo⟘
+chat.launcher.toolFrequencySet=%1 oʇ ʇǝs ʎɔuǝnbǝɹℲ
+
+gui.coordinator.name=ɹoʇɐuᴉpɹooƆ ǝꞁᴉssᴉW
+gui.coordinator.sim=ɹoʇɐꞁnɯᴉS ɥʇɐԀ
+gui.coordinator.from=:ɯoɹℲ
+gui.coordinator.to=:o⟘
+gui.coordinator.displace=sɹǝʇǝW %p :ʇuǝɯǝɔɐꞁdsᴉᗡ
+gui.coordinator.arc=sɹǝʇǝW %p :ɔɹⱯ
+gui.coordinator.time=spuoɔǝS %p :ǝɯᴉ⟘
+gui.coordinator.direction=:uoᴉʇɔǝɹᴉᗡ
+gui.coordinator.wip=¡uoos ᵷuᴉɯoɔ sǝɹnʇɐǝɟ ǝɹoW
+
+gui.assembler.name=ǝꞁqɐ⟘ ǝꞁᴉssᴉW
+gui.radar.coords=:sǝʇɐuᴉpɹooƆ
+gui.radar.zoneSafe=:ǝuoZ ǝɟɐS
+gui.radar.zoneAlarm=:ǝuoZ ɯɹɐꞁⱯ
+gui.radar.on=¡uO ɹɐpɐᴚ
+gui.radar.nopower=¡ʎʇᴉɔᴉɹʇɔǝꞁƎ oN
+
+gui.terminal.name=ꞁɐuᴉɯɹǝ⟘
+gui.platform.ammo=uoᴉʇᴉunɯɯⱯ
+gui.platform.upgrades=sǝpɐɹᵷd∩
+gui.platform.joules=%j ɟo
+gui.platform.access=ssǝɔɔⱯ ɹǝs∩
+
+info.misc.freq=:ʎɔuǝnbǝɹℲ
+info.tracker.tracking=:ᵷuᴉʞɔɐɹ⟘
+info.designator.noFreq=ʇǝS ʇoN :ʎɔuǝnbǝɹℲ
+info.radarGun.savedCoords=:sǝʇɐuᴉpɹooƆ pǝʌɐS
+info.radarGun.meters=sɹǝʇǝW
+info.detonator.linked=:ǝʌᴉsoꞁdxƎ pǝʞuᴉꞀ
+info.detonator.noLink=ǝʌᴉsoꞁdxƎ pǝʞuᴉꞀ oN
+info.misc.tier=ɹǝᴉ⟘ ǝʌᴉsoꞁdxƎ
+info.tracker.tooltip=˙ʇᴉ oʇ ʇuᴉod ꞁꞁᴉM I puɐ '(ꞁꞁǝʍsɐ sɹǝʎɐꞁd) qoɯ ɐ uo ʞɔᴉꞁƆ ʇɟǝꞀ
+
