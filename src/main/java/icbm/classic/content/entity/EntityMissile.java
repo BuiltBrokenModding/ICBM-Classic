@@ -188,6 +188,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
      */
     public void recalculatePath()
     {
+        final int ticksPerMeterFlat = 2;
+        final int minFlightTime = 100;
+
         if (this.targetVector != null)
         {
             // Calculate the distance difference of the missile
@@ -202,7 +205,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             // Parabolic Height
             this.maxHeight = 160 + (int) (this.flatDistance * 3);
             // Flight time
-            this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
+            this.missileFlightTime = (float) Math.max(minFlightTime, ticksPerMeterFlat * this.flatDistance) - this.ticksInAir;
             // Acceleration
             this.acceleration = (float) (this.maxHeight * 2) / (this.missileFlightTime * this.missileFlightTime);
         }
@@ -246,12 +249,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         //If we hit zero start curving towards target
                         if (this.lockHeight <= 0)
                         {
-                            //Set upwards motion
-                            this.motionY = this.acceleration * (this.missileFlightTime / 2); //TODO what is 2? meters per tick or ticks per meter
+                            //Set upwards motion (acceleration * half of flight time)
+                            this.motionY = this.acceleration * (this.missileFlightTime / 2); //Velocity needed to get to top of arc
 
                             //Aim missile vector towards target
-                            this.motionX = this.deltaPathX / missileFlightTime;
-                            this.motionZ = this.deltaPathZ / missileFlightTime;
+                            this.motionX = this.deltaPathX / missileFlightTime; //Velocity needed to move towards target
+                            this.motionZ = this.deltaPathZ / missileFlightTime; //Velocity needed to move towards target
                         }
                     }
                     else

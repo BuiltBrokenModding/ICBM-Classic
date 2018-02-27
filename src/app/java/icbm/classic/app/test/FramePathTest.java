@@ -160,7 +160,7 @@ public class FramePathTest extends JFrame implements ActionListener
         {
             try
             {
-                calculateData(0, Integer.parseInt(distanceField.getText().trim()), 3, 160, Color.RED, false);
+                calculateData(0, Integer.parseInt(distanceField.getText().trim()), 1, 0, Color.RED, false);
                 plotPanel.repaint();
             }
             catch (Exception e)
@@ -193,9 +193,17 @@ public class FramePathTest extends JFrame implements ActionListener
      */
     public void calculateData(int start, int end, int height_scale, int height_init, Color color, boolean add) //TODO break method down into sub methods and store all data values for display
     {
+        //Constants derived from original equations
+        final int ticksPerMeterFlat = 4;
+        final int minFlightTime = 100;
+
+
+        //Debug
         outputDebug("\n======================================"); //TODO replace debug called with debugger object
         outputDebug("==========Running Calculation=========");
         outputDebug("======================================");
+
+        //Collects points to draw in display
         List<PlotPoint> data = new ArrayList();
 
         //Debug
@@ -207,24 +215,24 @@ public class FramePathTest extends JFrame implements ActionListener
         double flat_distance = Math.abs(start - end);
 
         double max_height = height_init + (flat_distance * height_scale);
-        float flight_time = (float) Math.max(100, 2 * flat_distance);
-        float acceleration = (float) (max_height * 2) / (flight_time * flight_time);
+        float flight_time = (float) Math.max(minFlightTime, ticksPerMeterFlat * flat_distance);
+        float drag = (float) (max_height / (flight_time / ticksPerMeterFlat) / (0.5 * flat_distance));//(float) (height_scale * ticksPerMeterFlat * (max_height / (flight_time * flight_time)));
 
         //Set data in display
         maxHeightLabel.setText(max_height + " m");
         flightTimeLabel.setText(flight_time + " ticks");
-        accelerationLabel.setText(acceleration + " m/tick");
+        accelerationLabel.setText(drag + " m/tick");
 
         //Debug
         outputDebug("----------------------------------");
         outputDebug("\tDistance: " + flat_distance);
         outputDebug("\tHeight: " + max_height);
         outputDebug("\tTime: " + flight_time);
-        outputDebug("\tAcceleration: " + acceleration);
+        outputDebug("\tAcceleration: " + drag);
         outputDebug("----------------------------------");
 
         //Calculate vector for motion
-        float my = acceleration * (flight_time / 2); //I think this is asking "how much speed to get to center of ark"
+        float my = drag * (flight_time / 2); //I think this is asking "how much speed to get to center of ark"
         float mx = (float) (deltaX / flight_time);
 
         //Output to display
@@ -244,6 +252,8 @@ public class FramePathTest extends JFrame implements ActionListener
         double x = start;
         double y = 0;
 
+        data.add(new PlotPoint(start, -1, color.darker().darker(), 10));
+        data.add(new PlotPoint(end, -1, color, 10));
 
         //Loop until position is at ground
         int tick = 0;
@@ -263,7 +273,7 @@ public class FramePathTest extends JFrame implements ActionListener
             y += my;
 
             //Decrease upward motion
-            my -= acceleration;
+            my -= drag;
         }
 
         outputDebug("----------------------------------");

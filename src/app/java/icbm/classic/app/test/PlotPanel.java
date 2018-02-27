@@ -42,14 +42,14 @@ public class PlotPanel extends JPanel
             for (PlotPoint pos : data)
             {
                 //Get pixel position
-                double x = w - PAD - scaleX * pos.x();
+                double x = PAD + scaleX * pos.x();
                 double y = h - PAD - scaleY * pos.y();
 
                 //Set color
                 g2.setPaint(pos.color != null ? pos.color : Color.red);
 
                 //Draw
-                g2.fill(new Ellipse2D.Double(x - 2, y - 2, 4, 4));
+                g2.fill(new Ellipse2D.Double(x - (pos.size / 2), y - (pos.size / 2), pos.size, pos.size));
             }
         }
     }

@@ -15,6 +15,7 @@ public class PlotPoint implements IPos2D
     double x;
     double y;
     Color color;
+    int size = 4;
 
 
     public PlotPoint(double x, double y, Color color)
@@ -23,6 +24,13 @@ public class PlotPoint implements IPos2D
         this.y = y;
         this.color = color;
     }
+
+    public PlotPoint(double x, double y, Color color, int size)
+    {
+        this(x, y, color);
+        this.size = size;
+    }
+
 
     @Override
     public double x()
