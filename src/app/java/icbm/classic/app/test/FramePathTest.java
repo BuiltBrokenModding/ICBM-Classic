@@ -1,7 +1,5 @@
 package icbm.classic.app.test;
 
-import com.builtbroken.jlib.data.vector.Pos2DBean;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +18,15 @@ public class FramePathTest extends JFrame implements ActionListener
     PlotPanel plotPanel;
     JTextField distanceField;
 
+    Label maxHeightLabel;
+    Label flightTimeLabel;
+    Label accelerationLabel;
+    Label motionYLabel;
+    Label motionXLabel;
+    Label motionLabel;
+    Label maxYLabel;
+    Label arcDistanceLabel;
+
     public FramePathTest()
     {
         //Set frame properties
@@ -29,6 +36,9 @@ public class FramePathTest extends JFrame implements ActionListener
         setMinimumSize(new Dimension(800, 800));
         setLocation(200, 200);
         setTitle("Missile Path Visualizer");
+
+        //Output data
+        add(buildEastSection(), BorderLayout.EAST);
 
         //Add plot panel to left side
         add(buildMainDisplay(), BorderLayout.CENTER);
@@ -86,6 +96,63 @@ public class FramePathTest extends JFrame implements ActionListener
         return westPanel;
     }
 
+    protected JPanel buildEastSection()
+    {
+        JPanel westPanel = new JPanel();
+
+        //Controls
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new GridLayout(11, 2));
+
+        //Header
+        controlPanel.add(new Label("Field"));
+        controlPanel.add(new Label("Value"));
+
+        //Max Height
+        controlPanel.add(new Label("Max_Height"));
+        controlPanel.add(maxHeightLabel = new Label("--m"));
+
+        //Flight Time
+        controlPanel.add(new Label("Flight Time"));
+        controlPanel.add(flightTimeLabel = new Label("-- ticks"));
+
+        //Acceleration
+        controlPanel.add(new Label("Acceleration"));
+        controlPanel.add(accelerationLabel = new Label("--m/tick"));
+
+        //Spacer
+        controlPanel.add(new JPanel());
+        controlPanel.add(new JPanel());
+
+        //Motion Y
+        controlPanel.add(new Label("Motion Y"));
+        controlPanel.add(motionYLabel = new Label("--m/tick"));
+
+        //Motion X
+        controlPanel.add(new Label("Motion X"));
+        controlPanel.add(motionXLabel = new Label("--m/tick"));
+
+        //Motion X & Y
+        controlPanel.add(new Label("Motion"));
+        controlPanel.add(motionLabel = new Label("--m/tick"));
+
+        //Spacer
+        controlPanel.add(new JPanel());
+        controlPanel.add(new JPanel());
+
+        //Max Y
+        controlPanel.add(new Label("Max Y"));
+        controlPanel.add(maxYLabel = new Label("--m"));
+
+        //Arc Distance
+        controlPanel.add(new Label("Approx Arc Length"));
+        controlPanel.add(arcDistanceLabel = new Label("--m"));
+
+        //Add and return
+        westPanel.add(controlPanel);
+        return westPanel;
+    }
+
     @Override
     public void actionPerformed(ActionEvent event)
     {
@@ -93,8 +160,7 @@ public class FramePathTest extends JFrame implements ActionListener
         {
             try
             {
-                List<Pos2DBean> data = calculateData();
-                plotPanel.setData(data);
+                calculateData(0, Integer.parseInt(distanceField.getText().trim()), 3, 160, Color.RED, false);
                 plotPanel.repaint();
             }
             catch (Exception e)
@@ -108,33 +174,46 @@ public class FramePathTest extends JFrame implements ActionListener
      * Calculates the data points for the path from 0 to distance
      * <p>
      * Pulls distance from {@link #distanceField} and outputs data into
-     * console. In addition to returning data as a list for use in the display.
+     * console. In addition this the function sets data into the display
      *
      * @return list of 2D data points (x, y)
      */
-    public List<Pos2DBean> calculateData() //TODO break method down into sub methods and store all data values for display
+    public void calculateData(int start, int end, Color color, boolean add)
+    {
+        calculateData(start, end, 3, 160, color, add);
+    }
+
+    /**
+     * Calculates the data points for the path from 0 to distance
+     * <p>
+     * Pulls distance from {@link #distanceField} and outputs data into
+     * console. In addition this the function sets data into the display
+     *
+     * @return list of 2D data points (x, y)
+     */
+    public void calculateData(int start, int end, int height_scale, int height_init, Color color, boolean add) //TODO break method down into sub methods and store all data values for display
     {
         outputDebug("\n======================================"); //TODO replace debug called with debugger object
         outputDebug("==========Running Calculation=========");
         outputDebug("======================================");
-        List<Pos2DBean> data = new ArrayList();
-
-        //Starting data, TODO get from user input
-        int start = 0;
-        int end = Integer.parseInt(distanceField.getText().trim());
+        List<PlotPoint> data = new ArrayList();
 
         //Debug
         outputDebug("\tStart: " + start);
         outputDebug("\tEnd: " + end);
 
-        final int height_scale = 3;
-
         //Calculate vector data
         double deltaX = end - start;
         double flat_distance = Math.abs(start - end);
-        double max_height = 160 + (flat_distance * height_scale);
-        float flight_time = (float) (Math.max(100, 2 * flat_distance) - 2);
+
+        double max_height = height_init + (flat_distance * height_scale);
+        float flight_time = (float) Math.max(100, 2 * flat_distance);
         float acceleration = (float) (max_height * 2) / (flight_time * flight_time);
+
+        //Set data in display
+        maxHeightLabel.setText(max_height + " m");
+        flightTimeLabel.setText(flight_time + " ticks");
+        accelerationLabel.setText(acceleration + " m/tick");
 
         //Debug
         outputDebug("----------------------------------");
@@ -145,8 +224,16 @@ public class FramePathTest extends JFrame implements ActionListener
         outputDebug("----------------------------------");
 
         //Calculate vector for motion
-        float my = acceleration * (flight_time / 2);
+        float my = acceleration * (flight_time / 2); //I think this is asking "how much speed to get to center of ark"
         float mx = (float) (deltaX / flight_time);
+
+        //Output to display
+        motionXLabel.setText(String.format("%.2f m/tick", mx));
+        motionYLabel.setText(String.format("%.2f m/tick", my));
+
+        //Calculate magnitude of motion
+        double motion = Math.sqrt(mx * mx + my * my);
+        motionLabel.setText(String.format("%.2f m/tick", motion));
 
         outputDebug("\tMotion X: " + mx);
         outputDebug("\tMotion Y: " + my);
@@ -164,7 +251,7 @@ public class FramePathTest extends JFrame implements ActionListener
         {
             tick++;
             //Add position to data
-            data.add(new Pos2DBean(x, y));
+            data.add(new PlotPoint(x, y, color));
             outputDebug(String.format("\t\tT[%d]: %10.3fx %10.3fy %10.3fmx %10.3fmy", tick, x, y, mx, my));
             if (tick % 5 == 0)
             {
@@ -178,9 +265,45 @@ public class FramePathTest extends JFrame implements ActionListener
             //Decrease upward motion
             my -= acceleration;
         }
+
+        outputDebug("----------------------------------");
+
+        //Calc distance traveled
+        //http://tutorial.math.lamar.edu/Classes/CalcII/ArcLength.aspx
+        double arc_distance = 0;
+
+        for (int i = 0; i < data.size() - 1; i++)
+        {
+            PlotPoint p1 = data.get(i);
+            PlotPoint p2 = data.get(i + 1);
+
+            arc_distance += Math.sqrt(Math.pow(p2.x() - p1.x(), 2) + Math.pow(p2.y() - p1.y(), 2));
+        }
+        outputDebug("\tApprox Arc Distance: " + arc_distance);
+        arcDistanceLabel.setText(String.format("%.2fm", arc_distance));
+
+        double max_y = 0;
+        for (PlotPoint pos : data)
+        {
+            if (pos.y() > max_y)
+            {
+                max_y = pos.y();
+            }
+        }
+        outputDebug("\tMax Y: " + max_y);
+        maxYLabel.setText(String.format("%.2fm", max_y));
+
         outputDebug("======================================\n");
 
-        return data;
+        //Set data into display
+        if (!add)
+        {
+            plotPanel.setData(data);
+        }
+        else
+        {
+            plotPanel.addData(data);
+        }
     }
 
     protected void outputDebug(String msg)

@@ -1,17 +1,16 @@
 package icbm.classic.app.test;
 
 
-import com.builtbroken.jlib.data.vector.Pos2DBean;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlotPanel extends JPanel
 {
-    List<Pos2DBean> data = null;
+    List<PlotPoint> data = null;
     int PAD = 20;
 
     @Override
@@ -33,20 +32,23 @@ public class PlotPanel extends JPanel
         g2.draw(new Line2D.Double(PAD, h - PAD, w - PAD, h - PAD));
 
 
-        if(data != null && !data.isEmpty())
+        if (data != null && !data.isEmpty())
         {
             //Calculate scale to fit display
             double scaleX = (double) (w - 2 * PAD) / getMaxX();
             double scaleY = (double) (h - 2 * PAD) / getMaxY();
 
-            //Set color
-            g2.setPaint(Color.red);
-
             //Render data points
-            for (Pos2DBean pos : data)
+            for (PlotPoint pos : data)
             {
+                //Get pixel position
                 double x = w - PAD - scaleX * pos.x();
                 double y = h - PAD - scaleY * pos.y();
+
+                //Set color
+                g2.setPaint(pos.color != null ? pos.color : Color.red);
+
+                //Draw
                 g2.fill(new Ellipse2D.Double(x - 2, y - 2, 4, 4));
             }
         }
@@ -55,7 +57,7 @@ public class PlotPanel extends JPanel
     private double getMaxY()
     {
         double max = -Integer.MAX_VALUE;
-        for (Pos2DBean pos : data)
+        for (PlotPoint pos : data)
         {
             if (pos.y() > max)
             {
@@ -68,7 +70,7 @@ public class PlotPanel extends JPanel
     private double getMaxX()
     {
         double max = -Integer.MAX_VALUE;
-        for (Pos2DBean pos : data)
+        for (PlotPoint pos : data)
         {
             if (pos.x() > max)
             {
@@ -79,8 +81,17 @@ public class PlotPanel extends JPanel
     }
 
 
-    public void setData(List<Pos2DBean> data)
+    public void setData(List<PlotPoint> data)
     {
         this.data = data;
+    }
+
+    public void addData(List<PlotPoint> data)
+    {
+        if (this.data == null)
+        {
+            this.data = new ArrayList();
+        }
+        this.data.addAll(data);
     }
 }
