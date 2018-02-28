@@ -14,9 +14,19 @@ import java.util.List;
 public class FramePathTest extends JFrame implements ActionListener
 {
     public static final String COMMAND_CALCULATE = "calculate";
+    public static final String COMMAND_CLEAR = "clear";
 
     PlotPanel plotPanel;
     JTextField distanceField;
+
+    JTextField minHeightField;
+    JTextField maxHeightField;
+
+    JTextField heightInitField;
+    JTextField heightScaleField;
+
+    JTextField plotSizeXField;
+    JTextField plotSizeYField;
 
     Label maxHeightLabel;
     Label flightTimeLabel;
@@ -67,29 +77,86 @@ public class FramePathTest extends JFrame implements ActionListener
 
         //Controls
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new GridLayout(4, 2));
+        controlPanel.setLayout(new GridLayout(0, 2));
+
+        //Spacer
+        controlPanel.add(new JLabel("Path Variables"));
+        controlPanel.add(new JPanel());
 
         //Distance field
         controlPanel.add(new Label("Distance"));
-        controlPanel.add(distanceField = new JTextField(4));
+        controlPanel.add(distanceField = new JTextField(6));
         distanceField.setText(200 + "");
 
-        //Spacers
-        controlPanel.add(new JPanel());
-        controlPanel.add(new JPanel());
-
-        //Spacers
-        controlPanel.add(new JPanel());
-        controlPanel.add(new JPanel());
-
-        //Spacer
-        controlPanel.add(new JPanel());
-
         //Calculate button
+        controlPanel.add(new JPanel());
         JButton calculateButton = new JButton("Calculate");
         calculateButton.setActionCommand(COMMAND_CALCULATE);
         calculateButton.addActionListener(this);
         controlPanel.add(calculateButton);
+
+        //Spacer
+        controlPanel.add(new JPanel());
+        controlPanel.add(new JPanel());
+
+        //---------------------------------------------------------------
+
+        //Spacer
+        controlPanel.add(new JLabel("Path Constants"));
+        controlPanel.add(new JPanel());
+
+        //Min Height field
+        controlPanel.add(new Label("Min Height"));
+        controlPanel.add(minHeightField = new JTextField(6));
+        minHeightField.setText(100 + "");
+
+        //Max Height field
+        controlPanel.add(new Label("Max Height"));
+        controlPanel.add(maxHeightField = new JTextField(6));
+        maxHeightField.setText(1000 + "");
+
+        //Height Init field
+        controlPanel.add(new Label("Height Init"));
+        controlPanel.add(heightInitField = new JTextField(6));
+        heightInitField.setText(160 + "");
+
+        //Height Scale field
+        controlPanel.add(new Label("Height Scale"));
+        controlPanel.add(heightScaleField = new JTextField(6));
+        heightScaleField.setText(3 + "");
+
+        //Spacer
+        controlPanel.add(new JPanel());
+        controlPanel.add(new JPanel());
+
+        //---------------------------------------------------------------
+
+        //Spacer
+        controlPanel.add(new JLabel("Draw Options"));
+        controlPanel.add(new JPanel());
+
+        //Plot size fields
+        controlPanel.add(new Label("Plot Size X"));
+        controlPanel.add(plotSizeXField = new JTextField(6));
+        plotSizeXField.setText(-1 + "");
+
+        controlPanel.add(new Label("Plot Size Y"));
+        controlPanel.add(plotSizeYField = new JTextField(6));
+        plotSizeYField.setText(-1 + "");
+
+        //Spacer
+        controlPanel.add(new JPanel());
+        controlPanel.add(new JPanel());
+
+        //---------------------------------------------------------------
+
+
+        //Calculate button
+        controlPanel.add(new JPanel());
+        JButton clearButton = new JButton("Clear Display");
+        clearButton.setActionCommand(COMMAND_CLEAR);
+        clearButton.addActionListener(this);
+        controlPanel.add(clearButton);
 
         //Add and return
         westPanel.add(controlPanel);
@@ -160,21 +227,32 @@ public class FramePathTest extends JFrame implements ActionListener
         {
             try
             {
-                plotPanel.data = null;
+                //Set plot size
+                plotPanel.setPlotSize((int) Double.parseDouble(plotSizeXField.getText().trim()), (int) Double.parseDouble(plotSizeYField.getText().trim()));
+
+                //Get data
                 double distance = Double.parseDouble(distanceField.getText().trim());
-                //for (int i = 0; i < 10; i++)
-                {
-                    calculateData(0, distance, 3, 0, randomColor(), true);
-                }
-                plotPanel.repaint();
+                double heightInit = Double.parseDouble(heightInitField.getText().trim());
+                double heightScale = Double.parseDouble(heightScaleField.getText().trim());
+
+                //Draw data
+                calculateData(0, distance, heightScale, heightInit, randomColor(), true);
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
+        else if (event.getActionCommand().equalsIgnoreCase(COMMAND_CLEAR))
+        {
+            //Clear data
+            plotPanel.data = null;
+        }
+
+        plotPanel.repaint();
     }
 
+    //Creates a random color for use
     private Color randomColor()
     {
         return new Color((int) (255f * Math.random()), (int) (255f * Math.random()), (int) (255f * Math.random()));
@@ -188,24 +266,14 @@ public class FramePathTest extends JFrame implements ActionListener
      *
      * @return list of 2D data points (x, y)
      */
-    public void calculateData(double start, double end, Color color, boolean add)
-    {
-        calculateData(start, end, 3, 160, color, add);
-    }
-
-    /**
-     * Calculates the data points for the path from 0 to distance
-     * <p>
-     * Pulls distance from {@link #distanceField} and outputs data into
-     * console. In addition this the function sets data into the display
-     *
-     * @return list of 2D data points (x, y)
-     */
-    public void calculateData(double start, double end, int height_scale, int height_init, Color color, boolean add) //TODO break method down into sub methods and store all data values for display
+    public void calculateData(double start, double end, double height_scale, double height_init, Color color, boolean addToExistingData)
+    //TODO break method down into sub methods and store all data values for display
     {
         //Constants derived from original equations
         final int ticksPerMeterFlat = 2;
         final int minFlightTime = 100;
+        final double minHeight = Double.parseDouble(minHeightField.getText().trim());
+        final double maxHeight = Double.parseDouble(maxHeightField.getText().trim());
 
 
         //Debug
@@ -224,7 +292,7 @@ public class FramePathTest extends JFrame implements ActionListener
         double deltaX = end - start;
         double flat_distance = Math.abs(start - end);
 
-        double max_height = height_init + (flat_distance * height_scale);
+        double max_height = Math.min(maxHeight, Math.max(minHeight, height_init + (flat_distance * height_scale)));
         double flight_time = ticksPerMeterFlat * flat_distance;
 
 
@@ -319,7 +387,7 @@ public class FramePathTest extends JFrame implements ActionListener
         outputDebug("======================================\n");
 
         //Set data into display
-        if (!add)
+        if (!addToExistingData)
         {
             plotPanel.setData(data);
         }
