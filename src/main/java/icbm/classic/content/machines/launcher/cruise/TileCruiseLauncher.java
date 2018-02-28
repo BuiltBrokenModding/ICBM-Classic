@@ -297,7 +297,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             EntityMissile entityMissile = new EntityMissile(oldWorld(), xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() -180, -(float) currentAim.pitch(), 2);
             entityMissile.missileType = EntityMissile.MissileType.CruiseMissile;
             entityMissile.explosiveID = Explosives.get(this.getStackInSlot(0).getItemDamage());
-            entityMissile.acceleration = 1;
+            entityMissile.missilePathDrag = 1;
             entityMissile.launch(null);
             oldWorld().spawnEntityInWorld(entityMissile);
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens

@@ -46,7 +46,7 @@ public class MissileHoming extends Missile
     @Override
     public void update(EntityMissile missileObj)
     {
-        if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileType.MISSILE)
+        if (missileObj.getTicksInAir() > missileObj.missilePathTime / 2 && missileObj.missileType == MissileType.MISSILE)
         {
             World world = missileObj.worldObj;
             Entity trackingEntity = world.getEntityByID(missileObj.trackingVar);
@@ -62,21 +62,19 @@ public class MissileHoming extends Missile
 
                 missileObj.missileType = MissileType.CruiseMissile;
 
-                missileObj.deltaPathX = missileObj.targetVector.x() - missileObj.posX;
-                missileObj.deltaPathY = missileObj.targetVector.y() - missileObj.posY;
-                missileObj.deltaPathZ = missileObj.targetVector.z() - missileObj.posZ;
+                missileObj.missilePathDelta = new Pos(missileObj.targetVector.x() - missileObj.posX, missileObj.targetVector.y() - missileObj.posY, missileObj.targetVector.z() - missileObj.posZ);
 
-                missileObj.flatDistance = missileObj.sourceOfProjectile.toVector2().distance(missileObj.targetVector.toVector2());
-                missileObj.maxHeight = 150 + (int) (missileObj.flatDistance * 1.8);
-                missileObj.missileFlightTime = (float) Math.max(100, 2.4 * missileObj.flatDistance);
-                missileObj.acceleration = (float) missileObj.maxHeight * 2 / (missileObj.missileFlightTime * missileObj.missileFlightTime);
+                missileObj.missilePathFlatDistance = missileObj.sourceOfProjectile.toVector2().distance(missileObj.targetVector.toVector2());
+                missileObj.missilePathMaxY = 150 + (int) (missileObj.missilePathFlatDistance * 1.8);
+                missileObj.missilePathTime = (float) Math.max(100, 2.4 * missileObj.missilePathFlatDistance);
+                missileObj.missilePathDrag = (float) missileObj.missilePathMaxY * 2 / (missileObj.missilePathTime * missileObj.missilePathTime);
 
                 if (missileObj.xiaoDanMotion.equals(new Pos()) || missileObj.xiaoDanMotion == null)
                 {
                     float suDu = 0.3f;
-                    missileObj.xiaoDanMotion = new Pos(missileObj.deltaPathX / (missileObj.missileFlightTime * suDu)
-                            ,missileObj.deltaPathY / (missileObj.missileFlightTime * suDu),
-                            missileObj.deltaPathZ / (missileObj.missileFlightTime * suDu));
+                    missileObj.xiaoDanMotion = new Pos(missileObj.missilePathDelta.x() / (missileObj.missilePathTime * suDu)
+                            , missileObj.missilePathDelta.y() / (missileObj.missilePathTime * suDu),
+                            missileObj.missilePathDelta.z() / (missileObj.missilePathTime * suDu));
                 }
             }
         }

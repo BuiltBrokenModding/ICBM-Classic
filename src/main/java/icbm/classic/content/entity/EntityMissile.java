@@ -27,28 +27,51 @@ import resonant.api.explosion.IMissile;
 import java.util.HashSet;
 import java.util.Random;
 
-/** @Author - Calclavia */
+
+/**
+ * Entity for the missile object
+ *
+ * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ * Created by Calclavia and reworked Dark(DarkGuardsman, Robert).
+ */
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IMissile
 {
+    /** Speed limit of missile when not arcing */
     public static final float SPEED = 0.012F;
 
+    /** This offset for {@link #missilePathMaxY} when calculate */
+    public static final double MISSILE_PATH_HEIGHT_INIT = 160;
+    /** This is scale for {@link #missilePathMaxY} when calculate */
+    public static final double MISSILE_PATH_HEIGHT_SCALE = 3;
+    /** Amount of ticks required to travel a single meter flat distance when arcing */
+    public static final int MISSILE_PATH_TICKS_PER_METER = 2;
+
+    /** Limiter for {@link #missilePathMaxY}*/
+    public static final double MISSILE_PATH_HEIGHT_MAX = 2000;
+    /** Limiter for {@link #missilePathMaxY}*/
+    public static final double MISSILE_PATH_HEIGHT_MIN = 0;
+
+    /** Explosive type contained in the missile */
     public Explosives explosiveID = Explosives.CONDENSED;
-    public int maxHeight = 200;
+
     public Pos targetVector = null;
     public Pos launcherPos = null;
-    public boolean isExpoding = false;
+
+    public boolean isExploding = false;
 
     public int targetHeight = 0;
-    // Difference
-    public double deltaPathX;
-    public double deltaPathY;
-    public double deltaPathZ;
-    // Flat Distance
-    public double flatDistance;
-    // The flight time in ticks
-    public float missileFlightTime;
-    // Acceleration
-    public float acceleration;
+
+    /** Distance to target */
+    public Pos missilePathDelta = new Pos();
+    /** Desired max y value for missile path */
+    public double missilePathMaxY = 200;
+    /** Distance to target ignoring Y change */
+    public double missilePathFlatDistance;
+    /** Amount of time it will take to reach target */
+    public double missilePathTime;
+    /** Amount of pull towards the ground the missile will have while arcing towards target */
+    public double missilePathDrag;
+
     // Protection Time
     public int protectionTime = 2;
 
@@ -62,9 +85,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public int missileCount = 0;
 
     public double daoDanGaoDu = 2;
-
-    private boolean setExplode;
-    private boolean setNormalExplode;
 
     // Missile Type
     public MissileType missileType = MissileType.MISSILE;
@@ -188,26 +208,29 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
      */
     public void recalculatePath()
     {
-        final int ticksPerMeterFlat = 2;
-        final int minFlightTime = 100;
-
         if (this.targetVector != null)
         {
             // Calculate the distance difference of the missile
-            this.deltaPathX = this.targetVector.x() - this.sourceOfProjectile.x();
-            this.deltaPathY = this.targetVector.y() - this.sourceOfProjectile.y();
-            this.deltaPathZ = this.targetVector.z() - this.sourceOfProjectile.z();
+            this.missilePathDelta = targetVector.sub(sourceOfProjectile);
 
-            // TODO: Calculate parabola and relative out the targetHeight.
-            // Calculate the power required to reach the target co-ordinates
+            //Calculate the power required to reach the target co-ordinates
+
             // Ground Displacement
-            this.flatDistance = this.sourceOfProjectile.toVector2().distance(this.targetVector.toVector2());
+            this.missilePathFlatDistance = this.sourceOfProjectile.toVector2().distance(this.targetVector.toVector2());
+
             // Parabolic Height
-            this.maxHeight = 160 + (int) (this.flatDistance * 3);
+            this.missilePathMaxY = MISSILE_PATH_HEIGHT_INIT + this.missilePathFlatDistance * MISSILE_PATH_HEIGHT_SCALE;
+            this.missilePathMaxY = Math.max(MISSILE_PATH_HEIGHT_MIN, missilePathMaxY); //Limit by min
+            this.missilePathMaxY = Math.min(MISSILE_PATH_HEIGHT_MAX, missilePathMaxY); //Limit by max
+
             // Flight time
-            this.missileFlightTime = (float) Math.max(minFlightTime, ticksPerMeterFlat * this.flatDistance) - this.ticksInAir;
-            // Acceleration
-            this.acceleration = (float) (this.maxHeight * 2) / (this.missileFlightTime * this.missileFlightTime);
+            this.missilePathTime = MISSILE_PATH_TICKS_PER_METER * this.missilePathFlatDistance - this.ticksInAir;
+
+            //Calculate drag
+            double HD = missilePathMaxY / missilePathFlatDistance;
+            double HT = missilePathMaxY / missilePathTime;
+            double TD = missilePathTime / missilePathFlatDistance;
+            this.missilePathDrag = ((missilePathMaxY - HD) * HD) / (missilePathTime / TD) / (HT * missilePathFlatDistance);
         }
     }
 
@@ -250,17 +273,17 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         if (this.lockHeight <= 0)
                         {
                             //Set upwards motion (acceleration * half of flight time)
-                            this.motionY = this.acceleration * (this.missileFlightTime / 2); //Velocity needed to get to top of arc
+                            this.motionY = this.missilePathDrag * (this.missilePathTime / 2); //Velocity needed to get to top of arc
 
                             //Aim missile vector towards target
-                            this.motionX = this.deltaPathX / missileFlightTime; //Velocity needed to move towards target
-                            this.motionZ = this.deltaPathZ / missileFlightTime; //Velocity needed to move towards target
+                            this.motionX = this.missilePathDelta.x() / missilePathTime; //Velocity needed to move towards target
+                            this.motionZ = this.missilePathDelta.z() / missilePathTime; //Velocity needed to move towards target
                         }
                     }
                     else
                     {
                         //Decrease motion
-                        this.motionY -= this.acceleration;
+                        this.motionY -= this.missilePathDrag;
 
                         //Update rotation to aim at the next point
                         this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
@@ -352,7 +375,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public double getMountedYOffset()
     {
-        if (this.missileFlightTime <= 0 && this.missileType == MissileType.MISSILE)
+        if (this.missilePathTime <= 0 && this.missileType == MissileType.MISSILE)
         {
             return height;
         }
@@ -418,7 +441,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public Pos getPredictedPosition(int t)
     {
-        Pos guJiDiDian = toPos();
+        Pos pos = toPos();
         double tempMotionY = this.motionY;
 
         if (this.ticksInAir > 20)
@@ -427,29 +450,27 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             {
                 if (this.missileType == MissileType.CruiseMissile || this.missileType == MissileType.LAUNCHER)
                 {
-                    guJiDiDian = guJiDiDian.add(this.xiaoDanMotion);
+                    pos = pos.add(this.xiaoDanMotion);
                 }
                 else
                 {
-                    guJiDiDian = guJiDiDian.add(motionX, tempMotionY - this.acceleration, motionZ);
+                    pos = pos.add(motionX, tempMotionY - this.missilePathDrag, motionZ);
                 }
             }
         }
 
-        return guJiDiDian;
+        return pos;
     }
 
     @Override
     public void setNormalExplode()
     {
-        setNormalExplode = true;
         dataWatcher.updateObject(17, 1);
     }
 
     @Override
     public void setExplode()
     {
-        setExplode = true;
         dataWatcher.updateObject(17, 2);
     }
 
@@ -476,7 +497,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         try
         {
             // Make sure the missile is not already exploding
-            if (!this.isExpoding)
+            if (!this.isExploding)
             {
                 if (this.explosiveID == null)
                 {
@@ -490,7 +511,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                     this.explosiveID.handler.createExplosion(this.worldObj, this.posX, this.posY, this.posZ, this);
                 }
 
-                this.isExpoding = true;
+                this.isExploding = true;
 
                 ICBMClassic.INSTANCE.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
             }
@@ -504,9 +525,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void normalExplode()
     {
-        if (!this.isExpoding)
+        if (!this.isExploding)
         {
-            isExpoding = true;
+            isExploding = true;
 
             if (!this.worldObj.isRemote)
             {
@@ -520,7 +541,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void dropMissileAsItem()
     {
-        if (!this.isExpoding && !this.worldObj.isRemote)
+        if (!this.isExploding && !this.worldObj.isRemote)
         {
             EntityItem entityItem = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID.ordinal()));
 
@@ -541,8 +562,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         super.readEntityFromNBT(nbt);
         this.targetVector = new Pos(nbt.getCompoundTag("target"));
-        this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi")); //TODO change to english
-        this.acceleration = nbt.getFloat("acceleration");
+        this.launcherPos = new Pos(nbt.getCompoundTag("launcherPos"));
         this.targetHeight = nbt.getInteger("targetHeight");
         this.explosiveID = Explosives.get(nbt.getInteger("explosiveID"));
         this.ticksInAir = nbt.getInteger("ticksInAir");
@@ -562,13 +582,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             nbt.setTag("target", this.targetVector.toNBT());
         }
-
         if (this.launcherPos != null)
         {
             nbt.setTag("launcherPos", this.launcherPos.toNBT());
         }
-
-        nbt.setFloat("acceleration", this.acceleration);
         nbt.setInteger("explosiveID", this.explosiveID.ordinal());
         nbt.setInteger("targetHeight", this.targetHeight);
         nbt.setInteger("ticksInAir", this.ticksInAir);
