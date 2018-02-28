@@ -160,7 +160,12 @@ public class FramePathTest extends JFrame implements ActionListener
         {
             try
             {
-                calculateData(0, Integer.parseInt(distanceField.getText().trim()), 1, 0, Color.RED, false);
+                plotPanel.data = null;
+                double distance = Double.parseDouble(distanceField.getText().trim());
+                //for (int i = 0; i < 10; i++)
+                {
+                    calculateData(0, distance, 3, 0, randomColor(), true);
+                }
                 plotPanel.repaint();
             }
             catch (Exception e)
@@ -168,6 +173,11 @@ public class FramePathTest extends JFrame implements ActionListener
                 e.printStackTrace();
             }
         }
+    }
+
+    private Color randomColor()
+    {
+        return new Color((int) (255f * Math.random()), (int) (255f * Math.random()), (int) (255f * Math.random()));
     }
 
     /**
@@ -178,7 +188,7 @@ public class FramePathTest extends JFrame implements ActionListener
      *
      * @return list of 2D data points (x, y)
      */
-    public void calculateData(int start, int end, Color color, boolean add)
+    public void calculateData(double start, double end, Color color, boolean add)
     {
         calculateData(start, end, 3, 160, color, add);
     }
@@ -191,10 +201,10 @@ public class FramePathTest extends JFrame implements ActionListener
      *
      * @return list of 2D data points (x, y)
      */
-    public void calculateData(int start, int end, int height_scale, int height_init, Color color, boolean add) //TODO break method down into sub methods and store all data values for display
+    public void calculateData(double start, double end, int height_scale, int height_init, Color color, boolean add) //TODO break method down into sub methods and store all data values for display
     {
         //Constants derived from original equations
-        final int ticksPerMeterFlat = 4;
+        final int ticksPerMeterFlat = 2;
         final int minFlightTime = 100;
 
 
@@ -215,8 +225,13 @@ public class FramePathTest extends JFrame implements ActionListener
         double flat_distance = Math.abs(start - end);
 
         double max_height = height_init + (flat_distance * height_scale);
-        float flight_time = (float) Math.max(minFlightTime, ticksPerMeterFlat * flat_distance);
-        float drag = (float) (max_height / (flight_time / ticksPerMeterFlat) / (0.5 * flat_distance));//(float) (height_scale * ticksPerMeterFlat * (max_height / (flight_time * flight_time)));
+        double flight_time = ticksPerMeterFlat * flat_distance;
+
+
+        double HD = max_height / flat_distance;
+        double HT = max_height / flight_time;
+        double TD = flight_time / flat_distance;
+        double drag = ((max_height - HD) * HD) / (flight_time / TD) / (HT * flat_distance);//(float) (height_scale * ticksPerMeterFlat * (max_height / (flight_time * flight_time)));
 
         //Set data in display
         maxHeightLabel.setText(max_height + " m");
@@ -232,8 +247,8 @@ public class FramePathTest extends JFrame implements ActionListener
         outputDebug("----------------------------------");
 
         //Calculate vector for motion
-        float my = drag * (flight_time / 2); //I think this is asking "how much speed to get to center of ark"
-        float mx = (float) (deltaX / flight_time);
+        double my = drag * (flight_time / 2); //I think this is asking "how much speed to get to center of ark"
+        double mx = deltaX / flight_time;
 
         //Output to display
         motionXLabel.setText(String.format("%.2f m/tick", mx));
@@ -256,10 +271,8 @@ public class FramePathTest extends JFrame implements ActionListener
         data.add(new PlotPoint(end, -1, color, 10));
 
         //Loop until position is at ground
-        int tick = 0;
-        while (y >= 0)
+        for (int tick = 0; tick < flight_time * 2 && y >= 0; tick++)
         {
-            tick++;
             //Add position to data
             data.add(new PlotPoint(x, y, color));
             outputDebug(String.format("\t\tT[%d]: %10.3fx %10.3fy %10.3fmx %10.3fmy", tick, x, y, mx, my));
