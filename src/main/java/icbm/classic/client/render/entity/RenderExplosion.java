@@ -18,13 +18,18 @@ import org.lwjgl.util.glu.Sphere;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
 public class RenderExplosion extends Render<EntityExplosion>
 {
+    private static final Random redmatterBeamRandom = new Random(432L);
+
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "blackhole.png");
     public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "grey.png");
+    public static List<Color> randomColorsForBeams = new ArrayList();
 
     public Color colorIn = new Color(16777215);
     public Color colorOut = new Color(0);
@@ -190,30 +195,34 @@ public class RenderExplosion extends Render<EntityExplosion>
 
     public void renderBeams(EntityExplosion entityExplosion, BlastRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
     {
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        // This is basically a copy of the ender dragon Lighting effect with modifications to fit
 
-        /** Enderdragon Light */
-        float ticks = entityExplosion.ticksExisted;
+        //Get buffer
+        final BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        RenderHelper.disableStandardItemLighting();
 
+        //Get tick value
+        int ticks = entityExplosion.ticksExisted;
         while (ticks > 200)
         {
             ticks -= 100;
         }
 
-        RenderHelper.disableStandardItemLighting();
-        float var41 = (5 + ticks) / 200.0F;
-        float var51 = 0.0F;
 
-        if (var41 > 0.8F)
+        float timeScale = (5 + ticks) / 200.0F;
+        float sizeScale = 0.0F;
+
+        if (timeScale > 0.8F)
         {
-            var51 = (var41 - 0.8F) / 0.2F;
+            sizeScale = (timeScale - 0.8F) / 0.2F;
         }
 
-
-        Random rand = new Random(432L);
-
+        //Start
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) x, (float) y, (float) z);
+
+        //Setup
+
         GlStateManager.disableTexture2D();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         GlStateManager.enableBlend();
@@ -222,31 +231,52 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.enableCull();
         GlStateManager.disableDepth();
 
+        Random redmatterBeamRandom = new Random(432L);
 
-        int beamCount = (int) ((var41 + var41 * var41) / 2.0F * 60.0F);
+        //0 - 61 for scale of 1
+        final int beamCount = (int) ((timeScale + timeScale * timeScale) / 2.0F * 60.0F);
         for (int beamIndex = 0; beamIndex < beamCount; ++beamIndex)
         {
+            //Start
             GlStateManager.pushMatrix();
-            float beamLength = (rand.nextFloat() * 20.0F + 5.0F + var51 * 10.0F) * scale;
-            float beamWidth = (rand.nextFloat() * 2.0F + 1.0F + var51 * 2.0F) * scale;
+
+            //Calculate size
+            float beamLength = (redmatterBeamRandom.nextFloat() * 20.0F + 5.0F + sizeScale * 10.0F) * scale;
+            float beamWidth = (redmatterBeamRandom.nextFloat() * 2.0F + 1.0F + sizeScale * 2.0F) * scale;
 
             //Random rotations TODO see if we need to rotate so much
-            GlStateManager.rotate(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(rand.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.rotate(rand.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(rand.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(rand.nextFloat() * 360.0F + var41 * 90.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F + timeScale * 90.0F, 0.0F, 0.0F, 1.0F);
+
+            //Get color based on state
+            Color colorOut = this.colorOut;
+            Color colorIn = this.colorIn;
+            if (redmatter.coloredBeams)
+            {
+                if (beamIndex < randomColorsForBeams.size())
+                {
+                    colorOut = randomColorsForBeams.get(beamIndex);
+                }
+                else
+                {
+                    colorOut = new Color(redmatterBeamRandom.nextFloat(), redmatterBeamRandom.nextFloat(), redmatterBeamRandom.nextFloat());
+                    randomColorsForBeams.add(colorOut);
+                }
+            }
 
             //Draw spike shape
             bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
 
-            //center
+            //center vertex
             bufferbuilder.pos(0.0D, 0.0D, 0.0D)
                     .color(colorIn.getRed(), colorIn.getGreen(), colorIn.getBlue(), colorIn.getAlpha())
                     .endVertex();
 
-            //Outside
+            //Outside vertex
             bufferbuilder.pos(-0.866D * beamWidth, beamLength, -0.5F * beamWidth)
                     .color(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha())
                     .endVertex();
@@ -260,11 +290,14 @@ public class RenderExplosion extends Render<EntityExplosion>
                     .color(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha())
                     .endVertex();
 
+            //draw
             Tessellator.getInstance().draw();
 
+            //end
             GlStateManager.popMatrix();
         }
 
+        //Cleanup
         GlStateManager.enableDepth();
         GlStateManager.disableCull();
         GlStateManager.disableBlend();
@@ -273,6 +306,8 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.enableTexture2D();
         GlStateManager.enableAlpha();
         RenderHelper.enableStandardItemLighting();
+
+        //End
         GlStateManager.popMatrix();
     }
 

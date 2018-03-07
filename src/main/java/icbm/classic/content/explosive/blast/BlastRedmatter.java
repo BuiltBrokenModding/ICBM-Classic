@@ -43,6 +43,8 @@ public class BlastRedmatter extends Blast
     public int lifeSpan = MAX_LIFESPAN;
     public int blocksEditsPerTick = -1;
 
+    public boolean coloredBeams = false;
+
     public BlastRedmatter(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
