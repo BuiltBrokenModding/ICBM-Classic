@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.prefab.entity.EntityProjectile;
@@ -32,8 +33,6 @@ import java.util.Random;
 /** @Author - Calclavia */
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IExplosiveContainer, IMissile
 {
-    public static final float SPEED = 0.012F;
-
     public Explosives explosiveID = Explosives.CONDENSED;
     public int maxHeight = 200;
     public Pos targetVector = null;
@@ -242,7 +241,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                     // Start the launch
                     if (this.lockHeight > 0)
                     {
-                        this.motionY = SPEED * this.ticksInAir * (this.ticksInAir / 2);
+                        this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2);
                         this.motionX = 0;
                         this.motionZ = 0;
                         this.lockHeight -= this.motionY;
