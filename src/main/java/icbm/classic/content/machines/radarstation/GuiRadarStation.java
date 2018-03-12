@@ -6,7 +6,7 @@ import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

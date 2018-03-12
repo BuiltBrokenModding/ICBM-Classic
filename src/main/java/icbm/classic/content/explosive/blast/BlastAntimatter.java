@@ -28,7 +28,7 @@ public class BlastAntimatter extends Blast
     {
         super.doPreExplode();
         ICBMSounds.ANTIMATTER.play(world, this.position.x(), this.position.y(), this.position.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
-        this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
+        this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
     @Override
@@ -36,16 +36,16 @@ public class BlastAntimatter extends Blast
     {
         if (!this.world().isRemote)
         {
-            for (int x = (int) -this.getRadius(); x < this.getRadius(); x++)
+            for (int x = (int) -this.getBlastRadius(); x < this.getBlastRadius(); x++)
             {
-                for (int y = (int) -this.getRadius(); y < this.getRadius(); y++)
+                for (int y = (int) -this.getBlastRadius(); y < this.getBlastRadius(); y++)
                 {
-                    for (int z = (int) -this.getRadius(); z < this.getRadius(); z++)
+                    for (int z = (int) -this.getBlastRadius(); z < this.getBlastRadius(); z++)
                     {
                         final BlockPos blockPos = new BlockPos(position.xi() + x, position.yi() + y, position.zi() + z);
                         final double dist = position.distance(blockPos);
 
-                        if (dist < this.getRadius())
+                        if (dist < this.getBlastRadius())
                         {
                             IBlockState blockState = world.getBlockState(blockPos);
 
@@ -56,7 +56,7 @@ public class BlastAntimatter extends Blast
                                     continue;
                                 }
 
-                                if (dist < this.getRadius() - 1 || world().rand.nextFloat() > 0.7)
+                                if (dist < this.getBlastRadius() - 1 || world().rand.nextFloat() > 0.7)
                                 {
                                     world.setBlockToAir(blockPos);
                                 }
@@ -84,7 +84,7 @@ public class BlastAntimatter extends Blast
     @Override
     public void doPostExplode()
     {
-        this.doDamageEntities(this.getRadius() * 2, Integer.MAX_VALUE);
+        this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
     @Override

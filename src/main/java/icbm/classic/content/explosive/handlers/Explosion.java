@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.handlers;
 
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.player.EntityPlayer;

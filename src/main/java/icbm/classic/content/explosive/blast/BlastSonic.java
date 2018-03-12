@@ -3,7 +3,7 @@ package icbm.classic.content.explosive.blast;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
@@ -72,7 +72,7 @@ public class BlastSonic extends Blast
                 }
             } */
 
-            this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
+            this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder);
             this.thread.start();
         }
 
@@ -126,7 +126,7 @@ public class BlastSonic extends Blast
                             this.world().setBlockToAir(targetPosition);
                         }
 
-                        if (this.world().rand.nextFloat() < 0.3 * (this.getRadius() - r))
+                        if (this.world().rand.nextFloat() < 0.3 * (this.getBlastRadius() - r))
                         {
                             EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
                             this.world().spawnEntity(entity);
@@ -160,19 +160,19 @@ public class BlastSonic extends Blast
                     double xDifference = entity.posX - position.x();
                     double zDifference = entity.posZ - position.z();
 
-                    r = (int) this.getRadius();
+                    r = (int) this.getBlastRadius();
                     if (xDifference < 0)
                     {
-                        r = (int) -this.getRadius();
+                        r = (int) -this.getBlastRadius();
                     }
 
                     entity.motionX += (r - xDifference) * 0.02 * this.world().rand.nextFloat();
                     entity.motionY += 3 * this.world().rand.nextFloat();
 
-                    r = (int) this.getRadius();
+                    r = (int) this.getBlastRadius();
                     if (zDifference < 0)
                     {
-                        r = (int) -this.getRadius();
+                        r = (int) -this.getBlastRadius();
                     }
 
                     entity.motionZ += (r - zDifference) * 0.02 * this.world().rand.nextFloat();
@@ -180,7 +180,7 @@ public class BlastSonic extends Blast
             }
         }
 
-        if (this.callCount > this.getRadius())
+        if (this.callCount > this.getBlastRadius())
         {
             this.controller.endExplosion();
         }

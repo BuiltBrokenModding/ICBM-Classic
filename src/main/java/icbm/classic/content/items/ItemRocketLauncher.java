@@ -3,7 +3,7 @@ package icbm.classic.content.items;
 import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.prefab.item.ItemICBMElectrical;

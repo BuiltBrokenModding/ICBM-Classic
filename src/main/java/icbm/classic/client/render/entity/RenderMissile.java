@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

@@ -37,7 +37,7 @@ public class BlastEnderman extends Blast
     {
         if (this.world().isRemote)
         {
-            int r = (int) (this.getRadius() - ((double) this.callCount / (double) this.duration) * this.getRadius());
+            int r = (int) (this.getBlastRadius() - ((double) this.callCount / (double) this.duration) * this.getBlastRadius());
 
             for (int x = -r; x < r; x++)
             {
@@ -70,7 +70,7 @@ public class BlastEnderman extends Blast
             }
         }
 
-        int radius = (int) this.getRadius();
+        int radius = (int) this.getBlastRadius();
         AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
         boolean explosionCreated = false;
@@ -84,25 +84,25 @@ public class BlastEnderman extends Blast
                 double yDifference = entity.posY - position.y();
                 double zDifference = entity.posZ - position.z();
 
-                int r = (int) this.getRadius();
+                int r = (int) this.getBlastRadius();
                 if (xDifference < 0)
                 {
-                    r = (int) -this.getRadius();
+                    r = (int) -this.getBlastRadius();
                 }
 
                 entity.motionX -= (r - xDifference) * Math.abs(xDifference) * 0.0006;
 
-                r = (int) this.getRadius();
+                r = (int) this.getBlastRadius();
                 if (entity.posY > position.y())
                 {
-                    r = (int) -this.getRadius();
+                    r = (int) -this.getBlastRadius();
                 }
                 entity.motionY += (r - yDifference) * Math.abs(yDifference) * 0.0011;
 
-                r = (int) this.getRadius();
+                r = (int) this.getBlastRadius();
                 if (zDifference < 0)
                 {
-                    r = (int) -this.getRadius();
+                    r = (int) -this.getBlastRadius();
                 }
 
                 entity.motionZ -= (r - zDifference) * Math.abs(zDifference) * 0.0006;
@@ -195,7 +195,7 @@ public class BlastEnderman extends Blast
     }
 
     @Override
-    public float getRadius()
+    public float getBlastRadius()
     {
         return 20;
     }

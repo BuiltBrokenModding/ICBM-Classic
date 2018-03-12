@@ -2,8 +2,8 @@ package icbm.classic.content.explosive.handlers.missiles;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.content.entity.EntityMissile.MissileType;
+import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.prefab.tile.EnumTier;

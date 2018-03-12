@@ -1,27 +1,22 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.api.explosion.IMissile;
-import icbm.classic.api.items.IEMPItem;
-import icbm.classic.api.tile.IEMPBlock;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.events.EmpEvent;
+import icbm.classic.caps.emp.CapabilityEMP;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.config.ConfigEMP;
 import icbm.classic.lib.energy.UniversalEnergySystem;
-import icbm.classic.lib.radar.RadarRegistry;
-import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.List;
 
@@ -29,6 +24,7 @@ public class BlastEMP extends Blast
 {
     private boolean effectEntities = false;
     private boolean effectBlocks = false;
+    private float power = 1f;
 
     public BlastEMP(World world, Entity entity, double x, double y, double z, float size)
     {
@@ -52,68 +48,86 @@ public class BlastEMP extends Blast
     {
         if (!world().isRemote)
         {
-            if (this.effectBlocks)
+            if (this.effectBlocks && ConfigEMP.ALLOW_TILES)
             {
-                for (int x = (int) -this.getRadius(); x < (int) this.getRadius(); x++)
+                //Loop through cube to effect blocks TODO replace with ray trace system
+                for (int x = (int) -this.getBlastRadius(); x < (int) this.getBlastRadius(); x++)
                 {
-                    for (int y = (int) -this.getRadius(); y < (int) this.getRadius(); y++)
+                    for (int y = (int) -this.getBlastRadius(); y < (int) this.getBlastRadius(); y++)
                     {
-                        for (int z = (int) -this.getRadius(); z < (int) this.getRadius(); z++)
+                        for (int z = (int) -this.getBlastRadius(); z < (int) this.getBlastRadius(); z++)
                         {
-                            double dist = MathHelper.sqrt((x * x + y * y + z * z));
+                            final BlockPos blockPos = new BlockPos(x + position.xi(), y + position.yi(), z + position.zi());
 
-                            Pos searchPosition = new Pos(x, y, z).add(position);
-                            if (dist > this.getRadius())
+                            //Do distance check
+                            double dist = MathHelper.sqrt(x * x + y * y + z * z);
+                            if (dist > this.getBlastRadius())
                             {
                                 continue;
                             }
 
-                            if (Math.round(position.x() + y) == position.yi())
+                            //Apply action on block if loaded
+                            if (world.isBlockLoaded(blockPos))
                             {
-                                world().spawnParticle(EnumParticleTypes.SMOKE_LARGE, searchPosition.x(), searchPosition.y(), searchPosition.z(), 0, 0, 0);
-                            }
-
-                            Block block = searchPosition.getBlock(world());
-                            TileEntity tileEntity = searchPosition.getTileEntity(world());
-                            //TODO fire EMP event
-                            //TODO more EMP effect to UniversalEnergySystem to better support cross mod support
-                            if (block != null)
-                            {
-                                if (block instanceof IEMPBlock)
+                                //Generate some effects
+                                if (Math.round(position.x() + y) == position.yi())
                                 {
-                                    ((IEMPBlock) block).onEMP(world(), searchPosition.toBlockPos(), this);
+                                    world().spawnParticle(EnumParticleTypes.SMOKE_LARGE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
                                 }
-                            }
 
-                            if (tileEntity != null)
-                            {
-                                UniversalEnergySystem.clearEnergy(tileEntity, true);
+                                IBlockState iBlockState = world.getBlockState(blockPos);
+                                float powerEntity = 1f;
+
+                                //Fire event to allow canceling action on entity
+                                if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, world, blockPos, iBlockState)))
+                                {
+                                    if (ICBMClassicAPI.hasEmpHandler(iBlockState))
+                                    {
+                                        //TODO implement
+                                    }
+                                    else
+                                    {
+                                        TileEntity tileEntity = world.getTileEntity(blockPos);
+                                        if (tileEntity != null)
+                                        {
+
+                                            boolean doInventory = true;
+                                            if (tileEntity.hasCapability(CapabilityEMP.EMP, null))
+                                            {
+                                                IEMPReceiver receiver = tileEntity.getCapability(CapabilityEMP.EMP, null);
+                                                if (receiver != null)
+                                                {
+                                                    powerEntity = empEntity(tileEntity, powerEntity, receiver);
+                                                    doInventory = receiver.shouldEmpSubObjects(world, tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
+                                                }
+                                            }
+                                            else if (ConfigEMP.DRAIN_ENERGY_ENTITY)
+                                            {
+                                                UniversalEnergySystem.clearEnergy(tileEntity, true);
+                                            }
+
+                                            if (doInventory && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+                                            {
+                                                powerEntity = empEntity(tileEntity, powerEntity, tileEntity.getCapability(CapabilityEMP.EMP, null));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                //Fire post event to allow hooking EMP action
+                                MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPost(this, world, blockPos, iBlockState));
                             }
                         }
                     }
                 }
             }
 
-            if (this.effectEntities)
+            if (this.effectEntities && ConfigEMP.ALLOW_ENTITY)
             {
-                // Drop all missiles
-                List<Entity> entitiesNearby = RadarRegistry.getAllLivingObjectsWithin(world(), new Cube(position.sub(getRadius()), position.add(getRadius())));
-
-                for (Entity entity : entitiesNearby)
-                {
-                    if (entity instanceof IMissile && !entity.isEntityEqual(this.controller))
-                    {
-                        if (((IMissile) entity).getTicksInAir() > -1)
-                        {
-                            ((IMissile) entity).dropMissileAsItem();
-                        }
-                    }
-                }
-
                 //Calculate bounds
                 AxisAlignedBB bounds = new AxisAlignedBB(
-                        position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(),
-                        position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
+                        position.x() - this.getBlastRadius(), position.y() - this.getBlastRadius(), position.z() - this.getBlastRadius(),
+                        position.x() + this.getBlastRadius(), position.y() + this.getBlastRadius(), position.z() + this.getBlastRadius());
 
                 //Get entities in bounds
                 List<Entity> entities = world().getEntitiesWithinAABB(Entity.class, bounds);
@@ -121,40 +135,32 @@ public class BlastEMP extends Blast
                 //Loop entities to apply effects
                 for (Entity entity : entities)
                 {
-                    if (entity instanceof EntityLivingBase)
+                    float powerEntity = 1f;
+                    //Fire event to allow canceling action on entity
+                    if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity)))
                     {
-                        if (entity instanceof EntityCreeper)
+                        boolean doInventory = true;
+                        if (entity.hasCapability(CapabilityEMP.EMP, null))
                         {
-                            entity.onStruckByLightning(new EntityLightningBolt(world, entity.posX, entity.posY, entity.posZ, false));
-                        }
-                        if (entity instanceof EntityPlayer)
-                        {
-                            IInventory inventory = ((EntityPlayer) entity).inventory;
-
-                            for (int i = 0; i < inventory.getSizeInventory(); i++)
+                            IEMPReceiver receiver = entity.getCapability(CapabilityEMP.EMP, null);
+                            if (receiver != null)
                             {
-                                ItemStack itemStack = inventory.getStackInSlot(i);
-
-                                if (!itemStack.isEmpty())
-                                {
-                                    if (itemStack.getItem() instanceof IEMPItem)
-                                    {
-                                        ((IEMPItem) itemStack.getItem()).onEMP(itemStack, entity, this);
-                                    }
-                                    else
-                                    {
-                                        UniversalEnergySystem.clearEnergy(itemStack, true);
-                                    }
-                                }
+                                powerEntity = empEntity(entity, powerEntity, receiver);
+                                doInventory = receiver.shouldEmpSubObjects(world, entity.posX, entity.posY, entity.posZ);
                             }
-
-                            //TODO spawn effects on entity if items were effected
-                            //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
                         }
-                    }
-                    else if (entity instanceof EntityExplosive)
-                    {
-                        entity.setDead();
+                        else if (ConfigEMP.DRAIN_ENERGY_ENTITY)
+                        {
+                            UniversalEnergySystem.clearEnergy(entity, true);
+                        }
+
+                        if (doInventory && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+                        {
+                            powerEntity = empEntity(entity, powerEntity, entity.getCapability(CapabilityEMP.EMP, null));
+                        }
+
+                        //Fire post event to allow hooking EMP action
+                        MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPost(this, entity));
                     }
                 }
             }
@@ -164,6 +170,28 @@ public class BlastEMP extends Blast
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
             ICBMSounds.EMP.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
+    }
+
+    protected float empEntity(Entity entity, float powerEntity, IEMPReceiver receiver)
+    {
+        if (receiver != null)
+        {
+            powerEntity = receiver.applyEmpAction(world, entity.posX, entity.posY, entity.posZ, this, powerEntity, true);
+            //TODO spawn effects on entity if items were effected
+            //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
+        }
+        return powerEntity;
+    }
+
+    protected float empEntity(TileEntity entity, float powerEntity, IEMPReceiver receiver)
+    {
+        if (receiver != null)
+        {
+            powerEntity = receiver.applyEmpAction(world, entity.getPos().getX(), entity.getPos().getY(), entity.getPos().getZ(), this, powerEntity, true);
+            //TODO spawn effects on entity if items were effected
+            //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
+        }
+        return powerEntity;
     }
 
     @Override

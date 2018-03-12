@@ -50,7 +50,7 @@ public class BlastEndothermic extends BlastBeam
                 /*
                  * Freeze all nearby entities.
                  */
-                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position.x() - getRadius(), position.y() - getRadius(), position.z() - getRadius(), position.x() + getRadius(), position.y() + getRadius(), position.z() + getRadius()));
+                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position.x() - getBlastRadius(), position.y() - getBlastRadius(), position.z() - getBlastRadius(), position.x() + getBlastRadius(), position.y() + getBlastRadius(), position.z() + getBlastRadius()));
 
                 if (livingEntities != null && !livingEntities.isEmpty())
                 {
@@ -73,7 +73,7 @@ public class BlastEndothermic extends BlastBeam
                 {
                     double distanceFromCenter = position.distance(targetPosition);
 
-                    if (distanceFromCenter > this.getRadius())
+                    if (distanceFromCenter > this.getBlastRadius())
                     {
                         continue;
                     }
@@ -81,7 +81,7 @@ public class BlastEndothermic extends BlastBeam
                     /*
                      * Reduce the chance of setting blocks on fire based on distance from center.
                      */
-                    double chance = this.getRadius() - (Math.random() * distanceFromCenter);
+                    double chance = this.getBlastRadius() - (Math.random() * distanceFromCenter);
 
                     if (chance > distanceFromCenter * 0.55)
                     {

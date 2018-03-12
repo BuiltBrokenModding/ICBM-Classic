@@ -109,7 +109,7 @@ public class BlastRedmatter extends Blast
             {
                 if (this.world().rand.nextInt(8) == 0)
                 {
-                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getRadius(), position.y() + (Math.random() - 0.5) * getRadius(), position.z() + (Math.random() - 0.5) * getRadius(),  6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
+                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getBlastRadius(), position.y() + (Math.random() - 0.5) * getBlastRadius(), position.z() + (Math.random() - 0.5) * getBlastRadius(),  6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
                 }
                 ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
@@ -120,7 +120,7 @@ public class BlastRedmatter extends Blast
     {
         // Try to find and grab some blocks to orbit
         int blocksDestroyed = 0;
-        for (int currentRadius = 1; currentRadius < getRadius(); currentRadius++) //TODO recode as it can stall the main thread
+        for (int currentRadius = 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
         {
             for (int xr = -currentRadius; xr < currentRadius; xr++)
             {
@@ -157,7 +157,7 @@ public class BlastRedmatter extends Blast
                                             entity.yawChange = 50 * this.world().rand.nextFloat();
                                             entity.pitchChange = 50 * this.world().rand.nextFloat();
                                             this.world().spawnEntity(entity);
-                                            this.affectEntity(this.getRadius() * 2, entity, false);
+                                            this.affectEntity(this.getBlastRadius() * 2, entity, false);
                                         }
                                     }
                                     //Keep track of blocks removed to keep from lagging the game
@@ -179,7 +179,7 @@ public class BlastRedmatter extends Blast
 
     protected void doEntityMovement()
     {
-        float entityRadius = this.getRadius() * 2;
+        float entityRadius = this.getBlastRadius() * 2;
         Cube cube = new Cube(position.add(0.5).sub(entityRadius), position.add(0.5).add(entityRadius));
         AxisAlignedBB bounds = cube.getAABB();
         List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
@@ -262,9 +262,9 @@ public class BlastRedmatter extends Blast
                     //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
 
                     //We are going to merge both blasts together
-                    double sizeA = this.getRadius();
+                    double sizeA = this.getBlastRadius();
                     sizeA = sizeA * sizeA * sizeA;
-                    double sizeB = ((EntityExplosion) entity).getBlast().getRadius();
+                    double sizeB = ((EntityExplosion) entity).getBlast().getBlastRadius();
                     sizeB = sizeB * sizeB * sizeB;
                     float radiusNew = (float) Math.cbrt(sizeA + sizeB);
 

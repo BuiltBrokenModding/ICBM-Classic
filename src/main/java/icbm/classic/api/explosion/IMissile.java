@@ -11,30 +11,32 @@ import icbm.classic.lib.transform.vector.Pos;
 public interface IMissile extends IExplosiveContainer
 {
     /** Blows up this missile. It will detonate the missile with the appropriate explosion. */
-    public void explode();
+    void explode();
 
-    public void setExplode();
+    void setExplode();
+
+    boolean isExploding();
 
     /** Blows up this missile like a TNT explosion. Small explosion used for events such as a missile
      * crashing or failure to explode will result in this function being called. */
-    public void normalExplode();
+    void normalExplode();
 
-    public void setNormalExplode();
+    void setNormalExplode();
 
     /** Drops the specified missile as an item. */
-    public void dropMissileAsItem();
+    void dropMissileAsItem();
 
     /** The amount of ticks this missile has been flying for. Returns -1 if the missile is not
      * flying. */
-    public int getTicksInAir();
+    int getTicksInAir();
 
     /** Gets the launcher this missile is launched from. */
-    public ILauncherContainer getLauncher();
+    ILauncherContainer getLauncher();
 
     /** Launches the missile into a specific target.
      *
      * @param target */
-    public void launch(Pos target);
+    void launch(Pos target);
 
-    public void launch(Pos target, int height);
+    void launch(Pos target, int height);
 }

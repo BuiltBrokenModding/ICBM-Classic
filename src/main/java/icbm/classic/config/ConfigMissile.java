@@ -1,9 +1,10 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.entity.missile.EntityMissile;
 import net.minecraftforge.common.config.Config;
 
-/** Configs for {@link icbm.classic.content.entity.EntityMissile}
+/** Configs for {@link EntityMissile}
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 2/28/2018.
  */

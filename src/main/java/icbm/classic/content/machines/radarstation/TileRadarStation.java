@@ -13,7 +13,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.inventory.ExternalInventory;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.prefab.tile.TileFrequency;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;

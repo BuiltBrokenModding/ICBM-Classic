@@ -1,0 +1,32 @@
+package icbm.classic.caps.emp;
+
+import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.config.ConfigEMP;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.world.World;
+
+/**
+ * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
+ */
+public class CapabilityEmpCreeper implements IEMPReceiver
+{
+    public final EntityCreeper creeper;
+
+    public CapabilityEmpCreeper(EntityCreeper creeper)
+    {
+        this.creeper = creeper;
+    }
+
+    @Override
+    public float applyEmpAction(World world, double x, double y, double z, IBlast emp_blast, float power, boolean doAction)
+    {
+        if (ConfigEMP.ALLOW_LIGHTING_CREEPER)
+        {
+            creeper.onStruckByLightning(new EntityLightningBolt(world, creeper.posX, creeper.posY, creeper.posZ, false));
+        }
+        return power;
+    }
+}

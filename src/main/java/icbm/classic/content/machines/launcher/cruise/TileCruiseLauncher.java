@@ -12,7 +12,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.content.items.ItemMissile;

@@ -20,7 +20,7 @@ public class BlastFire extends Blast
     {
         if (!this.world().isRemote)
         {
-            int radius = (int) this.getRadius();
+            int radius = (int) this.getBlastRadius();
 
             for (int x = 0; x < radius; ++x)
             {

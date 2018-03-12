@@ -2,7 +2,7 @@ package icbm.classic;
 
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;

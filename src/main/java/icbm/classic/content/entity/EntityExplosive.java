@@ -1,8 +1,13 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.explosion.IExplosive;
+import icbm.classic.api.explosion.IExplosiveContainer;
 import icbm.classic.api.tile.IRotatable;
-import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.caps.emp.CapabilityEMP;
+import icbm.classic.caps.emp.CapabilityEmpKill;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -11,9 +16,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import icbm.classic.api.explosion.IExplosive;
-import icbm.classic.api.explosion.IExplosiveContainer;
+
+import javax.annotation.Nullable;
 
 public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData, IExplosiveContainer
 {
@@ -27,6 +33,8 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
     public NBTTagCompound nbtData = new NBTTagCompound();
 
+    public IEMPReceiver capabilityEMP;
+
     public EntityExplosive(World par1World)
     {
         super(par1World);
@@ -34,6 +42,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.preventEntitySpawning = true;
         this.setSize(0.98F, 0.98F);
         //this.yOffset = this.height / 2.0F;
+        capabilityEMP = new CapabilityEmpKill(this);
     }
 
     public EntityExplosive(World par1World, Pos position, byte orientation, Explosives explosiveID)
@@ -58,6 +67,16 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         this(par1World, position, orientation, explosiveID);
         this.nbtData = nbtData;
+    }
+
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityEMP.EMP)
+        {
+            return (T) capabilityEMP;
+        }
+        return super.getCapability(capability, facing);
     }
 
     @Override
@@ -124,8 +143,10 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
     }
 
-    /** returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
-     * spiders and wolves to prevent them from trampling crops */
+    /**
+     * returns if this entity triggers Block.onEntityWalking on the blocks they walk on. used for
+     * spiders and wolves to prevent them from trampling crops
+     */
     @Override
     protected boolean canTriggerWalking()
     {

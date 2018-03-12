@@ -43,7 +43,7 @@ public class BlastExothermic extends BlastBeam
                 {
                     double distanceFromCenter = position.distance(targetPosition);
 
-                    if (distanceFromCenter > this.getRadius())
+                    if (distanceFromCenter > this.getBlastRadius())
                     {
                         continue;
                     }
@@ -51,7 +51,7 @@ public class BlastExothermic extends BlastBeam
                     /*
                      * Reduce the chance of setting blocks on fire based on distance from center.
                      */
-                    double chance = this.getRadius() - (Math.random() * distanceFromCenter);
+                    double chance = this.getBlastRadius() - (Math.random() * distanceFromCenter);
 
                     if (chance > distanceFromCenter * 0.55)
                     {

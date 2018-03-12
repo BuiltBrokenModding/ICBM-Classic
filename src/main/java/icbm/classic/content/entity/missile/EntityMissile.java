@@ -1,14 +1,19 @@
-package icbm.classic.content.entity;
+package icbm.classic.content.entity.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.config.ConfigMissile;
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.radar.RadarRegistry;
-import icbm.classic.prefab.entity.EntityProjectile;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.explosion.IExplosiveContainer;
+import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.api.explosion.IMissile;
+import icbm.classic.caps.emp.CapabilityEMP;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
+import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,17 +22,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import icbm.classic.api.explosion.IExplosiveContainer;
-import icbm.classic.api.explosion.ILauncherContainer;
-import icbm.classic.api.explosion.IMissile;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -80,6 +85,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public NBTTagCompound nbtData = new NBTTagCompound();
 
+    public IEMPReceiver capabilityEMP;
+
     public EntityMissile(World w)
     {
         super(w);
@@ -106,6 +113,20 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.inAirKillTime = 144000 /* 2 hours */;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
+    }
+
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityEMP.EMP)
+        {
+            if (capabilityEMP == null)
+            {
+                capabilityEMP = new CapabilityEmpMissile(this);
+            }
+            return (T) capabilityEMP;
+        }
+        return super.getCapability(capability, facing);
     }
 
     @SideOnly(Side.CLIENT)
@@ -447,6 +468,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         setExplode = true;
         //dataWatcher.updateObject(17, 2);
+    }
+
+    @Override
+    public boolean isExploding()
+    {
+        return isExpoding;
     }
 
     @Override

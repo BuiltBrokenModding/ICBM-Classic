@@ -4,6 +4,7 @@ import icbm.classic.CommonProxy;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.machines.emptower.TESREMPTower;

@@ -28,14 +28,14 @@ public class BlastShrapnel extends Blast
     {
         if (!world().isRemote)
         {
-            float amountToRotate = 360 / this.getRadius();
+            float amountToRotate = 360 / this.getBlastRadius();
 
-            for (int i = 0; i < this.getRadius(); i++)
+            for (int i = 0; i < this.getBlastRadius(); i++)
             {
                 // Try to do a 360 explosion on all 6 faces of the cube.
                 float rotationYaw = 0.0F + amountToRotate * i;
 
-                for (int ii = 0; ii < this.getRadius(); ii++)
+                for (int ii = 0; ii < this.getBlastRadius(); ii++)
                 {
                     EntityFragments arrow = new EntityFragments(world(), position.x(), position.y(), position.z(), this.isExplosive, this.isAnvil);
 

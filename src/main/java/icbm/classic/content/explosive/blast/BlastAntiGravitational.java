@@ -28,7 +28,7 @@ public class BlastAntiGravitational extends Blast
     {
         if (!this.world().isRemote)
         {
-            this.thread = new ThreadSmallExplosion(this, (int) this.getRadius(), this.exploder);
+            this.thread = new ThreadSmallExplosion(this, (int) this.getBlastRadius(), this.exploder);
             this.thread.start();
         }
 
@@ -84,7 +84,7 @@ public class BlastAntiGravitational extends Blast
             }
         }
 
-        int radius = (int) this.getRadius();
+        int radius = (int) this.getBlastRadius();
         AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
@@ -126,7 +126,7 @@ public class BlastAntiGravitational extends Blast
     }
 
     @Override
-    public float getRadius()
+    public float getBlastRadius()
     {
         return 15;
     }

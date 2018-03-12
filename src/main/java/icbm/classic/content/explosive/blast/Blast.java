@@ -3,7 +3,7 @@ package icbm.classic.content.explosive.blast;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -131,12 +131,12 @@ public abstract class Blast extends Explosion implements IBlast
     }
 
 
-    public float getRadius()
+    public float getBlastRadius()
     {
         return Math.max(3, this.size);
     }
 
-
+    @Deprecated //TODO remove
     public long getEnergy()
     {
         return 0;
@@ -274,5 +274,11 @@ public abstract class Blast extends Explosion implements IBlast
     public double z()
     {
         return this.position.z();
+    }
+
+    @Override
+    public Entity getBlastSource()
+    {
+        return getBlastSource();
     }
 }

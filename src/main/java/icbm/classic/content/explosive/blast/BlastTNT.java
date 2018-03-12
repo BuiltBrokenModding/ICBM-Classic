@@ -87,10 +87,10 @@ public class BlastTNT extends Blast
         switch (this.pushType)
         {
             case 0:
-                this.doDamageEntities(this.getRadius(), damageToEntities, this.destroyItem);
+                this.doDamageEntities(this.getBlastRadius(), damageToEntities, this.destroyItem);
                 break;
             default:
-                this.pushEntities(12, this.getRadius() * 4, this.pushType);
+                this.pushEntities(12, this.getBlastRadius() * 4, this.pushType);
                 break;
         }
 
@@ -126,7 +126,7 @@ public class BlastTNT extends Blast
                             zStep /= diagonalDistance;
 
                             //Get energy
-                            float radialEnergy = this.getRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
+                            float radialEnergy = this.getBlastRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
 
                             //Get starting point for ray
                             double x = this.position.x();
@@ -207,7 +207,7 @@ public class BlastTNT extends Blast
                 var171 /= var211;
                 var191 /= var211;
 
-                double var23 = 0.5D / (var211 / this.getRadius() + 0.1D);
+                double var23 = 0.5D / (var211 / this.getBlastRadius() + 0.1D);
                 var23 *= (this.world().rand.nextFloat() * this.world().rand.nextFloat() + 0.3F);
                 var151 *= var23;
                 var171 *= var23;

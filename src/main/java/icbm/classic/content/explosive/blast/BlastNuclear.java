@@ -43,7 +43,7 @@ public class BlastNuclear extends Blast
     {
         if (!this.world().isRemote)
         {
-            this.thread = new ThreadLargeExplosion(this, (int) this.getRadius(), this.energy, this.exploder);
+            this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder);
 
             this.thread.start();
 
@@ -83,7 +83,7 @@ public class BlastNuclear extends Blast
             }
         }
 
-        this.doDamageEntities(this.getRadius(), this.energy * 1000);
+        this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
 
         ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(),  7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
@@ -153,12 +153,12 @@ public class BlastNuclear extends Blast
             ICBMClassic.INSTANCE.logger().error("Nuclear-type detonation Failed!", e);
         }
 
-        this.doDamageEntities(this.getRadius(), this.energy * 1000);
+        this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
 
         if (this.isRadioactive)
         {
-            new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getRadius(), this.energy).explode();
-            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getRadius()).explode();
+            new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius(), this.energy).explode();
+            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).explode();
 
             if (this.world().rand.nextInt(3) == 0)
             {
