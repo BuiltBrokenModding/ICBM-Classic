@@ -1,5 +1,7 @@
 package icbm.classic;
 
+import icbm.classic.caps.emp.CapabilityEMP;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.multiblock.BlockMultiblock;
 import icbm.classic.content.multiblock.TileMulti;
 import icbm.classic.lib.network.netty.PacketManager;
@@ -281,6 +283,9 @@ public final class ICBMClassic
     {
         proxy.preInit();
         ICBMSounds.registerAll();
+
+        //Register caps
+        CapabilityEMP.register();
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
