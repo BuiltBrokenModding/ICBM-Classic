@@ -4,7 +4,7 @@ import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import resonant.api.explosion.IMissile;
+import icbm.classic.api.explosion.IMissile;
 
 public class MissileModule extends Missile
 {

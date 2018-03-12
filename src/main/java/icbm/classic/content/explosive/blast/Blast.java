@@ -1,10 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.api.IWorldPosition;
-import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.client.models.ModelICBM;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityMissile;
-import icbm.classic.client.models.ModelICBM;
+import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,11 +17,13 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import resonant.api.explosion.IExplosion;
 
 import java.util.List;
 
-public abstract class Blast extends Explosion implements IWorldPosition, IExplosion
+/**
+ * Prefab for any Explosion/Blast object created
+ */
+public abstract class Blast extends Explosion implements IBlast
 {
     //TODO remove position as we are double storing location data
     public Location position;

@@ -1,5 +1,6 @@
 package icbm.classic.content.machines.radarstation;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.lib.IGuiTile;
@@ -162,7 +163,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                             {
                                 EntityMissile daoDan = this.incomingMissiles.get(i);
 
-                                if (dist < new Pos((TileEntity) this).distance(daoDan.toPos()))
+                                if (dist < new Pos((TileEntity) this).distance((IPos3D) daoDan))
                                 {
                                     this.incomingMissiles.add(i, (EntityMissile) entity);
                                     break;
@@ -196,7 +197,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         {
             return false;
         }
-        return (missile.toPos().toVector2().distance(this)) < this.alarmRange && missile.targetVector.toVector2().distance(this) < this.safetyRange;
+        //TODO simplify code to not use vector system
+        return (new Pos((IPos3D) missile)).toVector2().distance(this) < this.alarmRange && missile.targetVector.toVector2().distance(this) < this.safetyRange;
     }
 
     @Override
@@ -302,7 +304,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
             for (EntityMissile incomingMissile : this.incomingMissiles)
             {
-                Point position = incomingMissile.toPos().toVector2();
+                Point position = new Point(incomingMissile.x(), incomingMissile.y());
                 EnumFacing missileTravelDirection = EnumFacing.DOWN;
                 double closest = -1;
 

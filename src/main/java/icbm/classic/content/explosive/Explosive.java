@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import resonant.api.explosion.IExplosive;
+import icbm.classic.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
 public abstract class Explosive implements IExplosive

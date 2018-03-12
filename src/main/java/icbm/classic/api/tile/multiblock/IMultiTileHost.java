@@ -12,6 +12,7 @@ import java.util.Collection;
  * Implemented by blocks that act as the host or logical brain for a multiblock structure
  * Created by Dark on 8/9/2015.
  */
+@Deprecated //Will be turned into a capability
 public interface IMultiTileHost extends IWorldPosition
 {
     /**

@@ -1,4 +1,4 @@
-package resonant.api.explosion;
+package icbm.classic.api.explosion;
 
 
 import icbm.classic.lib.transform.vector.Pos;
@@ -7,6 +7,7 @@ import icbm.classic.lib.transform.vector.Pos;
  * "set" version of the function will make the entity do the action on the next tick.
  *
  * @author Calclavia */
+@Deprecated //Will be recoded
 public interface IMissile extends IExplosiveContainer
 {
     /** Blows up this missile. It will detonate the missile with the appropriate explosion. */

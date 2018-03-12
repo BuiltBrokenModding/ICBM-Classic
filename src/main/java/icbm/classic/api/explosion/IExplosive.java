@@ -1,4 +1,4 @@
-package resonant.api.explosion;
+package icbm.classic.api.explosion;
 
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
@@ -10,6 +10,7 @@ import net.minecraft.world.World;
  *
  * @author Calclavia
  */
+@Deprecated //Very likely will be recoded or replace, so do not implement
 public interface IExplosive
 {
     /** @return The unique name key in the ICBM language file. */

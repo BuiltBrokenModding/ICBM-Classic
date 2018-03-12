@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.radar.RadarRegistry;
@@ -23,9 +24,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import resonant.api.explosion.IExplosiveContainer;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.IMissile;
+import icbm.classic.api.explosion.IExplosiveContainer;
+import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.api.explosion.IMissile;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -152,7 +153,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void launch(Pos target)
     {
         //Update data
-        this.sourceOfProjectile = toPos();
+        this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
         this.targetVector = target;
         this.targetHeight = this.targetVector != null ? this.targetVector.yi() : 0;
         if (explosiveID != null && explosiveID.handler instanceof Explosion)
@@ -413,7 +414,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public Pos getPredictedPosition(int t)
     {
-        Pos guJiDiDian = toPos();
+        Pos guJiDiDian = new Pos((IPos3D) this);
         double tempMotionY = this.motionY;
 
         if (this.ticksInAir > 20)

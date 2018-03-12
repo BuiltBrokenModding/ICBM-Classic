@@ -7,6 +7,7 @@ import net.minecraft.util.EnumFacing;
  *
  * Created by robert on 12/9/2014.
  */
+@Deprecated //Highly likely this will be replaced or removed
 public interface IRotation
 {
     /** Gets the facing direction of the TileEntity

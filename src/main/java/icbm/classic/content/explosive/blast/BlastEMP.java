@@ -1,14 +1,18 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.lib.energy.UniversalEnergySystem;
-import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.api.explosion.IMissile;
+import icbm.classic.api.items.IEMPItem;
+import icbm.classic.api.tile.IEMPBlock;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.lib.energy.UniversalEnergySystem;
+import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -18,9 +22,6 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import resonant.api.explosion.IEMPBlock;
-import resonant.api.explosion.IEMPItem;
-import resonant.api.explosion.IMissile;
 
 import java.util.List;
 
@@ -78,22 +79,14 @@ public class BlastEMP extends Blast
                             //TODO more EMP effect to UniversalEnergySystem to better support cross mod support
                             if (block != null)
                             {
-                                //if (block instanceof IForceFieldBlock)
-                                //{
-                                //    ((IForceFieldBlock) block).weakenForceField(world(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), 1000);
-                                //}
                                 if (block instanceof IEMPBlock)
                                 {
-                                    ((IEMPBlock) block).onEMP(world(), searchPosition.xi(), searchPosition.yi(), searchPosition.zi(), this);
+                                    ((IEMPBlock) block).onEMP(world(), searchPosition.toBlockPos(), this);
                                 }
                             }
 
                             if (tileEntity != null)
                             {
-                                //if (tileEntity instanceof IFortronStorage)
-                                //{
-                                //    ((IFortronStorage) tileEntity).provideFortron((int) world().rand.nextFloat() * ((IFortronStorage) tileEntity).getFortronCapacity(), true);
-                                //}
                                 UniversalEnergySystem.clearEnergy(tileEntity, true);
                             }
                         }
@@ -117,26 +110,22 @@ public class BlastEMP extends Blast
                     }
                 }
 
-                int maxFx = 10;
-                AxisAlignedBB bounds = new AxisAlignedBB(position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(), position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
+                //Calculate bounds
+                AxisAlignedBB bounds = new AxisAlignedBB(
+                        position.x() - this.getRadius(), position.y() - this.getRadius(), position.z() - this.getRadius(),
+                        position.x() + this.getRadius(), position.y() + this.getRadius(), position.z() + this.getRadius());
+
+                //Get entities in bounds
                 List<Entity> entities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
+                //Loop entities to apply effects
                 for (Entity entity : entities)
                 {
                     if (entity instanceof EntityLivingBase)
                     {
-                        if (this.world().isRemote && maxFx > 0)
-                        {
-                            //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
-                            maxFx--;
-                        }
-
                         if (entity instanceof EntityCreeper)
                         {
-                            if (!this.world().isRemote)
-                            {
-                                //TODO ((EntityCreeper) entity).getDataManager().set(EntityCreeper.P);
-                            }
+                            entity.onStruckByLightning(new EntityLightningBolt(world, entity.posX, entity.posY, entity.posZ, false));
                         }
                         if (entity instanceof EntityPlayer)
                         {
@@ -146,15 +135,21 @@ public class BlastEMP extends Blast
                             {
                                 ItemStack itemStack = inventory.getStackInSlot(i);
 
-                                if (itemStack != null)
+                                if (!itemStack.isEmpty())
                                 {
                                     if (itemStack.getItem() instanceof IEMPItem)
                                     {
                                         ((IEMPItem) itemStack.getItem()).onEMP(itemStack, entity, this);
                                     }
-                                    UniversalEnergySystem.clearEnergy(itemStack, true);
+                                    else
+                                    {
+                                        UniversalEnergySystem.clearEnergy(itemStack, true);
+                                    }
                                 }
                             }
+
+                            //TODO spawn effects on entity if items were effected
+                            //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
                         }
                     }
                     else if (entity instanceof EntityExplosive)

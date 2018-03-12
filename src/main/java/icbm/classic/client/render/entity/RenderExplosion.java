@@ -25,8 +25,6 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RenderExplosion extends Render<EntityExplosion>
 {
-    private static final Random redmatterBeamRandom = new Random(432L);
-
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "blackhole.png");
     public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "grey.png");
     public static List<Color> randomColorsForBeams = new ArrayList();

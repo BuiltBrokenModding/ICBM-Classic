@@ -1,4 +1,4 @@
-package resonant.api.explosion;
+package icbm.classic.api.explosion;
 
 import net.minecraft.nbt.NBTTagCompound;
 

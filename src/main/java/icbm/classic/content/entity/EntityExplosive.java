@@ -12,8 +12,8 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import resonant.api.explosion.IExplosive;
-import resonant.api.explosion.IExplosiveContainer;
+import icbm.classic.api.explosion.IExplosive;
+import icbm.classic.api.explosion.IExplosiveContainer;
 
 public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData, IExplosiveContainer
 {

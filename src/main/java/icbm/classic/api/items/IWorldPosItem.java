@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
  *
  * Created by robert on 4/15/2015.
  */
+@Deprecated //Will be turned into a capability
 public interface IWorldPosItem
 {
     /**

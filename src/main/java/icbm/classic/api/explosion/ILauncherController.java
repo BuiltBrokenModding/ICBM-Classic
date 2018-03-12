@@ -1,4 +1,4 @@
-package resonant.api.explosion;
+package icbm.classic.api.explosion;
 
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.item.ItemStack;
@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 /** Applied to all launcher TileEntitiies that operates the launching of missiles.
  *
  * @author Calclavia */
+@Deprecated //Will be recoded
 public interface ILauncherController
 {
     /** What type of launcher is this? */

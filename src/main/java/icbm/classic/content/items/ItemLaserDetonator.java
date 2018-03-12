@@ -22,7 +22,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import resonant.api.explosion.ILauncherController;
+import icbm.classic.api.explosion.ILauncherController;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -66,7 +67,7 @@ public class BlastBreech extends BlastTNT
                         }
 
                         //Translate by center
-                        p = toPos().add(p);
+                        p = new Pos((IPos3D)this).add(p);
 
                         Block block = p.getBlock(world());
                         if (block != Blocks.AIR)

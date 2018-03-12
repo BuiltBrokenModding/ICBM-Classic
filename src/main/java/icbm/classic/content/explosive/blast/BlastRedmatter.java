@@ -20,7 +20,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
-import resonant.api.explosion.IExplosiveIgnore;
+import icbm.classic.api.explosion.IExplosiveIgnore;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class BlastRedmatter extends Blast
     public int lifeSpan = MAX_LIFESPAN;
     public int blocksEditsPerTick = -1;
 
-    public boolean coloredBeams = false;
+    public boolean coloredBeams = true;
 
     public BlastRedmatter(World world, Entity entity, double x, double y, double z, float size)
     {

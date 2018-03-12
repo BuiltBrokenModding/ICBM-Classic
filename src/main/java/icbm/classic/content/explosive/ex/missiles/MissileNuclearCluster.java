@@ -1,10 +1,11 @@
 package icbm.classic.content.explosive.ex.missiles;
 
-import icbm.classic.lib.transform.vector.Pos;
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastNuclear;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +32,7 @@ public class MissileNuclearCluster extends MissileCluster
             {
                 if (!missileObj.world.isRemote)
                 {
-                    Pos position = missileObj.toPos();
+                    Pos position = new Pos((IPos3D)missileObj);
 
                     EntityMissile clusterMissile = new EntityMissile(missileObj.world);
                     clusterMissile.setPosition(position.x(), position.y(), position.z()); //TODO randomize spread to prevent collisions

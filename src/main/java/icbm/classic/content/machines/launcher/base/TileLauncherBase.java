@@ -34,8 +34,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.ILauncherController;
+import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.api.explosion.ILauncherController;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

@@ -142,7 +142,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return new Cube(-1, 0, -1, 1, 3, 1).add(toPos()).toAABB();
+        return new Cube(-1, 0, -1, 1, 3, 1).add(this).toAABB();
     }
 }
 

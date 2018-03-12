@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.ex.missiles;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.entity.EntityMissile.MissileType;
@@ -32,7 +33,7 @@ public class MissileCluster extends Missile
             {
                 if (!missileObj.world.isRemote)
                 {
-                    Pos position = missileObj.toPos();
+                    Pos position = new Pos((IPos3D)missileObj);
                     EntityMissile missile = new EntityMissile(missileObj.world);
                     missile.setPosition(position.x(), position.y(), position.z()); //TODO spread to avoid collision
                     missile.launcherPos = position;

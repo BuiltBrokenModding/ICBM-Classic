@@ -1,5 +1,6 @@
 package icbm.classic.content.machines.launcher.cruise;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.prefab.inventory.IInventoryProvider;
@@ -26,9 +27,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import resonant.api.explosion.ILauncherContainer;
-import resonant.api.explosion.ILauncherController;
-import resonant.api.explosion.LauncherType;
+import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.api.explosion.ILauncherController;
+import icbm.classic.api.explosion.LauncherType;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>
 {
@@ -131,7 +132,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         if (getTarget() != null && !getTarget().isZero())
         {
             Pos aimPoint = getTarget();
-            Pos center = toPos().add(0.5);
+            Pos center = new Pos((IPos3D) this).add(0.5);
             if (ICBMClassic.runningAsDev)
             {
                 //Engine.packetHandler.sendToAllAround(new PacketSpawnParticleStream(world.provider.getDimension(), center, aimPoint), this);
@@ -357,7 +358,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return new Cube(-2, 0, -2, 2, 3, 2).add(toPos()).toAABB();
+        return new Cube(-2, 0, -2, 2, 3, 2).add(new Pos((IPos3D) this)).toAABB();
     }
 
     @Override

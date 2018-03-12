@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
  *
  * Created by robert on 8/14/2014.
  */
+@Deprecated //Will eventually be removed
 public interface ISave
 {
     /** Called to load the object from NBT */

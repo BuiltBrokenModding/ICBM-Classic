@@ -1,5 +1,6 @@
 package icbm.classic.content.machines.launcher.screen;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
@@ -24,8 +25,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import resonant.api.explosion.ILauncherController;
-import resonant.api.explosion.LauncherType;
+import icbm.classic.api.explosion.ILauncherController;
+import icbm.classic.api.explosion.LauncherType;
 
 /**
  * This tile entity is for the screen of the missile launcher
@@ -64,7 +65,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
             this.launcherBase = null;
             for (EnumFacing rotation : EnumFacing.HORIZONTALS)
             {
-                final Pos position = toPos().add(rotation);
+                final Pos position = new Pos((IPos3D) this).add(rotation);
                 final TileEntity tileEntity = position.getTileEntity(world);
                 if (tileEntity != null)
                 {
@@ -333,7 +334,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 if (messageHeader.equals("activateLauncherWithTarget"))
                 {
                     Pos pos = (Pos) data[0];
-                    if (toPos().distance(pos) < this.launcherBase.getRange())
+                    if (new Pos((IPos3D) this).distance(pos) < this.launcherBase.getRange())
                     {
                         setTarget(pos);
                         launch();

@@ -14,6 +14,7 @@ import net.minecraft.util.EnumFacing;
  * <p>
  * Created by Dark on 8/15/2015.
  */
+@Deprecated //Will be replaced by Capability system
 public interface IEnergyBufferProvider
 {
     /**
