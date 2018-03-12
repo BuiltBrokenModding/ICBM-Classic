@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive.ex;
+package icbm.classic.content.explosive.handlers;
 
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosive;

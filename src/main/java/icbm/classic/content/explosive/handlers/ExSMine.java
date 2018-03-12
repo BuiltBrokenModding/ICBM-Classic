@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive.ex;
+package icbm.classic.content.explosive.handlers;
 
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.client.models.ModelSMine;

@@ -1,19 +1,20 @@
-package icbm.classic.content.explosive.ex;
+package icbm.classic.content.explosive.handlers;
 
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.content.explosive.blast.BlastFire;
+import icbm.classic.content.explosive.blast.BlastExothermic;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ExIncendiary extends Explosion
+public class ExExothermic extends Explosion
 {
-    public ExIncendiary(String mingZi, EnumTier tier)
+
+
+    public ExExothermic()
     {
-        super(mingZi, tier);
-        //this.missileModelPath = "missiles/tier1/missile_head_incen.obj";
+        super("exothermic", EnumTier.THREE);
     }
 
     @Override
@@ -26,6 +27,6 @@ public class ExIncendiary extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity)
     {
-        new BlastFire(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 14).explode();
+        new BlastExothermic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50).explode();
     }
 }

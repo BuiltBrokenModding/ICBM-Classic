@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive.ex;
+package icbm.classic.content.explosive.handlers;
 
 import icbm.classic.content.explosive.blast.BlastEMP;
 import icbm.classic.prefab.tile.EnumTier;

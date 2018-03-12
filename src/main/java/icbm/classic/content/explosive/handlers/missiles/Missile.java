@@ -1,6 +1,6 @@
-package icbm.classic.content.explosive.ex.missiles;
+package icbm.classic.content.explosive.handlers.missiles;
 
-import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.prefab.tile.EnumTier;
 
 /** Ex object that are only defined as missiles

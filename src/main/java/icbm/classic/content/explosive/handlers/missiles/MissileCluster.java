@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive.ex.missiles;
+package icbm.classic.content.explosive.handlers.missiles;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.transform.vector.Pos;

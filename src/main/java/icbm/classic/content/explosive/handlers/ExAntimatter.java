@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive.ex;
+package icbm.classic.content.explosive.handlers;
 
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.lib.transform.vector.Pos;

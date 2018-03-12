@@ -8,7 +8,7 @@ import icbm.classic.prefab.entity.EntityProjectile;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.content.explosive.handlers.Explosion;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

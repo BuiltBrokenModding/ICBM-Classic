@@ -5,7 +5,7 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.entity.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.ex.Explosion;
+import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

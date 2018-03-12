@@ -1,4 +1,4 @@
-package icbm.classic.content.explosive.ex.missiles;
+package icbm.classic.content.explosive.handlers.missiles;
 
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
