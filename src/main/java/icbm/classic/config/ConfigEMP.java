@@ -35,6 +35,10 @@ public class ConfigEMP
     @Config.Comment("Should EMP effect drain energy items that do not support EMP effect directly?")
     public static boolean DRAIN_ENERGY_ITEMS = true;
 
+    @Config.Name("allow_draining_energy_tiles")
+    @Config.Comment("Should EMP effect drain energy tiles that do not support EMP effect directly?")
+    public static boolean DRAIN_ENERGY_TILES = true;
+
     @Config.Name("allow_entities")
     @Config.Comment("Should EMP effect run on entities?")
     public static boolean ALLOW_ENTITY = true;

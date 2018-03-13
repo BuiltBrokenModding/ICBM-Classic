@@ -4,9 +4,11 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.EmpEvent;
 import icbm.classic.caps.emp.CapabilityEMP;
+import icbm.classic.caps.emp.CapabilityEmpInventory;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigEMP;
-import icbm.classic.lib.energy.UniversalEnergySystem;
+import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.energy.system.IEnergySystem;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -90,7 +92,6 @@ public class BlastEMP extends Blast
                                         TileEntity tileEntity = world.getTileEntity(blockPos);
                                         if (tileEntity != null)
                                         {
-
                                             boolean doInventory = true;
                                             if (tileEntity.hasCapability(CapabilityEMP.EMP, null))
                                             {
@@ -101,14 +102,22 @@ public class BlastEMP extends Blast
                                                     doInventory = receiver.shouldEmpSubObjects(world, tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
                                                 }
                                             }
-                                            else if (ConfigEMP.DRAIN_ENERGY_ENTITY)
+                                            else if (ConfigEMP.DRAIN_ENERGY_TILES)
                                             {
-                                                UniversalEnergySystem.clearEnergy(tileEntity, true);
+                                                IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
+                                                if (energySystem.canSetEnergyDirectly(tileEntity, null))
+                                                {
+                                                    energySystem.setEnergy(tileEntity, null, 0, true);
+                                                }
+                                                else
+                                                {
+                                                    //TODO Spawn tick based effect to drain as much energy as possible over several ticks
+                                                }
                                             }
 
                                             if (doInventory && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
                                             {
-                                                powerEntity = empEntity(tileEntity, powerEntity, tileEntity.getCapability(CapabilityEMP.EMP, null));
+                                                powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
                                             }
                                         }
                                     }
@@ -151,12 +160,20 @@ public class BlastEMP extends Blast
                         }
                         else if (ConfigEMP.DRAIN_ENERGY_ENTITY)
                         {
-                            UniversalEnergySystem.clearEnergy(entity, true);
+                            IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
+                            if (energySystem.canSetEnergyDirectly(entity, null))
+                            {
+                                energySystem.setEnergy(entity, null, 0, true);
+                            }
+                            else
+                            {
+                                //TODO Spawn tick based effect to drain as much energy as possible over several ticks
+                            }
                         }
 
                         if (doInventory && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
                         {
-                            powerEntity = empEntity(entity, powerEntity, entity.getCapability(CapabilityEMP.EMP, null));
+                            powerEntity = empEntity(entity, powerEntity, new CapabilityEmpInventory.EntityInv(entity));
                         }
 
                         //Fire post event to allow hooking EMP action

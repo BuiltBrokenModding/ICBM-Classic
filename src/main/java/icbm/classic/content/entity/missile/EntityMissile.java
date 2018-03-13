@@ -490,50 +490,45 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void explode()
     {
-        try
-        {
-            // Make sure the missile is not already exploding
-            if (!this.isExpoding)
-            {
-                if (this.explosiveID == null)
-                {
-                    if (!this.world.isRemote)
-                    {
-                        this.world.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
-                    }
-                }
-                else
-                {
-                    ((Explosion) this.explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this);
-                }
-
-                this.isExpoding = true;
-
-                ICBMClassic.INSTANCE.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
-            }
-
-            setDead();
-
-        }
-        catch (Exception e)
-        {
-            ICBMClassic.INSTANCE.logger().error("Missile failed to explode properly. Report this to the developers.", e);
-        }
+        normalExplode();
     }
 
     @Override
     public void normalExplode()
     {
-        if (!this.isExpoding)
+        try
         {
-            isExpoding = true;
-
-            if (!this.world.isRemote)
+            // Make sure the missile is not already exploding
+            if (!this.isExpoding)
             {
-                world.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
-            }
+                //Make sure to note we are currently exploding
+                this.isExpoding = true;
 
-            setDead();
+                //Kill the misisle entity
+                setDead();
+
+                if (!this.world.isRemote)
+                {
+                    //Create TNT explosion if no explosive exists
+                    if (this.explosiveID == null)
+                    {
+                        this.world.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
+
+                    }
+                    //Triger normal explosion
+                    else
+                    {
+                        this.explosiveID.handler.createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this);
+                    }
+                }
+
+                //Log that the missile impacted
+                ICBMClassic.INSTANCE.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+            }
+        }
+        catch (Exception e)
+        {
+            ICBMClassic.INSTANCE.logger().error("EntityMissile#normalExplode() - Unexpected error while triggering explosive on missile", e);
         }
     }
 
