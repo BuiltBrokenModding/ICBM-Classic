@@ -24,8 +24,16 @@ public class ConfigEMP
     public static boolean ALLOW_MISSILE_DROPS = true;
 
     @Config.Name("allow_entity_inventory")
-    @Config.Comment("Should EMP effect run on entity inventories?")
+    @Config.Comment("Should EMP effect run on entity inventories? (Eg. Player, Cart)")
     public static boolean ALLOW_ENTITY_INVENTORY = true;
+
+    @Config.Name("allow_tile_inventory")
+    @Config.Comment("Should EMP effect run on block/tile inventories? (Eg. Chest, Hopper, Machine)")
+    public static boolean ALLOW_TILE_INVENTORY = true;
+
+    @Config.Name("allow_item_inventory")
+    @Config.Comment("Should EMP effect run on item inventories? (Eg. Bag, Backpack)")
+    public static boolean ALLOW_ITEM_INVENTORY = true;
 
     @Config.Name("allow_draining_energy_entity")
     @Config.Comment("Should EMP effect drain energy entities that do not support EMP effect directly?")

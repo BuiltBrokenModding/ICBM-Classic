@@ -1,7 +1,6 @@
 package icbm.classic.caps.emp;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.config.ConfigEMP;
@@ -16,11 +15,17 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 /**
+ * Used to wrapper an inventory capability to provide support to EMP the contents.
+ * <p>
+ * By default {@link icbm.classic.content.explosive.blast.BlastEMP} will generate this object
+ * for the target of the EMP.
+ *
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public abstract class CapabilityEmpInventory<H extends Object> implements IEMPReceiver, IWorldPosition
+public abstract class CapabilityEmpInventory<H extends Object> implements IEMPReceiver
 {
+    @Override
     public float applyEmpAction(World world, double x, double y, double z, IBlast emp_blast, float power, boolean doAction)
     {
         final IItemHandlerModifiable iItemHandler = getCapability();
@@ -34,6 +39,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
                 //Check to make sure its not a placeholder
                 if (!slotStack.isEmpty())
                 {
+                    boolean doInventory = ConfigEMP.ALLOW_ITEM_INVENTORY;
                     //Copy stack for editing
                     final ItemStack itemStack = slotStack.copy();
 
@@ -46,11 +52,24 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
                         {
                             //Apply effect
                             power = cap.applyEmpAction(world, x, y, z, emp_blast, power, true);
+                            doInventory = cap.shouldEmpSubObjects(world, x, y, z) && doInventory;
                         }
                     }
                     else if (ConfigEMP.DRAIN_ENERGY_ITEMS)
                     {
-                        EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0,  true);
+                        EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, true);
+                    }
+
+                    if (doInventory && itemStack.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+                    {
+                        if (getHost() instanceof Entity)
+                        {
+                            power = new ItemInvInEntity((Entity) getHost(), itemStack).applyEmpAction(world, x, y, z, emp_blast, power, doAction);
+                        }
+                        else if (getHost() instanceof TileEntity)
+                        {
+                            power = new ItemInvInTile((TileEntity) getHost(), itemStack).applyEmpAction(world, x, y, z, emp_blast, power, doAction);
+                        }
                     }
 
                     if (!InventoryUtility.stacksMatchExact(itemStack, slotStack))
@@ -108,30 +127,6 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         {
             return entity;
         }
-
-        @Override
-        public World world()
-        {
-            return entity.world;
-        }
-
-        @Override
-        public double z()
-        {
-            return entity.posZ;
-        }
-
-        @Override
-        public double x()
-        {
-            return entity.posX;
-        }
-
-        @Override
-        public double y()
-        {
-            return entity.posY;
-        }
     }
 
     public static class TileInv extends CapabilityEmpInventory<TileEntity>
@@ -146,7 +141,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ENTITY_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigEMP.ALLOW_TILE_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
             {
                 IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
@@ -165,29 +160,75 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         {
             return entity;
         }
+    }
 
-        @Override
-        public World world()
+    public static class ItemInvInEntity extends CapabilityEmpInventory<Entity>
+    {
+        public final ItemStack item;
+        public final Entity host;
+
+        public ItemInvInEntity(Entity host, ItemStack item)
         {
-            return entity.getWorld();
+            this.host = host;
+            this.item = item;
         }
 
         @Override
-        public double z()
+        protected IItemHandlerModifiable getCapability()
         {
-            return entity.getPos().getZ() + 0.5;
+            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            {
+                IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+
+                //Currently only support IItemHandlerModifiable due to
+                //  contract on IItemHandler preventing modification of returned getStack()
+                if (handler instanceof IItemHandlerModifiable)
+                {
+                    return (IItemHandlerModifiable) handler;
+                }
+            }
+            return null;
         }
 
         @Override
-        public double x()
+        protected Entity getHost()
         {
-            return entity.getPos().getX() + 0.5;
+            return host;
+        }
+    }
+
+    public static class ItemInvInTile extends CapabilityEmpInventory<TileEntity>
+    {
+        public final ItemStack item;
+        public final TileEntity host;
+
+        public ItemInvInTile(TileEntity host, ItemStack item)
+        {
+            this.host = host;
+            this.item = item;
         }
 
         @Override
-        public double y()
+        protected IItemHandlerModifiable getCapability()
         {
-            return entity.getPos().getY() + 0.5;
+            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            {
+                IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+
+                //Currently only support IItemHandlerModifiable due to
+                //  contract on IItemHandler preventing modification of returned getStack()
+                if (handler instanceof IItemHandlerModifiable)
+                {
+                    return (IItemHandlerModifiable) handler;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected TileEntity getHost()
+        {
+            return host;
         }
     }
 }
