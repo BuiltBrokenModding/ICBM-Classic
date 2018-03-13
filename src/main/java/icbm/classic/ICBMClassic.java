@@ -4,6 +4,8 @@ import icbm.classic.caps.emp.CapabilityEMP;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.multiblock.BlockMultiblock;
 import icbm.classic.content.multiblock.TileMulti;
+import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.*;
@@ -283,6 +285,7 @@ public final class ICBMClassic
     {
         proxy.preInit();
         ICBMSounds.registerAll();
+        EnergySystem.register(new EnergySystemFE());
 
         //Register caps
         CapabilityEMP.register();

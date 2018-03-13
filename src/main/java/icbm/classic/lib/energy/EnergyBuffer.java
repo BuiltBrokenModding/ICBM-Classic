@@ -1,7 +1,6 @@
 package icbm.classic.lib.energy;
 
 import icbm.classic.api.energy.IEnergyBuffer;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.energy.IEnergyStorage;
 
 /**
@@ -151,29 +150,4 @@ public class EnergyBuffer implements IEnergyBuffer, IEnergyStorage
         }
     }
 
-    /**
-     * Called to remove energy from the item and add it to this storage
-     * <p>
-     * Helper method to simplify the need to call {@link UniversalEnergySystem} directly
-     *
-     * @param stackInSlot - stack
-     */
-    public void addEmeryFromItem(ItemStack stackInSlot)
-    {
-        if (UniversalEnergySystem.isHandler(stackInSlot, null))
-        {
-            int energy = (int) Math.floor(UniversalEnergySystem.drain(stackInSlot, Integer.MAX_VALUE, false));
-            if (energy > 0)
-            {
-                UniversalEnergySystem.drain(stackInSlot, addEnergyToStorage(energy, true), true);
-            }
-        }
-    }
-
-    public static enum EnergyActionType
-    {
-        ADD,
-        REMOVE,
-        SET
-    }
 }
