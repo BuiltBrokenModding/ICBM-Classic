@@ -1,6 +1,6 @@
 package icbm.classic.prefab.gui.slot;
 
-import icbm.classic.lib.energy.UniversalEnergySystem;
+import icbm.classic.lib.energy.system.EnergySystem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,6 @@ public class SlotEnergyItem extends Slot
     @Override
     public boolean isItemValid(ItemStack compareStack)
     {
-        return UniversalEnergySystem.isHandler(compareStack, null);
+        return EnergySystem.getSystem(compareStack, null).canSupport(compareStack, null);
     }
-
 }
