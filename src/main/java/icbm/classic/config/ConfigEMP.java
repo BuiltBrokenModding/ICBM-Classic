@@ -35,6 +35,10 @@ public class ConfigEMP
     @Config.Comment("Should EMP effect run on item inventories? (Eg. Bag, Backpack)")
     public static boolean ALLOW_ITEM_INVENTORY = true;
 
+    @Config.Name("allow_ground_items")
+    @Config.Comment("Should EMP effect run on items dropped on the ground?")
+    public static boolean ALLOW_GROUND_ITEMS = true;
+
     @Config.Name("allow_draining_energy_entity")
     @Config.Comment("Should EMP effect drain energy entities that do not support EMP effect directly?")
     public static boolean DRAIN_ENERGY_ENTITY = true;

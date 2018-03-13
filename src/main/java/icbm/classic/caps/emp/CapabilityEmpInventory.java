@@ -39,40 +39,14 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
                 //Check to make sure its not a placeholder
                 if (!slotStack.isEmpty())
                 {
-                    boolean doInventory = ConfigEMP.ALLOW_ITEM_INVENTORY;
                     //Copy stack for editing
                     final ItemStack itemStack = slotStack.copy();
 
-                    //Check for EMP support
-                    if (itemStack.hasCapability(CapabilityEMP.EMP, null))
-                    {
-                        //Get EMP handler
-                        IEMPReceiver cap = itemStack.getCapability(CapabilityEMP.EMP, null);
-                        if (cap != null)
-                        {
-                            //Apply effect
-                            power = cap.applyEmpAction(world, x, y, z, emp_blast, power, true);
-                            doInventory = cap.shouldEmpSubObjects(world, x, y, z) && doInventory;
-                        }
-                    }
-                    else if (ConfigEMP.DRAIN_ENERGY_ITEMS)
-                    {
-                        EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, true);
-                    }
+                    //Run call
+                    power = empItemStack(itemStack, world, x, y, z, getHost(), emp_blast, power, doAction);
 
-                    if (doInventory && itemStack.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
-                    {
-                        if (getHost() instanceof Entity)
-                        {
-                            power = new ItemInvInEntity((Entity) getHost(), itemStack).applyEmpAction(world, x, y, z, emp_blast, power, doAction);
-                        }
-                        else if (getHost() instanceof TileEntity)
-                        {
-                            power = new ItemInvInTile((TileEntity) getHost(), itemStack).applyEmpAction(world, x, y, z, emp_blast, power, doAction);
-                        }
-                    }
-
-                    if (!InventoryUtility.stacksMatchExact(itemStack, slotStack))
+                    //Only apply changes if we are not simulating and there was a change in the stack
+                    if (doAction && !InventoryUtility.stacksMatchExact(itemStack, slotStack))
                     {
                         try
                         {
@@ -91,6 +65,43 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         }
         return power;
     }
+
+    public static float empItemStack(ItemStack itemStack, World world, double x, double y, double z, Object container, IBlast emp_blast, float power, boolean doAction)
+    {
+        boolean doInventory = ConfigEMP.ALLOW_ITEM_INVENTORY;
+
+
+        //Check for EMP support
+        if (itemStack.hasCapability(CapabilityEMP.EMP, null))
+        {
+            //Get EMP handler
+            IEMPReceiver cap = itemStack.getCapability(CapabilityEMP.EMP, null);
+            if (cap != null)
+            {
+                //Apply effect
+                power = cap.applyEmpAction(world, x, y, z, emp_blast, power, true);
+                doInventory = cap.shouldEmpSubObjects(world, x, y, z) && doInventory;
+            }
+        }
+        else if (ConfigEMP.DRAIN_ENERGY_ITEMS)
+        {
+            EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, true);
+        }
+
+        if (doInventory && itemStack.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        {
+            if (container instanceof Entity)
+            {
+                power = new ItemInvInEntity((Entity) container, itemStack).applyEmpAction(world, x, y, z, emp_blast, power, doAction);
+            }
+            else if (container instanceof TileEntity)
+            {
+                power = new ItemInvInTile((TileEntity) container, itemStack).applyEmpAction(world, x, y, z, emp_blast, power, doAction);
+            }
+        }
+        return power;
+    }
+
 
     protected abstract IItemHandlerModifiable getCapability();
 
