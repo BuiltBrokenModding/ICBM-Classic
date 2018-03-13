@@ -31,11 +31,11 @@ public class CapabilityEmpCreeper implements IEMPReceiver, ICapabilityProvider
     {
         if (ConfigEMP.ALLOW_LIGHTING_CREEPER)
         {
-            creeper.onStruckByLightning(new EntityLightningBolt(world, creeper.posX, creeper.posY, creeper.posZ, false));
+            //Attack creeper with lighting TODO replace with data manager call
+            creeper.onStruckByLightning(new EntityLightningBolt(world, creeper.posX, creeper.posY, creeper.posZ, true));
         }
         return power;
     }
-
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
     {
