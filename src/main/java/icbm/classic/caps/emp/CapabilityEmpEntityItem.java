@@ -6,7 +6,13 @@ import icbm.classic.config.ConfigEMP;
 import icbm.classic.prefab.inventory.InventoryUtility;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper to trigger EMP calls on ItemStack contained inside of {@link EntityItem}
@@ -14,7 +20,7 @@ import net.minecraft.world.World;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public class CapabilityEmpEntityItem implements IEMPReceiver
+public class CapabilityEmpEntityItem implements IEMPReceiver, ICapabilityProvider
 {
     public final EntityItem entityItem;
 
@@ -45,5 +51,18 @@ public class CapabilityEmpEntityItem implements IEMPReceiver
             }
         }
         return power;
+    }
+
+    @Override
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityEMP.EMP;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityEMP.EMP ? (T) this : null;
     }
 }

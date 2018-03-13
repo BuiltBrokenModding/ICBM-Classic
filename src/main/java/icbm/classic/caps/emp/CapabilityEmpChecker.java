@@ -2,16 +2,15 @@ package icbm.classic.caps.emp;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IBlast;
-import icbm.classic.lib.energy.UniversalEnergySystem;
 import net.minecraft.world.World;
 
 /**
- * Basic version of the capability that simply drains all energy from the tile
+ * Basic version of the capability that acts as a placeholder
  *
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public class CapabilityEmpUniversal implements IEMPReceiver
+public class CapabilityEmpChecker implements IEMPReceiver
 {
     public int timesHitByEMP = 0;
 
@@ -21,7 +20,6 @@ public class CapabilityEmpUniversal implements IEMPReceiver
         if (doAction)
         {
             timesHitByEMP++;
-            UniversalEnergySystem.clearEnergy(this, true);
         }
         return power;
     }

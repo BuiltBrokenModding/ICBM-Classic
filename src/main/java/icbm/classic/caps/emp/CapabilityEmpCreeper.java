@@ -5,13 +5,19 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.config.ConfigEMP;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public class CapabilityEmpCreeper implements IEMPReceiver
+public class CapabilityEmpCreeper implements IEMPReceiver, ICapabilityProvider
 {
     public final EntityCreeper creeper;
 
@@ -29,4 +35,18 @@ public class CapabilityEmpCreeper implements IEMPReceiver
         }
         return power;
     }
+
+    @Override
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityEMP.EMP;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityEMP.EMP ? (T) this : null;
+    }
+
 }
