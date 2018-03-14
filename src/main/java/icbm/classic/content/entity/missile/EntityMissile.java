@@ -175,6 +175,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void launch(Pos target)
     {
+        //Start motion
+        this.ticksInAir = 2;
+
         //Update data
         this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
         this.targetPos = target;
@@ -183,7 +186,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             ((Explosion) explosiveID.handler).launch(this);
         }
-        this.ticksInAir = 2;
 
         //Trigger code
         this.recalculatePath();

@@ -41,7 +41,7 @@ public class MissileNuclearCluster extends MissileCluster
                     missileObj.world.spawnEntity(clusterMissile);
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20;
-                    clusterMissile.launch(missileObj.targetVector.add(new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
+                    clusterMissile.launch(missileObj.targetPos.add(new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
                 }
 
                 missileObj.protectionTime = 20;
