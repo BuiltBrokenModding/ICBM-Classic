@@ -43,7 +43,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public int maxHeight = 200;
     public Pos targetPos = null;
     public Pos launcherPos = null;
-    public boolean isExpoding = false;
+
+    /** State check to prevent the missile from blowing up twice */
+    public boolean isExploding = false;
+
+    public boolean destroyNextTick = false;
+    public boolean destroyWithFullExplosion = false;
+    public boolean expodeNextTick = false;
 
     public int targetHeight = 0;
     // Difference
@@ -65,13 +71,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public boolean didTargetLockBefore = false;
     // Tracking
     public int trackingVar = -1;
-    // For cluster missile
-    public int missileCount = 0;
 
-    public double daoDanGaoDu = 2;
-
-    private boolean setExplode;
-    private boolean setNormalExplode;
     /** Used by the cluster missile */
     public int missileCount = 0;
 
@@ -315,7 +315,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void onImpactTile()
     {
-        explode();
+        doExplosion();
     }
 
     @Override
@@ -324,7 +324,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         if (!world.isRemote)
         {
             super.onImpactEntity(entityHit, velocity);
-            explode();
+            doExplosion();
         }
     }
 
@@ -447,23 +447,22 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
-    public void setNormalExplode()
+    public void triggerExplosion()
     {
-        setNormalExplode = true;
-        //dataWatcher.updateObject(17, 1);
+        expodeNextTick = true;
     }
 
     @Override
-    public void setExplode()
+    public void destroyMissile(boolean fullExplosion)
     {
-        setExplode = true;
-        //dataWatcher.updateObject(17, 2);
+        destroyNextTick = true;
+        destroyWithFullExplosion = fullExplosion;
     }
 
     @Override
     public boolean isExploding()
     {
-        return isExpoding;
+        return isExploding;
     }
 
     @Override
@@ -478,21 +477,15 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
-    public void explode()
-    {
-        normalExplode();
-    }
-
-    @Override
-    public void normalExplode()
+    public void doExplosion()
     {
         try
         {
             // Make sure the missile is not already exploding
-            if (!this.isExpoding)
+            if (!this.isExploding)
             {
                 //Make sure to note we are currently exploding
-                this.isExpoding = true;
+                this.isExploding = true;
 
                 //Kill the misisle entity
                 setDead();
@@ -525,7 +518,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void dropMissileAsItem()
     {
-        if (!this.isExpoding && !this.world.isRemote)
+        if (!this.isExploding && !this.world.isRemote)
         {
             EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID.ordinal()));
 

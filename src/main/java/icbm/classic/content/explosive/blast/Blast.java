@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -175,9 +175,9 @@ public abstract class Blast extends Explosion implements IBlast
                 continue;
             }
 
-            if (entity instanceof EntityMissile)
+            if (entity instanceof IMissile)
             {
-                ((EntityMissile) entity).setExplode();
+                ((IMissile) entity).destroyMissile(true);
                 continue;
             }
 

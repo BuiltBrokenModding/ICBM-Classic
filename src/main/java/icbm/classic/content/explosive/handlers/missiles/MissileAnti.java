@@ -34,7 +34,7 @@ public class MissileAnti extends Missile
 
             if (missileObj.lockedTarget.isDead)
             {
-                missileObj.explode();
+                missileObj.doExplosion();
                 return;
             }
 
@@ -70,7 +70,7 @@ public class MissileAnti extends Missile
 
             if (missileObj.didTargetLockBefore == true)
             {
-                missileObj.explode();
+                missileObj.doExplosion();
             }
         }
     }

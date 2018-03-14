@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
@@ -150,10 +150,10 @@ public class BlastSonic extends Blast
             {
                 Entity entity = (Entity) it.next();
 
-                if (entity instanceof EntityMissile)
+                if (entity instanceof IMissile) //TODO why?
                 {
-                    ((EntityMissile) entity).setExplode();
-                    break;
+                    ((IMissile) entity).destroyMissile(true);
+                    break; //TODO why stop looping entities?
                 }
                 else
                 {

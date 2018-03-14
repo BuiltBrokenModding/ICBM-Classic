@@ -36,7 +36,7 @@ public class MissileHoming extends Missile
             {
                 if (trackingEntity == missileObj)
                 {
-                    missileObj.explode();
+                    missileObj.doExplosion();
                 }
 
                 missileObj.targetPos = new Pos(trackingEntity);
@@ -56,7 +56,7 @@ public class MissileHoming extends Missile
             {
                 if (trackingEntity.equals(missileObj))
                 {
-                    missileObj.explode();
+                    missileObj.doExplosion();
                 }
 
                 missileObj.targetPos = new Pos(trackingEntity);
