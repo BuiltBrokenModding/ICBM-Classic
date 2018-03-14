@@ -59,8 +59,8 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
     protected boolean inGround = false;
 
     //Timers
-    protected int ticksInGround;
-    protected int ticksInAir;
+    public int ticksInGround;
+    public int ticksInAir;
 
     public EntityProjectile(World world)
     {

@@ -25,39 +25,41 @@ public class MissileCluster extends Missile
     }
 
     @Override
-    public void update(EntityMissile missileObj)
+    public void update(EntityMissile missileCluster)
     {
-        final int missileIndex = missileObj.missileCount;
-        if (missileObj.motionY < -0.5) //TODO why use motion as the trigger?
+        final int missileIndex = missileCluster.missileCount;
+        if (missileCluster.motionY < -0.5) //TODO why use motion as the trigger?
         {
-            if (missileObj.missileCount < MAX_CLUSTER)
+            if (missileCluster.missileCount < MAX_CLUSTER)
             {
-                if (!missileObj.world.isRemote)
+                if (!missileCluster.world.isRemote)
                 {
                     //Create missile
-                    EntityMissile missile = new EntityMissile(missileObj.world);
+                    EntityMissile missile = new EntityMissile(missileCluster.world);
 
                     //Set position
-                    Pos position = new Pos((IPos3D) missileObj).add(getSpreadForMissile(missileIndex));
+                    Pos position = new Pos((IPos3D) missileCluster).add(getSpreadForMissile(missileIndex));
                     missile.setPosition(position.x(), position.y(), position.z());
 
                     //Set data
-                    missile.launcherPos = position;
+                    missile.launcherPos = missileCluster.launcherPos;
                     missile.explosiveID = Explosives.CONDENSED;
                     missile.missileType = MissileType.MISSILE;
-                    missile.protectionTime = 20 + missileObj.targetHeight - 1;
+                    missile.protectionTime = 20 + missileCluster.targetHeight - 1;
+                    missile.ticksInAir = missileCluster.ticksInAir;
 
                     //Set target
-                    if (missileObj.targetPos != null)
+                    if (missileCluster.targetPos != null)
                     {
                         //Use existing target to offset
-                        missile.launch(missileObj.targetPos.add(getTargetDeltaForMissile(missileIndex)));
+                        missile.launch(missileCluster.targetPos.add(getTargetDeltaForMissile(missileIndex)));
                     }
                     else
                     {
                         //Calculate target as the vector
-                        Pos pos = new Pos(missile.motionX, missile.motionY, missile.motionZ).normalize();
+                        Pos pos = new Pos(missileCluster.motionX, missileCluster.motionY, missileCluster.motionZ).normalize();
                         pos = pos.multiply(200); //In theory this would be strait down
+                        pos = pos.add(missileCluster); //Add position
                         pos = pos.add(getTargetDeltaForMissile(missileIndex)); //offset
 
                         //Set
@@ -65,16 +67,16 @@ public class MissileCluster extends Missile
                     }
 
                     //Spawn
-                    missileObj.world.spawnEntity(missile);
+                    missileCluster.world.spawnEntity(missile);
                 }
 
                 //Setup for next missile
-                missileObj.protectionTime = 20;
-                missileObj.missileCount++;
+                missileCluster.protectionTime = 20;
+                missileCluster.missileCount++;
             }
             else
             {
-                missileObj.setDead();
+                missileCluster.setDead();
             }
         }
     }

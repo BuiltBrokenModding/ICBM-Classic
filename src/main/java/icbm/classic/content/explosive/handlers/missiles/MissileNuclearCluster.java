@@ -24,32 +24,32 @@ public class MissileNuclearCluster extends MissileCluster
     public static final int MAX_CLUSTER = 4;
 
     @Override
-    public void update(EntityMissile missileObj)
+    public void update(EntityMissile missileCluster)
     {
-        if (missileObj.motionY < -0.5)
+        if (missileCluster.motionY < -0.5)
         {
-            if (missileObj.missileCount < MAX_CLUSTER)
+            if (missileCluster.missileCount < MAX_CLUSTER)
             {
-                if (!missileObj.world.isRemote)
+                if (!missileCluster.world.isRemote)
                 {
-                    Pos position = new Pos((IPos3D)missileObj);
+                    Pos position = new Pos((IPos3D) missileCluster);
 
-                    EntityMissile clusterMissile = new EntityMissile(missileObj.world);
+                    EntityMissile clusterMissile = new EntityMissile(missileCluster.world);
                     clusterMissile.setPosition(position.x(), position.y(), position.z()); //TODO randomize spread to prevent collisions
                     clusterMissile.explosiveID = Explosives.NUCLEAR;
 
-                    missileObj.world.spawnEntity(clusterMissile);
+                    missileCluster.world.spawnEntity(clusterMissile);
                     clusterMissile.missileType = MissileType.CruiseMissile;
                     clusterMissile.protectionTime = 20;
-                    clusterMissile.launch(missileObj.targetPos.add(new Pos((missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileObj.missileCount - MAX_CLUSTER / 2) * random() * 30)));
+                    clusterMissile.launch(missileCluster.targetPos.add(new Pos((missileCluster.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileCluster.missileCount - MAX_CLUSTER / 2) * random() * 30, (missileCluster.missileCount - MAX_CLUSTER / 2) * random() * 30)));
                 }
 
-                missileObj.protectionTime = 20;
-                missileObj.missileCount++;
+                missileCluster.protectionTime = 20;
+                missileCluster.missileCount++;
             }
             else
             {
-                missileObj.setDead();
+                missileCluster.setDead();
             }
         }
     }

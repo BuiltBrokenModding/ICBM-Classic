@@ -49,7 +49,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public boolean destroyNextTick = false;
     public boolean destroyWithFullExplosion = false;
-    public boolean expodeNextTick = false;
+    public boolean explodeNextTick = false;
 
     public int targetHeight = 0;
     // Difference
@@ -176,7 +176,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void launch(Pos target)
     {
         //Start motion
-        this.ticksInAir = 2;
+        if (ticksInAir <= 0)
+        {
+            this.ticksInAir = 2;
+        }
 
         //Update data
         this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
@@ -284,7 +287,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
                         // Look at the next point
                         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-
                     }
                 }
             }
@@ -451,7 +453,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void triggerExplosion()
     {
-        expodeNextTick = true;
+        explodeNextTick = true;
     }
 
     @Override
