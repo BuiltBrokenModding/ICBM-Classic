@@ -36,10 +36,10 @@ public class MissileHoming extends Missile
             {
                 if (trackingEntity == missileObj)
                 {
-                    missileObj.setExplode();
+                    missileObj.explode();
                 }
 
-                missileObj.targetVector = new Pos(trackingEntity);
+                missileObj.targetPos = new Pos(trackingEntity);
             }
         }
     }
@@ -56,18 +56,18 @@ public class MissileHoming extends Missile
             {
                 if (trackingEntity.equals(missileObj))
                 {
-                    missileObj.setExplode();
+                    missileObj.explode();
                 }
 
-                missileObj.targetVector = new Pos(trackingEntity);
+                missileObj.targetPos = new Pos(trackingEntity);
 
                 missileObj.missileType = MissileType.CruiseMissile;
 
-                missileObj.deltaPathX = missileObj.targetVector.x() - missileObj.posX;
-                missileObj.deltaPathY = missileObj.targetVector.y() - missileObj.posY;
-                missileObj.deltaPathZ = missileObj.targetVector.z() - missileObj.posZ;
+                missileObj.deltaPathX = missileObj.targetPos.x() - missileObj.posX;
+                missileObj.deltaPathY = missileObj.targetPos.y() - missileObj.posY;
+                missileObj.deltaPathZ = missileObj.targetPos.z() - missileObj.posZ;
 
-                missileObj.flatDistance = missileObj.sourceOfProjectile.toVector2().distance(missileObj.targetVector.toVector2());
+                missileObj.flatDistance = missileObj.sourceOfProjectile.toVector2().distance(missileObj.targetPos.toVector2());
                 missileObj.maxHeight = 150 + (int) (missileObj.flatDistance * 1.8);
                 missileObj.missileFlightTime = (float) Math.max(100, 2.4 * missileObj.flatDistance);
                 missileObj.acceleration = (float) missileObj.maxHeight * 2 / (missileObj.missileFlightTime * missileObj.missileFlightTime);

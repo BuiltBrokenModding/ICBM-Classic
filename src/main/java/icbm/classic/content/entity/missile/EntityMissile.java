@@ -41,7 +41,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 {
     public Explosives explosiveID = Explosives.CONDENSED;
     public int maxHeight = 200;
-    public Pos targetVector = null;
+    public Pos targetPos = null;
     public Pos launcherPos = null;
     public boolean isExpoding = false;
 
@@ -72,6 +72,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     private boolean setExplode;
     private boolean setNormalExplode;
+    /** Used by the cluster missile */
+    public int missileCount = 0;
 
     // Missile Type
     public MissileType missileType = MissileType.MISSILE;
@@ -175,8 +177,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         //Update data
         this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
-        this.targetVector = target;
-        this.targetHeight = this.targetVector != null ? this.targetVector.yi() : 0;
+        this.targetPos = target;
+        this.targetHeight = this.targetPos != null ? this.targetPos.yi() : 0;
         if (explosiveID != null && explosiveID.handler instanceof Explosion)
         {
             ((Explosion) explosiveID.handler).launch(this);
@@ -195,7 +197,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         RadarRegistry.add(this);
         if (target != null)
         {
-            ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetVector.xi() + ", " + targetVector.yi() + ", " + targetVector.zi());
+            ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
         }
         else
         {
@@ -218,17 +220,17 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     /** Recalculates required parabolic path for the missile Registry */
     public void recalculatePath()
     {
-        if (this.targetVector != null)
+        if (this.targetPos != null)
         {
             // Calculate the distance difference of the missile
-            this.deltaPathX = this.targetVector.x() - this.sourceOfProjectile.x();
-            this.deltaPathY = this.targetVector.y() - this.sourceOfProjectile.y();
-            this.deltaPathZ = this.targetVector.z() - this.sourceOfProjectile.z();
+            this.deltaPathX = this.targetPos.x() - this.sourceOfProjectile.x();
+            this.deltaPathY = this.targetPos.y() - this.sourceOfProjectile.y();
+            this.deltaPathZ = this.targetPos.z() - this.sourceOfProjectile.z();
 
             // TODO: Calculate parabola and relative out the targetHeight.
             // Calculate the power required to reach the target co-ordinates
             // Ground Displacement
-            this.flatDistance = this.sourceOfProjectile.toVector2().distance(this.targetVector.toVector2());
+            this.flatDistance = this.sourceOfProjectile.toVector2().distance(this.targetPos.toVector2());
             // Parabolic Height
             this.maxHeight = 160 + (int) (this.flatDistance * 3);
             // Flight time
@@ -410,7 +412,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
     }
 
-    /** Checks to see if and entity is touching the missile. If so, blow up! */
+    /** Checks to see if an entity is touching the missile. If so, blow up! */
     @Override
     public AxisAlignedBB getCollisionBox(Entity entity)
     {
@@ -543,7 +545,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.targetVector = new Pos(nbt.getCompoundTag("target"));
+        this.targetPos = new Pos(nbt.getCompoundTag("target"));
         this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi"));
         this.acceleration = nbt.getFloat("acceleration");
         this.targetHeight = nbt.getInteger("targetHeight");
@@ -559,9 +561,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        if (this.targetVector != null)
+        if (this.targetPos != null)
         {
-            nbt.setTag("target", this.targetVector.toNBT());
+            nbt.setTag("target", this.targetPos.toNBT());
         }
 
         if (this.launcherPos != null)

@@ -193,12 +193,12 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
      */
     public boolean isMissileGoingToHit(EntityMissile missile)
     {
-        if (missile == null || missile.targetVector == null)
+        if (missile == null || missile.targetPos == null)
         {
             return false;
         }
         //TODO simplify code to not use vector system
-        return (new Pos((IPos3D) missile)).toVector2().distance(this) < this.alarmRange && missile.targetVector.toVector2().distance(this) < this.safetyRange;
+        return (new Pos((IPos3D) missile)).toVector2().distance(this) < this.alarmRange && missile.targetPos.toVector2().distance(this) < this.safetyRange;
     }
 
     @Override

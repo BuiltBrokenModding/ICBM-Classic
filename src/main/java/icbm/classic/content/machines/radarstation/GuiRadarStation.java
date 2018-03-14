@@ -233,9 +233,9 @@ public class GuiRadarStation extends GuiContainerBase
 
                     if (entity instanceof EntityMissile)
                     {
-                        if (((EntityMissile) entity).targetVector != null)
+                        if (((EntityMissile) entity).targetPos != null)
                         {
-                            this.info2 = "(" + ((EntityMissile) entity).targetVector.xi() + ", " + ((EntityMissile) entity).targetVector.zi() + ")";
+                            this.info2 = "(" + ((EntityMissile) entity).targetPos.xi() + ", " + ((EntityMissile) entity).targetPos.zi() + ")";
                         }
                     }
                 }
