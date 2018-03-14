@@ -418,19 +418,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             return null;
         }
-
-        // Make sure the entity is not an item
-        if (!(entity instanceof EntityItem) && entity != this.getRidingEntity() && this.protectionTime <= 0)
-        {
-            if (entity instanceof EntityMissile)
-            {
-                ((EntityMissile) entity).setNormalExplode();
-            }
-
-            this.setExplode();
-        }
-
-        return null;
+        return getEntityBoundingBox();
     }
 
     public Pos getPredictedPosition(int t)
