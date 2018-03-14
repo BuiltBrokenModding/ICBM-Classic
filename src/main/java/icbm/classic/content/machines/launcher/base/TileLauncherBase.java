@@ -47,6 +47,7 @@ import resonant.api.explosion.ILauncherController;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This tile entity is for the base of the missile launcher
@@ -58,7 +59,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
     public static HashMap<IPos3D, String> northSouthMultiBlockCache = new HashMap();
     public static HashMap<IPos3D, String> eastWestMultiBlockCache = new HashMap();
 
-    private static EulerAngle angle = new EulerAngle(0, 0, 0);
+    private static EulerAngle accuracyAngleRandomizer_yawCache = new EulerAngle(0, 0, 0);
 
     static
     {
@@ -237,23 +238,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
             Explosive ex = Explosives.get(stack.getItemDamage()).handler;
             if (ex.hasMissileForm())
             {
-                // Apply inaccuracy
-                int inaccuracy = 30;
-
-                //Get value from support frame
-                if (this.supportFrame != null)
-                {
-                    inaccuracy = this.supportFrame.getInaccuracy();
-                }
-
-                //Randomize distance
-                inaccuracy = oldWorld().rand.nextInt(inaccuracy);
-
-                //Randomize radius drop
-                angle.setYaw(oldWorld().rand.nextFloat() * 360);
-
-                //Update target
-                target = target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
+                target = applyInaccuracy(target, oldWorld().rand, getInaccuracy());
 
                 //TODO add distance check? --- something seems to be missing
                 //TODO add distance based inaccuracy addition
@@ -289,6 +274,50 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
             }
         }
         return false;
+    }
+
+    /**
+     * Gets the inaccuracy of the launcher
+     *
+     * @return
+     */
+    public int getInaccuracy()
+    {
+        // Apply inaccuracy
+        int inaccuracy = 30; //TODO move to config
+
+        //Get value from support frame
+        if (this.supportFrame != null)
+        {
+            inaccuracy = this.supportFrame.getInaccuracy();
+        }
+
+        return inaccuracy;
+    }
+
+    /**
+     * Called to randomize the target by a given maxInaccuracy
+     * <p>
+     * Will generate a random distance and angle to apply to the target position. This
+     * creates a circle pattern around the original target point
+     *
+     * @param target        - target to randomize
+     * @param random        - random object to use for randomization
+     * @param maxInaccuracy - max distance
+     * @return
+     */
+    public static Pos applyInaccuracy(Pos target, Random random, double maxInaccuracy)
+    {
+        final float degrees = 360;
+
+        //Randomize distance
+        double inaccuracy = maxInaccuracy * random.nextFloat();
+
+        //Randomize radius drop
+        accuracyAngleRandomizer_yawCache.setYaw(random.nextFloat() * degrees);
+
+        //Update target
+        return target.add(accuracyAngleRandomizer_yawCache.x() * inaccuracy, 0, accuracyAngleRandomizer_yawCache.z() * inaccuracy);
     }
 
     // Checks if the missile target is in range
