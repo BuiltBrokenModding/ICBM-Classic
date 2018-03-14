@@ -91,7 +91,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (ex.handler != null)
                             {
                                 // Limit the missile to tier two.
-                                if ((ex.handler.getTier().ordinal() <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || ICBMClassic.runningAsDev) && ((Explosion) ex.handler).isCruise())
+                                if ((ex.handler.getTier().ordinal() <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode) && ((Explosion) ex.handler).isCruise() || ICBMClassic.runningAsDev)
                                 {
                                     if(!world.isRemote)
                                     {
