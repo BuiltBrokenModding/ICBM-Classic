@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 /** @author Calclavia */
 public class MissileCluster extends Missile
 {
-    protected double spread = 20;
+    protected double spread = 30;
 
     public MissileCluster(String name, EnumTier tier)
     {
@@ -68,6 +68,7 @@ public class MissileCluster extends Missile
                         pos = pos.multiply(200); //In theory this would be strait down
                         pos = pos.add(missileCluster); //Add position
                         pos = pos.add(getTargetDeltaForMissile(missileIndex)); //offset
+                        pos = pos.addRandom(missileCluster.world.rand, 4);
 
                         //Set
                         missile.launch(pos);
@@ -127,11 +128,17 @@ public class MissileCluster extends Missile
         if (index > 0)
         {
             double theta = getAngleForMissile(index);
-            x = Math.cos(theta) * 5;
-            z = Math.sin(theta) * 5;
+            x = Math.cos(theta) * getSpreadDistanceForMissile(index);
+            z = Math.sin(theta) * getSpreadDistanceForMissile(index);
         }
         return new Pos(x, y, z);
     }
+
+    protected double getSpreadDistanceForMissile(int index)
+    {
+        return index % 2 == 0 ? 4 : 7;
+    }
+
 
     protected double getAngleForMissile(int index)
     {
