@@ -93,11 +93,11 @@ public class ExEnder extends Explosion
         NBTTagCompound tag = null;
         if (entity instanceof EntityExplosive)
         {
-            tag = ((EntityExplosive) entity).getTagCompound();
+            tag = ((EntityExplosive) entity).getExplosiveData();
         }
         else if (entity instanceof EntityMissile)
         {
-            tag = ((EntityMissile) entity).getTagCompound();
+            tag = ((EntityMissile) entity).getExplosiveData();
         }
 
         //Get target from data

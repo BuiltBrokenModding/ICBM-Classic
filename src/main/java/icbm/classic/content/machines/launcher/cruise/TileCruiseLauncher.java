@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.prefab.inventory.IInventoryProvider;
@@ -299,7 +300,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             this.extractEnergy();
 
             EntityMissile entityMissile = new EntityMissile(world, xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 2);
-            entityMissile.missileType = EntityMissile.MissileType.CruiseMissile;
+            entityMissile.missileType = MissileFlightType.CRUISE_LAUNCHER;
             entityMissile.explosiveID = Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage());
             entityMissile.acceleration = 1;
             entityMissile.launch(null);

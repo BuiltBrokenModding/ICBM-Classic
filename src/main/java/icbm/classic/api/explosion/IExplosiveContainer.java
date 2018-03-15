@@ -6,9 +6,10 @@ import net.minecraft.nbt.NBTTagCompound;
  * entities etc.
  *
  * @author Calclavia */
+@Deprecated //Will be replaced with capabilities
 public interface IExplosiveContainer
 {
-    public NBTTagCompound getTagCompound();
+    NBTTagCompound getExplosiveData();
 
-    public IExplosive getExplosiveType();
+    IExplosive getExplosiveType();
 }

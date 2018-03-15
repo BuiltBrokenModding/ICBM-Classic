@@ -1,8 +1,9 @@
 package icbm.classic.content.explosive.handlers.missiles;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.missile.EntityMissile.MissileType;
+import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.lib.transform.vector.Pos;
@@ -14,7 +15,6 @@ import net.minecraft.world.World;
 /** @author Calclavia */
 public class MissileCluster extends Missile
 {
-    public static final int MAX_CLUSTER = 12;
     protected double spread = 20;
 
     public MissileCluster(String name, EnumTier tier)
@@ -24,18 +24,26 @@ public class MissileCluster extends Missile
         //this.missileModelPath = "missiles/tier2/missile_head_cluster.obj";
     }
 
+    protected boolean shouldTrigger(EntityMissile missileCluster)
+    {
+        return missileCluster.motionY < -0.5;  //TODO why use motion as the trigger?
+    }
+
     @Override
     public void update(EntityMissile missileCluster)
     {
-        final int missileIndex = missileCluster.missileCount;
-        if (missileCluster.motionY < -0.5) //TODO why use motion as the trigger?
+        //Check if we can trigger
+        if (!missileCluster.isExploding() && shouldTrigger(missileCluster))
         {
-            if (missileCluster.missileCount < MAX_CLUSTER)
+            missileCluster.isExploding = true;
+            missileCluster.setDead();
+
+            for (int missileIndex = 0; missileIndex <= getMissileSpawnCount(); missileIndex++)
             {
                 if (!missileCluster.world.isRemote)
                 {
                     //Create missile
-                    EntityMissile missile = new EntityMissile(missileCluster.world);
+                    EntityMissile missile = createMissile(missileCluster, missileIndex);
 
                     //Set position
                     Pos position = new Pos((IPos3D) missileCluster).add(getSpreadForMissile(missileIndex));
@@ -43,8 +51,7 @@ public class MissileCluster extends Missile
 
                     //Set data
                     missile.launcherPos = missileCluster.launcherPos;
-                    missile.explosiveID = Explosives.CONDENSED;
-                    missile.missileType = MissileType.MISSILE;
+                    missile.missileType = MissileFlightType.DEAD_AIM;
                     missile.protectionTime = 20 + missileCluster.targetHeight - 1;
                     missile.ticksInAir = missileCluster.ticksInAir;
 
@@ -69,17 +76,22 @@ public class MissileCluster extends Missile
                     //Spawn
                     missileCluster.world.spawnEntity(missile);
                 }
-
-                //Setup for next missile
-                missileCluster.protectionTime = 20;
-                missileCluster.missileCount++;
-            }
-            else
-            {
-                missileCluster.setDead();
             }
         }
     }
+
+    protected int getMissileSpawnCount()
+    {
+        return ConfigMissile.CLUSTER_SIZE;
+    }
+
+    protected EntityMissile createMissile(EntityMissile missileCluster, int index)
+    {
+        EntityMissile missile = new EntityMissile(missileCluster.world);
+        missile.explosiveID = Explosives.CONDENSED;
+        return missile;
+    }
+
 
     /**
      * Calculates offset for the missile target
@@ -123,7 +135,7 @@ public class MissileCluster extends Missile
 
     protected double getAngleForMissile(int index)
     {
-        return (index / (double) MAX_CLUSTER) * Math.PI * 2;
+        return (index / (double) getMissileSpawnCount()) * Math.PI * 2;
     }
 
 

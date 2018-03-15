@@ -39,6 +39,7 @@ import java.util.Random;
 /** @Author - Calclavia */
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IExplosiveContainer, IMissile
 {
+    public static final float MISSILE_SPEED = 2;
     public Explosives explosiveID = Explosives.CONDENSED;
     public int maxHeight = 200;
     public Pos targetPos = null;
@@ -72,13 +73,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     // Tracking
     public int trackingVar = -1;
 
-    /** Used by the cluster missile */
-    public int missileCount = 0;
-
     // Missile Type
-    public MissileType missileType = MissileType.MISSILE;
+    public MissileFlightType missileType = MissileFlightType.PAD_LAUNCHER;
 
-    public Pos xiaoDanMotion = new Pos();
+    public Pos motionVector = new Pos();
 
     private double lockHeight = 3;
 
@@ -109,7 +107,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public EntityMissile(EntityLivingBase entity)
     {
-        super(entity.world, entity, 2);
+        super(entity.world, entity, MISSILE_SPEED);
         this.setSize(.5F, .5F);
         this.launcherPos = new Pos(entity);
         this.inAirKillTime = 144000 /* 2 hours */;
@@ -169,7 +167,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void readSpawnData(ByteBuf additionalMissileData)
     {
         this.explosiveID = Explosives.get(additionalMissileData.readInt());
-        this.missileType = MissileType.values()[additionalMissileData.readInt()];
+        this.missileType = MissileFlightType.values()[additionalMissileData.readInt()];
     }
 
     @Override
@@ -222,7 +220,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return this;
     }
 
-    /** Recalculates required parabolic path for the missile Registry */
+    /**
+     * Calculates the data needed to get the missile moving on a set path
+     * <p>
+     * Path is based on the type of missile
+     * {@link MissileFlightType#PAD_LAUNCHER} -> Moves on an parabolic path
+     */
     public void recalculatePath()
     {
         if (this.targetPos != null)
@@ -232,16 +235,23 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             this.deltaPathY = this.targetPos.y() - this.sourceOfProjectile.y();
             this.deltaPathZ = this.targetPos.z() - this.sourceOfProjectile.z();
 
-            // TODO: Calculate parabola and relative out the targetHeight.
-            // Calculate the power required to reach the target co-ordinates
-            // Ground Displacement
-            this.flatDistance = this.sourceOfProjectile.toVector2().distance(this.targetPos.toVector2());
-            // Parabolic Height
-            this.maxHeight = 160 + (int) (this.flatDistance * 3);
-            // Flight time
-            this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
-            // Acceleration
-            this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
+            if (missileType == MissileFlightType.PAD_LAUNCHER)
+            {
+                // TODO: Calculate parabola and relative out the targetHeight.
+                // Calculate the power required to reach the target co-ordinates
+                // Ground Displacement
+                this.flatDistance = this.sourceOfProjectile.toVector2().distance(this.targetPos.toVector2());
+                // Parabolic Height
+                this.maxHeight = 160 + (int) (this.flatDistance * 3);
+                // Flight time
+                this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
+                // Acceleration
+                this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
+            }
+            else if (missileType.movesDirectly)
+            {
+                shoot(deltaPathX, deltaPathY, deltaPathZ, MISSILE_SPEED, 0);
+            }
         }
     }
 
@@ -265,7 +275,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             if (this.ticksInAir >= 0)
             {
-                if (this.missileType == MissileType.MISSILE)
+                if (this.missileType == MissileFlightType.PAD_LAUNCHER)
                 {
                     // Start the launch
                     if (this.lockHeight > 0)
@@ -310,7 +320,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void decreaseMotion()
     {
-        if (this.missileType != MissileType.MISSILE && ticksInAir > 1000)
+        if (this.missileType != MissileFlightType.PAD_LAUNCHER && ticksInAir > 1000)
         {
             super.decreaseMotion();
         }
@@ -373,11 +383,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public double getMountedYOffset()
     {
-        if (this.missileFlightTime <= 0 && this.missileType == MissileType.MISSILE)
+        if (this.missileFlightTime <= 0 && this.missileType == MissileFlightType.PAD_LAUNCHER)
         {
             return height;
         }
-        else if (this.missileType == MissileType.CruiseMissile)
+        else if (this.missileType == MissileFlightType.CRUISE_LAUNCHER)
         {
             return height / 10;
         }
@@ -429,25 +439,25 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public Pos getPredictedPosition(int t)
     {
-        Pos guJiDiDian = new Pos((IPos3D) this);
+        Pos position = new Pos((IPos3D) this);
         double tempMotionY = this.motionY;
 
         if (this.ticksInAir > 20)
         {
             for (int i = 0; i < t; i++)
             {
-                if (this.missileType == MissileType.CruiseMissile || this.missileType == MissileType.LAUNCHER)
+                if (this.missileType.movesDirectly)
                 {
-                    guJiDiDian = guJiDiDian.add(this.xiaoDanMotion);
+                    position = position.add(this.motionVector);
                 }
                 else
                 {
-                    guJiDiDian = guJiDiDian.add(motionX, tempMotionY - this.acceleration, motionZ);
+                    position = position.add(motionX, tempMotionY - this.acceleration, motionZ);
                 }
             }
         }
 
-        return guJiDiDian;
+        return position;
     }
 
     @Override
@@ -543,13 +553,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         super.readEntityFromNBT(nbt);
         this.targetPos = new Pos(nbt.getCompoundTag("target"));
-        this.launcherPos = new Pos(nbt.getCompoundTag("faSheQi"));
+        this.launcherPos = new Pos(nbt.getCompoundTag("launcherPos"));
         this.acceleration = nbt.getFloat("acceleration");
         this.targetHeight = nbt.getInteger("targetHeight");
         this.explosiveID = Explosives.get(nbt.getInteger("explosiveID"));
         this.ticksInAir = nbt.getInteger("ticksInAir");
         this.lockHeight = nbt.getDouble("lockHeight");
-        this.missileType = MissileType.values()[nbt.getInteger("missileType")];
+        this.missileType = MissileFlightType.get(nbt.getInteger("missileType"));
         this.nbtData = nbt.getCompoundTag("additionalMissileData");
     }
 
@@ -590,16 +600,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
-    public NBTTagCompound getTagCompound()
+    public NBTTagCompound getExplosiveData()
     {
         return this.nbtData;
-    }
-
-    public enum MissileType
-    {
-        MISSILE,
-        CruiseMissile,
-        LAUNCHER
     }
 
 }

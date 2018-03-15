@@ -200,7 +200,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         return this.explosiveID.handler;
     }
 
-    public NBTTagCompound getTagCompound()
+    public NBTTagCompound getExplosiveData()
     {
         return this.nbtData;
     }

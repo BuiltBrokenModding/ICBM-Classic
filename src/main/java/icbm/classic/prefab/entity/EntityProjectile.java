@@ -110,7 +110,7 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
         this(world, shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ, shooter.rotationYaw, shooter.rotationPitch, f, distanceScale);
     }
 
-    public EntityProjectile(World world, double x, double y, double z, float yaw, float pitch, float f, float distanceScale)
+    public EntityProjectile(World world, double x, double y, double z, float yaw, float pitch, float speedScale, float distanceScale)
     {
         super(world);
         //this.renderDistanceWeight = 10.0D;
@@ -126,7 +126,7 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
         this.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * (float) Math.PI));
-        this.shoot(this.motionX, this.motionY, this.motionZ, f * 1.5F, 1.0F);
+        this.shoot(this.motionX, this.motionY, this.motionZ, speedScale, 1.0F);
     }
 
     @Override

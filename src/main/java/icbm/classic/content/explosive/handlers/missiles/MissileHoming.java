@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.handlers.missiles;
 
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.missile.EntityMissile.MissileType;
+import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.items.ItemTracker;
 import icbm.classic.prefab.tile.EnumTier;
@@ -47,7 +47,7 @@ public class MissileHoming extends Missile
     @Override
     public void update(EntityMissile missileObj)
     {
-        if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileType.MISSILE)
+        if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileFlightType.PAD_LAUNCHER)
         {
             World world = missileObj.world;
             Entity trackingEntity = world.getEntityByID(missileObj.trackingVar);
@@ -61,7 +61,7 @@ public class MissileHoming extends Missile
 
                 missileObj.targetPos = new Pos(trackingEntity);
 
-                missileObj.missileType = MissileType.CruiseMissile;
+                missileObj.missileType = MissileFlightType.HOMING;
 
                 missileObj.deltaPathX = missileObj.targetPos.x() - missileObj.posX;
                 missileObj.deltaPathY = missileObj.targetPos.y() - missileObj.posY;
@@ -72,10 +72,10 @@ public class MissileHoming extends Missile
                 missileObj.missileFlightTime = (float) Math.max(100, 2.4 * missileObj.flatDistance);
                 missileObj.acceleration = (float) missileObj.maxHeight * 2 / (missileObj.missileFlightTime * missileObj.missileFlightTime);
 
-                if (missileObj.xiaoDanMotion.equals(new Pos()) || missileObj.xiaoDanMotion == null)
+                if (missileObj.motionVector == null || missileObj.motionVector.equals(new Pos()))
                 {
                     float suDu = 0.3f;
-                    missileObj.xiaoDanMotion = new Pos(missileObj.deltaPathX / (missileObj.missileFlightTime * suDu)
+                    missileObj.motionVector = new Pos(missileObj.deltaPathX / (missileObj.missileFlightTime * suDu)
                             , missileObj.deltaPathY / (missileObj.missileFlightTime * suDu),
                             missileObj.deltaPathZ / (missileObj.missileFlightTime * suDu));
                 }
