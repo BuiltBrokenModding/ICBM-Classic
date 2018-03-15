@@ -26,7 +26,6 @@ public class ExRepulsive extends Explosion
         else
         {
             new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f).setDestroyItems().setPushType(2).explode();
-
         }
     }
 }

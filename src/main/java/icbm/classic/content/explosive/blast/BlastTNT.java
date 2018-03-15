@@ -249,7 +249,7 @@ public class BlastTNT extends Blast
         maxCoord = maxCoord.add(radius + 1);
 
         Cube region = new Cube(minCoord, maxCoord);
-        List<Entity> entities = region.getEntities(this.world(), Entity.class);
+        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, region.getAABB());
 
         for (Entity entity : entities)
         {
