@@ -257,13 +257,18 @@ public class BlastTNT extends Blast
 
             if (var13 <= 1.0D)
             {
+                //Get delta
                 double xDifference = entity.posX - position.x();
                 double yDifference = entity.posY - position.y();
                 double zDifference = entity.posZ - position.z();
-                double distance = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
-                xDifference /= distance;
-                yDifference /= distance;
-                zDifference /= distance;
+
+                //Get magnitude
+                double mag = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+
+                //Normalize difference
+                xDifference /= mag;
+                yDifference /= mag;
+                zDifference /= mag;
 
                 if (type == 1)
                 {
