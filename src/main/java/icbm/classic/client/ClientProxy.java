@@ -2,6 +2,7 @@ package icbm.classic.client;
 
 import icbm.classic.CommonProxy;
 import icbm.classic.ICBMClassic;
+import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.EntityMissile;
@@ -17,15 +18,18 @@ import icbm.classic.content.machines.launcher.screen.TESRLauncherScreen;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.TESRRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -234,5 +238,17 @@ public class ClientProxy extends CommonProxy
     private static <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> comparable)
     {
         return property.getName((T) comparable);
+    }
+
+    @Override
+    public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
+    {
+        if (world != null)
+        {
+            ParticleSmokeICBM particleSmokeICBM = new ParticleSmokeICBM(world, position, v, v1, v2, scale);
+            particleSmokeICBM.setColor(red, green, blue);
+            particleSmokeICBM.setAge(ticksToLive);
+            Minecraft.getMinecraft().effectRenderer.addEffect(particleSmokeICBM);
+        }
     }
 }

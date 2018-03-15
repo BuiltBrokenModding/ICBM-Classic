@@ -87,7 +87,10 @@ public class BlastChemical extends Blast
                 if (diDian.magnitude() <= radius)
                 {
                     diDian = diDian.add(this.position);
-                    //ICBMClassic.proxy.spawnParticle("smoke", this.oldWorld(), diDian, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, this.red, this.green, this.blue, 7.0F, 8);
+                    ICBMClassic.proxy.spawnSmoke(world, diDian,
+                            (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2,
+                            this.red, this.green, this.blue,
+                            7.0F, 8);
                 }
             }
         }

@@ -1,6 +1,7 @@
 package icbm.classic;
 
 import icbm.classic.lib.IGuiTile;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -130,5 +131,10 @@ public class CommonProxy implements IGuiHandler
     public boolean isShiftHeld()
     {
         return Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+    }
+
+    public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float v3, int i)
+    {
+
     }
 }
