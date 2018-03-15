@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.lib.IGuiTile;
@@ -143,7 +144,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
         for (Entity entity : entities)
         {
-            if (entity instanceof EntityMissile)
+            if (entity instanceof EntityMissile && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
             {
                 if (((EntityMissile) entity).getTicksInAir() > -1)
                 {
@@ -198,7 +199,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             return false;
         }
         //TODO simplify code to not use vector system
-        return (new Pos((IPos3D) missile)).toVector2().distance(this) < this.alarmRange && missile.targetPos.toVector2().distance(this) < this.safetyRange;
+        return missile.targetPos.distance(this) < this.safetyRange;
     }
 
     @Override

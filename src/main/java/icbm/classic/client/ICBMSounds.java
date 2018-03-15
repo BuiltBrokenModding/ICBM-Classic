@@ -63,6 +63,7 @@ public enum ICBMSounds
      */
     public void play(Entity entity, float volume, float pitch, boolean distanceDelay)
     {
+        //TODO move audio settings to constants attached to configs
         play(entity.world, entity.posX, entity.posY, entity.posZ, volume, pitch, distanceDelay);
     }
 
