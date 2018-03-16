@@ -27,13 +27,9 @@ public abstract class ItemAbstract extends Item
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag)
     {
         EntityPlayer player = Minecraft.getMinecraft().player;
-        //Generic info
-        String translationKey = getUnlocalizedName() + ".info";
-        String translation = LanguageUtility.getLocal(translationKey);
-        if (!translation.isEmpty() && !translation.equals(translationKey))
-        {
-            list.add(translation);
-        }
+
+        //Generic info, shared by item group
+        splitAdd(getUnlocalizedName() + ".info", list, false);
 
         if (hasDetailedInfo(stack, player))
         {
@@ -61,26 +57,10 @@ public abstract class ItemAbstract extends Item
      * @param player
      * @param list
      */
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info";
-        String translation = LanguageUtility.getLocal(translationKey);
-        if (!translation.isEmpty() && !translation.equals(translationKey))
-        {
-            if (translation.contains(","))
-            {
-                String[] split = translation.split(",");
-                for (String s : split)
-                {
-                    list.add(s.trim());
-                }
-            }
-            else
-            {
-                list.add(translation);
-            }
-        }
+        splitAdd(getUnlocalizedName(stack) + ".info", list, true);
     }
 
     /**
@@ -93,10 +73,14 @@ public abstract class ItemAbstract extends Item
      * @param player
      * @param list
      */
-    protected void getShiftDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    protected void getShiftDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info.detailed";
+        splitAdd(getUnlocalizedName(stack) + ".info.detailed", list, true);
+    }
+
+    protected void splitAdd(String translationKey, List<String> list, boolean addKeyIfEmpty)
+    {
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
@@ -108,7 +92,7 @@ public abstract class ItemAbstract extends Item
                     list.add(s.trim());
                 }
             }
-            else
+            else if (addKeyIfEmpty)
             {
                 list.add(translation);
             }
