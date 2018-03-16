@@ -106,12 +106,12 @@ public class MultiBlockHelper
     {
         if (world != null && tile != null && ICBMClassic.multiBlock != null)
         {
-            return canBuild(world, tile.xi(), tile.yi(), tile.zi(), tile.getLayoutOfMultiBlock(), offset);
+            return canBuild(world, ((TileEntity)tile).getPos(), tile.getLayoutOfMultiBlock(), offset);
         }
         return false;
     }
 
-    public static boolean canBuild(World world, int x, int y, int z, Collection<BlockPos> map, boolean offset)
+    public static boolean canBuild(World world, BlockPos pos, Collection<BlockPos> map, boolean offset)
     {
         if (world != null && ICBMClassic.multiBlock != null)
         {
@@ -128,14 +128,14 @@ public class MultiBlockHelper
                     //Moves the position based on the location of the host
                     if (offset)
                     {
-                        location = location.add(x, y, z);
+                        location = location.add(pos);
                     }
                     IBlockState block = world.getBlockState(location);
                     if (!block.getBlock().isReplaceable(world, location))
                     {
                         return false;
                     }
-                    else if (block == ICBMClassic.multiBlock)
+                    else if (block.getBlock() == ICBMClassic.multiBlock)
                     {
                         TileEntity tileEntity = world.getTileEntity(location);
                         if (tileEntity instanceof IMultiTile && ((IMultiTile) tileEntity).getHost() != null)

@@ -1,15 +1,10 @@
 package icbm.classic;
 
 import icbm.classic.caps.emp.CapabilityEMP;
-import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.multiblock.BlockMultiblock;
-import icbm.classic.content.multiblock.TileMulti;
-import icbm.classic.lib.energy.system.EnergySystem;
-import icbm.classic.lib.energy.system.EnergySystemFE;
-import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
@@ -25,13 +20,19 @@ import icbm.classic.content.machines.launcher.screen.BlockLaunchScreen;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
+import icbm.classic.content.multiblock.BlockMultiblock;
+import icbm.classic.content.multiblock.TileMulti;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.energy.system.EnergySystemFE;
+import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.Block;
@@ -200,18 +201,17 @@ public final class ICBMClassic
         event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
         event.getRegistry().register(itemMissile = new ItemMissile());
 
-
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockGlassButton).setRegistryName(blockGlassButton.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockSpikes).setRegistryName(blockSpikes.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockConcrete).setRegistryName(blockConcrete.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockSpikes));
+        event.getRegistry().register(new ItemBlockSubTypes(blockConcrete));
         event.getRegistry().register(new ItemBlock(blockReinforcedGlass).setRegistryName(blockReinforcedGlass.getRegistryName()));
-        event.getRegistry().register(new ItemBlockExplosive(blockExplosive).setRegistryName(blockExplosive.getRegistryName()));
+        event.getRegistry().register(new ItemBlockExplosive(blockExplosive));
         event.getRegistry().register(new ItemBlock(blockEmpTower).setRegistryName(blockEmpTower.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockRadarStation).setRegistryName(blockRadarStation.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport).setRegistryName(blockLaunchSupport.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchBase).setRegistryName(blockLaunchBase.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen).setRegistryName(blockLaunchScreen.getRegistryName()));
+        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport));
+        event.getRegistry().register(new ItemBlockRotatedMultiTile(blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
+        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen));
 
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }

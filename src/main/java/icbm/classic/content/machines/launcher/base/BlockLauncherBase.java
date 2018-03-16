@@ -58,15 +58,13 @@ public class BlockLauncherBase extends BlockICBM
     @Override
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
     {
-        return side == EnumFacing.UP && this.canPlaceBlockAt(worldIn, pos);
+        return false; //Setup to return false due to multi-block
     }
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos)
-                && worldIn.getBlockState(pos.up()).getBlock().isReplaceable(worldIn, pos.up())
-                && worldIn.getBlockState(pos.up(2)).getBlock().isReplaceable(worldIn, pos.up(2));
+        return false; //Setup to return false due to multi-block
     }
 
     @Override
@@ -110,6 +108,7 @@ public class BlockLauncherBase extends BlockICBM
 
             //Build multiblock
             MultiBlockHelper.buildMultiBlock(world, (IMultiTileHost) tile, true, true);
+            //TODO if can't place, break and drop item
         }
     }
 

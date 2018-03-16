@@ -17,6 +17,7 @@ public class ItemBlockSubTypes extends ItemBlockAbstract
     {
         super(block);
         setHasSubtypes(true);
+        setRegistryName(block.getRegistryName());
     }
 
     @Override

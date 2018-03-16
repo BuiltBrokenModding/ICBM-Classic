@@ -1,11 +1,13 @@
 package icbm.classic.content.machines.launcher.base;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.api.explosion.ILauncherController;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigLauncher;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.EntityPlayerSeat;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
@@ -34,8 +36,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
-import icbm.classic.api.explosion.ILauncherContainer;
-import icbm.classic.api.explosion.ILauncherController;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -265,7 +265,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     //Set data
                     missile.explosiveID = Explosives.get(stack.getItemDamage());
                     missile.launcherPos = new Pos((TileEntity) this);
-                    missile.setPosition(xi() + 0.5, yi() + 3, zi()+ 0.5);
+                    missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5);
 
                     //Trigger launch event
                     missile.launch(target, lockHeight);
@@ -501,7 +501,12 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Override
     public List<BlockPos> getLayoutOfMultiBlock()
     {
-        if (getRotation() == EnumFacing.EAST || getRotation() == EnumFacing.WEST)
+        return getLayoutOfMultiBlock(getRotation());
+    }
+
+    public static List<BlockPos> getLayoutOfMultiBlock(EnumFacing facing)
+    {
+        if (facing == EnumFacing.EAST || facing == EnumFacing.WEST)
         {
             return eastWestMultiBlockCache;
         }
