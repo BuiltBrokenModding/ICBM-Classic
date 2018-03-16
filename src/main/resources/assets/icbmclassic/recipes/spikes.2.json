@@ -4,7 +4,7 @@
     "data": 2,
     "count": 1
   },
-  "group": "icbmclassic:spikes_poison",
+  "group": "icbmclassic:spikes_fire",
   "pattern": [
     "c",
     "i"
@@ -12,10 +12,12 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "c": {
-      "item": "icbmclassic:poisonPowder"
+      "item": "icbmclassic:sulfurDust",
+      "data": 0
     },
     "i": {
-      "item": "icbmclassic:spikes"
+      "item": "icbmclassic:spikes",
+      "data": 0
     }
   }
 }
