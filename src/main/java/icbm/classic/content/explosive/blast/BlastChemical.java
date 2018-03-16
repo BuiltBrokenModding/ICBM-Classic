@@ -1,9 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
@@ -15,8 +15,8 @@ import java.util.List;
 
 public class BlastChemical extends Blast //TODO recode to separate out sub types
 {
-    private static final int CHECK_BAN_JING = 16;
-    private static final float NENG_LIANG = 10F;
+    public static final int PARTICLES_TO_SPAWN = 200; //TODO maybe add a config?
+
     private int duration;
     /** Color of particles */
     private float red = 1, green = 1, blue = 1;
@@ -75,74 +75,104 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     @Override
     public void doExplode()
     {
-        float radius = this.getBlastRadius();
+        final float radius = this.getBlastRadius();
 
-        if (this.world().isRemote)
+        //Trigger effects for user feedback
+        generateGraphicEffect();
+        generateAudioEffect();
+
+        //Only run potion effect application for the following types
+        if (isContagious || isPoisonous || isConfuse)
         {
-            for (int i = 0; i < 200; i++)
-            {
-                Pos diDian = new Pos(Math.random() * radius / 2 - radius / 4, Math.random() * radius / 2 - radius / 4, Math.random() * radius / 2 - radius / 4);
-                diDian = diDian.multiply(Math.min(radius, callCount) / 10);
+            //Get bounding box for effect
+            AxisAlignedBB bounds = new AxisAlignedBB(
+                    position.x() - radius, position.y() - radius, position.z() - radius,
+                    position.x() + radius, position.y() + radius, position.z() + radius);
 
-                if (diDian.magnitude() <= radius)
+            //Get all living entities
+            List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
+
+            //Loop all entities
+            for (EntityLivingBase entity : allEntities)
+            {
+                if (this.isContagious)
                 {
-                    diDian = diDian.add(this.position);
-                    ICBMClassic.proxy.spawnSmoke(world, diDian,
-                            (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2,
-                            this.red, this.green, this.blue,
-                            7.0F, 100);
+                    ICBMClassic.contagios_potion.poisonEntity(position.toPos(), entity);
+                }
+
+                if (this.isPoisonous)
+                {
+                    ICBMClassic.poisonous_potion.poisonEntity(position.toPos(), entity);
+                }
+
+                if (this.isConfuse)
+                {
+                    entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
+                    entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
+                    entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
                 }
             }
         }
 
-        AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
-        List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
-
-        for (EntityLivingBase entity : allEntities)
+        //Trigger secondary blast
+        if (this.isMutate) //TODO why?
         {
-            if (this.isContagious)
-            {
-                ICBMClassic.contagios_potion.poisonEntity(position.toPos(), entity);
-            }
-
-            if (this.isPoisonous)
-            {
-                ICBMClassic.poisonous_potion.poisonEntity(position.toPos(), entity);
-            }
-
-            if (this.isConfuse)
-            {
-                entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
-                entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
-                entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
-            }
+            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), radius).explode();
         }
 
-        if (this.isMutate)
-        {
-            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).explode();
-        }
-
-        if (this.playShortSoundFX)
-        {
-            ICBMSounds.GAS_LEAK.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
-        }
-
+        //End explosion when we hit life timer
         if (this.callCount > this.duration)
         {
             this.controller.endExplosion();
         }
     }
 
-    @Override
-    public long getEnergy()
+    protected void generateAudioEffect()
     {
-        return 20;
+        if (this.playShortSoundFX)
+        {
+            ICBMSounds.GAS_LEAK.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D,
+                    4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+        }
     }
 
-    /** The interval in ticks before the next procedural call of this explosive
+    protected void generateGraphicEffect()
+    {
+        if (this.world().isRemote)
+        {
+            final float radius = this.getBlastRadius();
+            for (int i = 0; i < PARTICLES_TO_SPAWN; i++)
+            {
+                //Get random spawn point
+                Pos randomSpawnPoint = new Pos(
+                        Math.random() * radius / 2 - radius / 4,
+                        Math.random() * radius / 2 - radius / 4,
+                        Math.random() * radius / 2 - radius / 4); //TODO document math
+
+                //Scale random by time alive
+                randomSpawnPoint = randomSpawnPoint.multiply(Math.min(radius, callCount) / 10);
+
+                //Ensure point is inside radius
+                if (randomSpawnPoint.magnitude() <= radius) //TODO why would it generate outside the range? Maybe fix the math?
+                {
+                    //Offset by our center
+                    randomSpawnPoint = randomSpawnPoint.add(this.position);
+
+                    //Call to spawn TODO maybe build a list of points, then spawn all at once?
+                    ICBMClassic.proxy.spawnSmoke(world, randomSpawnPoint,
+                            (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2,
+                            this.red, this.green, this.blue,
+                            7.0F, 100);
+                }
+            }
+        }
+    }
+
+    /**
+     * The interval in ticks before the next procedural call of this explosive
      *
-     * @return - Return -1 if this explosive does not need proceudral calls */
+     * @return - Return -1 if this explosive does not need proceudral calls
+     */
     @Override
     public int proceduralInterval()
     {
@@ -177,7 +207,5 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         nbt.setFloat("green", this.green);
         nbt.setFloat("blue", this.blue);
         nbt.setBoolean("playShortSoundFX", this.playShortSoundFX);
-
     }
-
 }
