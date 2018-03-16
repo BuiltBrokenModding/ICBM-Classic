@@ -16,6 +16,7 @@ import java.util.List;
 public class BlastChemical extends Blast //TODO recode to separate out sub types
 {
     public static final int PARTICLES_TO_SPAWN = 200; //TODO maybe add a config?
+    public static final int TICKS_BETWEEN_RUNS = 5;
 
     private int duration;
     /** Color of particles */
@@ -88,6 +89,8 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
             AxisAlignedBB bounds = new AxisAlignedBB(
                     position.x() - radius, position.y() - radius, position.z() - radius,
                     position.x() + radius, position.y() + radius, position.z() + radius);
+            //TODO scale affect area with time, the graphics do not match the logic
+            //TODO cache box, we do not need to recreate it each tick
 
             //Get all living entities
             List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
@@ -143,17 +146,17 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
             final float radius = this.getBlastRadius();
             for (int i = 0; i < PARTICLES_TO_SPAWN; i++)
             {
-                //Get random spawn point
+                //Get random spawn point (generates a random point in a box area)
                 Pos randomSpawnPoint = new Pos(
                         Math.random() * radius / 2 - radius / 4,
                         Math.random() * radius / 2 - radius / 4,
-                        Math.random() * radius / 2 - radius / 4); //TODO document math
+                        Math.random() * radius / 2 - radius / 4);
 
                 //Scale random by time alive
                 randomSpawnPoint = randomSpawnPoint.multiply(Math.min(radius, callCount) / 10);
 
                 //Ensure point is inside radius
-                if (randomSpawnPoint.magnitude() <= radius) //TODO why would it generate outside the range? Maybe fix the math?
+                if (randomSpawnPoint.magnitude() <= radius)
                 {
                     //Offset by our center
                     randomSpawnPoint = randomSpawnPoint.add(this.position);
@@ -168,15 +171,10 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         }
     }
 
-    /**
-     * The interval in ticks before the next procedural call of this explosive
-     *
-     * @return - Return -1 if this explosive does not need proceudral calls
-     */
     @Override
     public int proceduralInterval()
     {
-        return 5;
+        return TICKS_BETWEEN_RUNS;
     }
 
     @Override
