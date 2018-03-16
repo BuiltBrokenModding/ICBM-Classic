@@ -7,6 +7,7 @@ import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.handlers.missiles.Missile;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.machines.emptower.TESREMPTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
@@ -183,8 +184,14 @@ public class ClientProxy extends CommonProxy
         {
             if (ex.handler.hasMissileForm())
             {
-                String properties_string = "explosive=" + ex.getName();
-                ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemMissile, ex.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
+                if (ex.handler instanceof Missile)
+                {
+                    ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemMissile, ex.ordinal(), new ModelResourceLocation(resourcePath, "explosive=" + ex.getName()));
+                }
+                else
+                {
+                    ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemMissile, ex.ordinal(), new ModelResourceLocation(resourcePath + "_" + (ex.handler.getTier().ordinal() + 1), "explosive=" + ex.getName()));
+                }
             }
         }
     }

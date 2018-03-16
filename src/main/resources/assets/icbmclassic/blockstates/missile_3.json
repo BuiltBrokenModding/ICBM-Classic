@@ -121,20 +121,26 @@
   },
   "variants": {
     "explosive": {
-      "missile": {
-        "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
+      "nuclear": {
+        "model": "icbmclassic:missiles/tier3/missile_nuclear.obj"
       },
-      "missile_homing": {
-        "model": "icbmclassic:missiles/tier1/missile_homing.obj"
+      "emp": {
+        "model": "icbmclassic:missiles/tier3/missile_emp.obj"
       },
-      "missile_anti": {
-        "model": "icbmclassic:missiles/tier2/missile_anti.obj"
+      "exothermic": {
+        "model": "icbmclassic:missiles/tier3/missile_exothermic.obj"
       },
-      "missile_cluster": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
+      "endothermic": {
+        "model": "icbmclassic:missiles/tier3/missile_endothermic.obj"
       },
-      "missile_cluster_nuke": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
+      "anti_grav": {
+        "model": "icbmclassic:missiles/tier3/missile_anti_grav.obj"
+      },
+      "ender": {
+        "model": "icbmclassic:missiles/tier3/missile_ender.obj"
+      },
+      "hypersonic": {
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
       }
     }
   }

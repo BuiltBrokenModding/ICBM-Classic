@@ -121,20 +121,11 @@
   },
   "variants": {
     "explosive": {
-      "missile": {
-        "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
+      "antimatter": {
+        "model": "icbmclassic:missiles/tier4/missile_antimatter.obj"
       },
-      "missile_homing": {
-        "model": "icbmclassic:missiles/tier1/missile_homing.obj"
-      },
-      "missile_anti": {
-        "model": "icbmclassic:missiles/tier2/missile_anti.obj"
-      },
-      "missile_cluster": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
-      },
-      "missile_cluster_nuke": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
+      "redmatter": {
+        "model": "icbmclassic:missiles/tier4/missile_redmatter.obj"
       }
     }
   }

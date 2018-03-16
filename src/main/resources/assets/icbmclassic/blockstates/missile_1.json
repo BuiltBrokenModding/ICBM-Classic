@@ -121,20 +121,35 @@
   },
   "variants": {
     "explosive": {
+      "condensed": {
+        "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
+      },
+      "shrapnel": {
+        "model": "icbmclassic:missiles/tier1/missile_shrapnel.obj"
+      },
+      "incendiary": {
+        "model": "icbmclassic:missiles/tier1/missile_incendiary.obj"
+      },
+      "deblitation": {
+        "model": "icbmclassic:missiles/tier1/missile_deblitation.obj"
+      },
+      "chemical": {
+        "model": "icbmclassic:missiles/tier1/missile_chemical.obj"
+      },
+      "anvil": {
+        "model": "icbmclassic:missiles/tier1/missile_anvil.obj"
+      },
+      "replusive": {
+        "model": "icbmclassic:missiles/tier1/missile_repulsion.obj"
+      },
+      "attractive": {
+        "model": "icbmclassic:missiles/tier1/missile_attraction.obj"
+      },
       "missile": {
         "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
       },
       "missile_homing": {
         "model": "icbmclassic:missiles/tier1/missile_homing.obj"
-      },
-      "missile_anti": {
-        "model": "icbmclassic:missiles/tier2/missile_anti.obj"
-      },
-      "missile_cluster": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
-      },
-      "missile_cluster_nuke": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
       }
     }
   }

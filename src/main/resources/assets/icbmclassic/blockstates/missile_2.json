@@ -121,20 +121,23 @@
   },
   "variants": {
     "explosive": {
-      "missile": {
-        "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
+      "fragmentation": {
+        "model": "icbmclassic:missiles/tier2/missile_fragmentation.obj"
       },
-      "missile_homing": {
-        "model": "icbmclassic:missiles/tier1/missile_homing.obj"
+      "contagious": {
+        "model": "icbmclassic:missiles/tier2/missile_contagious.obj"
       },
-      "missile_anti": {
-        "model": "icbmclassic:missiles/tier2/missile_anti.obj"
+      "sonic": {
+        "model": "icbmclassic:missiles/tier2/missile_sonic.obj"
       },
-      "missile_cluster": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
+      "breaching": {
+        "model": "icbmclassic:missiles/tier2/missile_breaching.obj"
       },
-      "missile_cluster_nuke": {
-        "model": "icbmclassic:missiles/tier2/missile_cluster.obj"
+      "rejuvenation": {
+        "model": "icbmclassic:missiles/tier2/missile_regen.obj"
+      },
+      "thermobaric": {
+        "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
       }
     }
   }
