@@ -128,7 +128,7 @@ public class TileMulti extends TileEntity implements IMultiTile
         {
             return ((TileEntity) getHost()).getCapability(capability, facing);
         }
-        return getCapability(capability, facing);
+        return super.getCapability(capability, facing);
     }
 
     @Override
