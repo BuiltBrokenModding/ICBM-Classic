@@ -206,7 +206,7 @@ public final class ICBMClassic
         event.getRegistry().register(new ItemBlockSubTypes(blockSpikes));
         event.getRegistry().register(new ItemBlockSubTypes(blockConcrete));
         event.getRegistry().register(new ItemBlock(blockReinforcedGlass).setRegistryName(blockReinforcedGlass.getRegistryName()));
-        event.getRegistry().register(new ItemBlockExplosive(blockExplosive));
+        event.getRegistry().register(new ItemBlockExplosive(blockExplosive).setRegistryName(blockExplosive.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockEmpTower).setRegistryName(blockEmpTower.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockRadarStation).setRegistryName(blockRadarStation.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport));

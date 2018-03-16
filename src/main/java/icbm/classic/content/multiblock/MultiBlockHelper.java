@@ -121,16 +121,22 @@ public class MultiBlockHelper
                 //Loop all blocks and start placement
                 for (BlockPos location : map)
                 {
-                    if (location == null)
+                    //Validate data
+                    if (location == null || !world.isBlockLoaded(pos))
                     {
                         return false;
                     }
+
                     //Moves the position based on the location of the host
                     if (offset)
                     {
                         location = location.add(pos);
                     }
+
+                    //Get block
                     IBlockState block = world.getBlockState(location);
+
+                    //If not replaceable, do not place
                     if (!block.getBlock().isReplaceable(world, location))
                     {
                         return false;

@@ -58,13 +58,13 @@ public class BlockLauncherBase extends BlockICBM
     @Override
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
     {
-        return false; //Setup to return false due to multi-block
+        return super.canPlaceBlockOnSide(worldIn, pos, side);
     }
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return false; //Setup to return false due to multi-block
+        return super.canPlaceBlockAt(worldIn, pos);
     }
 
     @Override
