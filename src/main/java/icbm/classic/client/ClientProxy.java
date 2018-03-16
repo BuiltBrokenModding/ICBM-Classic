@@ -246,7 +246,7 @@ public class ClientProxy extends CommonProxy
         if (world != null)
         {
             ParticleSmokeICBM particleSmokeICBM = new ParticleSmokeICBM(world, position, v, v1, v2, scale);
-            particleSmokeICBM.setColor(red, green, blue);
+            particleSmokeICBM.setColor(red, green, blue, true);
             particleSmokeICBM.setAge(ticksToLive);
             Minecraft.getMinecraft().effectRenderer.addEffect(particleSmokeICBM);
         }

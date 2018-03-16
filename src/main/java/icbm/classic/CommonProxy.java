@@ -133,7 +133,7 @@ public class CommonProxy implements IGuiHandler
         return Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
     }
 
-    public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float v3, int i)
+    public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int age)
     {
 
     }

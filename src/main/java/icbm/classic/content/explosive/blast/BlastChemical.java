@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class BlastChemical extends Blast
+public class BlastChemical extends Blast //TODO recode to separate out sub types
 {
     private static final int CHECK_BAN_JING = 16;
     private static final float NENG_LIANG = 10F;
@@ -90,7 +90,7 @@ public class BlastChemical extends Blast
                     ICBMClassic.proxy.spawnSmoke(world, diDian,
                             (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2,
                             this.red, this.green, this.blue,
-                            7.0F, 8);
+                            7.0F, 100);
                 }
             }
         }
