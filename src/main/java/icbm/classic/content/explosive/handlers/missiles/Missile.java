@@ -13,6 +13,5 @@ public abstract class Missile extends Explosion
         super(name, tier);
         this.hasBlock = false;
         this.hasGrenade = false;
-        this.hasMinecart = false;
     }
 }

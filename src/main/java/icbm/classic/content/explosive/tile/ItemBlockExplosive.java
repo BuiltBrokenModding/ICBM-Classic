@@ -1,12 +1,13 @@
 package icbm.classic.content.explosive.tile;
 
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemBlockAbstract;
-import icbm.classic.content.explosive.Explosives;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBlockExplosive extends ItemBlockAbstract
@@ -28,12 +29,12 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     }
 
     @Override
-    public void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    public void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
-        ///Shhh!!! tell no one this exists, tis a surprise
         if (stack.getItemDamage() == Explosives.REDMATTER.ordinal())
         {
-            boolean taunt = player.getName().toLowerCase().startsWith("sips_") || player.getName().toLowerCase().startsWith("sjin");
+            ///Shhh!!! tell no one this exists, tis a surprise
+            boolean taunt = shouldTauntPlayer(player);
             if (taunt)
             {
                 switch (tauntCount)
@@ -61,40 +62,14 @@ public class ItemBlockExplosive extends ItemBlockAbstract
             }
             else
             {
-                if(redmatterRandomTranslations == -1)
-                {
-                    try
-                    {
-                        redmatterRandomTranslations = Integer.parseInt(LanguageUtility.getLocal("icbm.explosive.redMatter.info.count"));
-                    }
-                    catch (NumberFormatException e)
-                    {
-                        redmatterRandomTranslations = 0;
-                    }
-                }
-                String translationKey = "icbm.explosive.redMatter.info." + tauntCount;
-                String translation = LanguageUtility.getLocal(translationKey);
-                if (!translation.isEmpty() && !translation.equals(translationKey))
-                {
-                    if (translation.contains(","))
-                    {
-                        String[] split = translation.split(",");
-                        for (String s : split)
-                        {
-                            list.add(s.trim());
-                        }
-                    }
-                    else
-                    {
-                        list.add(translation);
-                    }
-                }
+                normalDetailedInfo(list);
             }
 
-            if(System.currentTimeMillis() - lastTranslationChange > changeOverDelay)
+            //Cycle next message
+            if (player != null && System.currentTimeMillis() - lastTranslationChange > changeOverDelay)
             {
                 lastTranslationChange = System.currentTimeMillis();
-                if(taunt)
+                if (taunt)
                 {
                     tauntCount = player.world.rand.nextInt(7);
                 }
@@ -107,6 +82,44 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         else
         {
             super.getDetailedInfo(stack, player, list);
+        }
+    }
+
+    protected boolean shouldTauntPlayer(@Nullable EntityPlayer player)
+    {
+        return player != null && player.getName() != null
+                && (player.getName().toLowerCase().startsWith("sips_") || player.getName().toLowerCase().startsWith("sjin"));
+    }
+
+    protected void normalDetailedInfo(List list)
+    {
+        if (redmatterRandomTranslations == -1)
+        {
+            try
+            {
+                redmatterRandomTranslations = Integer.parseInt(LanguageUtility.getLocal(count_key));
+            }
+            catch (NumberFormatException e)
+            {
+                redmatterRandomTranslations = 0;
+            }
+        }
+        String translationKey = "icbm.explosive.redMatter.info." + tauntCount;
+        String translation = LanguageUtility.getLocal(translationKey);
+        if (!translation.isEmpty() && !translation.equals(translationKey))
+        {
+            if (translation.contains(","))
+            {
+                String[] split = translation.split(",");
+                for (String s : split)
+                {
+                    list.add(s.trim());
+                }
+            }
+            else
+            {
+                list.add(translation);
+            }
         }
     }
 

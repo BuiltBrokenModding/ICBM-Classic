@@ -20,7 +20,6 @@ public class ExSMine extends Explosive
         super(mingZi, tier);
         this.setFuseTime(20);
         this.hasGrenade = false;
-        this.hasMinecart = false;
         this.hasMissile = false;
     }
 

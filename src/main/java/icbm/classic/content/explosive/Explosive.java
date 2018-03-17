@@ -30,7 +30,6 @@ public abstract class Explosive implements IExplosive
 
     protected boolean hasBlock;
     protected boolean hasGrenade;
-    protected boolean hasMinecart;
     protected boolean hasMissile;
 
     public ResourceLocation missileModel;
@@ -47,7 +46,6 @@ public abstract class Explosive implements IExplosive
         this.hasBlock = true;
         this.hasMissile = true;
         this.hasGrenade = this.tier.ordinal() <= EnumTier.ONE.ordinal();
-        this.hasMinecart = this.tier.ordinal() <= EnumTier.TWO.ordinal();
 
         //this.flagName = //FlagRegistry.registerFlag("ban_" + this.nameID);
         this.isDisabled = false;//Settings.CONFIGURATION.get("Disable_Explosives", "Disable " + this.nameID, false).getBoolean(false);
@@ -157,7 +155,7 @@ public abstract class Explosive implements IExplosive
 
     public boolean hasMinecartForm()
     {
-        return this.hasMinecart;
+        return hasBlockForm();
     }
 
     public boolean hasBlockForm()
