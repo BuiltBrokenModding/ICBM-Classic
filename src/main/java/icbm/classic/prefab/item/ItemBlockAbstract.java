@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -92,8 +93,9 @@ public class ItemBlockAbstract extends ItemBlock
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List list, ITooltipFlag flag)
+    public void addInformation(ItemStack stack, @Nullable World world, List list, ITooltipFlag flag)
     {
+        //Get player, don't run tool tips without
         EntityPlayer player = Minecraft.getMinecraft().player;
         try
         {
@@ -137,7 +139,7 @@ public class ItemBlockAbstract extends ItemBlock
      * @param player
      * @param list
      */
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    protected void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
         //Per item detailed info
         String translationKey = getUnlocalizedName(stack) + ".info";
@@ -169,7 +171,7 @@ public class ItemBlockAbstract extends ItemBlock
      * @param player
      * @param list
      */
-    protected void getShiftDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    protected void getShiftDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
         //Per item detailed info
         String translationKey = getUnlocalizedName(stack) + ".info.detailed";
@@ -198,7 +200,7 @@ public class ItemBlockAbstract extends ItemBlock
      * @param player
      * @return
      */
-    protected boolean hasDetailedInfo(ItemStack stack, EntityPlayer player)
+    protected boolean hasDetailedInfo(ItemStack stack, @Nullable EntityPlayer player)
     {
         String translationKey = getUnlocalizedName() + ".info";
         String translationKey2 = getUnlocalizedName(stack) + ".info";
@@ -213,7 +215,7 @@ public class ItemBlockAbstract extends ItemBlock
      * @param player
      * @return
      */
-    protected boolean hasShiftInfo(ItemStack stack, EntityPlayer player)
+    protected boolean hasShiftInfo(ItemStack stack, @Nullable EntityPlayer player)
     {
         return false;
     }
