@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "icbmclassic:glasspressureplate",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "ggg"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "g": {
+      "item": "minecraft:glass",
+      "data": 0
+    }
+  }
+}
