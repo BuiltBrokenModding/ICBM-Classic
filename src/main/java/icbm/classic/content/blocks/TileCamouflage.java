@@ -15,6 +15,7 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import icbm.classic.ICBMClassic;
+import icbm.classic.Settings;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -38,10 +39,12 @@ import java.util.List;
 
 public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeContainer
 {
-    public static boolean useGlassRender = false; //TODO client side config
 
     @SideOnly(Side.CLIENT)
     public static IIcon icon;
+
+    @SideOnly(Side.CLIENT)
+    public static IIcon vine_icon;
 
     // The block Id this block is trying to mimick
     private Block _blockToMimic = null;
@@ -220,6 +223,7 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side)
     {
+        //This method is not used for in world rendering
         if (canRenderSide(ForgeDirection.getOrientation(side)))
         {
             return Blocks.glass.getIcon(0, 0);
@@ -247,40 +251,55 @@ public class TileCamouflage extends Tile implements IPacketReceiver, IRecipeCont
     @SideOnly(Side.CLIENT)
     public boolean renderStatic(RenderBlocks renderer, Pos pos, int pass)
     {
-        Block block = getMimicBlock() != null ? getMimicBlock() : getBlockType();
+        //Get block to mimic
+        final Block block = getMimicBlock() != null ? getMimicBlock() : getBlockType();
 
-        //Render mimic block
+        //Crate wrapper to allow control of rendering
         BlockWrapper wrapper = new BlockWrapper(block);
+
+        //Figure out what sides to render
         for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
         {
             Block block2 = oldWorld().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
             wrapper.setRenderSide(dir, block2 != getBlockType() && !canRenderSide(dir));
         }
+
+        //Render mimic block with wrapper
         boolean rendered = renderer.renderStandardBlock(wrapper, xi(), yi(), zi());
 
         //Render see though sides
         if (renderSides != 0)
         {
-            //Render outside
-            wrapper = new BlockWrapper(useGlassRender ? Blocks.glass : Blocks.vine);
+            //Get block to use for rendering see through sides
+            final Block vineReplacement = Settings.getBlockToUseForInsideIcon();
+            final Block seeThroughSideBlock = Settings.CAMO_USE_GLASS_RENDER ? Blocks.glass : (vineReplacement != null ? vineReplacement : Blocks.vine);
+
+            //Generate render conditions for outside glass render
+            wrapper = new BlockWrapper(seeThroughSideBlock);
             for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
             {
                 wrapper.setRenderSide(dir, canRenderSide(dir));
             }
+
+            //Render
             if (renderer.renderStandardBlock(wrapper, xi(), yi(), zi()))
             {
                 rendered = true;
             }
 
-            //Render inside
+            //Generate render conditions for inside render
             renderer.renderFromInside = true;
             renderer.setRenderBounds(.01, .01, .01, .99, .99, .99);
-            wrapper = new BlockWrapper(useGlassRender ? Blocks.glass : Blocks.vine);
+            wrapper = new BlockWrapper(seeThroughSideBlock);
+
+            //Map sides to render so we can see the inside block rather than vines
             for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
             {
                 Block block2 = oldWorld().getBlock(xi() + dir.offsetX, yi() + dir.offsetY, zi() + dir.offsetZ);
                 wrapper.setRenderSide(dir, block2 != getBlockType());
             }
+
+            //Render
             if (renderer.renderStandardBlock(wrapper, xi(), yi(), zi()))
             {
                 rendered = true;
