@@ -20,14 +20,14 @@
       "data": 0
     },
     "c": {
-      "type": "forge:ore_dict",
-      "ore": "circuitBasic"
+      "item": "minecraft:repeater",
+      "data": 0
     }
   },
   "conditions": [
     {
       "type": "icbmclassic:ore_value",
-      "condition": "true",
+      "condition": "false",
       "value": "circuitBasic"
     }
   ]
