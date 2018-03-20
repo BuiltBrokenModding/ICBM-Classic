@@ -10,7 +10,7 @@
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "a": {
+    "c": {
       "item": "icbmclassic:explosives",
       "data": 0
     }
