@@ -1,0 +1,5 @@
+{
+  "conditions": {
+    "ore_value": "icbm.classic.lib.recipe.ConditionOreValue"
+  }
+}
