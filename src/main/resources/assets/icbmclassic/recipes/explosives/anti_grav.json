@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 19,
+    "count": 1
+  },
+  "pattern": [
+    "eee",
+    "ere",
+    "eee"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "r": {
+      "item": "icbmclassic:explosives",
+      "data": 6
+    },
+    "e": {
+      "item": "minecraft:ender_eye",
+      "data": 0
+    }
+  }
+}

@@ -18,39 +18,39 @@ import java.util.List;
  */
 public enum Explosives implements IStringSerializable
 {
-    CONDENSED(new ExCondensed("condensed", EnumTier.ONE)),
-    SHRAPNEL(new ExShrapnel("shrapnel", EnumTier.ONE)),
-    INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
-    DEBLITATION(new ExDebilitation("debilitation", EnumTier.ONE)),
-    CHEMICAL(new ExChemical("chemical", EnumTier.ONE)),
-    ANVIL(new ExShrapnel("anvil", EnumTier.ONE)),
-    REPLUSIVE(new ExRepulsive("repulsive", EnumTier.ONE)),
-    ATTRACTIVE(new ExRepulsive("attractive", EnumTier.ONE)),
+    /* 0  */CONDENSED(new ExCondensed("condensed", EnumTier.ONE)),
+    /* 1  */SHRAPNEL(new ExShrapnel("shrapnel", EnumTier.ONE)),
+    /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
+    /* 3  */DEBLITATION(new ExDebilitation("debilitation", EnumTier.ONE)),
+    /* 4  */CHEMICAL(new ExChemical("chemical", EnumTier.ONE)),
+    /* 5  */ANVIL(new ExShrapnel("anvil", EnumTier.ONE)),
+    /* 6  */REPLUSIVE(new ExRepulsive("repulsive", EnumTier.ONE)),
+    /* 7  */ATTRACTIVE(new ExRepulsive("attractive", EnumTier.ONE)),
 
-    FRAGMENTATION(new ExShrapnel("fragmentation", EnumTier.TWO)),
-    CONTAGIOUS(new ExChemical("contagious", EnumTier.TWO)),
-    SONIC(new ExSonic("sonic", EnumTier.TWO)),
-    BREACHING(new ExBreaching()),
-    REJUVENATION(new ExRejuvenation()),
-    THERMOBARIC(new ExNuclear("thermobaric", EnumTier.TWO)),
-    SMINE(new ExSMine("sMine", EnumTier.TWO)),
+    /* 8  */FRAGMENTATION(new ExShrapnel("fragmentation", EnumTier.TWO)),
+    /* 9  */CONTAGIOUS(new ExChemical("contagious", EnumTier.TWO)),
+    /* 10 */SONIC(new ExSonic("sonic", EnumTier.TWO)),
+    /* 11 */BREACHING(new ExBreaching()),
+    /* 12 */REJUVENATION(new ExRejuvenation()),
+    /* 13 */THERMOBARIC(new ExNuclear("thermobaric", EnumTier.TWO)),
+    /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)),
 
-    NUCLEAR(new ExNuclear("nuclear", EnumTier.THREE)),
-    EMP(new ExEMP()),
-    EXOTHERMIC(new ExExothermic()),
-    ENDOTHERMIC(new ExEndothermic()),
-    ANTI_GRAV(new ExAntiGravitational()),
-    ENDER(new ExEnder()),
-    HYPERSONIC(new ExSonic("hypersonic", EnumTier.THREE)), //TODO find Missile model
+    /* 15 */NUCLEAR(new ExNuclear("nuclear", EnumTier.THREE)),
+    /* 16 */EMP(new ExEMP()),
+    /* 17 */EXOTHERMIC(new ExExothermic()),
+    /* 18 */ENDOTHERMIC(new ExEndothermic()),
+    /* 19 */ANTI_GRAV(new ExAntiGravitational()),
+    /* 20 */ENDER(new ExEnder()),
+    /* 21 */HYPERSONIC(new ExSonic("hypersonic", EnumTier.THREE)), //TODO find Missile model
 
-    ANTIMATTER(new ExAntimatter()),
-    REDMATTER(new ExRedMatter()),
+    /* 22 */ANTIMATTER(new ExAntimatter()),
+    /* 23 */REDMATTER(new ExRedMatter()),
 
-    MISSILE(new MissileModule()),
-    MISSILE_HOMING(new MissileHoming()),
-    MISSILE_ANTI(new MissileAnti()),
-    MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO)),
-    MISSILE_CLUSTER_NUKE(new MissileNuclearCluster());
+    /* 24 */MISSILE(new MissileModule()),
+    /* 25 */MISSILE_HOMING(new MissileHoming()),
+    /* 26 */MISSILE_ANTI(new MissileAnti()),
+    /* 27 */MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO)),
+    /* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster());
 
     public final Explosive handler;
 

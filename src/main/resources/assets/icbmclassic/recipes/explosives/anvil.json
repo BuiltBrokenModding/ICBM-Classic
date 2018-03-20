@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 5,
+    "count": 10
+  },
+  "pattern": [
+    "aaa",
+    "ara",
+    "aaa"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "a": {
+      "item": "minecraft:anvil",
+      "data": 0
+    },
+    "r": {
+      "item": "icbmclassic:explosives",
+      "data": 1
+    }
+  }
+}

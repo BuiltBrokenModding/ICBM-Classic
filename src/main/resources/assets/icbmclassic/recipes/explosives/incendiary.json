@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 2,
+    "count": 1
+  },
+  "pattern": [
+    "aaa",
+    "ara",
+    "ala"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "a": {
+      "item": "icbmclassic:sulfurdust",
+      "data": 0
+    },
+    "l": {
+      "item": "minecraft:lava_bucket",
+      "data": 0
+    },
+    "r": {
+      "item": "icbmclassic:explosives",
+      "data": 1
+    }
+  }
+}

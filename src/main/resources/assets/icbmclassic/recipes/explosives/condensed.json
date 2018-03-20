@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 0,
+    "count": 3
+  },
+  "pattern": [
+    "trt",
+    "rtr",
+    "trt"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "r": {
+      "item": "minecraft:redstone",
+      "data": 0
+    },
+    "t": {
+      "item": "minecraft:tnt",
+      "data": 0
+    }
+  }
+}

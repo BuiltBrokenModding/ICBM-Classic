@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 15,
+    "count": 1
+  },
+  "pattern": [
+    "iii",
+    "iti",
+    "iii"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "t": {
+      "item": "icbmclassic:explosives",
+      "data": 13
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotUranium"
+    }
+  }
+}

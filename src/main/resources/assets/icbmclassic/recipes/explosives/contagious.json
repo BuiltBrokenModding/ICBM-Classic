@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 9,
+    "count": 2
+  },
+  "pattern": [
+    " c ",
+    "crc",
+    " c "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "c": {
+      "item": "icbmclassic:explosives",
+      "data": 4
+    },
+    "r": {
+      "item": "minecraft:rotten_flesh",
+      "data": 0
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 3,
+    "count": 3
+  },
+  "pattern": [
+    "sss",
+    "wrw",
+    "sss"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "s": {
+      "item": "icbmclassic:sulfurdust",
+      "data": 0
+    },
+    "w": {
+      "item": "minecraft:water_bucket",
+      "data": 0
+    },
+    "r": {
+      "item": "icbmclassic:explosives",
+      "data": 1
+    }
+  }
+}

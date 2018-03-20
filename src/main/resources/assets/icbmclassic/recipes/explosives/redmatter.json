@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 23,
+    "count": 1
+  },
+  "pattern": [
+    "nnn",
+    "nrn",
+    "nnn"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "r": {
+      "item": "icbmclassic:explosives",
+      "data": 22
+    },
+    "r": {
+      "item": "minecraft:nether_star",
+      "data": 0
+    }
+  }
+}
