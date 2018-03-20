@@ -1,0 +1,44 @@
+{
+  "result": {
+    "item": "icbmclassic:missile",
+    "data": 24,
+    "count": 1
+  },
+  "pattern": [
+    " i ",
+    "ici",
+    "ifi"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "c": {
+      "item": "minecraft:redstone_block",
+      "data": 0
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "f": {
+      "item": "minecraft:flint_and_steel",
+      "data": 0
+    }
+  },
+  "conditions": [
+    {
+      "type": "forge:or",
+      "values": [
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "false",
+          "value": "circuitBasic"
+        },
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "false",
+          "value": "ingotSteel"
+        }
+      ]
+    }
+  ]
+}
