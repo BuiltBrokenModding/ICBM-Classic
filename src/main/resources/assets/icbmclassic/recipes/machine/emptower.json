@@ -1,0 +1,35 @@
+{
+  "result": {
+    "item": "icbmclassic:emptower",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "pwp",
+    "ece",
+    "pmp"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "wireGold"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "circuitElite"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plateSteel"
+    },
+    "m": {
+        "type": "forge:ore_dict",
+        "ore": "motor"
+    },
+    "e": {
+      "type": "forge:ore_dict",
+      "ore": "batteryBox"
+    }
+  }
+}

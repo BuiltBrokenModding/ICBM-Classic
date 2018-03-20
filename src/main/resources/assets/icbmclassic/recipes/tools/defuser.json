@@ -1,0 +1,35 @@
+{
+  "result": {
+    "item": "icbmclassic:defuser",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "w w",
+    "rar",
+    "ici"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotCopper"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "circuitBasic"
+    },
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    },
+    "r": {
+      "item": "minecraft:redstone",
+      "data": 0
+    },
+    "a": {
+      "item": "minecraft:iron_axe",
+      "data": 0
+    }
+  }
+}

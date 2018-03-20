@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "icbmclassic:radarstation",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "grg",
+    " p ",
+    "pcp"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "circuitBasic"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plateSteel"
+    },
+    "r": {
+      "item": "radarGun",
+      "data": 0
+    }
+  }
+}
