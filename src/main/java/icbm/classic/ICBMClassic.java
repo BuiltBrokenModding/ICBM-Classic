@@ -2,6 +2,7 @@ package icbm.classic;
 
 import icbm.classic.caps.emp.CapabilityEMP;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.EntityMissile;
@@ -82,7 +83,8 @@ import java.util.List;
 /**
  * Mod class for ICBM Classic, contains all loading code and references to objects crated by the mod.
  *
- * @author DarkGuardsman
+ * @author Dark(DarkGuardsman, Robert).
+ * <p>
  * Orginal author and creator of the mod: Calclavia
  */
 @Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
@@ -128,21 +130,19 @@ public final class ICBMClassic
     // Blocks
     public static Block blockGlassPlate;
     public static Block blockGlassButton;
-    public static Block blockProximityDetector;
     public static Block blockSpikes;
-    public static Block blockCamo;
+    public static Block blockCamo; //TODO re-implement
     public static Block blockConcrete;
     public static Block blockReinforcedGlass;
     public static Block blockExplosive;
-    public static Block blockCombatRail;
 
     public static Block blockLaunchBase;
     public static Block blockLaunchScreen;
     public static Block blockLaunchSupport;
     public static Block blockRadarStation;
     public static Block blockEmpTower;
-    public static Block blockCruiseLauncher;
-    public static Block blockMissileCoordinator;
+    public static Block blockCruiseLauncher; //TODO re-implement
+    public static Block blockMissileCoordinator; //TODO re-implement
 
     public static Block multiBlock;
 
@@ -186,6 +186,7 @@ public final class ICBMClassic
         //"icbmCGrenade", -> "grenade"
         //"icbmCBombCart", -> "bombcart"
 
+        //Items
         event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
         event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
@@ -201,6 +202,7 @@ public final class ICBMClassic
         event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
         event.getRegistry().register(itemMissile = new ItemMissile());
 
+        //Block items
         event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
         event.getRegistry().register(new ItemBlock(blockGlassButton).setRegistryName(blockGlassButton.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(blockSpikes));
@@ -213,6 +215,29 @@ public final class ICBMClassic
         event.getRegistry().register(new ItemBlockRotatedMultiTile(blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen));
 
+        //Crafting resources
+        if (ConfigItems.ENABLE_CRAFTING_ITEMS)
+        {
+            if (ConfigItems.ENABLE_INGOTS_ITEMS)
+            {
+                event.getRegistry().register(new ItemCrafting("ingot", "steel", "copper"));
+            }
+            if (ConfigItems.ENABLE_PLATES_ITEMS)
+            {
+                event.getRegistry().register(new ItemCrafting("plate", "steel"));
+            }
+            if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
+            {
+                event.getRegistry().register(new ItemCrafting("circuit", "basic", "advanced", "elite"));
+            }
+            if (ConfigItems.ENABLE_WIRES_ITEMS)
+            {
+                event.getRegistry().register(new ItemCrafting("wire", "copper", "gold"));
+            }
+        }
+
+
+        //update tab
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
     }
 
@@ -457,7 +482,10 @@ public final class ICBMClassic
     {
         metadata.modId = id;
         metadata.name = name;
-        metadata.description = "ICBM is a Minecraft Mod that introduces intercontinental ballistic missiles to Minecraft. But the fun doesn't end there! This mod also features many different explosives, missiles and machines classified in three different tiers. If strategic warfare, carefully coordinated airstrikes, messing with matter and general destruction are up your alley, then this mod is for you!";
+        metadata.description = "ICBM is a Minecraft Mod that introduces intercontinental ballistic missiles to Minecraft. " +
+                "But the fun doesn't end there! This mod also features many different explosives, missiles and machines " +
+                "classified in three different tiers. If strategic warfare, carefully coordinated airstrikes, messing " +
+                "with matter and general destruction are up your alley, then this mod is for you!";
         metadata.url = "http://www.builtbroken.com/";
         metadata.logoFile = "/icbm_logo.png";
         metadata.version = ICBMClassic.VERSION;
