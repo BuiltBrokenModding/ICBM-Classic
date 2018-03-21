@@ -1,15 +1,19 @@
-package icbm.classic.lib.energy;
+package icbm.classic.lib.energy.storage;
 
 import icbm.classic.api.energy.IEnergyBuffer;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTPrimitive;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.energy.IEnergyStorage;
 
 /**
  * Basic implementation of energy buffer
  * Created by Dark on 8/15/2015.
  */
-public class EnergyBuffer implements IEnergyBuffer, IEnergyStorage
+public class EnergyBuffer implements IEnergyBuffer, IEnergyStorage, INBTSerializable
 {
-    private final int maxStorage;
+    private int maxStorage;
     private int energyStorage;
 
     public EnergyBuffer(int maxStorage)
@@ -150,4 +154,18 @@ public class EnergyBuffer implements IEnergyBuffer, IEnergyStorage
         }
     }
 
+    @Override
+    public NBTBase serializeNBT()
+    {
+        return new NBTTagInt(getEnergyStored());
+    }
+
+    @Override
+    public void deserializeNBT(NBTBase nbt)
+    {
+        if (nbt instanceof NBTPrimitive)
+        {
+            setEnergyStored(((NBTPrimitive) nbt).getInt());
+        }
+    }
 }

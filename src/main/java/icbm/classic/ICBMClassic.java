@@ -1,6 +1,6 @@
 package icbm.classic;
 
-import icbm.classic.caps.emp.CapabilityEMP;
+import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;

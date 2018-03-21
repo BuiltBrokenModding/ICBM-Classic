@@ -3,7 +3,7 @@ package icbm.classic.prefab.item;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
-import icbm.classic.lib.energy.EnergyBuffer;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;

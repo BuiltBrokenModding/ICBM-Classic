@@ -6,7 +6,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IExplosiveContainer;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.IMissile;
-import icbm.classic.caps.emp.CapabilityEMP;
+import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;

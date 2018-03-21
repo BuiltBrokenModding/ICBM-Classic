@@ -1,4 +1,4 @@
-package icbm.classic.caps.emp;
+package icbm.classic.lib.emp;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IEMPReceiver;
