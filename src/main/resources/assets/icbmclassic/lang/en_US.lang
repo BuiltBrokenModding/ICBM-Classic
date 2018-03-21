@@ -7,6 +7,7 @@ config.icbmclassic:launcher.title=Launcher
 config.icbmclassic:blast.title=Blast
 config.icbmclassic:emp.title=EMP
 config.icbmclassic:missile.title=Missile
+config.icbmclassic:battery.title=Battery
 
 ## Potions
 potion.toxin=Toxin
@@ -15,6 +16,9 @@ potion.frostBite=Frost Bite
 potion.radiation=Radiation
 
 ## Items
+item.icbmclassic:battery.name=Battery
+item.icbmclassic:battery.info=Used to store and transport power
+
 item.icbmclassic:sulfurDust.name=Sulfur
 item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
 

@@ -162,6 +162,7 @@ public final class ICBMClassic
     public static Item itemSulfurDust;
     public static Item itemSaltpeterDust;
     public static Item itemPoisonPowder;
+    public static Item itemBattery;
 
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
@@ -236,9 +237,10 @@ public final class ICBMClassic
             }
         }
 
+        //Optional items
         if(ConfigItems.ENABLE_BATTERY)
         {
-            event.getRegistry().register(new ItemBattery());
+            event.getRegistry().register(itemBattery = new ItemBattery());
         }
 
         //update tab
