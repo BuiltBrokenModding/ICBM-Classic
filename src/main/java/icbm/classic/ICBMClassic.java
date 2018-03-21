@@ -236,6 +236,10 @@ public final class ICBMClassic
             }
         }
 
+        if(ConfigItems.ENABLE_BATTERY)
+        {
+            event.getRegistry().register(new ItemBattery());
+        }
 
         //update tab
         CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
