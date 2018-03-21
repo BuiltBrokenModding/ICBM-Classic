@@ -39,7 +39,7 @@ public class ItemBattery extends ItemICBMBase
         ItemStackCapProvider provider = new ItemStackCapProvider(stack);
         provider.add("battery", CapabilityEnergy.ENERGY, new EnergyBufferLimited(ConfigBattery.BATTERY_CAPACITY, ConfigBattery.BATTERY_INPUT_LIMIT, ConfigBattery.BATTERY_OUTPUT_LIMIT));
         return provider;
-}
+    }
 
     @Override
     @SideOnly(Side.CLIENT)

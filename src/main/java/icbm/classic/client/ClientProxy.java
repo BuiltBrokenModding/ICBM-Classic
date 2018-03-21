@@ -63,6 +63,9 @@ public class ClientProxy extends CommonProxy
         newBlockModel(ICBMClassic.blockConcrete, 1, "inventory", "_compact");
         newBlockModel(ICBMClassic.blockConcrete, 2, "inventory", "_reinforced");
 
+        //Battery
+        newBlockModel(ICBMClassic.blockBattery, 0, "inventory", "");
+
         //Explosives
         registerExBlockRenders();
         registerGrenadeRenders();

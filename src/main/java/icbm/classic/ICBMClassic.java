@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import icbm.classic.content.machines.battery.BlockBattery;
 import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigItems;
@@ -144,6 +145,8 @@ public final class ICBMClassic
     public static Block blockCruiseLauncher; //TODO re-implement
     public static Block blockMissileCoordinator; //TODO re-implement
 
+    public static Block blockBattery;
+
     public static Block multiBlock;
 
 
@@ -215,6 +218,7 @@ public final class ICBMClassic
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport));
         event.getRegistry().register(new ItemBlockRotatedMultiTile(blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen));
+        event.getRegistry().register(new ItemBlockSubTypes(blockBattery));
 
         //Crafting resources
         if (ConfigItems.ENABLE_CRAFTING_ITEMS)
@@ -278,6 +282,7 @@ public final class ICBMClassic
         event.getRegistry().register(blockLaunchBase = new BlockLauncherBase());
         event.getRegistry().register(blockLaunchScreen = new BlockLaunchScreen());
         event.getRegistry().register(multiBlock = new BlockMultiblock());
+        event.getRegistry().register(blockBattery = new BlockBattery());
 
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
