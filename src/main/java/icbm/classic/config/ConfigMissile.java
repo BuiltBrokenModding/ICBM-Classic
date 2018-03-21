@@ -11,7 +11,7 @@ import net.minecraftforge.common.config.Config;
  * Created by Dark(DarkGuardsman, Robert) on 2/28/2018.
  */
 @Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/missile")
-@Config.LangKey("config.icbmclassic:blast.title")
+@Config.LangKey("config.icbmclassic:missile.title")
 public class ConfigMissile
 {
     @Config.Name("speed")

@@ -5,6 +5,8 @@ itemGroup.icbmclassic=ICBM-Classic
 config.icbmclassic:main.title=General
 config.icbmclassic:launcher.title=Launcher
 config.icbmclassic:blast.title=Blast
+config.icbmclassic:emp.title=EMP
+config.icbmclassic:missile.title=Missile
 
 ## Potions
 potion.toxin=Toxin
