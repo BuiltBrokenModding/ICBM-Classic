@@ -1,10 +1,12 @@
 package icbm.classic.prefab.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
@@ -227,4 +229,37 @@ public class ExternalInventory extends BasicInventory implements IExternalInvent
     {
         return getInventoryStackLimit();
     }
+
+    public void transferIntoInventory(EntityPlayer playerIn, EnumHand hand, ItemStack heldStack)
+    {
+        //Add stack to inventory, stack is consumed
+        heldStack = addItemToInventory(heldStack);
+
+        //Update player
+        if (hand == EnumHand.MAIN_HAND)
+        {
+            playerIn.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, heldStack);
+        }
+        else if (hand == EnumHand.OFF_HAND)
+        {
+            playerIn.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, heldStack);
+        }
+
+        //Send packet to update player with new inventory
+        playerIn.inventoryContainer.detectAndSendChanges();
+    }
+
+    public ItemStack addItemToInventory(ItemStack heldStack)
+    {
+        for (int slot : getSlotsWithSpace())
+        {
+            heldStack = insertItem(slot, heldStack, false);
+            if (heldStack.isEmpty() || heldStack.getCount() <= 0)
+            {
+                return ItemStack.EMPTY;
+            }
+        }
+        return heldStack;
+    }
+
 }

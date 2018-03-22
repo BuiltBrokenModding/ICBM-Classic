@@ -2,8 +2,17 @@ package icbm.classic.content.machines.battery;
 
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +25,43 @@ public class BlockBattery extends BlockICBM
     public BlockBattery()
     {
         super("batteryBox", Material.WOOD);
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    {
+        ItemStack heldStack = playerIn.getHeldItem(hand);
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileEntityBattery)
+        {
+            if (!heldStack.isEmpty())
+            {
+                if (heldStack.hasCapability(CapabilityEnergy.ENERGY, null))
+                {
+                    if (!worldIn.isRemote)
+                    {
+                        ((TileEntityBattery) tileEntity).getInventory().transferIntoInventory(playerIn, hand, heldStack);
+                    }
+                    return true;
+                }
+                else if (heldStack.getItem() == Items.STICK)
+                {
+                    if (!worldIn.isRemote)
+                    {
+                        int slotInUse = ((TileEntityBattery) tileEntity).getInventory().getSlots() - ((TileEntityBattery) tileEntity).getInventory().getEmptySlots().size();
+                        playerIn.sendMessage(new TextComponentString("Batteries: " + slotInUse));
+                    }
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                //TODO open GUI
+            }
+        }
+
+        return false;
     }
 
     @Nullable
