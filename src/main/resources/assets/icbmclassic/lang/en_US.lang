@@ -52,6 +52,19 @@ item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection, or m
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %s rockets
 
+## Crafting items
+item.icbmclassic:ingot.steel.name=Steel Ingot
+item.icbmclassic:ingot.copper.name=Copper Ingot
+
+item.icbmclassic:plate.steel.name=Steel Plate
+
+item.icbmclassic:wire.copper.name=Copper Wire
+item.icbmclassic:wire.gold.name=Gold Wire
+
+item.icbmclassic:circuit.basic.name=Basic Circuit
+item.icbmclassic:circuit.advanced.name=Advanced Circuit
+item.icbmclassic:circuit.elite.name=Elite Circuit
+
 ## ICBM Machines
 tile.icbmclassic:launcherbase.0.name=Launcher Platform T1
 tile.icbmclassic:launcherbase.1.name=Launcher Platform T2
