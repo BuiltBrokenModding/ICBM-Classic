@@ -200,11 +200,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         RadarRegistry.add(this);
         if (target != null)
         {
-            ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
+            ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
         }
         else
         {
-            ICBMClassic.INSTANCE.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
+            ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
         }
     }
 
@@ -520,12 +520,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 }
 
                 //Log that the missile impacted
-                ICBMClassic.INSTANCE.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+                ICBMClassic.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
             }
         }
         catch (Exception e)
         {
-            ICBMClassic.INSTANCE.logger().error("EntityMissile#normalExplode() - Unexpected error while triggering explosive on missile", e);
+            ICBMClassic.logger().error("EntityMissile#normalExplode() - Unexpected error while triggering explosive on missile", e);
         }
     }
 

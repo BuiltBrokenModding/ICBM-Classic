@@ -1,7 +1,9 @@
 package icbm.classic;
 
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import net.minecraft.command.*;
@@ -13,174 +15,123 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandICBM extends CommandBase
 {
-    @Override
-    public String getName()
-    {
-        return "icbmc";
-    }
 
-    @Override
-    public String getUsage(ICommandSender sender)
-    {
-        return "/icbmc help";
-    }
+	private static final String[] EMP_MESSAGES = new String[]{
+		"Did you pay the power bill?",
+		"See them power their toys now!",
+		"Hey who turned the lights out.",
+		"Ha! I run on steam power!",
+		"The power of lighting at my finger tips!"};
 
+	@Override
+	public String getName()
+	{
+		return "icbmc";
+	}
 
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-    {
-        try
-        {
-            EntityPlayer entityPlayer = (EntityPlayer) sender;
-            int dimension = entityPlayer.world.provider.getDimension();
-            if (args == null || args.length == 0 || args[0].equalsIgnoreCase("help"))
-            {
-                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc help"));
-                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc lag <radius>"));
-                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc remove <All/Missile/Explosion> <radius>"));
-                ((EntityPlayer) sender).sendMessage(new TextComponentString("/icbmc emp <radius>"));
-                return;
-            }
-            else if (args.length >= 2 && args[0].equalsIgnoreCase("lag"))
-            {
-                int radius = parseInt(args[1]);
+	@Override
+	public String getUsage(ICommandSender sender)
+	{
+		return "/icbmc";
+	}
 
-                if (radius > 0)
-                {
-                    AxisAlignedBB bounds = new AxisAlignedBB(entityPlayer.posX - radius, entityPlayer.posY - radius, entityPlayer.posZ - radius, entityPlayer.posX + radius, entityPlayer.posY + radius, entityPlayer.posZ + radius);
-                    List<Entity> entitiesNearby = entityPlayer.world.getEntitiesWithinAABB(Entity.class, bounds);
+	@Override
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+	{
+		EntityPlayer player = (EntityPlayer) sender;
 
-                    for (Entity entity : entitiesNearby)
-                    {
-                        if (entity instanceof EntityFlyingBlock)
-                        {
-                            ((EntityFlyingBlock) entity).setBlock();
-                        }
-                        else if (entity instanceof EntityMissile)
-                        {
-                            entity.setDead();
-                        }
-                        else if (entity instanceof EntityExplosion)
-                        {
-                            entity.setDead();
-                        }
-                    }
+		if (args.length == 0)
+		{
+			player.sendMessage(new TextComponentString("\u00a7c" + "ICBM Classic (" + (ICBMClassic.VERSION.startsWith("@") ? "DEV" : ICBMClassic.VERSION) + ")"));
+			player.sendMessage(new TextComponentString(""));
+			player.sendMessage(new TextComponentString("\u00a7c" + "/icbmc emp <radius>"));
+			player.sendMessage(new TextComponentString("\u00a7c" + "/icbmc remove <all/missile/explosion> {radius}"));
+		} else if (args[0].equalsIgnoreCase("remove"))
+		{
+			if (args.length == 2 || args.length == 3)
+			{
+				boolean all = args[1].equalsIgnoreCase("all");
+				boolean missile = all || args[1].equalsIgnoreCase("missile");
+				boolean explosion = all || args[1].equalsIgnoreCase("explosion");
+				String str = all ? "entities" : missile ? "missiles" : explosion ? "explosions" : null;
 
-                    ((EntityPlayer) sender).sendMessage(new TextComponentString("Removed all ICBM lag sources within " + radius + " radius."));
-                    return;
-                }
-                else
-                {
-                    throw new WrongUsageException("Radius needs to be higher than zero");
-                }
-            }
-            else if (args.length >= 3 && args[0].equalsIgnoreCase("remove"))
-            {
-                int radius = parseInt(args[2]);
-                boolean all = args[1].equalsIgnoreCase("all");
-                boolean missile = args[1].equalsIgnoreCase("missiles");
-                boolean explosion = args[1].equalsIgnoreCase("explosion");
-                String str = "entities";
-                if (missile)
-                {
-                    str = "missiles";
-                }
-                if (explosion)
-                {
-                    str = "explosions";
-                }
+				if (str != null)
+				{
+					boolean ranged = args.length == 3;
+					int r = ranged ? parseRadius(args[2]) : -1;
+					List<Entity> entities = ranged ? player.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(player.posX - r, player.posY - r, player.posZ - r, player.posX + r, player.posY + r, player.posZ + r))
+						                        : new ArrayList<>(player.world.loadedEntityList); //Must clone the backing list to avoid CME
 
-                if (radius > 0)
-                {
-                    EntityPlayer player = (EntityPlayer) sender;
+					for (Entity entity : entities)
+					{
+						if (explosion && entity instanceof EntityFlyingBlock)
+						{
+							((EntityFlyingBlock) entity).setBlock();
+						} else if ((missile && entity instanceof EntityMissile) || (explosion && (entity instanceof EntityExplosive || entity instanceof EntityExplosion || entity instanceof EntityFragments)))
+						{
+							entity.setDead();
+						}
+					}
 
-                    AxisAlignedBB bounds = new AxisAlignedBB(player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius);
-                    List<Entity> entitiesNearby = player.world.getEntitiesWithinAABB(Entity.class, bounds);
+					player.sendMessage(new TextComponentString("Removed all ICBM " + str + " " + (ranged ? "within " + r + " blocks" : "in this world")));
+					return; //Necessary return
+				}
 
-                    for (Entity entity : entitiesNearby)
-                    {
-                        if ((all || explosion) && entity instanceof EntityFlyingBlock)
-                        {
-                            ((EntityFlyingBlock) entity).setBlock();
-                        }
-                        else if ((all || missile) && entity instanceof EntityMissile)
-                        {
-                            entity.setDead();
-                        }
-                        else if ((all || explosion) && entity instanceof EntityExplosion)
-                        {
-                            entity.setDead();
-                        }
-                    }
+			}
+			throw new WrongUsageException("/icbmc remove <all/missile/explosion> {radius}");
+		} else if (args[0].equalsIgnoreCase("emp"))
+		{
+			int radius = parseRadius(args[1]);
+			new BlastEMP(player.world, null, player.posX, player.posY, player.posZ, radius).setEffectBlocks().setEffectEntities().doExplode();
 
-                    ((EntityPlayer) sender).sendMessage(new TextComponentString("Removed all ICBM " + str + " within " + radius + " radius."));
-                    return;
-                }
-                else
-                {
-                    throw new WrongUsageException("Radius needs to be higher than zero");
-                }
-            }
-            else if (args.length >= 2 && args[0].equalsIgnoreCase("emp"))
-            {
-                int radius = parseInt(args[1]);
-                if (radius > 0)
-                {
-                    new BlastEMP(entityPlayer.world, null, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, radius).setEffectBlocks().setEffectEntities().doExplode();
-                    switch (entityPlayer.world.rand.nextInt(20))
-                    {
-                        case 0:
-                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Did you pay the power bill?"));
-                            return;
-                        case 1:
-                            ((EntityPlayer) sender).sendMessage(new TextComponentString("See them power their toys now!"));
-                            return;
-                        case 2:
-                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Hey who turned the lights out."));
-                            return;
-                        case 3:
-                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Ha! I run on steam power!"));
-                            return;
-                        case 4:
-                            ((EntityPlayer) sender).sendMessage(new TextComponentString("The power of lighting at my finger tips!"));
-                            return;
-                        default:
-                            ((EntityPlayer) sender).sendMessage(new TextComponentString("Zap!"));
-                            return;
-                    }
-                }
-                else
-                {
-                    throw new WrongUsageException("Radius needs to be higher than zero");
-                }
-            }
-        }
-        catch (Exception e)
-        {
-        }
+			String message = player.world.rand.nextFloat() < 0.25 ? //Chance of special message
+				                 EMP_MESSAGES[player.world.rand.nextInt(EMP_MESSAGES.length)]
+				                 : "Zap!";
+			player.sendMessage(new TextComponentString(message));
+		} else
+		{
+			player.sendMessage(new TextComponentString("\u00a7c" + "Unknown ICBM command! Use /icbmc to see a list of commands."));
+		}
+	}
 
-        throw new WrongUsageException(this.getUsage(sender));
-    }
+	private static int parseRadius(String input) throws WrongUsageException
+	{
+		try
+		{
+			int radius = Integer.parseInt(input);
+			if (radius <= 0)
+			{
+				throw new WrongUsageException("Radius must be greater than zero!");
+			}
+			return radius;
+		} catch (NumberFormatException e)
+		{
+			throw new WrongUsageException("Invalid radius!");
+		}
+	}
 
-    @Override
-    public int getRequiredPermissionLevel()
-    {
-        return 2;
-    }
+	@Override
+	public int getRequiredPermissionLevel()
+	{
+		return 2;
+	}
 
-    @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-    {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] { "lag" }) : null;
-    }
+	@Override
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+	{
+		return args.length == 1 ? getListOfStringsMatchingLastWord(args, "remove", "emp")
+			       : args.length == 2 && args[0].equalsIgnoreCase("remove") ? getListOfStringsMatchingLastWord(args, "all", "missile", "explosion") : new ArrayList<>();
+	}
 
-    @Override
-    public int compareTo(ICommand par1Obj)
-    {
-        return super.compareTo(par1Obj);
-    }
+	@Override
+	public int compareTo(ICommand par1Obj)
+	{
+		return super.compareTo(par1Obj);
+	}
+
 }

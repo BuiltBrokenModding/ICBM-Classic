@@ -54,7 +54,7 @@ public class BlastRegen extends Blast
             }
             catch (Exception e)
             {
-                ICBMClassic.INSTANCE.logger().error("ICBM Rejuvenation Failed!", e);
+                ICBMClassic.logger().error("ICBM Rejuvenation Failed!", e);
             }
         }
     }
