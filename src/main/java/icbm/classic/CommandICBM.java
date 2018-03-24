@@ -181,6 +181,6 @@ public class CommandICBM extends CommandBase
     @Override
     public int compareTo(ICommand par1Obj)
     {
-        return this.compareTo(par1Obj);
+        return super.compareTo(par1Obj);
     }
 }
