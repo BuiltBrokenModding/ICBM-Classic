@@ -13,7 +13,7 @@
   "key": {
     "g": {
       "type": "forge:ore_dict",
-      "ore": "ingotGold"
+      "ore": "ingotSteel"
     },
     "c": {
       "type": "forge:ore_dict",
@@ -21,7 +21,7 @@
     },
     "w": {
       "type": "forge:ore_dict",
-      "ore": "wireCopper"
+      "ore": "wireGold"
     },
     "s": {
       "item": "icbmclassic:launcherscreen",

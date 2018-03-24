@@ -13,7 +13,7 @@
   "key": {
     "i": {
       "type": "forge:ore_dict",
-      "ore": "ingotSteel"
+      "ore": "ingotIron"
     },
     "c": {
       "type": "forge:ore_dict",
