@@ -106,7 +106,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (this.getBlast() == null || this.getBlast().controller != this || !this.getBlast().isAlive)
         {
             this.setDead();
-            ICBMClassic.INSTANCE.logger().error("Procedural explosion ended due to null! This is a bug!");
+            ICBMClassic.logger().error("Procedural explosion ended due to null! This is a bug!");
             return;
         }
 
@@ -191,7 +191,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         }
         catch (Exception e)
         {
-            ICBMClassic.INSTANCE.logger().error("ICBM error in loading an explosion!");
+            ICBMClassic.logger().error("ICBM error in loading an explosion!");
             e.printStackTrace();
         }
     }

@@ -153,7 +153,7 @@ public class BlastEnderman extends Blast
                     }
                     catch (Exception e)
                     {
-                        ICBMClassic.INSTANCE.logger().error("Failed to teleport entity to the End.", e);
+                        ICBMClassic.logger().error("Failed to teleport entity to the End.", e);
                     }
                 }
             }

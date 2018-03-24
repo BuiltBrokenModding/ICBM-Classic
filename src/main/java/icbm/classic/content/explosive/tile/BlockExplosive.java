@@ -140,7 +140,7 @@ public class BlockExplosive extends BlockICBM
 
             if (entityLiving != null)
             {
-                ICBMClassic.INSTANCE.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getName() + " placed " + ex.handler.getExplosiveName() + " in: " + pos);
+                ICBMClassic.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getName() + " placed " + ex.handler.getExplosiveName() + " in: " + pos);
             }
         }
     }

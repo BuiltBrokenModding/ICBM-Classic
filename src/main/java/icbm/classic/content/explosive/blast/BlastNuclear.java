@@ -126,7 +126,7 @@ public class BlastNuclear extends Blast
             else
             {
                 this.controller.endExplosion();
-                ICBMClassic.INSTANCE.logger().error("Something went wrong with multi-threading while detonating the nuclear explosive.");
+                ICBMClassic.logger().error("Something went wrong with multi-threading while detonating the nuclear explosive.");
             }
         }
     }
@@ -150,7 +150,7 @@ public class BlastNuclear extends Blast
         }
         catch (Exception e)
         {
-            ICBMClassic.INSTANCE.logger().error("Nuclear-type detonation Failed!", e);
+            ICBMClassic.logger().error("Nuclear-type detonation Failed!", e);
         }
 
         this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
