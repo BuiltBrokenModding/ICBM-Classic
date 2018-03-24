@@ -168,6 +168,7 @@ public final class ICBMClassic
     public static Item itemBattery;
 
     public static ItemCrafting itemIngot;
+    public static ItemCrafting itemIngotClump;
     public static ItemCrafting itemPlate;
     public static ItemCrafting itemCircuit;
     public static ItemCrafting itemWire;
@@ -231,11 +232,12 @@ public final class ICBMClassic
             if (ConfigItems.ENABLE_INGOTS_ITEMS)
             {
                 event.getRegistry().register(itemIngot = new ItemCrafting("ingot", "steel", "copper"));
+                event.getRegistry().register(itemIngotClump = new ItemCrafting("clump", "steel"));
                 itemIngot.registerOreNames();
             }
             if (ConfigItems.ENABLE_PLATES_ITEMS)
             {
-                event.getRegistry().register(itemPlate = new ItemCrafting("plate", "steel"));
+                event.getRegistry().register(itemPlate = new ItemCrafting("plate", "steel", "iron"));
                 itemPlate.registerOreNames();
             }
             if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
@@ -314,10 +316,14 @@ public final class ICBMClassic
         proxy.doLoadModels();
     }
 
-    //@SubscribeEvent
+    @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
     {
-
+        if (ConfigItems.ENABLE_INGOTS_ITEMS)
+        {
+            //Steel clump -> Steel ingot
+            GameRegistry.addSmelting(new ItemStack(itemIngotClump, 1, 0), new ItemStack(itemIngot, 1, 0), 0.1f);
+        }
     }
 
     private void registerEntity(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)

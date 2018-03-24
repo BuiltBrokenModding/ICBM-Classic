@@ -96,6 +96,7 @@ public class ClientProxy extends CommonProxy
 
         //crafting parts
         registerCraftingRender(ICBMClassic.itemIngot);
+        registerCraftingRender(ICBMClassic.itemIngotClump);
         registerCraftingRender(ICBMClassic.itemPlate);
         registerCraftingRender(ICBMClassic.itemCircuit);
         registerCraftingRender(ICBMClassic.itemWire);

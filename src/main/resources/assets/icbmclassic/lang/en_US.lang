@@ -56,6 +56,9 @@ item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %
 item.icbmclassic:ingot.steel.name=Steel Ingot
 item.icbmclassic:ingot.copper.name=Copper Ingot
 
+item.icbmclassic:clump.steel.name=Steel Clump
+
+item.icbmclassic:plate.iron.name=Iron Plate
 item.icbmclassic:plate.steel.name=Steel Plate
 
 item.icbmclassic:wire.copper.name=Copper Wire
