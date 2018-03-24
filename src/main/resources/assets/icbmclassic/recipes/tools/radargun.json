@@ -1,13 +1,12 @@
 {
   "result": {
-    "item": "icbmclassic:laserdetonator",
+    "item": "icbmclassic:radargun",
     "data": 0,
     "count": 1
   },
   "pattern": [
     "gci",
-    " bi",
-    "  i"
+    " bw"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
@@ -26,6 +25,10 @@
     "c": {
       "type": "forge:ore_dict",
       "ore": "circuitBasic"
+    },
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
     }
   }
 }
