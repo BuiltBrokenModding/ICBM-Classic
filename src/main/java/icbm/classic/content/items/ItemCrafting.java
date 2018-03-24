@@ -4,6 +4,7 @@ import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * Prefab for use in generating new sets of crafting items
@@ -13,17 +14,37 @@ import net.minecraft.util.NonNullList;
  */
 public class ItemCrafting extends ItemICBMBase
 {
-    protected final String[] subItems;
+    /** Array of sub types (e.g. Iron, Steel, Copper) */
+    public final String[] subItems;
+    /** Name of the set of items (Ingot, Plate, Circuit) */
+    public final String oreName;
 
     /**
-     * @param name  - registry name of the item, also used for unlocalized
-     * @param items - list of sub-items, used for unlocalized
+     * @param oreName - registry name, localization, and ore prefix
+     * @param items   - list of sub-items, used for unlocalized
      */
-    public ItemCrafting(String name, String... items)
+    public ItemCrafting(String oreName, String... items)
     {
-        super(name);
+        super(oreName);
+        this.oreName = oreName;
         subItems = items;
         setHasSubtypes(true);
+    }
+
+    public void registerOreNames()
+    {
+        for (int i = 0; i < subItems.length; i++)
+        {
+            //Get name
+            final String name = subItems[i];
+
+            //Turn into ore name
+            String oreName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
+            oreName = this.oreName + oreName;
+
+            //Register
+            OreDictionary.registerOre(oreName, new ItemStack(this, 1, i));
+        }
     }
 
     @Override

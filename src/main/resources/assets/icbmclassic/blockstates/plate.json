@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:item/generated",
+    "textures": {
+      "layer0": "items/iron_ingot"
+    }
+  },
+  "variants": {
+    "name": {
+      "steel": {
+        "textures": {
+          "layer0": "icbmclassic:items/plate_steel"
+        }
+      }
+    }
+  }
+}
+

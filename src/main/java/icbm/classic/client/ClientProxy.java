@@ -9,6 +9,7 @@ import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.missiles.Missile;
 import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.machines.emptower.TESREMPTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
 import icbm.classic.content.machines.launcher.base.TESRLauncherBase;
@@ -92,6 +93,12 @@ public class ClientProxy extends CommonProxy
         newItemModel(ICBMClassic.itemLaserDesignator, 0, "inventory", "");
         newItemModel(ICBMClassic.itemRocketLauncher, 0, "inventory", "");
         newItemModel(ICBMClassic.itemBattery, 0, "inventory", "");
+
+        //crafting parts
+        registerCraftingRender(ICBMClassic.itemIngot);
+        registerCraftingRender(ICBMClassic.itemPlate);
+        registerCraftingRender(ICBMClassic.itemCircuit);
+        registerCraftingRender(ICBMClassic.itemWire);
 
         //---------------------------------------
         //Entity renders
@@ -196,6 +203,20 @@ public class ClientProxy extends CommonProxy
                 {
                     ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemMissile, ex.ordinal(), new ModelResourceLocation(resourcePath + "_" + (ex.handler.getTier().ordinal() + 1), "explosive=" + ex.getName()));
                 }
+            }
+        }
+    }
+
+    protected void registerCraftingRender(ItemCrafting itemCrafting)
+    {
+        //Most crafting items can be disabled, so null check is needed
+        if(itemCrafting != null)
+        {
+            final String resourcePath = itemCrafting.getRegistryName().toString();
+            for (int i = 0; i < itemCrafting.subItems.length; i++)
+            {
+                String subItem = itemCrafting.subItems[i];
+                ModelLoader.setCustomModelResourceLocation(itemCrafting, i, new ModelResourceLocation(resourcePath, "name=" + subItem));
             }
         }
     }

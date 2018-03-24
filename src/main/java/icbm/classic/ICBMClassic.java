@@ -1,7 +1,5 @@
 package icbm.classic;
 
-import icbm.classic.content.machines.battery.BlockBattery;
-import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
@@ -12,6 +10,7 @@ import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import icbm.classic.content.items.*;
+import icbm.classic.content.machines.battery.BlockBattery;
 import icbm.classic.content.machines.emptower.BlockEmpTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
 import icbm.classic.content.machines.launcher.base.BlockLauncherBase;
@@ -28,6 +27,7 @@ import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.network.netty.PacketManager;
@@ -167,6 +167,11 @@ public final class ICBMClassic
     public static Item itemPoisonPowder;
     public static Item itemBattery;
 
+    public static ItemCrafting itemIngot;
+    public static ItemCrafting itemPlate;
+    public static ItemCrafting itemCircuit;
+    public static ItemCrafting itemWire;
+
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
@@ -225,24 +230,28 @@ public final class ICBMClassic
         {
             if (ConfigItems.ENABLE_INGOTS_ITEMS)
             {
-                event.getRegistry().register(new ItemCrafting("ingot", "steel", "copper"));
+                event.getRegistry().register(itemIngot = new ItemCrafting("ingot", "steel", "copper"));
+                itemIngot.registerOreNames();
             }
             if (ConfigItems.ENABLE_PLATES_ITEMS)
             {
-                event.getRegistry().register(new ItemCrafting("plate", "steel"));
+                event.getRegistry().register(itemPlate = new ItemCrafting("plate", "steel"));
+                itemPlate.registerOreNames();
             }
             if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
             {
-                event.getRegistry().register(new ItemCrafting("circuit", "basic", "advanced", "elite"));
+                event.getRegistry().register(itemCircuit = new ItemCrafting("circuit", "basic", "advanced", "elite"));
+                itemCircuit.registerOreNames();
             }
             if (ConfigItems.ENABLE_WIRES_ITEMS)
             {
-                event.getRegistry().register(new ItemCrafting("wire", "copper", "gold"));
+                event.getRegistry().register(itemWire = new ItemCrafting("wire", "copper", "gold"));
+                itemWire.registerOreNames();
             }
         }
 
         //Optional items
-        if(ConfigItems.ENABLE_BATTERY)
+        if (ConfigItems.ENABLE_BATTERY)
         {
             event.getRegistry().register(itemBattery = new ItemBattery());
         }
