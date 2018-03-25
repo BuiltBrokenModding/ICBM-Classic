@@ -72,7 +72,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
@@ -119,7 +120,7 @@ public final class ICBMClassic
     public static final int ENTITY_ID_PREFIX = 50;
 
     protected static Logger logger = LogManager.getLogger(DOMAIN);
-    private static int nextID = ENTITY_ID_PREFIX;
+    private static int nextEntityID = ENTITY_ID_PREFIX;
 
 
     public static final PacketManager packetHandler = new PacketManager(DOMAIN);
@@ -311,6 +312,30 @@ public final class ICBMClassic
     }
 
     @SubscribeEvent
+    public static void registerEntity(RegistryEvent.Register<EntityEntry> event)
+    {
+        event.getRegistry().register(buildEntityEntry(EntityFlyingBlock.class, "block.gravity", 128, 15));
+        event.getRegistry().register(buildEntityEntry(EntityFragments.class, "block.fragment", 40, 8));
+        event.getRegistry().register(buildEntityEntry(EntityExplosive.class, "block.explosive", 50, 5));
+        event.getRegistry().register(buildEntityEntry(EntityMissile.class, "missile", 500, 1));
+        event.getRegistry().register(buildEntityEntry(EntityExplosion.class, "holder.explosion", 100, 5));
+        event.getRegistry().register(buildEntityEntry(EntityLightBeam.class, "beam.light", 80, 5));
+        event.getRegistry().register(buildEntityEntry(EntityGrenade.class, "item.grenade", 50, 5));
+        event.getRegistry().register(buildEntityEntry(EntityBombCart.class, "cart.bomb", 50, 2));
+        event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, "holder.seat", 50, 2));
+    }
+
+    private static EntityEntry buildEntityEntry(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)
+    {
+        EntityEntryBuilder builder = EntityEntryBuilder.create();
+        builder.name(PREFIX + entityName);
+        builder.id(new ResourceLocation(DOMAIN, entityName), nextEntityID++);
+        builder.tracker(trackingRange, updateFrequency, true);
+        builder.entity(entityClass);
+        return builder.build();
+    }
+
+    @SubscribeEvent
     public static void registerAllModels(ModelRegistryEvent event)
     {
         proxy.doLoadModels();
@@ -326,11 +351,6 @@ public final class ICBMClassic
         }
     }
 
-    private void registerEntity(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)
-    {
-        EntityRegistry.registerModEntity(new ResourceLocation(DOMAIN, entityName), entityClass, entityName, nextID++, this, trackingRange, updateFrequency, true);
-    }
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -344,17 +364,6 @@ public final class ICBMClassic
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
-
-        //Register entities
-        registerEntity(EntityFlyingBlock.class, "ICBMGravityBlock", 128, 15);
-        registerEntity(EntityFragments.class, "ICBMFragment", 40, 8);
-        registerEntity(EntityExplosive.class, "ICBMExplosive", 50, 5);
-        registerEntity(EntityMissile.class, "ICBMMissile", 500, 1);
-        registerEntity(EntityExplosion.class, "ICBMProceduralExplosion", 100, 5);
-        registerEntity(EntityLightBeam.class, "ICBMLightBeam", 80, 5);
-        registerEntity(EntityGrenade.class, "ICBMGrenade", 50, 5);
-        registerEntity(EntityBombCart.class, "ICBMChe", 50, 2);
-        registerEntity(EntityPlayerSeat.class, "ICBMSeat", 50, 2);
     }
 
     @Mod.EventHandler
