@@ -63,6 +63,34 @@ public class ItemCrafting extends ItemICBMBase
         return null;
     }
 
+    public int getIndexForName(String name)
+    {
+        for (int i = 0; i < subItems.length; i++)
+        {
+            String s = subItems[i];
+            if (s.equalsIgnoreCase(name))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public ItemStack getStack(String name)
+    {
+        return getStack(name, 1);
+    }
+
+    public ItemStack getStack(String name, int count)
+    {
+        int index = getIndexForName(name);
+        if (index > 0)
+        {
+            return new ItemStack(this, count, index);
+        }
+        return ItemStack.EMPTY;
+    }
+
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
