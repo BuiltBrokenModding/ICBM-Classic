@@ -213,13 +213,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     //=========================================
 
     @Override
-    public void onLoad()
-    {
-        super.onLoad();
-        MultiBlockHelper.buildMultiBlock(world, this, true, true);
-    }
-
-    @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
         if (tileMulti instanceof TileEntity)

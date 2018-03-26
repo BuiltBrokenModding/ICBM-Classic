@@ -1,9 +1,13 @@
 package icbm.classic.content.machines.emptower;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -32,6 +36,18 @@ public class BlockEmpTower extends BlockICBM
             playerIn.openGui(ICBMClassic.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack stack)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof TileEMPTower)
+        {
+            //Build multiblock
+            MultiBlockHelper.buildMultiBlock(world, (IMultiTileHost) tile, true, true);
+            //TODO if can't place, break and drop item
+        }
     }
 
     @Override
