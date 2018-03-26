@@ -83,6 +83,7 @@ public abstract class BlockICBM extends BlockContainer
         }
         if (tile instanceof IMultiTileHost)
         {
+            //At this point the structure should already be dead if broken by a player
             MultiBlockHelper.destroyMultiBlockStructure((IMultiTileHost) tile, false, true, false);
         }
         super.breakBlock(world, pos, state);

@@ -1,6 +1,7 @@
 package icbm.classic.api;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -25,5 +26,10 @@ public interface IWorldPosition extends IPos3D
     default boolean hasWorld()
     {
         return world() != null;
+    }
+
+    default BlockPos getPos()
+    {
+        return new BlockPos(xi(), yi(), zi());
     }
 }

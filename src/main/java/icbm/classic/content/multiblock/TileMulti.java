@@ -55,6 +55,12 @@ public class TileMulti extends TileEntity implements IMultiTile
     }
 
     @Override
+    public boolean isHost(IMultiTileHost host)
+    {
+        return host == getHost() || hostPosition != null && hostPosition.equals(host.getPos());
+    }
+
+    @Override
     public void setHost(IMultiTileHost host)
     {
         if (host != null)

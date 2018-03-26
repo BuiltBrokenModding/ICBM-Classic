@@ -1,9 +1,8 @@
 package icbm.classic.content.multiblock;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.inventory.InventoryUtility;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -106,7 +105,7 @@ public class MultiBlockHelper
     {
         if (world != null && tile != null && ICBMClassic.multiBlock != null)
         {
-            return canBuild(world, ((TileEntity)tile).getPos(), tile.getLayoutOfMultiBlock(), offset);
+            return canBuild(world, ((TileEntity) tile).getPos(), tile.getLayoutOfMultiBlock(), offset);
         }
         return false;
     }
@@ -197,42 +196,40 @@ public class MultiBlockHelper
     {
         if (host != null)
         {
-            Collection<BlockPos> map = host.getLayoutOfMultiBlock();
+            //Get tile map
+            final Collection<BlockPos> map = host.getLayoutOfMultiBlock();
             if (map != null && !map.isEmpty())
             {
-                BlockPos center;
+                //Get host as a position
+                final BlockPos center = host.getPos();
 
-                if (host instanceof TileEntity)
-                {
-                    center = ((TileEntity) host).getPos();
-                }
-                else if (host instanceof IWorldPosition)
-                {
-                    center = new BlockPos(host.xi(), host.yi(), host.zi());
-                }
-                else
-                {
-                    logger.error("MultiBlockHelper >> Tile[" + host + "]'s is not a TileEntity or IWorldPosition instance, thus we can not get a position to break down the structure.");
-                    return;
-                }
-
+                //Loop tile map
                 for (BlockPos pos : map)
                 {
+                    //Offset position
                     if (offset)
                     {
                         pos = pos.add(center);
                     }
+
+                    //Get tile
                     TileEntity tile = host.world().getTileEntity(pos);
-                    if (tile instanceof IMultiTile)
+
+                    //Validate it is a multi-tile and that it belongs to the host
+                    if (tile instanceof IMultiTile && ((IMultiTile) tile).isHost(host))
                     {
+                        //Clear and destroy
                         ((IMultiTile) tile).setHost(null);
                         host.world().setBlockToAir(pos);
                     }
                 }
+
+                //Drop item
                 if (doDrops)
                 {
                     InventoryUtility.dropBlockAsItem(((TileEntity) host).getWorld(), center, killHost);
                 }
+                //Destroy tile
                 else if (killHost)
                 {
                     ((TileEntity) host).getWorld().setBlockToAir(center);
