@@ -387,6 +387,14 @@ public final class ICBMClassic
                 }
             }
         }
+        else if (event.getName().equals(LootTableList.ENTITIES_CREEPER))
+        {
+            LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
+            if (lootPool != null)
+            {
+                lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(itemSulfurDust, 10, 0), 2, 0));
+            }
+        }
     }
 
     @Mod.EventHandler
