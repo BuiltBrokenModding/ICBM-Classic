@@ -7,7 +7,7 @@
   "pattern": [
     "pwp",
     "ece",
-    "pmp"
+    "prp"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
@@ -23,13 +23,13 @@
       "type": "forge:ore_dict",
       "ore": "plateSteel"
     },
-    "m": {
-        "type": "forge:ore_dict",
-        "ore": "motor"
+    "r": {
+      "item": "minecraft:redstone",
+      "data": 0
     },
     "e": {
-      "type": "forge:ore_dict",
-      "ore": "batteryBox"
+      "item": "icbmclassic:battery",
+      "data": 0
     }
   }
 }
