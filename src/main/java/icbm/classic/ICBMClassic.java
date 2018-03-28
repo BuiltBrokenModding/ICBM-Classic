@@ -11,6 +11,7 @@ import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import icbm.classic.content.items.*;
 import icbm.classic.content.machines.battery.BlockBattery;
+import icbm.classic.content.machines.battery.TileEntityBattery;
 import icbm.classic.content.machines.emptower.BlockEmpTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
 import icbm.classic.content.machines.launcher.base.BlockLauncherBase;
@@ -56,7 +57,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -313,6 +313,7 @@ public final class ICBMClassic
         GameRegistry.registerTileEntity(TileLauncherBase.class, PREFIX + "launcherbase");
         GameRegistry.registerTileEntity(TileLauncherScreen.class, PREFIX + "launcherscreen");
         GameRegistry.registerTileEntity(TileMulti.class, PREFIX + "multiblock");
+        GameRegistry.registerTileEntity(TileEntityBattery.class, PREFIX + "batterybox");
     }
 
     @SubscribeEvent
