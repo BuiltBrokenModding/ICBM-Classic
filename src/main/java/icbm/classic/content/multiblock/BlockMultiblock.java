@@ -5,6 +5,7 @@ import icbm.classic.api.tile.multiblock.IMultiTile;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,7 +19,13 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -215,5 +222,17 @@ public class BlockMultiblock extends BlockContainer
             return (TileMulti) tile;
         }
         return null;
+    }
+
+    //Fix for multi-block having no model but still wanting a JSON file
+    @Mod.EventBusSubscriber(value = Side.CLIENT, modid = ICBMClassic.DOMAIN)
+    public static class ClientLoader
+    {
+        @SubscribeEvent
+        public static void registerModels(ModelRegistryEvent event)
+        {
+            ModelLoader.setCustomStateMapper(ICBMClassic.multiBlock, block -> Collections.emptyMap());
+            ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.multiBlock));
+        }
     }
 }

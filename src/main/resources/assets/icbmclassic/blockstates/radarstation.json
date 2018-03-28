@@ -122,7 +122,19 @@
   "variants": {
     "inventory": [
       {}
-    ]
+    ],
+    "rotation": {
+      "up": {},
+      "down": {},
+      "north": {},
+      "south": {},
+      "east": {},
+      "west": {}
+    },
+    "redstone": {
+      "true": {},
+      "false": {}
+    }
   }
 }
 
