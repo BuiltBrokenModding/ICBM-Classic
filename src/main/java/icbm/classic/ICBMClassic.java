@@ -130,7 +130,7 @@ public final class ICBMClassic
     public static final PacketManager packetHandler = new PacketManager(DOMAIN);
 
     //Mod support
-    public static Block blockRadioactive;
+    public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
     public static int blockRadioactiveMeta;
 
     // Blocks
@@ -422,31 +422,6 @@ public final class ICBMClassic
 
         OreDictionary.registerOre("dustSulfur", new ItemStack(itemSulfurDust));
         OreDictionary.registerOre("dustSaltpeter", new ItemStack(itemSaltpeterDust));
-
-        /** Check for existence of radioactive block. If it does not exist, then create it. */
-        if (OreDictionary.getOres("blockRadioactive").size() > 0)
-        {
-            NonNullList<ItemStack> stacks = OreDictionary.getOres("blockRadioactive");
-            for (ItemStack stack : stacks)
-            {
-                if (stack != null && stack.getItem() instanceof ItemBlock)
-                {
-                    //TODO add code to handle this from the ItemStack or test if this block is valid
-                    //      As assuming the metadata is valid may not be a good idea, and the block may not be valid as well
-                    //TODO add config to force block that is used
-                    //TODO add error checking
-                    blockRadioactive = ((ItemBlock) stack.getItem()).getBlock();
-                    blockRadioactiveMeta = stack.getItem().getMetadata(stack.getItemDamage());
-                    logger().info("Detected radioative block from another mod.");
-                    logger().info("Radioactive explosives will use: " + blockRadioactive);
-                }
-            }
-        }
-
-        if (blockRadioactive == null)
-        {
-            blockRadioactive = Blocks.MYCELIUM;
-        }
 
         /** Potion Effects */ //TODO move to effect system
         PoisonToxin.INSTANCE = MobEffects.POISON;//new PoisonToxin(true, 5149489, "toxin");
