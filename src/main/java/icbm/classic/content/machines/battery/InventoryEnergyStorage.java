@@ -103,11 +103,21 @@ public class InventoryEnergyStorage implements IEnergyStorage, Iterable<IEnergyS
         @Override
         public boolean hasNext()
         {
-            while (get(nextSlot) == null)
+            while (get(nextSlot) == null && insideLimits())
             {
                 nextSlot++;
             }
+            return isNextValid();
+        }
+
+        private boolean insideLimits()
+        {
             return nextSlot >= 0 && nextSlot < inventory.getSlots();
+        }
+
+        private boolean isNextValid()
+        {
+            return insideLimits() && get(nextSlot) != null;
         }
 
         @Override

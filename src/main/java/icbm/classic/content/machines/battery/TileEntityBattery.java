@@ -1,7 +1,10 @@
 package icbm.classic.content.machines.battery;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.lib.IGuiTile;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -15,7 +18,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/21/2018.
  */
-public class TileEntityBattery extends TileEntity implements IInventoryProvider
+public class TileEntityBattery extends TileEntity implements IInventoryProvider, IGuiTile
 {
     public static final int SLOTS = 5;
 
@@ -68,5 +71,24 @@ public class TileEntityBattery extends TileEntity implements IInventoryProvider
             return (T) getEnergyStorage();
         }
         return getCapability(capability, facing);
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player)
+    {
+        return new ContainerBattery(player, this);
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return new GuiBattery(player, this);
+    }
+
+    @Override
+    public boolean openGui(EntityPlayer player, int requestedID)
+    {
+        player.openGui(ICBMClassic.INSTANCE, requestedID, world, getPos().getX(), getPos().getY(), getPos().getZ());
+        return true;
     }
 }

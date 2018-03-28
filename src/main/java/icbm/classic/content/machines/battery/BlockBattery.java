@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +25,13 @@ public class BlockBattery extends BlockICBM
 {
     public BlockBattery()
     {
-        super("batteryBox", Material.WOOD);
+        super("batterybox", Material.WOOD);
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.MODEL;
     }
 
     @Override
@@ -42,7 +49,6 @@ public class BlockBattery extends BlockICBM
                     {
                         ((TileEntityBattery) tileEntity).getInventory().transferIntoInventory(playerIn, hand, heldStack);
                     }
-                    return true;
                 }
                 else if (heldStack.getItem() == Items.STICK)
                 {
@@ -50,19 +56,17 @@ public class BlockBattery extends BlockICBM
                     {
                         int slotInUse = ((TileEntityBattery) tileEntity).getInventory().getSlots() - ((TileEntityBattery) tileEntity).getInventory().getEmptySlots().size();
                         int energy = ((TileEntityBattery) tileEntity).getEnergyStorage().getEnergyStored();
-                        playerIn.sendMessage(new TextComponentString("Batteries: " + slotInUse + " " + energy));
+                        playerIn.sendMessage(new TextComponentString("Batteries: " + slotInUse + " Energy: " + energy));
                     }
-                    return true;
                 }
-                return false;
             }
             else
             {
-                //TODO open GUI
+                ((TileEntityBattery) tileEntity).openGui(playerIn, 0);
             }
         }
 
-        return false;
+        return true;
     }
 
     @Nullable

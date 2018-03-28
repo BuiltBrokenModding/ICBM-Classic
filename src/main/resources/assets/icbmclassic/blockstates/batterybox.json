@@ -1,33 +1,15 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
-    "textures": {
-      "particle": "blocks/anvil_base",
-      "down": "blocks/planks_big_oak",
-      "up": "blocks/planks_big_oak",
-      "north": "blocks/anvil_base",
-      "east": "blocks/anvil_base",
-      "south": "blocks/anvil_base",
-      "west": "blocks/anvil_base"
-    }
+    "model": "icbmclassic:batterybox"
   },
   "variants": {
+    "normal": [
+      {}
+    ],
     "inventory": [
       {}
     ],
-    "normal": {
-      "model": "cube_all",
-      "textures": {
-        "particle": "blocks/anvil_base",
-        "down": "blocks/planks_big_oak",
-        "up": "blocks/planks_big_oak",
-        "north": "blocks/anvil_base",
-        "east": "blocks/anvil_base",
-        "south": "blocks/anvil_base",
-        "west": "blocks/anvil_base"
-      }
-    },
     "rotation": {
       "up": {},
       "down": {},

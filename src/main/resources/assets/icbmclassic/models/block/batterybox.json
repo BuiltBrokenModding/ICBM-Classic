@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "particle": "minecraft:blocks/anvil_base",
+    "down": "minecraft:blocks/planks_big_oak",
+    "up": "minecraft:blocks/planks_big_oak",
+    "north": "minecraft:blocks/anvil_base",
+    "east": "minecraft:blocks/anvil_base",
+    "south": "minecraft:blocks/anvil_base",
+    "west": "minecraft:blocks/anvil_base"
+  }
+}
