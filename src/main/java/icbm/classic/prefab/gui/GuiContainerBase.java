@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 
 public class GuiContainerBase extends GuiContainer
 {
-    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "mc_base.png");
+    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "mc_base_empty.png");
     public static final ResourceLocation GUI_COMPONENTS = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_components.png");
 
     public ResourceLocation baseTexture;

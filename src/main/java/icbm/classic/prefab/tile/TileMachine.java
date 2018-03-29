@@ -302,41 +302,6 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         return getPos().getY();
     }
 
-    public boolean hasPower()
-    {
-        return true;
-    }
-
-    public void setEnergy(int energy)
-    {
-
-    }
-
-    public int getEnergy()
-    {
-        return 0;
-    }
-
-    public int getEnergyConsumption()
-    {
-        return 100000;
-    }
-
-    public int getEnergyBufferSize()
-    {
-        return getEnergyConsumption() * 2;
-    }
-
-    public boolean checkExtract()
-    {
-        return getEnergy() >= getEnergyConsumption();
-    }
-
-    public void extractEnergy()
-    {
-
-    }
-
     @Override
     public boolean openGui(EntityPlayer player, int requestedID)
     {

@@ -1,11 +1,14 @@
 package icbm.classic.content.machines.battery;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.IGuiTile;
+import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
+import icbm.classic.prefab.tile.TileMachine;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -18,12 +21,24 @@ import javax.annotation.Nullable;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/21/2018.
  */
-public class TileEntityBattery extends TileEntity implements IInventoryProvider, IGuiTile
+public class TileEntityBattery extends TileMachine implements IInventoryProvider, IGuiTile, IPacketIDReceiver, IPlayerUsing
 {
+    //Settings
     public static final int SLOTS = 5;
 
+    //Caps
     private ExternalInventory _inventory;
     private IEnergyStorage _batteryWrapper;
+
+    //Gui data
+    public int _localEnergy = 0;
+    public int _localEnergyMax = 0;
+
+    @Override
+    public void update()
+    {
+        super.update();
+    }
 
     @Override
     public ExternalInventory getInventory()
@@ -86,9 +101,33 @@ public class TileEntityBattery extends TileEntity implements IInventoryProvider,
     }
 
     @Override
-    public boolean openGui(EntityPlayer player, int requestedID)
+    public void writeDescPacket(ByteBuf buf)
     {
-        player.openGui(ICBMClassic.INSTANCE, requestedID, world, getPos().getX(), getPos().getY(), getPos().getZ());
-        return true;
+        super.writeDescPacket(buf);
+        buf.writeInt(getEnergyStorage().getEnergyStored());
+        buf.writeInt(getEnergyStorage().getMaxEnergyStored());
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf buf)
+    {
+        super.readDescPacket(buf);
+        _localEnergy = buf.readInt();
+        _localEnergyMax = buf.readInt();
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
+        getInventory().load(compound.getCompoundTag("inventory"));
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        compound.setInteger("tier", _tier.ordinal());
+        compound.setTag("inventory", getInventory().save(new NBTTagCompound()));
+        return super.writeToNBT(compound);
     }
 }
