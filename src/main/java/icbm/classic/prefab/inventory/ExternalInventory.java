@@ -7,9 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.items.IItemHandlerModifiable;
-
-import javax.annotation.Nonnull;
 
 /**
  * Version of the basic ISidedInventory that is designed to be used as a replacement for
@@ -17,7 +14,7 @@ import javax.annotation.Nonnull;
  *
  * @author Darkguardsman
  */
-public class ExternalInventory extends BasicInventory implements IExternalInventory, ISidedInventory, IItemHandlerModifiable
+public class ExternalInventory extends BasicInventory implements IExternalInventory, ISidedInventory
 {
     /**
      * Access able slots side all
@@ -26,11 +23,13 @@ public class ExternalInventory extends BasicInventory implements IExternalInvent
     /**
      * Host tileEntity
      */
-    protected IInventoryProvider host;
+    public final IInventoryProvider host;
+    public final ExternalWrapper itemHandlerWrapper;
 
     public ExternalInventory(IInventoryProvider inv, int slots)
     {
         super(slots);
+        this.itemHandlerWrapper = new ExternalWrapper(this);
         this.host = inv;
     }
 
@@ -123,113 +122,6 @@ public class ExternalInventory extends BasicInventory implements IExternalInvent
         this.inventoryMap.clear();
     }
 
-
-    //===========================================================
-    //===============  IItemHandlerModifiable   =================
-    //===========================================================
-
-    @Override
-    public void setStackInSlot(int slot, @Nonnull ItemStack stack)
-    {
-        setInventorySlotContents(slot, stack);
-    }
-
-    @Override
-    public int getSlots()
-    {
-        return getSizeInventory();
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
-    {
-        if (!stack.isEmpty() && slot >= 0 && slot < getSizeInventory())
-        {
-            ItemStack slotStack = getStackInSlot(slot);
-            if (slotStack.isEmpty())
-            {
-                int cap = Math.min(stack.getMaxStackSize(), getInventoryStackLimit());
-                int insert = Math.min(cap, stack.getCount());
-                ItemStack re = stack.copy();
-                re.setCount(stack.getCount() - insert);
-                if (re.getCount() <= 0)
-                {
-                    re = ItemStack.EMPTY;
-                }
-
-                if (!simulate)
-                {
-                    ItemStack insertStack = stack.copy();
-                    insertStack.setCount(insert);
-                    setInventorySlotContents(slot, insertStack);
-                }
-
-                return re;
-            }
-            else if (InventoryUtility.stacksMatch(slotStack, stack))
-            {
-                int cap = Math.min(slotStack.getMaxStackSize(), getInventoryStackLimit());
-                int room = Math.max(0, cap - slotStack.getCount());
-                int take = Math.min(room, stack.getCount());
-                if (room > 0 && take > 0)
-                {
-                    ItemStack re = stack.copy();
-                    re.setCount(stack.getCount() - take);
-                    if (re.getCount() <= 0)
-                    {
-                        re = ItemStack.EMPTY;
-                    }
-
-                    if (!simulate)
-                    {
-                        slotStack.setCount(slotStack.getCount() + take);
-                        setInventorySlotContents(slot, slotStack);
-                    }
-
-                    return re;
-                }
-            }
-        }
-        return stack;
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate)
-    {
-        ItemStack slotStack = getStackInSlot(slot);
-        if (!slotStack.isEmpty())
-        {
-            ItemStack copy = slotStack.copy();
-            if (copy.getCount() >= amount)
-            {
-                if (!simulate)
-                {
-                    setInventorySlotContents(0, ItemStack.EMPTY);
-                }
-                return copy;
-            }
-            else
-            {
-                copy.setCount(amount);
-                slotStack.setCount(slotStack.getCount() - amount);
-                if (!simulate)
-                {
-                    setInventorySlotContents(0, slotStack);
-                }
-                return copy;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public int getSlotLimit(int slot)
-    {
-        return getInventoryStackLimit();
-    }
-
     public void transferIntoInventory(EntityPlayer playerIn, EnumHand hand, ItemStack heldStack)
     {
         //Add stack to inventory, stack is consumed
@@ -253,7 +145,7 @@ public class ExternalInventory extends BasicInventory implements IExternalInvent
     {
         for (int slot : getSlotsWithSpace())
         {
-            heldStack = insertItem(slot, heldStack, false);
+            heldStack = itemHandlerWrapper.insertItem(slot, heldStack, false);
             if (heldStack.isEmpty() || heldStack.getCount() <= 0)
             {
                 return ItemStack.EMPTY;

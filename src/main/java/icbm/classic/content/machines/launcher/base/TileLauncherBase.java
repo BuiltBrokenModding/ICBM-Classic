@@ -186,7 +186,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) getInventory();
+            return (T) getInventory().itemHandlerWrapper;
         }
         else if (launchScreen != null)
         {

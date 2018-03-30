@@ -54,7 +54,7 @@ public class TileEntityBattery extends TileMachine implements IInventoryProvider
     {
         if (_batteryWrapper == null)
         {
-            _batteryWrapper = new InventoryEnergyStorage(getInventory());
+            _batteryWrapper = new InventoryEnergyStorage(getInventory().itemHandlerWrapper);
         }
         return _batteryWrapper;
     }
@@ -79,7 +79,7 @@ public class TileEntityBattery extends TileMachine implements IInventoryProvider
     {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) getInventory();
+            return (T) getInventory().itemHandlerWrapper;
         }
         else if (capability == CapabilityEnergy.ENERGY)
         {

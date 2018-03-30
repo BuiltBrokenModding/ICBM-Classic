@@ -54,7 +54,7 @@ public class BlockBattery extends BlockICBM
                 {
                     if (!worldIn.isRemote)
                     {
-                        int slotInUse = ((TileEntityBattery) tileEntity).getInventory().getSlots() - ((TileEntityBattery) tileEntity).getInventory().getEmptySlots().size();
+                        int slotInUse = ((TileEntityBattery) tileEntity).getInventory().getSizeInventory() - ((TileEntityBattery) tileEntity).getInventory().getEmptySlots().size();
                         int energy = ((TileEntityBattery) tileEntity).getEnergyStorage().getEnergyStored();
                         playerIn.sendMessage(new TextComponentString("Batteries: " + slotInUse + " Energy: " + energy));
                     }
