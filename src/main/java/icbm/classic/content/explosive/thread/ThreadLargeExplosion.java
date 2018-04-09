@@ -72,7 +72,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
 
                             if (power > 0f)
                             {
-                                this.results.add(blockPos);
+                                this.blast.addThreadResult(blockPos);
                             }
                         }
                     }

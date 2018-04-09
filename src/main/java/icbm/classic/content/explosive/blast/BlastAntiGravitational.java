@@ -49,13 +49,17 @@ public class BlastAntiGravitational extends Blast
                 {
                     if (this.thread.isComplete)
                     {
+                        //Copy as concurrent list is not fast to sort
+                        List<BlockPos> results = new ArrayList();
+                        results.addAll(getThreadResults());
+
                         if (r == 0)
                         {
-                            Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
+                            Collections.sort(results, new GravitationalBlockSorter(position));
                         }
                         int blocksToTake = 20;
 
-                        for (BlockPos targetPosition : this.thread.results)
+                        for (BlockPos targetPosition : results)
                         {
                             final IBlockState blockState = world.getBlockState(targetPosition);
                             if (blockState.getBlock() != Blocks.AIR)

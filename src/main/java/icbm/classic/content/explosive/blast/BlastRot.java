@@ -11,6 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import java.util.Iterator;
+
 /**
  * Creates radiation spawning
  *
@@ -36,8 +38,7 @@ public class BlastRot extends Blast
     {
         if (!this.world().isRemote)
         {
-            this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder);
-            this.thread.start();
+            createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder));
         }
     }
 
@@ -48,12 +49,14 @@ public class BlastRot extends Blast
         {
             try
             {
-                if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
+                if (isThreadCompleted())
                 {
-                    if (this.thread.isComplete)
+                    if (!getThreadResults().isEmpty()) //TODO replace thread check with callback triggered by thread and delayed into main thread
                     {
-                        for (BlockPos targetPosition : this.thread.results)
+                        Iterator<BlockPos> it = getThreadResults().iterator();
+                        while (it.hasNext())
                         {
+                            BlockPos targetPosition = it.next();
                             /** Decay the blocks. */
                             IBlockState blockState = world.getBlockState(targetPosition);
                             Block block = blockState.getBlock();
@@ -96,17 +99,18 @@ public class BlastRot extends Blast
                         }
 
                         this.controller.endExplosion();
+
                     }
-                }
-                else
-                {
-                    String msg = String.format("BlastNuclear#doPostExplode() -> Failed to run due to null thread" +
-                                    "\nWorld = %s " +
-                                    "\nThread = %s" +
-                                    "\nSize = %s" +
-                                    "\nPos = ",
-                            world, thread, size, position);
-                    ICBMClassic.logger().error(msg);
+                    else
+                    {
+                        String msg = String.format("BlastNuclear#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
+                                        "\nWorld = %s " +
+                                        "\nThread = %s" +
+                                        "\nSize = %s" +
+                                        "\nPos = ",
+                                world, getThread(), size, position);
+                        ICBMClassic.logger().error(msg);
+                    }
                 }
             }
             catch (Exception e)
@@ -116,7 +120,7 @@ public class BlastRot extends Blast
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
-                        world, thread, size, position);
+                        world, getThread(), size, position);
                 ICBMClassic.logger().error(msg, e);
             }
         }

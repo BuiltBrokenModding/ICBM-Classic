@@ -71,8 +71,7 @@ public class BlastSonic extends Blast
                 }
             } */
 
-            this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder);
-            this.thread.start();
+            createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder));
         }
 
         if (this.hasShockWave)
@@ -94,11 +93,11 @@ public class BlastSonic extends Blast
         {
             try
             {
-                if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
+                if (isThreadCompleted())
                 {
-                    if (this.thread != null && this.thread.isComplete)
+                    if (!getThreadResults().isEmpty())
                     {
-                        Iterator<BlockPos> it = this.thread.results.iterator();
+                        Iterator<BlockPos> it = getThreadResults().iterator();
 
                         while (it.hasNext())
                         {
@@ -141,16 +140,16 @@ public class BlastSonic extends Blast
                             }
                         }
                     }
-                }
-                else
-                {
-                    String msg = String.format("BlastSonic#doPostExplode() -> Failed to run due to null thread" +
-                                    "\nWorld = %s " +
-                                    "\nThread = %s" +
-                                    "\nSize = %s" +
-                                    "\nPos = ",
-                            world, thread, size, position);
-                    ICBMClassic.logger().error(msg);
+                    else
+                    {
+                        String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
+                                        "\nWorld = %s " +
+                                        "\nThread = %s" +
+                                        "\nSize = %s" +
+                                        "\nPos = ",
+                                world, getThread(), size, position);
+                        ICBMClassic.logger().error(msg);
+                    }
                 }
             }
             catch (Exception e)
@@ -160,7 +159,7 @@ public class BlastSonic extends Blast
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
-                        world, thread, size, position);
+                        world, getThread(), size, position);
                 ICBMClassic.logger().error(msg, e);
             }
         }

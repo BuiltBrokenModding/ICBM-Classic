@@ -42,8 +42,7 @@ public abstract class BlastBeam extends Blast
             this.lightBeam = new EntityLightBeam(this.world(), position, 20 * 20, this.red, this.green, this.blue);
             this.world().spawnEntity(this.lightBeam);
 
-            this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), 50, this.exploder);
-            this.thread.start();
+            createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), 50, this.exploder));
         }
     }
 
@@ -52,7 +51,7 @@ public abstract class BlastBeam extends Blast
     {
         if (!this.world().isRemote)
         {
-            if (this.callCount > 100 / this.proceduralInterval() && this.thread.isComplete)
+            if (this.callCount > 100 / this.proceduralInterval() && isThreadCompleted())
             {
                 this.controller.endExplosion();
             }

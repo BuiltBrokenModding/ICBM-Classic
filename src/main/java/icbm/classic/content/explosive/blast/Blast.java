@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
@@ -21,13 +22,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Prefab for any Explosion/Blast object created
  */
 public abstract class Blast extends Explosion implements IBlast
 {
-    public ThreadExplosion thread;
+    private ThreadExplosion thread;
+    private ConcurrentLinkedQueue<BlockPos> threadResults;
+
     //TODO remove position as we are double storing location data
     public Location position;
     public EntityExplosion controller = null;
@@ -285,5 +289,35 @@ public abstract class Blast extends Explosion implements IBlast
     public Entity getBlastSource()
     {
         return getBlastSource();
+    }
+
+    protected void createAndStartThread(ThreadExplosion thread)
+    {
+        this.thread = thread;
+        thread.start();
+    }
+
+    protected boolean isThreadCompleted()
+    {
+        return thread == null || thread.isComplete;
+    }
+
+    public void addThreadResult(BlockPos pos)
+    {
+        getThreadResults().add(pos);
+    }
+
+    protected ConcurrentLinkedQueue getThreadResults()
+    {
+        if(threadResults == null)
+        {
+            threadResults = new ConcurrentLinkedQueue();
+        }
+        return threadResults;
+    }
+
+    public ThreadExplosion getThread()
+    {
+        return thread;
     }
 }

@@ -13,6 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.Iterator;
+
 public class BlastNuclear extends Blast
 {
     private float energy;
@@ -44,9 +46,7 @@ public class BlastNuclear extends Blast
         {
             if (!this.world().isRemote)
             {
-                //TODO replace thread with worker thread system
-                this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder);
-                this.thread.start();
+                createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder));
             }
             else if (this.spawnMoreParticles)
             {
@@ -117,9 +117,9 @@ public class BlastNuclear extends Blast
         }
         else
         {
-            if (this.thread != null)
+            if (this.getThread() != null)
             {
-                if (this.thread.isComplete)
+                if (isThreadCompleted())
                 {
                     this.controller.endExplosion();
                 }
@@ -139,13 +139,15 @@ public class BlastNuclear extends Blast
         {
             try
             {
-                if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
+                if (isThreadCompleted())
                 {
-                    //Place blocks
-                    if (this.thread.isComplete)
+                    if (!getThreadResults().isEmpty()) //TODO replace thread check with callback triggered by thread and delayed into main thread
                     {
-                        for (BlockPos p : this.thread.results)
+                        //Place blocks
+                        Iterator<BlockPos> it = getThreadResults().iterator();
+                        while (it.hasNext())
                         {
+                            BlockPos p = it.next();
                             IBlockState state = this.world().getBlockState(p);
                             if (!state.getBlock().isAir(state, world(), p))
                             {
@@ -153,35 +155,36 @@ public class BlastNuclear extends Blast
                             }
                         }
                     }
-
-                    //Attack entities
-                    this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
-
-                    //Place radio active blocks
-                    if (this.isRadioactive)
+                    else
                     {
-                        new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius(), this.energy).explode();
-                        new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).explode();
-
-                        if (this.world().rand.nextInt(3) == 0)
-                        {
-                            world().rainingStrength = 1f;
-                        }
+                        String msg = String.format("BlastNuclear#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
+                                        "\nWorld = %s " +
+                                        "\nThread = %s" +
+                                        "\nSize = %s" +
+                                        "\nPos = ",
+                                world, getThread(), size, position);
+                        ICBMClassic.logger().error(msg);
                     }
+                }
 
-                    //Play audio
-                    ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
-                }
-                else
+                //Attack entities
+                this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
+
+                //Place radio active blocks
+                if (this.isRadioactive)
                 {
-                    String msg = String.format("BlastNuclear#doPostExplode() -> Failed to run due to null thread" +
-                                    "\nWorld = %s " +
-                                    "\nThread = %s" +
-                                    "\nSize = %s" +
-                                    "\nPos = ",
-                            world, thread, size, position);
-                    ICBMClassic.logger().error(msg);
+                    new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius(), this.energy).explode();
+                    new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).explode();
+
+                    if (this.world().rand.nextInt(3) == 0)
+                    {
+                        world().rainingStrength = 1f;
+                    }
                 }
+
+                //Play audio
+                ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+
             }
             catch (Exception e)
             {
@@ -190,7 +193,7 @@ public class BlastNuclear extends Blast
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
-                        world, thread, size, position);
+                        world, getThread(), size, position);
                 ICBMClassic.logger().error(msg, e);
             }
         }

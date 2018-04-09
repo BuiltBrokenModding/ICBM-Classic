@@ -4,11 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** @author Calclavia */
 public abstract class ThreadExplosion extends Thread
@@ -21,8 +17,6 @@ public abstract class ThreadExplosion extends Thread
 
     public boolean isComplete = false;
     public boolean kill = false;
-
-    public final List<BlockPos> results = new ArrayList();
 
     public ThreadExplosion(Blast blast, int radius, float energy, Entity source)
     {

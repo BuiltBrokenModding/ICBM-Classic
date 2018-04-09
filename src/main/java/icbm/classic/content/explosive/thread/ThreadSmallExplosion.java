@@ -73,7 +73,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
 
                             if (power > 0.0F)
                             {
-                                this.results.add(targetPosition);
+                                this.blast.addThreadResult(targetPosition);
                             }
 
                             var15 += xStep * var21;

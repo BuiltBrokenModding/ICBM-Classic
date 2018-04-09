@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BlastEndothermic extends BlastBeam
 {
@@ -45,7 +46,7 @@ public class BlastEndothermic extends BlastBeam
 
         if (!this.world().isRemote)
         {
-            if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
+            if (this.canFocusBeam(this.world(), position) &&  isThreadCompleted())
             {
                 /*
                  * Freeze all nearby entities.
@@ -69,7 +70,8 @@ public class BlastEndothermic extends BlastBeam
                     }
                 }
 
-                for (BlockPos targetPosition : this.thread.results)
+                ConcurrentLinkedQueue<BlockPos> list = getThreadResults();
+                for (BlockPos targetPosition : list)
                 {
                     double distanceFromCenter = position.distance(targetPosition);
 

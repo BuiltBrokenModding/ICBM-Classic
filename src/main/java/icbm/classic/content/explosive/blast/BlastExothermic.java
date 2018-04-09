@@ -11,6 +11,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class BlastExothermic extends BlastBeam
 {
     public BlastExothermic(World world, Entity entity, double x, double y, double z, float size)
@@ -37,9 +39,10 @@ public class BlastExothermic extends BlastBeam
         {
             ICBMSounds.POWER_DOWN.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
 
-            if (this.canFocusBeam(this.world(), position) && this.thread.isComplete)
+            if (this.canFocusBeam(this.world(), position) && isThreadCompleted())
             {
-                for (BlockPos targetPosition : this.thread.results)
+                ConcurrentLinkedQueue<BlockPos> list = getThreadResults();
+                for (BlockPos targetPosition : list)
                 {
                     double distanceFromCenter = position.distance(targetPosition);
 

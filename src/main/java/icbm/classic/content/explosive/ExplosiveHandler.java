@@ -41,9 +41,9 @@ public class ExplosiveHandler
                 Blast next = it.next();
                 if (next.world == null || next.world.provider.getDimension() == event.getWorld().provider.getDimension())
                 {
-                    if (next.thread != null)
+                    if (next.getThread() != null)
                     {
-                        next.thread.kill();
+                        next.getThread().kill();
                     }
                     next.isAlive = false;
                     it.remove();
