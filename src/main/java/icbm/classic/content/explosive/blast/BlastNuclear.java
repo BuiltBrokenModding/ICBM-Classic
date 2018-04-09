@@ -1,10 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -43,10 +43,9 @@ public class BlastNuclear extends Blast
     {
         if (!this.world().isRemote)
         {
+            //TODO replace thread with worker thread system
             this.thread = new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder);
-
             this.thread.start();
-
         }
         else if (this.spawnMoreParticles)
         {
@@ -85,7 +84,7 @@ public class BlastNuclear extends Blast
 
         this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
 
-        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(),  7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     @Override
@@ -136,37 +135,60 @@ public class BlastNuclear extends Blast
     {
         try
         {
-            if (!world().isRemote && this.thread.isComplete)
+            if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
             {
-                for (BlockPos p : this.thread.results)
+                //Place blocks
+                if (!world().isRemote && this.thread.isComplete)
                 {
-                    IBlockState state = this.world().getBlockState(p);
-                    if (!state.getBlock().isAir(state, world(), p))
+                    for (BlockPos p : this.thread.results)
                     {
-                        state.getBlock().onBlockExploded(this.world(), p, this);
+                        IBlockState state = this.world().getBlockState(p);
+                        if (!state.getBlock().isAir(state, world(), p))
+                        {
+                            state.getBlock().onBlockExploded(this.world(), p, this);
+                        }
                     }
                 }
+
+                //Attack entities
+                this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
+
+                //Place radio active blocks
+                if (this.isRadioactive)
+                {
+                    new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius(), this.energy).explode();
+                    new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).explode();
+
+                    if (this.world().rand.nextInt(3) == 0)
+                    {
+                        world().rainingStrength = 1f;
+                    }
+                }
+
+                //Play audio
+                ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            }
+            else
+            {
+                String msg = String.format("BlastNuclear#doPostExplode() -> Failed to run due to null thread" +
+                                "\nWorld = %s " +
+                                "\nThread = %s" +
+                                "\nSize = %s" +
+                                "\nPos = ",
+                        world, thread, size, position);
+                ICBMClassic.logger().error(msg);
             }
         }
         catch (Exception e)
         {
-            ICBMClassic.logger().error("Nuclear-type detonation Failed!", e);
+            String msg = String.format("BlastNuclear#doPostExplode() ->  Unexpected error while running post detonation code " +
+                            "\nWorld = %s " +
+                            "\nThread = %s" +
+                            "\nSize = %s" +
+                            "\nPos = ",
+                    world, thread, size, position);
+            ICBMClassic.logger().error(msg, e);
         }
-
-        this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
-
-        if (this.isRadioactive)
-        {
-            new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius(), this.energy).explode();
-            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).explode();
-
-            if (this.world().rand.nextInt(3) == 0)
-            {
-                world().rainingStrength = 1f;
-            }
-        }
-
-        ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     /**
@@ -181,12 +203,6 @@ public class BlastNuclear extends Blast
     }
 
     @Override
-    public long getEnergy()
-    {
-        return (long) (41840000 * this.energy);
-    }
-
-    @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
@@ -198,6 +214,5 @@ public class BlastNuclear extends Blast
     {
         super.writeToNBT(nbt);
         nbt.setBoolean("spawnMoreParticles", this.spawnMoreParticles);
-
     }
 }

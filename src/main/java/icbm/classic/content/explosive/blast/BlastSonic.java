@@ -46,7 +46,7 @@ public class BlastSonic extends Blast
     {
         if (!this.world().isRemote)
         {
-            /*
+            /* TODO re-add?
             if (this.hasShockWave)
             {
                 for (int x = (int) (-this.getRadius() * 2); x < this.getRadius() * 2; ++x)
@@ -87,57 +87,83 @@ public class BlastSonic extends Blast
     }
 
     @Override
-    public void doExplode()
+    public void doExplode() //TODO Rewrite this entire method
     {
         int r = this.callCount;
 
-        if (!this.world().isRemote)
+        try
         {
-            if (this.thread != null && this.thread.isComplete)
+            if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
             {
-                Iterator<BlockPos> it = this.thread.results.iterator();
-
-                while (it.hasNext())
+                if (!this.world().isRemote)
                 {
-                    BlockPos targetPosition = it.next();
-                    double distance = position.distance(targetPosition);
-
-                    if (distance > r || distance < r - 3)
+                    if (this.thread != null && this.thread.isComplete)
                     {
-                        continue;
-                    }
+                        Iterator<BlockPos> it = this.thread.results.iterator();
 
-                    final IBlockState blockState = world.getBlockState(targetPosition);
-                    final Block block = blockState.getBlock();
-
-                    if (block == Blocks.AIR || blockState.getBlockHardness(world, targetPosition) < 0)
-                    {
-                        continue;
-                    }
-
-                    if (distance < r - 1 || this.world().rand.nextInt(3) > 0)
-                    {
-                        if (block == ICBMClassic.blockExplosive)
+                        while (it.hasNext())
                         {
-                            BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive, 1);
-                        }
-                        else
-                        {
-                            this.world().setBlockToAir(targetPosition);
-                        }
+                            BlockPos targetPosition = it.next();
+                            double distance = position.distance(targetPosition);
 
-                        if (this.world().rand.nextFloat() < 0.3 * (this.getBlastRadius() - r))
-                        {
-                            EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
-                            this.world().spawnEntity(entity);
-                            entity.yawChange = 50 * this.world().rand.nextFloat();
-                            entity.pitchChange = 100 * this.world().rand.nextFloat();
-                        }
+                            if (distance > r || distance < r - 3)
+                            {
+                                continue;
+                            }
 
-                        it.remove();
+                            final IBlockState blockState = world.getBlockState(targetPosition);
+                            final Block block = blockState.getBlock();
+
+                            if (block == Blocks.AIR || blockState.getBlockHardness(world, targetPosition) < 0)
+                            {
+                                continue;
+                            }
+
+                            if (distance < r - 1 || this.world().rand.nextInt(3) > 0)
+                            {
+                                if (block == ICBMClassic.blockExplosive)
+                                {
+                                    BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive, 1);
+                                }
+                                else
+                                {
+                                    this.world().setBlockToAir(targetPosition);
+                                }
+
+                                if (this.world().rand.nextFloat() < 0.3 * (this.getBlastRadius() - r))
+                                {
+                                    EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
+                                    this.world().spawnEntity(entity);
+                                    entity.yawChange = 50 * this.world().rand.nextFloat();
+                                    entity.pitchChange = 100 * this.world().rand.nextFloat();
+                                }
+
+                                it.remove();
+                            }
+                        }
                     }
                 }
             }
+            else
+            {
+                String msg = String.format("BlastSonic#doPostExplode() -> Failed to run due to null thread" +
+                                "\nWorld = %s " +
+                                "\nThread = %s" +
+                                "\nSize = %s" +
+                                "\nPos = ",
+                        world, thread, size, position);
+                ICBMClassic.logger().error(msg);
+            }
+        }
+        catch (Exception e)
+        {
+            String msg = String.format("BlastSonic#doPostExplode() ->  Unexpected error while running post detonation code " +
+                            "\nWorld = %s " +
+                            "\nThread = %s" +
+                            "\nSize = %s" +
+                            "\nPos = ",
+                    world, thread, size, position);
+            ICBMClassic.logger().error(msg, e);
         }
 
         int radius = 2 * this.callCount;
@@ -184,7 +210,6 @@ public class BlastSonic extends Blast
         {
             this.controller.endExplosion();
         }
-
     }
 
     /**

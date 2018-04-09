@@ -32,8 +32,6 @@ public class RenderExplosion extends Render<EntityExplosion>
     public Color colorIn = new Color(16777215);
     public Color colorOut = new Color(0);
 
-    public Random random = new Random();
-
     public RenderExplosion(RenderManager renderManager)
     {
         super(renderManager);

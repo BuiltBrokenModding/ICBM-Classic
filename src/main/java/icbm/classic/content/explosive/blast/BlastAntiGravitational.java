@@ -1,9 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -36,52 +37,78 @@ public class BlastAntiGravitational extends Blast
     }
 
     @Override
-    public void doExplode()
+    public void doExplode() //TODO rewrite entire method
     {
         int r = this.callCount;
 
-        if (!this.world().isRemote && this.thread.isComplete)
+        try
         {
-            if (r == 0)
+            if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
             {
-                Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
-            }
-            int blocksToTake = 20;
-
-            for (BlockPos targetPosition : this.thread.results)
-            {
-                final IBlockState blockState = world.getBlockState(targetPosition);
-                if (blockState.getBlock() != Blocks.AIR)
+                if (!this.world().isRemote && this.thread.isComplete)
                 {
-                    float hardness = blockState.getBlockHardness(world, targetPosition);
-                    if (hardness >= 0 && hardness < 1000)
+                    if (r == 0)
                     {
-                        if (world().rand.nextInt(3) > 0)
+                        Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
+                    }
+                    int blocksToTake = 20;
+
+                    for (BlockPos targetPosition : this.thread.results)
+                    {
+                        final IBlockState blockState = world.getBlockState(targetPosition);
+                        if (blockState.getBlock() != Blocks.AIR)
                         {
-                            //Remove block
-                            world.setBlockToAir(targetPosition);
-
-                            //Mark blocks taken
-                            blocksToTake--;
-                            if (blocksToTake <= 0)
+                            float hardness = blockState.getBlockHardness(world, targetPosition);
+                            if (hardness >= 0 && hardness < 1000)
                             {
-                                break;
+                                if (world().rand.nextInt(3) > 0)
+                                {
+                                    //Remove block
+                                    world.setBlockToAir(targetPosition);
+
+                                    //Mark blocks taken
+                                    blocksToTake--;
+                                    if (blocksToTake <= 0)
+                                    {
+                                        break;
+                                    }
+
+                                    //Create flying block
+                                    EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
+                                    entity.yawChange = 50 * world().rand.nextFloat();
+                                    entity.pitchChange = 100 * world().rand.nextFloat();
+                                    entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
+                                    entity.noClip = true;
+                                    world().spawnEntity(entity);
+
+                                    //Track flying block
+                                    flyingBlocks.add(entity);
+                                }
                             }
-
-                            //Create flying block
-                            EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
-                            entity.yawChange = 50 * world().rand.nextFloat();
-                            entity.pitchChange = 100 * world().rand.nextFloat();
-                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
-                            entity.noClip = true;
-                            world().spawnEntity(entity);
-
-                            //Track flying block
-                            flyingBlocks.add(entity);
                         }
                     }
                 }
             }
+            else
+            {
+                String msg = String.format("BlastAntiGravitational#doPostExplode() -> Failed to run due to null thread" +
+                                "\nWorld = %s " +
+                                "\nThread = %s" +
+                                "\nSize = %s" +
+                                "\nPos = ",
+                        world, thread, size, position);
+                ICBMClassic.logger().error(msg);
+            }
+        }
+        catch (Exception e)
+        {
+            String msg = String.format("BlastAntiGravitational#doPostExplode() ->  Unexpected error while running post detonation code " +
+                            "\nWorld = %s " +
+                            "\nThread = %s" +
+                            "\nSize = %s" +
+                            "\nPos = ",
+                    world, thread, size, position);
+            ICBMClassic.logger().error(msg, e);
         }
 
         int radius = (int) this.getBlastRadius();
