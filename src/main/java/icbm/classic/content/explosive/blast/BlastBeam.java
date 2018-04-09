@@ -1,11 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityLightBeam;
-import icbm.classic.content.explosive.thread.ThreadExplosion;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -21,7 +20,6 @@ import java.util.Set;
  * @author Calclavia */
 public abstract class BlastBeam extends Blast
 {
-    protected ThreadExplosion thread;
     protected Set<EntityFlyingBlock> feiBlocks = new HashSet<EntityFlyingBlock>();
     protected EntityLightBeam lightBeam;
     protected float red, green, blue;

@@ -21,7 +21,6 @@ import java.util.List;
 public class BlastSonic extends Blast
 {
     private float energy;
-    private ThreadLargeExplosion thread;
     private boolean hasShockWave = false;
 
     public BlastSonic(World world, Entity entity, double x, double y, double z, float size)
@@ -91,11 +90,11 @@ public class BlastSonic extends Blast
     {
         int r = this.callCount;
 
-        try
+        if (world() != null && !this.world().isRemote)
         {
-            if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
+            try
             {
-                if (!this.world().isRemote)
+                if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
                 {
                     if (this.thread != null && this.thread.isComplete)
                     {
@@ -143,27 +142,27 @@ public class BlastSonic extends Blast
                         }
                     }
                 }
+                else
+                {
+                    String msg = String.format("BlastSonic#doPostExplode() -> Failed to run due to null thread" +
+                                    "\nWorld = %s " +
+                                    "\nThread = %s" +
+                                    "\nSize = %s" +
+                                    "\nPos = ",
+                            world, thread, size, position);
+                    ICBMClassic.logger().error(msg);
+                }
             }
-            else
+            catch (Exception e)
             {
-                String msg = String.format("BlastSonic#doPostExplode() -> Failed to run due to null thread" +
+                String msg = String.format("BlastSonic#doPostExplode() ->  Unexpected error while running post detonation code " +
                                 "\nWorld = %s " +
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
                         world, thread, size, position);
-                ICBMClassic.logger().error(msg);
+                ICBMClassic.logger().error(msg, e);
             }
-        }
-        catch (Exception e)
-        {
-            String msg = String.format("BlastSonic#doPostExplode() ->  Unexpected error while running post detonation code " +
-                            "\nWorld = %s " +
-                            "\nThread = %s" +
-                            "\nSize = %s" +
-                            "\nPos = ",
-                    world, thread, size, position);
-            ICBMClassic.logger().error(msg, e);
         }
 
         int radius = 2 * this.callCount;

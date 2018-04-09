@@ -4,6 +4,8 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.explosive.ExplosiveHandler;
+import icbm.classic.content.explosive.thread.ThreadExplosion;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -25,6 +27,7 @@ import java.util.List;
  */
 public abstract class Blast extends Explosion implements IBlast
 {
+    public ThreadExplosion thread;
     //TODO remove position as we are double storing location data
     public Location position;
     public EntityExplosion controller = null;
@@ -59,6 +62,7 @@ public abstract class Blast extends Explosion implements IBlast
     /** Called before an explosion happens. */
     public final void preExplode()
     {
+        ExplosiveHandler.add(this);
         this.doPreExplode();
     }
 
@@ -79,6 +83,7 @@ public abstract class Blast extends Explosion implements IBlast
     public final void postExplode()
     {
         this.doPostExplode();
+        ExplosiveHandler.remove(this);
     }
 
     /**

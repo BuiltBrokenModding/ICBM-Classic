@@ -1,9 +1,11 @@
 package icbm.classic.content.explosive.thread;
 
-import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public abstract class ThreadExplosion extends Thread
     public Entity source;
 
     public boolean isComplete = false;
+    public boolean kill = false;
 
     public final List<BlockPos> results = new ArrayList();
 
@@ -32,8 +35,31 @@ public abstract class ThreadExplosion extends Thread
     }
 
     @Override
-    public void run()
+    public final void run()
     {
+        try
+        {
+            if (position != null && position.world() != null)
+            {
+                doRun(position.world, position);
+            }
+            else
+            {
+                ICBMClassic.logger().error("ThreadExplosion#run() -> Invalid world or position provided for thread. " +
+                        "Canceling action to prevent issues. \n Pos = " + position + " World = " + (position != null ? position.world : "null"));
+            }
+        }
+        catch (Exception e)
+        {
+            ICBMClassic.logger().error("ThreadExplosion#run() -> Unexpected error ");
+        }
         this.isComplete = true;
     }
+
+    public void kill()
+    {
+        kill = true;
+    }
+
+    protected abstract void doRun(World world, Location center);
 }

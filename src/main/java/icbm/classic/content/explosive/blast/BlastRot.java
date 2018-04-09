@@ -18,7 +18,6 @@ import net.minecraftforge.fluids.FluidRegistry;
  */
 public class BlastRot extends Blast
 {
-    private ThreadLargeExplosion thread;
     private float energy;
 
     public BlastRot(World world, Entity entity, double x, double y, double z, float size)
@@ -45,11 +44,11 @@ public class BlastRot extends Blast
     @Override
     public void doExplode()
     {
-        try
+        if (world() != null && !this.world().isRemote)
         {
-            if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
+            try
             {
-                if (!this.world().isRemote)
+                if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
                 {
                     if (this.thread.isComplete)
                     {
@@ -99,27 +98,27 @@ public class BlastRot extends Blast
                         this.controller.endExplosion();
                     }
                 }
+                else
+                {
+                    String msg = String.format("BlastNuclear#doPostExplode() -> Failed to run due to null thread" +
+                                    "\nWorld = %s " +
+                                    "\nThread = %s" +
+                                    "\nSize = %s" +
+                                    "\nPos = ",
+                            world, thread, size, position);
+                    ICBMClassic.logger().error(msg);
+                }
             }
-            else
+            catch (Exception e)
             {
-                String msg = String.format("BlastNuclear#doPostExplode() -> Failed to run due to null thread" +
+                String msg = String.format("BlastRot#doPostExplode() ->  Unexpected error while running post detonation code " +
                                 "\nWorld = %s " +
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
                         world, thread, size, position);
-                ICBMClassic.logger().error(msg);
+                ICBMClassic.logger().error(msg, e);
             }
-        }
-        catch (Exception e)
-        {
-            String msg = String.format("BlastRot#doPostExplode() ->  Unexpected error while running post detonation code " +
-                            "\nWorld = %s " +
-                            "\nThread = %s" +
-                            "\nSize = %s" +
-                            "\nPos = ",
-                    world, thread, size, position);
-            ICBMClassic.logger().error(msg, e);
         }
     }
 

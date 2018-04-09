@@ -41,74 +41,77 @@ public class BlastAntiGravitational extends Blast
     {
         int r = this.callCount;
 
-        try
+        if(world() != null && !this.world().isRemote)
         {
-            if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
+            try
             {
-                if (!this.world().isRemote && this.thread.isComplete)
+                if (this.thread != null) //TODO replace thread check with callback triggered by thread and delayed into main thread
                 {
-                    if (r == 0)
+                    if (this.thread.isComplete)
                     {
-                        Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
-                    }
-                    int blocksToTake = 20;
-
-                    for (BlockPos targetPosition : this.thread.results)
-                    {
-                        final IBlockState blockState = world.getBlockState(targetPosition);
-                        if (blockState.getBlock() != Blocks.AIR)
+                        if (r == 0)
                         {
-                            float hardness = blockState.getBlockHardness(world, targetPosition);
-                            if (hardness >= 0 && hardness < 1000)
+                            Collections.sort(this.thread.results, new GravitationalBlockSorter(position));
+                        }
+                        int blocksToTake = 20;
+
+                        for (BlockPos targetPosition : this.thread.results)
+                        {
+                            final IBlockState blockState = world.getBlockState(targetPosition);
+                            if (blockState.getBlock() != Blocks.AIR)
                             {
-                                if (world().rand.nextInt(3) > 0)
+                                float hardness = blockState.getBlockHardness(world, targetPosition);
+                                if (hardness >= 0 && hardness < 1000)
                                 {
-                                    //Remove block
-                                    world.setBlockToAir(targetPosition);
-
-                                    //Mark blocks taken
-                                    blocksToTake--;
-                                    if (blocksToTake <= 0)
+                                    if (world().rand.nextInt(3) > 0)
                                     {
-                                        break;
+                                        //Remove block
+                                        world.setBlockToAir(targetPosition);
+
+                                        //Mark blocks taken
+                                        blocksToTake--;
+                                        if (blocksToTake <= 0)
+                                        {
+                                            break;
+                                        }
+
+                                        //Create flying block
+                                        EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
+                                        entity.yawChange = 50 * world().rand.nextFloat();
+                                        entity.pitchChange = 100 * world().rand.nextFloat();
+                                        entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
+                                        entity.noClip = true;
+                                        world().spawnEntity(entity);
+
+                                        //Track flying block
+                                        flyingBlocks.add(entity);
                                     }
-
-                                    //Create flying block
-                                    EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
-                                    entity.yawChange = 50 * world().rand.nextFloat();
-                                    entity.pitchChange = 100 * world().rand.nextFloat();
-                                    entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
-                                    entity.noClip = true;
-                                    world().spawnEntity(entity);
-
-                                    //Track flying block
-                                    flyingBlocks.add(entity);
                                 }
                             }
                         }
                     }
                 }
+                else
+                {
+                    String msg = String.format("BlastAntiGravitational#doPostExplode() -> Failed to run due to null thread" +
+                                    "\nWorld = %s " +
+                                    "\nThread = %s" +
+                                    "\nSize = %s" +
+                                    "\nPos = ",
+                            world, thread, size, position);
+                    ICBMClassic.logger().error(msg);
+                }
             }
-            else
+            catch (Exception e)
             {
-                String msg = String.format("BlastAntiGravitational#doPostExplode() -> Failed to run due to null thread" +
+                String msg = String.format("BlastAntiGravitational#doPostExplode() ->  Unexpected error while running post detonation code " +
                                 "\nWorld = %s " +
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
                         world, thread, size, position);
-                ICBMClassic.logger().error(msg);
+                ICBMClassic.logger().error(msg, e);
             }
-        }
-        catch (Exception e)
-        {
-            String msg = String.format("BlastAntiGravitational#doPostExplode() ->  Unexpected error while running post detonation code " +
-                            "\nWorld = %s " +
-                            "\nThread = %s" +
-                            "\nSize = %s" +
-                            "\nPos = ",
-                    world, thread, size, position);
-            ICBMClassic.logger().error(msg, e);
         }
 
         int radius = (int) this.getBlastRadius();

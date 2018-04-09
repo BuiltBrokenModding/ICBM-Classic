@@ -1,7 +1,8 @@
 package icbm.classic.content.explosive.thread;
 
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -32,15 +33,18 @@ public class ThreadLargeExplosion extends ThreadExplosion
     }
 
     @Override
-    public void run()
+    public void doRun(World world, Location center)
     {
-        final World world = position.world;
-        int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.radius));
+        final int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.radius));
 
         for (int phi_n = 0; phi_n < 2 * steps; phi_n++)
         {
             for (int theta_n = 0; theta_n < steps; theta_n++)
             {
+                if (kill)
+                {
+                    return;
+                }
                 double phi = Math.PI * 2 / steps * phi_n;
                 double theta = Math.PI / steps * theta_n;
 
@@ -76,7 +80,5 @@ public class ThreadLargeExplosion extends ThreadExplosion
                 }
             }
         }
-
-        super.run();
     }
 }
