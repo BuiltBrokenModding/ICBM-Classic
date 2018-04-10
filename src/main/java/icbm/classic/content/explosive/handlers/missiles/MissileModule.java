@@ -16,7 +16,7 @@ public class MissileModule extends Missile
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         if (entity instanceof IMissile)
         {

@@ -116,7 +116,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     public void explode()
     {
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        this.getExplosiveType().createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this);
+        this.getExplosiveType().createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this, 1);
         this.setDead();
     }
 

@@ -515,7 +515,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                     //Triger normal explosion
                     else
                     {
-                        this.explosiveID.handler.createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this);
+                        this.explosiveID.handler.createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this, 1);
                     }
                 }
 

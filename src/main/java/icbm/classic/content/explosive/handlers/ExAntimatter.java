@@ -32,8 +32,8 @@ public class ExAntimatter extends Explosion
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastAntimatter(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, ConfigBlast.ANTIMATTER_SIZE, ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).explode();
+        new BlastAntimatter(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, ConfigBlast.ANTIMATTER_SIZE * scale, ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).explode();
     }
 }

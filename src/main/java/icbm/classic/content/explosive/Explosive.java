@@ -174,13 +174,13 @@ public abstract class Explosive implements IExplosive
         return false;
     }
 
-    public void createExplosion(World world, BlockPos pos, Entity entity) //TODO switch back to x y z, as this causes all blasts to be centered on the block
+    public void createExplosion(World world, BlockPos pos, Entity entity, float scale) //TODO switch back to x y z, as this causes all blasts to be centered on the block
     {
         if (!this.isDisabled)
         {
-            this.doCreateExplosion(world, pos, entity);
+            this.doCreateExplosion(world, pos, entity, scale);
         }
     }
 
-    public abstract void doCreateExplosion(World world, BlockPos pos, Entity entity);
+    public abstract void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale);
 }

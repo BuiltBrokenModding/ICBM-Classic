@@ -4,6 +4,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.explosive.Explosives;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -59,23 +62,93 @@ public class CommandICBM extends CommandBase
     {
         if (sender instanceof EntityPlayer)
         {
+            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast list"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <scale>"));
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <x> <y> <z> <scale>"));
+            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <x> <y> <z> <scale>"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> [radius]"));
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <x> <y> <z> <radius>"));
+            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <dim> <x> <y> <z> <radius>"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc lag [radius]"));
         }
         else
         {
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <x> <y> <z> <scale>"));
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <x> <y> <z> <radius>"));
+            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast list"));
+            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <dim> <x> <y> <z> <scale>"));
+            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <dim> <x> <y> <z> <radius>"));
         }
     }
 
     protected void commandBlast(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException
     {
-        //TODO will implement this later
-        sender.sendMessage(new TextComponentString("\u00a7cCommand not implement yet!"));
+        if (args.length >= 1 && args[1].equalsIgnoreCase("list"))
+        {
+            String names = "Explosive Types: ";
+            for (int i = 0; i <= 23; i++)
+            {
+                names += Explosives.get(i).name().toLowerCase();
+                if (i != 23)
+                {
+                    names += ", ";
+                }
+            }
+            sender.sendMessage(new TextComponentString(names));
+        }
+        else if (args.length >= 3)
+        {
+            final String explosive_id = args[1];
+            final float scale = Float.parseFloat(args.length == 3 ? args[2] : args[6]);
+            if (scale <= 0)
+            {
+                throw new WrongUsageException("Scale must be greater than zero!");
+            }
+
+            Explosives type = null;
+            for (int i = 0; i <= 23; i++)
+            {
+                Explosives ex = Explosives.get(i);
+                if (ex.getName().equalsIgnoreCase(explosive_id))
+                {
+                    type = ex;
+                    break;
+                }
+            }
+
+            if (type == null)
+            {
+                throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
+            }
+
+            //Get position
+            World world;
+            double x, y, z;
+            if (args.length == 7)
+            {
+                world = DimensionManager.getWorld(Integer.getInteger(args[2]));
+                x = Double.parseDouble(args[3]);
+                y = Double.parseDouble(args[4]);
+                z = Double.parseDouble(args[5]);
+            }
+            else if (!(sender instanceof MinecraftServer))
+            {
+                world = sender.getEntityWorld();
+                x = sender.getPositionVector().x;
+                y = sender.getPositionVector().y;
+                z = sender.getPositionVector().z;
+            }
+            else
+            {
+                throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
+            }
+
+            if (world != null)
+            {
+                type.handler.createExplosion(world, new BlockPos(x, y, z), sender.getCommandSenderEntity(), scale);
+                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + type.name().toLowerCase() + "] with scale " + scale));
+            }
+            else
+            {
+                throw new WrongUsageException("Failed to get a world instance from arguments or sender.");
+            }
+        }
     }
 
     protected void commandRemove(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException
@@ -100,57 +173,65 @@ public class CommandICBM extends CommandBase
             if (typeString != null)
             {
                 //Get range
-                boolean hasRange = args.length == 3 || args.length == 6;
+                boolean hasRange = args.length == 3 || args.length == 7;
                 int range = args.length == 3 ? parseRadius(args[2])
-                        : args.length == 6 ? parseRadius(args[5])
+                        : args.length == 7 ? parseRadius(args[6])
                         : -1;
 
                 //Get position
+                World world;
                 double x, y, z;
-                if (sender instanceof MinecraftServer)
+
+                if (args.length == 6)
                 {
-                    if (args.length == 6)
-                    {
-                        x = Double.parseDouble(args[2]);
-                        y = Double.parseDouble(args[3]);
-                        z = Double.parseDouble(args[4]);
-                    }
-                    else
-                    {
-                        throw new WrongUsageException("/icbmc remove <all/missile/explosion> x y z radius");
-                    }
+                    world = DimensionManager.getWorld(Integer.getInteger(args[2]));
+                    x = Double.parseDouble(args[3]);
+                    y = Double.parseDouble(args[4]);
+                    z = Double.parseDouble(args[5]);
                 }
-                else
+                else if (!(sender instanceof MinecraftServer))
                 {
+                    world = sender.getEntityWorld();
                     x = sender.getPositionVector().x;
                     y = sender.getPositionVector().y;
                     z = sender.getPositionVector().z;
                 }
-
-                //Get entities
-                List<Entity> entities = getEntities(sender, x, y, z, range);
-
-                int count = 0;
-
-                //Loop with for-loop to prevent CME
-                for (int i = 0; i < entities.size(); i++)
+                else
                 {
-                    Entity entity = entities.get(i);
-                    if (entity != null && !entity.isDead)
-                    {
-                        boolean isExplosive = entity instanceof EntityExplosive;
-                        boolean isMissile = entity instanceof EntityMissile;
-                        boolean isICBM = entity instanceof EntityFragments || entity instanceof EntityFlyingBlock;
-                        if (remove_explosives && isExplosive || remove_missiles && isMissile || remove_all && isICBM)
-                        {
-                            entity.setDead();
-                            count++;
-                        }
-                    }
+                    throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
                 }
 
-                sender.sendMessage(new TextComponentString("Removed '" + count + "' ICBM entities "  + (hasRange ? "within " + range + "meters" : "from the world")));
-                return; //Necessary return
+                if (world != null)
+                {
+                    //Get entities
+                    List<Entity> entities = getEntities(world, x, y, z, range);
+
+                    int count = 0;
+
+                    //Loop with for-loop to prevent CME
+                    for (int i = 0; i < entities.size(); i++)
+                    {
+                        Entity entity = entities.get(i);
+                        if (entity != null && !entity.isDead)
+                        {
+                            boolean isExplosive = entity instanceof EntityExplosive;
+                            boolean isMissile = entity instanceof EntityMissile;
+                            boolean isICBM = entity instanceof EntityFragments || entity instanceof EntityFlyingBlock;
+                            if (remove_explosives && isExplosive || remove_missiles && isMissile || remove_all && isICBM)
+                            {
+                                entity.setDead();
+                                count++;
+                            }
+                        }
+                    }
+
+                    sender.sendMessage(new TextComponentString("Removed '" + count + "' ICBM entities " + (hasRange ? "within " + range + "meters" : "from the world")));
+                    return; //Necessary return
+                }
+                else
+                {
+                    throw new WrongUsageException("Failed to get a world instance from arguments or sender.");
+                }
             }
 
         }
@@ -162,7 +243,7 @@ public class CommandICBM extends CommandBase
         double range = args.length > 1 ? Double.parseDouble(args[1]) : 1000;
 
         //Get entities
-        List<Entity> entities = getEntities(sender, sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z, range);
+        List<Entity> entities = getEntities(sender.getEntityWorld(), sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z, range);
 
         int count = 0;
         //Loop with for-loop to prevent CME
@@ -181,7 +262,7 @@ public class CommandICBM extends CommandBase
         sender.sendMessage(new TextComponentString("Removed '" + count + "' sources of lag caused by ICBM within " + range + " meters"));
     }
 
-    protected List<Entity> getEntities(ICommandSender sender, double x, double y, double z, double range)
+    protected List<Entity> getEntities(World world, double x, double y, double z, double range)
     {
         if (range > 0)
         {
@@ -189,11 +270,11 @@ public class CommandICBM extends CommandBase
                     x - range, y - range, z - range,
                     x + range, y + range, z + range);
 
-            return sender.getEntityWorld().getEntitiesWithinAABB(Entity.class, bb);
+            return world.getEntitiesWithinAABB(Entity.class, bb);
         }
         else if (range == -1)
         {
-            return sender.getEntityWorld().loadedEntityList;
+            return world.loadedEntityList;
         }
         return new ArrayList();
     }

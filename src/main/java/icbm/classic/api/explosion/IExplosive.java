@@ -38,6 +38,6 @@ public interface IExplosive
      * @param pos
      * @param entity Entity that caused the explosion.
      */
-    public void createExplosion(World world, BlockPos pos, Entity entity);
+    public void createExplosion(World world, BlockPos pos, Entity entity, float scale);
 
 }

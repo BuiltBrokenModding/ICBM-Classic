@@ -14,15 +14,15 @@ public class ExNuclear extends Explosion
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         if (this.getTier() == EnumTier.THREE)
         {
-            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50, 80).setNuclear().explode();
+            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50, 80 * scale).setNuclear().explode();
         }
         else
         {
-            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30, 45).explode();
+            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30, 45 * scale).explode();
         }
     }
 }

@@ -25,8 +25,8 @@ public class ExExothermic extends Explosion
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastExothermic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50).explode();
+        new BlastExothermic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50 * scale).explode();
     }
 }

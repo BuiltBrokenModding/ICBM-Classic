@@ -15,19 +15,19 @@ public class ExShrapnel extends Explosion
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         if (this.getTier() == EnumTier.TWO)
         {
-            new BlastShrapnel(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 15, true, true, false).explode();
+            new BlastShrapnel(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 15 * scale, true, true, false).explode();
         }
         else if (this == Explosives.ANVIL.handler)
         {
-            new BlastShrapnel(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 25, false, false, true).explode();
+            new BlastShrapnel(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 25 * scale, false, false, true).explode();
         }
         else
         {
-            new BlastShrapnel(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30, true, false, false).explode();
+            new BlastShrapnel(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale, true, false, false).explode();
         }
     }
 }

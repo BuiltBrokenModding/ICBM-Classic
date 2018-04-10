@@ -51,7 +51,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     {
         // TODO add event
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        explosive.handler.createExplosion(world, new BlockPos(posX, posY, posZ), this);
+        explosive.handler.createExplosion(world, new BlockPos(posX, posY, posZ), this, 1);
         this.setDead();
     }
 

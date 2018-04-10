@@ -32,9 +32,9 @@ public class MissileNuclearCluster extends MissileCluster
     }
 
     @Override
-    public void createExplosion(World world, BlockPos pos, Entity entity)
+    public void createExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastNuclear(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 30, 50).setNuclear().explode();
+        new BlastNuclear(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 30 * scale, 50).setNuclear().explode();
     }
 
     @Override

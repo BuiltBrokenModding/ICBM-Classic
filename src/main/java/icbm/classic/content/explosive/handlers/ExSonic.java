@@ -14,15 +14,15 @@ public class ExSonic extends Explosion
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         if (this.getTier() == EnumTier.THREE)
         {
-            new BlastSonic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20, 35).setShockWave().explode();
+            new BlastSonic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20, 35 * scale).setShockWave().explode();
         }
         else
         {
-            new BlastSonic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 15, 30).explode();
+            new BlastSonic(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 15, 30 * scale).explode();
         }
     }
 }

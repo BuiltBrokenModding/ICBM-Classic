@@ -14,8 +14,8 @@ public class ExEMP extends Explosion
     }
 
     @Override
-    public void doCreateExplosion(World world, BlockPos pos, Entity entity)
+    public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastEMP(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50).setEffectBlocks().setEffectEntities().explode();
+        new BlastEMP(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50 * scale).setEffectBlocks().setEffectEntities().explode();
     }
 }

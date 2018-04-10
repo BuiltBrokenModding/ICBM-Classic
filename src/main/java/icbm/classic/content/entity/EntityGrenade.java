@@ -198,7 +198,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         if (this.ticksExisted > Math.max(60, (explosiveID.handler.getYinXin())))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            (explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this);
+            (explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this, 1);
             this.setDead();
             return;
         }
