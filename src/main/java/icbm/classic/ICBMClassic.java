@@ -362,38 +362,44 @@ public final class ICBMClassic
         final String VANILLA_LOOT_POOL_ID = "main";
         if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) || event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON))
         {
-            LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-            if (lootPool != null)
+            if (ConfigItems.ENABLE_LOOT_DROPS)
             {
-                if (ConfigItems.ENABLE_INGOTS_ITEMS)
+                LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
+                if (lootPool != null)
                 {
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.copper", itemIngot.getStack("copper", 10), 15, 5));
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.steel", itemIngot.getStack("steel", 10), 20, 3));
-                }
-                if (ConfigItems.ENABLE_PLATES_ITEMS)
-                {
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.iron", itemPlate.getStack("iron", 7), 25, 5));
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.steel", itemPlate.getStack("steel", 5), 30, 3));
-                }
-                if (ConfigItems.ENABLE_WIRES_ITEMS)
-                {
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.copper", itemWire.getStack("copper", 20), 15, 5));
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.gold", itemWire.getStack("gold", 15), 30, 3));
-                }
-                if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
-                {
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.basic", itemCircuit.getStack("basic", 15), 15, 5));
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.advanced", itemCircuit.getStack("advanced", 11), 30, 3));
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.elite", itemCircuit.getStack("elite", 8), 30, 3));
+                    if (ConfigItems.ENABLE_INGOTS_ITEMS)
+                    {
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.copper", itemIngot.getStack("copper", 10), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.steel", itemIngot.getStack("steel", 10), 20, 3));
+                    }
+                    if (ConfigItems.ENABLE_PLATES_ITEMS)
+                    {
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.iron", itemPlate.getStack("iron", 7), 25, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.steel", itemPlate.getStack("steel", 5), 30, 3));
+                    }
+                    if (ConfigItems.ENABLE_WIRES_ITEMS)
+                    {
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.copper", itemWire.getStack("copper", 20), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.gold", itemWire.getStack("gold", 15), 30, 3));
+                    }
+                    if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
+                    {
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.basic", itemCircuit.getStack("basic", 15), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.advanced", itemCircuit.getStack("advanced", 11), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.elite", itemCircuit.getStack("elite", 8), 30, 3));
+                    }
                 }
             }
         }
         else if (event.getName().equals(LootTableList.ENTITIES_CREEPER))
         {
-            LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-            if (lootPool != null)
+            if (ConfigItems.ENABLE_SULFUR_LOOT_DROPS)
             {
-                lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(itemSulfurDust, 10, 0), 2, 0));
+                LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
+                if (lootPool != null)
+                {
+                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(itemSulfurDust, 10, 0), 2, 0));
+                }
             }
         }
     }
