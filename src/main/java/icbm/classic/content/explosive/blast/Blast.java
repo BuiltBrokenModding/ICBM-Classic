@@ -1,8 +1,10 @@
 package icbm.classic.content.explosive.blast;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.models.ModelICBM;
+import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.explosive.ExplosiveHandler;
 import icbm.classic.content.explosive.thread.ThreadExplosion;
@@ -32,6 +34,7 @@ public abstract class Blast extends Explosion implements IBlast
     //Thread stuff
     private ThreadExplosion thread;
     private ConcurrentLinkedQueue<BlockPos> threadResults;
+    private boolean threadComplete = false;
 
     //TODO remove position as we are double storing location data
     public Location position;
@@ -329,13 +332,53 @@ public abstract class Blast extends Explosion implements IBlast
 
     protected void createAndStartThread(ThreadExplosion thread)
     {
+        //Debug
+        if (ConfigDebug.DEBUG_THREADS)
+        {
+            ICBMClassic.logger().info("Blast#createAndStartThread(" + thread + ") -> Thread set");
+        }
+
+        if (this.thread != null && !this.thread.isComplete)
+        {
+            ICBMClassic.logger().info("Blast#createAndStartThread(" + thread + ") -> Error new thread was set before last finished\nLast: " + thread);
+        }
+
+        //Store thread instance
         this.thread = thread;
-        thread.start();
+
+        //Reset thread state
+        this.threadComplete = false;
+
+        //Start thread
+        this.thread.start();
+
+        //Debug
+        if (ConfigDebug.DEBUG_THREADS)
+        {
+            ICBMClassic.logger().info("Blast#createAndStartThread(" + thread + ") -> Thread started: " + thread.isAlive());
+        }
     }
 
     protected boolean isThreadCompleted()
     {
-        return thread == null || thread.isComplete;
+        return threadComplete || thread != null && thread.isComplete;
+    }
+
+    /**
+     * Called from the explosive thread to mark as completed
+     *
+     * @param exThread
+     */
+    public synchronized void markThreadCompleted(ThreadExplosion exThread) //This method is a work around for thread instance going null
+    {
+        if (thread == null || thread == exThread)
+        {
+            threadComplete = true;
+        }
+        else
+        {
+            ICBMClassic.logger().info("Blast#markThreadCompleted(" + exThread + ") -> Error thread attempted to mark for complete but did not match current thread \nCurrent: " + thread);
+        }
     }
 
     public void addThreadResult(BlockPos pos)

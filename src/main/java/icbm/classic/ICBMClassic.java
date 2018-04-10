@@ -98,6 +98,7 @@ import java.util.List;
 public final class ICBMClassic
 {
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
+
     @Mod.Instance(ICBMClassic.DOMAIN)
     public static ICBMClassic INSTANCE;
 

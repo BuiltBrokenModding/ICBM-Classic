@@ -3,6 +3,7 @@ package icbm.classic.content.explosive.blast;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
 import icbm.classic.content.explosive.tile.BlockExplosive;
@@ -143,13 +144,16 @@ public class BlastSonic extends Blast
                     else
                     {
                         isAlive = false;
-                        String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
-                                        "\nWorld = %s " +
-                                        "\nThread = %s" +
-                                        "\nSize = %s" +
-                                        "\nPos = %s",
-                                world, getThread(), size, position);
-                        ICBMClassic.logger().error(msg);
+                        if(ConfigDebug.DEBUG_THREADS)
+                        {
+                            String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find blocks to edit. Either thread failed or no valid blocks were found in range." +
+                                            "\nWorld = %s " +
+                                            "\nThread = %s" +
+                                            "\nSize = %s" +
+                                            "\nPos = %s",
+                                    world, getThread(), size, position);
+                            ICBMClassic.logger().error(msg);
+                        }
                     }
                 }
             }
