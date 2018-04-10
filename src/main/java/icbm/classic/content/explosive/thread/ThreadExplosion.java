@@ -77,7 +77,7 @@ public abstract class ThreadExplosion extends Thread //TODO replace with worker 
         }
         catch (Exception e)
         {
-            ICBMClassic.logger().error("ThreadExplosion#run() -> Unexpected error ");
+            ICBMClassic.logger().error("ThreadExplosion#run() -> Unexpected error ", e);
         }
 
         //Marked as completed
