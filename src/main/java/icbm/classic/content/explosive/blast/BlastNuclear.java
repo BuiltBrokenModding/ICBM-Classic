@@ -114,22 +114,10 @@ public class BlastNuclear extends Blast
                     }
                 }
             }
-
         }
-        else
+        else if (isThreadCompleted())
         {
-            if (this.getThread() != null)
-            {
-                if (isThreadCompleted())
-                {
-                    this.controller.endExplosion();
-                }
-            }
-            else
-            {
-                this.controller.endExplosion();
-                ICBMClassic.logger().error("Something went wrong with multi-threading while detonating the nuclear explosive.");
-            }
+            this.controller.endExplosion();
         }
     }
 
@@ -159,7 +147,7 @@ public class BlastNuclear extends Blast
                     else
                     {
                         isAlive = false;
-                        if(ConfigDebug.DEBUG_THREADS)
+                        if (ConfigDebug.DEBUG_THREADS)
                         {
                             String msg = String.format("BlastNuclear#doPostExplode() -> Thread failed to find blocks to edit. Either thread failed or no valid blocks were found in range." +
                                             "\nWorld = %s " +
