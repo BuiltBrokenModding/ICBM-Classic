@@ -285,12 +285,6 @@ public class BlastTNT extends Blast
     }
 
     @Override
-    public long getEnergy()
-    {
-        return 418000; //TODO check what this number means?
-    }
-
-    @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);

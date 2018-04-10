@@ -140,10 +140,4 @@ public abstract class BlastBeam extends Blast
         return 4;
     }
 
-    @Override
-    public long getEnergy()
-    {
-        return 10000;
-    }
-
 }

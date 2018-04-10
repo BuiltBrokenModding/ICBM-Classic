@@ -103,11 +103,12 @@ public class BlastRot extends Blast
                     }
                     else
                     {
+                        isAlive = false;
                         String msg = String.format("BlastNuclear#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
                                         "\nWorld = %s " +
                                         "\nThread = %s" +
                                         "\nSize = %s" +
-                                        "\nPos = ",
+                                        "\nPos = %s",
                                 world, getThread(), size, position);
                         ICBMClassic.logger().error(msg);
                     }
@@ -119,7 +120,7 @@ public class BlastRot extends Blast
                                 "\nWorld = %s " +
                                 "\nThread = %s" +
                                 "\nSize = %s" +
-                                "\nPos = ",
+                                "\nPos = %s",
                         world, getThread(), size, position);
                 ICBMClassic.logger().error(msg, e);
             }
@@ -130,11 +131,5 @@ public class BlastRot extends Blast
     public int proceduralInterval()
     {
         return 1;
-    }
-
-    @Override
-    public long getEnergy()
-    {
-        return 100;
     }
 }

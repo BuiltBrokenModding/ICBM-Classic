@@ -29,17 +29,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public abstract class Blast extends Explosion implements IBlast
 {
+    //Thread stuff
     private ThreadExplosion thread;
     private ConcurrentLinkedQueue<BlockPos> threadResults;
 
     //TODO remove position as we are double storing location data
     public Location position;
+
+    /** Host of the blast */
     public EntityExplosion controller = null;
 
+    /** Is the blast alive, if false the blast is dead */
     public boolean isAlive = true;
 
     /** The amount of times the explosion has been called */
     protected int callCount = 0;
+
+    private boolean preExplode = false;
 
     public Blast(World world, Entity entity, double x, double y, double z, float size)
     {
@@ -59,35 +65,68 @@ public abstract class Blast extends Explosion implements IBlast
         this.position = new Location(entity);
     }
 
+    /**
+     * Internal call to run setup code for the blast
+     */
     protected void doPreExplode()
     {
     }
 
-    /** Called before an explosion happens. */
+    /**
+     * Called to start the blast and run setup code
+     */
     public final void preExplode()
     {
-        ExplosiveHandler.add(this);
-        this.doPreExplode();
+        if (isAlive && !preExplode)
+        {
+            preExplode = true;
+            ExplosiveHandler.add(this);
+            this.doPreExplode();
+        }
     }
 
-    /** Called every tick when this explosive is being progressed. */
+    /**
+     * Internal call to run the blast code
+     */
     protected abstract void doExplode();
 
+    /**
+     * Called to trigger the main blast code
+     */
     public final void onExplode()
     {
-        this.doExplode();
-        this.callCount++;
+        if (isAlive)
+        {
+            this.doExplode();
+            this.callCount++;
+        }
     }
 
+    /**
+     * Internal call for running post blast code
+     * Do not se the entity or blast dead. This is completed
+     * in the {@link #postExplode()} method.
+     */
     protected void doPostExplode()
     {
     }
 
-    /** Called after the explosion is completed. */
+    /**
+     * Called to kill the blast and run last min code
+     */
     public final void postExplode()
     {
-        this.doPostExplode();
-        ExplosiveHandler.remove(this);
+        if (isAlive)
+        {
+            //Mark as dead to prevent blast running
+            isAlive = false;
+
+            //Remove from tracker
+            ExplosiveHandler.remove(this);
+
+            //Run post code
+            this.doPostExplode();
+        }
     }
 
     /**
@@ -109,14 +148,18 @@ public abstract class Blast extends Explosion implements IBlast
     @Override
     public void doExplosionA()
     {
+        //Empty to cancel MC code
     }
 
     @Override
     public void doExplosionB(boolean par1)
     {
+        //Empty to cancel MC code
     }
 
-    /** All outside classes should call this. */
+    /**
+     * Called to trigger the explosion
+     */
     public void explode()
     {
         if (this.proceduralInterval() > 0)
@@ -128,27 +171,20 @@ public abstract class Blast extends Explosion implements IBlast
         }
         else
         {
-            this.doPreExplode();
+            this.preExplode();
             this.doExplode();
-            this.doPostExplode();
+            this.postExplode();
         }
     }
 
-    public int countIncrement()
-    {
-        return 1;
-    }
-
-
+    /**
+     * Radius of the blast
+     *
+     * @return
+     */
     public float getBlastRadius()
     {
         return Math.max(3, this.size);
-    }
-
-    @Deprecated //TODO remove
-    public long getEnergy()
-    {
-        return 0;
     }
 
     /**
@@ -309,7 +345,7 @@ public abstract class Blast extends Explosion implements IBlast
 
     protected ConcurrentLinkedQueue getThreadResults()
     {
-        if(threadResults == null)
+        if (threadResults == null)
         {
             threadResults = new ConcurrentLinkedQueue();
         }

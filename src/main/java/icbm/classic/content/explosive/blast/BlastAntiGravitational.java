@@ -165,12 +165,6 @@ public class BlastAntiGravitational extends Blast
         return 15;
     }
 
-    @Override
-    public long getEnergy()
-    {
-        return 10000;
-    }
-
     public class GravitationalBlockSorter implements Comparator<BlockPos>
     {
         final IPos3D center;

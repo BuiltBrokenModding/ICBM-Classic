@@ -64,12 +64,6 @@ public class BlastMine extends Blast
         return 1;
     }
 
-    @Override
-    public long getEnergy()
-    {
-        return 8000;
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public ModelICBM getRenderModel()

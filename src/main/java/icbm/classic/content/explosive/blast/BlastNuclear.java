@@ -157,11 +157,12 @@ public class BlastNuclear extends Blast
                     }
                     else
                     {
+                        isAlive = false;
                         String msg = String.format("BlastNuclear#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
                                         "\nWorld = %s " +
                                         "\nThread = %s" +
                                         "\nSize = %s" +
-                                        "\nPos = ",
+                                        "\nPos = %s",
                                 world, getThread(), size, position);
                         ICBMClassic.logger().error(msg);
                     }
@@ -192,7 +193,7 @@ public class BlastNuclear extends Blast
                                 "\nWorld = %s " +
                                 "\nThread = %s" +
                                 "\nSize = %s" +
-                                "\nPos = ",
+                                "\nPos = %s",
                         world, getThread(), size, position);
                 ICBMClassic.logger().error(msg, e);
             }

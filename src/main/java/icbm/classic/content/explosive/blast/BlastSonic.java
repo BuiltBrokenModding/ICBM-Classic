@@ -142,11 +142,12 @@ public class BlastSonic extends Blast
                     }
                     else
                     {
+                        isAlive = false;
                         String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find results, this could be a result of the thread failing to run" +
                                         "\nWorld = %s " +
                                         "\nThread = %s" +
                                         "\nSize = %s" +
-                                        "\nPos = ",
+                                        "\nPos = %s",
                                 world, getThread(), size, position);
                         ICBMClassic.logger().error(msg);
                     }
@@ -158,7 +159,7 @@ public class BlastSonic extends Blast
                                 "\nWorld = %s " +
                                 "\nThread = %s" +
                                 "\nSize = %s" +
-                                "\nPos = ",
+                                "\nPos = %s",
                         world, getThread(), size, position);
                 ICBMClassic.logger().error(msg, e);
             }
@@ -219,11 +220,5 @@ public class BlastSonic extends Blast
     public int proceduralInterval()
     {
         return 4;
-    }
-
-    @Override
-    public long getEnergy()
-    {
-        return 3000;
     }
 }

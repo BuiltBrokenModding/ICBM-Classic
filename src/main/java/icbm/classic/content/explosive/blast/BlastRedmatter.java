@@ -1,13 +1,14 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.api.explosion.IExplosiveIgnore;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.lib.transform.rotation.EulerAngle;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -20,7 +21,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
-import icbm.classic.api.explosion.IExplosiveIgnore;
 
 import java.util.List;
 
@@ -76,6 +76,7 @@ public class BlastRedmatter extends Blast
     @Override
     protected void doPostExplode()
     {
+        //Kill host TODO see if this is really needed
         AxisAlignedBB bounds = new AxisAlignedBB(this.x - this.size, this.y - this.size, this.z - this.size, this.x + this.size, this.y + this.size, this.z + this.size);
         List<?> list = this.world().getEntitiesWithinAABB(EntityExplosion.class, bounds);
 
@@ -101,15 +102,19 @@ public class BlastRedmatter extends Blast
             //Limit life span of the blast
             if (DO_DESPAWN && callCount >= lifeSpan)
             {
-                this.postExplode();
+                this.postExplode(); //kill explosion
             }
+
+            //Do actions
             doDestroyBlocks();
             doEntityMovement();
+
+            //Play effects
             if (doAudio)
             {
                 if (this.world().rand.nextInt(8) == 0)
                 {
-                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getBlastRadius(), position.y() + (Math.random() - 0.5) * getBlastRadius(), position.z() + (Math.random() - 0.5) * getBlastRadius(),  6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
+                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getBlastRadius(), position.y() + (Math.random() - 0.5) * getBlastRadius(), position.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
                 }
                 ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
@@ -321,12 +326,6 @@ public class BlastRedmatter extends Blast
     public int proceduralInterval()
     {
         return 1;
-    }
-
-    @Override
-    public long getEnergy()
-    {
-        return -3000;
     }
 
     @Override

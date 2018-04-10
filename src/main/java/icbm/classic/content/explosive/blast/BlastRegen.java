@@ -58,10 +58,4 @@ public class BlastRegen extends Blast
             }
         }
     }
-
-    @Override
-    public long getEnergy()
-    {
-        return 0;
-    }
 }

@@ -52,10 +52,4 @@ public class BlastMutation extends Blast
     {
         return 0;
     }
-
-    @Override
-    public long getEnergy()
-    {
-        return 50;
-    }
 }

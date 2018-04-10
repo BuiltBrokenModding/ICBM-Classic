@@ -201,12 +201,6 @@ public class BlastEnderman extends Blast
     }
 
     @Override
-    public long getEnergy()
-    {
-        return 0;
-    }
-
-    @Override
     public boolean isMovable()
     {
         return true;

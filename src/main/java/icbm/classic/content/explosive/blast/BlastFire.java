@@ -86,10 +86,4 @@ public class BlastFire extends Blast
 
         ICBMSounds.EXPLOSION_FIRE.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
     }
-
-    @Override
-    public long getEnergy()
-    {
-        return 3000;
-    }
 }

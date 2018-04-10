@@ -210,10 +210,4 @@ public class BlastEMP extends Blast
         }
         return powerEntity;
     }
-
-    @Override
-    public long getEnergy()
-    {
-        return 3000;
-    }
 }

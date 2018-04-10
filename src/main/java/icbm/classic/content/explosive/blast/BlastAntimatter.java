@@ -101,10 +101,4 @@ public class BlastAntimatter extends Blast
 
         return false;
     }
-
-    @Override
-    public long getEnergy()
-    {
-        return 30000000;
-    }
 }
