@@ -2,7 +2,6 @@ package icbm.classic.content.explosive.thread;
 
 import icbm.classic.content.explosive.blast.Blast;
 import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -35,48 +34,66 @@ public class ThreadLargeExplosion extends ThreadExplosion
     @Override
     public void doRun(World world, Location center)
     {
+        //How many steps to go per rotation
         final int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.radius));
 
-        for (int phi_n = 0; phi_n < 2 * steps; phi_n++)
+        double x;
+        double y;
+        double z;
+
+        double dx;
+        double dy;
+        double dz;
+
+        for (int phi_n = 0; phi_n < 2 * steps && !kill; phi_n++)
         {
-            for (int theta_n = 0; theta_n < steps; theta_n++)
+            for (int theta_n = 0; theta_n < steps && !kill; theta_n++)
             {
-                if (kill)
-                {
-                    return;
-                }
+                //Calculate power
+                float power = this.energy - (this.energy * world.rand.nextFloat() / 2);
+
+                //Get angles for rotation steps
                 double phi = Math.PI * 2 / steps * phi_n;
                 double theta = Math.PI / steps * theta_n;
 
-                Pos delta = new Pos(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi));
-                float power = this.energy - (this.energy * world.rand.nextFloat() / 2);
+                //Figure out vector to move for trace
+                dx = sin(theta) * cos(phi);
+                dy = cos(theta);
+                dz = sin(theta) * sin(phi);
 
-                Pos pos = new Pos(position.xi(), position.yi(), position.zi());
+                //Reset position to current
+                x = center.x();
+                y = center.y();
+                z = center.z();
 
-                for (float d = 0.3F; power > 0f; power -= d * 0.75F * 10)
+                //Trace from start to end
+                while (center.distance(x, y, z) <= this.radius && power > 0 && !kill)
                 {
-                    if (position.distance(pos) > this.radius)
-                    {
-                        break;
-                    }
+                    //Consume power per loop
+                    power -= 0.3F * 0.75F * 10;
 
-                    final BlockPos blockPos = new BlockPos(pos.xi(), pos.yi(), pos.zi());
+                    //Get block at position
+                    final BlockPos blockPos = new BlockPos(Math.floor(x), Math.floor(y), Math.floor(z));
                     final IBlockState state = world.getBlockState(blockPos);
                     final Block block = state.getBlock();
 
-                    if (!block.isAir(state, world, blockPos))
+                    //Ignore air blocks && Only break block that can be broken
+                    if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
                     {
-                        if (state.getBlockHardness(world, blockPos) >= 0)
-                        {
-                            power -= this.callBack.getResistance(world, position, blockPos, source, block);
+                        //Consume power based on block
+                        power -= this.callBack.getResistance(world, position, blockPos, source, block);
 
-                            if (power > 0f)
-                            {
-                                this.blast.addThreadResult(blockPos);
-                            }
+                        //If we still have power, break the block
+                        if (power > 0f)
+                        {
+                            this.blast.addThreadResult(blockPos);
                         }
                     }
-                    pos = pos.add(delta);
+
+                    //Move forward
+                    x += dx;
+                    y += dy;
+                    z += dz;
                 }
             }
         }
