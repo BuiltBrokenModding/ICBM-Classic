@@ -1,6 +1,7 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.explosive.blast.Blast;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -41,6 +42,10 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
         this(blast.world());
         this.setBlast(blast);
+        if (ConfigDebug.DEBUG_EXPLOSIVES)
+        {
+            ICBMClassic.logger().info("EntityExplosion#new(" + blast + ") Created new blast controller entity");
+        }
     }
 
     @Override

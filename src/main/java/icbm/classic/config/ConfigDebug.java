@@ -14,4 +14,8 @@ public class ConfigDebug
     @Config.Name("debug_threads")
     @Config.Comment("Enabled extra console output to check the state of the explosive threads.")
     public static boolean DEBUG_THREADS = false;
+
+    @Config.Name("debug_explosives")
+    @Config.Comment("Enabled extra console output to check the state of the explosive logic.")
+    public static boolean DEBUG_EXPLOSIVES = false;
 }

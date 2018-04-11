@@ -80,6 +80,7 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public final void preExplode()
     {
+        debugEx(String.format("Blast#preExplode() -> Blast: %s, IsAlive: %s, HasBeenCalledBefore: %s", this, isAlive, preExplode));
         if (isAlive && !preExplode)
         {
             preExplode = true;
@@ -98,6 +99,7 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public final void onExplode()
     {
+        debugEx(String.format("Blast#onExplode() -> Blast: %s, IsAlive: %s, CallCount: %s", this, isAlive, callCount));
         if (isAlive)
         {
             this.doExplode();
@@ -119,6 +121,7 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public final void postExplode()
     {
+        debugEx(String.format("Blast#postExplode() -> Blast: %s, IsAlive: %s", this, isAlive));
         if (isAlive)
         {
             //Mark as dead to prevent blast running
@@ -145,6 +148,7 @@ public abstract class Blast extends Explosion implements IBlast
         this.y = posY;
         this.z = posZ;
         position = new Location(world(), posX, posY, posZ);
+        debugEx(String.format("Blast#onPositionUpdate(%s, %s, %s) -> position has been updated, Blast: %s", this, posX, posY, posZ));
     }
 
     /** Make the default functions useless. */
@@ -152,12 +156,14 @@ public abstract class Blast extends Explosion implements IBlast
     public void doExplosionA()
     {
         //Empty to cancel MC code
+        ICBMClassic.logger().error("Blast#doExplosionA() -> Something called the vanilla explosion method. This is not a support behavior for ICBM explosions. Blast: " + this, new RuntimeException());
     }
 
     @Override
     public void doExplosionB(boolean par1)
     {
         //Empty to cancel MC code
+        ICBMClassic.logger().error("Blast#doExplosionB(" + par1 + ") -> Something called the vanilla explosion method. This is not a support behavior for ICBM explosions. Blast: " + this, new RuntimeException());
     }
 
     /**
@@ -167,13 +173,19 @@ public abstract class Blast extends Explosion implements IBlast
     {
         if (this.proceduralInterval() > 0)
         {
+            debugEx("Blast#explode() -> Triggering interval based explosion, Blast: " + this);
             if (!this.world().isRemote)
             {
-                this.world().spawnEntity(new EntityExplosion(this));
+                if (!this.world().spawnEntity(new EntityExplosion(this)))
+                {
+                    ICBMClassic.logger().error("Blast#explode() -> Failed to spawn explosion entity to control blast, Blast: " + this);
+                    isAlive = false;
+                }
             }
         }
         else
         {
+            debugEx("Blast#explode() -> Triggering full explosion, Blast: " + this);
             this.preExplode();
             this.doExplode();
             this.postExplode();
@@ -371,13 +383,18 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public synchronized void markThreadCompleted(ThreadExplosion exThread) //This method is a work around for thread instance going null
     {
+        //Debug
+        if (ConfigDebug.DEBUG_THREADS)
+        {
+            ICBMClassic.logger().info("Blast#markThreadCompleted(" + exThread + ") -> Thread responded that is has completed, Blast: " + this);
+        }
         if (thread == null || thread == exThread)
         {
             threadComplete = true;
         }
         else
         {
-            ICBMClassic.logger().info("Blast#markThreadCompleted(" + exThread + ") -> Error thread attempted to mark for complete but did not match current thread \nCurrent: " + thread);
+            ICBMClassic.logger().info("Blast#markThreadCompleted(" + exThread + ") -> Error thread attempted to mark for complete but did not match current thread \nCurrent: " + thread + "\nBlast: " + this);
         }
     }
 
@@ -398,5 +415,13 @@ public abstract class Blast extends Explosion implements IBlast
     public ThreadExplosion getThread()
     {
         return thread;
+    }
+
+    protected final void debugEx(String msg)
+    {
+        if (ConfigDebug.DEBUG_EXPLOSIVES)
+        {
+            ICBMClassic.logger().info(msg);
+        }
     }
 }
