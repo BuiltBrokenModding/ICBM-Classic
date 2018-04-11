@@ -99,6 +99,11 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public final void onExplode()
     {
+        if (!preExplode)
+        {
+            debugEx(String.format("Blast#onExplode() -> preExplode() was never called, Blast: %s, IsAlive: %s, CallCount: %s", this, isAlive, callCount));
+            preExplode();
+        }
         debugEx(String.format("Blast#onExplode() -> Blast: %s, IsAlive: %s, CallCount: %s", this, isAlive, callCount));
         if (isAlive)
         {
