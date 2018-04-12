@@ -4,13 +4,17 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -47,12 +51,13 @@ public class RenderMissile extends Render<EntityMissile>
         GlStateManager.translate(x, y, z);
 
         //Rotate
-        GlStateManager.rotate(entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
+        float yaw = entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * partialTicks - 90;
         float pitch = entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * partialTicks - 90;
+        GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(pitch, 0.0F, 0.0F, 1.0F);
 
         //Render missile
-        GlStateManager.translate(0, -3, 0);
+        GlStateManager.translate(0, -1.5, 0);
         final float scale = 2;
         GlStateManager.scale(scale, scale, scale);
         renderMissile(entityMissile.explosiveID,
@@ -63,6 +68,22 @@ public class RenderMissile extends Render<EntityMissile>
         GlStateManager.popMatrix();
 
         super.doRender(entityMissile, x, y, z, entityYaw, partialTicks);
+
+        if(renderManager.isDebugBoundingBox()) //TODO fix so we can see motion vector
+        {
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferbuilder = tessellator.getBuffer();
+            Vec3d vec3d = entityMissile.motionVector.toVec3d();
+            bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
+            bufferbuilder.pos(x, y, z).color(0, 255, 0, 255).endVertex();
+            bufferbuilder.pos(x + vec3d.x * 2.0D, y + vec3d.y * 2.0D, z + vec3d.z * 2.0D).color(0, 255, 0, 2555).endVertex();
+            tessellator.draw();
+            GlStateManager.enableTexture2D();
+            GlStateManager.enableLighting();
+            GlStateManager.enableCull();
+            GlStateManager.disableBlend();
+            GlStateManager.depthMask(true);
+        }
     }
 
     @Nullable

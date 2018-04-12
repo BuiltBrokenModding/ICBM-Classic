@@ -361,14 +361,21 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
 
     protected void updateMotion()
     {
+        //Update motion
         this.posX += this.motionX;
         this.posY += this.motionY;
         this.posZ += this.motionZ;
-        float f2 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
 
-        for (this.rotationPitch = (float) (Math.atan2(this.motionY, (double) f2) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
+        //Get rotation from motion
+        float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
+        this.rotationPitch = (float) (Math.atan2(this.motionY, (double) speed) * 180.0D / Math.PI);
+
+        //-------------------------------------
+        //Fix rotation
+        while (this.rotationPitch - this.prevRotationPitch < -180.0F)
         {
+            this.prevRotationPitch -= 360.0F;
         }
 
         while (this.rotationPitch - this.prevRotationPitch >= 180.0F)
@@ -385,9 +392,11 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
         {
             this.prevRotationYaw += 360.0F;
         }
-
+        //-------------------------------------
+        //Reduce delta in rotation to provide for a smoother animation
         this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
         this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
+        //-------------------------------------
 
         //Decrease motion so the projectile stops
         decreaseMotion();
@@ -503,17 +512,17 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
-        if(nbt.hasKey("xTile"))
+        if (nbt.hasKey("xTile"))
         {
             //Legacy
-            tilePos = new BlockPos(nbt.getShort("xTile"),nbt.getShort("yTile"),nbt.getShort("zTile"));
+            tilePos = new BlockPos(nbt.getShort("xTile"), nbt.getShort("yTile"), nbt.getShort("zTile"));
         }
-        else if(nbt.hasKey("xTilePos"))
+        else if (nbt.hasKey("xTilePos"))
         {
-            tilePos = new BlockPos(nbt.getInteger("xTilePos"),nbt.getInteger("yTilePos"),nbt.getInteger("zTilePos"));
+            tilePos = new BlockPos(nbt.getInteger("xTilePos"), nbt.getInteger("yTilePos"), nbt.getInteger("zTilePos"));
         }
 
-        if(nbt.hasKey("sideTile"))
+        if (nbt.hasKey("sideTile"))
         {
             //Legacy
             this.sideTile = EnumFacing.getFront(nbt.getShort("sideTile"));
@@ -523,17 +532,17 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
             this.sideTile = EnumFacing.getFront(nbt.getByte("sideTilePos"));
         }
         this.ticksInGround = nbt.getShort("life");
-        if(nbt.hasKey("inTile"))
+        if (nbt.hasKey("inTile"))
         {
             //Legacy
             Block block = Block.getBlockById(nbt.getByte("inTile"));
-            if(block != null)
+            if (block != null)
             {
                 int meta = nbt.getByte("inData");
                 this.blockInside = block.getStateFromMeta(meta);
             }
         }
-        else if(nbt.hasKey("inTileState"))
+        else if (nbt.hasKey("inTileState"))
         {
             this.blockInside = Block.getStateById(nbt.getInteger("inTileState"));
         }

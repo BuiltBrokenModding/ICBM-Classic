@@ -2,6 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRotatable;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -43,11 +44,11 @@ public class BlastBreech extends BlastTNT
             {
                 if (this.exploder.rotationPitch > 45)
                 {
-                    direction = EnumFacing.UP;
+                    direction = this.exploder instanceof EntityMissile ? EnumFacing.UP : EnumFacing.DOWN;
                 }
                 else if (this.exploder.rotationPitch < -45)
                 {
-                    direction = EnumFacing.DOWN;
+                    direction = this.exploder instanceof EntityMissile ? EnumFacing.DOWN : EnumFacing.UP;
                 }
                 else
                 {
