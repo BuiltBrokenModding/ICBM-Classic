@@ -76,7 +76,7 @@ public class BlastBreech extends BlastTNT
                             if (e < 40)
                             {
                                 energy -= e;
-                                blownBlocks.add(p.toBlockPos());
+                                getAffectedBlockPositions().add(p.toBlockPos());
                             }
                         }
                         if (energy <= 0)

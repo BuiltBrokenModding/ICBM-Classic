@@ -161,14 +161,14 @@ public abstract class Blast extends Explosion implements IBlast
     public void doExplosionA()
     {
         //Empty to cancel MC code
-        ICBMClassic.logger().error("Blast#doExplosionA() -> Something called the vanilla explosion method. This is not a support behavior for ICBM explosions. Blast: " + this, new RuntimeException());
+        ICBMClassic.logger().error("Blast#doExplosionA() -> Something called the vanilla explosion method. This is not a supported behavior for ICBM explosions. Blast: " + this, new RuntimeException());
     }
 
     @Override
     public void doExplosionB(boolean par1)
     {
         //Empty to cancel MC code
-        ICBMClassic.logger().error("Blast#doExplosionB(" + par1 + ") -> Something called the vanilla explosion method. This is not a support behavior for ICBM explosions. Blast: " + this, new RuntimeException());
+        ICBMClassic.logger().error("Blast#doExplosionB(" + par1 + ") -> Something called the vanilla explosion method. This is not a supported behavior for ICBM explosions. Blast: " + this, new RuntimeException());
     }
 
     /**
@@ -176,6 +176,10 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public void explode()
     {
+        //Forge event, allows for interaction and canceling the explosion
+        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this)) return;
+
+        //Start explosion
         if (this.proceduralInterval() > 0)
         {
             debugEx("Blast#explode() -> Triggering interval based explosion, Blast: " + this);

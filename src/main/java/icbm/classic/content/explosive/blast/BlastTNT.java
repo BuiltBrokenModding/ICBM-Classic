@@ -14,6 +14,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.ExplosionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +26,6 @@ import java.util.List;
  */
 public class BlastTNT extends Blast
 {
-    /** List of blocks to break */
-    protected List<BlockPos> blownBlocks = new ArrayList();
-
     /** 0- No push, 1 - Attract, 2 - Repel */
     private int pushType = 0; //TODO change to enum
     /** Do destroy items */
@@ -77,13 +76,12 @@ public class BlastTNT extends Blast
     @Override
     public void doExplode()
     {
-        calculateDamage();
-
-        //TODO fire event to allow editing list of blocks
+        calculateDamage(); //TODO add listener(s) to control block break and placement
 
         //TODO move effect to Effect handler
         this.world().playSound(this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
+        //TODO collect entities before applying effects, this way event can override
         switch (this.pushType)
         {
             case 0:
@@ -94,7 +92,11 @@ public class BlastTNT extends Blast
                 break;
         }
 
-        doDestroyBlocks(); //TODO fire event per block being destroyed
+        //Fire event to allow blocking explosion damage
+        MinecraftForge.EVENT_BUS.post(new ExplosionEvent.Detonate(world, this, new ArrayList()));
+
+        //Destroy blocks
+        doDestroyBlocks(); //TODO add listener(s) to control block break and placement
     }
 
     /**
@@ -154,9 +156,9 @@ public class BlastTNT extends Blast
                                     //Track blocks to destroy
                                     if (radialEnergy > 0.0F)
                                     {
-                                        if (!blownBlocks.contains(blockPos))
+                                        if (!getAffectedBlockPositions().contains(blockPos))
                                         {
-                                            blownBlocks.add(blockPos);
+                                            getAffectedBlockPositions().add(blockPos);
                                         }
                                     }
                                 }
@@ -181,7 +183,7 @@ public class BlastTNT extends Blast
     {
         if (!this.world().isRemote)
         {
-            for (BlockPos blownPosition : blownBlocks) //TODO convert block positions to block edits to track prev and current blocks
+            for (BlockPos blownPosition : getAffectedBlockPositions()) //TODO convert block positions to block edits to track prev and current blocks
             {
                 //Get position
                 int xi = blownPosition.getX();
