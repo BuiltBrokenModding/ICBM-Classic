@@ -57,6 +57,29 @@ public class BlockExplosive extends BlockICBM
         return state.withProperty(EX_PROP, ex);
     }
 
+    @Override
+    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos)
+    {
+        return state.getValue(EX_PROP) != Explosives.SMINE;
+    }
+
+    @Override
+    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side)
+    {
+        return isNormalCube(base_state, world, pos);
+    }
+
+    @Override
+    public boolean isTopSolid(IBlockState state)
+    {
+        return state.getValue(EX_PROP) != Explosives.SMINE;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return state.getValue(EX_PROP) != Explosives.SMINE;
+    }
 
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
