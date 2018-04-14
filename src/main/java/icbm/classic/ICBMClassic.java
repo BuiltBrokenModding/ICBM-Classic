@@ -1,6 +1,7 @@
 package icbm.classic;
 
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
@@ -66,10 +67,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModMetadata;
-import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -561,10 +559,18 @@ public final class ICBMClassic
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
-        // Setup command
+        //Get command manager
         ICommandManager commandManager = FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager();
         ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
-        serverCommandManager.registerCommand(new CommandICBM());
+
+        //Register main command
+        serverCommandManager.registerCommand(new CommandICBM("icbmc"));
+
+        //Register secondary, to help with usability
+        if (!Loader.isModLoaded("icbm"))
+        {
+            serverCommandManager.registerCommand(new CommandICBM("icbm"));
+        }
     }
 
     public static Logger logger()
