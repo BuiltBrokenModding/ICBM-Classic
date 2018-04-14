@@ -149,14 +149,12 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
         }
 
 
-        //Get block we are face-palmed into
+        //Check if we hit the ground
         IBlockState state = this.world.getBlockState(tilePos);
-        Block block = state.getBlock();
-
-        if (state.getMaterial() != Material.AIR)
+        if (!state.getBlock().isAir(state, world, tilePos))
         {
+            //Check if what we hit can be collided with
             AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
-
             if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ)))
             {
                 this.inGround = true;
