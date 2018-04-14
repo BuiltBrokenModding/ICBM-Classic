@@ -20,9 +20,9 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class RenderEntityExplosive extends Render<EntityExplosive>
+public class RenderExBlock extends Render<EntityExplosive>
 {
-    public RenderEntityExplosive(RenderManager renderManager)
+    public RenderExBlock(RenderManager renderManager)
     {
         super(renderManager);
     }

@@ -106,7 +106,7 @@ public class ClientProxy extends CommonProxy
         //---------------------------------------
         //Entity renders
         //---------------------------------------
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderEntityExplosive(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderExBlock(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, manager -> new RenderEntityBlock(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, manager -> new RenderExplosion(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, manager -> new RenderGrenade(manager));
