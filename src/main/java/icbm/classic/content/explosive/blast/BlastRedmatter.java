@@ -123,6 +123,7 @@ public class BlastRedmatter extends Blast
 
     protected void doDestroyBlocks()
     {
+        long time = System.currentTimeMillis();
         // Try to find and grab some blocks to orbit
         int blocksDestroyed = 0;
         for (int currentRadius = 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
@@ -172,7 +173,7 @@ public class BlastRedmatter extends Blast
                         }
 
                         //Exit conditions, make sure stays at bottom of loop
-                        if (blocksDestroyed > getBlocksPerTick() || !isAlive)
+                        if (blocksDestroyed > getBlocksPerTick() || !isAlive || System.currentTimeMillis() - time > 30) //30ms to prevent stall
                         {
                             return;
                         }
