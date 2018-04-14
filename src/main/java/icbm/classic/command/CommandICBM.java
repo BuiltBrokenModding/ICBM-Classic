@@ -6,6 +6,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.explosive.ExplosiveHandler;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -192,6 +193,7 @@ public class CommandICBM extends CommandBase
 
     protected void commandLag(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException
     {
+        //Parse range
         double range = args.length > 1 ? Double.parseDouble(args[1]) : 1000;
 
         //Get entities
@@ -211,7 +213,13 @@ public class CommandICBM extends CommandBase
                 }
             }
         }
-        sender.sendMessage(new TextComponentString("Removed '" + count + "' sources of lag caused by ICBM within " + range + " meters"));
+
+        //Clear blasts
+        int blasts = ExplosiveHandler.removeNear(sender.getEntityWorld(), sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z, range);
+
+        //Update user with data
+        sender.sendMessage(new TextComponentString("Removed '" + count + "' ICBM entities within " + range + " meters"));
+        sender.sendMessage(new TextComponentString("Removed '" + blasts + "' blast controllers within " + range + " meters"));
     }
 
     protected List<Entity> getEntities(World world, double x, double y, double z, double range)

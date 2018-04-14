@@ -2,6 +2,7 @@ package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
+import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,14 +42,51 @@ public class ExplosiveHandler
                 Blast next = it.next();
                 if (next.world == null || next.world.provider.getDimension() == event.getWorld().provider.getDimension())
                 {
-                    if (next.getThread() != null)
-                    {
-                        next.getThread().kill();
-                    }
-                    next.isAlive = false;
+                    onKill(next);
                     it.remove();
                 }
             }
         }
+    }
+
+    /**
+     * Runs kill logic on the blast, does not remove the blast
+     *
+     * @param blast
+     */
+    public static void onKill(Blast blast)
+    {
+        if (blast.getThread() != null)
+        {
+            blast.getThread().kill();
+        }
+        blast.isAlive = false; //TODO replace with method to allow blast to cleanup
+    }
+
+    /**
+     * Called to remove blasts near the location
+     *
+     * @param world = position
+     * @param x     - position
+     * @param y     - position
+     * @param z     - position
+     * @param range - distance from position, less than zero will turn into global
+     * @return number of blasts removed
+     */
+    public static int removeNear(World world, double x, double y, double z, double range)
+    {
+        int removeCount = 0;
+        Iterator<Blast> it = ExplosiveHandler.activeBlasts.iterator();
+        while (it.hasNext())
+        {
+            Blast blast = it.next();
+            if (blast.world == world && (range < 0 || range > 0 && range > blast.position.distance(x, y, z)))
+            {
+                ExplosiveHandler.onKill(blast);
+                it.remove();
+                removeCount++;
+            }
+        }
+        return removeCount;
     }
 }
