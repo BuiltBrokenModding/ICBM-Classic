@@ -1,10 +1,11 @@
-package icbm.classic;
+package icbm.classic.command;
 
+import icbm.classic.command.imp.SubCommand;
+import icbm.classic.command.sub.SubCommandBlast;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,21 +17,29 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CommandICBM extends CommandBase
 {
+    private final Map<String, SubCommand> subCommandMap = new HashMap();
+    private final String id;
+
+    public CommandICBM(String id)
+    {
+        this.id = id;
+        subCommandMap.put("blast", new SubCommandBlast());
+    }
+
     @Override
     public String getName()
     {
-        return "icbmc";
+        return id;
     }
 
     @Override
     public String getUsage(ICommandSender sender)
     {
-        return "/icbmc";
+        return "/" + id;
     }
 
     @Override
@@ -40,22 +49,39 @@ public class CommandICBM extends CommandBase
         {
             displayHelp(sender, false);
         }
-        else if (args[0].equalsIgnoreCase("remove"))
-        {
-            commandRemove(server, sender, args);
-        }
-        else if (args[0].equalsIgnoreCase("blast"))
-        {
-            commandBlast(server, sender, args);
-        }
-        else if (args[0].equalsIgnoreCase("lag"))
-        {
-            commandLag(server, sender, args);
-        }
         else
         {
-            sender.sendMessage(new TextComponentString("\u00a7c" + "Unknown command! Use '" + getUsage(sender) + " help' for more a list of commands"));
+            final String subCommand = args[0].toLowerCase();
+            if (subCommandMap.containsKey(subCommand))
+            {
+                subCommandMap.get(subCommand).execute(server, sender, removeFront(args));
+            }
+            else if (args[0].equalsIgnoreCase("remove"))
+            {
+                commandRemove(server, sender, args);
+            }
+            else if (args[0].equalsIgnoreCase("lag"))
+            {
+                commandLag(server, sender, args);
+            }
+            else if (args[0].equalsIgnoreCase("debug"))
+            {
+                commandLag(server, sender, args);
+            }
+            else
+            {
+                sender.sendMessage(new TextComponentString("\u00a7c" + "Unknown command! Use '" + getUsage(sender) + " help' for more a list of commands"));
+            }
         }
+    }
+
+    protected String[] removeFront(String[] args)
+    {
+        if (args.length == 0 || args.length == 1)
+        {
+            return new String[0];
+        }
+        return Arrays.copyOfRange(args, 1, args.length);
     }
 
     protected void displayHelp(ICommandSender sender, boolean error)
@@ -74,80 +100,6 @@ public class CommandICBM extends CommandBase
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast list"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <dim> <x> <y> <z> <scale>"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <dim> <x> <y> <z> <radius>"));
-        }
-    }
-
-    protected void commandBlast(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException
-    {
-        if (args.length >= 1 && args[1].equalsIgnoreCase("list"))
-        {
-            String names = "Explosive Types: ";
-            for (int i = 0; i <= 23; i++)
-            {
-                names += Explosives.get(i).name().toLowerCase();
-                if (i != 23)
-                {
-                    names += ", ";
-                }
-            }
-            sender.sendMessage(new TextComponentString(names));
-        }
-        else if (args.length >= 3)
-        {
-            final String explosive_id = args[1];
-            final float scale = Float.parseFloat(args.length == 3 ? args[2] : args[6]);
-            if (scale <= 0)
-            {
-                throw new WrongUsageException("Scale must be greater than zero!");
-            }
-
-            Explosives type = null;
-            for (int i = 0; i <= 23; i++)
-            {
-                Explosives ex = Explosives.get(i);
-                if (ex.getName().equalsIgnoreCase(explosive_id))
-                {
-                    type = ex;
-                    break;
-                }
-            }
-
-            if (type == null)
-            {
-                throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
-            }
-
-            //Get position
-            World world;
-            double x, y, z;
-            if (args.length == 7)
-            {
-                world = DimensionManager.getWorld(Integer.getInteger(args[2]));
-                x = Double.parseDouble(args[3]);
-                y = Double.parseDouble(args[4]);
-                z = Double.parseDouble(args[5]);
-            }
-            else if (!(sender instanceof MinecraftServer))
-            {
-                world = sender.getEntityWorld();
-                x = sender.getPositionVector().x;
-                y = sender.getPositionVector().y;
-                z = sender.getPositionVector().z;
-            }
-            else
-            {
-                throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
-            }
-
-            if (world != null)
-            {
-                type.handler.createExplosion(world, new BlockPos(x, y, z), sender.getCommandSenderEntity(), scale);
-                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + type.name().toLowerCase() + "] with scale " + scale));
-            }
-            else
-            {
-                throw new WrongUsageException("Failed to get a world instance from arguments or sender.");
-            }
         }
     }
 
