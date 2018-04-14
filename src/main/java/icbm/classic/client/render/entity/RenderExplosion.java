@@ -42,7 +42,7 @@ public class RenderExplosion extends Render<EntityExplosion>
     {
         if (entityExplosion.getBlast() != null)
         {
-            // RedM atter Render
+            // RedMatter Render
             if (entityExplosion.getBlast() instanceof BlastRedmatter)
             {
                 final BlastRedmatter redmatter = (BlastRedmatter) entityExplosion.getBlast();
@@ -53,7 +53,6 @@ public class RenderExplosion extends Render<EntityExplosion>
 
                 renderSphere(entityExplosion, redmatter, x, y, z, scale, par8, par9);
                 GlStateManager.color(1, 1, 1, 1);
-
 
                 renderBeams(entityExplosion, redmatter, x, y, z, scale, par8, par9);
                 GlStateManager.color(1, 1, 1, 1);
@@ -191,26 +190,33 @@ public class RenderExplosion extends Render<EntityExplosion>
 
     public void renderBeams(EntityExplosion entityExplosion, BlastRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
     {
-        // This is basically a copy of the ender dragon Lighting effect with modifications to fit
+        //This is basically a copy of the ender dragon Lighting effect with modifications to fit
+        //Animation has been changed to remove size scale and have a ramp up then down time.
+        //Additional to this animation has been customized for control and visuals
+
+        final int totalAnimationTime = 4000;
+        final int rotationAnimationTime = 200;
+        final float animationPhaseTime = totalAnimationTime / 2f;
 
         //Get buffer
         final BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
         RenderHelper.disableStandardItemLighting();
 
         //Get tick value
-        int ticks = entityExplosion.ticksExisted;
-        while (ticks > 200)
+        int ticks = entityExplosion.ticksExisted % totalAnimationTime;
+
+        //Controls rotation of beams
+        float rotationScale = (entityExplosion.ticksExisted % rotationAnimationTime) / (float) rotationAnimationTime ;
+
+        //Controls beam count and other factors based on animation phase time
+        float timeScale;
+        if (ticks < animationPhaseTime)
         {
-            ticks -= 100;
+            timeScale = (ticks / animationPhaseTime);
         }
-
-
-        float timeScale = (5 + ticks) / 200.0F;
-        float sizeScale = 0.0F;
-
-        if (timeScale > 0.8F)
+        else
         {
-            sizeScale = (timeScale - 0.8F) / 0.2F;
+            timeScale = (2 - (ticks / animationPhaseTime));
         }
 
         //Start
@@ -218,7 +224,6 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.translate((float) x, (float) y, (float) z);
 
         //Setup
-
         GlStateManager.disableTexture2D();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         GlStateManager.enableBlend();
@@ -237,8 +242,8 @@ public class RenderExplosion extends Render<EntityExplosion>
             GlStateManager.pushMatrix();
 
             //Calculate size
-            float beamLength = (redmatterBeamRandom.nextFloat() * 20.0F + 5.0F + sizeScale * 10.0F) * scale;
-            float beamWidth = (redmatterBeamRandom.nextFloat() * 2.0F + 1.0F + sizeScale * 2.0F) * scale;
+            float beamLength = (redmatterBeamRandom.nextFloat() * 20.0F + 5.0F) * scale;
+            float beamWidth = (redmatterBeamRandom.nextFloat() * 2.0F + 1.0F) * scale;
 
             //Random rotations TODO see if we need to rotate so much
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
@@ -246,7 +251,7 @@ public class RenderExplosion extends Render<EntityExplosion>
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F + timeScale * 90.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F + rotationScale * 360.0F, 0.0F, 0.0F, 1.0F);
 
             //Get color based on state
             Color colorOut = this.colorOut;
