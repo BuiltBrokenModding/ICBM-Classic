@@ -40,6 +40,7 @@ public class BlastBreech extends BlastTNT
             {
                 direction = ((IRotatable) this.exploder).getDirection().getOpposite();
             }
+            //Guess direction from entity rotation
             else if (this.exploder != null)
             {
                 if (this.exploder.rotationPitch > 45)

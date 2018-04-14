@@ -52,24 +52,24 @@ public class ThreadLargeExplosion extends ThreadExplosion
 
         double power;
 
-        double phi;
-        double theta;
+        double yaw;
+        double pitch;
 
         for (int phi_n = 0; phi_n < 2 * steps && !kill; phi_n++)
         {
             for (int theta_n = 0; theta_n < steps && !kill; theta_n++)
             {
                 //Calculate power
-                power = this.energy; // - (this.energy * world.rand.nextFloat() / 2);
+                power = this.energy - (this.energy * world.rand.nextFloat() / 2);
 
                 //Get angles for rotation steps
-                phi = Math.PI * 2 / steps * phi_n;
-                theta = Math.PI / steps * theta_n;
+                yaw = Math.PI * 2 / steps * phi_n;
+                pitch = Math.PI / steps * theta_n;
 
                 //Figure out vector to move for trace (cut in half to improve trace skipping blocks)
-                dx = sin(theta) * cos(phi) * 0.5;
-                dy = cos(theta) * 0.5;
-                dz = sin(theta) * sin(phi) * 0.5;
+                dx = sin(pitch) * cos(yaw) * 0.5;
+                dy = cos(pitch) * 0.5;
+                dz = sin(pitch) * sin(yaw) * 0.5;
 
                 //Reset position to current
                 x = center.x();
