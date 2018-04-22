@@ -41,7 +41,7 @@ public class PacketManager
 
     public void init()
     {
-        this.channelEnumMap = NetworkRegistry.INSTANCE.newChannel(channel, new ResonantChannelHandler(), new ResonantPacketHandler());
+        this.channelEnumMap = NetworkRegistry.INSTANCE.newChannel(channel, new PacketEncoderDecoderHandler(), new PacketInboundHandler());
     }
 
     /**

@@ -12,13 +12,13 @@ import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
  * @author tgame14
  * @since 31/05/14
  */
-public class ResonantChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket>
+public class PacketEncoderDecoderHandler extends FMLIndexedMessageToMessageCodec<IPacket>
 {
     public boolean silenceStackTrace = false; //TODO add command and config
 
     private int nextID = 0;
 
-    public ResonantChannelHandler()
+    public PacketEncoderDecoderHandler()
     {
         addPacket(PacketTile.class);
         addPacket(PacketPlayerItem.class);
