@@ -23,4 +23,8 @@ public class ConfigBlast
     @Config.Name("exothermic_create_netherrack")
     @Config.Comment("Allows the exothermic to place netherrack in the world")
     public static boolean EXOTHERMIC_CREATE_NETHER_RACK = true;
+
+    @Config.Name("redmatter_movement")
+    @Config.Comment("Allows red matter explosions to be moved")
+    public static boolean REDMATTER_MOVEMENT = true;
 }

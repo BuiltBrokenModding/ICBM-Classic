@@ -2,6 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import icbm.classic.api.explosion.IExplosiveIgnore;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -332,6 +333,7 @@ public class BlastRedmatter extends Blast
     @Override
     public boolean isMovable()
     {
-        return true;
+        return ConfigBlast.REDMATTER_MOVEMENT;
     }
+
 }
