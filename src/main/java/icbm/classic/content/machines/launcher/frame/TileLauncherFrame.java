@@ -78,7 +78,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
         {
             return launcherBase.getCapability(capability, facing);
         }
-        return getCapability(capability, facing);
+        return super.getCapability(capability, facing);
     }
 
     //==========================================
