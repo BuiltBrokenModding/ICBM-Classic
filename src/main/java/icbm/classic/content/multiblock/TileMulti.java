@@ -1,12 +1,19 @@
 package icbm.classic.content.multiblock;
 
+import ic2.api.energy.tile.IEnergyEmitter;
+import ic2.api.energy.tile.IEnergySink;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.config.ConfigIC2;
+import icbm.classic.mods.ic2.IC2Proxy;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -15,7 +22,11 @@ import java.lang.ref.WeakReference;
  * Basic implementation of a multi block
  * Created by Dark on 8/9/2015.
  */
-public class TileMulti extends TileEntity implements IMultiTile
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
+        @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
+})
+public class TileMulti extends TileEntity implements IMultiTile, IEnergySink
 {
     public static final String NBT_HOST_POS = "hostPos";
 
@@ -108,6 +119,7 @@ public class TileMulti extends TileEntity implements IMultiTile
             getHost().onTileInvalidate(this);
         }
         super.invalidate();
+        IC2Proxy.INSTANCE.onTileInvalidate(this);
     }
 
     @Override
@@ -141,5 +153,61 @@ public class TileMulti extends TileEntity implements IMultiTile
     public String toString()
     {
         return getClass().getSimpleName() + "[ DIM@" + (world != null && world.provider != null ? world.provider.getDimension() + " " : "null ") + getPos().getX() + "x " + getPos().getY() + "y " + getPos().getZ() + "z " + "]@" + hashCode();
+    }
+
+
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public double getDemandedEnergy()
+    {
+        if (!ConfigIC2.DISABLED && hasCapability(CapabilityEnergy.ENERGY, null))
+        {
+            IEnergyStorage energyStorage = getCapability(CapabilityEnergy.ENERGY, null);
+            if (energyStorage != null)
+            {
+                int need = energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored();
+                return need / ConfigIC2.FROM_IC2;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public int getSinkTier()
+    {
+        return !ConfigIC2.DISABLED ? 4 : 0;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public double injectEnergy(EnumFacing directionFrom, double amount, double voltage)
+    {
+        if (!ConfigIC2.DISABLED && hasCapability(CapabilityEnergy.ENERGY, null))
+        {
+            IEnergyStorage energyStorage = getCapability(CapabilityEnergy.ENERGY, null);
+            if (energyStorage != null)
+            {
+                int energy = (int) Math.floor(amount * ConfigIC2.FROM_IC2);
+                int received = energyStorage.receiveEnergy(energy, false);
+                return amount - (received / ConfigIC2.FROM_IC2);
+            }
+        }
+        return amount;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing side)
+    {
+        return !ConfigIC2.DISABLED && hasCapability(CapabilityEnergy.ENERGY, side);
+    }
+
+    @Override
+    public void validate()
+    {
+        super.validate();
+        IC2Proxy.INSTANCE.onTileValidate(this);
     }
 }
