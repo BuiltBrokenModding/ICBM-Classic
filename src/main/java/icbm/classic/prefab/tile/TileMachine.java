@@ -1,12 +1,16 @@
 package icbm.classic.prefab.tile;
 
 import com.builtbroken.jlib.data.network.IByteBufWriter;
+import ic2.api.energy.tile.IEnergyEmitter;
+import ic2.api.energy.tile.IEnergySink;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.config.ConfigIC2;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.mods.ic2.IC2Proxy;
 import icbm.classic.prefab.gui.IPlayerUsing;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -20,6 +24,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.Optional;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,7 +36,11 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public abstract class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
+        @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
+})
+public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile, IEnergySink
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -262,7 +273,7 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
         if (tier != getTier())
         {
             this._tier = tier;
-            if(isServer())
+            if (isServer())
             {
                 IBlockState state = getBlockState();
                 if (state.getProperties().containsKey(BlockICBM.TIER_PROP))
@@ -307,5 +318,66 @@ public abstract class TileMachine extends TileEntity implements IPacketIDReceive
     {
         player.openGui(ICBMClassic.INSTANCE, requestedID, world, xi(), yi(), zi());
         return true;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public double getDemandedEnergy()
+    {
+        if (!ConfigIC2.DISABLED && hasCapability(CapabilityEnergy.ENERGY, null))
+        {
+            IEnergyStorage energyStorage = getCapability(CapabilityEnergy.ENERGY, null);
+            if (energyStorage != null)
+            {
+                int need = energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored();
+                return need / ConfigIC2.FROM_IC2;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public int getSinkTier()
+    {
+        return !ConfigIC2.DISABLED ? 4 : 0;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public double injectEnergy(EnumFacing directionFrom, double amount, double voltage)
+    {
+        if (!ConfigIC2.DISABLED && hasCapability(CapabilityEnergy.ENERGY, null))
+        {
+            IEnergyStorage energyStorage = getCapability(CapabilityEnergy.ENERGY, null);
+            if (energyStorage != null)
+            {
+                int energy = (int) Math.floor(amount * ConfigIC2.FROM_IC2);
+                int received = energyStorage.receiveEnergy(energy, false);
+                return amount - (received / ConfigIC2.FROM_IC2);
+            }
+        }
+        return amount;
+    }
+
+    @Override
+    @Optional.Method(modid = "ic2")
+    public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing side)
+    {
+        return !ConfigIC2.DISABLED && hasCapability(CapabilityEnergy.ENERGY, side);
+    }
+
+    @Override
+    public void invalidate()
+    {
+        super.invalidate();
+        IC2Proxy.INSTANCE.onTileInvalidate(this);
+    }
+
+    @Override
+    public void validate()
+    {
+        super.validate();
+        IC2Proxy.INSTANCE.onTileValidate(this);
     }
 }
