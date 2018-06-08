@@ -38,6 +38,8 @@ import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.mod.IC2Proxy.IC2Proxy;
+import icbm.classic.mod.ModProxy;
 import icbm.classic.mod.waila.WailaLoader;
 import icbm.classic.prefab.ListenerExplosiveBreakTrigger;
 import icbm.classic.prefab.item.ItemICBMBase;
@@ -136,6 +138,8 @@ public final class ICBMClassic extends AbstractMod
 
     public final ModCreativeTab CREATIVE_TAB;
 
+    public static ModProxy IC2PROXY;
+
     public ICBMClassic()
     {
         super(ICBMClassic.DOMAIN, "/bbm/ICBM-Classic");
@@ -154,6 +158,7 @@ public final class ICBMClassic extends AbstractMod
     public void loadHandlers(LoadableHandler loader)
     {
         loader.applyModule(WailaLoader.class, Mods.WAILA.isLoaded());
+        loader.applyModule(IC2Proxy.class, Mods.IC2.isLoaded());
     }
 
     @Override

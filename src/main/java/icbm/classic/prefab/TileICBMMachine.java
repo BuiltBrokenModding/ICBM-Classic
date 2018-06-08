@@ -8,7 +8,7 @@ import com.builtbroken.mc.mods.ic.ICHandler;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import cpw.mods.fml.common.Optional;
 import ic2.api.energy.tile.IEnergySink;
-import icbm.classic.mod.IC2Proxy.IC2Proxy;
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -192,7 +192,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
     {
         IEnergyBuffer buffer = getEnergyBuffer(directionFrom);
-        if(buffer != null)
+        if (buffer != null)
         {
             int energy = (int) Math.floor(amount * ICHandler.TO_UE);
             int received = buffer.addEnergyToStorage(energy, true);
@@ -209,18 +209,22 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     @Override
-    @Optional.Method(modid = "IC2")
     public void invalidate()
     {
         super.invalidate();
-        IC2Proxy.INSTANCE.onTileInvalidate(this);
+        if (ICBMClassic.IC2PROXY != null)
+        {
+            ICBMClassic.IC2PROXY.onTileInvalidate(this);
+        }
     }
 
     @Override
-    @Optional.Method(modid = "IC2")
     public void validate()
     {
         super.validate();
-        IC2Proxy.INSTANCE.onTileValidate(this);
+        if (ICBMClassic.IC2PROXY != null)
+        {
+            ICBMClassic.IC2PROXY.onTileValidate(this);
+        }
     }
 }

@@ -1,9 +1,9 @@
 package icbm.classic.mod.IC2Proxy;
 
-import cpw.mods.fml.common.Optional;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyTile;
+import icbm.classic.ICBMClassic;
 import icbm.classic.mod.ModProxy;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,9 +14,14 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public class IC2Proxy extends ModProxy
 {
-    public static final IC2Proxy INSTANCE = new IC2Proxy();
+    @Override
+    public void preInit()
+    {
+        super.preInit();
+        ICBMClassic.IC2PROXY = this;
+    }
 
-    @Optional.Method(modid = "IC2")
+    @Override
     public void onTileValidate(TileEntity tile)
     {
         if (tile instanceof IEnergyTile && !tile.getWorldObj().isRemote)
@@ -25,7 +30,7 @@ public class IC2Proxy extends ModProxy
         }
     }
 
-    @Optional.Method(modid = "IC2")
+    @Override
     public void onTileInvalidate(TileEntity tile)
     {
         if (tile instanceof IEnergyTile && !tile.getWorldObj().isRemote)
