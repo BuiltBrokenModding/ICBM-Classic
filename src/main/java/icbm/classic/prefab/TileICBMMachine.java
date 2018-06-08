@@ -2,19 +2,28 @@ package icbm.classic.prefab;
 
 import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
+import com.builtbroken.mc.api.tile.ConnectionType;
 import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.mods.ic.ICHandler;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import cpw.mods.fml.common.Optional;
+import ic2.api.energy.tile.IEnergySink;
+import icbm.classic.mod.IC2Proxy.IC2Proxy;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore")
-public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler
+
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "IC2.api.energy.tile.IEnergySink", modid = "IC2"),
+        @Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore")
+})
+public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler, IEnergySink
 {
     /**
      * Toggle to send a {@link #getDescPacket()} on the next tick, keep in mind only do this for render data.
@@ -157,5 +166,59 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     public boolean hasPower()
     {
         return getEnergy() > 0;
+    }
+
+
+    @Override
+    @Optional.Method(modid = "IC2")
+    public double getDemandedEnergy()
+    {
+        if (getEnergyBuffer(ForgeDirection.UNKNOWN) != null)
+        {
+            return ICHandler.FROM_UE * (getEnergyBufferSize() - getEnergy());
+        }
+        return 0;
+    }
+
+    @Override
+    @Optional.Method(modid = "IC2")
+    public int getSinkTier()
+    {
+        return 4;
+    }
+
+    @Override
+    @Optional.Method(modid = "IC2")
+    public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
+    {
+        IEnergyBuffer buffer = getEnergyBuffer(directionFrom);
+        if(buffer != null)
+        {
+            int energy = (int) Math.floor(amount * ICHandler.TO_UE);
+            int received = buffer.addEnergyToStorage(energy, true);
+            return amount - (received * ICHandler.FROM_UE);
+        }
+        return amount;
+    }
+
+    @Override
+    @Optional.Method(modid = "IC2")
+    public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection direction)
+    {
+        return canConnect(emitter, ConnectionType.POWER, direction);
+    }
+
+    @Override
+    public void invalidate()
+    {
+        super.invalidate();
+        IC2Proxy.INSTANCE.onTileInvalidate(this);
+    }
+
+    @Override
+    public void validate()
+    {
+        super.validate();
+        IC2Proxy.INSTANCE.onTileValidate(this);
     }
 }
