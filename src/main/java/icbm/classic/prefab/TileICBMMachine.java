@@ -209,6 +209,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     @Override
+    @Optional.Method(modid = "IC2")
     public void invalidate()
     {
         super.invalidate();
@@ -216,6 +217,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     }
 
     @Override
+    @Optional.Method(modid = "IC2")
     public void validate()
     {
         super.validate();
