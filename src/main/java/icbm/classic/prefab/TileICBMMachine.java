@@ -20,7 +20,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 
 @Optional.InterfaceList({
-        @Optional.Interface(iface = "IC2.api.energy.tile.IEnergySink", modid = "IC2"),
+        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2"),
         @Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore")
 })
 public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler, IEnergySink
