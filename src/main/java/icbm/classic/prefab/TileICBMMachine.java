@@ -19,11 +19,8 @@ import net.minecraftforge.common.util.ForgeDirection;
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
 
-@Optional.InterfaceList({
-        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2"),
-        @Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore")
-})
-public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler, IEnergySink
+@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2")
+public abstract class TileICBMMachine extends TileModuleMachine implements IEnergyHandler, IEnergySink //CoFH api is shipped in VoltzEngine
 {
     /**
      * Toggle to send a {@link #getDescPacket()} on the next tick, keep in mind only do this for render data.
