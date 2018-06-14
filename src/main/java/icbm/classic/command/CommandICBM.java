@@ -168,8 +168,8 @@ public class CommandICBM extends CommandBase
                         if (entity != null && !entity.isDead)
                         {
                             boolean isExplosive = entity instanceof EntityExplosive;
-                            boolean isMissile = entity instanceof EntityMissile;
-                            boolean isICBM = entity instanceof EntityFragments || entity instanceof EntityFlyingBlock;
+                            boolean isMissile = isMissile(entity);
+                            boolean isICBM = isICBMEntity(entity);
                             if (remove_explosives && isExplosive || remove_missiles && isMissile || remove_all && isICBM)
                             {
                                 entity.setDead();
@@ -206,7 +206,7 @@ public class CommandICBM extends CommandBase
             Entity entity = entities.get(i);
             if (entity != null && !entity.isDead)
             {
-                if (entity instanceof EntityFragments || entity instanceof EntityFlyingBlock || entity instanceof EntityMissile || entity instanceof EntityExplosive)
+                if (isICBMEntity(entity))
                 {
                     entity.setDead();
                     count++;
@@ -220,6 +220,16 @@ public class CommandICBM extends CommandBase
         //Update user with data
         sender.sendMessage(new TextComponentString("Removed '" + count + "' ICBM entities within " + range + " meters"));
         sender.sendMessage(new TextComponentString("Removed '" + blasts + "' blast controllers within " + range + " meters"));
+    }
+
+    private boolean isICBMEntity(Entity entity)
+    {
+        return entity instanceof EntityFragments || entity instanceof EntityFlyingBlock || isMissile(entity) || entity instanceof EntityExplosive;
+    }
+
+    private boolean isMissile(Entity entity)
+    {
+        return entity instanceof EntityMissile;
     }
 
     protected List<Entity> getEntities(World world, double x, double y, double z, double range)
