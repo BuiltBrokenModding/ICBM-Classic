@@ -4,40 +4,59 @@ This log contains changes made to the project. Each entry contains changed made 
 If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
 
 # Versions
-## 2.16.3 - 12/28/2017
+## 3.1.0
 ### Runtime Changes
-Added: translations to nightmare missile
-Added: rematter ore (easter egg, not used for crafting)
-Added: improved growth mechanics for redmatter
-Fixed: redmatter animation
-Fixed: redmatter graphic scale
-Fixed: redmatter gaphics not being centered
-Fixed: camo block inventory render (was a few pixels too high)
-Fixed: launcher frame and base item renders
-Fixed: Exothermic placing invalid fire blocks
-        caused crashes due to MC attempting to clear invalid fire 
-        blocks but triggering infinite loop in proces. Should not happen
-        anymore. However, the issue is a vanilla bug that can happen with 
-        any block.
-Fixed: Settings not generating
-Increased: redmatter gravity from 0.015 to 0.02
-Increased: redmatter default size from 35 to 70
-Implemented: redmatter disk render
-Implemented: redmatter size scaling (will change size visually to match effect size)
-Reworked: Configuration file
+* Added: IC2 support
+* Added: Config for sulfur drop
+* Added: Add blast command to spawn blasts
+* Added: alias name of icbm to icbmc command (only works if ICBM 2 is not installed)
+* Added: runtime check to redmatter to prevent it from using to much CPU time each tick
 
-Removed: recipe disable configs (has been replaced with JSON recipe removal)
+* Fixed: Thread not starting if entity tick was set high (sponge bug)
+* Fixed: explosives not generating block breaks
+* Fixed: redmatter stalling main thread
+* Fixed: tiles not cleaning up correctly when broken
+* Fixed: crash when placing a different tile in a previous location of a screen or frame
+* Fixed: is air check in projectile
+* Fixed: breaching blast not rotating in some cases (missile and commands)
+* Fixed: '/icbm remove all' not clearing redmatter (or explosives in general)
+* Fixed: debug spam in some cases0.
+* Fixed: energy issues for explosive pathing
+* Fixed: not being able placing presure plates on explosive blocks
 
-## 2.16.2 - 11/3/2017
-### Runtime Changes
-Added: Waila support for camo blocks
-Added: Waila support for launcher parts
-Added: Nightmare missile - Halloween themed entity spawn explosive
-Fixed: Missile mounting on launchers (aka fixed missing riding)
-Fixed: button hardness
-Changed: cruise launcher energy cost from 100M UE to 10K UE (20k RF)
+* Improved: Thread performance
+* Improved: explosive pathing in threads
+* Improved: Missile position rendering
+* Improved: redmatter animation and scaling
+
+* Removed: redmatter beam scale that made it hard to look at
 
 ### Development Changes
-Renamed: a few fields and methods (removing Chinese leftovers from calclavia's time)
+* Added: Scale option to blast creation
+* Added: sub command system to reduce work making commands
 
-//TODO update change log for older versions
+* Reworked: Thread handling to reduce issues
+* Renamed: packet handlers and other classes
+
+## 3.0.0- 3.0.1 [1.12 Beta]
+Not full list of changes as I neglected to use version #s during the update
+
+### Runtime Changes
+* Added: handling for power pass through for full launcher frame & support
+* Added: More explosive cart types
+
+* Rewrote: mod for 1.12
+* Rewrote: to not use VoltzEngine in order to be standalone
+* Rewrote: usage of metadata in some case in prep for 1.13 update
+
+* Temp Removed: Some graphics and audio until they can be ported
+* Temp Removed: Camo block
+* Temp Removed: Cruise Launcher
+
+### Development Changes
+* Rewrote: mod for 1.12
+* Rewrote: to include parts of CodingLib
+* Rewrote: to include parts of VoltzEngine
+* Rewrote: Network handling
+* Rewrote: Multi-Block handling
+
