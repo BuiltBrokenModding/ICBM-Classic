@@ -2,11 +2,11 @@ package icbm.classic.content.machines.launcher.base;
 
 import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
 import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.framework.energy.data.EnergyBuffer;
 import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
 import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.rotation.EulerAngle;
@@ -112,7 +112,7 @@ public class TileLauncherBase extends TileModuleMachine implements IPacketIDRece
 
 
     @Override
-    public EnergyBuffer getEnergyBuffer(ForgeDirection side)
+    public IEnergyBuffer getEnergyBuffer(ForgeDirection side)
     {
         if (launchScreen != null)
         {

@@ -1,6 +1,7 @@
 package icbm.classic.content.machines.emptower;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTileHost;
@@ -8,15 +9,15 @@ import com.builtbroken.mc.core.network.IPacketIDReceiver;
 import com.builtbroken.mc.core.network.packet.PacketTile;
 import com.builtbroken.mc.core.network.packet.PacketType;
 import com.builtbroken.mc.core.registry.implement.IRecipeContainer;
-import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
+import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
+import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import com.builtbroken.mc.imp.transform.vector.Pos;
+import com.builtbroken.mc.lib.helper.recipe.UniversalRecipe;
 import com.builtbroken.mc.prefab.gui.ContainerDummy;
 import com.builtbroken.mc.prefab.inventory.InventoryUtility;
 import com.builtbroken.mc.prefab.items.ItemBlockBase;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
-import com.builtbroken.mc.framework.multiblock.EnumMultiblock;
-import com.builtbroken.mc.framework.multiblock.MultiBlockHelper;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastEMP;
@@ -41,6 +42,8 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
+    public static final int ENERGY_SCALE_USAGE = 3000000;
+    public static final int ENERGY_MIN_USAGE = 1000000;
 
     public static HashMap<IPos3D, String> tileMapCache = new HashMap();
 
@@ -69,6 +72,16 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         this.hardness = 10f;
         this.resistance = 10f;
         this.isOpaque = false;
+    }
+
+    @Override
+    public IEnergyBuffer getEnergyBuffer(ForgeDirection side)
+    {
+        if (energyBuffer == null && getEnergyBufferSize() > 0)
+        {
+            energyBuffer = new EnergyBufferEMPTower(this);
+        }
+        return energyBuffer;
     }
 
     @Override
@@ -103,7 +116,8 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
             sendDescPacket();
         }
 
-        rotationDelta = (float) (Math.pow(getEnergy() / getEnergyBufferSize(), 2) * 0.5);
+        float r = getEnergy() / (float)getEnergyConsumption();
+        rotationDelta = (float) (Math.pow(r, 2) * 0.5);
         rotation += rotationDelta;
         if (rotation > 360)
         {
@@ -144,7 +158,13 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public int getEnergyBufferSize()
     {
-        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
+        return ENERGY_SCALE_USAGE * MAX_RADIUS * 2;
+    }
+
+    @Override
+    public int getEnergyConsumption()
+    {
+        return Math.max(ENERGY_SCALE_USAGE * (this.empRadius / MAX_RADIUS), ENERGY_MIN_USAGE);
     }
 
     @Override
