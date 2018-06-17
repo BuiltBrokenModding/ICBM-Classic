@@ -4,6 +4,28 @@ This log contains changes made to the project. Each entry contains changed made 
 If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
 
 # Versions
+## 2.16.4
+### Runtime Changes
+* Added: IC2 support
+* Added: configs to change camo block texture
+
+* Improved: missile flight equation (Big thanks to Graugger)
+
+* Fixed: equation for missile flight to have a max height
+* Fixed: issues with block wrapper (used by camo block)
+* Fixed: fixed EMP missile dropping itself
+* Fixed: emp tower not using the correct energy usage value
+* Fixed: emp tower battery not using correct max value
+* Fixed: emp tower animation not running until full battery
+* Fixed: emp GUI status only showing charged when full battery
+* Fixed: emp audio increasing in volume past full charge
+* Fixed: emp audio not scaling
+* Fixed: some power support issues
+
+### Development Changes
+* Moved: delay spawn object to Versions
+* Added: Error checks to block wrapper
+
 ## 2.16.3 - 12/28/2017
 ### Runtime Changes
 Added: translations to nightmare missile
