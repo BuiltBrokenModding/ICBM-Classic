@@ -42,8 +42,8 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
-    public static final int ENERGY_SCALE_USAGE = 3000000;
-    public static final int ENERGY_MIN_USAGE = 1000000;
+    public static final int ENERGY_SCALE_USAGE = 300000;
+    public static final int ENERGY_MIN_USAGE = 50000;
 
     public static HashMap<IPos3D, String> tileMapCache = new HashMap();
 
@@ -75,16 +75,6 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     }
 
     @Override
-    public IEnergyBuffer getEnergyBuffer(ForgeDirection side)
-    {
-        if (energyBuffer == null && getEnergyBufferSize() > 0)
-        {
-            energyBuffer = new EnergyBufferEMPTower(this);
-        }
-        return energyBuffer;
-    }
-
-    @Override
     protected IInventory createInventory()
     {
         return new TileModuleInventory(this, 2);
@@ -112,17 +102,26 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
 
         if (ticks % 20 == 0 && getEnergy() > 0)
         {
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getEnergy() / getEnergyBufferSize());
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, ICBMClassic.PREFIX + "machinehum", 0.5F, 0.85F * getChargePercentage());
             sendDescPacket();
         }
 
-        float r = getEnergy() / (float)getEnergyConsumption();
-        rotationDelta = (float) (Math.pow(r, 2) * 0.5);
+        rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5);
         rotation += rotationDelta;
         if (rotation > 360)
         {
             rotation = 0;
         }
+    }
+
+    public boolean isCharged()
+    {
+        return checkExtract();
+    }
+
+    public float getChargePercentage()
+    {
+        return Math.min(1, getEnergy() / (float)getEnergyConsumption());
     }
 
     @Override
@@ -158,13 +157,23 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     @Override
     public int getEnergyBufferSize()
     {
-        return ENERGY_SCALE_USAGE * MAX_RADIUS * 2;
+        return ENERGY_SCALE_USAGE * 2;
     }
 
     @Override
     public int getEnergyConsumption()
     {
         return Math.max(ENERGY_SCALE_USAGE * (this.empRadius / MAX_RADIUS), ENERGY_MIN_USAGE);
+    }
+
+    @Override
+    public IEnergyBuffer getEnergyBuffer(ForgeDirection side)
+    {
+        if (energyBuffer == null)
+        {
+            energyBuffer = new EnergyBufferEMPTower(this);
+        }
+        return energyBuffer;
     }
 
     @Override
