@@ -50,7 +50,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
 
     /** Energy used per tick */
-    public static final int WATTS = 2;
+    public static final int ENERGY_USAGE = 20;
+    public static final int BUFFER_SIZE = 20000;
 
     public float rotation = 0;
     public int alarmRange = 100;
@@ -108,7 +109,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         }
 
         //If we have energy
-        if (hasEnergy())
+        if (checkExtract())
         {
             this.rotation += 0.08f;
 
@@ -119,7 +120,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
             if (!this.worldObj.isRemote)
             {
-                //this.getEnergyHandler().extractEnergy();
+                this.extractEnergy();
             }
 
             int prevDetectedEntities = this.detectedEntities.size();
@@ -157,9 +158,16 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         }
     }
 
-    private boolean hasEnergy()
+    @Override
+    public int getEnergyConsumption()
     {
-        return true;
+        return ENERGY_USAGE;
+    }
+
+    @Override
+    public int getEnergyBufferSize()
+    {
+        return getEnergyConsumption() * 2;
     }
 
     private void doScan()

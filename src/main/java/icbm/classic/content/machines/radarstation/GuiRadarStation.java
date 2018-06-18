@@ -108,7 +108,7 @@ public class GuiRadarStation extends GuiICBM
         String color = "\u00a74";
         String status = LanguageUtility.getLocal("gui.misc.idle");
 
-        if (this.tileEntity.hasPower())
+        if (this.tileEntity.checkExtract())
         {
             color = "\u00a72";
             status = LanguageUtility.getLocal("gui.radar.on");

@@ -53,7 +53,7 @@ public class TileRadarStationClient extends TileRadarStation implements ISimpleI
         GL11.glPushMatrix();
         GL11.glTranslated(pos.xf() + 0.5f, pos.yf() + 1.5f, pos.zf() + 0.5f);
 
-        if (hasPower())
+        if (checkExtract())
         {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
         }
