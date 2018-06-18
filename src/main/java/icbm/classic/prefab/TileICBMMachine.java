@@ -84,12 +84,14 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
+        setEnergy(nbt.getInteger("energy"));
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt)
     {
         super.writeToNBT(nbt);
+        nbt.setInteger("energy", getEnergy());
     }
 
     @Override
