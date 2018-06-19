@@ -1,6 +1,8 @@
 package icbm.classic.content.machines.emptower;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
@@ -203,9 +205,10 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     }
 
     //@Callback(limit = 1)
+    @DataSystemMethod(name = "fireEmp", type = DataMethodType.INVOKE)
     public boolean fire()
     {
-        if (this.checkExtract())
+        if (this.isReady())
         {
             if (isReady())
             {
@@ -245,19 +248,19 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         return INFINITE_EXTENT_AABB;
     }
 
-    //@Callback
+    @DataSystemMethod(name = "isEmpReady", type = DataMethodType.GET)
     public boolean isReady()
     {
-        return getCooldown() <= 0;
+        return getCooldown() <= 0 && isCharged();
     }
 
-    //@Callback
+    @DataSystemMethod(name = "empCooldown", type = DataMethodType.GET)
     public int getCooldown()
     {
         return cooldownTicks;
     }
 
-    //@Callback
+    @DataSystemMethod(name = "empMaxCooldown", type = DataMethodType.GET)
     public int getMaxCooldown()
     {
         return 120;
