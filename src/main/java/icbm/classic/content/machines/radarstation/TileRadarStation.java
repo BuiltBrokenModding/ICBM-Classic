@@ -1,5 +1,7 @@
 package icbm.classic.content.machines.radarstation;
 
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.items.hz.IItemFrequency;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
@@ -39,6 +41,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IRecipeContainer, IGuiTile
@@ -62,7 +65,6 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public List<Entity> detectedEntities = new ArrayList<Entity>();
     /** List of all incoming missiles, in order of distance. */
     private List<EntityMissile> incomingMissiles = new ArrayList<EntityMissile>();
-
     public TileRadarStation()
     {
         super("radarStation", Material.iron);
@@ -74,7 +76,45 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.renderNormalBlock = false;
         this.canEmmitRedstone = true;
     }
-
+    
+    @DataSystemMethod(name = "incomingMissilePos", type = DataMethodType.GET)
+    public Object[] getIncomingMissilePos() {
+    HashMap<String, Double> data = new HashMap<String, Double>();
+    for (EntityMissile missile : incomingMissiles) {
+    	int threatID = 0;
+    	int dim = missile.dimension;
+    	double x = missile.posX;
+    	double y = missile.posY;
+    	double z = missile.posZ;
+    	data.put("dim_" + threatID, (double) dim);
+    	data.put("X_" + threatID, x);
+    	data.put("Y_" + threatID, y);
+    	data.put("Z_" + threatID, z);
+    	threatID++;
+    	return new Object[] { data };
+    	}
+	return null;
+    }
+    @DataSystemMethod(name = "detectedMissilePos", type = DataMethodType.GET)
+    public Object[] getDetectedMissilePos() {
+    HashMap<String, Double> data = new HashMap<String, Double>();
+    for (Entity missile : detectedEntities) {
+    	int threatID = 0;
+    	int dim = missile.dimension;
+    	double x = missile.posX;
+    	double y = missile.posY;
+    	double z = missile.posZ;
+    	
+    	data.put("dim_" + threatID, (double) dim);
+    	data.put("X_" + threatID, x);
+    	data.put("Y_" + threatID, y);
+    	data.put("Z_" + threatID, z);
+    	threatID++;
+    	return new Object[] { data };
+    	}
+	return null;
+    }
+    
     @Override
     protected IInventory createInventory()
     {
@@ -159,12 +199,14 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     }
 
     @Override
+    @DataSystemMethod(name = "energyConsumption", type = DataMethodType.GET)
     public int getEnergyConsumption()
     {
         return ENERGY_USAGE;
     }
 
     @Override
+    
     public int getEnergyBufferSize()
     {
         return getEnergyConsumption() * 2;
@@ -444,7 +486,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     {
         RadioRegistry.popMessage(oldWorld(), this, hz, header, data);
     }
-
+    
+    @DataSystemMethod(name = "sensorRange", type = DataMethodType.GET) 
     @Override
     public Cube getRadioSenderRange()
     {

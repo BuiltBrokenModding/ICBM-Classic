@@ -205,7 +205,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     }
 
     //@Callback(limit = 1)
-    @DataSystemMethod(name = "fireEmp", type = DataMethodType.INVOKE)
+    @DataSystemMethod(name = "fireEmp", type = DataMethodType.INVOKE) 
     public boolean fire()
     {
         if (this.isReady())
@@ -392,3 +392,5 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         return null;
     }
 }
+//YOU CAN'T HANDLE THE POWER
+//ANDREW WUZ HERE

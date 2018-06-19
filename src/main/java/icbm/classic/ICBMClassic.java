@@ -36,6 +36,9 @@ import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.items.*;
 import icbm.classic.content.machines.emptower.TileEMPTower;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
+import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
+import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -176,6 +179,10 @@ public final class ICBMClassic extends AbstractMod
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
 
         DataSystemHandler.generate(PREFIX + "empTower", TileEMPTower.class);
+        DataSystemHandler.generate(PREFIX + "launcherScreen", TileLauncherScreen.class);
+        DataSystemHandler.generate(PREFIX + "cruiseLauncher", TileCruiseLauncher.class);
+        DataSystemHandler.generate(PREFIX + "radarStation", TileRadarStation.class);
+        
     }
 
     @Override
