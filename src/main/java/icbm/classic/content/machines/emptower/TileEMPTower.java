@@ -93,11 +93,11 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     {
         super.update();
 
-        if (!isReady())
+        if (cooldownTicks > 0)
         {
             cooldownTicks--;
         }
-        else if (isIndirectlyPowered())
+        else if (isReady() && isIndirectlyPowered())
         {
             fire();
         }
@@ -123,7 +123,7 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
 
     public float getChargePercentage()
     {
-        return Math.min(1, getEnergy() / (float)getEnergyConsumption());
+        return Math.min(1, getEnergy() / (float) getEnergyConsumption());
     }
 
     @Override
@@ -210,24 +210,21 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
     {
         if (this.isReady())
         {
-            if (isReady())
+            switch (this.empMode)
             {
-                switch (this.empMode)
-                {
-                    default:
-                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().setEffectEntities().explode();
-                        break;
-                    case 1:
-                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectEntities().explode();
-                        break;
-                    case 2:
-                        new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().explode();
-                        break;
-                }
-                this.extractEnergy();
-                this.cooldownTicks = getMaxCooldown();
-                return true;
+                default:
+                    new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().setEffectEntities().explode();
+                    break;
+                case 1:
+                    new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectEntities().explode();
+                    break;
+                case 2:
+                    new BlastEMP(this.worldObj, null, this.xCoord + 0.5, this.yCoord + 1.2, this.zCoord + 0.5, this.empRadius).setEffectBlocks().explode();
+                    break;
             }
+            this.extractEnergy();
+            this.cooldownTicks = getMaxCooldown();
+            return true;
         }
         return false;
     }
