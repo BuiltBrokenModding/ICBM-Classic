@@ -1,5 +1,7 @@
 package icbm.classic.prefab;
 
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import net.minecraft.block.material.Material;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -29,6 +31,7 @@ public abstract class TileFrequency extends TileICBMMachine
      *
      * @return Hz value
      */
+    @DataSystemMethod(name = "frequency", type = DataMethodType.GET)
     public int getFrequency()
     {
         return this.frequency;
@@ -39,6 +42,7 @@ public abstract class TileFrequency extends TileICBMMachine
      *
      * @param frequency - Hz value
      */
+    @DataSystemMethod(name = "frequency", type = DataMethodType.SET, args = "int:frequency")
     public void setFrequency(int frequency)
     {
         this.frequency = frequency;

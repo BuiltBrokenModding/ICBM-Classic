@@ -19,6 +19,8 @@ import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
@@ -80,10 +82,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public Tile newTile()
     {
         return new TileLauncherScreen();
-    }
-    @DataSystemMethod(name = "setTarget", type = DataMethodType.SET, args = {"double:x", "double:y", "double:z"})
-    public void setTarget(double x, double y, double z) {
-    	this.setTarget(x, y, z);
     }
 
     @Override
@@ -244,9 +242,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         return true;
     }
 
-    // Checks if the missile is launchable
-    @DataSystemMethod(name = "canLaunch", type = DataMethodType.GET)
     @Override
+    @DataSystemMethod(name = "canLaunchMissile", type = DataMethodType.GET)
     public boolean canLaunch()
     {
         if (this.laucherBase != null && this.laucherBase.getMissileStack() != null)
@@ -259,9 +256,8 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
         return false;
     }
 
-    /** Calls the missile launcher base to launch it's missile towards a targeted location */
-    @DataSystemMethod(name = "launch", type = DataMethodType.INVOKE)
     @Override
+    @DataSystemMethod(name = "launchMissile", type = DataMethodType.INVOKE)
     public void launch()
     {
         if (this.canLaunch() && this.laucherBase.launchMissile(this.getTarget(), this.lockHeight))
@@ -270,19 +266,52 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             updateClient = true;
         }
     }
-    
+
     @DataSystemMethod(name = "missileType", type = DataMethodType.GET)
-    public String getMissileType() {
-    	return this.inventory_module.getInventoryName();
+    public String getMissileTypeName()
+    {
+        if (this.laucherBase != null)
+        {
+            ItemStack stack = this.laucherBase.getMissileStack();
+            if (stack != null && stack.getItem() instanceof ItemMissile)
+            {
+                int meta = stack.getItemDamage();
+                if (meta >= 0 && meta < Explosives.values().length)
+                {
+                    return Explosives.values()[meta].name().toLowerCase();
+                }
+                return "invalid";
+            }
+        }
+        return "empty";
     }
-    
+
+    @DataSystemMethod(name = "missileTypeID", type = DataMethodType.GET)
+    public int getMissileTypeIndex()
+    {
+        if (this.laucherBase != null)
+        {
+            ItemStack stack = this.laucherBase.getMissileStack();
+            if (stack != null && stack.getItem() instanceof ItemMissile)
+            {
+                int meta = stack.getItemDamage();
+                if (meta >= 0 && meta < Explosives.values().length)
+                {
+                    return Explosives.values()[meta].ordinal();
+                }
+                return -2;
+            }
+        }
+        return -1;
+    }
+
     /**
      * Gets the display status of the missile launcher
      *
      * @return The string to be displayed
      */
     @Override
-    @DataSystemMethod(name = "Status", type = DataMethodType.GET)
+    @DataSystemMethod(name = "launcherStatus", type = DataMethodType.GET)
     public String getStatus()
     {
         String color = "\u00a74";
@@ -342,7 +371,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    @DataSystemMethod(name = "tier", type = DataMethodType.GET)
     public int getTier()
     {
         return this.tier;

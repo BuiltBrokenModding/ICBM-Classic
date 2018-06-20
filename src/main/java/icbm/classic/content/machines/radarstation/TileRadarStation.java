@@ -65,6 +65,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public List<Entity> detectedEntities = new ArrayList<Entity>();
     /** List of all incoming missiles, in order of distance. */
     private List<EntityMissile> incomingMissiles = new ArrayList<EntityMissile>();
+
     public TileRadarStation()
     {
         super("radarStation", Material.iron);
@@ -76,45 +77,53 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.renderNormalBlock = false;
         this.canEmmitRedstone = true;
     }
-    
-    @DataSystemMethod(name = "incomingMissilePos", type = DataMethodType.GET)
-    public Object[] getIncomingMissilePos() {
-    HashMap<String, Double> data = new HashMap<String, Double>();
-    for (EntityMissile missile : incomingMissiles) {
-    	int threatID = 0;
-    	int dim = missile.dimension;
-    	double x = missile.posX;
-    	double y = missile.posY;
-    	double z = missile.posZ;
-    	data.put("dim_" + threatID, (double) dim);
-    	data.put("X_" + threatID, x);
-    	data.put("Y_" + threatID, y);
-    	data.put("Z_" + threatID, z);
-    	threatID++;
-    	return new Object[] { data };
-    	}
-	return null;
+
+    @DataSystemMethod(name = "incomingMissileData", type = DataMethodType.GET)
+    public Object[] getIncomingMissilePos()
+    {
+        HashMap<String, Double> data = new HashMap();
+        data.put("size", (double) incomingMissiles.size());
+
+        for (int i = 0; i < incomingMissiles.size(); i++)
+        {
+            EntityMissile missile = incomingMissiles.get(i);
+            data.put("dim_" + i, (double) missile.dimension);
+
+            data.put("X_" + i, missile.posX);
+            data.put("Y_" + i, missile.posY);
+            data.put("Z_" + i, missile.posZ);
+
+            data.put("VX_" + i, missile.motionX);
+            data.put("VY_" + i, missile.motionY);
+            data.put("VZ_" + i, missile.motionZ);
+            return new Object[]{data};
+        }
+        return null;
     }
-    @DataSystemMethod(name = "detectedMissilePos", type = DataMethodType.GET)
-    public Object[] getDetectedMissilePos() {
-    HashMap<String, Double> data = new HashMap<String, Double>();
-    for (Entity missile : detectedEntities) {
-    	int threatID = 0;
-    	int dim = missile.dimension;
-    	double x = missile.posX;
-    	double y = missile.posY;
-    	double z = missile.posZ;
-    	
-    	data.put("dim_" + threatID, (double) dim);
-    	data.put("X_" + threatID, x);
-    	data.put("Y_" + threatID, y);
-    	data.put("Z_" + threatID, z);
-    	threatID++;
-    	return new Object[] { data };
-    	}
-	return null;
+
+    @DataSystemMethod(name = "detectedEntityData", type = DataMethodType.GET)
+    public Object[] getDetectedMissilePos()
+    {
+        HashMap<String, Double> data = new HashMap();
+        data.put("size", (double) detectedEntities.size());
+
+        for (int i = 0; i < detectedEntities.size(); i++)
+        {
+            Entity missile = detectedEntities.get(i);
+            data.put("dim_" + i, (double) missile.dimension);
+
+            data.put("X_" + i, missile.posX);
+            data.put("Y_" + i, missile.posY);
+            data.put("Z_" + i, missile.posZ);
+
+            data.put("VX_" + i, missile.motionX);
+            data.put("VY_" + i, missile.motionY);
+            data.put("VZ_" + i, missile.motionZ);
+            return new Object[]{data};
+        }
+        return null;
     }
-    
+
     @Override
     protected IInventory createInventory()
     {
@@ -199,17 +208,15 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     }
 
     @Override
-    @DataSystemMethod(name = "energyConsumption", type = DataMethodType.GET)
     public int getEnergyConsumption()
     {
         return ENERGY_USAGE;
     }
 
     @Override
-    
     public int getEnergyBufferSize()
     {
-        return getEnergyConsumption() * 2;
+        return BUFFER_SIZE;
     }
 
     private void doScan()
@@ -486,8 +493,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     {
         RadioRegistry.popMessage(oldWorld(), this, hz, header, data);
     }
-    
-    @DataSystemMethod(name = "sensorRange", type = DataMethodType.GET) 
+
     @Override
     public Cube getRadioSenderRange()
     {

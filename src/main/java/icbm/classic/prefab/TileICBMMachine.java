@@ -1,6 +1,8 @@
 package icbm.classic.prefab;
 
 import cofh.api.energy.IEnergyHandler;
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.ConnectionType;
 import com.builtbroken.mc.core.network.packet.PacketTile;
@@ -100,6 +102,7 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
         return true;
     }
 
+    @DataSystemMethod(name = "energyStored", type = DataMethodType.GET)
     public int getEnergy()
     {
         IEnergyBuffer buffer = getEnergyBuffer(ForgeDirection.UNKNOWN);

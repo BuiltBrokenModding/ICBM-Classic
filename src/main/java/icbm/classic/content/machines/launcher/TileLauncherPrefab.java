@@ -1,5 +1,7 @@
 package icbm.classic.content.machines.launcher;
 
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.map.radio.IRadioWaveReceiver;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.lib.helper.LanguageUtility;
@@ -56,6 +58,12 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
         }
 
         return this._targetPos;
+    }
+
+    @DataSystemMethod(name = "missileTarget", type = DataMethodType.SET, args = {"double:x", "double:y", "double:z"})
+    public void setTarget(double x, double y, double z)
+    {
+        this.setTarget(x, y, z);
     }
 
     /**
