@@ -2,7 +2,6 @@ package icbm.classic;
 
 import com.builtbroken.mc.core.Engine;
 import com.builtbroken.mc.core.registry.ModManager;
-import com.builtbroken.mc.framework.computer.DataSystemHandler;
 import com.builtbroken.mc.framework.mod.AbstractMod;
 import com.builtbroken.mc.framework.mod.AbstractProxy;
 import com.builtbroken.mc.framework.mod.ModCreativeTab;
@@ -27,6 +26,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import icbm.classic.content.DataSystemICBMLoader;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosive;
@@ -35,10 +35,6 @@ import icbm.classic.content.explosive.ex.missiles.Missile;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.items.*;
-import icbm.classic.content.machines.emptower.TileEMPTower;
-import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -177,12 +173,6 @@ public final class ICBMClassic extends AbstractMod
         blockReinforcedGlass = manager.newBlock("icbmCGlass", BlockReinforcedGlass.class, ItemBlockBase.class);
         blockCombatRail = manager.newBlock("icbmCRail", BlockReinforcedRail.class, ItemBlockBase.class);
         blockExplosive = manager.newBlock("icbmCExplosive", BlockExplosive.class, ItemBlockExplosive.class);
-
-        DataSystemHandler.generate(PREFIX + "empTower", TileEMPTower.class);
-        DataSystemHandler.generate(PREFIX + "launcherScreen", TileLauncherScreen.class);
-        DataSystemHandler.generate(PREFIX + "cruiseLauncher", TileCruiseLauncher.class);
-        DataSystemHandler.generate(PREFIX + "radarStation", TileRadarStation.class);
-        
     }
 
     @Override
@@ -396,6 +386,7 @@ public final class ICBMClassic extends AbstractMod
     public void preInit(FMLPreInitializationEvent event)
     {
         super.preInit(event);
+        loader.applyModule(new DataSystemICBMLoader());
         Engine.requestBaseModules();
         Engine.requestMultiBlock();
         Settings.load(getConfig());

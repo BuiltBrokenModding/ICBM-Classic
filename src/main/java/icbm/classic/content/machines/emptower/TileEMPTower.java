@@ -1,8 +1,6 @@
 package icbm.classic.content.machines.emptower;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.mc.api.computer.DataMethodType;
-import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.api.tile.multiblock.IMultiTile;
@@ -204,8 +202,6 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         par1NBTTagCompound.setByte("empMode", this.empMode);
     }
 
-    //@Callback(limit = 1)
-    @DataSystemMethod(name = "fireEmp", type = DataMethodType.INVOKE) 
     public boolean fire()
     {
         if (this.isReady())
@@ -245,19 +241,16 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         return INFINITE_EXTENT_AABB;
     }
 
-    @DataSystemMethod(name = "isEmpReady", type = DataMethodType.GET)
     public boolean isReady()
     {
         return getCooldown() <= 0 && isCharged();
     }
 
-    @DataSystemMethod(name = "empCooldown", type = DataMethodType.GET)
     public int getCooldown()
     {
         return cooldownTicks;
     }
 
-    @DataSystemMethod(name = "empMaxCooldown", type = DataMethodType.GET)
     public int getMaxCooldown()
     {
         return 120;
@@ -392,5 +385,3 @@ public class TileEMPTower extends TileICBMMachine implements IMultiTileHost, IPa
         return null;
     }
 }
-//YOU CAN'T HANDLE THE POWER
-//ANDREW WUZ HERE
