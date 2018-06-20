@@ -4,6 +4,7 @@ import cofh.api.energy.IEnergyHandler;
 import com.builtbroken.mc.api.energy.IEnergyBuffer;
 import com.builtbroken.mc.api.tile.ConnectionType;
 import com.builtbroken.mc.core.network.packet.PacketTile;
+import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.mods.ic.ICHandler;
 import com.builtbroken.mc.prefab.tile.TileModuleMachine;
 import cpw.mods.fml.common.Optional;
@@ -68,6 +69,13 @@ public abstract class TileICBMMachine extends TileModuleMachine implements IEner
                 }
             }
         }
+    }
+
+    public String getStatus()
+    {
+        String color = "\u00a74";
+        String status = LanguageUtility.getLocal("gui.misc.idle");
+        return color + status;
     }
 
     /**

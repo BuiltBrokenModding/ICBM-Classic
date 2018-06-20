@@ -1,8 +1,6 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.api.computer.DataMethodType;
-import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.Engine;
@@ -83,7 +81,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
      * @return The string to be displayed
      */
     @Override
-    @DataSystemMethod(name = "launcherStatus", type = DataMethodType.GET)
     public String getStatus()
     {
         String color = "\u00a74";
@@ -142,38 +139,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     public String getInventoryName()
     {
         return LanguageUtility.getLocal("gui.launcherCruise.name");
-    }
-
-    @DataSystemMethod(name = "missileType", type = DataMethodType.GET)
-    public String getMissileTypeName()
-    {
-        ItemStack stack = getInventory().getStackInSlot(0);
-        if (stack != null && stack.getItem() instanceof ItemMissile)
-        {
-            int meta = stack.getItemDamage();
-            if (meta >= 0 && meta < Explosives.values().length)
-            {
-                return Explosives.values()[meta].name().toLowerCase();
-            }
-            return "invalid";
-        }
-        return "empty";
-    }
-
-    @DataSystemMethod(name = "missileTypeID", type = DataMethodType.GET)
-    public int getMissileTypeIndex()
-    {
-        ItemStack stack = getInventory().getStackInSlot(0);
-        if (stack != null && stack.getItem() instanceof ItemMissile)
-        {
-            int meta = stack.getItemDamage();
-            if (meta >= 0 && meta < Explosives.values().length)
-            {
-                return Explosives.values()[meta].ordinal();
-            }
-            return -2;
-        }
-        return -1;
     }
 
     @Override
@@ -269,7 +234,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
-    @DataSystemMethod(name = "canLaunchMissile", type = DataMethodType.GET)
     public boolean canLaunch()
     {
         if (getTarget() != null && !getTarget().isZero())
@@ -324,8 +288,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
      * Launches the missile
      */
     @Override
-    @DataSystemMethod(name = "launchMissile", type = DataMethodType.INVOKE)
-    public void launch()
+    public boolean launch()
     {
         if (this.canLaunch())
         {
@@ -339,7 +302,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             oldWorld().spawnEntityInWorld(entityMissile);
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens
             this.decrStackSize(0, 1);
+
+            return true;
         }
+        return false;
     }
 
     // Is the target too close?
@@ -403,6 +369,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
             }
         }
         return true;
+    }
+
+    @Override
+    public ItemStack getMissileStack()
+    {
+        return getInventory().getStackInSlot(0);
     }
 
     @Override

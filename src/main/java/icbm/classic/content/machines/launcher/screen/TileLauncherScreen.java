@@ -1,8 +1,6 @@
 package icbm.classic.content.machines.launcher.screen;
 
 import com.builtbroken.mc.api.IWorldPosition;
-import com.builtbroken.mc.api.computer.DataMethodType;
-import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
@@ -19,8 +17,6 @@ import com.builtbroken.mc.prefab.items.ItemBlockSubTypes;
 import com.builtbroken.mc.prefab.tile.Tile;
 import com.builtbroken.mc.prefab.tile.module.TileModuleInventory;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
@@ -243,7 +239,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    @DataSystemMethod(name = "canLaunchMissile", type = DataMethodType.GET)
     public boolean canLaunch()
     {
         if (this.laucherBase != null && this.laucherBase.getMissileStack() != null)
@@ -257,52 +252,25 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    @DataSystemMethod(name = "launchMissile", type = DataMethodType.INVOKE)
-    public void launch()
+    public boolean launch()
     {
         if (this.canLaunch() && this.laucherBase.launchMissile(this.getTarget(), this.lockHeight))
         {
             this.extractEnergy();
             updateClient = true;
+            return true;
         }
+        return false;
     }
 
-    @DataSystemMethod(name = "missileType", type = DataMethodType.GET)
-    public String getMissileTypeName()
+    @Override
+    public ItemStack getMissileStack()
     {
-        if (this.laucherBase != null)
+        if (laucherBase != null)
         {
-            ItemStack stack = this.laucherBase.getMissileStack();
-            if (stack != null && stack.getItem() instanceof ItemMissile)
-            {
-                int meta = stack.getItemDamage();
-                if (meta >= 0 && meta < Explosives.values().length)
-                {
-                    return Explosives.values()[meta].name().toLowerCase();
-                }
-                return "invalid";
-            }
+            return laucherBase.getMissileStack();
         }
-        return "empty";
-    }
-
-    @DataSystemMethod(name = "missileTypeID", type = DataMethodType.GET)
-    public int getMissileTypeIndex()
-    {
-        if (this.laucherBase != null)
-        {
-            ItemStack stack = this.laucherBase.getMissileStack();
-            if (stack != null && stack.getItem() instanceof ItemMissile)
-            {
-                int meta = stack.getItemDamage();
-                if (meta >= 0 && meta < Explosives.values().length)
-                {
-                    return Explosives.values()[meta].ordinal();
-                }
-                return -2;
-            }
-        }
-        return -1;
+        return null;
     }
 
     /**
@@ -311,7 +279,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
      * @return The string to be displayed
      */
     @Override
-    @DataSystemMethod(name = "launcherStatus", type = DataMethodType.GET)
     public String getStatus()
     {
         String color = "\u00a74";
@@ -384,7 +351,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    @DataSystemMethod(name = "energyConsumption", type = DataMethodType.GET)
     public int getEnergyConsumption()
     {
         switch (this.getTier())
@@ -398,7 +364,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
-    @DataSystemMethod(name = "energyBufferSize", type = DataMethodType.GET)
     public int getEnergyBufferSize()
     {
         return getEnergyConsumption() * 2;

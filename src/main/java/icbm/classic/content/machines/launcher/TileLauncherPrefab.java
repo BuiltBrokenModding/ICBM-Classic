@@ -1,13 +1,12 @@
 package icbm.classic.content.machines.launcher;
 
-import com.builtbroken.mc.api.computer.DataMethodType;
-import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.map.radio.IRadioWaveReceiver;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
-import com.builtbroken.mc.lib.helper.LanguageUtility;
 import com.builtbroken.mc.imp.transform.region.Cube;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import com.builtbroken.mc.lib.world.map.radio.RadioRegistry;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.items.ItemMissile;
 import icbm.classic.prefab.TileFrequency;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
@@ -43,38 +42,60 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
         super.invalidate();
     }
 
+    public abstract ItemStack getMissileStack();
+
+    public String getMissileTypeName()
+    {
+        ItemStack stack = getMissileStack();
+        if (stack != null)
+        {
+            if(stack.getItem() instanceof ItemMissile)
+            {
+                int meta = stack.getItemDamage();
+                if (meta >= 0 && meta < Explosives.values().length)
+                {
+                    return Explosives.values()[meta].name().toLowerCase();
+                }
+                return "invalid type";
+            }
+            return "no missile";
+        }
+        return "empty";
+    }
+
+    public Explosives getMissileType()
+    {
+        ItemStack stack = getMissileStack();
+        if (stack != null && stack.getItem() instanceof ItemMissile)
+        {
+            int meta = stack.getItemDamage();
+            if (meta >= 0 && meta < Explosives.values().length)
+            {
+                return Explosives.values()[meta];
+            }
+        }
+        return null;
+    }
+
     public Pos getTarget()
     {
         if (this._targetPos == null)
         {
-            if (targetWithYValue())
-            {
-                this._targetPos = new Pos(this.xCoord, this.yCoord, this.zCoord);
-            }
-            else
-            {
-                this._targetPos = new Pos(this.xCoord, 0, this.zCoord);
-            }
+            setTarget(this.xCoord, this.yCoord, this.zCoord);
         }
-
         return this._targetPos;
     }
 
-    @DataSystemMethod(name = "missileTarget", type = DataMethodType.SET, args = {"double:x", "double:y", "double:z"})
     public void setTarget(double x, double y, double z)
     {
-        this.setTarget(x, y, z);
-    }
-
-    /**
-     * Should we use the Y value when setting the target data
-     * into the missile
-     *
-     * @return true if yes
-     */
-    public boolean targetWithYValue()
-    {
-        return false;
+        if (targetWithYValue())
+        {
+            this._targetPos = new Pos(x, y, z);
+        }
+        else
+        {
+            this._targetPos = new Pos(x, 0, z);
+        }
     }
 
     /**
@@ -86,6 +107,17 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     {
         this._targetPos = target.floor();
         updateClient = true;
+    }
+
+    /**
+     * Should we use the Y value when setting the target data
+     * into the missile
+     *
+     * @return true if yes
+     */
+    public boolean targetWithYValue()
+    {
+        return false;
     }
 
     @Override
@@ -104,13 +136,6 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
         {
             nbt.setTag("target", this._targetPos.toNBT());
         }
-    }
-
-    public String getStatus()
-    {
-        String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
-        return color + status;
     }
 
     @Override
