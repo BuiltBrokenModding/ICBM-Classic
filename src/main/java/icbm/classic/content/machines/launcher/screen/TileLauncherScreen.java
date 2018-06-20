@@ -1,6 +1,8 @@
 package icbm.classic.content.machines.launcher.screen;
 
 import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.map.radio.IRadioWaveSender;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
@@ -78,6 +80,10 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     public Tile newTile()
     {
         return new TileLauncherScreen();
+    }
+    @DataSystemMethod(name = "setTarget", type = DataMethodType.SET, args = {"double:x", "double:y", "double:z"})
+    public void setTarget(double x, double y, double z) {
+    	this.setTarget(x, y, z);
     }
 
     @Override
@@ -239,6 +245,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     // Checks if the missile is launchable
+    @DataSystemMethod(name = "canLaunch", type = DataMethodType.GET)
     @Override
     public boolean canLaunch()
     {
@@ -253,6 +260,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     /** Calls the missile launcher base to launch it's missile towards a targeted location */
+    @DataSystemMethod(name = "launch", type = DataMethodType.INVOKE)
     @Override
     public void launch()
     {
@@ -262,13 +270,19 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
             updateClient = true;
         }
     }
-
+    
+    @DataSystemMethod(name = "missileType", type = DataMethodType.GET)
+    public String getMissileType() {
+    	return this.inventory_module.getInventoryName();
+    }
+    
     /**
      * Gets the display status of the missile launcher
      *
      * @return The string to be displayed
      */
     @Override
+    @DataSystemMethod(name = "Status", type = DataMethodType.GET)
     public String getStatus()
     {
         String color = "\u00a74";
@@ -328,6 +342,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
+    @DataSystemMethod(name = "tier", type = DataMethodType.GET)
     public int getTier()
     {
         return this.tier;
@@ -341,6 +356,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
+    @DataSystemMethod(name = "energyConsumption", type = DataMethodType.GET)
     public int getEnergyConsumption()
     {
         switch (this.getTier())
@@ -354,6 +370,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements ITier, IPa
     }
 
     @Override
+    @DataSystemMethod(name = "energyBufferSize", type = DataMethodType.GET)
     public int getEnergyBufferSize()
     {
         return getEnergyConsumption() * 2;

@@ -1,14 +1,11 @@
 !*.*
 /bin
-
 *.classpath
 *.project
 .gradle/
 .settings/
 build/
 eclipse/
-
-
 *.iml
 *.iws
 *.ipr
@@ -19,3 +16,4 @@ CompiledWith.txt
 output
 changelog.html
 .okhttpcache/
+.DS_Store

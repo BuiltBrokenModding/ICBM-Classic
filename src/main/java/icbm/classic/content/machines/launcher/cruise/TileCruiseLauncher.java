@@ -1,6 +1,8 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.mc.api.IWorldPosition;
+import com.builtbroken.mc.api.computer.DataMethodType;
+import com.builtbroken.mc.api.computer.DataSystemMethod;
 import com.builtbroken.mc.api.items.tools.IWorldPosItem;
 import com.builtbroken.mc.api.tile.access.IGuiTile;
 import com.builtbroken.mc.core.Engine;
@@ -81,6 +83,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
      * @return The string to be displayed
      */
     @Override
+    @DataSystemMethod(name = "Status", type = DataMethodType.GET)
     public String getStatus()
     {
         String color = "\u00a74";
@@ -136,9 +139,15 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
 
     /** Returns the name of the inventory. */
     @Override
+    @DataSystemMethod(name = "inventoryGUIName", type = DataMethodType.GET)
     public String getInventoryName()
     {
         return LanguageUtility.getLocal("gui.launcherCruise.name");
+    }
+    
+    @DataSystemMethod(name = "missileType", type = DataMethodType.GET)
+    public String getMissileType() {
+    	return this.inventory_module.getInventoryName();
     }
 
     @Override
@@ -184,7 +193,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     {
         setInventorySlotContents(0, itemStack);
     }
-
+    
+    @DataSystemMethod(name = "setTarget", type = DataMethodType.SET, args = {"double:x", "double:y", "double:z"})
+    public void setTarget(double x, double y, double z) {
+    	this.setTarget(x, y, z);
+    }
+    
+    
     @Override
     public PacketTile getGUIPacket()
     {
@@ -234,6 +249,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
+    @DataSystemMethod(name = "canLaunch", type = DataMethodType.GET)
     public boolean canLaunch()
     {
         if (getTarget() != null && !getTarget().isZero())
@@ -279,6 +295,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
+    @DataSystemMethod(name = "launcherType", type = DataMethodType.GET)
     public LauncherType getLauncherType()
     {
         return LauncherType.CRUISE;
@@ -288,6 +305,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
      * Launches the missile
      */
     @Override
+    @DataSystemMethod(name = "launch", type = DataMethodType.INVOKE)
     public void launch()
     {
         if (this.canLaunch())
@@ -369,6 +387,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
     }
 
     @Override
+    @DataSystemMethod(name = "targgetingY", type = DataMethodType.GET)
     public boolean targetWithYValue()
     {
         return true;
@@ -429,3 +448,4 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IInventory
         return null;
     }
 }
+//YOUR MAMA IS A CRUISE MISSILE
