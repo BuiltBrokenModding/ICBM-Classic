@@ -129,6 +129,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return super.getCapability(capability, facing);
     }
 
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == CapabilityEMP.EMP || super.hasCapability(capability, facing);
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public AxisAlignedBB getRenderBoundingBox()
