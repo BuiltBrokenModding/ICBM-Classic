@@ -6,7 +6,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 
 /**
@@ -17,6 +19,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  * <p>
  * Credit to https://github.com/kitsushadow for sharing info on how to do sounds in MC 1.12
  */
+@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
 public enum ICBMSounds
 {
     ANTIMATTER("antimatter"),
@@ -80,24 +83,16 @@ public enum ICBMSounds
      */
     public void play(World world, double x, double y, double z, float volume, float pitch, boolean distanceDelay)
     {
-        world.playSound(x, y, z, getSound(), SoundCategory.BLOCKS, volume, pitch, distanceDelay);
+        world.playSound(null, x, y, z, getSound(), SoundCategory.BLOCKS, volume, pitch);
     }
 
-    /**
-     * Registers all sounds to event system
-     */
-    public static void registerAll()
+    @SubscribeEvent
+    public static void registerSounds(RegistryEvent.Register<SoundEvent> event)
     {
         for (ICBMSounds icbmSounds : values())
         {
-            icbmSounds.register();
+            icbmSounds.sound = new SoundEvent(icbmSounds.location).setRegistryName(icbmSounds.location);
+            event.getRegistry().register(icbmSounds.sound);
         }
-    }
-
-    //Registers the given sound
-    private void register()
-    {
-        sound = new SoundEvent(location).setRegistryName(location);
-        ForgeRegistries.SOUND_EVENTS.register(sound);
     }
 }

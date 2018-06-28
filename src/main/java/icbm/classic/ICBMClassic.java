@@ -1,6 +1,5 @@
 package icbm.classic;
 
-import icbm.classic.client.ICBMSounds;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
@@ -407,7 +406,6 @@ public final class ICBMClassic
     public void preInit(FMLPreInitializationEvent event)
     {
         proxy.preInit();
-        ICBMSounds.registerAll();
         EnergySystem.register(new EnergySystemFE());
 
         //Register caps
