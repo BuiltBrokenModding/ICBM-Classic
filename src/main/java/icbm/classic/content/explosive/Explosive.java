@@ -118,7 +118,7 @@ public abstract class Explosive implements IExplosive
      */
     public void yinZhaQian(World world, Entity entity)
     {
-        world.playSound(entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
+        world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     /**
