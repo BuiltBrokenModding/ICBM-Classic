@@ -64,7 +64,7 @@ public class TileLauncherBaseClient extends TileLauncherBase implements ISimpleI
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(Pos pos, float frame, int pass)
+    public void renderDynamic(Pos pos, float deltaFrame, int pass)
     {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);

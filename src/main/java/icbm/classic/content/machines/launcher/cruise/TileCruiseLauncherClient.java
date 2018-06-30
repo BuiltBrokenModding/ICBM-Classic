@@ -53,7 +53,7 @@ public class TileCruiseLauncherClient extends TileCruiseLauncher implements ISim
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(Pos pos, float frame, int pass)
+    public void renderDynamic(Pos pos, float deltaFrame, int pass)
     {
         float yaw = (float)currentAim.yaw();
         float pitch = (float)currentAim.pitch();

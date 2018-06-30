@@ -48,7 +48,7 @@ public class TileRadarStationClient extends TileRadarStation implements ISimpleI
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(Pos pos, float frame, int pass)
+    public void renderDynamic(Pos pos, float deltaFrame, int pass)
     {
         GL11.glPushMatrix();
         GL11.glTranslated(pos.xf() + 0.5f, pos.yf() + 1.5f, pos.zf() + 0.5f);

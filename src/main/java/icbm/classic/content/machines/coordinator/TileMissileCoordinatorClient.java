@@ -46,7 +46,7 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void renderDynamic(Pos pos, float frame, int pass)
+    public void renderDynamic(Pos pos, float deltaFrame, int pass)
     {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) pos.x() + 0.5F, (float) pos.y() + 1.5F, (float) pos.z() + 0.5F);
@@ -66,7 +66,7 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
             else
             {
                 // Flicker for first 3 seconds when player comes near.
-                this.lastSeePlayer += frame;
+                this.lastSeePlayer += deltaFrame;
 
                 if (Math.random() * 3 < this.lastSeePlayer / 3 && this.lastFlicker <= 0)
                 {
@@ -78,7 +78,7 @@ public class TileMissileCoordinatorClient extends TileMissileCoordinator impleme
                     FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
                 }
 
-                this.lastFlicker -= frame;
+                this.lastFlicker -= deltaFrame;
             }
 
         }
