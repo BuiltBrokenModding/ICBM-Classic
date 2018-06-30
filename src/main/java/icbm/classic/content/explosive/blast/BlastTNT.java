@@ -79,7 +79,7 @@ public class BlastTNT extends Blast
         calculateDamage(); //TODO add listener(s) to control block break and placement
 
         //TODO move effect to Effect handler
-        this.world().playSound(this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        this.world().playSound(null, this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
 
         //TODO collect entities before applying effects, this way event can override
         switch (this.pushType)

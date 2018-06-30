@@ -1,14 +1,13 @@
 package icbm.classic.content.machines.radarstation;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.lib.transform.vector.Point;
-import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.gui.GuiContainerBase;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.missile.EntityMissile;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -194,49 +193,43 @@ public class GuiRadarStation extends GuiContainerBase
         {
             int range = 4;
 
-            for (Entity entity : this.tileEntity.detectedEntities)
+            for (Pos pos : tileEntity.guiDrawPoints)
             {
-                Point position = new Point(radarCenter.x() + (entity.posX - this.tileEntity.getPos().getX()) / this.radarMapRadius, radarCenter.y() - (entity.posZ - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
+                final int type = (int) pos.z();
+                final double x = pos.x();
+                final double z = pos.y();
 
-                if (entity instanceof EntityMissile)
+                Point position = new Point(radarCenter.x() + (x - this.tileEntity.getPos().getX()) / this.radarMapRadius, radarCenter.y() - (z - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
+
+                switch (type)
                 {
-                    if (this.tileEntity.isMissileGoingToHit((EntityMissile) entity))
-                    {
-                        FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_RED_DOT);
-                    }
-                    else
-                    {
+                    case 1:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_YELLOW_DOT);
-                    }
-                }
-                else
-                {
-                    FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_WHITE_DOT);
+                        break;
+                    case 2:
+                        FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_RED_DOT);
+                        break;
+                    case 0:
+                    default:
+                        FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_WHITE_DOT);
+                        break;
                 }
 
                 this.drawTexturedModalRect(position.xi(), position.yi(), 0, 0, 2, 2);
 
                 // Hover Detection
-                Point minPosition = position.clone();
-                minPosition.add(-range);
-                Point maxPosition = position.clone();
-                maxPosition.add(range);
+                Point minPosition = position.add(-range);
+                Point maxPosition = position.add(range);
 
                 if (new Rectangle(minPosition, maxPosition).isWithin(this.mousePosition))
                 {
-                    this.info = entity.getName();
-
-                    if (entity instanceof EntityPlayer)
+                    if (type == 0)
                     {
-                        this.info = "\u00a71" + this.info;
+                        this.info = "Object: (" + x + "x, " + z + "z)";
                     }
-
-                    if (entity instanceof EntityMissile)
+                    else
                     {
-                        if (((EntityMissile) entity).targetPos != null)
-                        {
-                            this.info2 = "(" + ((EntityMissile) entity).targetPos.xi() + ", " + ((EntityMissile) entity).targetPos.zi() + ")";
-                        }
+                        this.info = "Missile: (" + x + "x, " + z + "z)";
                     }
                 }
             }

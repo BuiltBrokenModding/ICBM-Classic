@@ -139,7 +139,7 @@ public class BlastEnderman extends Blast
                             this.teleportTarget = new Pos(checkX, checkY, checkZ);
                         }
 
-                        this.world().playSound(entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+                        this.world().playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                         if (entity instanceof EntityPlayerMP)
                         {
@@ -159,7 +159,7 @@ public class BlastEnderman extends Blast
             }
         }
 
-        this.world().playSound(this.position.x(), this.position.y(), this.position.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F, false);
+        this.world().playSound(null, this.position.x(), this.position.y(), this.position.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F);
 
         if (this.callCount > this.duration)
         {

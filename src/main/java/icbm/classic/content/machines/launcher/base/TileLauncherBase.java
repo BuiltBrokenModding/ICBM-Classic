@@ -192,7 +192,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         {
             return launchScreen.getCapability(capability, facing);
         }
-        return getCapability(capability, facing);
+        return super.getCapability(capability, facing);
     }
 
     @Override

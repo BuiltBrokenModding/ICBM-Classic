@@ -1,15 +1,15 @@
 package icbm.classic.content.machines.emptower;
 
-import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.IGuiTile;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
-import icbm.classic.prefab.inventory.IInventoryProvider;
-import icbm.classic.lib.network.IPacketIDReceiver;
-import icbm.classic.content.multiblock.MultiBlockHelper;
-import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.blast.BlastEMP;
+import icbm.classic.content.multiblock.MultiBlockHelper;
+import icbm.classic.lib.IGuiTile;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.prefab.inventory.ExternalInventory;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.item.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
@@ -70,27 +70,33 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
             {
                 cooldownTicks--;
             }
-            else if (world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+            else
             {
-                fire();
-            }
-
-            if (ticks % 20 == 0 && getEnergy() > 0)
-            {
-                ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getEnergy() / getEnergyBufferSize(), true);
-                sendDescPacket();
+                if (ticks % 20 == 0 && getEnergy() > 0)
+                {
+                    ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getChargePercentage(), true);
+                    sendDescPacket();
+                }
+                if (world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+                {
+                    fire();
+                }
             }
         }
         else
         {
-            double ratio = Math.min(getEnergy(), getEnergyConsumption()) / (double) getEnergyConsumption();
-            rotationDelta = (float) (ratio * ratio * 0.5);
+            rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5);
             rotation += rotationDelta;
             if (rotation > 360)
             {
                 rotation = 0;
             }
         }
+    }
+
+    public float getChargePercentage()
+    {
+        return Math.min(1, getEnergy() / (float) getEnergyConsumption());
     }
 
     @Override

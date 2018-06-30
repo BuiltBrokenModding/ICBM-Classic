@@ -15,7 +15,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
 public class CapabilityEMP
 {
     @CapabilityInject(IEMPReceiver.class)

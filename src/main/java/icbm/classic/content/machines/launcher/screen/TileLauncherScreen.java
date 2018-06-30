@@ -2,6 +2,8 @@ package icbm.classic.content.machines.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.energy.IEnergyBufferProvider;
+import icbm.classic.api.explosion.ILauncherController;
+import icbm.classic.api.explosion.LauncherType;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
@@ -16,17 +18,12 @@ import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.EnumTier;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
-import icbm.classic.api.explosion.ILauncherController;
-import icbm.classic.api.explosion.LauncherType;
 
 /**
  * This tile entity is for the screen of the missile launcher
@@ -100,12 +97,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 sendDescPacket();
             }
         }
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
-        return false;
     }
 
     @Override

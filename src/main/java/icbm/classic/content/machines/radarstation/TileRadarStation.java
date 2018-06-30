@@ -1,20 +1,20 @@
 package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.lib.network.IPacket;
 import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.IGuiTile;
-import icbm.classic.prefab.inventory.IInventoryProvider;
+import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.radar.RadarRegistry;
-import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.inventory.ExternalInventory;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.TileFrequency;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -47,6 +47,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     private List<EntityMissile> incomingMissiles = new ArrayList<EntityMissile>();
 
     ExternalInventory inventory;
+
+    protected List<Pos> guiDrawPoints = new ArrayList();
+    protected boolean updateDrawList = true;
 
     @Override
     public ExternalInventory getInventory()
@@ -119,12 +122,34 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         {
             if (checkExtract()) //TODO use a boolean on client for on/off state
             {
+                if (updateDrawList)
+                {
+                    guiDrawPoints.clear();
+                    for (int i = 0; i < detectedEntities.size(); i++)
+                    {
+                        Entity entity = detectedEntities.get(i);
+                        if (entity != null)
+                        {
+                            int type = 0;
+                            if (entity instanceof EntityMissile)
+                            {
+                                type = isMissileGoingToHit((EntityMissile) entity) ? 1 : 2;
+                            }
+                            guiDrawPoints.add(new Pos(entity.posX, entity.posZ, type));
+                        }
+                    }
+                }
+
                 //Animation
                 this.rotation += 0.08f;
                 if (this.rotation > 360)
                 {
                     this.rotation = 0;
                 }
+            }
+            else
+            {
+                guiDrawPoints.clear();
             }
         }
     }
@@ -254,7 +279,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                     this.safetyRange = data.readInt();
                     this.setFrequency(data.readInt());
 
-                    detectedEntities.clear();
+                    this.updateDrawList = true;
+
+                    detectedEntities.clear(); //TODO recode so we are not getting entities client side
                     int entityListSize = data.readInt();
                     for (int i = 0; i < entityListSize; i++)
                     {
