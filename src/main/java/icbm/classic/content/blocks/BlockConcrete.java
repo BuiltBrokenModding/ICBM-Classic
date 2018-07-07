@@ -32,7 +32,6 @@ public class BlockConcrete extends Block
         this.setUnlocalizedName(ICBMClassic.PREFIX + "concrete");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(10);
-        this.setResistance(50);
     }
 
     @Override
@@ -69,16 +68,17 @@ public class BlockConcrete extends Block
     public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion)
     {
         IBlockState blockState = world.getBlockState(pos);
-    /*
-        switch (metadata)
+
+        switch (blockState.getValue(TYPE_PROP))
         {
-            case 1:
+            case COMPACT:
                 return 38;
-            case 2:
+            case REINFORCED:
                 return 48;
+            default:
+            case NORMAL:
+                return 28;
         }
-*/
-        return this.getExplosionResistance(exploder);
     }
 
     @Override
