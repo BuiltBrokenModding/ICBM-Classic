@@ -2,10 +2,10 @@ package icbm.classic.content.multiblock;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.tile.multiblock.IMultiTile;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,13 +19,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -83,15 +77,24 @@ public class BlockMultiblock extends BlockContainer
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
     {
-        IMultiTile multiblock = getTile(world, pos);
+        final IMultiTile multiblock = getTile(world, pos);
         if (multiblock != null && multiblock.getHost() instanceof TileEntity)
         {
+            //Get tile
             TileEntity tileEntity = ((TileEntity) multiblock.getHost());
-            IBlockState block = tileEntity.getWorld().getBlockState(tileEntity.getPos());
-            ItemStack stack = block.getBlock().getPickBlock(block, target, tileEntity.getWorld(), tileEntity.getPos(), player);
+
+            //Get state
+            IBlockState blockState = tileEntity.getWorld().getBlockState(tileEntity.getPos());
+            Block block = blockState.getBlock();
+
+            //Get actual block state
+            blockState = block.getActualState(blockState, world, pos);
+
+            //Get stack from state
+            ItemStack stack = block.getPickBlock(blockState, target, world, tileEntity.getPos(), player);
             return stack;
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override
