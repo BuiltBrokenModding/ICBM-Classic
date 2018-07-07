@@ -27,6 +27,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.Item;
@@ -39,6 +40,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collections;
 import java.util.Map;
 
 @SideOnly(Side.CLIENT)
@@ -82,6 +84,8 @@ public class ClientProxy extends CommonProxy
         registerLauncherPart(ICBMClassic.blockLaunchSupport);
         registerLauncherPart(ICBMClassic.blockLaunchScreen);
 
+        registerMultiBlockRenders();
+
         //items
         newItemModel(ICBMClassic.itemPoisonPowder, 0, "inventory", "");
         newItemModel(ICBMClassic.itemSulfurDust, 0, "inventory", "");
@@ -120,6 +124,13 @@ public class ClientProxy extends CommonProxy
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new TESRLauncherFrame());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherScreen.class, new TESRLauncherScreen());
+    }
+
+    protected void registerMultiBlockRenders()
+    {
+        //Disable rendering of the block, Fixes JSON errors as well
+        ModelLoader.setCustomStateMapper(ICBMClassic.multiBlock, block -> Collections.emptyMap());
+        ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.multiBlock));
     }
 
     protected void registerExBlockRenders()

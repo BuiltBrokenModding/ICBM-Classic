@@ -223,16 +223,4 @@ public class BlockMultiblock extends BlockContainer
         }
         return null;
     }
-
-    //Fix for multi-block having no model but still wanting a JSON file
-    @Mod.EventBusSubscriber(value = Side.CLIENT, modid = ICBMClassic.DOMAIN)
-    public static class ClientLoader
-    {
-        @SubscribeEvent
-        public static void registerModels(ModelRegistryEvent event)
-        {
-            ModelLoader.setCustomStateMapper(ICBMClassic.multiBlock, block -> Collections.emptyMap());
-            ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.multiBlock));
-        }
-    }
 }
