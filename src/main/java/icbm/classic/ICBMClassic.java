@@ -51,6 +51,7 @@ import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -352,11 +353,18 @@ public final class ICBMClassic
             //Steel clump -> Steel ingot
             GameRegistry.addSmelting(new ItemStack(itemIngotClump, 1, 0), new ItemStack(itemIngot, 1, 0), 0.1f);
         }
+
+        if(ConfigItems.ENABLE_PLATES_ITEMS)
+        {
+            //Fix for removing recipe of plate
+            GameRegistry.addSmelting(itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
+        }
     }
 
     @SubscribeEvent
     public static void registerLoot(LootTableLoadEvent event)
     {
+        ///setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/simple_dungeon"}
         final String VANILLA_LOOT_POOL_ID = "main";
         if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) || event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON))
         {
@@ -372,7 +380,6 @@ public final class ICBMClassic
                     }
                     if (ConfigItems.ENABLE_PLATES_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.iron", itemPlate.getStack("iron", 7), 25, 5));
                         lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.steel", itemPlate.getStack("steel", 5), 30, 3));
                     }
                     if (ConfigItems.ENABLE_WIRES_ITEMS)
