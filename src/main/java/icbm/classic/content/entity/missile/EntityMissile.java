@@ -1,6 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.sun.media.jfxmedia.logging.Logger;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IExplosiveContainer;
@@ -26,11 +27,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Console;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -78,7 +82,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public Pos motionVector = new Pos();
 
-    private double lockHeight = 3;
+    public double lockHeight = 3;
+
+    public boolean wasSimulated = false;
 
     // Used for the rocket launcher preventing the players from killing themselves.
     private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
@@ -86,6 +92,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public NBTTagCompound nbtData = new NBTTagCompound();
 
     public IEMPReceiver capabilityEMP;
+
+    private ForgeChunkManager.Ticket chunkLoadTicket;
+    private ChunkPos currentLoadedChunk;
+    private ChunkPos oldloadedChunk;
 
     public EntityMissile(World w)
     {
@@ -253,6 +263,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
                 // Acceleration
                 this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
+
             }
             else if (missileType.movesDirectly)
             {
@@ -266,6 +277,19 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         //this.dataWatcher.addObject(16, -1);
         //this.dataWatcher.addObject(17, 0);
+        /*ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE,null);
+        chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE,this.world, ForgeChunkManager.Type.NORMAL);
+        if (chunkLoadTicket != null) // if we are allowed to load chunks
+        {
+
+            currentLoadedChunk = new ChunkPos((int)this.posX>>4,(int)this.posZ>>4);
+            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+            ICBMClassic.logger().warn("(Init) Forced chunk at: "+currentLoadedChunk.toString());
+        }
+        else
+        {
+            ICBMClassic.logger().warn("Unable to receive chunkloading ticket. You could try to increase the maximum loaded chunks for ICBM.");
+        }*/
     }
 
     @Override
@@ -281,9 +305,33 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             if (this.ticksInAir >= 0)
             {
-                if (this.missileType == MissileFlightType.PAD_LAUNCHER)
-                {
+                if (this.missileType == MissileFlightType.PAD_LAUNCHER) {
+
+                   /*  if (chunkLoadTicket != null) // if we are allowed to load chunks
+                    {
+//                        if (oldloadedChunk != null && (oldloadedChunk.getXStart() > this.x() || oldloadedChunk.getXEnd() < this.x())
+//                                                   && (oldloadedChunk.getZStart() > this.z() || oldloadedChunk.getZEnd() < this.z()))
+//                        {
+//                            ForgeChunkManager.unforceChunk(chunkLoadTicket, oldloadedChunk);
+//                            ICBMClassic.logger().warn("Unforced chunk at: "+oldloadedChunk.toString());
+//                            oldloadedChunk = null;
+//                        }
+
+                        // load chunks
+                       ChunkPos nextChunk = new ChunkPos((int) (this.posX + this.motionX)>>4, (int) (this.posZ + this.motionZ)>>4);
+                        //ICBMClassic.logger().warn("Speed: X:"+this.motionX+" Z:" +this.motionZ);
+                        if (nextChunk.x != currentLoadedChunk.x || nextChunk.z != currentLoadedChunk.z) { // next chunk is a different one. lets load a new chunk and mark the current one for unloading
+                            oldloadedChunk = currentLoadedChunk;
+
+                            currentLoadedChunk = nextChunk;
+                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+                            ICBMClassic.logger().warn("Forced chunk at: "+currentLoadedChunk.toString());
+                        }
+                    }
+                    ICBMClassic.logger().warn("Speed: y" +this.motionY + "Pos y" +this.y() + "Est next y" +(this.y() + this.motionY));*/
                     // Start the launch
+
+
                     if (this.lockHeight > 0)
                     {
                         this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2);
@@ -304,7 +352,19 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         // Look at the next point
                         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
                     }
+
+
+
+                    if (targetPos.distance(launcherPos)>50 && !wasSimulated && this.ticksInAir > 20*5) // 5 seconds
+                    {
+                        ICBMClassic.logger().info("Simulating missile.");
+                        ICBMClassic.missileSimulationHandler.AddMissile(this);
+                        this.setDead();
+                    }
+
                 }
+
+                ICBMClassic.logger().info("x/y/z: "+this.posX+"/"+this.posY+"/"+this.posZ);
             }
             else
             {
