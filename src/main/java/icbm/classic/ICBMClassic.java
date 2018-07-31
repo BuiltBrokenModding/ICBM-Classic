@@ -5,6 +5,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.MissileSimulationHandler;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
@@ -67,6 +68,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -181,6 +183,8 @@ public final class ICBMClassic
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
+    public static MissileSimulationHandler missileSimulationHandler;
+
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -406,6 +410,18 @@ public final class ICBMClassic
                     lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(itemSulfurDust, 10, 0), 2, 0));
                 }
             }
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onWorldLoad(WorldEvent.Load event)
+    {
+        if (!event.getWorld().isRemote) // if server
+        {
+            missileSimulationHandler = new MissileSimulationHandler(event.getWorld().getWorldInfo().getWorldName());
+            missileSimulationHandler.handlerThread.start();
+            ICBMClassic.logger().info("Missile Simulation Handler Started");
         }
     }
 
