@@ -4,8 +4,6 @@ import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.missile.EntityMissile;
-import icbm.classic.content.missile.MissileSimulationHandler;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
@@ -23,6 +21,8 @@ import icbm.classic.content.machines.launcher.screen.BlockLaunchScreen;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
+import icbm.classic.content.missile.EntityMissile;
+import icbm.classic.content.missile.MissileSimulationHandler;
 import icbm.classic.content.multiblock.BlockMultiblock;
 import icbm.classic.content.multiblock.TileMulti;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -358,7 +358,7 @@ public final class ICBMClassic
             GameRegistry.addSmelting(new ItemStack(itemIngotClump, 1, 0), new ItemStack(itemIngot, 1, 0), 0.1f);
         }
 
-        if(ConfigItems.ENABLE_PLATES_ITEMS)
+        if (ConfigItems.ENABLE_PLATES_ITEMS)
         {
             //Fix for removing recipe of plate
             GameRegistry.addSmelting(itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
