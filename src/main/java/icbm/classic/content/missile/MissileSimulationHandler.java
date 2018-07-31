@@ -1,10 +1,7 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.missile;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.jlib.data.vector.Pos3D;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.transform.vector.Pos;
 import javafx.util.Pair;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;

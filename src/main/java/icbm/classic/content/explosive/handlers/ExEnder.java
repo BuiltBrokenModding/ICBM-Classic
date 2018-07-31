@@ -5,7 +5,7 @@ import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
 import icbm.classic.prefab.tile.EnumTier;

@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRotatable;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

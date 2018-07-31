@@ -2,7 +2,7 @@ package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.lib.network.IPacket;

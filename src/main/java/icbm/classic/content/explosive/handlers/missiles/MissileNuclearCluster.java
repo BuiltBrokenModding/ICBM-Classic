@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.handlers.missiles;
 
 import icbm.classic.config.ConfigMissile;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastNuclear;
 import icbm.classic.prefab.tile.EnumTier;
