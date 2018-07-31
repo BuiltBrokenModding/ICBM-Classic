@@ -1,6 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.jlib.data.vector.Pos3D;
 import com.sun.media.jfxmedia.logging.Logger;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IEMPReceiver;
@@ -25,9 +26,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
@@ -37,8 +40,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Console;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 /** @Author - Calclavia */
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IExplosiveContainer, IMissile
@@ -93,9 +95,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public IEMPReceiver capabilityEMP;
 
-    private ForgeChunkManager.Ticket chunkLoadTicket;
-    private ChunkPos currentLoadedChunk;
-    private ChunkPos oldloadedChunk;
+    final int maxPreLaunchSmokeTimer = 50;
+    public int preLaunchSmokeTimer = maxPreLaunchSmokeTimer;
+    public int launcherHasAirBelow = -1;
+
 
     public EntityMissile(World w)
     {
@@ -277,19 +280,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         //this.dataWatcher.addObject(16, -1);
         //this.dataWatcher.addObject(17, 0);
-        /*ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE,null);
-        chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE,this.world, ForgeChunkManager.Type.NORMAL);
-        if (chunkLoadTicket != null) // if we are allowed to load chunks
-        {
-
-            currentLoadedChunk = new ChunkPos((int)this.posX>>4,(int)this.posZ>>4);
-            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-            ICBMClassic.logger().warn("(Init) Forced chunk at: "+currentLoadedChunk.toString());
-        }
-        else
-        {
-            ICBMClassic.logger().warn("Unable to receive chunkloading ticket. You could try to increase the maximum loaded chunks for ICBM.");
-        }*/
     }
 
     @Override
@@ -301,81 +291,70 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void updateMotion()
     {
-        if (!this.world.isRemote)
-        {
-            if (this.ticksInAir >= 0)
-            {
-                if (this.missileType == MissileFlightType.PAD_LAUNCHER) {
+        if(this.wasSimulated)
+            preLaunchSmokeTimer = 0;
 
-                   /*  if (chunkLoadTicket != null) // if we are allowed to load chunks
-                    {
-//                        if (oldloadedChunk != null && (oldloadedChunk.getXStart() > this.x() || oldloadedChunk.getXEnd() < this.x())
-//                                                   && (oldloadedChunk.getZStart() > this.z() || oldloadedChunk.getZEnd() < this.z()))
-//                        {
-//                            ForgeChunkManager.unforceChunk(chunkLoadTicket, oldloadedChunk);
-//                            ICBMClassic.logger().warn("Unforced chunk at: "+oldloadedChunk.toString());
-//                            oldloadedChunk = null;
-//                        }
+        if (!this.world.isRemote) {
 
-                        // load chunks
-                       ChunkPos nextChunk = new ChunkPos((int) (this.posX + this.motionX)>>4, (int) (this.posZ + this.motionZ)>>4);
-                        //ICBMClassic.logger().warn("Speed: X:"+this.motionX+" Z:" +this.motionZ);
-                        if (nextChunk.x != currentLoadedChunk.x || nextChunk.z != currentLoadedChunk.z) { // next chunk is a different one. lets load a new chunk and mark the current one for unloading
-                            oldloadedChunk = currentLoadedChunk;
-
-                            currentLoadedChunk = nextChunk;
-                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                            ICBMClassic.logger().warn("Forced chunk at: "+currentLoadedChunk.toString());
-                        }
-                    }
-                    ICBMClassic.logger().warn("Speed: y" +this.motionY + "Pos y" +this.y() + "Est next y" +(this.y() + this.motionY));*/
-                    // Start the launch
-
-
-                    if (this.lockHeight > 0)
-                    {
-                        this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2);
-                        this.motionX = 0;
-                        this.motionZ = 0;
-                        this.lockHeight -= this.motionY;
-                        if (this.lockHeight <= 0)
-                        {
-                            this.motionY = this.acceleration * (this.missileFlightTime / 2);
-                            this.motionX = this.deltaPathX / missileFlightTime;
-                            this.motionZ = this.deltaPathZ / missileFlightTime;
-                        }
-                    }
-                    else
-                    {
-                        this.motionY -= this.acceleration;
-                        this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                        // Look at the next point
-                        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-                    }
-
-
-
-                    if (targetPos.distance(launcherPos)>50 && !wasSimulated && this.ticksInAir > 20*5) // 5 seconds
-                    {
-                        ICBMClassic.logger().info("Simulating missile.");
-                        ICBMClassic.missileSimulationHandler.AddMissile(this);
-                        this.setDead();
-                    }
-
+            if (preLaunchSmokeTimer <= 0) {
+                //Start motion
+                if (ticksInAir <= 0)
+                {
+                    this.ticksInAir = 2;
                 }
 
-                ICBMClassic.logger().info("x/y/z: "+this.posX+"/"+this.posY+"/"+this.posZ);
+                if (this.ticksInAir >= 0) {
+                    if (this.missileType == MissileFlightType.PAD_LAUNCHER) {
+
+                        if (this.lockHeight > 0) {
+                            this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2f);
+                            this.motionX = 0;
+                            this.motionZ = 0;
+                            this.lockHeight -= this.motionY;
+                            if (this.lockHeight <= 0) {
+                                this.motionY = this.acceleration * (this.missileFlightTime / 2);
+                                this.motionX = this.deltaPathX / missileFlightTime;
+                                this.motionZ = this.deltaPathZ / missileFlightTime;
+                            }
+                        } else {
+                            this.motionY -= this.acceleration;
+                            this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
+                            // Look at the next point
+                            this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                        }
+
+
+                        if (targetPos.distance(launcherPos) > 50 && !wasSimulated && this.ticksInAir > 20 * 10) // 10 seconds
+                        {
+                            ICBMClassic.logger().info("Simulating missile.");
+                            ICBMClassic.missileSimulationHandler.AddMissile(this);
+                            this.setDead();
+                        }
+
+                    }
+
+                    ICBMClassic.logger().info("x/y/z: " + this.posX + "/" + this.posY + "/" + this.posZ);
+                } else {
+                    //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
+                    // Look at the next point
+                    //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                }
+                this.protectionTime--;
             }
             else
             {
-                //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                // Look at the next point
-                //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                motionY=0.015f;
+                this.lockHeight-=motionY;
+                posY = launcherPos.y()+2.2f;
+                this.prevRotationPitch = 90f;
+                this.rotationPitch = 90f;
+                spawnMissileSmoke();
+                this.ticksInAir = 0;
             }
-
-            this.spawnMissileSmoke();
-            this.protectionTime--;
         }
+        if(preLaunchSmokeTimer>0)
+            preLaunchSmokeTimer--;
+        this.spawnMissileSmoke();
         if (this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
         {
             ((Explosion) this.explosiveID.handler).update(this);
@@ -461,15 +440,21 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return height / 2 + motionY;
     }
 
+    LinkedList<Pos> lastSmokePos = new LinkedList<>();
+
     private void spawnMissileSmoke()
     {
         if (this.world.isRemote)
         {
-            /*
+            if(launcherHasAirBelow == -1)
+            {
+                BlockPos bp = new BlockPos(Math.signum(this.posX)*Math.round(Math.abs(this.posX)),this.posY-3,Math.signum(this.posZ) * Math.round(Math.abs(this.posZ)));
+                launcherHasAirBelow = world.isAirBlock(bp) ? 1 : 0;
+            }
             Pos position = new Pos((IPos3D) this);
             // The distance of the smoke relative
             // to the missile.
-            double distance = -this.daoDanGaoDu - 0.2f;
+            double distance = -1.2f;
             // The delta Y of the smoke.
             double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
             // The horizontal distance of the
@@ -478,17 +463,37 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             // The delta X and Z.
             double x = Math.sin(Math.toRadians(this.rotationYaw)) * dH;
             double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
-
             position = position.add(x, y, z);
-            this.world.spawnParticle("flame", position.x(), position.y(), position.z(), 0, 0, 0);
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            */
+
+            if(preLaunchSmokeTimer>0 && ticksInAir <= maxPreLaunchSmokeTimer) {
+                if(launcherHasAirBelow == 1) {
+                    position = position.sub(0, 2, 0);
+                    Pos velocity = new Pos(0, -1, 0).addRandom(world.rand, 0.5);
+                    for (int i = 0; i < 10; i++) {
+                        ICBMClassic.proxy.spawnSmoke(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
+                        position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+                    }
+                }
+            }
+            else
+            {
+                lastSmokePos.add(position);
+                Pos lastPos = null;
+                if (lastSmokePos.size()>5)
+                {
+                    lastPos = lastSmokePos.get(0);
+                    lastSmokePos.remove(0);
+                }
+                ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX*0.75, -this.motionY*0.75, -this.motionZ*0.75, 1, 0.75f, 0, 5, 10);
+                if (ticksInAir>5 && lastPos != null)
+                {
+                    for (int i = 0; i<10;i++)
+                    {
+                        ICBMClassic.proxy.spawnSmoke(this.world, lastPos, -this.motionX*0.5, -this.motionY*0.5, -this.motionZ*0.5, 1, 1, 1,(int) Math.max(1d,6d*(1/(1+posY/100))), 240);
+                        position.multiply(1 - 0.025 * Math.random(),1 - 0.025 * Math.random(),1 - 0.025 * Math.random());
+                    }
+                }
+            }
         }
     }
 

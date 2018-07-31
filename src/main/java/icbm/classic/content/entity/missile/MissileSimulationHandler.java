@@ -1,20 +1,15 @@
 package icbm.classic.content.entity.missile;
 
+import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.Pos3D;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.handlers.missiles.Missile;
 import icbm.classic.lib.transform.vector.Pos;
 import javafx.util.Pair;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import scala.unchecked;
 
 import java.io.InvalidObjectException;
 import java.util.*;
@@ -43,7 +38,7 @@ public class MissileSimulationHandler extends WorldSavedData{
 
     protected void AddMissile(EntityMissile missile)
     {
-        if(missile.world.isRemote)
+        if(missile.world.isRemote) // TODO add turn into log with stacktrace
         {
             throw new UncheckedExecutionException(new InvalidObjectException("Missile handler cannot be constructed Clientside!"));
         }
@@ -54,19 +49,20 @@ public class MissileSimulationHandler extends WorldSavedData{
         // copy data
         newMissile.explosiveID = missile.explosiveID;
         newMissile.launcherPos = missile.launcherPos;
+        newMissile.sourceOfProjectile = missile.sourceOfProjectile;
         newMissile.setPosition(missile.posX,missile.posY,missile.posZ);
         newMissile.lockHeight = missile.lockHeight;
         newMissile.targetPos = missile.targetPos;
         newMissile.world = missile.world;
         newMissile.ticksInAir = (int)missile.missileFlightTime - 20;
         newMissile.wasSimulated = true;
-        newMissile.motionX = speedPerSec*Math.signum(missile.targetPos.x() - missile.posX);
-        newMissile.motionZ = speedPerSec*Math.signum(missile.targetPos.z() - missile.posZ);
+        newMissile.motionX = speedPerTick *Math.signum(missile.targetPos.x() - missile.posX);
+        newMissile.motionZ = speedPerTick *Math.signum(missile.targetPos.z() - missile.posZ);
 
         missileBuffer.add(newMissile);
     }
 
-    private final int speedPerSec = 100;
+    private final int speedPerTick = 20;
     private final int unloadChunkCooldown = 60;
 
     private void SimulationLoop()
@@ -79,7 +75,8 @@ public class MissileSimulationHandler extends WorldSavedData{
                 EntityMissile missile = missileBuffer.get(i);
                 if (missile.posX == missile.targetPos.x() && missile.posZ == missile.targetPos.z()) // if missile is at the target location
                 {
-                    missile.missileType = MissileFlightType.DEAD_AIM;
+                    //missile.missileType = MissileFlightType.DEAD_AIM;
+                    missile.missileType = MissileFlightType.PAD_LAUNCHER;
                     ICBMClassic.logger().info("["+i+"] Reached target location");
                     try {
                         if (chunkLoadTicket == null) {
@@ -117,13 +114,14 @@ public class MissileSimulationHandler extends WorldSavedData{
                         ICBMClassic.logger().warn("Exception!");
                     }
 
-                    missile.posY = 125;
-                    missile.motionY = -10;
+                    missile.posY = 256;
+                    missile.motionY = -1;
                     missile.motionZ = 0;
                     missile.motionX = 0;
 
                     missile.lockHeight = 0;
-                    missile.acceleration = 40;
+                    missile.acceleration = 1;
+                    //missile.targetPos = null;
                     Launch(missile);
                     missileBuffer.remove(i);
                 }
@@ -134,7 +132,6 @@ public class MissileSimulationHandler extends WorldSavedData{
                     double nextDeltaX = Math.abs(currDeltaX - missile.motionX);
                     double currDeltaZ = Math.abs(missile.targetPos.z() - missile.posZ);
                     double nextDeltaZ = Math.abs(currDeltaZ - missile.motionZ);
-
 
                     if (nextDeltaX < currDeltaX) // lets tro to move the missile closer. if we cant then we are at the target pos.
                     {
@@ -174,7 +171,7 @@ public class MissileSimulationHandler extends WorldSavedData{
             }
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(200);
             }
             catch (InterruptedException e)
             {
@@ -187,10 +184,7 @@ public class MissileSimulationHandler extends WorldSavedData{
     {
         //Trigger launch event
         missile.launch(missile.targetPos, (int)missile.lockHeight);
-try {
-    Thread.sleep(1000);
-}
-catch (Exception e){}
+
         //Spawn entity
         missile.world().spawnEntity(missile);
     }
