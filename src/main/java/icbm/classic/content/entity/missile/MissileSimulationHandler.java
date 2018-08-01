@@ -10,6 +10,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.io.InvalidObjectException;
 import java.util.*;
@@ -17,22 +19,16 @@ import java.util.*;
 
 public class MissileSimulationHandler extends WorldSavedData{
 
-    public Thread handlerThread = null;
-    private Stack<EntityMissile> missileBuffer;
+    private LinkedList<EntityMissile> missileBuffer;
     private ForgeChunkManager.Ticket chunkLoadTicket;
-    private Stack<Pair<ChunkPos, Integer>> currentLoadedChunks;
+    private LinkedList<Pair<ChunkPos, Integer>> currentLoadedChunks;
+    private Integer simTick = 0;
 
     public MissileSimulationHandler(String mapName)
     {
         super(mapName);
-        missileBuffer = new Stack<EntityMissile>();
-        handlerThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SimulationLoop();
-            }
-        }, "ICBM-MissileSimThread");
-        currentLoadedChunks = new Stack<>();
+        missileBuffer = new LinkedList<>();
+        currentLoadedChunks = new LinkedList<>();
         ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE,null);
     }
 
@@ -56,20 +52,21 @@ public class MissileSimulationHandler extends WorldSavedData{
         newMissile.world = missile.world;
         newMissile.ticksInAir = (int)missile.missileFlightTime - 20;
         newMissile.wasSimulated = true;
-        newMissile.motionX = speedPerTick *Math.signum(missile.targetPos.x() - missile.posX);
-        newMissile.motionZ = speedPerTick *Math.signum(missile.targetPos.z() - missile.posZ);
+        newMissile.motionX = speedPerSecond *Math.signum(missile.targetPos.x() - missile.posX);
+        newMissile.motionZ = speedPerSecond *Math.signum(missile.targetPos.z() - missile.posZ);
 
         missileBuffer.add(newMissile);
     }
 
-    private final int speedPerTick = 20;
-    private final int unloadChunkCooldown = 60;
+    private final int speedPerSecond = 20; // 20 blocks per second // TODO set to 10
+    private final int unloadChunkCooldown = 60*20; // 1 minute
 
-    private void SimulationLoop()
+    public void Simulate()
     {
-        boolean doRun = true;
-        while (doRun)
+        if(simTick >= 20)
         {
+            simTick = 0;
+
             for (int i = 0; i<missileBuffer.size();i++)
             {
                 EntityMissile missile = missileBuffer.get(i);
@@ -78,40 +75,35 @@ public class MissileSimulationHandler extends WorldSavedData{
                     //missile.missileType = MissileFlightType.DEAD_AIM;
                     missile.missileType = MissileFlightType.PAD_LAUNCHER;
                     ICBMClassic.logger().info("["+i+"] Reached target location");
-                    try {
-                        if (chunkLoadTicket == null) {
-                            chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE, missile.world, ForgeChunkManager.Type.NORMAL);
-                        }
-                        if (chunkLoadTicket != null) // if we are allowed to load chunks
-                        {
-                            ChunkPos currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, (int) missile.posZ >> 4);
-                            currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                            ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                            currentLoadedChunk = new ChunkPos(1+((int) missile.posX >> 4), (int) missile.posZ >> 4);
-                            currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                            ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                            currentLoadedChunk = new ChunkPos(-1+((int) missile.posX >> 4), (int) missile.posZ >> 4);
-                            currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                            ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                            currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, 1+((int) missile.posZ >> 4));
-                            currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                            ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                            currentLoadedChunk = new ChunkPos((int) missile.posX >> 4 , -1+((int) missile.posZ >> 4));
-                            currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                            ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
 
-                            ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        } else {
-                            ICBMClassic.logger().warn("Unable to receive chunkloading ticket. You could try to increase the maximum loaded chunks for ICBM.");
-                        }
+                    if (chunkLoadTicket == null) {
+                        chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE, missile.world, ForgeChunkManager.Type.NORMAL);
                     }
-                    catch (Exception e)
+                    if (chunkLoadTicket != null) // if we are allowed to load chunks
                     {
-                        ICBMClassic.logger().warn("Exception!");
+                        ChunkPos currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, (int) missile.posZ >> 4);
+                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
+                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+                        currentLoadedChunk = new ChunkPos(1+((int) missile.posX >> 4), (int) missile.posZ >> 4);
+                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
+                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+                        currentLoadedChunk = new ChunkPos(-1+((int) missile.posX >> 4), (int) missile.posZ >> 4);
+                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
+                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, 1+((int) missile.posZ >> 4));
+                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
+                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4 , -1+((int) missile.posZ >> 4));
+                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
+                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+                    } else {
+                        ICBMClassic.logger().warn("Unable to receive chunkloading ticket. You could try to increase the maximum loaded chunks for ICBM.");
                     }
 
                     missile.posY = 256;
@@ -120,7 +112,7 @@ public class MissileSimulationHandler extends WorldSavedData{
                     missile.motionX = 0;
 
                     missile.lockHeight = 0;
-                    missile.acceleration = 1;
+                    missile.acceleration = 5;
                     //missile.targetPos = null;
                     Launch(missile);
                     missileBuffer.remove(i);
@@ -155,38 +147,30 @@ public class MissileSimulationHandler extends WorldSavedData{
             }
 
             for (int i = 0; i<currentLoadedChunks.size();i++) {
-                ChunkPos chunkPos = currentLoadedChunks.elementAt(i).getKey();
-                int waitTime = currentLoadedChunks.elementAt(i).getValue() - 1;
+                ChunkPos chunkPos = currentLoadedChunks.get(i).getKey();
+                int waitTime = currentLoadedChunks.get(i).getValue() - 1;
                 if (waitTime <= 0)
                 {
                     ForgeChunkManager.unforceChunk(chunkLoadTicket,chunkPos);
-                    currentLoadedChunks.removeElementAt(i);
+                    currentLoadedChunks.remove(i);
                     ICBMClassic.logger().info("Unforced chunk");
                 }
                 else
                 {
-                    currentLoadedChunks.setElementAt(new Pair(chunkPos,waitTime),i);
+                    currentLoadedChunks.set(i, new Pair(chunkPos,waitTime));
                 }
-
-            }
-
-            try {
-                Thread.sleep(200);
-            }
-            catch (InterruptedException e)
-            {
-                doRun = false;
             }
         }
+        simTick++;
     }
 
     private void Launch(EntityMissile missile)
     {
-        //Trigger launch event
-        missile.launch(missile.targetPos, (int)missile.lockHeight);
-
         //Spawn entity
         missile.world().spawnEntity(missile);
+
+        //Trigger launch event
+        missile.launch(missile.targetPos, (int)missile.lockHeight);
     }
 
     @Override
@@ -194,10 +178,24 @@ public class MissileSimulationHandler extends WorldSavedData{
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        handlerThread.interrupt();
-        missileBuffer.clear();
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         return null;
     }
 
+    // save data and then clear buffers
+    public void destroy() {
+        save();
+        this.missileBuffer.clear();
+
+        for (Pair<ChunkPos,Integer> chunkPair : currentLoadedChunks) {  // unforca all chunks
+            ForgeChunkManager.unforceChunk(chunkLoadTicket,chunkPair.getKey());
+        }
+        currentLoadedChunks.clear();
+        chunkLoadTicket = null;
+    }
+
+
+    public void save() {
+        // TODO add saving
+    }
 }
