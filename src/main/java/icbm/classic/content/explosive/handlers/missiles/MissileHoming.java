@@ -1,8 +1,8 @@
 package icbm.classic.content.explosive.handlers.missiles;
 
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.missile.EntityMissile;
+import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.items.ItemTracker;
 import icbm.classic.prefab.tile.EnumTier;

@@ -1,7 +1,7 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.prefab.inventory.IInventoryProvider;
@@ -13,7 +13,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.content.items.ItemMissile;

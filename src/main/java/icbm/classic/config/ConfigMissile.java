@@ -1,7 +1,7 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import net.minecraftforge.common.config.Config;
 
 /**

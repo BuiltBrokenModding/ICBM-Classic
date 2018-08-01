@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.handlers.missiles;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;

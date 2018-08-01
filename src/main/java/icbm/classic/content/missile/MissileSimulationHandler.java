@@ -1,4 +1,4 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.Pos3D;
@@ -17,7 +17,8 @@ import java.io.InvalidObjectException;
 import java.util.*;
 
 
-public class MissileSimulationHandler extends WorldSavedData{
+public class MissileSimulationHandler extends WorldSavedData
+{
 
     private LinkedList<EntityMissile> missileBuffer;
     private ForgeChunkManager.Ticket chunkLoadTicket;
@@ -46,11 +47,11 @@ public class MissileSimulationHandler extends WorldSavedData{
         newMissile.explosiveID = missile.explosiveID;
         newMissile.launcherPos = missile.launcherPos;
         newMissile.sourceOfProjectile = missile.sourceOfProjectile;
-        newMissile.setPosition(missile.posX,missile.posY,missile.posZ);
+        newMissile.setPosition(missile.posX, missile.posY, missile.posZ);
         newMissile.lockHeight = missile.lockHeight;
         newMissile.targetPos = missile.targetPos;
         newMissile.world = missile.world;
-        newMissile.ticksInAir = (int)missile.missileFlightTime - 20;
+        newMissile.ticksInAir = (int) missile.missileFlightTime - 20;
         newMissile.wasSimulated = true;
         newMissile.motionX = speedPerSecond *Math.signum(missile.targetPos.x() - missile.posX);
         newMissile.motionZ = speedPerSecond *Math.signum(missile.targetPos.z() - missile.posZ);
@@ -63,7 +64,8 @@ public class MissileSimulationHandler extends WorldSavedData{
 
     public void Simulate()
     {
-        if(simTick >= 20)
+        boolean doRun = true;
+        while (doRun)
         {
             simTick = 0;
 
@@ -119,7 +121,7 @@ public class MissileSimulationHandler extends WorldSavedData{
                 }
                 else
                 {
-                    ICBMClassic.logger().info("["+i+"] Adjusting target x, z. Current Delta: "+(missile.targetPos.x() - missile.posX)+", "+(missile.targetPos.z() - missile.posZ));
+                    ICBMClassic.logger().info("[" + i + "] Adjusting target x, z. Current Delta: " + (missile.targetPos.x() - missile.posX) + ", " + (missile.targetPos.z() - missile.posZ));
                     double currDeltaX = Math.abs(missile.targetPos.x() - missile.posX);
                     double nextDeltaX = Math.abs(currDeltaX - missile.motionX);
                     double currDeltaZ = Math.abs(missile.targetPos.z() - missile.posZ);
@@ -132,7 +134,7 @@ public class MissileSimulationHandler extends WorldSavedData{
                     else
                     {
                         missile.posX = missile.targetPos.x();
-                        ICBMClassic.logger().info("["+i+"] Reached target x");
+                        ICBMClassic.logger().info("[" + i + "] Reached target x");
                     }
                     if (nextDeltaZ < currDeltaZ)
                     {
@@ -141,17 +143,18 @@ public class MissileSimulationHandler extends WorldSavedData{
                     else
                     {
                         missile.posZ = missile.targetPos.z();
-                        ICBMClassic.logger().info("["+i+"] Reached target z");
+                        ICBMClassic.logger().info("[" + i + "] Reached target z");
                     }
                 }
             }
 
-            for (int i = 0; i<currentLoadedChunks.size();i++) {
+            for (int i = 0; i<currentLoadedChunks.size();i++)
+            {
                 ChunkPos chunkPos = currentLoadedChunks.get(i).getKey();
                 int waitTime = currentLoadedChunks.get(i).getValue() - 1;
                 if (waitTime <= 0)
                 {
-                    ForgeChunkManager.unforceChunk(chunkLoadTicket,chunkPos);
+                    ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPos);
                     currentLoadedChunks.remove(i);
                     ICBMClassic.logger().info("Unforced chunk");
                 }
@@ -166,19 +169,21 @@ public class MissileSimulationHandler extends WorldSavedData{
 
     private void Launch(EntityMissile missile)
     {
+        //Trigger launch event
+        missile.launch(missile.targetPos, (int) missile.lockHeight);
+
         //Spawn entity
         missile.world().spawnEntity(missile);
-
-        //Trigger launch event
-        missile.launch(missile.targetPos, (int)missile.lockHeight);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(NBTTagCompound nbt)
+    {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+    {
         return null;
     }
 
