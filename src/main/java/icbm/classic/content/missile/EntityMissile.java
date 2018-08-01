@@ -340,7 +340,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         if (targetPos.distance(launcherPos) > 50 && !wasSimulated && this.ticksInAir > 20 * 10) // 10 seconds
                         {
                             ICBMClassic.logger().info("Simulating missile.");
-                            ICBMClassic.missileSimulationHandler.AddMissile(this);
+                            ICBMClassic.missileSimulationHandlers.get(world.provider.getDimension()).AddMissile(this);
                             this.setDead();
                         }
 

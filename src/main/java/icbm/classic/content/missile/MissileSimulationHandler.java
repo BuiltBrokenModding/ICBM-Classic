@@ -17,25 +17,22 @@ import java.io.InvalidObjectException;
 import java.util.*;
 
 
-public class MissileSimulationHandler extends WorldSavedData
-{
+public class MissileSimulationHandler extends WorldSavedData {
 
     private LinkedList<EntityMissile> missileBuffer;
     private ForgeChunkManager.Ticket chunkLoadTicket;
     private LinkedList<Pair<ChunkPos, Integer>> currentLoadedChunks;
     private Integer simTick = 0;
 
-    public MissileSimulationHandler(String mapName)
-    {
+    public MissileSimulationHandler(String mapName) {
         super(mapName);
         missileBuffer = new LinkedList<>();
         currentLoadedChunks = new LinkedList<>();
-        ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE,null);
+        ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE, null);
     }
 
-    protected void AddMissile(EntityMissile missile)
-    {
-        if(missile.world.isRemote) // TODO add turn into log with stacktrace
+    protected void AddMissile(EntityMissile missile) {
+        if (missile.world.isRemote) // TODO add turn into log with stacktrace
         {
             throw new UncheckedExecutionException(new InvalidObjectException("Missile handler cannot be constructed Clientside!"));
         }
@@ -53,30 +50,27 @@ public class MissileSimulationHandler extends WorldSavedData
         newMissile.world = missile.world;
         newMissile.ticksInAir = (int) missile.missileFlightTime - 20;
         newMissile.wasSimulated = true;
-        newMissile.motionX = speedPerSecond *Math.signum(missile.targetPos.x() - missile.posX);
-        newMissile.motionZ = speedPerSecond *Math.signum(missile.targetPos.z() - missile.posZ);
+        newMissile.motionX = speedPerSecond * Math.signum(missile.targetPos.x() - missile.posX);
+        newMissile.motionZ = speedPerSecond * Math.signum(missile.targetPos.z() - missile.posZ);
 
         missileBuffer.add(newMissile);
     }
 
     private final int speedPerSecond = 20; // 20 blocks per second // TODO set to 10
-    private final int unloadChunkCooldown = 60*20; // 1 minute
+    private final int unloadChunkCooldown = 60 * 20; // 1 minute
 
-    public void Simulate()
-    {
-        boolean doRun = true;
-        while (doRun)
+    public void Simulate() {
+        if(simTick >= 20)
         {
             simTick = 0;
 
-            for (int i = 0; i<missileBuffer.size();i++)
-            {
+            for (int i = 0; i < missileBuffer.size(); i++) {
                 EntityMissile missile = missileBuffer.get(i);
                 if (missile.posX == missile.targetPos.x() && missile.posZ == missile.targetPos.z()) // if missile is at the target location
                 {
                     //missile.missileType = MissileFlightType.DEAD_AIM;
                     missile.missileType = MissileFlightType.PAD_LAUNCHER;
-                    ICBMClassic.logger().info("["+i+"] Reached target location");
+                    ICBMClassic.logger().info("[" + i + "] Reached target location");
 
                     if (chunkLoadTicket == null) {
                         chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE, missile.world, ForgeChunkManager.Type.NORMAL);
@@ -87,19 +81,19 @@ public class MissileSimulationHandler extends WorldSavedData
                         currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
                         ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
                         ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos(1+((int) missile.posX >> 4), (int) missile.posZ >> 4);
+                        currentLoadedChunk = new ChunkPos(1 + ((int) missile.posX >> 4), (int) missile.posZ >> 4);
                         currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
                         ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
                         ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos(-1+((int) missile.posX >> 4), (int) missile.posZ >> 4);
+                        currentLoadedChunk = new ChunkPos(-1 + ((int) missile.posX >> 4), (int) missile.posZ >> 4);
                         currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
                         ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
                         ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, 1+((int) missile.posZ >> 4));
+                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, 1 + ((int) missile.posZ >> 4));
                         currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
                         ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
                         ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4 , -1+((int) missile.posZ >> 4));
+                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, -1 + ((int) missile.posZ >> 4));
                         currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
                         ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
 
@@ -118,9 +112,7 @@ public class MissileSimulationHandler extends WorldSavedData
                     //missile.targetPos = null;
                     Launch(missile);
                     missileBuffer.remove(i);
-                }
-                else
-                {
+                } else {
                     ICBMClassic.logger().info("[" + i + "] Adjusting target x, z. Current Delta: " + (missile.targetPos.x() - missile.posX) + ", " + (missile.targetPos.z() - missile.posZ));
                     double currDeltaX = Math.abs(missile.targetPos.x() - missile.posX);
                     double nextDeltaX = Math.abs(currDeltaX - missile.motionX);
@@ -130,37 +122,28 @@ public class MissileSimulationHandler extends WorldSavedData
                     if (nextDeltaX < currDeltaX) // lets tro to move the missile closer. if we cant then we are at the target pos.
                     {
                         missile.posX += missile.motionX;
-                    }
-                    else
-                    {
+                    } else {
                         missile.posX = missile.targetPos.x();
                         ICBMClassic.logger().info("[" + i + "] Reached target x");
                     }
-                    if (nextDeltaZ < currDeltaZ)
-                    {
+                    if (nextDeltaZ < currDeltaZ) {
                         missile.posZ += missile.motionZ;
-                    }
-                    else
-                    {
+                    } else {
                         missile.posZ = missile.targetPos.z();
                         ICBMClassic.logger().info("[" + i + "] Reached target z");
                     }
                 }
             }
 
-            for (int i = 0; i<currentLoadedChunks.size();i++)
-            {
+            for (int i = 0; i < currentLoadedChunks.size(); i++) {
                 ChunkPos chunkPos = currentLoadedChunks.get(i).getKey();
                 int waitTime = currentLoadedChunks.get(i).getValue() - 1;
-                if (waitTime <= 0)
-                {
+                if (waitTime <= 0) {
                     ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPos);
                     currentLoadedChunks.remove(i);
                     ICBMClassic.logger().info("Unforced chunk");
-                }
-                else
-                {
-                    currentLoadedChunks.set(i, new Pair(chunkPos,waitTime));
+                } else {
+                    currentLoadedChunks.set(i, new Pair(chunkPos, waitTime));
                 }
             }
         }
