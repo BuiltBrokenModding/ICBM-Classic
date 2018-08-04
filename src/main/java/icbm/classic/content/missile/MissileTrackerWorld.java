@@ -62,7 +62,7 @@ public class MissileTrackerWorld extends WorldSavedData
             double dz = speedPerSecond * Math.signum(missile.targetPos.z() - missile.posZ);
             double dst = Math.sqrt(dx * dx + dz * dz);
 
-            mtd.ticksLeftToTarget = (int) Math.round(dst / (speedPerSecond / 20d));
+            mtd.ticksLeftToTarget = (int) Math.round(dst / speedPerSecond);
 
             /*
             // create copy
@@ -140,6 +140,7 @@ public class MissileTrackerWorld extends WorldSavedData
                 }
                 else
                 {
+                    ICBMClassic.logger().warn("Seconds left to target: "+ missile.ticksLeftToTarget);
                     missile.ticksLeftToTarget--;
                 }
             }
