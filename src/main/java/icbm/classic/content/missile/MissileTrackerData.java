@@ -1,29 +1,45 @@
 package icbm.classic.content.missile;
 
-import com.builtbroken.jlib.data.vector.Pos3D;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class MissileTrackerData
 {
+    private static final String NBT_TICKS = "ticks";
+    private static final String NBT_TARGET = "target";
+    private static final String NBT_MISSILE_DATA = "data";
+
+    public int preLoadChunkTimer;
+
     public int ticksLeftToTarget;
-    public Pos3D targetPos;
-    public Explosives explosiveID;
+    public Pos targetPos;
+
+    public NBTTagCompound missileData;
+
+    public MissileTrackerData(EntityMissile missile)
+    {
+        targetPos = missile.targetPos;
+        missileData = missile.writeToNBT(new NBTTagCompound());
+        missileData.removeTag("Pos");
+    }
+
+    public MissileTrackerData(NBTTagCompound tagCompound)
+    {
+        readFromNBT(tagCompound);
+    }
 
     public void readFromNBT(NBTTagCompound nbt)
     {
-        ticksLeftToTarget = nbt.getInteger("ticksLeftToTarget");
-        int[] pos = nbt.getIntArray("targetPosX");
-        targetPos = new Pos(pos[0], pos[1], pos[2]);
-        explosiveID = Explosives.values()[nbt.getInteger("explosiveID")];
+        ticksLeftToTarget = nbt.getInteger(NBT_TICKS);
+        targetPos = new Pos(nbt.getCompoundTag(NBT_TARGET));
+        missileData = nbt.getCompoundTag(NBT_MISSILE_DATA);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("ticksLeftToTarget",ticksLeftToTarget);
-        nbt.setIntArray("targetPosX", new int[]{targetPos.xi(), targetPos.yi(), targetPos.zi()});
-        nbt.setInteger("explosiveID",explosiveID.ordinal());
+        nbt.setInteger(NBT_TICKS, ticksLeftToTarget);
+        nbt.setTag(NBT_TARGET, targetPos.writeNBT(new NBTTagCompound()));
+        nbt.setTag(NBT_MISSILE_DATA, missileData);
         return nbt;
     }
 }

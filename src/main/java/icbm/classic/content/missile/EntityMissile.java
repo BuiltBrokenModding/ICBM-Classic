@@ -1,14 +1,11 @@
 package icbm.classic.content.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.jlib.data.vector.Pos3D;
-import com.sun.media.jfxmedia.logging.Logger;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IExplosiveContainer;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.IMissile;
-import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
@@ -27,18 +24,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.Console;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -340,10 +332,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         if (launcherPos != null && targetPos.distance(launcherPos) > 50 && !wasSimulated && this.ticksInAir > 20 * 10) // 10 seconds
                         {
                             ICBMClassic.logger().info("Simulating missile.");
-                            ICBMClassic.missileSimulationHandlers.get(world.provider.getDimension()).AddMissile(this);
-                            this.setDead();
+                            MissileTrackerHandler.simulateMissile(this);
                         }
-
                     }
 
                     ICBMClassic.logger().info("x/y/z: " + this.posX + "/" + this.posY + "/" + this.posZ);

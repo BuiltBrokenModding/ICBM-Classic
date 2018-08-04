@@ -5,7 +5,6 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.handlers.missiles.Missile;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
@@ -23,7 +22,6 @@ import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
 import icbm.classic.content.missile.EntityMissile;
-import icbm.classic.content.missile.MissileSimulationHandler;
 import icbm.classic.content.multiblock.BlockMultiblock;
 import icbm.classic.content.multiblock.TileMulti;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -69,14 +67,12 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -86,7 +82,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -186,8 +181,6 @@ public final class ICBMClassic
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
-    public static HashMap<Integer, MissileSimulationHandler> missileSimulationHandlers;
-
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -415,80 +408,6 @@ public final class ICBMClassic
             }
         }
     }
-
-
-    @SubscribeEvent
-    public static void onWorldLoad(WorldEvent.Load event) // used to setup new missile simulation handlers for each dimension
-    {
-        if (!event.getWorld().isRemote) // if server
-        {
-            if (missileSimulationHandlers == null)
-            {
-                missileSimulationHandlers = new HashMap<>();
-            }
-
-            int dimId = event.getWorld().provider.getDimension();   // if there is no missileSimulationHandler registered for the current dimension then register it.
-            if(!missileSimulationHandlers.containsKey(dimId))
-            {
-                MissileSimulationHandler msh = new MissileSimulationHandler("ICBM_MSH_"+event.getWorld().provider.getDimension(), event.getWorld());
-
-                ICBMClassic.logger().info("Missile Simulation Handler started for Dim " + dimId);
-                missileSimulationHandlers.put(dimId,msh);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onWorldUnload(WorldEvent.Unload event) // used to destroy existing handlers on unload
-    {
-        if (!event.getWorld().isRemote) // if server
-        {
-            int dimId = event.getWorld().provider.getDimension();   // if there is a missileSimulationHandler registered for the current dimension then destroy it.
-            if(missileSimulationHandlers.containsKey(dimId))
-            {
-                missileSimulationHandlers.get(dimId).destroy();
-
-                ICBMClassic.logger().info("Missile Simulation Handler stopped for Dim " + dimId);
-                missileSimulationHandlers.remove(dimId);
-            }
-            else
-            {
-                ICBMClassic.logger().error("World "+dimId+" does not have a missileSimulationHandler registered on world unload!");
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onWorldSave(WorldEvent.Save event) // used to let handlers save when the world is saved
-    {
-        if (!event.getWorld().isRemote) // if server
-        {
-            int dimId = event.getWorld().provider.getDimension();   // if there is a missileSimulationHandler registered for the current dimension then destroy it.
-            if(missileSimulationHandlers.containsKey(dimId))
-            {
-                missileSimulationHandlers.get(dimId).save();
-            }
-            else
-            {
-                ICBMClassic.logger().error("World "+dimId+" does not have a missileSimulationHandler registered on save!");
-            }
-        }
-    }
-
-
-    @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent event)
-    {
-        if (!event.world.isRemote) // if server
-        {
-            int dimId = event.world.provider.getDimension();   // if there is a missileSimulationHandler registered for the current dimension then destroy it.
-            if(missileSimulationHandlers.containsKey(dimId))
-            {
-                missileSimulationHandlers.get(dimId).Simulate();
-            }
-        }
-    }
-
 
 
     @Mod.EventHandler
