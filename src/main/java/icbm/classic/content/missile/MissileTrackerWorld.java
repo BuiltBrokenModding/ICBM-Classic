@@ -191,7 +191,9 @@ public class MissileTrackerWorld extends WorldSavedData
 
         // create entity
         missile.missileType = MissileFlightType.PAD_LAUNCHER;
-        missile.posY = 256;
+        missile.posY = 250;
+        missile.posX = mtd.targetPos.x();
+        missile.posZ = mtd.targetPos.z();
         missile.motionY = -1;
         missile.motionZ = 0;
         missile.motionX = 0;
@@ -231,13 +233,13 @@ public class MissileTrackerWorld extends WorldSavedData
             if (currentLoadedChunks.get(i).getKey() == chunkPos)
             {
                 currentLoadedChunks.set(i, new Pair(chunkPos, forceTime));
-                ICBMClassic.logger().warn("(Init) Forced chunk at: " + chunkPos.toString());
+                ICBMClassic.logger().warn("(Init) Re-Forced chunk at: " + chunkPos.toString());
                 return;
             }
         }
         currentLoadedChunks.add(new Pair(chunkPos, forceTime));
         ForgeChunkManager.forceChunk(ticket, chunkPos);
-        ICBMClassic.logger().warn("(Init) Re-forced chunk at: " + chunkPos.toString());
+        ICBMClassic.logger().warn("(Init) Forced chunk at: " + chunkPos.toString());
     }
 
     @Override
