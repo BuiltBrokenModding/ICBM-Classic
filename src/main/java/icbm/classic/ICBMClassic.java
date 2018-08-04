@@ -430,7 +430,7 @@ public final class ICBMClassic
             int dimId = event.getWorld().provider.getDimension();   // if there is no missileSimulationHandler registered for the current dimension then register it.
             if(!missileSimulationHandlers.containsKey(dimId))
             {
-                MissileSimulationHandler msh = new MissileSimulationHandler(event.getWorld().getWorldInfo().getWorldName());
+                MissileSimulationHandler msh = new MissileSimulationHandler("ICBM_MSH_"+event.getWorld().provider.getDimension(), event.getWorld());
 
                 ICBMClassic.logger().info("Missile Simulation Handler started for Dim " + dimId);
                 missileSimulationHandlers.put(dimId,msh);
