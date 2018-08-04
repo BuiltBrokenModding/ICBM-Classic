@@ -8,8 +8,10 @@ import icbm.classic.lib.transform.vector.Pos;
 import javafx.util.Pair;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -22,12 +24,14 @@ public class MissileSimulationHandler extends WorldSavedData {
     private LinkedList<EntityMissile> missileBuffer;
     private ForgeChunkManager.Ticket chunkLoadTicket;
     private LinkedList<Pair<ChunkPos, Integer>> currentLoadedChunks;
+    private LinkedList<Pair<EntityMissile, Integer>> queuedMissileSpawns;
     private Integer simTick = 0;
 
     public MissileSimulationHandler(String mapName) {
         super(mapName);
         missileBuffer = new LinkedList<>();
         currentLoadedChunks = new LinkedList<>();
+        queuedMissileSpawns = new LinkedList<>();
         ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE, null);
     }
 
@@ -48,7 +52,7 @@ public class MissileSimulationHandler extends WorldSavedData {
         newMissile.lockHeight = missile.lockHeight;
         newMissile.targetPos = missile.targetPos;
         newMissile.world = missile.world;
-        newMissile.ticksInAir = (int) missile.missileFlightTime - 20;
+        newMissile.ticksInAir = (int) missile.missileFlightTime - 60;
         newMissile.wasSimulated = true;
         newMissile.motionX = speedPerSecond * Math.signum(missile.targetPos.x() - missile.posX);
         newMissile.motionZ = speedPerSecond * Math.signum(missile.targetPos.z() - missile.posZ);
@@ -58,6 +62,7 @@ public class MissileSimulationHandler extends WorldSavedData {
 
     private final int speedPerSecond = 20; // 20 blocks per second // TODO set to 10
     private final int unloadChunkCooldown = 60 * 20; // 1 minute
+    private final int preLoadChunkTimer = 5; // 5 update ticks (5 seconds) / the time that we wait before spawning the missile in a force-loaded chunk
 
     public void Simulate() {
         if(simTick >= 20)
@@ -78,26 +83,25 @@ public class MissileSimulationHandler extends WorldSavedData {
                     if (chunkLoadTicket != null) // if we are allowed to load chunks
                     {
                         ChunkPos currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, (int) missile.posZ >> 4);
-                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
+                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
                         ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos(1 + ((int) missile.posX >> 4), (int) missile.posZ >> 4);
-                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos(-1 + ((int) missile.posX >> 4), (int) missile.posZ >> 4);
-                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, 1 + ((int) missile.posZ >> 4));
-                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
-                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
-                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, -1 + ((int) missile.posZ >> 4));
-                        currentLoadedChunks.add(new Pair(currentLoadedChunk, unloadChunkCooldown));
-                        ForgeChunkManager.forceChunk(chunkLoadTicket, currentLoadedChunk);
 
+                        currentLoadedChunk = new ChunkPos(1 + ((int) missile.posX >> 4), (int) missile.posZ >> 4);
+                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
                         ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+
+                        currentLoadedChunk = new ChunkPos(-1 + ((int) missile.posX >> 4), (int) missile.posZ >> 4);
+                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+
+                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, 1 + ((int) missile.posZ >> 4));
+                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+
+                        currentLoadedChunk = new ChunkPos((int) missile.posX >> 4, -1 + ((int) missile.posZ >> 4));
+                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        ICBMClassic.logger().warn("(Init) Forced chunk at: " + currentLoadedChunk.toString());
+
                     } else {
                         ICBMClassic.logger().warn("Unable to receive chunkloading ticket. You could try to increase the maximum loaded chunks for ICBM.");
                     }
@@ -109,8 +113,9 @@ public class MissileSimulationHandler extends WorldSavedData {
 
                     missile.lockHeight = 0;
                     missile.acceleration = 5;
+                    missile.preLaunchSmokeTimer = 0;
                     //missile.targetPos = null;
-                    Launch(missile);
+                    queuedMissileSpawns.add(new Pair(missile,preLoadChunkTimer));
                     missileBuffer.remove(i);
                 } else {
                     ICBMClassic.logger().info("[" + i + "] Adjusting target x, z. Current Delta: " + (missile.targetPos.x() - missile.posX) + ", " + (missile.targetPos.z() - missile.posZ));
@@ -146,6 +151,17 @@ public class MissileSimulationHandler extends WorldSavedData {
                     currentLoadedChunks.set(i, new Pair(chunkPos, waitTime));
                 }
             }
+
+            for (int i = 0; i < queuedMissileSpawns.size(); i++) { // TODO wait for callback maybe instead of waiting a set amount of time
+                EntityMissile missile = queuedMissileSpawns.get(i).getKey();
+                int waitTime = queuedMissileSpawns.get(i).getValue() - 1;
+                if (waitTime <= 0) {
+                    Launch(missile);
+                    queuedMissileSpawns.remove(i); // TODO maybe do i--?
+                } else {
+                    queuedMissileSpawns.set(i, new Pair(missile, waitTime));
+                }
+            }
         }
         simTick++;
     }
@@ -157,6 +173,19 @@ public class MissileSimulationHandler extends WorldSavedData {
 
         //Spawn entity
         missile.world().spawnEntity(missile);
+    }
+
+    private void forceChunk(ChunkPos chunkPos, Integer forceTime, ForgeChunkManager.Ticket ticket)
+    {
+        for (int i = 0; i < currentLoadedChunks.size(); i++) {
+            if(currentLoadedChunks.get(i).getKey() == chunkPos)
+            {
+                currentLoadedChunks.set(i, new Pair(chunkPos, forceTime));
+                return;
+            }
+        }
+        currentLoadedChunks.add(new Pair(chunkPos, forceTime));
+        ForgeChunkManager.forceChunk(ticket, chunkPos);
     }
 
     @Override
