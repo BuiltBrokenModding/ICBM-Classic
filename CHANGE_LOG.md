@@ -4,6 +4,18 @@ This log contains changes made to the project. Each entry contains changed made 
 If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
 
 # Versions
+## 3.2.0
+### Runtime Changes
+* Added: Chunloading for impact target
+* Added: Missile simulation to allow missiles to move while world is unloaded
+* Added: Delayed missile launch to act as a launching animation
+* Added: Missile smoke
+
+* Fixed: Missile riding
+* Fixed: Missing battery recipes
+* Fixed: Some recipes not using sulfurDust ore dictionary value
+
+
 ## 3.1.0
 ### Runtime Changes
 * Added: IC2 support
