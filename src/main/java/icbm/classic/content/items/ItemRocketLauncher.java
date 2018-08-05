@@ -8,6 +8,7 @@ import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.prefab.item.ItemICBMElectrical;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -149,9 +150,16 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     }
 
     @Override
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag)
     {
-        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
-        lines.add(str);
+        final String key = "item.icbmclassic:rocketLauncher.info";
+        String translation = LanguageUtility.getLocal(key);
+
+        if(translation.contains("%s"))
+        {
+            String str = String.format(translation, String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
+            splitAdd(str, list, false, false);
+        }
     }
 }
