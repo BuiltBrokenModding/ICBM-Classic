@@ -12,8 +12,8 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "s": {
-      "item": "icbmclassic:sulfurdust",
-      "data": 0
+      "type": "forge:ore_dict",
+      "ore": "dustSulfur"
     },
     "w": {
       "item": "minecraft:water_bucket",
