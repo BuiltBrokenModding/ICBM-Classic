@@ -58,8 +58,8 @@ public class MissileTrackerWorld extends WorldSavedData
         {
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 
-            double dx = speedPerSecond * Math.signum(missile.targetPos.x() - missile.posX);
-            double dz = speedPerSecond * Math.signum(missile.targetPos.z() - missile.posZ);
+            double dx = missile.targetPos.x() - missile.posX;
+            double dz = missile.targetPos.z() - missile.posZ;
             double dst = Math.sqrt(dx * dx + dz * dz);
 
             mtd.ticksLeftToTarget = (int) Math.round(dst / speedPerSecond);
