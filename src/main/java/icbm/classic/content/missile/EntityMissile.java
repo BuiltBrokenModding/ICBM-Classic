@@ -661,6 +661,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.ticksInAir = nbt.getInteger("ticksInAir");
         this.lockHeight = nbt.getDouble("lockHeight");
         this.missileType = MissileFlightType.get(nbt.getInteger("missileType"));
+        this.preLaunchSmokeTimer = nbt.getInteger("preLaunchSmokeTimer");
         this.nbtData = nbt.getCompoundTag("additionalMissileData");
     }
 
@@ -685,6 +686,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         nbt.setInteger("ticksInAir", this.ticksInAir);
         nbt.setDouble("lockHeight", this.lockHeight);
         nbt.setInteger("missileType", this.missileType.ordinal());
+        nbt.setInteger("preLaunchSmokeTimer", this.preLaunchSmokeTimer);
         nbt.setTag("additionalMissileData", this.nbtData);
     }
 
