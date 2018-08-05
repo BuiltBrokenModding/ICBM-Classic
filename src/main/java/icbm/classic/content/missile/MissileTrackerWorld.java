@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
 
@@ -23,7 +24,7 @@ public class MissileTrackerWorld extends WorldSavedData
 
     //Constants
     private final int speedPerSecond = 20; // 20 blocks per second // TODO set to 10
-    private final int unloadChunkCooldown = 60 * 20; // 1 minute
+    private final int unloadChunkCooldown = 60; // 1 minute
     private final int preLoadChunkTimer = 5; // 5 update ticks (5 seconds) / the time that we wait before spawning the missile in a force-loaded chunk
 
     //Missile lists
@@ -109,6 +110,14 @@ public class MissileTrackerWorld extends WorldSavedData
                     if (chunkLoadTicket == null)
                     {
                         chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE, world, ForgeChunkManager.Type.NORMAL);
+
+                        if(chunkLoadTicket != null)
+                        {
+                            for(ChunkPos cp : chunkLoadTicket.getChunkList())
+                            {
+                                this.currentLoadedChunks.add(new Pair(cp,unloadChunkCooldown));
+                            }
+                        }
                     }
 
                     if (chunkLoadTicket != null) // if we are allowed to load chunks
@@ -297,11 +306,11 @@ public class MissileTrackerWorld extends WorldSavedData
         this.missileList.clear();
         this.missileSpawnList.clear();
 
-        if(chunkLoadTicket != null)
-        {
-            ForgeChunkManager.releaseTicket(chunkLoadTicket);
+        //if(chunkLoadTicket != null)
+        //{
+        //    ForgeChunkManager.releaseTicket(chunkLoadTicket);
             chunkLoadTicket = null;
-        }
+        //}
         currentLoadedChunks.clear();
     }
 }
