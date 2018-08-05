@@ -3,19 +3,26 @@ package icbm.classic.content.missile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 
+/**
+ * Stores missile simulation Data
+ *
+ * Created by GHXX on 8/4/2018.
+ */
+
 public class MissileTrackerData
 {
     private static final String NBT_TICKS = "ticks";
     private static final String NBT_TARGET = "target";
     private static final String NBT_MISSILE_DATA = "data";
 
-    public int preLoadChunkTimer;
+    public int preLoadChunkTimer;   //Seconds before the missiles spawns in the loaded chunk
 
-    public int ticksLeftToTarget;
-    public Pos targetPos;
+    public int ticksLeftToTarget;   //Seconds left before the missile reaches the target area (1 Tick = 1 Second)
+    public Pos targetPos;           //Target coordinates
 
-    public NBTTagCompound missileData;
+    public NBTTagCompound missileData;  //Additional missile data
 
+    //Constructors
     public MissileTrackerData(EntityMissile missile)
     {
         targetPos = missile.targetPos;
@@ -28,6 +35,7 @@ public class MissileTrackerData
         readFromNBT(tagCompound);
     }
 
+    //Helper methods for saving and loading
     public void readFromNBT(NBTTagCompound nbt)
     {
         ticksLeftToTarget = nbt.getInteger(NBT_TICKS);

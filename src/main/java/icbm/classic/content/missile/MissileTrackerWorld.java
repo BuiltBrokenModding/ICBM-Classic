@@ -15,6 +15,8 @@ import java.util.LinkedList;
 
 /**
  * Per world handler for tracking and simulating missiles
+ *
+ * Created by GHXX on 7/31/2018.
  */
 public class MissileTrackerWorld extends WorldSavedData
 {
@@ -23,19 +25,19 @@ public class MissileTrackerWorld extends WorldSavedData
     private static final String NBT_MISSILE_SPAWN = "spawns";
 
     //Constants
-    private final int speedPerSecond = 20; // 20 blocks per second // TODO set to 10
-    private final int unloadChunkCooldown = 60; // 1 minute
-    private final int preLoadChunkTimer = 5; // 5 update ticks (5 seconds) / the time that we wait before spawning the missile in a force-loaded chunk
+    private final int speedPerSecond = 10; //10 blocks per second
+    private final int unloadChunkCooldown = 60; //1 minute
+    private final int preLoadChunkTimer = 5; //5 update ticks (5 seconds) / the time that we wait before spawning the missile in a force-loaded chunk
 
     //Missile lists
-    private LinkedList<MissileTrackerData> missileList;
-    private LinkedList<MissileTrackerData> missileSpawnList;
+    private LinkedList<MissileTrackerData> missileList;         //Stores missiles which are being simulated right now
+    private LinkedList<MissileTrackerData> missileSpawnList;    //Stores missiles which are awaiting to be spawned in world
 
     //Chunk stuff
-    private ForgeChunkManager.Ticket chunkLoadTicket;
-    private LinkedList<Pair<ChunkPos, Integer>> currentLoadedChunks;
+    private ForgeChunkManager.Ticket chunkLoadTicket;   //The chunkloading ticket used for loading chunks
+    private LinkedList<Pair<ChunkPos, Integer>> currentLoadedChunks;    //Stores the currently loaded chunks along with a timer how long they will be loaded for
 
-    //Ticks
+    //Tick counter for reducing the simulation speed
     private int ticks = 0;
 
     //Constructor has to be (String) or it will break
@@ -59,29 +61,13 @@ public class MissileTrackerWorld extends WorldSavedData
         {
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 
+            //Calculate distance
             double dx = missile.targetPos.x() - missile.posX;
             double dz = missile.targetPos.z() - missile.posZ;
             double dst = Math.sqrt(dx * dx + dz * dz);
 
+            //Calculate duration and queue up
             mtd.ticksLeftToTarget = (int) Math.round(dst / speedPerSecond);
-
-            /*
-            // create copy
-            EntityMissile newMissile = new EntityMissile(missile.world());
-
-            // copy data
-
-            newMissile.explosiveID =
-            newMissile.launcherPos = missile.launcherPos;
-            newMissile.sourceOfProjectile = missile.sourceOfProjectile;
-            newMissile.setPosition(missile.posX, missile.posY, missile.posZ);
-            newMissile.targetPos = missile.targetPos;
-            newMissile.world = missile.world;
-            newMissile.ticksInAir = (int) missile.missileFlightTime - 60;
-            newMissile.wasSimulated = true;
-            newMissile.motionX =
-            newMissile.motionZ = ;*/
-
             missileList.add(mtd);
 
             //Destroys the entity and marks it for removal from world
@@ -97,21 +83,24 @@ public class MissileTrackerWorld extends WorldSavedData
      */
     public void onWorldTick(final World world)
     {
-        if (ticks++ >= 20)
+        if (ticks++ >= 20)  //Run every 20 ticks = 1 second
         {
             ticks = 0;
 
+            //Loop through all simulated missiles
             final Iterator<MissileTrackerData> missileIterator = missileList.iterator();
             while(missileIterator.hasNext())
             {
+                //Get current missile
                 MissileTrackerData missile = missileIterator.next();
-                if (missile.ticksLeftToTarget <= 0) // if missile is at the target location
+                if (missile.ticksLeftToTarget <= 0) //If missile is at the target location
                 {
+                    //If we haven't got a chunkload ticket then create one
                     if (chunkLoadTicket == null)
                     {
                         chunkLoadTicket = ForgeChunkManager.requestTicket(ICBMClassic.INSTANCE, world, ForgeChunkManager.Type.NORMAL);
 
-                        if(chunkLoadTicket != null)
+                        if(chunkLoadTicket != null) //If we just created a ticket then we queue up all chunks which may have been kept forced to unforce them later
                         {
                             for(ChunkPos cp : chunkLoadTicket.getChunkList())
                             {
@@ -120,7 +109,7 @@ public class MissileTrackerWorld extends WorldSavedData
                         }
                     }
 
-                    if (chunkLoadTicket != null) // if we are allowed to load chunks
+                    if (chunkLoadTicket != null) //If we are allowed to load chunks, lets load the chunk the target location is in and the adjacent ones
                     {
                         ChunkPos currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, (int) missile.targetPos.z() >> 4);
                         forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
@@ -147,13 +136,13 @@ public class MissileTrackerWorld extends WorldSavedData
                     missileSpawnList.add(missile);
                     missileIterator.remove();
                 }
-                else
+                else //If we aren't at the target location then simulate it for another tick
                 {
-                    ICBMClassic.logger().warn("Seconds left to target: "+ missile.ticksLeftToTarget);
                     missile.ticksLeftToTarget--;
                 }
             }
 
+            //Check forced chunks, decrease lifetime and maybe unforce
             for (int i = 0; i < currentLoadedChunks.size(); i++) //TODO replace with while loop
             {
                 ChunkPos chunkPos = currentLoadedChunks.get(i).getKey();
@@ -162,7 +151,6 @@ public class MissileTrackerWorld extends WorldSavedData
                 {
                     ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPos);
                     currentLoadedChunks.remove(i);
-                    ICBMClassic.logger().info("Unforced chunk");
                 }
                 else
                 {
@@ -170,6 +158,7 @@ public class MissileTrackerWorld extends WorldSavedData
                 }
             }
 
+            //Check missile spawn-queue
             final Iterator<MissileTrackerData> spawnIterator = missileSpawnList.iterator();
             while(spawnIterator.hasNext()) // TODO wait for callback maybe instead of waiting a set amount of time
             {
@@ -196,10 +185,12 @@ public class MissileTrackerWorld extends WorldSavedData
 
     private void Launch(final World world, MissileTrackerData mtd)
     {
-        EntityMissile missile = new EntityMissile(world);
-        missile.readEntityFromNBT(mtd.missileData);
+        //Create entity
 
-        // create entity
+        EntityMissile missile = new EntityMissile(world);
+
+        //Set data
+        missile.readEntityFromNBT(mtd.missileData);
         missile.missileType = MissileFlightType.PAD_LAUNCHER;
         missile.posY = 250;
         missile.posX = mtd.targetPos.x();
@@ -207,7 +198,6 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.motionY = -1;
         missile.motionZ = 0;
         missile.motionX = 0;
-
         missile.lockHeight = 0;
         missile.acceleration = 5;
         missile.preLaunchSmokeTimer = 0;
@@ -219,23 +209,9 @@ public class MissileTrackerWorld extends WorldSavedData
 
         //Spawn entity
         missile.world().spawnEntity(missile);
-
-        /*
-        newMissile.explosiveID = missile.explosiveID;
-        newMissile.launcherPos = missile.launcherPos;
-        newMissile.sourceOfProjectile = missile.sourceOfProjectile;
-        newMissile.setPosition(missile.posX, missile.posY, missile.posZ);
-        newMissile.lockHeight = missile.lockHeight;
-        newMissile.targetPos = missile.targetPos;
-        newMissile.world = missile.world;
-        newMissile.ticksInAir = (int) missile.missileFlightTime - 60;
-        newMissile
-        newMissile.motionX = speedPerSecond * Math.signum(missile.targetPos.x() - missile.posX);
-        newMissile.motionZ = speedPerSecond * Math.signum(missile.targetPos.z() - missile.posZ);
-        */
-
     }
 
+    //Helper method for forcing a chunk (chunkloading)
     private void forceChunk(ChunkPos chunkPos, Integer forceTime, ForgeChunkManager.Ticket ticket)
     {
         for (int i = 0; i < currentLoadedChunks.size(); i++)
@@ -243,13 +219,11 @@ public class MissileTrackerWorld extends WorldSavedData
             if (currentLoadedChunks.get(i).getKey() == chunkPos)
             {
                 currentLoadedChunks.set(i, new Pair(chunkPos, forceTime));
-                ICBMClassic.logger().warn("(Init) Re-Forced chunk at: " + chunkPos.toString());
                 return;
             }
         }
         currentLoadedChunks.add(new Pair(chunkPos, forceTime));
         ForgeChunkManager.forceChunk(ticket, chunkPos);
-        ICBMClassic.logger().warn("(Init) Forced chunk at: " + chunkPos.toString());
     }
 
     @Override
