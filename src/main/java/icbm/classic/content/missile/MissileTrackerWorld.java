@@ -297,14 +297,11 @@ public class MissileTrackerWorld extends WorldSavedData
         this.missileList.clear();
         this.missileSpawnList.clear();
 
-        if(currentLoadedChunks != null)
+        if(chunkLoadTicket != null)
         {
-            for (Pair<ChunkPos, Integer> chunkPair : currentLoadedChunks)
-            {  // unforca all chunks
-                ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPair.getKey());
-            }
+            ForgeChunkManager.releaseTicket(chunkLoadTicket);
+            chunkLoadTicket = null;
         }
         currentLoadedChunks.clear();
-        chunkLoadTicket = null;
     }
 }
