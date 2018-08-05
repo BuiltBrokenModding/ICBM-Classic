@@ -387,7 +387,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        if (!world.isRemote)
+        if (!world.isRemote && entityHit.getRidingEntity() != this)
         {
             super.onImpactEntity(entityHit, velocity);
             doExplosion();
@@ -594,6 +594,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void doExplosion()
     {
+        //Eject rider
+        dismountRidingEntity();
+        
         try
         {
             // Make sure the missile is not already exploding
