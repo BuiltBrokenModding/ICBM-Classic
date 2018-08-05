@@ -373,7 +373,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 && !(getPassengers().size() > 0)
                 && targetPos.distance(launcherPos) > 50
                 && !wasSimulated
-                && posY >= ConfigMissile.SIMULATION_START_HEIGHT;
+                && ( posY >= ConfigMissile.SIMULATION_START_HEIGHT || ( motionY <= 0 && this.ticksInAir > 20*5 ));
     }
 
     @Override
