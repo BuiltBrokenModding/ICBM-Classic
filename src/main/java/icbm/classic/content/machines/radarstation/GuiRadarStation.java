@@ -66,8 +66,8 @@ public class GuiRadarStation extends GuiContainerBase
         this.textFieldAlarmRange.setMaxStringLength(3);
         this.textFieldAlarmRange.setText(this.tileEntity.alarmRange + "");
 
-        this.textFieldFrequency = new GuiTextField(2, fontRenderer, 155, 112, 50, 12);
-        this.textFieldFrequency.setMaxStringLength(6);
+        this.textFieldFrequency = new GuiTextField(2, fontRenderer, 210, 110, 50, 12);
+        this.textFieldFrequency.setMaxStringLength(3);
         this.textFieldFrequency.setText(this.tileEntity.getFrequency() + "");
 
         //Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, -1, true));
@@ -84,29 +84,39 @@ public class GuiRadarStation extends GuiContainerBase
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal(ICBMClassic.blockRadarStation.getUnlocalizedName()), this.xSize / 2 - 30, 6, 4210752);
+        //Header
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocalName(ICBMClassic.blockRadarStation.getUnlocalizedName()), this.xSize / 2 - 30, 6, 4210752);
 
+        //Coredinates header
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.coords"), 155, 18, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.x") + " " + (int) Math.round(mouseOverCoords.x()) + " " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) Math.round(mouseOverCoords.y()), 155, 30, 4210752);
+
+        //Coordinates
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.x")
+                + " " + (int) Math.round(mouseOverCoords.x())
+                + " " + LanguageUtility.getLocal("gui.misc.z")
+                + " " + (int) Math.round(mouseOverCoords.y()), 155, 30, 4210752);
 
         this.fontRenderer.drawString("\u00a76" + this.info, 155, 42, 4210752);
         this.fontRenderer.drawString("\u00a74" + this.info2, 155, 54, 4210752);
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.zoneSafe"), 152, 70, 4210752);
+        //Range Header
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.range"), 152, 55, 4210752);
+
+        //Trigger range
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.range.trigger"), 155, 70, 4210752);
         this.textFieldSafetyZone.drawTextBox();
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.zoneAlarm"), 150, 85, 4210752);
+
+        //Detection range
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.range.detection"), 155, 85, 4210752);
         this.textFieldAlarmRange.drawTextBox();
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 155, 100, 4210752);
+        //Hz
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 152, 110, 4210752);
         this.textFieldFrequency.drawTextBox();
-
-        //this.fontRenderer.drawString(UnitDisplay.getDisplay(TileRadarStation.WATTS, UnitDisplay.Unit.WATT), 155, 128, 4210752);
-
-        //this.fontRenderer.drawString(UnitDisplay.getDisplay(this.tileEntity.getVoltageInput(null), Unit.VOLTAGE), 155, 138, 4210752);
 
         // Shows the status of the radar
         String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
+        String status = LanguageUtility.getLocal("gui.misc.idle"); //TODO ?
 
         if (this.tileEntity.hasPower())
         {

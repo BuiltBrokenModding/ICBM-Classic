@@ -96,7 +96,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             {
                 if (detectedEntities.size() > 0)
                 {
-                    world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, true));
+                    world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, false));
                 }
 
                 incomingMissiles.clear();
@@ -165,7 +165,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.incomingMissiles.clear();
         this.detectedEntities.clear();
 
-        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, MAX_DETECTION_RANGE);
+        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(alarmRange, MAX_DETECTION_RANGE));
 
         for (Entity entity : entities)
         {

@@ -367,10 +367,10 @@ gui.coordinator.time=Time: %p Seconds
 gui.coordinator.direction=Direction:
 gui.coordinator.wip=More features coming soon!
 
-gui.assembler.name=Missile Table
 gui.radar.coords=Coordinates:
-gui.radar.zoneSafe=Safe Zone:
-gui.radar.zoneAlarm=Alarm Zone:
+gui.radar.range=Range
+gui.radar.range.trigger=Trigger:
+gui.radar.range.detection=Detection:
 gui.radar.on=Radar On!
 gui.radar.nopower=No Electricity!
 
