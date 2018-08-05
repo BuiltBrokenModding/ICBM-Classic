@@ -1,7 +1,6 @@
 package icbm.classic.content.missile;
 
 import icbm.classic.ICBMClassic;
-import javafx.util.Pair;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
@@ -34,7 +33,7 @@ public class MissileTrackerWorld extends WorldSavedData
 
     //Chunk stuff
     private ForgeChunkManager.Ticket chunkLoadTicket;   //The chunkloading ticket used for loading chunks
-    private LinkedList<Pair<ChunkPos, Integer>> currentLoadedChunks;    //Stores the currently loaded chunks along with a timer how long they will be loaded for
+    private LinkedList<LoadedChunkPair> currentLoadedChunks;    //Stores the currently loaded chunks along with a timer how long they will be loaded for
 
     //Tick counter for reducing the simulation speed
     private int ticks = 0;
@@ -104,7 +103,7 @@ public class MissileTrackerWorld extends WorldSavedData
                         {
                             for(ChunkPos cp : chunkLoadTicket.getChunkList())
                             {
-                                this.currentLoadedChunks.add(new Pair(cp,unloadChunkCooldown));
+                                this.currentLoadedChunks.add(new LoadedChunkPair(cp, unloadChunkCooldown));
                             }
                         }
                     }
@@ -145,8 +144,8 @@ public class MissileTrackerWorld extends WorldSavedData
             //Check forced chunks, decrease lifetime and maybe unforce
             for (int i = 0; i < currentLoadedChunks.size(); i++) //TODO replace with while loop
             {
-                ChunkPos chunkPos = currentLoadedChunks.get(i).getKey();
-                int waitTime = currentLoadedChunks.get(i).getValue() - 1;
+                ChunkPos chunkPos = currentLoadedChunks.get(i).chunkPos;
+                int waitTime = currentLoadedChunks.get(i).timeLeft - 1;
                 if (waitTime <= 0)
                 {
                     ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPos);
@@ -154,7 +153,7 @@ public class MissileTrackerWorld extends WorldSavedData
                 }
                 else
                 {
-                    currentLoadedChunks.set(i, new Pair(chunkPos, waitTime));
+                    currentLoadedChunks.set(i, new LoadedChunkPair(chunkPos, waitTime));
                 }
             }
 
@@ -216,13 +215,13 @@ public class MissileTrackerWorld extends WorldSavedData
     {
         for (int i = 0; i < currentLoadedChunks.size(); i++)
         {
-            if (currentLoadedChunks.get(i).getKey() == chunkPos)
+            if (currentLoadedChunks.get(i).chunkPos == chunkPos)
             {
-                currentLoadedChunks.set(i, new Pair(chunkPos, forceTime));
+                currentLoadedChunks.set(i, new LoadedChunkPair(chunkPos, forceTime));
                 return;
             }
         }
-        currentLoadedChunks.add(new Pair(chunkPos, forceTime));
+        currentLoadedChunks.add(new LoadedChunkPair(chunkPos, forceTime));
         ForgeChunkManager.forceChunk(ticket, chunkPos);
     }
 
