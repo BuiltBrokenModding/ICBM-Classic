@@ -328,15 +328,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                             this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
                         }
 
-
-                        if (launcherPos != null && targetPos.distance(launcherPos) > 50 && !wasSimulated && this.ticksInAir > 20 * 10) // 10 seconds
+                        //Simulate missile
+                        if (shouldSimulate())
                         {
-                            ICBMClassic.logger().info("Simulating missile.");
                             MissileTrackerHandler.simulateMissile(this);
                         }
                     }
-
-                    ICBMClassic.logger().info("x/y/z: " + this.posX + "/" + this.posY + "/" + this.posZ);
                 }
                 else
                 {
@@ -367,6 +364,16 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             ((Explosion) this.explosiveID.handler).update(this);
         }
         super.updateMotion();
+    }
+
+    protected boolean shouldSimulate()
+    {
+        //TODO predict position, if traveling into unloaded chunk simulate
+        return launcherPos != null
+                && !(getPassengers().size() > 0)
+                && targetPos.distance(launcherPos) > 50
+                && !wasSimulated
+                && posY >= ConfigMissile.SIMULATION_START_HEIGHT;
     }
 
     @Override
@@ -455,10 +462,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             if (this.missileType == MissileFlightType.PAD_LAUNCHER)
             {
-                if(this.motionY > -1)
+                if (this.motionY > -1)
                 {
-                    if (this.world.isRemote && this.motionY > -1) {
-                        if (launcherHasAirBelow == -1) {
+                    if (this.world.isRemote && this.motionY > -1)
+                    {
+                        if (launcherHasAirBelow == -1)
+                        {
                             BlockPos bp = new BlockPos(Math.signum(this.posX) * Math.floor(Math.abs(this.posX)), this.posY - 3, Math.signum(this.posZ) * Math.floor(Math.abs(this.posZ)));
                             launcherHasAirBelow = world.isAirBlock(bp) ? 1 : 0;
                         }
@@ -476,25 +485,33 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
                         position = position.add(x, y, z);
 
-                        if (preLaunchSmokeTimer > 0 && ticksInAir <= maxPreLaunchSmokeTimer) {
-                            if (launcherHasAirBelow == 1) {
+                        if (preLaunchSmokeTimer > 0 && ticksInAir <= maxPreLaunchSmokeTimer)
+                        {
+                            if (launcherHasAirBelow == 1)
+                            {
                                 position = position.sub(0, 2, 0);
                                 Pos velocity = new Pos(0, -1, 0).addRandom(world.rand, 0.5);
-                                for (int i = 0; i < 10; i++) {
+                                for (int i = 0; i < 10; i++)
+                                {
                                     ICBMClassic.proxy.spawnSmoke(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
                                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             lastSmokePos.add(position);
                             Pos lastPos = null;
-                            if (lastSmokePos.size() > 5) {
+                            if (lastSmokePos.size() > 5)
+                            {
                                 lastPos = lastSmokePos.get(0);
                                 lastSmokePos.remove(0);
                             }
                             ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX * 0.75, -this.motionY * 0.75, -this.motionZ * 0.75, 1, 0.75f, 0, 5, 10);
-                            if (ticksInAir > 5 && lastPos != null) {
-                                for (int i = 0; i < 10; i++) {
+                            if (ticksInAir > 5 && lastPos != null)
+                            {
+                                for (int i = 0; i < 10; i++)
+                                {
                                     ICBMClassic.proxy.spawnSmoke(this.world, lastPos, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 240);
                                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                                 }
@@ -508,7 +525,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 Pos position = new Pos((IPos3D) this);
                 // The distance of the smoke relative
                 // to the missile.
-                double distance = - 1.2f;
+                double distance = -1.2f;
                 // The delta Y of the smoke.
                 double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
                 // The horizontal distance of the
@@ -519,7 +536,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
                 position = position.add(x, y, z);
 
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 10; i++)
+                {
                     ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 240);
                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                 }
@@ -594,9 +612,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void doExplosion()
     {
-        //Eject rider
+        //Eject from riding
         dismountRidingEntity();
-        
+        //Eject passengers
+        removePassengers();
+
         try
         {
             // Make sure the missile is not already exploding

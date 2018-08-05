@@ -6,7 +6,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
 
@@ -56,6 +55,7 @@ public class MissileTrackerWorld extends WorldSavedData
      */
     protected void simulateMissile(EntityMissile missile)
     {
+        ICBMClassic.logger().info("MissileTracker[ " + missile.world.provider.getDimension() + "]: Simulating missile");
         //Only run on server
         if (!missile.world.isRemote)
         {
