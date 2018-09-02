@@ -246,6 +246,11 @@ public class BlastRedmatter extends Blast
         // Gravity Velocity (0.015 is barely enough to overcome y gravity so do not lower)
         entity.addVelocity(-xDifference * 0.02 * xPercentage, -yDifference * 0.02 * yPercentage, -zDifference * 0.02 * zPercentage);
 
+        if (entity instanceof EntityPlayer) // if player send packet because motion is handled client side
+        {
+            entity.velocityChanged = true;
+        }
+
         boolean explosionCreated = false;
 
         if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
@@ -294,7 +299,7 @@ public class BlastRedmatter extends Blast
             {
                 ((EntityExplosive) entity).explode();
             }
-            else if (entity instanceof EntityLiving)
+            else if (entity instanceof EntityLiving || entity instanceof EntityPlayer)
             {
                 entity.attackEntityFrom(new DamageSourceRedmatter(this), 2000);
             }
