@@ -111,7 +111,6 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.disableLighting();
-        GlStateManager.disableDepth();
 
         //Translate
         GlStateManager.translate((float) x, (float) y, (float) z);
@@ -137,7 +136,6 @@ public class RenderExplosion extends Render<EntityExplosion>
         new Sphere().draw(radius + scaleDelta, 32, 32);
 
         //Reset
-        GlStateManager.enableDepth();
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
@@ -151,7 +149,6 @@ public class RenderExplosion extends Render<EntityExplosion>
 
         //Setup
         GlStateManager.pushMatrix();
-        GlStateManager.disableDepth();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.disableLighting();
@@ -183,7 +180,6 @@ public class RenderExplosion extends Render<EntityExplosion>
         //Reset
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();
-        GlStateManager.enableDepth();
         GlStateManager.popMatrix();
         RenderHelper.enableStandardItemLighting();
     }
@@ -230,7 +226,6 @@ public class RenderExplosion extends Render<EntityExplosion>
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GlStateManager.disableAlpha();
         GlStateManager.enableCull();
-        GlStateManager.disableDepth();
 
         Random redmatterBeamRandom = new Random(432L);
 
@@ -299,7 +294,6 @@ public class RenderExplosion extends Render<EntityExplosion>
         }
 
         //Cleanup
-        GlStateManager.enableDepth();
         GlStateManager.disableCull();
         GlStateManager.disableBlend();
         GlStateManager.shadeModel(GL11.GL_FLAT);
