@@ -112,7 +112,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
                                         if (!player.capabilities.isCreativeMode)
                                         {
-                                            player.inventory.setInventorySlotContents(slot, null);
+                                            player.inventory.setInventorySlotContents(slot, ItemStack.EMPTY);
                                             player.inventoryContainer.detectAndSendChanges();
                                             this.discharge(stack, ENERGY, true);
                                         }
