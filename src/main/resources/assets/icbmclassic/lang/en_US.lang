@@ -391,3 +391,5 @@ info.detonator.noLink=No Linked Explosive
 info.misc.tier=Explosive Tier
 info.tracker.tooltip=Left Click on a mob (players aswell), and I Will point to it.
 
+## Death messages
+death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty black hole.
