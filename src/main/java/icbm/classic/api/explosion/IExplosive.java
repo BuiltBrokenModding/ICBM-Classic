@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 public interface IExplosive
 {
     /** @return The unique name key in the ICBM language file. */
-    public String getUnlocalizedName();
+    public String getTranslationKey();
 
     /** @return Gets the specific translated name of the block versions of the explosive. */
     public String getExplosiveName();

@@ -142,7 +142,7 @@ public class BlockExplosive extends BlockICBM
             ((TileEntityExplosive) tile).explosive = ex;
 
 
-            if (world.isBlockIndirectlyGettingPowered(pos) > 0)
+            if (world.getRedstonePowerFromNeighbors(pos) > 0)
             {
                 BlockExplosive.triggerExplosive(world, pos, ex, 0);
             }
@@ -180,7 +180,7 @@ public class BlockExplosive extends BlockICBM
         {
             Explosives explosiveID = ((TileEntityExplosive) tile).explosive;
 
-            int power = world.isBlockIndirectlyGettingPowered(pos);
+            int power = world.getRedstonePowerFromNeighbors(pos);
             if (power > 0)
             {
                 BlockExplosive.triggerExplosive(world, pos, explosiveID, 0);
@@ -276,7 +276,7 @@ public class BlockExplosive extends BlockICBM
     @Override
     public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (tab == getCreativeTabToDisplayOn())
+        if (tab == getCreativeTab())
         {
             for (Explosives zhaPin : Explosives.values())
             {

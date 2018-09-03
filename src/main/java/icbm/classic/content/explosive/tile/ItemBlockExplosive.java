@@ -136,13 +136,13 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack itemstack)
+    public String getTranslationKey(ItemStack itemstack)
     {
-        return this.getUnlocalizedName() + "." + Explosives.get(itemstack.getItemDamage()).handler.getUnlocalizedName();
+        return this.getTranslationKey() + "." + Explosives.get(itemstack.getItemDamage()).handler.getTranslationKey();
     }
 
     @Override
-    public String getUnlocalizedName()
+    public String getTranslationKey()
     {
         return "icbm.explosive";
     }

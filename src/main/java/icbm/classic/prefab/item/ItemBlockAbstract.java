@@ -100,7 +100,7 @@ public class ItemBlockAbstract extends ItemBlock
         try
         {
             //Generic info
-            String translationKey = getUnlocalizedName() + ".info";
+            String translationKey = getTranslationKey() + ".info";
             String translation = LanguageUtility.getLocal(translationKey);
             if (!translation.isEmpty() && !translation.equals(translationKey))
             {
@@ -142,7 +142,7 @@ public class ItemBlockAbstract extends ItemBlock
     protected void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info";
+        String translationKey = getTranslationKey(stack) + ".info";
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
@@ -174,7 +174,7 @@ public class ItemBlockAbstract extends ItemBlock
     protected void getShiftDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info.detailed";
+        String translationKey = getTranslationKey(stack) + ".info.detailed";
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
@@ -202,8 +202,8 @@ public class ItemBlockAbstract extends ItemBlock
      */
     protected boolean hasDetailedInfo(ItemStack stack, @Nullable EntityPlayer player)
     {
-        String translationKey = getUnlocalizedName() + ".info";
-        String translationKey2 = getUnlocalizedName(stack) + ".info";
+        String translationKey = getTranslationKey() + ".info";
+        String translationKey2 = getTranslationKey(stack) + ".info";
         return !translationKey.equals(translationKey2);
     }
 

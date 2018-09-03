@@ -32,13 +32,13 @@ public class ItemMissile extends ItemICBMBase
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack itemStack)
+    public String getTranslationKey(ItemStack itemStack)
     {
-        return this.getUnlocalizedName() + "." + Explosives.get(itemStack.getItemDamage()).handler.getUnlocalizedName();
+        return this.getTranslationKey() + "." + Explosives.get(itemStack.getItemDamage()).handler.getTranslationKey();
     }
 
     @Override
-    public String getUnlocalizedName()
+    public String getTranslationKey()
     {
         return "icbm.missile";
     }

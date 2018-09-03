@@ -31,7 +31,7 @@ public class BlockMultiblock extends BlockContainer
     {
         super(Material.ROCK);
         this.setRegistryName(ICBMClassic.DOMAIN, "multiblock");
-        this.setUnlocalizedName(ICBMClassic.PREFIX + "multiblock");
+        this.setTranslationKey(ICBMClassic.PREFIX + "multiblock");
         this.setHardness(2f);
         needsRandomTick = true;
     }
@@ -156,7 +156,7 @@ public class BlockMultiblock extends BlockContainer
     }
 
     @Override
-    public void onBlockDestroyedByExplosion(World world, BlockPos pos, Explosion ex)
+    public void onBlockExploded(World world, BlockPos pos, Explosion ex)
     {
         IMultiTile tile = getTile(world, pos);
         if (tile != null && tile.getHost() != null)

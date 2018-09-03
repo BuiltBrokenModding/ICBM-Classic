@@ -35,7 +35,6 @@ public class GuiEMPTower extends GuiContainerBase
     public void initGui()
     {
         super.initGui();
-        this.buttonList.clear();
 
         this.buttonList.add(new GuiButton(0, this.width / 2 - 77, this.height / 2 - 10, 50, 20, LanguageUtility.getLocal("gui.empTower.missiles")));
         this.buttonList.add(new GuiButton(1, this.width / 2 - 25, this.height / 2 - 10, 65, 20, LanguageUtility.getLocal("gui.empTower.elec")));

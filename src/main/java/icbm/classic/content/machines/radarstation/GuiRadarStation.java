@@ -85,7 +85,7 @@ public class GuiRadarStation extends GuiContainerBase
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         //Header
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocalName(ICBMClassic.blockRadarStation.getUnlocalizedName()), this.xSize / 2 - 30, 6, 4210752);
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocalName(ICBMClassic.blockRadarStation.getTranslationKey()), this.xSize / 2 - 30, 6, 4210752);
 
         //Coredinates header
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.coords"), 155, 18, 4210752);

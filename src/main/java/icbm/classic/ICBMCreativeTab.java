@@ -52,7 +52,7 @@ public class ICBMCreativeTab extends CreativeTabs
     }
 
     @Override
-    public ItemStack getIconItemStack()
+    public ItemStack createIcon()
     {
         if (itemStack == null || itemStack.getItem() == null)
         {
@@ -79,12 +79,6 @@ public class ICBMCreativeTab extends CreativeTabs
             itemStack = new ItemStack(Blocks.REDSTONE_LAMP);
         }
         return itemStack;
-    }
-
-    @Override
-    public ItemStack getTabIconItem()
-    {
-        return getIconItemStack();
     }
 
     /**

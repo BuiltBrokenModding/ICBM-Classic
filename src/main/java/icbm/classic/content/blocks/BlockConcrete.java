@@ -29,7 +29,7 @@ public class BlockConcrete extends Block
     {
         super(Material.ROCK);
         this.setRegistryName(ICBMClassic.PREFIX + "concrete");
-        this.setUnlocalizedName(ICBMClassic.PREFIX + "concrete");
+        this.setTranslationKey(ICBMClassic.PREFIX + "concrete");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(10);
     }
@@ -84,7 +84,7 @@ public class BlockConcrete extends Block
     @Override
     public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (tab == getCreativeTabToDisplayOn())
+        if (tab == getCreativeTab())
         {
             for (int i = 0; i < 3; i++)
             {

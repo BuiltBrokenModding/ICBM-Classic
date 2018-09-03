@@ -27,20 +27,20 @@ public class ItemBlockSubTypes extends ItemBlockAbstract
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack itemstack)
+    public String getTranslationKey(ItemStack itemstack)
     {
-        String localized = LanguageUtility.getLocal(getUnlocalizedName() + "." + itemstack.getItemDamage() + ".name");
+        String localized = LanguageUtility.getLocal(getTranslationKey() + "." + itemstack.getItemDamage() + ".name");
         if (localized != null && !localized.isEmpty())
         {
-            return getUnlocalizedName() + "." + itemstack.getItemDamage();
+            return getTranslationKey() + "." + itemstack.getItemDamage();
         }
-        return getUnlocalizedName();
+        return getTranslationKey();
     }
 
     @Override
     protected boolean hasShiftInfo(ItemStack stack, EntityPlayer player)
     {
-        final String translationKey = getUnlocalizedName(stack) + ".info.detailed";
+        final String translationKey = getTranslationKey(stack) + ".info.detailed";
         final String translation = LanguageUtility.getLocal(translationKey);
         return !translation.trim().isEmpty() && !translation.equals(translationKey);
     }

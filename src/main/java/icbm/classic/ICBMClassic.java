@@ -455,7 +455,7 @@ public final class ICBMClassic
                         EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
 
                         EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), Explosives.get(itemStack.getItemDamage()));
-                        entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
+                        entity.setThrowableHeading(enumFacing.getXOffset(), 0.10000000149011612D, enumFacing.getZOffset(), 0.5F, 1.0F);
                         world.spawnEntity(entity);
                     }
 
@@ -477,9 +477,9 @@ public final class ICBMClassic
                 {
                     EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
                     World world = source.getWorld();
-                    double x = source.getX() + (double) enumfacing.getFrontOffsetX() * 1.125D;
-                    double y = Math.floor(source.getY()) + (double) enumfacing.getFrontOffsetY();
-                    double z = source.getZ() + (double) enumfacing.getFrontOffsetZ() * 1.125D;
+                    double x = source.getX() + (double) enumfacing.getXOffset() * 1.125D;
+                    double y = Math.floor(source.getY()) + (double) enumfacing.getYOffset();
+                    double z = source.getZ() + (double) enumfacing.getZOffset() * 1.125D;
                     BlockPos blockpos = source.getBlockPos().offset(enumfacing);
                     IBlockState iblockstate = world.getBlockState(blockpos);
                     BlockRailBase.EnumRailDirection rail =

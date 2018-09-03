@@ -29,7 +29,7 @@ public abstract class ItemAbstract extends Item
         EntityPlayer player = Minecraft.getMinecraft().player;
 
         //Generic info, shared by item group
-        splitAdd(getUnlocalizedName() + ".info", list, false, true);
+        splitAdd(getTranslationKey() + ".info", list, false, true);
 
         if (hasDetailedInfo(stack, player))
         {
@@ -60,7 +60,7 @@ public abstract class ItemAbstract extends Item
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
     {
         //Per item detailed info
-        splitAdd(getUnlocalizedName(stack) + ".info", list, true, true);
+        splitAdd(getTranslationKey(stack) + ".info", list, true, true);
     }
 
     /**
@@ -76,7 +76,7 @@ public abstract class ItemAbstract extends Item
     protected void getShiftDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
     {
         //Per item detailed info
-        splitAdd(getUnlocalizedName(stack) + ".info.detailed", list, true, true);
+        splitAdd(getTranslationKey(stack) + ".info.detailed", list, true, true);
     }
 
     protected void splitAdd(String translationKey, List<String> list, boolean addKeyIfEmpty, boolean translate)

@@ -144,7 +144,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
             if (isServer())
             {
-                if (this.ticks % 40 == 0 && this.world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+                if (this.ticks % 40 == 0 && this.world.getRedstonePowerFromNeighbors(getPos()) > 0)
                 {
                     this.launch();
                 }

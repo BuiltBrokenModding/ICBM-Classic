@@ -55,11 +55,11 @@ public abstract class Explosive implements IExplosive
     //@Override
     //public final int getID()
     //{
-    //    return ExplosiveRegistry.getID(this.getUnlocalizedName());
+    //    return ExplosiveRegistry.getID(this.getTranslationKey());
     //}
 
 
-    public String getUnlocalizedName()
+    public String getTranslationKey()
     {
         return this.nameID;
     }

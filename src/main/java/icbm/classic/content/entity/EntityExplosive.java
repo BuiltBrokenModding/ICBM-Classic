@@ -170,7 +170,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     public EnumFacing getDirection()
     {
-        return EnumFacing.getFront(this.orientation);
+        return EnumFacing.byIndex(this.orientation);
     }
 
     @Override
