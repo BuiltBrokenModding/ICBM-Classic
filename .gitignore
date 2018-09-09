@@ -1,5 +1,7 @@
 !*.*
 /bin
+/run
+/out
 
 *.classpath
 *.project
