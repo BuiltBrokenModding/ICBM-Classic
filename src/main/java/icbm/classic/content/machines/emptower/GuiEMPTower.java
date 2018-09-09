@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class GuiEMPTower extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "mc_gui_empty_large.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_empty.png");
 
     private TileEMPTower tileEntity;
     private GuiTextField textFieldBanJing;
