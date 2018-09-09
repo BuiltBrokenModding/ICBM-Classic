@@ -57,10 +57,10 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.prevPosY = position.y();
         this.prevPosZ = position.z();
         this.explosiveID = explosiveID;
-        this.fuse = explosiveID.handler.getYinXin();
+        this.fuse = explosiveID.handler.getFuseTimer();
         this.orientation = orientation;
 
-        explosiveID.handler.yinZhaQian(par1World, this);
+        explosiveID.handler.onEntityCreated(par1World, this);
     }
 
     public EntityExplosive(World par1World, Pos position, Explosives explosiveID, byte orientation, NBTTagCompound nbtData)
@@ -105,7 +105,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         }
         else
         {
-            this.explosiveID.handler.onYinZha(this.world, new Pos(this.posX, this.posY, this.posZ), this.fuse);
+            this.explosiveID.handler.onFuseTick(this.world, new Pos(this.posX, this.posY, this.posZ), this.fuse);
         }
 
         this.fuse--;

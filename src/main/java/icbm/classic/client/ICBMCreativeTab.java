@@ -1,11 +1,15 @@
-package icbm.classic;
+package icbm.classic.client;
 
+import icbm.classic.ICBMClassic;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Prefab creative tab to either create a fast creative tab or reduce code
@@ -15,38 +19,95 @@ import net.minecraft.util.NonNullList;
 public class ICBMCreativeTab extends CreativeTabs
 {
     public ItemStack itemStack = null;
+    public List<Item> definedTabItemsInOrder = new ArrayList();
 
     public ICBMCreativeTab(String name)
     {
         super(name);
     }
 
+    public void init()
+    {
+        definedTabItemsInOrder.clear();
+        orderItem(ICBMClassic.blockLaunchBase);
+        orderItem(ICBMClassic.blockLaunchScreen);
+        orderItem(ICBMClassic.blockLaunchSupport);
+        orderItem(ICBMClassic.blockEmpTower);
+        orderItem(ICBMClassic.blockRadarStation);
+        orderItem(ICBMClassic.blockBattery);
+
+        orderItem(ICBMClassic.blockConcrete);
+        orderItem(ICBMClassic.blockReinforcedGlass);
+        orderItem(ICBMClassic.blockSpikes);
+
+        orderItem(ICBMClassic.itemRocketLauncher);
+        orderItem(ICBMClassic.itemRadarGun);
+        orderItem(ICBMClassic.itemRemoteDetonator);
+        orderItem(ICBMClassic.itemLaserDesignator);
+        orderItem(ICBMClassic.itemTracker);
+        orderItem(ICBMClassic.itemSignalDisrupter);
+        orderItem(ICBMClassic.itemDefuser);
+        orderItem(ICBMClassic.itemBattery);
+
+        orderItem(ICBMClassic.blockExplosive);
+        orderItem(ICBMClassic.itemMissile);
+        orderItem(ICBMClassic.itemGrenade);
+        orderItem(ICBMClassic.itemBombCart);
+    }
+
+    private void orderItem(Block item)
+    {
+        orderItem(Item.getItemFromBlock(item));
+    }
+
+    private void orderItem(Item item)
+    {
+        definedTabItemsInOrder.add(item);
+    }
+
     @Override
     public void displayAllRelevantItems(NonNullList<ItemStack> list)
     {
+        //Insert defined items in order
+        definedTabItemsInOrder.forEach(item -> collectSubItems(item, list));
+
+        //Collect any non-defined items
         for (Item item : Item.REGISTRY)
         {
             if (item != null)
             {
                 for (CreativeTabs tab : item.getCreativeTabs())
                 {
-                    if (tab == this)
+                    if (tab == this && !definedTabItemsInOrder.contains(item))
                     {
-                        NonNullList<ItemStack> temp_list = NonNullList.create();
-                        item.getSubItems(this, temp_list);
-                        for (ItemStack stack : temp_list)
-                        {
-                            if (stack.getItem() != null)
-                            {
-                                list.add(stack);
-                            }
-                            else
-                            {
-                                ICBMClassic.logger().error("Item: " + item + "  attempted to add a stack with a null item to creative tab " + this);
-                            }
-                        }
+                        collectSubItems(item, list);
                     }
                 }
+            }
+        }
+    }
+
+    protected void collectSubItems(Item item, NonNullList<ItemStack> list)
+    {
+        //Collect stacks
+        NonNullList<ItemStack> temp_list = NonNullList.create();
+        item.getSubItems(this, temp_list);
+
+        //Merge into list with null check
+        mergeIntoList(item, list, temp_list);
+    }
+
+    protected void mergeIntoList(Item item, NonNullList<ItemStack> list, NonNullList<ItemStack> listToMerge)
+    {
+        for (ItemStack stack : listToMerge)
+        {
+            if (stack.getItem() != null)
+            {
+                list.add(stack);
+            }
+            else
+            {
+                ICBMClassic.logger().error("Item: " + item + "  attempted to add a stack with a null item to creative tab " + this);
             }
         }
     }

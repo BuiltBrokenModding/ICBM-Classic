@@ -195,7 +195,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
-        if (this.ticksExisted > Math.max(60, (explosiveID.handler.getYinXin())))
+        if (this.ticksExisted > Math.max(60, (explosiveID.handler.getFuseTimer())))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
             (explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this, 1);
@@ -204,7 +204,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         }
         else
         {
-            (explosiveID.handler).onYinZha(this.world, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
+            (explosiveID.handler).onFuseTick(this.world, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
         }
     }
 
