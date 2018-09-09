@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
@@ -130,7 +131,6 @@ public final class ICBMClassic
 
     //Mod support
     public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
-    public static int blockRadioactiveMeta;
 
     // Blocks
     public static Block blockGlassPlate;
@@ -429,6 +429,7 @@ public final class ICBMClassic
     {
         proxy.init();
         packetHandler.init();
+        CREATIVE_TAB.init();
 
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
