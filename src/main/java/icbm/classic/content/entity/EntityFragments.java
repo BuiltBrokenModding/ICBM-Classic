@@ -1,29 +1,36 @@
 package icbm.classic.content.entity;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class EntityFragments extends Entity implements IEntityAdditionalSpawnData
 {
+    private static final Predicate<Entity> ARROW_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, new Predicate<Entity>()
+    {
+        public boolean apply(@Nullable Entity p_apply_1_)
+        {
+            return p_apply_1_.canBeCollidedWith();
+        }
+    });
+
     private BlockPos inTilePosition = new BlockPos(0, 0, 0);
     private IBlockState inTile;
+
     private boolean inGround = false;
     public boolean isExplosive;
     public boolean isAnvil;
@@ -143,45 +150,30 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     }
 
     /** Called to update the entity's position/logic. */
+    //  entity.attackEntityFrom(DamageSource.ANVIL, 15);
     @Override
     public void onUpdate()
     {
         super.onUpdate();
 
-        if (this.isAnvil)
-        {
-            ArrayList entities = new ArrayList(this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox()));
-
-            Iterator var5 = entities.iterator();
-
-            while (var5.hasNext())
-            {
-                Entity entity = (Entity) var5.next();
-                entity.attackEntityFrom(DamageSource.ANVIL, 15);
-            }
-        }
-
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
-            float var1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(this.motionY, var1) * 180.0D / Math.PI);
+            float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * (180D / Math.PI));
+            this.prevRotationYaw = this.rotationYaw;
+            this.prevRotationPitch = this.rotationPitch;
         }
 
-        if (inTilePosition != null)
+        IBlockState iblockstate = this.world.getBlockState(inTilePosition);
+
+        if (iblockstate.getMaterial() != Material.AIR)
         {
-            IBlockState blockState = this.world.getBlockState(inTilePosition);
-            Block block = blockState.getBlock();
+            AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(this.world, inTilePosition);
 
-            if (block != Blocks.AIR)
+            if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(inTilePosition).contains(new Vec3d(this.posX, this.posY, this.posZ)))
             {
-                //var15.setBlockBoundsBasedOnState(this.world, this.xTile, this.yTile, this.zTile);
-                AxisAlignedBB var2 = block.getCollisionBoundingBox(blockState, this.world, inTilePosition);
-
-                if (var2 != null && var2.contains(new Vec3d(this.posX, this.posY, this.posZ)))
-                {
-                    this.inGround = true;
-                }
+                this.inGround = true;
             }
         }
 
@@ -192,160 +184,52 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (this.inGround)
         {
-            IBlockState blockState = inTilePosition != null ? this.world.getBlockState(inTilePosition) : Blocks.AIR.getDefaultState();
-
-            if (blockState == inTile)
+            if (iblockstate != this.inTile && !this.world.collidesWithAnyBlock(this.getEntityBoundingBox().grow(0.05D)))
             {
-                if (this.isExplosive)
-                {
-                    explode();
-                }
-                else
-                {
-                    if (this.isAnvil && this.world.rand.nextFloat() > 0.5f)
-                    {
-                        this.world.playSound(this.posX, (int) this.posY, (int) this.posZ, SoundEvents.BLOCK_ANVIL_HIT, SoundCategory.BLOCKS, 1, 1, true);
-                    }
-
-                    this.setDead();
-                }
+                this.inGround = false;
+                this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
+                this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
+                this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
+                this.ticksInAir = 0;
             }
             else
             {
-                this.inGround = false;
-                this.motionX *= (this.rand.nextFloat() * 0.2F);
-                this.motionY *= (this.rand.nextFloat() * 0.2F);
-                this.motionZ *= (this.rand.nextFloat() * 0.2F);
-                this.ticksInAir = 0;
+                onImpactGround();
             }
         }
         else
         {
             ++this.ticksInAir;
-            Vec3d var16 = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d var17 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            RayTraceResult movingObjPos = this.world.rayTraceBlocks(var16, var17, false);
-            var16 = new Vec3d(this.posX, this.posY, this.posZ);
-            var17 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+            Vec3d vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
+            Vec3d vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+            RayTraceResult raytraceresult = this.world.rayTraceBlocks(vec3d1, vec3d, false, true, false);
+            vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
+            vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
-            if (movingObjPos != null)
+            if (raytraceresult != null)
             {
-                var17 = new Vec3d(movingObjPos.hitVec.x, movingObjPos.hitVec.y, movingObjPos.hitVec.z);
+                vec3d = new Vec3d(raytraceresult.hitVec.x, raytraceresult.hitVec.y, raytraceresult.hitVec.z);
             }
 
-            Entity var4 = null;
-            List var5 = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().offset(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
-            double var6 = 0.0D;
-            int var8;
-            float var10;
+            Entity entity = this.findEntityOnPath(vec3d1, vec3d);
 
-            for (var8 = 0; var8 < var5.size(); ++var8)
+            if (entity != null)
             {
-                Entity var9 = (Entity) var5.get(var8);
-
-                if (var9.canBeCollidedWith() && (this.ticksInAir >= 5))
-                {
-                    var10 = 0.3F;
-                    AxisAlignedBB var11 = var9.getEntityBoundingBox().expand(var10, var10, var10);
-                    RayTraceResult var12 = var11.calculateIntercept(var16, var17);
-
-                    if (var12 != null)
-                    {
-                        double var13 = var16.distanceTo(var12.hitVec);
-
-                        if (var13 < var6 || var6 == 0.0D)
-                        {
-                            var4 = var9;
-                            var6 = var13;
-                        }
-                    }
-                }
+                raytraceresult = new RayTraceResult(entity);
             }
 
-            if (var4 != null)
+            if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
             {
-                movingObjPos = new RayTraceResult(var4);
-            }
-
-            float speed;
-
-            if (movingObjPos != null)
-            {
-                if (movingObjPos.entityHit != null)
-                {
-                    speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-                    int damage = (int) Math.ceil(speed * this.damage);
-
-                    if (this.arrowCritical)
-                    {
-                        damage += this.rand.nextInt(damage / 2 + 2);
-                    }
-
-                    DamageSource damageSource = (new EntityDamageSourceIndirect("arrow", this, this)).setProjectile();
-
-                    if (this.isBurning())
-                    {
-                        movingObjPos.entityHit.setFire(5);
-                    }
-
-                    if (movingObjPos.entityHit.attackEntityFrom(damageSource, damage))
-                    {
-                        if (movingObjPos.entityHit instanceof EntityLiving)
-                        {
-                            EntityLiving var24 = (EntityLiving) movingObjPos.entityHit;
-
-                            if (!this.world.isRemote)
-                            {
-                                var24.setArrowCountInEntity(var24.getArrowCountInEntity() + 1);
-                            }
-                        }
-
-                        this.world.playSound(posX, posY, posZ, SoundEvents.ENTITY_ARROW_HIT, SoundCategory.BLOCKS, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F), true);
-                        this.setDead();
-                    }
-                    else
-                    {
-                        this.motionX *= -0.10000000149011612D;
-                        this.motionY *= -0.10000000149011612D;
-                        this.motionZ *= -0.10000000149011612D;
-                        this.rotationYaw += 180.0F;
-                        this.prevRotationYaw += 180.0F;
-                        this.ticksInAir = 0;
-                    }
-                }
-                else
-                {
-                    this.inTilePosition = movingObjPos.getBlockPos();
-                    this.inTile = this.world.getBlockState(inTilePosition);
-                    this.motionX = ((float) (movingObjPos.hitVec.x - this.posX));
-                    this.motionY = ((float) (movingObjPos.hitVec.y - this.posY));
-                    this.motionZ = ((float) (movingObjPos.hitVec.z - this.posZ));
-                    speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-                    this.posX -= this.motionX / speed * 0.05000000074505806D;
-                    this.posY -= this.motionY / speed * 0.05000000074505806D;
-                    this.posZ -= this.motionZ / speed * 0.05000000074505806D;
-                    this.world.playSound(posX, posY, posZ, SoundEvents.ENTITY_ARROW_HIT, SoundCategory.BLOCKS, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F), true);
-                    this.inGround = true;
-                    this.arrowShake = 7;
-                    this.arrowCritical = false;
-                }
-            }
-
-            if (this.arrowCritical)
-            {
-                for (var8 = 0; var8 < 4; ++var8)
-                {
-                    this.world.spawnParticle(EnumParticleTypes.CRIT, this.posX + this.motionX * var8 / 4.0D, this.posY + this.motionY * var8 / 4.0D, this.posZ + this.motionZ * var8 / 4.0D, -this.motionX, -this.motionY + 0.2D, -this.motionZ);
-                }
+                this.onHit(raytraceresult);
             }
 
             this.posX += this.motionX;
             this.posY += this.motionY;
             this.posZ += this.motionZ;
-            speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
+            float f4 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
 
-            for (this.rotationPitch = (float) (Math.atan2(this.motionY, speed) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
+            for (this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f4) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
             {
                 ;
             }
@@ -367,26 +251,176 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
             this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
             this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
-            float var23 = 0.99F;
-            var10 = 0.05F;
+            float f1 = 0.99F;
+            float f2 = 0.05F;
 
             if (this.isInWater())
             {
-                for (int var25 = 0; var25 < 4; ++var25)
+                for (int i = 0; i < 4; ++i)
                 {
-                    float var24 = 0.25F;
-                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * var24, this.posY - this.motionY * var24, this.posZ - this.motionZ * var24, this.motionX, this.motionY, this.motionZ);
+                    float f3 = 0.25F;
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
                 }
 
-                var23 = 0.8F;
+                f1 = 0.6F;
             }
 
-            this.motionX *= var23;
-            this.motionY *= var23;
-            this.motionZ *= var23;
-            this.motionY -= var10;
+            if (this.isWet())
+            {
+                this.extinguish();
+            }
+
+            this.motionX *= (double)f1;
+            this.motionY *= (double)f1;
+            this.motionZ *= (double)f1;
+
+            if (!this.hasNoGravity())
+            {
+                this.motionY -= 0.05000000074505806D;
+            }
+
             this.setPosition(this.posX, this.posY, this.posZ);
+            this.doBlockCollisions();
         }
+    }
+
+    /**
+     * Called when the arrow hits a block or an entity
+     */
+    protected void onHit(RayTraceResult raytraceResultIn)
+    {
+        Entity entity = raytraceResultIn.entityHit;
+
+        if (entity != null)
+        {
+            float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+            int damageScaled = MathHelper.ceil((double)speed * this.damage);
+
+            DamageSource damagesource = new EntityDamageSourceIndirect("arrow", this, null).setProjectile(); //TODO track source, TODO custom damage type
+
+            //Notify that we hit an entity
+            this.onImpactEntity(entity);
+
+            if (this.isBurning() && !(entity instanceof EntityEnderman))
+            {
+                entity.setFire(5);
+            }
+
+            if (entity.attackEntityFrom(damagesource, (float)damageScaled))
+            {
+                if (!(entity instanceof EntityEnderman))
+                {
+                    this.setDead();
+                }
+            }
+            else
+            {
+                this.motionX *= -0.10000000149011612D;
+                this.motionY *= -0.10000000149011612D;
+                this.motionZ *= -0.10000000149011612D;
+                this.rotationYaw += 180.0F;
+                this.prevRotationYaw += 180.0F;
+                this.ticksInAir = 0;
+
+                if (!this.world.isRemote && this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ < 0.0010000000474974513D)
+                {
+                    this.setDead();
+                }
+            }
+        }
+        else
+        {
+            this.inTilePosition = raytraceResultIn.getBlockPos();
+            this.inTile = this.world.getBlockState(inTilePosition);
+            this.motionX = (double)((float)(raytraceResultIn.hitVec.x - this.posX));
+            this.motionY = (double)((float)(raytraceResultIn.hitVec.y - this.posY));
+            this.motionZ = (double)((float)(raytraceResultIn.hitVec.z - this.posZ));
+            float f2 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+            this.posX -= this.motionX / (double)f2 * 0.05000000074505806D;
+            this.posY -= this.motionY / (double)f2 * 0.05000000074505806D;
+            this.posZ -= this.motionZ / (double)f2 * 0.05000000074505806D;
+            this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+            this.inGround = true;
+            this.arrowShake = 7;
+
+            if (this.inTile.getMaterial() != Material.AIR)
+            {
+                this.inTile.getBlock().onEntityCollision(this.world, inTilePosition, this.inTile, this);
+            }
+        }
+    }
+
+    protected void onImpactEntity(Entity entity)
+    {
+        if (this.isExplosive)
+        {
+            explode();
+        }
+        else
+        {
+            playImpactAudio();
+        }
+    }
+
+
+    protected void onImpactGround()
+    {
+        if (this.isExplosive)
+        {
+            explode();
+        }
+        else
+        {
+            playImpactAudio();
+            this.setDead();
+        }
+    }
+
+    protected void playImpactAudio()
+    {
+        if(this.world.rand.nextFloat() > 0.5f)
+        {
+            if (this.isAnvil)
+            {
+                this.world.playSound(this.posX, (int) this.posY, (int) this.posZ, SoundEvents.BLOCK_ANVIL_HIT, SoundCategory.BLOCKS, 1, 1, true);
+            }
+            else
+            {
+                this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+            }
+        }
+    }
+
+    @Nullable
+    protected Entity findEntityOnPath(Vec3d start, Vec3d end)
+    {
+        Entity entity = null;
+        List<Entity> list = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D), ARROW_TARGETS);
+        double d0 = 0.0D;
+
+        for (int i = 0; i < list.size(); ++i)
+        {
+            Entity entity1 = list.get(i);
+
+            if (this.ticksInAir >= 5)
+            {
+                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.30000001192092896D);
+                RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(start, end);
+
+                if (raytraceresult != null)
+                {
+                    double d1 = start.squareDistanceTo(raytraceresult.hitVec);
+
+                    if (d1 < d0 || d0 == 0.0D)
+                    {
+                        entity = entity1;
+                        d0 = d1;
+                    }
+                }
+            }
+        }
+
+        return entity;
     }
 
     /** (abstract) Protected helper method to write subclass entity data to NBT. */
