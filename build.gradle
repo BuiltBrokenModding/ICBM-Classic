@@ -32,7 +32,11 @@ plugins {
 }
 
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
-apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/scripts/forge/deps.gradle'
+
+dependencies 
+{
+    testCompile 'junit:junit:4.11'
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
