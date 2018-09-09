@@ -381,7 +381,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
 
     protected boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
     {
-        if (!heldItem.isEmpty())
+        if (heldItem.getItem() instanceof ItemMissile && this.getMissileStack().isEmpty())
         {
             if (heldItem.getItem() instanceof ItemMissile)
             {
@@ -399,13 +399,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     return true;
                 }
             }
-            else if (launchScreen != null)
-            {
-                return ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
-                //return launchScreen.onPlayerActivated(player, side, hit);
-            }
         }
-        else if (!this.getMissileStack().isEmpty())
+        else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
         {
             if (isServer())
             {
@@ -415,6 +410,11 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                 player.inventoryContainer.detectAndSendChanges();
             }
             return true;
+        }
+        else if (launchScreen != null)
+        {
+            return ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
+            //return launchScreen.onPlayerActivated(player, side, hit);
         }
 
         return true;
