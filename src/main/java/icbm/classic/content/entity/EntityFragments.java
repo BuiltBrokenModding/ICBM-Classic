@@ -41,7 +41,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
     /** The owner of this arrow. */
     private int ticksInAir = 0;
-    private final int damage = 11;
+    private int damage = 11;
 
     /** Is this arrow a critical hit? (Controls particles and damage) */
     public boolean arrowCritical = false;
@@ -64,6 +64,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         if (this.isAnvil)
         {
             this.setSize(1, 1);
+            this.damage = 30;
         }
         else
         {
