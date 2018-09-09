@@ -201,12 +201,27 @@ public class GuiLauncherScreen extends GuiContainerBase
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
+        int containerPosX = (this.width - this.xSize) / 2;
+        int containerPosY = (this.height - this.ySize) / 2;
+
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         containerWidth = (this.width - this.xSize) / 2;
         containerHeight = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(containerWidth, containerHeight, 0, 0, this.xSize, this.ySize);
+
+        //Draw energy bar
+        if (tileEntity.getEnergy() > 0)
+        {
+            float energyScale = tileEntity.getEnergy() / (float) tileEntity.getEnergyBufferSize();
+
+            final int textureX = 352 / 2;
+            final int textureWidth = 8;
+            final int textureHeight = 142 / 2;
+            final int height = (int) Math.min(textureHeight, Math.floor(textureHeight * energyScale));
+            this.drawTexturedModalRect(containerPosX + 168, containerPosY + 65 + (textureHeight - height), textureX, textureHeight - height, textureWidth, height);
+        }
     }
 
     @Override
