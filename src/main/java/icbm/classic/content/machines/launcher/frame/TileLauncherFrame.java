@@ -8,6 +8,7 @@ import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.prefab.tile.TileMachine;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -114,8 +115,16 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
     @Override
     public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
     {
-        //TODO return this.onPlayerRightClick(player, side, new Pos(xHit, yHit, zHit));
-        return true;
+        return this.onPlayerRightClick(player, hand, player.getHeldItem(hand));
+    }
+
+    protected boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
+    {
+        if(launcherBase != null)
+        {
+            return launcherBase.onPlayerRightClick(player, hand, heldItem);
+        }
+        return false;
     }
 
     @Override
