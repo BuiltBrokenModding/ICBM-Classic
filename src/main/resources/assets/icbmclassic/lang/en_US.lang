@@ -294,6 +294,8 @@ gui.misc.y=Y:
 gui.misc.z=Z:
 gui.misc.status=Status:
 gui.misc.voltage=Voltage:
+gui.misc.missile=Missile[%d, %d]
+gui.misc.object=Object[%d, %d]
 
 gui.tracker.freq=Frequency
 gui.detector.name=Proximity Detector

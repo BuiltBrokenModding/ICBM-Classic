@@ -92,11 +92,11 @@ public class GuiRadarStation extends GuiContainerBase
 
         //Coordinates
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.x")
-                + " " + (int) Math.round(mouseOverCoords.x())
+                + " " + (int) Math.floor(mouseOverCoords.x())
                 + " " + LanguageUtility.getLocal("gui.misc.z")
-                + " " + (int) Math.round(mouseOverCoords.y()), 155, 30, 4210752);
+                + " " + (int) Math.floor(mouseOverCoords.y()), 155, 30, 4210752);
 
-        this.fontRenderer.drawString("\u00a76" + this.info, 155, 42, 4210752);
+        this.fontRenderer.drawString(this.info, 155, 42, 4210752);
         this.fontRenderer.drawString("\u00a74" + this.info2, 155, 54, 4210752);
 
         //Range Header
@@ -235,11 +235,11 @@ public class GuiRadarStation extends GuiContainerBase
                 {
                     if (type == 0)
                     {
-                        this.info = "Object: (" + x + "x, " + z + "z)";
+                        this.info = String.format(LanguageUtility.getLocal("gui.misc.object"), (int)x, (int)z);
                     }
                     else
                     {
-                        this.info = "Missile: (" + x + "x, " + z + "z)";
+                        this.info = (type == 1 ? "\u00a76" : "\u00a74") + String.format(LanguageUtility.getLocal("gui.misc.missile"), (int)x, (int)z);
                     }
                 }
             }
