@@ -116,7 +116,7 @@ public class GuiRadarStation extends GuiContainerBase
 
         // Shows the status of the radar
         String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle"); //TODO ?
+        String status;
 
         if (this.tileEntity.hasPower())
         {
@@ -205,21 +205,23 @@ public class GuiRadarStation extends GuiContainerBase
 
             for (Pos pos : tileEntity.guiDrawPoints)
             {
-                final int type = (int) pos.z();
+                final RadarObjectType type = RadarObjectType.get(pos.zi());
+
                 final double x = pos.x();
                 final double z = pos.y();
 
-                Point position = new Point(radarCenter.x() + (x - this.tileEntity.getPos().getX()) / this.radarMapRadius, radarCenter.y() - (z - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
+                Point position = new Point(radarCenter.x() + (x - this.tileEntity.getPos().getX()) / this.radarMapRadius,
+                        radarCenter.y() - (z - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
 
                 switch (type)
                 {
-                    case 1:
+                    case MISSILE:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_YELLOW_DOT);
                         break;
-                    case 2:
+                    case MISSILE_IMPACT:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_RED_DOT);
                         break;
-                    case 0:
+                    case OTHER:
                     default:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_WHITE_DOT);
                         break;
@@ -233,13 +235,13 @@ public class GuiRadarStation extends GuiContainerBase
 
                 if (new Rectangle(minPosition, maxPosition).isWithin(this.mousePosition))
                 {
-                    if (type == 0)
+                    if (type == RadarObjectType.OTHER)
                     {
                         this.info = String.format(LanguageUtility.getLocal("gui.misc.object"), (int)x, (int)z);
                     }
                     else
                     {
-                        this.info = (type == 1 ? "\u00a76" : "\u00a74") + String.format(LanguageUtility.getLocal("gui.misc.missile"), (int)x, (int)z);
+                        this.info = (type == RadarObjectType.MISSILE ? "\u00a76" : "\u00a74") + String.format(LanguageUtility.getLocal("gui.misc.missile"), (int)x, (int)z);
                     }
                 }
             }
