@@ -393,3 +393,9 @@ info.tracker.tooltip=Left Click on a mob (players aswell), and I Will point to i
 
 ## Death messages
 death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty black hole.
+
+## GPS
+gps.pos.set.name=GPS Data Saved
+gps.error.pos.invalid.name=Invalid Location
+gps.data.transferred.name=Data transferred
+gps.cleared.name=GPS Data Cleared
