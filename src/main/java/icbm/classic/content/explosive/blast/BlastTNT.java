@@ -225,7 +225,7 @@ public class BlastTNT extends Blast
                     try
                     {
                         //Do drops
-                        if (block.canDropFromExplosion(null))
+                        if (block.canDropFromExplosion(this))
                         {
                             block.dropBlockAsItemWithChance(this.world(), blownPosition, blockState, 1F, 0);
                         }

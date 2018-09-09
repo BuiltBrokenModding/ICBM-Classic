@@ -246,6 +246,12 @@ public class BlockExplosive extends BlockICBM
         super.onBlockExploded(world, pos, explosion);
     }
 
+    @Override
+    public boolean canDropFromExplosion(Explosion explosionIn)
+    {
+        return false;
+    }
+
     /**
      * Called upon block activation (left or right click on the block.). The three integers
      * represent x,y,z of the block.
