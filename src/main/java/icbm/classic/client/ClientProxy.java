@@ -5,6 +5,8 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.machines.launcher.cruise.TESRCruiseLauncher;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.missiles.Missile;
@@ -69,6 +71,8 @@ public class ClientProxy extends CommonProxy
         //Battery
         newBlockModel(ICBMClassic.blockBattery, 0, "inventory", "");
 
+        newBlockModel(ICBMClassic.blockCruiseLauncher, 0, "inventory", "");
+
         //Explosives
         registerExBlockRenders();
         registerGrenadeRenders();
@@ -124,6 +128,7 @@ public class ClientProxy extends CommonProxy
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new TESRLauncherFrame());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherScreen.class, new TESRLauncherScreen());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
     }
 
     protected void registerMultiBlockRenders()

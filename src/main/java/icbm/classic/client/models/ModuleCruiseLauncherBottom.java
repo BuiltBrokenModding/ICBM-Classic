@@ -6,36 +6,39 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MXiaoFaSheQi extends ModelBase
+public class ModuleCruiseLauncherBottom extends ModelBase
 {
     // fields
-    ModelRenderer SUPPORT_1;
-    ModelRenderer SUPPORT_2;
+    ModelRenderer SUPPORT_CROSS_A;
+    ModelRenderer SUPPORT_CROSS_B;
     ModelRenderer SUPPORT_3;
     ModelRenderer SUPPORT_4;
     ModelRenderer SUPPORT_5;
     ModelRenderer SUPPORT_6;
+
     ModelRenderer MAIN_BODY;
     ModelRenderer MAIN_SUPPORT;
     ModelRenderer TORQUE_ROT;
 
-    public MXiaoFaSheQi()
+    public ModuleCruiseLauncherBottom()
     {
         textureWidth = 128;
         textureHeight = 128;
 
-        SUPPORT_1 = new ModelRenderer(this, 0, 0);
-        SUPPORT_1.addBox(-1F, 0F, -21F, 2, 1, 42);
-        SUPPORT_1.setRotationPoint(0F, 21F, 0F);
-        SUPPORT_1.setTextureSize(128, 128);
-        SUPPORT_1.mirror = true;
-        setRotation(SUPPORT_1, 0F, 0.7853982F, 0F);
-        SUPPORT_2 = new ModelRenderer(this, 0, 0);
-        SUPPORT_2.addBox(-1F, 0F, -21F, 2, 1, 42);
-        SUPPORT_2.setRotationPoint(0F, 21F, 0F);
-        SUPPORT_2.setTextureSize(128, 128);
-        SUPPORT_2.mirror = true;
-        setRotation(SUPPORT_2, 0F, 2.356194F, 0F);
+        SUPPORT_CROSS_A = new ModelRenderer(this, 0, 0);
+        SUPPORT_CROSS_A.addBox(-1F, 0.1F, -21F, 2, 1, 42);
+        SUPPORT_CROSS_A.setRotationPoint(0F, 21F, 0F);
+        SUPPORT_CROSS_A.setTextureSize(128, 128);
+        SUPPORT_CROSS_A.mirror = true;
+        setRotation(SUPPORT_CROSS_A, 0F, 0.7853982F, 0F);
+
+        SUPPORT_CROSS_B = new ModelRenderer(this, 0, 0);
+        SUPPORT_CROSS_B.addBox(-1F, 0.1F, -21F, 2, 1, 42);
+        SUPPORT_CROSS_B.setRotationPoint(0F, 21F, 0F);
+        SUPPORT_CROSS_B.setTextureSize(128, 128);
+        SUPPORT_CROSS_B.mirror = true;
+        setRotation(SUPPORT_CROSS_B, 0F, 2.356194F, 0F);
+
         SUPPORT_3 = new ModelRenderer(this, 0, 28);
         SUPPORT_3.addBox(0F, 0F, 0F, 4, 3, 4);
         SUPPORT_3.setRotationPoint(-16F, 21F, -16F);
@@ -60,6 +63,7 @@ public class MXiaoFaSheQi extends ModelBase
         SUPPORT_6.setTextureSize(128, 128);
         SUPPORT_6.mirror = true;
         setRotation(SUPPORT_6, 0F, 0F, 0F);
+
         MAIN_BODY = new ModelRenderer(this, 0, 46);
         MAIN_BODY.addBox(0F, 0F, 0F, 6, 4, 6);
         MAIN_BODY.setRotationPoint(-3F, 20F, -3F);
@@ -83,8 +87,8 @@ public class MXiaoFaSheQi extends ModelBase
 
     public void render(float f5)
     {
-        SUPPORT_1.render(f5);
-        SUPPORT_2.render(f5);
+        SUPPORT_CROSS_A.render(f5);
+        SUPPORT_CROSS_B.render(f5);
         SUPPORT_3.render(f5);
         SUPPORT_4.render(f5);
         SUPPORT_5.render(f5);

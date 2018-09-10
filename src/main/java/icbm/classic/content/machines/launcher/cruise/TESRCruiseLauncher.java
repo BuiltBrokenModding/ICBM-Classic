@@ -1,8 +1,8 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.MXiaoFaSheQi;
-import icbm.classic.client.models.MXiaoFaSheQiJia;
+import icbm.classic.client.models.ModuleCruiseLauncherBottom;
+import icbm.classic.client.models.ModelCruiseLauncherTop;
 import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.explosive.Explosives;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -20,8 +20,8 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "cruise_launcher.png");
 
-    public static final MXiaoFaSheQi MODEL0 = new MXiaoFaSheQi();
-    public static final MXiaoFaSheQiJia MODEL1 = new MXiaoFaSheQiJia();
+    public static final ModuleCruiseLauncherBottom MODEL0 = new ModuleCruiseLauncherBottom();
+    public static final ModelCruiseLauncherTop MODEL1 = new ModelCruiseLauncherTop();
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -32,15 +32,19 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
+
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
+
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
         MODEL0.render(0.0625F);
-        GL11.glRotatef(-yaw, 0F, 1F, 0F);
+
+        GL11.glRotatef(-yaw, 0F, 1F, 0F); //TODO add lerp function to smooth rotation when FPS spikes
         GL11.glRotatef(-pitch, 1F, 0F, 0F);
         MODEL1.render(0.0625F);
+
         GL11.glPopMatrix();
 
-        if (launcher.cachedMissileStack != null)
+        if (!launcher.cachedMissileStack.isEmpty())
         {
             GL11.glPushMatrix();
             GL11.glTranslatef((float) x + 0.5F, (float) y + 1, (float) z + 0.5f);
