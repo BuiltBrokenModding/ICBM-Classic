@@ -148,8 +148,7 @@ public class BlastRedmatter extends Blast
                             {
                                 final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
                                 //Ignore air blocks and unbreakable blocks
-                                if (!block.isAir(blockState, world(), blockPos)
-                                        && (isFluid || blockState.getBlockHardness(world, blockPos) >= 0))
+                                if (!block.isAir(blockState, world(), blockPos)&&(((isFluid && blockState.getValue(BlockLiquid.LEVEL) < 7  )||( !isFluid && blockState.getBlockHardness(world, blockPos) >= 0))))
                                 {
                                     //TODO handle multi-blocks
 
