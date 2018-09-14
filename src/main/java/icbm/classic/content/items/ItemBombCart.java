@@ -83,9 +83,9 @@ public class ItemBombCart extends ItemICBMBase
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack itemstack)
+    public String getTranslationKey(ItemStack itemstack)
     {
-        return "icbm.minecart." + Explosives.get(itemstack.getItemDamage()).handler.getUnlocalizedName();
+        return "icbm.minecart." + Explosives.get(itemstack.getItemDamage()).handler.getTranslationKey();
     }
 
     @Override

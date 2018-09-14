@@ -27,8 +27,8 @@ public class GuiRadarStation extends GuiContainerBase
     private int containerPosX;
     private int containerPosY;
 
-    private GuiTextField textFieldAlarmRange;
-    private GuiTextField textFieldSafetyZone;
+    private GuiTextField textFieldDetectionRange;
+    private GuiTextField textFieldTriggerRange;
     private GuiTextField textFieldFrequency;
 
     private Point mouseOverCoords = new Point();
@@ -58,16 +58,16 @@ public class GuiRadarStation extends GuiContainerBase
     {
         super.initGui();
 
-        this.textFieldSafetyZone = new GuiTextField(0, fontRenderer, 210, 67, 30, 12);
-        this.textFieldSafetyZone.setMaxStringLength(3);
-        this.textFieldSafetyZone.setText(this.tileEntity.safetyRange + "");
+        this.textFieldTriggerRange = new GuiTextField(0, fontRenderer, 210, 67, 30, 12);
+        this.textFieldTriggerRange.setMaxStringLength(3);
+        this.textFieldTriggerRange.setText(this.tileEntity.safetyRange + "");
 
-        this.textFieldAlarmRange = new GuiTextField(1, fontRenderer, 210, 82, 30, 12);
-        this.textFieldAlarmRange.setMaxStringLength(3);
-        this.textFieldAlarmRange.setText(this.tileEntity.alarmRange + "");
+        this.textFieldDetectionRange = new GuiTextField(1, fontRenderer, 210, 82, 30, 12);
+        this.textFieldDetectionRange.setMaxStringLength(3);
+        this.textFieldDetectionRange.setText(this.tileEntity.alarmRange + "");
 
-        this.textFieldFrequency = new GuiTextField(2, fontRenderer, 155, 112, 50, 12);
-        this.textFieldFrequency.setMaxStringLength(6);
+        this.textFieldFrequency = new GuiTextField(2, fontRenderer, 210, 108, 30, 12);
+        this.textFieldFrequency.setMaxStringLength(3);
         this.textFieldFrequency.setText(this.tileEntity.getFrequency() + "");
 
         //Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, -1, true));
@@ -84,29 +84,39 @@ public class GuiRadarStation extends GuiContainerBase
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal(ICBMClassic.blockRadarStation.getUnlocalizedName()), this.xSize / 2 - 30, 6, 4210752);
+        //Header
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocalName(ICBMClassic.blockRadarStation.getTranslationKey()), this.xSize / 2 - 30, 6, 4210752);
 
+        //Coredinates header
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.coords"), 155, 18, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.x") + " " + (int) Math.round(mouseOverCoords.x()) + " " + LanguageUtility.getLocal("gui.misc.z") + " " + (int) Math.round(mouseOverCoords.y()), 155, 30, 4210752);
 
-        this.fontRenderer.drawString("\u00a76" + this.info, 155, 42, 4210752);
+        //Coordinates
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.x")
+                + " " + (int) Math.floor(mouseOverCoords.x())
+                + " " + LanguageUtility.getLocal("gui.misc.z")
+                + " " + (int) Math.floor(mouseOverCoords.y()), 155, 30, 4210752);
+
+        this.fontRenderer.drawString(this.info, 155, 42, 4210752);
         this.fontRenderer.drawString("\u00a74" + this.info2, 155, 54, 4210752);
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.zoneSafe"), 152, 70, 4210752);
-        this.textFieldSafetyZone.drawTextBox();
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.zoneAlarm"), 150, 85, 4210752);
-        this.textFieldAlarmRange.drawTextBox();
+        //Range Header
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.range"), 152, 55, 4210752);
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 155, 100, 4210752);
+        //Trigger range
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.range.trigger"), 155, 70, 4210752);
+        this.textFieldTriggerRange.drawTextBox();
+
+        //Detection range
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.radar.range.detection"), 155, 85, 4210752);
+        this.textFieldDetectionRange.drawTextBox();
+
+        //Hz
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 152, 110, 4210752);
         this.textFieldFrequency.drawTextBox();
-
-        //this.fontRenderer.drawString(UnitDisplay.getDisplay(TileRadarStation.WATTS, UnitDisplay.Unit.WATT), 155, 128, 4210752);
-
-        //this.fontRenderer.drawString(UnitDisplay.getDisplay(this.tileEntity.getVoltageInput(null), Unit.VOLTAGE), 155, 138, 4210752);
 
         // Shows the status of the radar
         String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
+        String status;
 
         if (this.tileEntity.hasPower())
         {
@@ -126,13 +136,13 @@ public class GuiRadarStation extends GuiContainerBase
     public void keyTyped(char par1, int par2) throws IOException
     {
         super.keyTyped(par1, par2);
-        this.textFieldSafetyZone.textboxKeyTyped(par1, par2);
-        this.textFieldAlarmRange.textboxKeyTyped(par1, par2);
+        this.textFieldTriggerRange.textboxKeyTyped(par1, par2);
+        this.textFieldDetectionRange.textboxKeyTyped(par1, par2);
         this.textFieldFrequency.textboxKeyTyped(par1, par2);
 
         try
         {
-            int newSafetyRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldSafetyZone.getText())));
+            int newSafetyRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldTriggerRange.getText())));
             this.tileEntity.safetyRange = newSafetyRadius;
             ICBMClassic.packetHandler.sendToServer(new PacketTile("safeRange_C>S", 2, this.tileEntity).addData(this.tileEntity.safetyRange));
         }
@@ -142,7 +152,7 @@ public class GuiRadarStation extends GuiContainerBase
 
         try
         {
-            int newAlarmRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldAlarmRange.getText())));
+            int newAlarmRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldDetectionRange.getText())));
             this.tileEntity.alarmRange = newAlarmRadius;
             ICBMClassic.packetHandler.sendToServer(new PacketTile("alarmRange_C>S", 3, this.tileEntity).addData(this.tileEntity.alarmRange));
         }
@@ -166,8 +176,8 @@ public class GuiRadarStation extends GuiContainerBase
     public void mouseClicked(int par1, int par2, int par3) throws IOException
     {
         super.mouseClicked(par1, par2, par3);
-        this.textFieldAlarmRange.mouseClicked(par1 - containerPosX, par2 - containerPosY, par3);
-        this.textFieldSafetyZone.mouseClicked(par1 - containerPosX, par2 - containerPosY, par3);
+        this.textFieldDetectionRange.mouseClicked(par1 - containerPosX, par2 - containerPosY, par3);
+        this.textFieldTriggerRange.mouseClicked(par1 - containerPosX, par2 - containerPosY, par3);
         this.textFieldFrequency.mouseClicked(par1 - containerPosX, par2 - containerPosY, par3);
     }
 
@@ -195,21 +205,23 @@ public class GuiRadarStation extends GuiContainerBase
 
             for (Pos pos : tileEntity.guiDrawPoints)
             {
-                final int type = (int) pos.z();
+                final RadarObjectType type = RadarObjectType.get(pos.zi());
+
                 final double x = pos.x();
                 final double z = pos.y();
 
-                Point position = new Point(radarCenter.x() + (x - this.tileEntity.getPos().getX()) / this.radarMapRadius, radarCenter.y() - (z - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
+                Point position = new Point(radarCenter.x() + (x - this.tileEntity.getPos().getX()) / this.radarMapRadius,
+                        radarCenter.y() - (z - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
 
                 switch (type)
                 {
-                    case 1:
+                    case MISSILE:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_YELLOW_DOT);
                         break;
-                    case 2:
+                    case MISSILE_IMPACT:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_RED_DOT);
                         break;
-                    case 0:
+                    case OTHER:
                     default:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_WHITE_DOT);
                         break;
@@ -223,16 +235,27 @@ public class GuiRadarStation extends GuiContainerBase
 
                 if (new Rectangle(minPosition, maxPosition).isWithin(this.mousePosition))
                 {
-                    if (type == 0)
+                    if (type == RadarObjectType.OTHER)
                     {
-                        this.info = "Object: (" + x + "x, " + z + "z)";
+                        this.info = String.format(LanguageUtility.getLocal("gui.misc.object"), (int)x, (int)z);
                     }
                     else
                     {
-                        this.info = "Missile: (" + x + "x, " + z + "z)";
+                        this.info = (type == RadarObjectType.MISSILE ? "\u00a76" : "\u00a74") + String.format(LanguageUtility.getLocal("gui.misc.missile"), (int)x, (int)z);
                     }
                 }
             }
+        }
+
+        //Draw energy bar
+        if (tileEntity.getEnergy() > 0)
+        {
+            float energyScale = tileEntity.getEnergy() / (float) tileEntity.getEnergyBufferSize();
+
+            final int textureWidth = 8;
+            final int textureHeight = 142 / 2;
+            final int height = (int) Math.min(textureHeight, Math.floor(textureHeight * energyScale));
+            this.drawTexturedModalRect(containerPosX + 248, containerPosY + 65 + (textureHeight - height), 0, (332 / 2) + textureHeight - height, textureWidth, height);
         }
     }
 
@@ -263,13 +286,13 @@ public class GuiRadarStation extends GuiContainerBase
             }
         }
 
-        if (!this.textFieldSafetyZone.isFocused())
+        if (!this.textFieldTriggerRange.isFocused())
         {
-            this.textFieldSafetyZone.setText(this.tileEntity.safetyRange + "");
+            this.textFieldTriggerRange.setText(this.tileEntity.safetyRange + "");
         }
-        if (!this.textFieldAlarmRange.isFocused())
+        if (!this.textFieldDetectionRange.isFocused())
         {
-            this.textFieldAlarmRange.setText(this.tileEntity.alarmRange + "");
+            this.textFieldDetectionRange.setText(this.tileEntity.alarmRange + "");
         }
     }
 }

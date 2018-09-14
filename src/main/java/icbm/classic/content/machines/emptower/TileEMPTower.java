@@ -77,7 +77,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                     ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getChargePercentage(), true);
                     sendDescPacket();
                 }
-                if (world.isBlockIndirectlyGettingPowered(getPos()) > 0)
+                if (world.getRedstonePowerFromNeighbors(getPos()) > 0)
                 {
                     fire();
                 }

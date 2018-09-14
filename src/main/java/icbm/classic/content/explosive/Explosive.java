@@ -55,11 +55,11 @@ public abstract class Explosive implements IExplosive
     //@Override
     //public final int getID()
     //{
-    //    return ExplosiveRegistry.getID(this.getUnlocalizedName());
+    //    return ExplosiveRegistry.getID(this.getTranslationKey());
     //}
 
 
-    public String getUnlocalizedName()
+    public String getTranslationKey()
     {
         return this.nameID;
     }
@@ -105,7 +105,7 @@ public abstract class Explosive implements IExplosive
      *
      * @return The Fuse
      */
-    public int getYinXin()
+    public int getFuseTimer()
     {
         return fuseTime;
     }
@@ -116,7 +116,7 @@ public abstract class Explosive implements IExplosive
      * @param world
      * @param entity
      */
-    public void yinZhaQian(World world, Entity entity)
+    public void onEntityCreated(World world, Entity entity)
     {
         world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
@@ -126,7 +126,7 @@ public abstract class Explosive implements IExplosive
      *
      * @param fuseTicks - The amount of ticks this explosive is on fuse
      */
-    public void onYinZha(World world, Pos position, int fuseTicks)
+    public void onFuseTick(World world, Pos position, int fuseTicks)
     {
         world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }

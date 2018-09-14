@@ -151,8 +151,8 @@ public class InventoryUtility
 
     public static boolean doTagsMatch(final NBTTagCompound tag, final NBTTagCompound tag2)
     {
-        boolean firstTagEmpty = tag == null || tag.hasNoTags();
-        boolean firstTagEmpty2 = tag2 == null || tag2.hasNoTags();
+        boolean firstTagEmpty = tag == null || tag.isEmpty();
+        boolean firstTagEmpty2 = tag2 == null || tag2.isEmpty();
         if (firstTagEmpty && firstTagEmpty2)
         {
             return true;

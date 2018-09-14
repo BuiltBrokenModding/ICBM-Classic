@@ -294,6 +294,8 @@ gui.misc.y=Y:
 gui.misc.z=Z:
 gui.misc.status=Status:
 gui.misc.voltage=Voltage:
+gui.misc.missile=Missile[%d, %d]
+gui.misc.object=Object[%d, %d]
 
 gui.tracker.freq=Frequency
 gui.detector.name=Proximity Detector
@@ -367,10 +369,10 @@ gui.coordinator.time=Time: %p Seconds
 gui.coordinator.direction=Direction:
 gui.coordinator.wip=More features coming soon!
 
-gui.assembler.name=Missile Table
 gui.radar.coords=Coordinates:
-gui.radar.zoneSafe=Safe Zone:
-gui.radar.zoneAlarm=Alarm Zone:
+gui.radar.range=Range
+gui.radar.range.trigger=Trigger:
+gui.radar.range.detection=Detection:
 gui.radar.on=Radar On!
 gui.radar.nopower=No Electricity!
 
@@ -391,3 +393,11 @@ info.detonator.noLink=No Linked Explosive
 info.misc.tier=Explosive Tier
 info.tracker.tooltip=Left Click on a mob (players aswell), and I Will point to it.
 
+## Death messages
+death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty black hole.
+
+## GPS
+gps.pos.set.name=GPS Data Saved
+gps.error.pos.invalid.name=Invalid Location
+gps.data.transferred.name=Data transferred
+gps.cleared.name=GPS Data Cleared

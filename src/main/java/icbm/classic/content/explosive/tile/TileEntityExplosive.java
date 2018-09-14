@@ -87,7 +87,7 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     @Override
     public EnumFacing getDirection()
     {
-        return EnumFacing.getFront(this.getBlockMetadata());
+        return EnumFacing.byIndex(this.getBlockMetadata());
     }
 
     @Override

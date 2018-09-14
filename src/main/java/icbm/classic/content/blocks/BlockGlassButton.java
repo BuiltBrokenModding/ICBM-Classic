@@ -21,7 +21,7 @@ public class BlockGlassButton extends BlockButton
     {
         super(false);
         this.setTickRandomly(true);
-        this.setUnlocalizedName(ICBMClassic.PREFIX + "glassButton");
+        this.setTranslationKey(ICBMClassic.PREFIX + "glassButton");
         this.setRegistryName(ICBMClassic.PREFIX + "glassButton");
         this.setSoundType(SoundType.GLASS);
         this.setHardness(0.5F);
@@ -29,7 +29,7 @@ public class BlockGlassButton extends BlockButton
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }

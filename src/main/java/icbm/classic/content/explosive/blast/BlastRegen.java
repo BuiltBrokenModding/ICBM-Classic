@@ -25,7 +25,7 @@ public class BlastRegen extends Blast
         {
             try
             {
-                Chunk oldChunk = world().getChunkFromChunkCoords(position.xi() >> 4, position.zi() >> 4);
+                Chunk oldChunk = world().getChunk(position.xi() >> 4, position.zi() >> 4);
 
                 if (world() instanceof WorldServer)
                 {

@@ -21,9 +21,9 @@ public class ExAntimatter extends Explosion
      *
      * @param fuseTicks - The amount of ticks this explosive is on fuse */
     @Override
-    public void onYinZha(World worldObj, Pos position, int fuseTicks)
+    public void onFuseTick(World worldObj, Pos position, int fuseTicks)
     {
-        super.onYinZha(worldObj, position, fuseTicks);
+        super.onFuseTick(worldObj, position, fuseTicks);
 
         if (fuseTicks % 25 == 0)
         {

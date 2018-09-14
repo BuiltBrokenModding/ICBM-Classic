@@ -7,7 +7,7 @@ import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
@@ -379,9 +379,21 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         return getInventory().getStackInSlot(0);
     }
 
-    protected boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
+    public boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
     {
-        if (!heldItem.isEmpty())
+
+        if (!tryInsertMissile(player, hand, heldItem) && launchScreen != null)
+        {
+            return ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
+            //return launchScreen.onPlayerActivated(player, side, hit);
+        }
+
+        return true;
+    }
+
+    public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem)
+    {
+        if (heldItem.getItem() instanceof ItemMissile && this.getMissileStack().isEmpty())
         {
             if (heldItem.getItem() instanceof ItemMissile)
             {
@@ -399,13 +411,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     return true;
                 }
             }
-            else if (launchScreen != null)
-            {
-                return ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
-                //return launchScreen.onPlayerActivated(player, side, hit);
-            }
         }
-        else if (!this.getMissileStack().isEmpty())
+        else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
         {
             if (isServer())
             {
@@ -416,8 +423,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
             }
             return true;
         }
-
-        return true;
+        return false;
     }
 
     @Override

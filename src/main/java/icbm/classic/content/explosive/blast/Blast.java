@@ -11,9 +11,12 @@ import icbm.classic.content.explosive.thread.ThreadExplosion;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -179,6 +182,9 @@ public abstract class Blast extends Explosion implements IBlast
         //Forge event, allows for interaction and canceling the explosion
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this)) return;
 
+        //Play audio to confirm explosion triggered
+        playExplodeSound();
+
         //Start explosion
         if (this.proceduralInterval() > 0)
         {
@@ -199,6 +205,16 @@ public abstract class Blast extends Explosion implements IBlast
             this.doExplode();
             this.postExplode();
         }
+    }
+
+    protected void playExplodeSound()
+    {
+        this.world.playSound((EntityPlayer)null,
+                this.x, this.y, this.z,
+                SoundEvents.ENTITY_GENERIC_EXPLODE,
+                SoundCategory.BLOCKS,
+                4.0F,
+                (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
     }
 
     /**

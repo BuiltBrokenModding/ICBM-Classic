@@ -18,9 +18,9 @@ public class ExExothermic extends Explosion
     }
 
     @Override
-    public void onYinZha(World worldObj, Pos position, int fuseTicks)
+    public void onFuseTick(World worldObj, Pos position, int fuseTicks)
     {
-        super.onYinZha(worldObj, position, fuseTicks);
+        super.onFuseTick(worldObj, position, fuseTicks);
         worldObj.spawnParticle(EnumParticleTypes.LAVA, position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
 

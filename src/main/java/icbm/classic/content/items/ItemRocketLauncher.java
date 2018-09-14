@@ -2,12 +2,13 @@ package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigMain;
-import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.prefab.item.ItemICBMElectrical;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -111,7 +112,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
                                         if (!player.capabilities.isCreativeMode)
                                         {
-                                            player.inventory.setInventorySlotContents(slot, null);
+                                            player.inventory.setInventorySlotContents(slot, ItemStack.EMPTY);
                                             player.inventoryContainer.detectAndSendChanges();
                                             this.discharge(stack, ENERGY, true);
                                         }
@@ -149,9 +150,16 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     }
 
     @Override
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List lines)
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag)
     {
-        String str = LanguageUtility.getLocal("item.icbmclassic:rocketLauncher.info").replaceAll("%s", String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
-        lines.add(str);
+        final String key = "item.icbmclassic:rocketLauncher.info";
+        String translation = LanguageUtility.getLocal(key);
+
+        if(translation.contains("%s"))
+        {
+            String str = String.format(translation, String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
+            splitAdd(str, list, false, false);
+        }
     }
 }

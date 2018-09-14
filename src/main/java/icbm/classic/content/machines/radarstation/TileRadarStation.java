@@ -2,8 +2,8 @@ package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -49,6 +49,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     ExternalInventory inventory;
 
     protected List<Pos> guiDrawPoints = new ArrayList();
+    protected RadarObjectType[] types;
     protected boolean updateDrawList = true;
 
     @Override
@@ -96,7 +97,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             {
                 if (detectedEntities.size() > 0)
                 {
-                    world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, true));
+                    world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, false));
                 }
 
                 incomingMissiles.clear();
@@ -110,7 +111,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn));
                 for (EnumFacing facing : EnumFacing.HORIZONTALS)
                 {
-                    BlockPos pos = getPos().add(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
+                    BlockPos pos = getPos().add(facing.getXOffset(), facing.getYOffset(), facing.getZOffset());
                     for (EnumFacing enumfacing : EnumFacing.values())
                     {
                         world.notifyNeighborsOfStateChange(pos.offset(enumfacing), getBlockType(), false);
@@ -130,12 +131,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                         Entity entity = detectedEntities.get(i);
                         if (entity != null)
                         {
-                            int type = 0;
-                            if (entity instanceof EntityMissile)
-                            {
-                                type = isMissileGoingToHit((EntityMissile) entity) ? 1 : 2;
-                            }
-                            guiDrawPoints.add(new Pos(entity.posX, entity.posZ, type));
+                            guiDrawPoints.add(new Pos(entity.posX, entity.posZ, types[i].ordinal()));
                         }
                     }
                 }
@@ -165,7 +161,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.incomingMissiles.clear();
         this.detectedEntities.clear();
 
-        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, MAX_DETECTION_RANGE);
+        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(alarmRange, MAX_DETECTION_RANGE));
 
         for (Entity entity : entities)
         {
@@ -187,9 +183,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
                             for (int i = 0; i < this.incomingMissiles.size(); i++)
                             {
-                                EntityMissile daoDan = this.incomingMissiles.get(i);
+                                EntityMissile missile = this.incomingMissiles.get(i);
 
-                                if (dist < new Pos((TileEntity) this).distance((IPos3D) daoDan))
+                                if (dist < new Pos((TileEntity) this).distance((IPos3D) missile))
                                 {
                                     this.incomingMissiles.add(i, (EntityMissile) entity);
                                     break;
@@ -223,8 +219,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         {
             return false;
         }
+        double d = missile.targetPos.distance(this);
         //TODO simplify code to not use vector system
-        return missile.targetPos.distance(this) < this.safetyRange;
+        return d < this.safetyRange;
     }
 
     @Override
@@ -242,10 +239,18 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 if (entity != null && entity.isEntityAlive())
                 {
                     packet.write(entity.getEntityId());
+
+                    int type = RadarObjectType.OTHER.ordinal();
+                    if (entity instanceof EntityMissile)
+                    {
+                        type = isMissileGoingToHit((EntityMissile) entity) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
+                    }
+                    packet.write(type);
                 }
                 else
                 {
                     packet.write(-1);
+                    packet.write(0);
                 }
             }
         }
@@ -281,8 +286,12 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
                     this.updateDrawList = true;
 
+                    types = null;
                     detectedEntities.clear(); //TODO recode so we are not getting entities client side
+
                     int entityListSize = data.readInt();
+                    types = new RadarObjectType[entityListSize];
+
                     for (int i = 0; i < entityListSize; i++)
                     {
                         int id = data.readInt();
@@ -294,6 +303,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                                 detectedEntities.add(entity);
                             }
                         }
+                        types[i] = RadarObjectType.get(data.readInt());
                     }
                     return true;
                 }
@@ -338,7 +348,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
                 for (EnumFacing rotation : EnumFacing.HORIZONTALS)
                 {
-                    double dist = position.distance(new Point(this.getPos().getX() + rotation.getFrontOffsetX(), this.getPos().getZ() + rotation.getFrontOffsetZ()));
+                    double dist = position.distance(new Point(this.getPos().getX() + rotation.getXOffset(), this.getPos().getZ() + rotation.getZOffset()));
 
                     if (dist < closest || closest < 0)
                     {

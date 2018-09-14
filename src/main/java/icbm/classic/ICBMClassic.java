@@ -1,10 +1,10 @@
 package icbm.classic;
 
+import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
@@ -16,12 +16,15 @@ import icbm.classic.content.machines.emptower.BlockEmpTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
 import icbm.classic.content.machines.launcher.base.BlockLauncherBase;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
+import icbm.classic.content.machines.launcher.cruise.BlockCruiseLauncher;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.machines.launcher.frame.BlockLaunchFrame;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.BlockLaunchScreen;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.machines.radarstation.BlockRadarStation;
 import icbm.classic.content.machines.radarstation.TileRadarStation;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.multiblock.BlockMultiblock;
 import icbm.classic.content.multiblock.TileMulti;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -130,7 +133,6 @@ public final class ICBMClassic
 
     //Mod support
     public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
-    public static int blockRadioactiveMeta;
 
     // Blocks
     public static Block blockGlassPlate;
@@ -185,21 +187,6 @@ public final class ICBMClassic
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
-        //TODO add missing mappings for the following
-        //"icbmCPoisonPowder" -> "poisonPowder"
-        //"icbmCSulfurDust" -> "sulfurDust"
-        //"icbmCAntidote" -> "antidote"
-        //"icbmCSignalDisrupter" -> "signalDisrupter"
-        //"icbmCTracker" -> "tracker"
-        //"icbmCMissile", ->"missile"
-        //"icbmCDefuser", -> "defuser"
-        //"icbmCRadarGun", -> "radarGun"
-        //"icbmCRemoteDetonator", -> "remoteDetonator"
-        //"icbmCLaserDetonator", -> "laserDetonator"
-        //"icbmCRocketLauncher", -> "rocketLauncher"
-        //"icbmCGrenade", -> "grenade"
-        //"icbmCBombCart", -> "bombcart"
-
         //Items
         event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
@@ -229,6 +216,7 @@ public final class ICBMClassic
         event.getRegistry().register(new ItemBlockRotatedMultiTile(blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen));
         event.getRegistry().register(new ItemBlockSubTypes(blockBattery));
+        event.getRegistry().register(new ItemBlock(blockCruiseLauncher).setRegistryName(blockCruiseLauncher.getRegistryName()));
 
         //Crafting resources
         if (ConfigItems.ENABLE_CRAFTING_ITEMS)
@@ -269,20 +257,6 @@ public final class ICBMClassic
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
-        //TODO add conversion for
-        //"icbmCGlassPlate" -> "glassPressurePlate"
-        //"icbmCGlassButton" -> "glassButton"
-        //"icbmCSpike" -> "spikes"
-        //"icbmCConcrete" -> "concrete"
-        //"icbmCGlass" -> "reinforcedGlass"
-        //"icbmCRail"
-        //"icbmCExplosive" -> "explosives"
-        //"icbmCEmpTower" -> "emptower"
-        //"icbmCRadarStation" -> "radarStation"
-        //"icbmCLauncherFrame" -> "launcherFrame"
-        //"icbmCLauncherBase" -> "launcherBase"
-        //"icbmCLauncherScreen" -> "launcherScreen"
-
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         event.getRegistry().register(blockGlassButton = new BlockGlassButton());
         event.getRegistry().register(blockSpikes = new BlockSpikes());
@@ -299,6 +273,8 @@ public final class ICBMClassic
         event.getRegistry().register(multiBlock = new BlockMultiblock());
         event.getRegistry().register(blockBattery = new BlockBattery());
 
+        event.getRegistry().register(blockCruiseLauncher = new BlockCruiseLauncher());
+
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
@@ -313,6 +289,7 @@ public final class ICBMClassic
         GameRegistry.registerTileEntity(TileLauncherScreen.class, PREFIX + "launcherscreen");
         GameRegistry.registerTileEntity(TileMulti.class, PREFIX + "multiblock");
         GameRegistry.registerTileEntity(TileEntityBattery.class, PREFIX + "batterybox");
+        GameRegistry.registerTileEntity(TileCruiseLauncher.class, PREFIX + "cruiseLauncher");
     }
 
     @SubscribeEvent
@@ -354,7 +331,7 @@ public final class ICBMClassic
             GameRegistry.addSmelting(new ItemStack(itemIngotClump, 1, 0), new ItemStack(itemIngot, 1, 0), 0.1f);
         }
 
-        if(ConfigItems.ENABLE_PLATES_ITEMS)
+        if (ConfigItems.ENABLE_PLATES_ITEMS)
         {
             //Fix for removing recipe of plate
             GameRegistry.addSmelting(itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
@@ -409,6 +386,7 @@ public final class ICBMClassic
         }
     }
 
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -428,6 +406,7 @@ public final class ICBMClassic
     {
         proxy.init();
         packetHandler.init();
+        CREATIVE_TAB.init();
 
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
@@ -454,7 +433,7 @@ public final class ICBMClassic
                         EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
 
                         EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), Explosives.get(itemStack.getItemDamage()));
-                        entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
+                        entity.setThrowableHeading(enumFacing.getXOffset(), 0.10000000149011612D, enumFacing.getZOffset(), 0.5F, 1.0F);
                         world.spawnEntity(entity);
                     }
 
@@ -476,9 +455,9 @@ public final class ICBMClassic
                 {
                     EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
                     World world = source.getWorld();
-                    double x = source.getX() + (double) enumfacing.getFrontOffsetX() * 1.125D;
-                    double y = Math.floor(source.getY()) + (double) enumfacing.getFrontOffsetY();
-                    double z = source.getZ() + (double) enumfacing.getFrontOffsetZ() * 1.125D;
+                    double x = source.getX() + (double) enumfacing.getXOffset() * 1.125D;
+                    double y = Math.floor(source.getY()) + (double) enumfacing.getYOffset();
+                    double z = source.getZ() + (double) enumfacing.getZOffset() * 1.125D;
                     BlockPos blockpos = source.getBlockPos().offset(enumfacing);
                     IBlockState iblockstate = world.getBlockState(blockpos);
                     BlockRailBase.EnumRailDirection rail =

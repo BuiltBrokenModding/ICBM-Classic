@@ -17,7 +17,7 @@ public class BlockReinforcedGlass extends Block
     {
         super(Material.GLASS);
         this.setRegistryName(ICBMClassic.PREFIX + "reinforcedGlass");
-        this.setUnlocalizedName(ICBMClassic.PREFIX + "reinforcedGlass");
+        this.setTranslationKey(ICBMClassic.PREFIX + "reinforcedGlass");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(10);
         this.setResistance(48);
@@ -37,7 +37,7 @@ public class BlockReinforcedGlass extends Block
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }

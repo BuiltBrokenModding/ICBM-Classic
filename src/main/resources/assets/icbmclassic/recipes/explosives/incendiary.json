@@ -12,8 +12,8 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "a": {
-      "item": "icbmclassic:sulfurdust",
-      "data": 0
+      "type": "forge:ore_dict",
+      "ore": "dustSulfur"
     },
     "l": {
       "item": "minecraft:lava_bucket",

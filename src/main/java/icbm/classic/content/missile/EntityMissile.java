@@ -1,4 +1,4 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
@@ -6,11 +6,11 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IExplosiveContainer;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.IMissile;
-import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.handlers.Explosion;
+import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.entity.EntityProjectile;
@@ -34,6 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Random;
 
 /** @Author - Calclavia */
@@ -78,7 +79,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public Pos motionVector = new Pos();
 
-    private double lockHeight = 3;
+    public double lockHeight = 3;
+
+    public boolean wasSimulated = false;
 
     // Used for the rocket launcher preventing the players from killing themselves.
     private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
@@ -86,6 +89,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public NBTTagCompound nbtData = new NBTTagCompound();
 
     public IEMPReceiver capabilityEMP;
+
+    final int maxPreLaunchSmokeTimer = 50;
+    public int preLaunchSmokeTimer = maxPreLaunchSmokeTimer;
+    public int launcherHasAirBelow = -1;
+
 
     public EntityMissile(World w)
     {
@@ -253,6 +261,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
                 // Acceleration
                 this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
+
             }
             else if (missileType.movesDirectly)
             {
@@ -277,50 +286,94 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void updateMotion()
     {
+        if (this.wasSimulated)
+        {
+            preLaunchSmokeTimer = 0;
+        }
+
         if (!this.world.isRemote)
         {
-            if (this.ticksInAir >= 0)
+
+            if (preLaunchSmokeTimer <= 0 || this.missileType != MissileFlightType.PAD_LAUNCHER)
             {
-                if (this.missileType == MissileFlightType.PAD_LAUNCHER)
+                //Start motion
+                if (ticksInAir <= 0)
                 {
-                    // Start the launch
-                    if (this.lockHeight > 0)
+                    this.ticksInAir = 2;
+                }
+
+                if (this.ticksInAir >= 0)
+                {
+                    if (this.missileType == MissileFlightType.PAD_LAUNCHER)
                     {
-                        this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2);
-                        this.motionX = 0;
-                        this.motionZ = 0;
-                        this.lockHeight -= this.motionY;
-                        if (this.lockHeight <= 0)
+
+                        if (this.lockHeight > 0)
                         {
-                            this.motionY = this.acceleration * (this.missileFlightTime / 2);
-                            this.motionX = this.deltaPathX / missileFlightTime;
-                            this.motionZ = this.deltaPathZ / missileFlightTime;
+                            this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2f);
+                            this.motionX = 0;
+                            this.motionZ = 0;
+                            this.lockHeight -= this.motionY;
+                            if (this.lockHeight <= 0)
+                            {
+                                this.motionY = this.acceleration * (this.missileFlightTime / 2);
+                                this.motionX = this.deltaPathX / missileFlightTime;
+                                this.motionZ = this.deltaPathZ / missileFlightTime;
+                            }
+                        }
+                        else
+                        {
+                            this.motionY -= this.acceleration;
+                            this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
+                            // Look at the next point
+                            this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                        }
+
+                        //Simulate missile
+                        if (shouldSimulate())
+                        {
+                            MissileTrackerHandler.simulateMissile(this);
                         }
                     }
-                    else
-                    {
-                        this.motionY -= this.acceleration;
-                        this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                        // Look at the next point
-                        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-                    }
                 }
+                else
+                {
+                    //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
+                    // Look at the next point
+                    //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                }
+                this.protectionTime--;
             }
             else
             {
-                //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                // Look at the next point
-                //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
+                motionY = 0.015f;
+                this.lockHeight -= motionY;
+                posY = launcherPos.y() + 2.2f;
+                this.prevRotationPitch = 90f;
+                this.rotationPitch = 90f;
+                spawnMissileSmoke();
+                this.ticksInAir = 0;
             }
-
-            this.spawnMissileSmoke();
-            this.protectionTime--;
         }
+        if (preLaunchSmokeTimer > 0)
+        {
+            preLaunchSmokeTimer--;
+        }
+        this.spawnMissileSmoke();
         if (this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
         {
             ((Explosion) this.explosiveID.handler).update(this);
         }
         super.updateMotion();
+    }
+
+    protected boolean shouldSimulate()
+    {
+        //TODO predict position, if traveling into unloaded chunk simulate
+        return launcherPos != null
+                && !(getPassengers().size() > 0)
+                && targetPos.distance(launcherPos) > 50
+                && !wasSimulated
+                && ( posY >= ConfigMissile.SIMULATION_START_HEIGHT || ( motionY <= 0 && this.ticksInAir > 20*5 ));
     }
 
     @Override
@@ -341,7 +394,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        if (!world.isRemote)
+        if (!world.isRemote && entityHit.getRidingEntity() != this)
         {
             super.onImpactEntity(entityHit, velocity);
             doExplosion();
@@ -401,34 +454,94 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return height / 2 + motionY;
     }
 
+    LinkedList<Pos> lastSmokePos = new LinkedList<>();
+
     private void spawnMissileSmoke()
     {
         if (this.world.isRemote)
         {
-            /*
-            Pos position = new Pos((IPos3D) this);
-            // The distance of the smoke relative
-            // to the missile.
-            double distance = -this.daoDanGaoDu - 0.2f;
-            // The delta Y of the smoke.
-            double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
-            // The horizontal distance of the
-            // smoke.
-            double dH = Math.cos(Math.toRadians(this.rotationPitch)) * distance;
-            // The delta X and Z.
-            double x = Math.sin(Math.toRadians(this.rotationYaw)) * dH;
-            double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
+            if (this.missileType == MissileFlightType.PAD_LAUNCHER)
+            {
+                if (this.motionY > -1)
+                {
+                    if (this.world.isRemote && this.motionY > -1)
+                    {
+                        if (launcherHasAirBelow == -1)
+                        {
+                            BlockPos bp = new BlockPos(Math.signum(this.posX) * Math.floor(Math.abs(this.posX)), this.posY - 3, Math.signum(this.posZ) * Math.floor(Math.abs(this.posZ)));
+                            launcherHasAirBelow = world.isAirBlock(bp) ? 1 : 0;
+                        }
+                        Pos position = new Pos((IPos3D) this);
+                        // The distance of the smoke relative
+                        // to the missile.
+                        double distance = -1.2f;
+                        // The delta Y of the smoke.
+                        double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
+                        // The horizontal distance of the
+                        // smoke.
+                        double dH = Math.cos(Math.toRadians(this.rotationPitch)) * distance;
+                        // The delta X and Z.
+                        double x = Math.sin(Math.toRadians(this.rotationYaw)) * dH;
+                        double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
+                        position = position.add(x, y, z);
 
-            position = position.add(x, y, z);
-            this.world.spawnParticle("flame", position.x(), position.y(), position.z(), 0, 0, 0);
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            position = position.multiply(1 - 0.001 * Math.random());
-            ICBMClassic.proxy.spawnParticle("missile_smoke", this.world, position, 4, 2);
-            */
+                        if (preLaunchSmokeTimer > 0 && ticksInAir <= maxPreLaunchSmokeTimer)
+                        {
+                            if (launcherHasAirBelow == 1)
+                            {
+                                position = position.sub(0, 2, 0);
+                                Pos velocity = new Pos(0, -1, 0).addRandom(world.rand, 0.5);
+                                for (int i = 0; i < 10; i++)
+                                {
+                                    ICBMClassic.proxy.spawnSmoke(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
+                                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            lastSmokePos.add(position);
+                            Pos lastPos = null;
+                            if (lastSmokePos.size() > 5)
+                            {
+                                lastPos = lastSmokePos.get(0);
+                                lastSmokePos.remove(0);
+                            }
+                            ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX * 0.75, -this.motionY * 0.75, -this.motionZ * 0.75, 1, 0.75f, 0, 5, 10);
+                            if (ticksInAir > 5 && lastPos != null)
+                            {
+                                for (int i = 0; i < 10; i++)
+                                {
+                                    ICBMClassic.proxy.spawnSmoke(this.world, lastPos, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 240);
+                                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Pos position = new Pos((IPos3D) this);
+                // The distance of the smoke relative
+                // to the missile.
+                double distance = -1.2f;
+                // The delta Y of the smoke.
+                double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
+                // The horizontal distance of the
+                // smoke.
+                double dH = Math.cos(Math.toRadians(this.rotationPitch)) * distance;
+                // The delta X and Z.
+                double x = Math.sin(Math.toRadians(this.rotationYaw)) * dH;
+                double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
+                position = position.add(x, y, z);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 240);
+                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+                }
+            }
         }
     }
 
@@ -499,6 +612,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void doExplosion()
     {
+        //Eject from riding
+        dismountRidingEntity();
+        //Eject passengers
+        removePassengers();
+
         try
         {
             // Make sure the missile is not already exploding
@@ -566,6 +684,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.ticksInAir = nbt.getInteger("ticksInAir");
         this.lockHeight = nbt.getDouble("lockHeight");
         this.missileType = MissileFlightType.get(nbt.getInteger("missileType"));
+        this.preLaunchSmokeTimer = nbt.getInteger("preLaunchSmokeTimer");
         this.nbtData = nbt.getCompoundTag("additionalMissileData");
     }
 
@@ -590,6 +709,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         nbt.setInteger("ticksInAir", this.ticksInAir);
         nbt.setDouble("lockHeight", this.lockHeight);
         nbt.setInteger("missileType", this.missileType.ordinal());
+        nbt.setInteger("preLaunchSmokeTimer", this.preLaunchSmokeTimer);
         nbt.setTag("additionalMissileData", this.nbtData);
     }
 

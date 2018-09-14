@@ -1,7 +1,7 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.EntityMissile;
 import net.minecraftforge.common.config.Config;
 
 /**
@@ -29,4 +29,9 @@ public class ConfigMissile
     @Config.Comment("Number of missiles to spawn for cluster missile")
     @Config.RangeInt(min = 1, max = 30)
     public static int CLUSTER_SIZE = 12;
+
+    @Config.Name("simulation_start_height")
+    @Config.Comment("Height (y level) to start simulating a missile when it travels above the map")
+    @Config.RangeInt(min = 1)
+    public static int SIMULATION_START_HEIGHT = 300;
 }

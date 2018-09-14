@@ -3,10 +3,10 @@ package icbm.classic.content.explosive.blast;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
@@ -148,7 +148,7 @@ public class BlastTNT extends Blast
                                 Block block = blockState.getBlock();
 
                                 //Only act on non-air blocks
-                                if (block != Blocks.AIR)
+                                if (blockState.getMaterial() != Material.AIR)
                                 {
                                     //Decrease energy based on resistance
                                     radialEnergy -= (block.getExplosionResistance(this.world(), blockPos, this.exploder, this) + 0.3F) * step;
@@ -219,13 +219,13 @@ public class BlastTNT extends Blast
                 this.world().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var9, var11, var13, var151, var171, var191);
                 ///---------------------------------------------
 
-                //Only edit block if not air TODO see if we need to check for modded air
-                if (block != Blocks.AIR)
+                //Only edit block if not air
+                if (blockState.getMaterial() != Material.AIR)
                 {
                     try
                     {
                         //Do drops
-                        if (block.canDropFromExplosion(null))
+                        if (block.canDropFromExplosion(this))
                         {
                             block.dropBlockAsItemWithChance(this.world(), blownPosition, blockState, 1F, 0);
                         }
