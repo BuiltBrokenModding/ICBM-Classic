@@ -134,7 +134,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             this.motionZ *= (double) speed;
 
             //Move box
-            this.getEntityBoundingBox().offset(motionX, motionY, motionZ);
+            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(motionX, motionY, motionZ));
 
             //Reset position based on box
             this.posX = (this.getEntityBoundingBox().minX + this.getEntityBoundingBox().maxX) / 2.0D;
