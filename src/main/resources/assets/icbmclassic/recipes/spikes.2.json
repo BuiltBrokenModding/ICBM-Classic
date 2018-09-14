@@ -12,8 +12,8 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "c": {
-      "item": "icbmclassic:sulfurDust",
-      "data": 0
+      "type": "forge:ore_dict",
+      "ore": "dustSulfur"
     },
     "i": {
       "item": "icbmclassic:spikes",
