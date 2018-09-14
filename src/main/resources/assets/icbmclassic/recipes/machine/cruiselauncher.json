@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "icbmclassic:cruiselauncher",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "LF ",
+    "SSS"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "L": {
+      "item": "icbmclassic:launcherbase",
+      "data": 2
+    },
+    "F": {
+      "item": "icbmclassic:launcherframe",
+      "data": 2
+    },
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "ingotSteel"
+    }
+  }
+}

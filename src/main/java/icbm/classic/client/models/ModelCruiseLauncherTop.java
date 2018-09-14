@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MXiaoFaSheQiJia extends ModelBase
+public class ModelCruiseLauncherTop extends ModelBase
 {
 
     ModelRenderer CLAMP_1_ROT;
@@ -17,7 +17,7 @@ public class MXiaoFaSheQiJia extends ModelBase
     ModelRenderer RAIL_2_ROT;
     ModelRenderer TORQUE_SUPPORT_ROT;
 
-    public MXiaoFaSheQiJia()
+    public ModelCruiseLauncherTop()
     {
         textureWidth = 128;
         textureHeight = 128;

@@ -16,6 +16,8 @@ import icbm.classic.content.machines.emptower.BlockEmpTower;
 import icbm.classic.content.machines.emptower.TileEMPTower;
 import icbm.classic.content.machines.launcher.base.BlockLauncherBase;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
+import icbm.classic.content.machines.launcher.cruise.BlockCruiseLauncher;
+import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.machines.launcher.frame.BlockLaunchFrame;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.BlockLaunchScreen;
@@ -185,21 +187,6 @@ public final class ICBMClassic
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
-        //TODO add missing mappings for the following
-        //"icbmCPoisonPowder" -> "poisonPowder"
-        //"icbmCSulfurDust" -> "sulfurDust"
-        //"icbmCAntidote" -> "antidote"
-        //"icbmCSignalDisrupter" -> "signalDisrupter"
-        //"icbmCTracker" -> "tracker"
-        //"icbmCMissile", ->"missile"
-        //"icbmCDefuser", -> "defuser"
-        //"icbmCRadarGun", -> "radarGun"
-        //"icbmCRemoteDetonator", -> "remoteDetonator"
-        //"icbmCLaserDetonator", -> "laserDetonator"
-        //"icbmCRocketLauncher", -> "rocketLauncher"
-        //"icbmCGrenade", -> "grenade"
-        //"icbmCBombCart", -> "bombcart"
-
         //Items
         event.getRegistry().register(itemGrenade = new ItemGrenade());
         event.getRegistry().register(itemBombCart = new ItemBombCart());
@@ -229,6 +216,7 @@ public final class ICBMClassic
         event.getRegistry().register(new ItemBlockRotatedMultiTile(blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
         event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen));
         event.getRegistry().register(new ItemBlockSubTypes(blockBattery));
+        event.getRegistry().register(new ItemBlock(blockCruiseLauncher).setRegistryName(blockCruiseLauncher.getRegistryName()));
 
         //Crafting resources
         if (ConfigItems.ENABLE_CRAFTING_ITEMS)
@@ -269,20 +257,6 @@ public final class ICBMClassic
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
-        //TODO add conversion for
-        //"icbmCGlassPlate" -> "glassPressurePlate"
-        //"icbmCGlassButton" -> "glassButton"
-        //"icbmCSpike" -> "spikes"
-        //"icbmCConcrete" -> "concrete"
-        //"icbmCGlass" -> "reinforcedGlass"
-        //"icbmCRail"
-        //"icbmCExplosive" -> "explosives"
-        //"icbmCEmpTower" -> "emptower"
-        //"icbmCRadarStation" -> "radarStation"
-        //"icbmCLauncherFrame" -> "launcherFrame"
-        //"icbmCLauncherBase" -> "launcherBase"
-        //"icbmCLauncherScreen" -> "launcherScreen"
-
         event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
         event.getRegistry().register(blockGlassButton = new BlockGlassButton());
         event.getRegistry().register(blockSpikes = new BlockSpikes());
@@ -299,6 +273,8 @@ public final class ICBMClassic
         event.getRegistry().register(multiBlock = new BlockMultiblock());
         event.getRegistry().register(blockBattery = new BlockBattery());
 
+        event.getRegistry().register(blockCruiseLauncher = new BlockCruiseLauncher());
+
         /*
         blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
         ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
@@ -313,6 +289,7 @@ public final class ICBMClassic
         GameRegistry.registerTileEntity(TileLauncherScreen.class, PREFIX + "launcherscreen");
         GameRegistry.registerTileEntity(TileMulti.class, PREFIX + "multiblock");
         GameRegistry.registerTileEntity(TileEntityBattery.class, PREFIX + "batterybox");
+        GameRegistry.registerTileEntity(TileCruiseLauncher.class, PREFIX + "cruiseLauncher");
     }
 
     @SubscribeEvent

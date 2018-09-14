@@ -246,6 +246,17 @@ public class GuiRadarStation extends GuiContainerBase
                 }
             }
         }
+
+        //Draw energy bar
+        if (tileEntity.getEnergy() > 0)
+        {
+            float energyScale = tileEntity.getEnergy() / (float) tileEntity.getEnergyBufferSize();
+
+            final int textureWidth = 8;
+            final int textureHeight = 142 / 2;
+            final int height = (int) Math.min(textureHeight, Math.floor(textureHeight * energyScale));
+            this.drawTexturedModalRect(containerPosX + 248, containerPosY + 65 + (textureHeight - height), 0, (332 / 2) + textureHeight - height, textureWidth, height);
+        }
     }
 
     @Override

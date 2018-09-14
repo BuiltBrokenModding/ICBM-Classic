@@ -24,6 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +50,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     ExternalInventory inventory;
 
 
-    protected ItemStack cachedMissileStack;
+    protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
     @Override
     public ExternalInventory getInventory()
@@ -76,7 +77,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusNoPower");
         }
-        else if (this.getInventory().getStackInSlot(0) == null)
+        else if (this.getInventory().getStackInSlot(0).isEmpty())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
@@ -128,7 +129,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
         lastRotationUpdate = System.nanoTime();
 
-        //this.discharge(this.containingItems[1]);
+        //this.discharge(this.containingItems[1]); TODO
 
         if (getTarget() != null && !getTarget().isZero())
         {
@@ -215,9 +216,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             ByteBufUtils.writeItemStack(buf, getInventory().getStackInSlot(0));
         }
+
         buf.writeInt(getTarget().xi());
         buf.writeInt(getTarget().yi());
         buf.writeInt(getTarget().zi());
+
+        buf.writeDouble(currentAim.yaw());
+        buf.writeDouble(currentAim.pitch());
     }
 
     @Override
@@ -230,9 +235,30 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         else
         {
-            cachedMissileStack = null;
+            cachedMissileStack = ItemStack.EMPTY;
         }
         setTarget(new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
+
+        currentAim.setYaw(buf.readDouble());
+        currentAim.setPitch(buf.readDouble());
+    }
+
+    /** Reads a tile entity from NBT. */
+    @Override
+    public void readFromNBT(NBTTagCompound nbt)
+    {
+        super.readFromNBT(nbt);
+        getInventory().load(nbt.getCompoundTag("inventory"));
+        currentAim.readFromNBT(nbt.getCompoundTag("currentAim"));
+    }
+
+    /** Writes a tile entity to NBT. */
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+    {
+        nbt.setTag("inventory", getInventory().save(new NBTTagCompound()));
+        nbt.setTag("currentAim", currentAim.writeNBT(new NBTTagCompound()));
+        return super.writeToNBT(nbt);
     }
 
     @Override

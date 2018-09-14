@@ -65,7 +65,8 @@ public class BlockLaunchScreen extends BlockICBM
                     else
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
-                        String translation = LanguageUtility.getLocal("chat.launcher.status");
+
+                        String translation = LanguageUtility.getLocal("chat.launcher.status"); //TODO replace %1 with %s in translation file
                         translation = translation.replace("%1", screen.getStatus());
                         player.sendMessage(new TextComponentString(translation));
                     }
@@ -100,7 +101,7 @@ public class BlockLaunchScreen extends BlockICBM
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
                     }
                 }
-                else
+                else if(screen.launcherBase == null || !screen.launcherBase.tryInsertMissile(player, hand, player.getHeldItem(hand)))
                 {
                     player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
                 }
