@@ -17,6 +17,6 @@ Credits are a work in progress and will need to be recreated
 * Calcalvia - orginal author
 * DarkGuardsman/DarkCow - current author
 * Dmod - buildscripts
-* Graugger - helped with assets
-* Tgame14 - helped with code
-
+* Graugger - assets
+* M1W3st - assets
+* Tgame14 - code
