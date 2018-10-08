@@ -1,14 +1,19 @@
 package icbm.classic.content.explosive.blast.threaded;
 
 import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.content.explosive.thread2.BlockEditHandler;
 import icbm.classic.content.explosive.thread2.IThreadWork;
+import icbm.classic.content.explosive.thread2.ThreadWorkBlast;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
+import icbm.classic.lib.PosDistanceSorter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -36,7 +41,30 @@ public abstract class BlastThreaded extends Blast
         }
     }
 
-    protected abstract IThreadWork getWorkerTask();
+    protected IThreadWork getWorkerTask()
+    {
+        return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
+    }
+
+    public boolean doRun(int loops, List<BlockPos> edits)
+    {
+        return false;
+    }
+
+
+    protected void onWorkerThreadComplete(List<BlockPos> edits)
+    {
+        if (world instanceof WorldServer)
+        {
+            Collections.sort(edits, new PosDistanceSorter(position, false));
+
+            ((WorldServer) world).addScheduledTask(() -> {
+                doExplode();
+                BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
+                doPostExplode();
+            });
+        }
+    }
 
     @Override
     protected void doExplode()
@@ -48,16 +76,6 @@ public abstract class BlastThreaded extends Blast
     protected void doPostExplode()
     {
 
-    }
-
-    public void destroyBlocks(Iterable<BlockPos> edits)
-    {
-        //Place blocks
-        Iterator<BlockPos> it = edits.iterator();
-        while (it.hasNext())
-        {
-            destroyBlock(it.next());
-        }
     }
 
     public void destroyBlock(BlockPos pos)

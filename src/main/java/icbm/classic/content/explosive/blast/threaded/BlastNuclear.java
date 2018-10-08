@@ -4,8 +4,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.explosive.blast.BlastMutation;
 import icbm.classic.content.explosive.blast.BlastRot;
-import icbm.classic.content.explosive.thread2.IThreadWork;
-import icbm.classic.content.explosive.thread2.ThreadWorkBlast;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -16,7 +14,6 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import java.util.List;
 
@@ -48,24 +45,6 @@ public class BlastNuclear extends BlastThreaded
     }
 
     @Override
-    protected IThreadWork getWorkerTask()
-    {
-        return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
-    }
-
-    protected void onWorkerThreadComplete(List<BlockPos> edits)
-    {
-        if (world instanceof WorldServer)
-        {
-            ((WorldServer) world).addScheduledTask(() -> {
-                doExplode();
-                destroyBlocks(edits); //TODO break up into chunks
-                doPostExplode();
-            });
-        }
-    }
-
-
     public boolean doRun(int loops, List<BlockPos> edits)
     {
         //How many steps to go per rotation

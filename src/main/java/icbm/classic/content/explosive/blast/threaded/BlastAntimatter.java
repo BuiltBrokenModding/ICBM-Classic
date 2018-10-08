@@ -3,13 +3,10 @@ package icbm.classic.content.explosive.blast.threaded;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.explosive.blast.BlastRedmatter;
-import icbm.classic.content.explosive.thread2.IThreadWork;
-import icbm.classic.content.explosive.thread2.ThreadWorkBlast;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import java.util.List;
 
@@ -38,23 +35,6 @@ public class BlastAntimatter extends BlastThreaded
     }
 
     @Override
-    protected IThreadWork getWorkerTask()
-    {
-        return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
-    }
-
-    protected void onWorkerThreadComplete(List<BlockPos> edits)
-    {
-        if (world instanceof WorldServer)
-        {
-            ((WorldServer) world).addScheduledTask(() -> {
-                doExplode();
-                destroyBlocks(edits); //TODO break up into chunks
-                doPostExplode();
-            });
-        }
-    }
-
     public void destroyBlock(BlockPos blockPos)
     {
         IBlockState blockState = world.getBlockState(blockPos);
@@ -71,25 +51,22 @@ public class BlastAntimatter extends BlastThreaded
         }
     }
 
+    @Override
     public boolean doRun(int loops, List<BlockPos> edits)
     {
-        if (!this.world().isRemote)
+        for (int x = (int) -this.getBlastRadius(); x < this.getBlastRadius(); x++)
         {
-            for (int x = (int) -this.getBlastRadius(); x < this.getBlastRadius(); x++)
+            for (int y = (int) -this.getBlastRadius(); y < this.getBlastRadius(); y++)
             {
-                for (int y = (int) -this.getBlastRadius(); y < this.getBlastRadius(); y++)
+                for (int z = (int) -this.getBlastRadius(); z < this.getBlastRadius(); z++)
                 {
-                    for (int z = (int) -this.getBlastRadius(); z < this.getBlastRadius(); z++)
+                    final BlockPos blockPos = new BlockPos(position.xi() + x, position.yi() + y, position.zi() + z);
+                    final double dist = position.distance(blockPos);
+
+                    if (dist < this.getBlastRadius())
                     {
-                        final BlockPos blockPos = new BlockPos(position.xi() + x, position.yi() + y, position.zi() + z);
-                        final double dist = position.distance(blockPos);
-
-                        if (dist < this.getBlastRadius())
-                        {
-                            edits.add(blockPos);
-                        }
+                        edits.add(blockPos);
                     }
-
                 }
             }
         }

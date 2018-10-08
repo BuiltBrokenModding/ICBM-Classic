@@ -1,10 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.thread.ThreadSmallExplosion;
-import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.PosDistanceSorter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -55,7 +54,7 @@ public class BlastAntiGravitational extends Blast
 
                         if (r == 0)
                         {
-                            Collections.sort(results, new GravitationalBlockSorter(position));
+                            Collections.sort(results, new PosDistanceSorter(position, true));
                         }
                         int blocksToTake = 20;
 
@@ -165,25 +164,4 @@ public class BlastAntiGravitational extends Blast
         return 15;
     }
 
-    public class GravitationalBlockSorter implements Comparator<BlockPos>
-    {
-        final IPos3D center;
-
-        public GravitationalBlockSorter(IPos3D center)
-        {
-            this.center = center;
-        }
-
-        @Override
-        public int compare(BlockPos o1, BlockPos o2)
-        {
-            if (o1.getY() == o2.getY())
-            {
-                double d = new Pos(o1).distance(center);
-                double d2 = new Pos(o2).distance(center);
-                return d > d2 ? 1 : d == d2 ? 0 : -1;
-            }
-            return Integer.compare(o1.getY(), o2.getY());
-        }
-    }
 }

@@ -45,6 +45,20 @@ public class SubCommandBlast extends SubCommand
             }
             sender.sendMessage(new TextComponentString(names));
         }
+        else if (args.length >= 1 && args[0].equalsIgnoreCase("spread"))
+        {
+            int spread = parseInt(args[1]);
+
+
+            for (int x = -spread; x <= spread; x++)
+            {
+                for (int z = -spread; z <= spread; z++)
+                {
+                    String[] parms = new String[]{args[2], args[3], args[4] + x * 100, args[5], args[6] + x * 100, args[7]};
+                    execute(server, sender, parms);
+                }
+            }
+        }
         else if (args.length >= 2)
         {
             final String explosive_id = args[0];
@@ -95,7 +109,7 @@ public class SubCommandBlast extends SubCommand
             if (world != null)
             {
                 type.handler.createExplosion(world, new BlockPos(x, y, z), sender.getCommandSenderEntity(), scale);
-                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + type.name().toLowerCase() + "] with scale " + scale));
+                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + type.name().toLowerCase() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
             }
             else
             {
