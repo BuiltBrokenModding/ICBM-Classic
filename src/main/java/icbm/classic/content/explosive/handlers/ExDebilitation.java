@@ -17,6 +17,6 @@ public class ExDebilitation extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastChemical(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20 * scale, 20 * 30, false).setConfuse().explode();
+        new BlastChemical(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20 * scale, 20 * 30, false).setConfuse().runBlast();
     }
 }

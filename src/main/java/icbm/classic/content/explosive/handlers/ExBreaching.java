@@ -18,6 +18,6 @@ public class ExBreaching extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastBreech(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2.5f * scale, 7).explode();
+        new BlastBreech(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2.5f * scale, 7).runBlast();
     }
 }

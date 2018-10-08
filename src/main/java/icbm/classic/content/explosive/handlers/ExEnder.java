@@ -106,6 +106,6 @@ public class ExEnder extends Explosion
             teleportTarget = new Pos(tag);
         }
 
-        new BlastEnderman(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale, teleportTarget).explode();
+        new BlastEnderman(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale, teleportTarget).runBlast();
     }
 }

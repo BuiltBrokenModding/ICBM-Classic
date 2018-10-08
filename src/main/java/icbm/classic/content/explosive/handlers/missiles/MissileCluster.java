@@ -149,7 +149,7 @@ public class MissileCluster extends Missile
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6 * scale).setDestroyItems().explode();
+        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6 * scale).setDestroyItems().runBlast();
     }
 
     @Override

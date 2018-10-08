@@ -21,11 +21,11 @@ public class ExRepulsive extends Explosion
         //TODO recode
         if (this == Explosives.ATTRACTIVE.handler)
         {
-            new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f * scale).setDestroyItems().setPushType(1).explode();
+            new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f * scale).setDestroyItems().setPushType(1).runBlast();
         }
         else
         {
-            new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f * scale).setDestroyItems().setPushType(2).explode();
+            new BlastTNT(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 2f * scale).setDestroyItems().setPushType(2).runBlast();
         }
     }
 }

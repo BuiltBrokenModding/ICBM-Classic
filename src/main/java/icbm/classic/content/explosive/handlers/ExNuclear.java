@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.handlers;
 
-import icbm.classic.content.explosive.blast.BlastNuclear;
+import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -18,11 +18,11 @@ public class ExNuclear extends Explosion
     {
         if (this.getTier() == EnumTier.THREE)
         {
-            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50 * scale, 80 * scale).setNuclear().explode();
+            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 50 * scale, 80 * scale).setNuclear().runBlast();
         }
         else
         {
-            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale, 45 * scale).explode();
+            new BlastNuclear(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale, 45 * scale).runBlast();
         }
     }
 }

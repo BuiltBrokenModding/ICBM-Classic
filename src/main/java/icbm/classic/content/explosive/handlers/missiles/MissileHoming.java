@@ -124,6 +124,6 @@ public class MissileHoming extends Missile
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4 * scale).setDestroyItems().explode();
+        new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4 * scale).setDestroyItems().runBlast();
     }
 }

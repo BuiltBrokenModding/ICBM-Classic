@@ -16,6 +16,6 @@ public class ExAntiGravitational extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastAntiGravitational(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale).explode();
+        new BlastAntiGravitational(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 30 * scale).runBlast();
     }
 }

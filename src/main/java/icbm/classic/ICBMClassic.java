@@ -6,6 +6,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
@@ -71,10 +72,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.*;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -555,6 +553,15 @@ public final class ICBMClassic
         {
             serverCommandManager.registerCommand(new CommandICBM("icbm"));
         }
+
+        WorkerThreadManager.INSTANCE = new WorkerThreadManager(4); //TODO add config TODO do (cpu cores - 1) as default config
+        WorkerThreadManager.INSTANCE.startThreads();
+    }
+
+    @Mod.EventHandler
+    public void serverStarting(FMLServerStoppingEvent event)
+    {
+        WorkerThreadManager.INSTANCE.killThreads();
     }
 
     public static Logger logger()

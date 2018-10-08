@@ -120,7 +120,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         //Trigger secondary blast
         if (this.isMutate) //TODO why?
         {
-            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), radius).explode();
+            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), radius).runBlast();
         }
 
         //End explosion when we hit life timer

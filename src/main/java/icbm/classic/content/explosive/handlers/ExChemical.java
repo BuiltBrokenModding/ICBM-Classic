@@ -27,11 +27,11 @@ public class ExChemical extends Explosion
     {
         if (this.getTier() == EnumTier.ONE)
         {
-            new BlastChemical(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20 * scale, 20 * 30, false).setPoison().setRGB(0.8f, 0.8f, 0).explode();
+            new BlastChemical(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20 * scale, 20 * 30, false).setPoison().setRGB(0.8f, 0.8f, 0).runBlast();
         }
         else if (this.getTier() == EnumTier.TWO)
         {
-            new BlastChemical(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20 * scale, 20 * 30, false).setContagious().setRGB(0.3f, 0.8f, 0).explode();
+            new BlastChemical(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 20 * scale, 20 * 30, false).setContagious().setRGB(0.3f, 0.8f, 0).runBlast();
         }
 
     }

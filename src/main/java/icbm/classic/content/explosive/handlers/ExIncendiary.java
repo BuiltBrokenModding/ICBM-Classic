@@ -26,6 +26,6 @@ public class ExIncendiary extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastFire(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 14 * scale).explode();
+        new BlastFire(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 14 * scale).runBlast();
     }
 }

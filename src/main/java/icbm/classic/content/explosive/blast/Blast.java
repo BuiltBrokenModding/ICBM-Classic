@@ -177,10 +177,13 @@ public abstract class Blast extends Explosion implements IBlast
     /**
      * Called to trigger the explosion
      */
-    public void explode()
+    public void runBlast()
     {
         //Forge event, allows for interaction and canceling the explosion
-        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this)) return;
+        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this))
+        {
+            return;
+        }
 
         //Play audio to confirm explosion triggered
         playExplodeSound();
@@ -201,15 +204,20 @@ public abstract class Blast extends Explosion implements IBlast
         else
         {
             debugEx("Blast#explode() -> Triggering full explosion, Blast: " + this);
-            this.preExplode();
-            this.doExplode();
-            this.postExplode();
+            doRunBlast();
         }
+    }
+
+    protected void doRunBlast()
+    {
+        this.preExplode();
+        this.doExplode();
+        this.postExplode();
     }
 
     protected void playExplodeSound()
     {
-        this.world.playSound((EntityPlayer)null,
+        this.world.playSound((EntityPlayer) null,
                 this.x, this.y, this.z,
                 SoundEvents.ENTITY_GENERIC_EXPLODE,
                 SoundCategory.BLOCKS,

@@ -3,7 +3,7 @@ package icbm.classic.content.explosive.handlers.missiles;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.blast.BlastNuclear;
+import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.prefab.tile.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +34,7 @@ public class MissileNuclearCluster extends MissileCluster
     @Override
     public void createExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastNuclear(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 30 * scale, 50).setNuclear().explode();
+        new BlastNuclear(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 30 * scale, 50).setNuclear().runBlast();
     }
 
     @Override
