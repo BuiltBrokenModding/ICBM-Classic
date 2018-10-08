@@ -6,6 +6,7 @@ import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.explosive.blast.threaded.BlastAntimatter;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Location;

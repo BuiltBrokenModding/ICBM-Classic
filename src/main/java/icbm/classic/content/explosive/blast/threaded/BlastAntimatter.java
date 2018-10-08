@@ -1,13 +1,19 @@
-package icbm.classic.content.explosive.blast;
+package icbm.classic.content.explosive.blast.threaded;
 
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.explosive.blast.BlastRedmatter;
+import icbm.classic.content.explosive.thread2.IThreadWork;
+import icbm.classic.content.explosive.thread2.ThreadWorkBlast;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
-public class BlastAntimatter extends Blast
+import java.util.List;
+
+public class BlastAntimatter extends BlastThreaded
 {
     private boolean destroyBedrock;
 
@@ -32,7 +38,40 @@ public class BlastAntimatter extends Blast
     }
 
     @Override
-    public void doExplode()
+    protected IThreadWork getWorkerTask()
+    {
+        return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
+    }
+
+    protected void onWorkerThreadComplete(List<BlockPos> edits)
+    {
+        if (world instanceof WorldServer)
+        {
+            ((WorldServer) world).addScheduledTask(() -> {
+                doExplode();
+                destroyBlocks(edits); //TODO break up into chunks
+                doPostExplode();
+            });
+        }
+    }
+
+    public void destroyBlock(BlockPos blockPos)
+    {
+        IBlockState blockState = world.getBlockState(blockPos);
+        if (!blockState.getBlock().isAir(blockState, world, blockPos))
+        {
+            final double dist = position.distance(blockPos);
+            if (dist < this.getBlastRadius() - 1 || world().rand.nextFloat() > 0.7)
+            {
+                if (blockState.getBlockHardness(this.world(), blockPos) >= 0 || destroyBedrock)
+                {
+                    world.setBlockToAir(blockPos);
+                }
+            }
+        }
+    }
+
+    public boolean doRun(int loops, List<BlockPos> edits)
     {
         if (!this.world().isRemote)
         {
@@ -47,26 +86,20 @@ public class BlastAntimatter extends Blast
 
                         if (dist < this.getBlastRadius())
                         {
-                            IBlockState blockState = world.getBlockState(blockPos);
-
-                            if (!blockState.getBlock().isAir(blockState, world, blockPos))
-                            {
-                                if (!this.destroyBedrock && blockState.getBlockHardness(this.world(), blockPos) < 0)
-                                {
-                                    continue;
-                                }
-
-                                if (dist < this.getBlastRadius() - 1 || world().rand.nextFloat() > 0.7)
-                                {
-                                    world.setBlockToAir(blockPos);
-                                }
-                            }
+                            edits.add(blockPos);
                         }
                     }
 
                 }
             }
         }
+        return false;
+    }
+
+    @Override
+    public void doExplode()
+    {
+        super.doExplode();
 
         // TODO: Render antimatter shockwave
         /*
@@ -84,6 +117,7 @@ public class BlastAntimatter extends Blast
     @Override
     public void doPostExplode()
     {
+        super.doPostExplode();
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
