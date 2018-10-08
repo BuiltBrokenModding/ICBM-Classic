@@ -31,20 +31,35 @@ public class ItemCrafting extends ItemICBMBase
         setHasSubtypes(true);
     }
 
-    public void registerOreNames()
+    public void registerOreNames(String... exceptions)
     {
         for (int i = 0; i < subItems.length; i++)
         {
             //Get name
             final String name = subItems[i];
-
-            //Turn into ore name
-            String oreName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
-            oreName = this.oreName + oreName;
-
-            //Register
-            OreDictionary.registerOre(oreName, new ItemStack(this, 1, i));
+            registerOreName(name, i, exceptions);
         }
+    }
+
+    protected void registerOreName(String name, int metadata, String... exceptions)
+    {
+        if (exceptions != null)
+        {
+            for (String string : exceptions)
+            {
+                if (name.equalsIgnoreCase(string))
+                {
+                    return;
+                }
+            }
+        }
+
+        //Turn into ore name
+        String oreName = name.substring(0, 1).toUpperCase() + name.substring(1);
+        oreName = this.oreName + oreName;
+
+        //Register
+        OreDictionary.registerOre(oreName, new ItemStack(this, 1, metadata));
     }
 
     @Override

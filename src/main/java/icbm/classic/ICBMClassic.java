@@ -230,7 +230,7 @@ public final class ICBMClassic
             if (ConfigItems.ENABLE_PLATES_ITEMS)
             {
                 event.getRegistry().register(itemPlate = new ItemCrafting("plate", "steel", "iron"));
-                itemPlate.registerOreNames();
+                itemPlate.registerOreNames("iron");
             }
             if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
             {
