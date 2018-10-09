@@ -4,6 +4,49 @@ This log contains changes made to the project. Each entry contains changed made 
 If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
 
 # Versions
+## 3.3.0
+### Runtime Changes
+* Added: Worker thread system (generates several threads to do blast calculations)
+* Added: Block placement queue to reduce lag when runing several blasts at once
+* Added: Redmatter death messages
+* Added: Translation keys for radar guns
+* Added: Missile insertion from screen
+* Added: Interaction from launcher frame to base & screen
+* Added: Energy bars to machine UIs
+
+* Changed: Launcher to remove missile on sneak + right click
+* Changed: Launcher to open screen UI on right click
+* Changed: nuclear explosive to use new thread
+* Changed: Antimatter explosive to use new thread
+
+* Fixed: Iron Plate sill having an ore-dictionary name causing issues with Atomic Science and other mods
+* Fixed: Missile not removing from inventory for RPG
+* Fixed: Redmatter being seen through walls
+* Fixed: air checks in several blasts
+* Fixed: explosive blocks dropping when destroyed by explosives
+* Fixed: formating and translation issues
+* Fixed: spike recipe not using ore name for sulfur
+* Fixed: some issues with redmatter movement
+
+* Reworked: Fragment entity fixing several issues and improving functionality
+
+* Implemented: creative tab sorting
+* Implemented: Orginal UIs for machines
+* Implemented: Cruise launcher
+
+* Improved: UI handling
+* Improved: redmatter fluid handling
+
+### Development Changes
+* Added: batch scripts to make building easier
+* Added: run and output folder to .gitignore
+
+* Updated: IC2 API
+* Updated: To latest snapshot
+* Updated: deps list
+
+* Renamed: methods
+
 ## 3.2.0
 ### Runtime Changes
 * Added: Chunloading for impact target
