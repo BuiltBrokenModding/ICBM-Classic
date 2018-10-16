@@ -5,9 +5,9 @@
     "count": 1
   },
   "pattern": [
+    "tit",
     "iii",
-    "iti",
-    "iii"
+    "tit"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
@@ -15,9 +15,15 @@
       "item": "icbmclassic:explosives",
       "data": 13
     },
-    "i": {
-      "type": "forge:ore_dict",
-      "ore": "ingotUranium"
-    }
+    "i": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "ingotUranium"
+      },
+      {
+        "type": "forge:ore_dict",
+        "ore": "pelletUranium235"
+      }
+    ]
   }
 }
