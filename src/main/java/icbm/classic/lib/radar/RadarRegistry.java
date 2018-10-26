@@ -118,7 +118,7 @@ public final class RadarRegistry
      */
     public static List<Entity> getAllLivingObjectsWithin(World world, double x, double y, double z, double distance)
     {
-        return getAllLivingObjectsWithin(world, new Cube(x - distance, Math.max(0, y - distance), z - distance, x + distance, Math.min(255, y + distance), z + distance));
+        return getAllLivingObjectsWithin(world, new Cube(x - distance, Math.max(0, y - distance), z - distance, x + distance, Math.min(ICBMClassic.MAP_HEIGHT, y + distance), z + distance));
     }
 
     /**

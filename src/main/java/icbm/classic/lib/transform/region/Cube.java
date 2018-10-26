@@ -2,6 +2,7 @@ package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
@@ -787,9 +788,9 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         {
             one = new Pos(min().x(), 0, min().y());
         }
-        if (max().y() > 255)
+        if (max().y() > ICBMClassic.MAP_HEIGHT)
         {
-            two = new Pos(min().x(), 255, min().y());
+            two = new Pos(min().x(), ICBMClassic.MAP_HEIGHT, min().y());
         }
         set(one, two);
         return this;

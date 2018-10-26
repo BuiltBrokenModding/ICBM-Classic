@@ -1,5 +1,6 @@
 package icbm.classic.lib.radar;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
@@ -205,7 +206,7 @@ public class RadarMap
      */
     public List<RadarEntity> getRadarObjects(double x, double z, double distance)
     {
-        return getRadarObjects(new Cube(x - distance, 0, z - distance, x + distance, 255, z + distance).cropToWorld(), true);
+        return getRadarObjects(new Cube(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance).cropToWorld(), true);
     }
 
     /**

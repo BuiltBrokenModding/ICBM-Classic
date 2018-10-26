@@ -122,6 +122,7 @@ public final class ICBMClassic
     public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
 
     public static final int ENTITY_ID_PREFIX = 50;
+    public static final int MAP_HEIGHT = 255;
 
     protected static Logger logger = LogManager.getLogger(DOMAIN);
     private static int nextEntityID = ENTITY_ID_PREFIX;

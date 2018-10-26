@@ -3,6 +3,7 @@ package icbm.classic.lib.transform.vector;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
 import com.builtbroken.jlib.data.vector.Pos3D;
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -541,7 +542,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public boolean isInsideMap()
     {
-        return isAboveBedrock() && y() < 255;
+        return isAboveBedrock() && y() < ICBMClassic.MAP_HEIGHT;
     }
 
     /**
