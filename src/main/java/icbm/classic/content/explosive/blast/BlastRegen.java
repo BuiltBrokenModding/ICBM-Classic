@@ -1,6 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.config.ConfigBlast;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -42,6 +43,15 @@ public class BlastRegen extends Blast
                             {
                                 IBlockState state = newChunk.getBlockState(x, y, z);
                                 world.setBlockState(new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16), state, 3);
+
+                                world.markBlockRangeForRenderUpdate(new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16),new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16));
+                                world.notifyBlockUpdate(new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16),state,state,3);
+                                world.scheduleBlockUpdate(new BlockPos(x + oldChunk.x * 16, y, z + oldChunk.z * 16),state.getBlock(),100,0);
+                            }
+
+                            if (ConfigBlast.REJUVENATION_REGEN_STRUCTURES)
+                            {
+                                generator.recreateStructures(oldChunk, x, z);
                             }
                         }
                     }

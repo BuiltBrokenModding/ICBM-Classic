@@ -27,4 +27,8 @@ public class ConfigBlast
     @Config.Name("redmatter_movement")
     @Config.Comment("Allows red matter explosions to be moved")
     public static boolean REDMATTER_MOVEMENT = true;
+
+    @Config.Name("rejuvenation_regen_structures")
+    @Config.Comment("Regenerates structures such as villages and dungeons in the current chunk")
+    public static boolean REJUVENATION_REGEN_STRUCTURES = true;
 }
