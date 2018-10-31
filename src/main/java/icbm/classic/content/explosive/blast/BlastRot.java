@@ -2,14 +2,19 @@ package icbm.classic.content.explosive.blast;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigDebug;
+import icbm.classic.config.ConfigNuclearCraft;
 import icbm.classic.content.explosive.thread.ThreadLargeExplosion;
+import icbm.classic.mods.nuclearcraft.NCProxy;
+import nc.capability.radiation.IRadiationSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import java.util.Iterator;
@@ -21,6 +26,7 @@ import java.util.Iterator;
  */
 public class BlastRot extends Blast
 {
+    NCProxy ncProxy = NCProxy.INSTANCE;
     private float energy;
 
     public BlastRot(World world, Entity entity, double x, double y, double z, float size)
@@ -61,6 +67,12 @@ public class BlastRot extends Blast
                             /** Decay the blocks. */
                             IBlockState blockState = world.getBlockState(targetPosition);
                             Block block = blockState.getBlock();
+
+                            // Add NuclearCraft radiation to chunks affected.
+                            if (ncProxy.isNCActive() && ConfigNuclearCraft.NUKESCAUSERADS)
+                            {
+                                ncProxy.addRadiationToChunk(world.getChunk(targetPosition));
+                            }
 
                             if (block == Blocks.GRASS || block == Blocks.SAND)
                             {

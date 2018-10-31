@@ -39,6 +39,7 @@ import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.mods.nuclearcraft.NCProxy;
 import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import icbm.classic.prefab.item.ItemICBMBase;
@@ -92,6 +93,7 @@ import java.util.List;
  * <p>
  * Orginal author and creator of the mod: Calclavia
  */
+
 @Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
 @Mod.EventBusSubscriber
 public final class ICBMClassic
@@ -131,7 +133,8 @@ public final class ICBMClassic
     public static final PacketManager packetHandler = new PacketManager(DOMAIN);
 
     //Mod support
-    public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
+    //public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
+    public static Block blockRadioactive;
 
     // Blocks
     public static Block blockGlassPlate;
@@ -182,6 +185,8 @@ public final class ICBMClassic
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
+
+    static NCProxy ncproxy = NCProxy.INSTANCE;
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -513,6 +518,13 @@ public final class ICBMClassic
                 }
             });
         }
+
+        if (ncproxy.isNCActive()) {
+            blockRadioactive = ncproxy.getRadiationBlock();
+        } else {
+            blockRadioactive = Blocks.MYCELIUM;
+        }
+
         proxy.init();
     }
 
