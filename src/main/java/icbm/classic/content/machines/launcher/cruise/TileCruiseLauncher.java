@@ -1,6 +1,10 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.IGuiTile;
@@ -33,7 +37,10 @@ import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.ILauncherController;
 import icbm.classic.api.explosion.LauncherType;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>, IPeripheral
 {
     /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0);
@@ -398,5 +405,92 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiCruiseLauncher(player, this);
+    }
+
+    @Nonnull
+    @Override
+    public String getType() {
+        return "ICBM_CruiseLauncher";
+    }
+
+    @Nonnull
+    @Override
+    public String[] getMethodNames() {
+        return new String[]{"launch", "canLaunch", "getMissile", "getStoredEnergy", "getMaxEnergy", "setTarget", "setFrequency"};
+    }
+
+    /**
+     * Almost identical to LauncherScreen
+     *
+     * @param computer  The interface to the computer that is making the call. Remember that multiple
+     *                  computers can be attached to a peripheral at once.
+     * @param context   The context of the currently running lua thread. This can be used to wait for events
+     *                  or otherwise yield.
+     * @param method    An integer identifying which of the methods from getMethodNames() the computercraft
+     *                  wishes to call. The integer indicates the index into the getMethodNames() table
+     *                  that corresponds to the string passed into peripheral.call()
+     * @param arguments An array of objects, representing the arguments passed into {@code peripheral.call()}.<br>
+     *                  Lua values of type "string" will be represented by Object type String.<br>
+     *                  Lua values of type "number" will be represented by Object type Double.<br>
+     *                  Lua values of type "boolean" will be represented by Object type Boolean.<br>
+     *                  Lua values of type "table" will be represented by Object type Map.<br>
+     *                  Lua values of any other type will be represented by a null object.<br>
+     *                  This array will be empty if no arguments are passed.
+     * @return
+     * @throws LuaException
+     * @throws InterruptedException
+     */
+    @Nullable
+    @Override
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+        switch (method) {
+            case 0:             // launch
+                this.launch();
+                return new Object[0];
+            case 1:             // canLaunch
+                return new Object[]{this.canLaunch()}; //  && !this.launcherBase.getMissileStack().isEmpty()
+            case 2:             // getMissile
+                if (this.getInventory().getStackInSlot(0) != null) {
+                    if (this.getInventory().getStackInSlot(0).getItem() instanceof ItemMissile) {
+                        return new String[]{Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage()).getName()};
+                    }
+                }
+            case 3:             // getStoredEnergy
+                return new Object[]{this.getEnergy()};
+            case 4:             // getMaxEnergy
+                return new Object[]{this.getEnergyBufferSize()};
+            case 5:             // setTarget
+                if (arguments.length == 3) {
+                    try {
+                        System.out.println(arguments[0] + " " + arguments[1] + " " + arguments[2]);
+                        int x = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                        int y = (int) Double.parseDouble(String.valueOf(arguments[1]));
+                        int z = (int) Double.parseDouble(String.valueOf(arguments[2]));
+                        this.setTarget(new Pos(x, y, z));
+                        return new Object[]{true};
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameters x, y, z must be valid integers");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 3 required");
+                }
+            case 6:             // setFrequency
+                if (arguments.length == 1) {
+                    try {
+                        int frequency = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                        this.setFrequency(frequency);
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameter must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. One required");
+                }
+        }
+        return new Object[0];
+    }
+
+    @Override
+    public boolean equals(@Nullable IPeripheral other) {
+        return false;
     }
 }

@@ -1,11 +1,17 @@
 package icbm.classic.content.machines.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.api.explosion.ILauncherController;
 import icbm.classic.api.explosion.LauncherType;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
+import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.content.machines.launcher.base.TileLauncherBase;
 import icbm.classic.lib.LanguageUtility;
@@ -25,12 +31,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentString;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * This tile entity is for the screen of the missile launcher
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
+public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>, IPeripheral
 {
     // The missile launcher base in which this
     // screen is connected with
@@ -340,5 +349,136 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 }
             }
         }
+    }
+
+    @Nonnull
+    @Override
+    public String getType() {
+        return "ICBM_LauncherScreen";
+    }
+
+    /**
+     * @ callable methods based on launcher tier
+     */
+    @Nonnull
+    @Override
+    public String[] getMethodNames() {
+        switch (this._tier) {
+            case ONE:
+                return new String[]{"launch", "canLaunch", "getMissile", "getStoredEnergy", "getMaxEnergy", "setTarget"};
+            case TWO:
+                return new String[]{"launch", "canLaunch", "getMissile", "getStoredEnergy", "getMaxEnergy", "setTarget", "setLockHeight"};
+            case THREE:
+                return new String[]{"launch", "canLaunch", "getMissile", "getStoredEnergy", "getMaxEnergy", "setTarget", "setLockHeight", "setFrequency"};
+        }
+        return new String[0];
+    }
+
+    /**
+     * Call a method from LUA. Tier capabilities are checked with the getMethods, so tier 1 won't be able to set lock
+     * height and so on.
+     *
+     * @param computer  The interface to the computer that is making the call. Remember that multiple
+     *                  computers can be attached to a peripheral at once.
+     * @param context   The context of the currently running lua thread. This can be used to wait for events
+     *                  or otherwise yield.
+     * @param method    An integer identifying which of the methods from getMethodNames() the computercraft
+     *                  wishes to call. The integer indicates the index into the getMethodNames() table
+     *                  that corresponds to the string passed into peripheral.call()
+     * @param arguments An array of objects, representing the arguments passed into {@code peripheral.call()}.<br>
+     *                  Lua values of type "string" will be represented by Object type String.<br>
+     *                  Lua values of type "number" will be represented by Object type Double.<br>
+     *                  Lua values of type "boolean" will be represented by Object type Boolean.<br>
+     *                  Lua values of type "table" will be represented by Object type Map.<br>
+     *                  Lua values of any other type will be represented by a null object.<br>
+     *                  This array will be empty if no arguments are passed.
+     * @return
+     * @throws LuaException
+     * @throws InterruptedException
+     */
+    @Nullable
+    @Override
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+        switch (method) {
+            case 0:             // launch missile
+                this.launch();
+                return new Object[0];
+            case 1:             // check whether can launch missile
+                return new Object[]{this.canLaunch() && !this.launcherBase.getMissileStack().isEmpty()};
+            case 2:             // return missile type (if present)
+                if (!this.launcherBase.getMissileStack().isEmpty()) {
+                    if (this.launcherBase.getMissileStack().getItem() instanceof ItemMissile) {
+                        return new String[]{Explosives.get(this.launcherBase.getMissileStack().getItemDamage()).getName()};
+                    }
+                }
+                break;
+            case 3:             // get energy stored in the launcher
+                return new Object[]{this.getEnergy()};
+            case 4:             // get launcher's energy capacity
+                return new Object[]{this.getEnergyBufferSize()};
+            case 5:             // set missile target. Check launcher tier to ensure it works like with the GUI
+                if (_tier == EnumTier.THREE || _tier == EnumTier.TWO) {
+                    if (arguments.length == 3) {
+                        try {
+                            System.out.println(arguments[0] + " " + arguments[1] + " " + arguments[2]);
+                            int x = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                            int y = (int) Double.parseDouble(String.valueOf(arguments[1]));
+                            int z = (int) Double.parseDouble(String.valueOf(arguments[2]));
+                            this.setTarget(new Pos(x, y, z));
+                            return new Object[]{true};
+                        } catch (NumberFormatException ignored) {
+                            throw new LuaException("Parameters x, y, z must be valid integers");
+                        }
+                    } else {
+                        throw new LuaException("Wrong amount of parameters. 3 required");
+                    }
+                } else if (arguments.length == 2) {
+                    try {
+                        System.out.println(arguments[0] + " " + arguments[1]);
+                        int x = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                        int z = (int) Double.parseDouble(String.valueOf(arguments[1]));
+                        this.setTarget(new Pos(x, getTarget().yi(), z));
+                        return new Object[]{true};
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameters x, z must be valid integers");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 2 required");
+                }
+            case 6:             // set missile Lock Height
+                if (arguments.length == 1) {
+                    try {
+                        short lockHeight = (short) Double.parseDouble(String.valueOf(arguments[0]));
+                        if (0 <= lockHeight && lockHeight <= 999) {
+                            this.lockHeight = lockHeight;
+                        } else {
+                            throw new LuaException("Lock height must be in [0..999] range");
+                        }
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameter must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 1 required");
+                }
+                break;
+            case 7:             // set launcher frequency
+                if (arguments.length == 1) {
+                    try {
+                        int frequency = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                        this.setFrequency(frequency);
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameter must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 1 required");
+                }
+                break;
+        }
+        return new Object[0];
+    }
+
+    @Override
+    public boolean equals(@Nullable IPeripheral other) {
+        return false;
     }
 }

@@ -1,6 +1,10 @@
 package icbm.classic.content.machines.radarstation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.missile.EntityMissile;
@@ -26,10 +30,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IGuiTile, IInventoryProvider<ExternalInventory>, IPeripheral
 {
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
@@ -409,5 +416,119 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiRadarStation(player, this);
+    }
+
+    /**
+     * @return Peripheral name
+     */
+    @Nonnull
+    @Override
+    public String getType() {
+        return "ICBM_radar";
+    }
+
+    /**
+     * @return Methods callable in LUA with ComputerCraft
+     */
+    @Nonnull
+    @Override
+    public String[] getMethodNames() {
+        return new String[]{"getDetectedEntities", "getIncomingMissiles", "getAlarmRange", "getSafetyRange", "setAlarmRange", "setSafetyRange"};
+    }
+
+    @Nullable
+    @Override
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+        if (!this.hasPower()) {
+            throw new LuaException("Radar needs power to operate!");
+        }
+
+        switch (method) {
+            case 0:                 // return entities detected by radar
+//                doScan();            used for testing if radar thread is not active
+                List<Entity> entities;
+                synchronized (this) {
+                    entities = detectedEntities;
+                }
+                if (entities.size() > 0) {
+                    ArrayList<HashMap<String, String>> output = new ArrayList<>();
+                    for (Entity entity : entities) {
+                        // Generate HashMap with entity information
+                        HashMap<String, String> entry = new HashMap<>();
+                        entry.put("x", String.valueOf(entity.posX));
+                        entry.put("y", String.valueOf(entity.posY));
+                        entry.put("z", String.valueOf(entity.posZ));
+                        if (entity instanceof EntityMissile) {
+                            entry.put("type", ((EntityMissile) entity).explosiveID.handler.getMissileName());
+                            entry.put("xt", String.valueOf(((EntityMissile) entity).targetPos.xi()));
+                            entry.put("yt", String.valueOf(((EntityMissile) entity).targetPos.yi()));
+                            entry.put("zt", String.valueOf(((EntityMissile) entity).targetPos.zi()));
+                            output.add(entry);
+                        } else {
+                            entry.put("what", entity.toString());
+                        }
+                    }
+                    // return all the detected entities
+                    return output.toArray();
+                }
+                break;
+            case 1:                     // return missile that are going to hit safe zone
+//                doScan();
+                List<EntityMissile> missiles;
+                synchronized (this) {
+                    missiles = incomingMissiles;
+                }
+                if (missiles.size() > 0) {
+                    ArrayList<HashMap<String, String>> output = new ArrayList<>();
+                    for (EntityMissile missile : missiles) {
+                        HashMap<String, String> entry = new HashMap<>();
+                        // When called, for each missile it will return missile position, target position and missile type
+                        entry.put("type", missile.explosiveID.handler.getMissileName());
+                        entry.put("x", String.valueOf(missile.xi()));
+                        entry.put("y", String.valueOf(missile.yi()));
+                        entry.put("z", String.valueOf(missile.zi()));
+                        entry.put("xt", String.valueOf(missile.targetPos.xi()));
+                        entry.put("yt", String.valueOf(missile.targetPos.yi()));
+                        entry.put("zt", String.valueOf(missile.targetPos.zi()));
+                        output.add(entry);
+                    }
+                    return output.toArray();
+                }
+                return new Object[0];
+            case 2:                     // Return alarm range
+                return new String[]{String.valueOf(this.alarmRange)};
+            case 3:                     // Return safety range
+                return new String[]{String.valueOf(this.safetyRange)};
+            case 4:                     // Set alarm range
+                if (arguments.length == 1) {
+                    try {
+                        this.alarmRange = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                        return new Object[]{true};
+                    } catch (NumberFormatException e) {
+                        throw new LuaException("Parameter alarmRange must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 1 required");
+                }
+            case 5:                     // set safety range
+                if (arguments.length == 1) {
+                    try {
+                        this.safetyRange = (int) Double.parseDouble(String.valueOf(arguments[0]));
+                        return new Object[]{true};
+                    } catch (NumberFormatException e) {
+                        throw new LuaException("Parameter safetyRange must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 1 required");
+                }
+            default:
+                break;
+        }
+        return new Object[0];
+    }
+
+    @Override
+    public boolean equals(@Nullable IPeripheral other) {
+        return false;
     }
 }

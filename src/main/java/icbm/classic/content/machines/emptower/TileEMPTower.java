@@ -1,5 +1,9 @@
 package icbm.classic.content.machines.emptower;
 
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
@@ -20,10 +24,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>, IPeripheral
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
@@ -282,5 +288,91 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiEMPTower(player, this);
+    }
+
+    @Nonnull
+    @Override
+    public String getType() {
+        return "ICBM_EMPTower";
+    }
+
+    @Nonnull
+    @Override
+    public String[] getMethodNames() {
+        return new String[]{"fire", "isReady", "getStoredEnergy", "getMaxEnergy", "setFireMode", "setRadius"};
+    }
+
+    /**
+     * Adds LUA control for the EMP tower
+     *
+     * @param computer  The interface to the computer that is making the call. Remember that multiple
+     *                  computers can be attached to a peripheral at once.
+     * @param context   The context of the currently running lua thread. This can be used to wait for events
+     *                  or otherwise yield.
+     * @param method    An integer identifying which of the methods from getMethodNames() the computercraft
+     *                  wishes to call. The integer indicates the index into the getMethodNames() table
+     *                  that corresponds to the string passed into peripheral.call()
+     * @param arguments An array of objects, representing the arguments passed into {@code peripheral.call()}.<br>
+     *                  Lua values of type "string" will be represented by Object type String.<br>
+     *                  Lua values of type "number" will be represented by Object type Double.<br>
+     *                  Lua values of type "boolean" will be represented by Object type Boolean.<br>
+     *                  Lua values of type "table" will be represented by Object type Map.<br>
+     *                  Lua values of any other type will be represented by a null object.<br>
+     *                  This array will be empty if no arguments are passed.
+     * @return
+     * @throws LuaException
+     * @throws InterruptedException
+     */
+    @Nullable
+    @Override
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) throws LuaException, InterruptedException {
+        switch (method) {
+            case 0:             // canFire
+                return new Object[]{this.fire()};
+            case 1:             // isReady
+                return new Object[]{this.isReady()};
+            case 2:             // getStoredEnergy
+                return new Object[]{this.getEnergy()};
+            case 3:             // getMaxEnergy
+                return new Object[]{this.getEnergyBufferSize()};
+            case 4:             // setFireMode
+                if (arguments.length == 1) {
+                    try {
+                        byte mode = (byte) Double.parseDouble(String.valueOf(arguments[0]));
+                        if (mode == 0 || mode == 1 || mode == 2) {
+                            this.empMode = mode;
+                            return new Object[0];
+                        } else {
+                            throw new LuaException("Parameter mode must be either 0 (both), 1 (missiles) or 2 (blocks)");
+                        }
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameter mode must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 1 required");
+                }
+            case 5:             // setRadius
+                if (arguments.length == 1) {
+                    try {
+                        int range = (byte) Double.parseDouble(String.valueOf(arguments[0]));
+                        if (range >= 10 && range <= 150) {
+                            empRadius = range;
+                            return new Object[0];
+                        } else {
+                            throw new LuaException("Parameter range must be between 10 and 150]");
+                        }
+                    } catch (NumberFormatException ignored) {
+                        throw new LuaException("Parameter range must be a valid integer");
+                    }
+                } else {
+                    throw new LuaException("Wrong amount of parameters. 1 required");
+                }
+        }
+        return new Object[0];
+    }
+
+    @Override
+    public boolean equals(@Nullable IPeripheral other) {
+        return false;
     }
 }

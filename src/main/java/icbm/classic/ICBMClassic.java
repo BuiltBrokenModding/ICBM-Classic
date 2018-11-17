@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import dan200.computercraft.api.ComputerCraftAPI;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
@@ -39,6 +40,7 @@ import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.mods.cc.CCPeripheralProvider;
 import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import icbm.classic.prefab.item.ItemICBMBase;
@@ -116,7 +118,7 @@ public final class ICBMClassic
     public static final String BUILD_VERSION = "@BUILD@";
     public static final String MC_VERSION = "@MC@";
     public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
-    public static final String DEPENDENCIES = "";
+    public static final String DEPENDENCIES = "after:ComputerCraft";
 
     public static final String TEXTURE_DIRECTORY = "textures/";
     public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
@@ -513,6 +515,12 @@ public final class ICBMClassic
                 }
             });
         }
+
+        // Check if ComputerCraft is installed and register a peripheral provider
+        if (ComputerCraftAPI.isInstalled()) {
+            ComputerCraftAPI.registerPeripheralProvider( new CCPeripheralProvider() );
+        }
+
         proxy.init();
     }
 
