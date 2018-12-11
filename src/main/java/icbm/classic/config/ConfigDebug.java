@@ -18,4 +18,8 @@ public class ConfigDebug
     @Config.Name("debug_explosives")
     @Config.Comment("Enabled extra console output to check the state of the explosive logic.")
     public static boolean DEBUG_EXPLOSIVES = false;
+
+    @Config.Name("debug_missile_launches")
+    @Config.Comment("When enabled, all missile launches are logged, including target and origin coordinates.")
+    public static boolean DEBUG_MISSILE_LAUNCHES = false;
 }

@@ -6,6 +6,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IExplosiveContainer;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.IMissile;
+import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
@@ -212,13 +213,16 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         //Trigger events
         // TODO add an event system here
         RadarRegistry.add(this);
-        if (target != null)
+        if (ConfigDebug.DEBUG_MISSILE_LAUNCHES)
         {
-            ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
-        }
-        else
-        {
-            ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
+            if (target != null)
+            {
+                ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
+            }
+            else
+            {
+                ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
+            }
         }
     }
 
