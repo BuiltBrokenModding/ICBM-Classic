@@ -1,12 +1,14 @@
 package icbm.classic.content.missile;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.config.ConfigDebug;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
+import org.apache.logging.log4j.Level;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -54,7 +56,9 @@ public class MissileTrackerWorld extends WorldSavedData
      */
     protected void simulateMissile(EntityMissile missile)
     {
-        ICBMClassic.logger().info("MissileTracker[ " + missile.world.provider.getDimension() + "]: Simulating missile");
+        if(ConfigDebug.DEBUG_MISSILE_TRACKER)
+            ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
+
         //Only run on server
         if (!missile.world.isRemote)
         {
@@ -85,7 +89,7 @@ public class MissileTrackerWorld extends WorldSavedData
         if (ticks++ >= 20)  //Run every 20 ticks = 1 second
         {
             ticks = 0;
-
+            int mIndex = 0;
             //Loop through all simulated missiles
             final Iterator<MissileTrackerData> missileIterator = missileList.iterator();
             while(missileIterator.hasNext())
@@ -138,7 +142,10 @@ public class MissileTrackerWorld extends WorldSavedData
                 else //If we aren't at the target location then simulate it for another tick
                 {
                     missile.ticksLeftToTarget--;
+                    if(ConfigDebug.DEBUG_MISSILE_TRACKER)
+                        ICBMClassic.logger().log(Level.INFO,"MissileTracker Missile ["+mIndex+"]: Simulation ticks left: "+missile.ticksLeftToTarget);
                 }
+                mIndex++;
             }
 
             //Check forced chunks, decrease lifetime and maybe unforce
@@ -194,11 +201,11 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.posY = 250;
         missile.posX = mtd.targetPos.x();
         missile.posZ = mtd.targetPos.z();
-        missile.motionY = -1;
+        missile.motionY = -5;
         missile.motionZ = 0;
         missile.motionX = 0;
         missile.lockHeight = 0;
-        missile.acceleration = 5;
+        missile.acceleration = 0;
         missile.preLaunchSmokeTimer = 0;
         missile.targetPos = mtd.targetPos;
         missile.wasSimulated = true;

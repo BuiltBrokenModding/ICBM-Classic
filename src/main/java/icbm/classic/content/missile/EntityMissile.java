@@ -264,8 +264,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 // Flight time
                 this.missileFlightTime = (float) Math.max(100, 2 * this.flatDistance) - this.ticksInAir;
                 // Acceleration
-                this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
-
+                if (!this.wasSimulated)     // only set acceleration when doing a normal launch as the missile flight time is set to -1 when it comes out of simulation.
+                {
+                    this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
+                }
             }
             else if (missileType.movesDirectly)
             {
