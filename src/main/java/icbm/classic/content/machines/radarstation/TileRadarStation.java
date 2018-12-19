@@ -4,6 +4,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.missile.EntityMissile;
+import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -215,6 +217,17 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
      */
     public boolean isMissileGoingToHit(EntityMissile missile)
     {
+        if (missile.missileType == MissileFlightType.HAND_LAUNCHER)
+        {
+            Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
+            Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
+
+            double nextDistance = mpos.add(missile.getVelocity().toVec3d()).distanceTo(rpos);   // next distance from missile to radar
+            double currentDistance = mpos.distanceTo(rpos); // current distance from missile to radar
+
+            return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
+        }
+
         if (missile == null || missile.targetPos == null)
         {
             return false;
