@@ -303,6 +303,7 @@ public final class ICBMClassic
         event.getRegistry().register(buildEntityEntry(EntityGrenade.class, "item.grenade", 50, 5));
         event.getRegistry().register(buildEntityEntry(EntityBombCart.class, "cart.bomb", 50, 2));
         event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, "holder.seat", 50, 2));
+        event.getRegistry().register(buildEntityEntry(EntityXmasSkeleton.class, "skeleton.xmas", 64, 1));
     }
 
     private static EntityEntry buildEntityEntry(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)

@@ -163,6 +163,8 @@ icbm.explosive.hypersonic.info=I feel bad for your ears
 
 icbm.explosive.antimatter.info=matter + antimatter = no matter
 
+icbm.explosive.xmas.info=No, don't do it, he's evil!
+
 ##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
 icbm.explosive.redMatter.info.count=11
 icbm.explosive.redMatter.info.0=Yogscast? Diggy diggy hole
@@ -207,6 +209,8 @@ icbm.missile.hypersonic.name=Hypersonic Missile
 icbm.missile.antimatter.name=Antimatter Missile
 icbm.missile.redMatter.name=Red Matter Missile
 
+icbm.missile.xmas.name=Robot Santa Gift Missile
+
 ## Special Missiles
 icbm.missile.missileModule.name=Missile Module
 icbm.missile.antiBallistic.name=Anti-ballistic Missile
@@ -223,6 +227,8 @@ icbm.grenade.chemical.name=Chemical Grenade
 icbm.grenade.anvil.name=Anvil Grenade
 icbm.grenade.repulsive.name=Repulsive Grenade
 icbm.grenade.attractive.name=Attractive Grenade
+
+icbm.grenade.xmas.name=Robot Santa Gift Grenade
 
 ## Explosive Minecarts
 icbm.minecart.condensed.name=Explosive Cart
@@ -241,6 +247,8 @@ icbm.minecart.sonic.name=Sonic Minecart
 icbm.minecart.breaching.name=Breaching Minecart
 icbm.minecart.rejuvenation.name=Rejuvenation Minecart
 icbm.minecart.thermobaric.name=Thermobaric Minecart
+
+icbm.minecart.xmas.name=Robot Santa Gift Cart
 
 ## ICBM Misc Blocks
 tile.icbmclassic:concrete.0.name=Concrete

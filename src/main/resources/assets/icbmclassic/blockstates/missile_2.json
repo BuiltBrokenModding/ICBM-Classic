@@ -138,6 +138,9 @@
       },
       "thermobaric": {
         "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
+      },
+      "xmas": {
+        "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
       }
     }
   }

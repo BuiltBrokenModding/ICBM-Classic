@@ -95,7 +95,16 @@ public abstract class Blast extends Explosion implements IBlast
     /**
      * Internal call to run the blast code
      */
-    protected abstract void doExplode();
+    @Deprecated
+    protected void doExplode()
+    {
+
+    }
+
+    protected void doExplode(int callCount)
+    {
+        doExplode();
+    }
 
     /**
      * Called to trigger the main blast code
@@ -110,8 +119,7 @@ public abstract class Blast extends Explosion implements IBlast
         debugEx(String.format("Blast#onExplode() -> Blast: %s, IsAlive: %s, CallCount: %s", this, isAlive, callCount));
         if (isAlive)
         {
-            this.doExplode();
-            this.callCount++;
+            this.doExplode(callCount++);
         }
     }
 
