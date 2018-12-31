@@ -5,10 +5,7 @@ import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.entity.mobs.EntityXmasRPG;
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
-import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
-import icbm.classic.content.entity.mobs.EntityXmasSnowman;
+import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;
@@ -309,10 +306,15 @@ public final class ICBMClassic
         event.getRegistry().register(buildEntityEntry(EntityBombCart.class, "cart.bomb", 50, 2));
         event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, "holder.seat", 50, 2));
 
-
+        //Green team
         event.getRegistry().register(buildMobEntry(EntityXmasSkeleton.class, "skeleton.xmas.elf", Color.GREEN, Color.CYAN));
         event.getRegistry().register(buildMobEntry(EntityXmasSkeletonBoss.class, "skeleton.xmas.boss", Color.GREEN, Color.CYAN));
-        event.getRegistry().register(buildMobEntry(EntityXmasSnowman.class, "skeleton.snowman", Color.BLACK, Color.CYAN));
+        event.getRegistry().register(buildMobEntry(EntityXmasSnowman.class, "skeleton.xmas.snowman", Color.BLACK, Color.CYAN));
+
+        //Red team
+        event.getRegistry().register(buildMobEntry(EntityXmasZombie.class, "zombie.xmas.elf", Color.RED, Color.CYAN));
+        event.getRegistry().register(buildMobEntry(EntityXmasZombieBoss.class, "zombie.xmas.boss", Color.RED, Color.CYAN));
+
 
         event.getRegistry().register(buildEntityEntry(EntityXmasRPG.class, "skeleton.snowman.rocket", 64, 1));
     }

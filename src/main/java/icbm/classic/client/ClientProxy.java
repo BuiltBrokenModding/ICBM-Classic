@@ -5,9 +5,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
-import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
-import icbm.classic.content.entity.mobs.EntityXmasSnowman;
+import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.machines.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.missile.EntityMissile;
@@ -125,9 +123,13 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, manager -> new RenderFragments(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, manager -> new RenderSeat(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
+
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, manager -> new RenderSkeletonXmas(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, manager -> new RenderSkeletonXmas(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, manager -> new RenderSnowmanXmas(manager));
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, manager -> new RenderZombieXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, manager -> new RenderZombieXmas(manager));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());

@@ -1,12 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
-import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
-import icbm.classic.content.entity.mobs.EntityXmasSnowman;
+import icbm.classic.content.entity.mobs.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
@@ -27,9 +24,12 @@ public class BlastXmas extends Blast
 {
     public int callCountEnd = 20;
 
-    public BlastXmas(World world, Entity entity, double x, double y, double z, float size)
+    final boolean zombie;
+
+    public BlastXmas(World world, Entity entity, double x, double y, double z, float size, boolean zombie)
     {
         super(world, entity, x, y, z, size);
+        this.zombie = zombie;
     }
 
     @Override
@@ -49,11 +49,7 @@ public class BlastXmas extends Blast
             //End explosion if we hit the timer end
             if (callCount > this.callCountEnd)
             {
-                EntityLiving entity = new EntityXmasSkeletonBoss(world());
-                entity.setPositionAndRotation(x, y + 4, z, MathHelper.wrapDegrees(world.rand.nextFloat() * 360.0F), 0);
-                entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData) null);
-                this.world().spawnEntity(entity);
-
+                spawnEntity(zombie ? new EntityXmasZombieBoss(world()) : new EntityXmasSkeletonBoss(world()), x, y + 4, z);
                 this.controller.endExplosion();
             }
         }
@@ -181,19 +177,30 @@ public class BlastXmas extends Blast
 
     protected void spawnMob(double x, double y, double z)
     {
-        EntityLiving entity;
+        EntityXmasMob entity;
 
         //Get entity to spawn
         final float randomSpawnChance = world.rand.nextFloat();
-        if (randomSpawnChance < 0.8)
+        if(!zombie)
         {
-            entity = new EntityXmasSkeleton(world());
+            if (randomSpawnChance < 0.8)
+            {
+                entity = new EntityXmasSkeleton(world());
+            }
+            else
+            {
+                entity = new EntityXmasSnowman(world());
+            }
         }
         else
         {
-            entity = new EntityXmasSnowman(world());
+            entity = new EntityXmasZombie(world());
         }
+        spawnEntity(entity, x, y, z);
+    }
 
+    protected void spawnEntity(EntityXmasMob entity, double x, double y, double z)
+    {
         //Update position and trigger init
         entity.setPositionAndRotation(x, y, z, MathHelper.wrapDegrees(world.rand.nextFloat() * 360.0F), 0);
         entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData) null);

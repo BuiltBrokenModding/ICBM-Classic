@@ -1,8 +1,8 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.mobs.ModelSkeletonXmas;
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.client.models.mobs.ModelZombieXmas;
+import icbm.classic.content.entity.mobs.EntityXmasZombie;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -11,13 +11,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSkeletonXmas extends RenderLiving<EntityXmasSkeleton>
+public class RenderZombieXmas extends RenderLiving<EntityXmasZombie>
 {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/skeleton/skeleton.hat.green.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/zombie/zombie.hat.red.png");
 
-    public RenderSkeletonXmas(RenderManager renderManagerIn)
+    public RenderZombieXmas(RenderManager renderManagerIn)
     {
-        super(renderManagerIn, new ModelSkeletonXmas(), 0.5F);
+        super(renderManagerIn, new ModelZombieXmas(), 0.5F);
         //this.addLayer(new LayerHeldItemSkeletonXmas(this));
     }
 
@@ -28,7 +28,7 @@ public class RenderSkeletonXmas extends RenderLiving<EntityXmasSkeleton>
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityXmasSkeleton entity)
+    protected ResourceLocation getEntityTexture(EntityXmasZombie entity)
     {
         return TEXTURE;
     }

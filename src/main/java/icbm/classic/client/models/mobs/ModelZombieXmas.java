@@ -1,20 +1,25 @@
 package icbm.classic.client.models.mobs;
 
+import icbm.classic.content.entity.mobs.EntityXmasZombieBoss;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelZombie - Either Mojang or a mod author
  * Created using Tabula 7.0.0
  */
-public class ModelZombieXmas extends ModelBase {
-    public ModelRenderer BipedRightArm;
-    public ModelRenderer BipedRightLeg;
+public class ModelZombieXmas extends ModelBase
+{
+    public ModelRenderer bipedRightArm;
+    public ModelRenderer bipedRightLeg;
     public ModelRenderer bipedHead;
-    public ModelRenderer bipedbody;
-    public ModelRenderer LeftLeg;
-    public ModelRenderer biprfLeftLeg;
+    public ModelRenderer bipedBody;
+    public ModelRenderer bipedLeftArm;
+    public ModelRenderer bipedLeftLeg;
+
     public ModelRenderer shape8;
     public ModelRenderer shape9;
     public ModelRenderer shape10;
@@ -53,7 +58,8 @@ public class ModelZombieXmas extends ModelBase {
     public ModelRenderer Magazine;
     public ModelRenderer Magazine2;
 
-    public ModelZombieXmas() {
+    public ModelZombieXmas()
+    {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.Magazine = new ModelRenderer(this, 0, 55);
@@ -68,15 +74,15 @@ public class ModelZombieXmas extends ModelBase {
         this.shape24 = new ModelRenderer(this, 8, 59);
         this.shape24.setRotationPoint(-6.999999999999996F, -3.969047313034935E-15F, -8.099999999999998F);
         this.shape24.addBox(0.0F, -0.1F, 0.0F, 1, 4, 1, 0.0F);
-        this.BipedRightLeg = new ModelRenderer(this, 0, 16);
-        this.BipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.1F);
-        this.BipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.bipedRightLeg = new ModelRenderer(this, 0, 16);
+        this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.1F);
+        this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
         this.shape8_1 = new ModelRenderer(this, 7, 58);
         this.shape8_1.setRotationPoint(-7.099999999999995F, -3.969047313034935E-15F, -9.299999999999992F);
         this.shape8_1.addBox(0.0F, -0.1F, 0.0F, 2, 4, 2, 0.0F);
-        this.bipedbody = new ModelRenderer(this, 16, 16);
-        this.bipedbody.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.bipedbody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F);
+        this.bipedBody = new ModelRenderer(this, 16, 16);
+        this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F);
         this.shape14_1 = new ModelRenderer(this, 0, 34);
         this.shape14_1.setRotationPoint(-6.599999999999997F, -2.3799999999999906F, -11.899999999999983F);
         this.shape14_1.addBox(0.0F, -0.1F, 0.0F, 1, 1, 1, 0.0F);
@@ -125,14 +131,14 @@ public class ModelZombieXmas extends ModelBase {
         this.shape18 = new ModelRenderer(this, 0, 34);
         this.shape18.setRotationPoint(-6.699999999999997F, -1.6999999999999924F, -12.44999999999998F);
         this.shape18.addBox(0.0F, -0.1F, 0.0F, 1, 1, 1, 0.0F);
-        this.biprfLeftLeg = new ModelRenderer(this, 0, 16);
-        this.biprfLeftLeg.mirror = true;
-        this.biprfLeftLeg.setRotationPoint(1.9F, 12.0F, 0.1F);
-        this.biprfLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.BipedRightArm = new ModelRenderer(this, 40, 16);
-        this.BipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-        this.BipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.setRotateAngle(BipedRightArm, -1.5707963267948966F, 0.0F, 0.0F);
+        this.bipedLeftLeg = new ModelRenderer(this, 0, 16);
+        this.bipedLeftLeg.mirror = true;
+        this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.1F);
+        this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.bipedRightArm = new ModelRenderer(this, 40, 16);
+        this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+        this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.setRotateAngle(bipedRightArm, -1.5707963267948966F, 0.0F, 0.0F);
         this.shape11_1 = new ModelRenderer(this, 0, 40);
         this.shape11_1.setRotationPoint(-6.599999999999997F, -3.969047313034935E-15F, -11.199999999999985F);
         this.shape11_1.addBox(0.0F, -0.1F, 0.0F, 1, 1, 0, 0.0F);
@@ -167,11 +173,11 @@ public class ModelZombieXmas extends ModelBase {
         this.shape20 = new ModelRenderer(this, 16, 61);
         this.shape20.setRotationPoint(-6.599999999999997F, -1.5999999999999959F, -13.699999999999976F);
         this.shape20.addBox(0.0F, -0.1F, 0.0F, 1, 1, 2, 0.0F);
-        this.LeftLeg = new ModelRenderer(this, 40, 16);
-        this.LeftLeg.mirror = true;
-        this.LeftLeg.setRotationPoint(5.0F, 2.0F, 0.0F);
-        this.LeftLeg.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.setRotateAngle(LeftLeg, 0.0F, 0.10000736613927509F, -0.10000736613927509F);
+        this.bipedLeftArm = new ModelRenderer(this, 40, 16);
+        this.bipedLeftArm.mirror = true;
+        this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+        this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.setRotateAngle(bipedLeftArm, 0.0F, 0.10000736613927509F, -0.10000736613927509F);
         this.Supressor3 = new ModelRenderer(this, 0, 9);
         this.Supressor3.setRotationPoint(-6.799999999999996F, -1.3999999999999975F, -17.499999999999975F);
         this.Supressor3.addBox(0.0F, -0.1F, 0.0F, 1, 1, 5, 0.0F);
@@ -206,49 +212,94 @@ public class ModelZombieXmas extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        this.Magazine.render(f5);
-        this.Supressor4.render(f5);
-        this.shape24.render(f5);
-        this.BipedRightLeg.render(f5);
-        this.shape8_1.render(f5);
-        this.bipedbody.render(f5);
-        this.shape14_1.render(f5);
-        this.shape17.render(f5);
-        this.shape9_1.render(f5);
-        this.Supressor.render(f5);
-        this.shape25.render(f5);
-        this.shape21.render(f5);
-        this.shape10_1.render(f5);
-        this.shape22.render(f5);
-        this.Supressor2.render(f5);
-        this.shape8.render(f5);
-        this.shape12_1.render(f5);
-        this.shape1.render(f5);
-        this.shape18.render(f5);
-        this.biprfLeftLeg.render(f5);
-        this.BipedRightArm.render(f5);
-        this.shape11_1.render(f5);
-        this.shape16.render(f5);
-        this.shape2.render(f5);
-        this.Magazine2.render(f5);
-        this.bipedHead.render(f5);
-        this.shape19.render(f5);
-        this.shape20.render(f5);
-        this.LeftLeg.render(f5);
-        this.Supressor3.render(f5);
-        this.shape5.render(f5);
-        this.shape13_1.render(f5);
-        this.shape23.render(f5);
-        this.shape15_1.render(f5);
-        this.shape4.render(f5);
-        this.shape3.render(f5);
+    public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    {
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+        GlStateManager.pushMatrix();
+        if (entity instanceof EntityXmasZombieBoss)
+        {
+            GlStateManager.scale(1.9F, 1.9F, 1.9F);
+            GlStateManager.translate(0.0F, -12.0F * scale, 0.0F);
+            render(scale);
+        }
+        else
+        {
+            GlStateManager.scale(0.7F, 0.7F, 0.7F);
+            GlStateManager.translate(0.0F, 10.0F * scale, 0.0F);
+            render(scale);
+        }
+
+        GlStateManager.popMatrix();
+    }
+
+    @Override
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
+    {
+        this.bipedRightLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+        this.bipedLeftArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
+        this.bipedRightLeg.rotateAngleY = 0.0F;
+        this.bipedLeftArm.rotateAngleY = 0.0F;
+        this.bipedRightLeg.rotateAngleZ = 0.0F;
+        this.bipedLeftArm.rotateAngleZ = 0.0F;
+
+        if (this.isRiding)
+        {
+            this.bipedRightArm.rotateAngleX += -((float) Math.PI / 5F);
+            this.bipedLeftArm.rotateAngleX += -((float) Math.PI / 5F);
+            this.bipedRightLeg.rotateAngleX = -1.4137167F;
+            this.bipedRightLeg.rotateAngleY = ((float) Math.PI / 10F);
+            this.bipedRightLeg.rotateAngleZ = 0.07853982F;
+            this.bipedLeftArm.rotateAngleX = -1.4137167F;
+            this.bipedLeftArm.rotateAngleY = -((float) Math.PI / 10F);
+            this.bipedLeftArm.rotateAngleZ = -0.07853982F;
+        }
+    }
+
+    public void render(float scale)
+    {
+        this.Magazine.render(scale);
+        //this.Supressor4.render(scale);
+        this.shape24.render(scale);
+        this.bipedRightLeg.render(scale);
+        this.shape8_1.render(scale);
+        this.bipedBody.render(scale);
+        this.shape14_1.render(scale);
+        this.shape17.render(scale);
+        this.shape9_1.render(scale);
+        //this.Supressor.render(scale);
+        this.shape25.render(scale);
+        this.shape21.render(scale);
+        this.shape10_1.render(scale);
+        this.shape22.render(scale);
+        //this.Supressor2.render(scale);
+        this.shape8.render(scale);
+        this.shape12_1.render(scale);
+        this.shape1.render(scale);
+        this.shape18.render(scale);
+        this.bipedLeftLeg.render(scale);
+        this.bipedRightArm.render(scale);
+        this.shape11_1.render(scale);
+        this.shape16.render(scale);
+        this.shape2.render(scale);
+        this.Magazine2.render(scale);
+        this.bipedHead.render(scale);
+        this.shape19.render(scale);
+        this.shape20.render(scale);
+        this.bipedLeftArm.render(scale);
+        //this.Supressor3.render(scale);
+        this.shape5.render(scale);
+        this.shape13_1.render(scale);
+        this.shape23.render(scale);
+        this.shape15_1.render(scale);
+        this.shape4.render(scale);
+        this.shape3.render(scale);
     }
 
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;

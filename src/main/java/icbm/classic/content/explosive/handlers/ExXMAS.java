@@ -9,9 +9,11 @@ import net.minecraft.world.World;
 
 public class ExXMAS extends Explosion
 {
-    public ExXMAS()
+    final boolean zombie;
+    public ExXMAS(boolean zombie)
     {
         super("xmas", EnumTier.TWO);
+        this.zombie = zombie;
         this.setFuseTime(200);
         this.hasGrenade = true;
     }
@@ -25,6 +27,6 @@ public class ExXMAS extends Explosion
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        new BlastXmas(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 5 * scale).runBlast();
+        new BlastXmas(world, entity, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 5 * scale, zombie).runBlast();
     }
 }

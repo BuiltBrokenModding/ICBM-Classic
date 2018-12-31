@@ -53,7 +53,8 @@ public enum Explosives implements IStringSerializable
     /* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster()),
 
 
-    /* 29 */XMAS(new ExXMAS());
+    /* 29 */XMAS_ZOMBIE(new ExXMAS(true)),
+    /* 30 */XMAS_SKELTON(new ExXMAS(false));
 
     public final Explosive handler;
 

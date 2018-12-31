@@ -1,7 +1,6 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
-import icbm.classic.content.entity.mobs.EntityXmasSnowman;
+import icbm.classic.content.entity.mobs.EntityXmasMob;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -313,9 +312,9 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     {
         if(entity != null && entity.isEntityAlive())
         {
-            if(isXmasBullet && (entity instanceof EntityXmasSkeleton || entity instanceof EntityXmasSnowman))
+            if(isXmasBullet && entity instanceof EntityXmasMob)
             {
-                return false;
+                return !((EntityXmasMob) entity).isOnTeam(shootingEntity);
             }
             return true;
         }
