@@ -25,7 +25,8 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class RenderFragments extends Render<EntityFragments>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/fragment.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.png");
+    public static final ResourceLocation TEXTURE_ICE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.ice.png");
 
     public RenderFragments(RenderManager renderManager)
     {
@@ -124,6 +125,10 @@ public class RenderFragments extends Render<EntityFragments>
     @Override
     protected ResourceLocation getEntityTexture(EntityFragments entity)
     {
-        return TEXTURE_FILE;
+        if(entity.isIce)
+        {
+            return TEXTURE_ICE;
+        }
+        return TEXTURE;
     }
 }

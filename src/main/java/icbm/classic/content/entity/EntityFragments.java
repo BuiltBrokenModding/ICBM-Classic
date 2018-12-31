@@ -1,7 +1,5 @@
 package icbm.classic.content.entity;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -10,7 +8,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -20,15 +21,17 @@ import java.util.List;
 
 public class EntityFragments extends Entity implements IEntityAdditionalSpawnData
 {
-    private static final Predicate<Entity> ARROW_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, p_apply_1_ -> p_apply_1_.canBeCollidedWith());
-
     private BlockPos inTilePosition = new BlockPos(0, 0, 0);
     private IBlockState inTile;
 
-    private boolean inGround = false;
+    //Type settings
     public boolean isExplosive; //TODO replace with ENUM
     public boolean isAnvil; //TODO replace with ENUM
     public boolean isIce; //TODO replace with ENUM
+    public boolean isXmasBullet;
+
+    //Triggers
+    private boolean inGround = false;
     private boolean isExploding = false;
 
     /** Seems to be some sort of timer for animating an arrow. */
@@ -301,18 +304,38 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         return (double)speed * this.damage;
     }
 
+    protected boolean canAttack(Entity entity)
+    {
+        if(entity != null && entity.isEntityAlive())
+        {
+            if(isXmasBullet && entity instanceof EntityXmasSkeleton)
+            {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Called when the arrow hits a block or an entity
      */
     protected void onHit(RayTraceResult raytraceResultIn)
     {
-        Entity entity = raytraceResultIn.entityHit;
+        final Entity entity = raytraceResultIn.entityHit;
 
         if (entity != null)
         {
-            float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-            int damageScaled = MathHelper.ceil(getDamage(speed));
+            if(!canAttack(entity))
+            {
+                this.setDead();
+                return;
+            }
 
+            final float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+            final int damageScaled = MathHelper.ceil(getDamage(speed));
+
+            //TODO change damage source to match fragment
             DamageSource damagesource = new EntityDamageSourceIndirect("arrow", this, null).setProjectile(); //TODO track source, TODO custom damage type
 
             //Notify that we hit an entity
@@ -412,7 +435,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     protected Entity findEntityOnPath(Vec3d start, Vec3d end)
     {
         Entity entity = null;
-        List<Entity> list = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D), ARROW_TARGETS);
+        List<Entity> list = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D), e -> e.canBeCollidedWith());
         double d0 = 0.0D;
 
         for (int i = 0; i < list.size(); ++i)
