@@ -1,6 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.content.entity.EntityXmasSkeleton;
+import icbm.classic.content.entity.EntityXmasSkeletonBoss;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -33,19 +34,27 @@ public class BlastXmas extends Blast
     @Override
     protected void doExplode(int callCount)
     {
-        if (callCount == 0)
+        if(!world.isRemote)
         {
-            generateGround();
-        }
-        else if (callCount % 2 == 0)
-        {
-            spawnMobs();
-        }
+            if (callCount == 0)
+            {
+                generateGround();
+            }
+            else if (callCount % 2 == 0)
+            {
+                spawnMobs();
+            }
 
-        //End explosion if we hit the timer end
-        if (callCount > this.callCountEnd)
-        {
-            this.controller.endExplosion();
+            //End explosion if we hit the timer end
+            if (callCount > this.callCountEnd)
+            {
+                EntityLiving entity = new EntityXmasSkeletonBoss(world());
+                entity.setPositionAndRotation(x, y + 4, z, MathHelper.wrapDegrees(world.rand.nextFloat() * 360.0F), 0);
+                entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData) null);
+                this.world().spawnEntity(entity);
+
+                this.controller.endExplosion();
+            }
         }
     }
 

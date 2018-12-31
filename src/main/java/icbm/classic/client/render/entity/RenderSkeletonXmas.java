@@ -6,7 +6,6 @@ import icbm.classic.content.entity.EntityXmasSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -20,7 +19,9 @@ public class RenderSkeletonXmas extends RenderLiving<EntityXmasSkeleton>
     public RenderSkeletonXmas(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelSkeletonXmas(0, false), 0.5F);
+        //this.addLayer(new LayerTommyGun(this));
         this.addLayer(new LayerHeldItemSkeletonXmas(this));
+        /*
         this.addLayer(new LayerBipedArmor(this)
         {
             protected void initArmor()
@@ -29,6 +30,7 @@ public class RenderSkeletonXmas extends RenderLiving<EntityXmasSkeleton>
                 this.modelArmor = new ModelSkeletonXmas(1.0F, true);
             }
         });
+        */
     }
 
     @Override

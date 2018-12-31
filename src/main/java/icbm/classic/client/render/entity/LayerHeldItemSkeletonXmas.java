@@ -1,6 +1,7 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.content.entity.EntityXmasSkeleton;
+import icbm.classic.content.entity.EntityXmasSkeletonBoss;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
@@ -33,8 +34,16 @@ public class LayerHeldItemSkeletonXmas implements LayerRenderer<EntityXmasSkelet
         {
             GlStateManager.pushMatrix();
 
-            GlStateManager.translate(0.0F, 0.4F, 0.0F);
-            GlStateManager.scale(0.7F, 0.7F, 0.7F);
+            if(entitylivingbaseIn instanceof EntityXmasSkeletonBoss)
+            {
+                GlStateManager.translate(0.0F, -1.4F, 0.0F);
+                GlStateManager.scale(1.8F, 1.8F, 1.8F);
+            }
+            else
+            {
+                GlStateManager.translate(0.0F, 0.4F, 0.0F);
+                GlStateManager.scale(0.7F, 0.7F, 0.7F);
+            }
 
             this.renderHeldItem(entitylivingbaseIn, itemstack1, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, EnumHandSide.RIGHT);
             this.renderHeldItem(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, EnumHandSide.LEFT);
