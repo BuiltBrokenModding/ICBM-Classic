@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.ModelSkeletonXmas;
+import icbm.classic.client.models.mobs.ModelSkeletonXmas;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;

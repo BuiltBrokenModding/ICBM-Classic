@@ -1,4 +1,4 @@
-package icbm.classic.client.models;
+package icbm.classic.client.models.mobs;
 
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
 import net.minecraft.client.model.ModelBase;
