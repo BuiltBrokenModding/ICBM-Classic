@@ -18,19 +18,8 @@ public class RenderSkeletonXmas extends RenderLiving<EntityXmasSkeleton>
 
     public RenderSkeletonXmas(RenderManager renderManagerIn)
     {
-        super(renderManagerIn, new ModelSkeletonXmas(0, false), 0.5F);
-        //this.addLayer(new LayerTommyGun(this));
-        this.addLayer(new LayerHeldItemSkeletonXmas(this));
-        /*
-        this.addLayer(new LayerBipedArmor(this)
-        {
-            protected void initArmor()
-            {
-                this.modelLeggings = new ModelSkeletonXmas(0.5F, true);
-                this.modelArmor = new ModelSkeletonXmas(1.0F, true);
-            }
-        });
-        */
+        super(renderManagerIn, new ModelSkeletonXmas(), 0.5F);
+        //this.addLayer(new LayerHeldItemSkeletonXmas(this));
     }
 
     @Override

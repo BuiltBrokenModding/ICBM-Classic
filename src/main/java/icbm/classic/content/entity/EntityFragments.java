@@ -20,20 +20,15 @@ import java.util.List;
 
 public class EntityFragments extends Entity implements IEntityAdditionalSpawnData
 {
-    private static final Predicate<Entity> ARROW_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, new Predicate<Entity>()
-    {
-        public boolean apply(@Nullable Entity p_apply_1_)
-        {
-            return p_apply_1_.canBeCollidedWith();
-        }
-    });
+    private static final Predicate<Entity> ARROW_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, p_apply_1_ -> p_apply_1_.canBeCollidedWith());
 
     private BlockPos inTilePosition = new BlockPos(0, 0, 0);
     private IBlockState inTile;
 
     private boolean inGround = false;
-    public boolean isExplosive;
-    public boolean isAnvil;
+    public boolean isExplosive; //TODO replace with ENUM
+    public boolean isAnvil; //TODO replace with ENUM
+    public boolean isIce; //TODO replace with ENUM
     private boolean isExploding = false;
 
     /** Seems to be some sort of timer for animating an arrow. */
@@ -41,7 +36,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
     /** The owner of this arrow. */
     private int ticksInAir = 0;
-    private int damage = 11;
+    public int damage = 11;
+    public boolean flatDamage = false;
 
     /** Is this arrow a critical hit? (Controls particles and damage) */
     public boolean arrowCritical = false;
@@ -75,8 +71,9 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeBoolean(this.isExplosive);
+        data.writeBoolean(this.isExplosive); //TODO replace with ENUM
         data.writeBoolean(this.isAnvil);
+        data.writeBoolean(this.isIce);
     }
 
     @Override
@@ -84,6 +81,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     {
         this.isExplosive = data.readBoolean();
         this.isAnvil = data.readBoolean();
+        this.isIce = data.readBoolean();
     }
 
     @Override
@@ -101,24 +99,33 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
      * Uses the provided coordinates as a heading and determines the velocity from it with the set
      * force and random variance. Args: x, y, z, force, forceVariation
      */
-    public void setArrowHeading(double par1, double par3, double par5, float par7, float par8)
+    public void setArrowHeading(double vecX, double vecY, double vecZ, float scale, float random)
     {
-        float var9 = MathHelper.sqrt(par1 * par1 + par3 * par3 + par5 * par5);
-        par1 /= var9;
-        par3 /= var9;
-        par5 /= var9;
-        par1 += this.rand.nextGaussian() * 0.007499999832361937D * par8;
-        par3 += this.rand.nextGaussian() * 0.007499999832361937D * par8;
-        par5 += this.rand.nextGaussian() * 0.007499999832361937D * par8;
-        par1 *= par7;
-        par3 *= par7;
-        par5 *= par7;
-        this.motionX = par1;
-        this.motionY = par3;
-        this.motionZ = par5;
-        float var10 = MathHelper.sqrt(par1 * par1 + par5 * par5);
-        this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
-        this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var10) * 180.0D / Math.PI);
+        //Normalize vector
+        float mag = MathHelper.sqrt(vecX * vecX + vecY * vecY + vecZ * vecZ);
+        vecX /= mag;
+        vecY /= mag;
+        vecZ /= mag;
+
+        //Add random
+        vecX += this.rand.nextGaussian() * 0.007499999832361937D * random;
+        vecY += this.rand.nextGaussian() * 0.007499999832361937D * random;
+        vecZ += this.rand.nextGaussian() * 0.007499999832361937D * random;
+
+        //Scale to power
+        vecX *= scale;
+        vecY *= scale;
+        vecZ *= scale;
+
+        //Set motion
+        this.motionX = vecX;
+        this.motionY = vecY;
+        this.motionZ = vecZ;
+
+        //Update rotation
+        float var10 = MathHelper.sqrt(vecX * vecX + vecZ * vecZ);
+        this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(vecX, vecZ) * 180.0D / Math.PI);
+        this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(vecY, var10) * 180.0D / Math.PI);
     }
 
     /** Sets the velocity to the args. Args: x, y, z */
@@ -285,6 +292,15 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         }
     }
 
+    protected double getDamage(float speed)
+    {
+        if(flatDamage)
+        {
+            return damage;
+        }
+        return (double)speed * this.damage;
+    }
+
     /**
      * Called when the arrow hits a block or an entity
      */
@@ -295,7 +311,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         if (entity != null)
         {
             float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-            int damageScaled = MathHelper.ceil((double)speed * this.damage);
+            int damageScaled = MathHelper.ceil(getDamage(speed));
 
             DamageSource damagesource = new EntityDamageSourceIndirect("arrow", this, null).setProjectile(); //TODO track source, TODO custom damage type
 
