@@ -7,6 +7,7 @@ import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.explosive.blast.threaded.BlastAntimatter;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Location;
@@ -294,6 +295,10 @@ public class BlastRedmatter extends Blast
                 ((EntityExplosion) entity).getBlast().isAlive = false;
                 //Kill entity in the center of the ball
                 entity.setDead();
+            }
+            else if (entity instanceof EntityMissile)
+            {
+                ((EntityMissile) entity).doExplosion();
             }
             else if (entity instanceof EntityExplosive)
             {
