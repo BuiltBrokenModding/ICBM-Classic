@@ -23,11 +23,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
-public class RenderShrapnel extends Render<EntityFragments>
+public class RenderFragments extends Render<EntityFragments>
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/fragment.png");
 
-    public RenderShrapnel(RenderManager renderManager)
+    public RenderFragments(RenderManager renderManager)
     {
         super(renderManager);
     }
