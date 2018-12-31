@@ -1,11 +1,13 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSnowman;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,6 +26,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 {
     private BlockPos inTilePosition = new BlockPos(0, 0, 0);
     private IBlockState inTile;
+
+    public EntityLivingBase shootingEntity;
 
     //Type settings
     public boolean isExplosive; //TODO replace with ENUM
@@ -309,7 +313,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     {
         if(entity != null && entity.isEntityAlive())
         {
-            if(isXmasBullet && entity instanceof EntityXmasSkeleton)
+            if(isXmasBullet && (entity instanceof EntityXmasSkeleton || entity instanceof EntityXmasSnowman))
             {
                 return false;
             }
@@ -337,7 +341,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             final int damageScaled = MathHelper.ceil(getDamage(speed));
 
             //TODO change damage source to match fragment
-            DamageSource damagesource = new EntityDamageSourceIndirect("arrow", this, null).setProjectile(); //TODO track source, TODO custom damage type
+            DamageSource damagesource = new EntityDamageSourceIndirect("arrow", this, shootingEntity).setProjectile(); //TODO track source, TODO custom damage type
 
             //Notify that we hit an entity
             this.onImpactEntity(entity);

@@ -2,6 +2,7 @@ package icbm.classic.content.explosive.blast;
 
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSnowman;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -34,7 +35,7 @@ public class BlastXmas extends Blast
     @Override
     protected void doExplode(int callCount)
     {
-        if(!world.isRemote)
+        if (!world.isRemote)
         {
             if (callCount == 0)
             {
@@ -180,9 +181,24 @@ public class BlastXmas extends Blast
 
     protected void spawnMob(double x, double y, double z)
     {
-        EntityLiving entity = new EntityXmasSkeleton(world());
+        EntityLiving entity;
+
+        //Get entity to spawn
+        final float randomSpawnChance = world.rand.nextFloat();
+        if (randomSpawnChance < 0.8)
+        {
+            entity = new EntityXmasSkeleton(world());
+        }
+        else
+        {
+            entity = new EntityXmasSnowman(world());
+        }
+
+        //Update position and trigger init
         entity.setPositionAndRotation(x, y, z, MathHelper.wrapDegrees(world.rand.nextFloat() * 360.0F), 0);
         entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData) null);
+
+        //Place in world
         this.world().spawnEntity(entity);
     }
 

@@ -7,6 +7,7 @@ import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSnowman;
 import icbm.classic.content.machines.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.missile.EntityMissile;
@@ -126,6 +127,7 @@ public class ClientProxy extends CommonProxy
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, manager -> new RenderSkeletonXmas(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, manager -> new RenderSkeletonXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, manager -> new RenderSnowmanXmas(manager));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());

@@ -5,8 +5,10 @@ import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.mobs.EntityXmasRPG;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSnowman;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;
@@ -84,6 +86,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -305,8 +308,13 @@ public final class ICBMClassic
         event.getRegistry().register(buildEntityEntry(EntityGrenade.class, "item.grenade", 50, 5));
         event.getRegistry().register(buildEntityEntry(EntityBombCart.class, "cart.bomb", 50, 2));
         event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, "holder.seat", 50, 2));
-        event.getRegistry().register(buildEntityEntry(EntityXmasSkeleton.class, "skeleton.xmas.elf", 64, 1));
-        event.getRegistry().register(buildEntityEntry(EntityXmasSkeletonBoss.class, "skeleton.xmas.boss", 64, 1));
+
+
+        event.getRegistry().register(buildMobEntry(EntityXmasSkeleton.class, "skeleton.xmas.elf", Color.GREEN, Color.CYAN));
+        event.getRegistry().register(buildMobEntry(EntityXmasSkeletonBoss.class, "skeleton.xmas.boss", Color.GREEN, Color.CYAN));
+        event.getRegistry().register(buildMobEntry(EntityXmasSnowman.class, "skeleton.snowman", Color.BLACK, Color.CYAN));
+
+        event.getRegistry().register(buildEntityEntry(EntityXmasRPG.class, "skeleton.snowman.rocket", 64, 1));
     }
 
     private static EntityEntry buildEntityEntry(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)
@@ -315,6 +323,17 @@ public final class ICBMClassic
         builder.name(PREFIX + entityName);
         builder.id(new ResourceLocation(DOMAIN, entityName), nextEntityID++);
         builder.tracker(trackingRange, updateFrequency, true);
+        builder.entity(entityClass);
+        return builder.build();
+    }
+
+    private static EntityEntry buildMobEntry(Class<? extends Entity> entityClass, String entityName, Color p, Color s)
+    {
+        EntityEntryBuilder builder = EntityEntryBuilder.create();
+        builder.name(PREFIX + entityName);
+        builder.id(new ResourceLocation(DOMAIN, entityName), nextEntityID++);
+        builder.tracker(64, 1, true);
+        builder.egg(p.getRGB(), s.getRGB());
         builder.entity(entityClass);
         return builder.build();
     }

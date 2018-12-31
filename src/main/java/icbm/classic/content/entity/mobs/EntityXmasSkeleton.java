@@ -127,6 +127,7 @@ public class EntityXmasSkeleton extends EntityMob implements IRangedAttackMob
     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
     {
         final EntityFragments fragment = new EntityFragments(world, posX, posY, posZ, false, false);
+        fragment.shootingEntity = this;
         fragment.isIce = true;
         fragment.isXmasBullet = true;
         fragment.damage = 3;
