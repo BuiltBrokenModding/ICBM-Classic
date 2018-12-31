@@ -27,12 +27,17 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(4, new EntityAIAttackRanged(this, 0.1D, 5, 20.0F));
+        this.tasks.addTask(4, new EntityAIAttackRanged(this, 0.1D, getFireDelay(), 50.0F));
         this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
 
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
+    }
+
+    protected int getFireDelay()
+    {
+        return 5;
     }
 
     public abstract boolean isOnTeam(Entity entity);
@@ -41,6 +46,7 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12);
     }

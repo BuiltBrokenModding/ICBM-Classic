@@ -409,3 +409,11 @@ gps.pos.set.name=GPS Data Saved
 gps.error.pos.invalid.name=Invalid Location
 gps.data.transferred.name=Data transferred
 gps.cleared.name=GPS Data Cleared
+
+## Entity
+entity.icbmclassic:skeleton.xmas.elf.name=Ice Skeleton
+entity.icbmclassic:skeleton.xmas.boss.name=Ice Skeleton Lord
+entity.icbmclassic:skeleton.xmas.snowman.name=Tactical Snowman
+
+entity.icbmclassic:zombie.xmas.elf.name=Fire Zombie
+entity.icbmclassic:zombie.xmas.boss.name=Fire Zombie Boss

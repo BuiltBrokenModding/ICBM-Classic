@@ -30,6 +30,12 @@ public class EntityXmasSnowman extends EntityXmasSkeleton
     }
 
     @Override
+    protected int getFireDelay()
+    {
+        return 40;
+    }
+
+    @Override
     public void onLivingUpdate()
     {
         super.onLivingUpdate();
