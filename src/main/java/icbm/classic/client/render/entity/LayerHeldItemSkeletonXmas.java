@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.EntityXmasSkeleton;
-import icbm.classic.content.entity.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;

@@ -5,6 +5,8 @@ import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;

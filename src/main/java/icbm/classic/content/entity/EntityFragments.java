@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

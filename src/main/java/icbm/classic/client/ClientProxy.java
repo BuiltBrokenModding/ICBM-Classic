@@ -5,6 +5,8 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
 import icbm.classic.content.machines.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.missile.EntityMissile;

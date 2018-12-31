@@ -1,4 +1,4 @@
-package icbm.classic.content.entity;
+package icbm.classic.content.entity.mobs;
 
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;

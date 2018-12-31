@@ -1,5 +1,6 @@
-package icbm.classic.content.entity;
+package icbm.classic.content.entity.mobs;
 
+import icbm.classic.content.entity.EntityFragments;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;

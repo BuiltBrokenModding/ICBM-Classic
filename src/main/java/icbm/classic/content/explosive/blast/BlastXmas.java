@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.content.entity.EntityXmasSkeleton;
-import icbm.classic.content.entity.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
