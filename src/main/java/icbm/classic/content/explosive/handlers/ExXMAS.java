@@ -10,9 +10,10 @@ import net.minecraft.world.World;
 public class ExXMAS extends Explosion
 {
     final boolean zombie;
+
     public ExXMAS(boolean zombie)
     {
-        super("xmas", EnumTier.TWO);
+        super("xmas." + (zombie ? "zombie" : "skeleton"), EnumTier.TWO);
         this.zombie = zombie;
         this.setFuseTime(200);
         this.hasGrenade = true;

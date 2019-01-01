@@ -209,7 +209,8 @@ icbm.missile.hypersonic.name=Hypersonic Missile
 icbm.missile.antimatter.name=Antimatter Missile
 icbm.missile.redMatter.name=Red Matter Missile
 
-icbm.missile.xmas.name=Robot Santa Gift Missile
+icbm.missile.xmas.zombie.name=Zombie Gift Missile
+icbm.missile.xmas.skeleton.name=Skeleton Gift Missile
 
 ## Special Missiles
 icbm.missile.missileModule.name=Missile Module
@@ -228,7 +229,8 @@ icbm.grenade.anvil.name=Anvil Grenade
 icbm.grenade.repulsive.name=Repulsive Grenade
 icbm.grenade.attractive.name=Attractive Grenade
 
-icbm.grenade.xmas.name=Robot Santa Gift Grenade
+icbm.grenade.xmas.zombie.name=Zombie Gift Grenade
+icbm.grenade.xmas.skeleton.name=Skeleton Gift Grenade
 
 ## Explosive Minecarts
 icbm.minecart.condensed.name=Explosive Cart
@@ -248,7 +250,8 @@ icbm.minecart.breaching.name=Breaching Minecart
 icbm.minecart.rejuvenation.name=Rejuvenation Minecart
 icbm.minecart.thermobaric.name=Thermobaric Minecart
 
-icbm.minecart.xmas.name=Robot Santa Gift Cart
+icbm.minecart.xmas.zombie.name=Zombie Gift Cart
+icbm.minecart.xmas.skeleton.name=Skeleton Gift Cart
 
 ## ICBM Misc Blocks
 tile.icbmclassic:concrete.0.name=Concrete
@@ -417,3 +420,4 @@ entity.icbmclassic:skeleton.xmas.snowman.name=Tactical Snowman
 
 entity.icbmclassic:zombie.xmas.elf.name=Fire Zombie
 entity.icbmclassic:zombie.xmas.boss.name=Fire Zombie Boss
+entity.icbmclassic:zombie.xmas.creeper.name=Creeper Sentinel

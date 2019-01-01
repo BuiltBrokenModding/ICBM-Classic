@@ -47,6 +47,16 @@
         "textures": {
           "layer0": "icbmclassic:items/grenade_attractive"
         }
+      },
+      "xmas_zombie": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_attractive"
+        }
+      },
+      "xmas_skeleton": {
+        "textures": {
+          "layer0": "icbmclassic:items/grenade_attractive"
+        }
       }
     }
   }

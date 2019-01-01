@@ -127,6 +127,16 @@
         "textures": {
           "layer0": "items/minecart_tnt"
         }
+      },
+      "xmas_zombie": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
+      },
+      "xmas_skeleton": {
+        "textures": {
+          "layer0": "items/minecart_tnt"
+        }
       }
     }
   }

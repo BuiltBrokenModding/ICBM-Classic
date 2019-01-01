@@ -54,7 +54,7 @@ public enum Explosives implements IStringSerializable
 
 
     /* 29 */XMAS_ZOMBIE(new ExXMAS(true)),
-    /* 30 */XMAS_SKELTON(new ExXMAS(false));
+    /* 30 */XMAS_SKELETON(new ExXMAS(false));
 
     public final Explosive handler;
 

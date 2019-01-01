@@ -194,7 +194,15 @@ public class BlastXmas extends Blast
         }
         else
         {
-            entity = new EntityXmasZombie(world());
+            if (randomSpawnChance < 0.8)
+            {
+                entity = new EntityXmasZombie(world());
+            }
+            else
+            {
+                entity = new EntityXmasCreeper(world());
+            }
+
         }
         spawnEntity(entity, x, y, z);
     }

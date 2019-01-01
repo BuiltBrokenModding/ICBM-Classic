@@ -139,7 +139,10 @@
       "thermobaric": {
         "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
       },
-      "xmas": {
+      "xmas_zombie": {
+        "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
+      },
+      "xmas_skeleton": {
         "model": "icbmclassic:missiles/tier2/missile_thermobaric.obj"
       }
     }
