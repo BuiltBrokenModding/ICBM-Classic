@@ -38,6 +38,18 @@ public class EntityXmasSkeleton extends EntityXmasMob
     }
 
     @Override
+    protected double getArmOffset()
+    {
+        return -0.18;
+    }
+
+    @Override
+    protected double getForwardOffset()
+    {
+        return  0.7;
+    }
+
+    @Override
     public boolean isIceFaction()
     {
         return true;

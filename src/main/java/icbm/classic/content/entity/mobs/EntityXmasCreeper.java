@@ -1,7 +1,7 @@
 package icbm.classic.content.entity.mobs;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
 /**
@@ -24,34 +24,29 @@ public class EntityXmasCreeper extends EntityXmasZombie
         return 1.4F;
     }
 
-    @Override
-    public void onUpdate()
+    protected void debugProjectileSpawns()
     {
-        super.onUpdate();
-
-        /*
-        double x = posX + getProjectileXOffset(0, 0);
-        double y = posY + getProjectileYOffset(0, 0);
-        double z = posZ + getProjectileZOffset(0, 0);
+        double x = posX + getProjectileXOffset(null, 0, 0);
+        double y = posY + getProjectileYOffset(null, 0, 0);
+        double z = posZ + getProjectileZOffset(null, 0, 0);
 
         world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, x, y, z, 0, 0, 0);
 
         altGun = !altGun;
-        x = posX + getProjectileXOffset(0, 0);
-        y = posY + getProjectileYOffset(0, 0);
-        z = posZ + getProjectileZOffset(0, 0);
+        x = posX + getProjectileXOffset(null, 0, 0);
+        y = posY + getProjectileYOffset(null, 0, 0);
+        z = posZ + getProjectileZOffset(null, 0, 0);
 
-       world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, x, y, z, 0, 0, 0);
+        world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, x, y, z, 0, 0, 0);
 
         altGun = !altGun;
 
         double r = getFacingRotation();
-        x = posX +(Math.cos(r) - Math.sin(r)) * 0.4;
-        y = posY + getProjectileYOffset(0, 0);
+        x = posX + (Math.cos(r) - Math.sin(r)) * 0.4;
+        y = posY + getProjectileYOffset(null, 0, 0);
         z = posZ + (Math.sin(r) + Math.cos(r)) * 0.4;
 
         world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, x, y, z, 0, 0, 0);
-        */
     }
 
     @Override
@@ -69,42 +64,20 @@ public class EntityXmasCreeper extends EntityXmasZombie
     }
 
     @Override
-    protected double getProjectileXOffset(EntityLivingBase target, double delta, double distance)
+    protected double getArmOffset()
     {
-        double r = getArmRotation();
-        final double armPos = (Math.cos(r) - Math.sin(r)) * (altGun ? 0.35 : -0.35);
-
-        r = getFacingRotation();
-        final double forwardOffset = (Math.cos(r) - Math.sin(r)) * 0.5;
-
-        return forwardOffset + armPos;
+        return (altGun ? 0.35 : -0.35);
     }
 
     @Override
-    protected double getProjectileZOffset(EntityLivingBase target, double delta, double distance)
+    protected double getForwardOffset()
     {
-        double r = getArmRotation();
-        final double armPos = (Math.sin(r) + Math.cos(r)) * (altGun ? 0.35 : -0.35);
-
-        r = getFacingRotation();
-        final double forwardOffset = (Math.sin(r) + Math.cos(r)) * 0.5;
-
-        return forwardOffset + armPos;
+        return  0.5;
     }
 
     @Override
     protected double getProjectileYOffset(EntityLivingBase target, double delta, double distance)
     {
         return 1;
-    }
-
-    protected double getFacingRotation()
-    {
-        return Math.toRadians(MathHelper.wrapDegrees(this.getRotationYawHead() + 45));
-    }
-
-    protected double getArmRotation()
-    {
-        return Math.toRadians(MathHelper.wrapDegrees(this.getRotationYawHead() - 45));
     }
 }

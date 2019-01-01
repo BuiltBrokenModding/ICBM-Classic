@@ -18,6 +18,18 @@ public class EntityXmasZombie extends EntityXmasMob
     }
 
     @Override
+    protected double getArmOffset()
+    {
+        return -0.2;
+    }
+
+    @Override
+    protected double getForwardOffset()
+    {
+        return  0.5;
+    }
+
+    @Override
     public boolean isIceFaction()
     {
         return false;

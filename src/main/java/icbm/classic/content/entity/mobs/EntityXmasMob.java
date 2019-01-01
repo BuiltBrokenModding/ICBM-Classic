@@ -8,6 +8,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -119,14 +120,47 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
         return getEyeHeight();
     }
 
-    protected double getProjectileXOffset(EntityLivingBase target, double deltaX, double distance)
+    protected double getProjectileXOffset(EntityLivingBase target, double delta, double distance)
     {
-        return (deltaX / distance) * 0.3;
+        double r = getArmRotation();
+        final double armPos = (Math.cos(r) - Math.sin(r)) * getArmOffset();
+
+        r = getFacingRotation();
+        final double forwardOffset = (Math.cos(r) - Math.sin(r)) * getForwardOffset();
+
+        return forwardOffset + armPos;
     }
 
-    protected double getProjectileZOffset(EntityLivingBase target, double deltaZ, double distance)
+
+    protected double getProjectileZOffset(EntityLivingBase target, double delta, double distance)
     {
-        return (deltaZ / distance) * 0.3;
+        double r = getArmRotation();
+        final double armPos = (Math.sin(r) + Math.cos(r)) * getArmOffset();
+
+        r = getFacingRotation();
+        final double forwardOffset = (Math.sin(r) + Math.cos(r)) * getForwardOffset();
+
+        return forwardOffset + armPos;
+    }
+
+    protected double getArmOffset()
+    {
+        return -0.35;
+    }
+
+    protected double getForwardOffset()
+    {
+        return  0.5;
+    }
+
+    protected double getFacingRotation()
+    {
+        return Math.toRadians(MathHelper.wrapDegrees(this.getRotationYawHead() + 45));
+    }
+
+    protected double getArmRotation()
+    {
+        return Math.toRadians(MathHelper.wrapDegrees(this.getRotationYawHead() - 45));
     }
 
     protected EntityFragments getProjectile(EntityLivingBase target, float distanceFactor)
@@ -138,5 +172,21 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
     public void setSwingingArms(boolean swingingArms)
     {
 
+    }
+
+    @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+        debugProjectileSpawns();
+    }
+
+    protected void debugProjectileSpawns()
+    {
+        double x = posX + getProjectileXOffset(null, 0, 0);
+        double y = posY + getProjectileYOffset(null, 0, 0);
+        double z = posZ + getProjectileZOffset(null, 0, 0);
+
+        world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, x, y, z, 0, 0, 0);
     }
 }
