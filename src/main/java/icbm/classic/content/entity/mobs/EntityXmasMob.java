@@ -178,7 +178,7 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
     public void onUpdate()
     {
         super.onUpdate();
-        debugProjectileSpawns();
+        //debugProjectileSpawns();
     }
 
     protected void debugProjectileSpawns()
