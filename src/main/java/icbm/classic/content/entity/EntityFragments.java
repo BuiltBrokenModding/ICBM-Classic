@@ -32,6 +32,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     public boolean isExplosive; //TODO replace with ENUM
     public boolean isAnvil; //TODO replace with ENUM
     public boolean isIce; //TODO replace with ENUM
+    public boolean isFire; //TODO replace with ENUM
     public boolean isXmasBullet;
 
     //Triggers
@@ -81,6 +82,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         data.writeBoolean(this.isExplosive); //TODO replace with ENUM
         data.writeBoolean(this.isAnvil);
         data.writeBoolean(this.isIce);
+        data.writeBoolean(this.isFire);
+        data.writeBoolean(this.isXmasBullet);
     }
 
     @Override
@@ -89,6 +92,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         this.isExplosive = data.readBoolean();
         this.isAnvil = data.readBoolean();
         this.isIce = data.readBoolean();
+        this.isFire = data.readBoolean();
+        this.isXmasBullet = data.readBoolean();
     }
 
     @Override
@@ -174,8 +179,8 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
             float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-            this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * (180D / Math.PI));
+            this.rotationYaw = (float) (MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            this.rotationPitch = (float) (MathHelper.atan2(this.motionY, (double) f) * (180D / Math.PI));
             this.prevRotationYaw = this.rotationYaw;
             this.prevRotationPitch = this.rotationPitch;
         }
@@ -202,9 +207,9 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             if (iblockstate != this.inTile && !this.world.collidesWithAnyBlock(this.getEntityBoundingBox().grow(0.05D)))
             {
                 this.inGround = false;
-                this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
-                this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
-                this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
+                this.motionX *= (double) (this.rand.nextFloat() * 0.2F);
+                this.motionY *= (double) (this.rand.nextFloat() * 0.2F);
+                this.motionZ *= (double) (this.rand.nextFloat() * 0.2F);
                 this.ticksInAir = 0;
             }
             else
@@ -215,36 +220,49 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         else
         {
             ++this.ticksInAir;
-            Vec3d vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            RayTraceResult raytraceresult = this.world.rayTraceBlocks(vec3d1, vec3d, false, true, false);
-            vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
-            vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
+            //Check for block collision
+            Vec3d start = new Vec3d(this.posX, this.posY, this.posZ);
+            Vec3d end = new Vec3d(this.posX + this.motionX * 2, this.posY + this.motionY * 2, this.posZ + this.motionZ * 2);
+            RayTraceResult raytraceresult = this.world.rayTraceBlocks(start, end, false, true, false);
+
+
+            //Reset start end
+            start = new Vec3d(this.posX, this.posY, this.posZ);
+            end = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+
+            //IF hit, change end to last block hit
             if (raytraceresult != null)
             {
-                vec3d = new Vec3d(raytraceresult.hitVec.x, raytraceresult.hitVec.y, raytraceresult.hitVec.z);
+                end = new Vec3d(raytraceresult.hitVec.x, raytraceresult.hitVec.y, raytraceresult.hitVec.z);
             }
 
-            Entity entity = this.findEntityOnPath(vec3d1, vec3d);
+            //Check for entities
+            Entity entity = this.findEntityOnPath(start, end);
 
+            //Wrapper entity hit
             if (entity != null)
             {
                 raytraceresult = new RayTraceResult(entity);
             }
 
+            //Handle entity hit
             if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
             {
                 this.onHit(raytraceresult);
             }
 
+            //Update position
             this.posX += this.motionX;
             this.posY += this.motionY;
             this.posZ += this.motionZ;
-            float f4 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
 
-            for (this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f4) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
+
+            //Update rotation
+            float flatMag = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            this.rotationYaw = (float) (MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+
+            for (this.rotationPitch = (float) (MathHelper.atan2(this.motionY, (double) flatMag) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
             {
                 ;
             }
@@ -266,9 +284,11 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
             this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
             this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
-            float f1 = 0.99F;
-            float f2 = 0.05F;
 
+
+            float motionModifier = 0.99F;
+
+            //Handle water
             if (this.isInWater())
             {
                 for (int i = 0; i < 4; ++i)
@@ -277,7 +297,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                     this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
                 }
 
-                f1 = 0.6F;
+                motionModifier = 0.6F;
             }
 
             if (this.isWet())
@@ -285,13 +305,28 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                 this.extinguish();
             }
 
-            this.motionX *= (double)f1;
-            this.motionY *= (double)f1;
-            this.motionZ *= (double)f1;
-
-            if (!this.hasNoGravity())
+            //Disable gravity for bullets
+            if (!isXmasBullet)
             {
-                this.motionY -= 0.05000000074505806D;
+                this.motionX *= (double) motionModifier;
+                this.motionY *= (double) motionModifier;
+                this.motionZ *= (double) motionModifier;
+
+                if (!this.hasNoGravity())
+                {
+                    this.motionY -= 0.05000000074505806D;
+                }
+            }
+            //Kill off projectiles that are too slow so we do not see matrix bullets
+            else
+            {
+                final double speedMin = 0.2;
+                double speed = motionY * motionY + motionX * motionX + motionZ * motionZ;
+
+                if (speedMin * speedMin >= speed)
+                {
+                    setDead();
+                }
             }
 
             this.setPosition(this.posX, this.posY, this.posZ);
@@ -301,18 +336,18 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
     protected double getDamage(float speed)
     {
-        if(flatDamage)
+        if (flatDamage)
         {
             return damage;
         }
-        return (double)speed * this.damage;
+        return (double) speed * this.damage;
     }
 
     protected boolean canAttack(Entity entity)
     {
-        if(entity != null && entity.isEntityAlive())
+        if (entity != null && entity.isEntityAlive())
         {
-            if(isXmasBullet && entity instanceof EntityXmasMob)
+            if (isXmasBullet && entity instanceof EntityXmasMob)
             {
                 return !((EntityXmasMob) entity).isOnTeam(shootingEntity);
             }
@@ -330,7 +365,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
         if (entity != null)
         {
-            if(!canAttack(entity))
+            if (!canAttack(entity))
             {
                 this.setDead();
                 return;
@@ -350,7 +385,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                 entity.setFire(5);
             }
 
-            if (entity.attackEntityFrom(damagesource, (float)damageScaled))
+            if (entity.attackEntityFrom(damagesource, (float) damageScaled))
             {
                 if (!(entity instanceof EntityEnderman))
                 {
@@ -376,13 +411,13 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         {
             this.inTilePosition = raytraceResultIn.getBlockPos();
             this.inTile = this.world.getBlockState(inTilePosition);
-            this.motionX = (double)((float)(raytraceResultIn.hitVec.x - this.posX));
-            this.motionY = (double)((float)(raytraceResultIn.hitVec.y - this.posY));
-            this.motionZ = (double)((float)(raytraceResultIn.hitVec.z - this.posZ));
+            this.motionX = (double) ((float) (raytraceResultIn.hitVec.x - this.posX));
+            this.motionY = (double) ((float) (raytraceResultIn.hitVec.y - this.posY));
+            this.motionZ = (double) ((float) (raytraceResultIn.hitVec.z - this.posZ));
             float f2 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-            this.posX -= this.motionX / (double)f2 * 0.05000000074505806D;
-            this.posY -= this.motionY / (double)f2 * 0.05000000074505806D;
-            this.posZ -= this.motionZ / (double)f2 * 0.05000000074505806D;
+            this.posX -= this.motionX / (double) f2 * 0.05000000074505806D;
+            this.posY -= this.motionY / (double) f2 * 0.05000000074505806D;
+            this.posZ -= this.motionZ / (double) f2 * 0.05000000074505806D;
             this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
             this.inGround = true;
             this.arrowShake = 7;
@@ -422,7 +457,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
     protected void playImpactAudio()
     {
-        if(this.world.rand.nextFloat() > 0.5f)
+        if (this.world.rand.nextFloat() > 0.5f)
         {
             if (this.isAnvil)
             {
@@ -438,17 +473,17 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     @Nullable
     protected Entity findEntityOnPath(Vec3d start, Vec3d end)
     {
-        Entity entity = null;
-        List<Entity> list = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D), e -> e.canBeCollidedWith());
+        Entity resultEntity = null;
+        List<Entity> entityList = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX * 1.2, this.motionY * 1.2, this.motionZ * 1.2).grow(1.0D), e -> e.canBeCollidedWith());
         double d0 = 0.0D;
 
-        for (int i = 0; i < list.size(); ++i)
+        for (int i = 0; i < entityList.size(); ++i)
         {
-            Entity entity1 = list.get(i);
+            final Entity currentEntity = entityList.get(i);
 
-            if (this.ticksInAir >= 5)
+            if (!(currentEntity instanceof EntityFragments) && (this.isXmasBullet || this.ticksInAir >= 5))
             {
-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.30000001192092896D);
+                AxisAlignedBB axisalignedbb = currentEntity.getEntityBoundingBox().grow(0.30000001192092896D);
                 RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(start, end);
 
                 if (raytraceresult != null)
@@ -457,14 +492,14 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
                     if (d1 < d0 || d0 == 0.0D)
                     {
-                        entity = entity1;
+                        resultEntity = currentEntity;
                         d0 = d1;
                     }
                 }
             }
         }
 
-        return entity;
+        return resultEntity;
     }
 
     /** (abstract) Protected helper method to write subclass entity data to NBT. */

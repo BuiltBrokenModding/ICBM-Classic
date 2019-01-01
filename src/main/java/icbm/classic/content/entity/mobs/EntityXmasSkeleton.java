@@ -1,9 +1,7 @@
 package icbm.classic.content.entity.mobs;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -23,8 +21,6 @@ import javax.annotation.Nullable;
  */
 public class EntityXmasSkeleton extends EntityXmasMob
 {
-    private boolean allowFire = true;
-
     public EntityXmasSkeleton(World worldIn)
     {
         super(worldIn);
@@ -42,9 +38,9 @@ public class EntityXmasSkeleton extends EntityXmasMob
     }
 
     @Override
-    public boolean isOnTeam(Entity entity)
+    public boolean isIceFaction()
     {
-        return entity instanceof EntitySkeleton;
+        return true;
     }
 
     @Override

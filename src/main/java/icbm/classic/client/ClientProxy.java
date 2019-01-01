@@ -130,6 +130,7 @@ public class ClientProxy extends CommonProxy
 
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, manager -> new RenderZombieXmas(manager));
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, manager -> new RenderZombieXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, manager -> new RenderCreeperXmas(manager));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());

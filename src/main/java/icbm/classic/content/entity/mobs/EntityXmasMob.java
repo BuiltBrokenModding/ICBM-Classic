@@ -40,7 +40,16 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
         return 5;
     }
 
-    public abstract boolean isOnTeam(Entity entity);
+    public boolean isOnTeam(Entity entity)
+    {
+        if(entity instanceof EntityXmasMob)
+        {
+            return ((EntityXmasMob) entity).isIceFaction() == isIceFaction();
+        }
+        return false;
+    }
+
+    public abstract boolean isIceFaction();
 
     @Override
     protected void applyEntityAttributes()
@@ -54,27 +63,32 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
     {
-        final EntityFragments fragment = new EntityFragments(world, posX, posY + getEyeHeight(), posZ, false, false);
+        final EntityFragments fragment = getProjectile(target, distanceFactor);
         fragment.shootingEntity = this;
-        fragment.isIce = true;
+        fragment.isIce = isIceFaction();
+        fragment.isFire = !isIceFaction();
         fragment.isXmasBullet = true;
-        fragment.damage = 3;
+        fragment.damage = getDamageForGun();
 
-        //Get vector between target and self
-        final double deltaX = target.posX - this.posX;
-        final double deltaY = target.getEntityBoundingBox().minY + (double) (target.height / 2.0F) - fragment.posY;
-        final double deltaZ = target.posZ - this.posZ;
-
-        //Get distance, used to normalize vector
-        final double distance = (double) MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+        //Get different in distance
+        double deltaX = target.posX - this.posX;
+        double deltaY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - fragment.posY;
+        double deltaZ = target.posZ - this.posZ;
+        double distance = (double) MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ);
 
         //Offset from shooter body
-        fragment.posX += (deltaX / distance) * 0.3;
-        fragment.posZ += (deltaZ / distance) * 0.3;
+        fragment.posX += getProjectileXOffset(target, deltaX, distance);
+        fragment.posY += getProjectileYOffset(target, deltaY, distance); //TODO turn all 3 offsets into a single method that uses a POS object
+        fragment.posZ += getProjectileZOffset(target, deltaZ, distance);
+
+        //Get vector between target and self, doing it again as offset changes the values
+        deltaX = target.posX - this.posX;
+        deltaY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - fragment.posY;
+        deltaZ = target.posZ - this.posZ;
 
         //Settings
-        final float randomAim = (float) (14 - this.world.getDifficulty().getId() * 4);
-        final float power = 3F;
+        final float randomAim = getProjectileRandom();
+        final float power = getProjectilePower();
 
         //Aim arrow
         fragment.setArrowHeading(deltaX, deltaY, deltaZ, power, randomAim);
@@ -83,6 +97,41 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
 
         //Spawn
         this.world.spawnEntity(fragment);
+    }
+
+    protected float getProjectilePower()
+    {
+        return 2F;
+    }
+
+    protected float getProjectileRandom()
+    {
+        return (float) (14 - this.world.getDifficulty().getId() * 4);
+    }
+
+    protected int getDamageForGun()
+    {
+        return 3;
+    }
+
+    protected double getProjectileYOffset(EntityLivingBase target, double deltaY, double distance)
+    {
+        return getEyeHeight();
+    }
+
+    protected double getProjectileXOffset(EntityLivingBase target, double deltaX, double distance)
+    {
+        return (deltaX / distance) * 0.3;
+    }
+
+    protected double getProjectileZOffset(EntityLivingBase target, double deltaZ, double distance)
+    {
+        return (deltaZ / distance) * 0.3;
+    }
+
+    protected EntityFragments getProjectile(EntityLivingBase target, float distanceFactor)
+    {
+        return new EntityFragments(world, posX, posY, posZ, false, false);
     }
 
     @Override

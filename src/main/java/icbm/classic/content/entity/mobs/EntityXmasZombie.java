@@ -1,9 +1,7 @@
 package icbm.classic.content.entity.mobs;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -20,9 +18,9 @@ public class EntityXmasZombie extends EntityXmasMob
     }
 
     @Override
-    public boolean isOnTeam(Entity entity)
+    public boolean isIceFaction()
     {
-        return entity instanceof EntityZombie;
+        return false;
     }
 
     @Override

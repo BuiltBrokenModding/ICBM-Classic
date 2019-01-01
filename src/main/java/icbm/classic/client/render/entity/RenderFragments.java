@@ -26,7 +26,8 @@ import javax.annotation.Nullable;
 public class RenderFragments extends Render<EntityFragments>
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.png");
-    public static final ResourceLocation TEXTURE_ICE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.ice.png");
+    public static final ResourceLocation TEXTURE_XMAS_ICE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.xmas.ice.png");
+    public static final ResourceLocation TEXTURE_XMAS_FIRE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.xmas.fire.png");
 
     public RenderFragments(RenderManager renderManager)
     {
@@ -65,14 +66,14 @@ public class RenderFragments extends Render<EntityFragments>
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.pushMatrix();
             GlStateManager.disableLighting();
-            GlStateManager.translate((float)x, (float)y, (float)z);
+            GlStateManager.translate((float) x, (float) y, (float) z);
             GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
 
             GlStateManager.enableRescaleNormal();
-            float f9 = (float)entity.arrowShake - partialTicks;
+            float f9 = (float) entity.arrowShake - partialTicks;
 
             if (f9 > 0.0F)
             {
@@ -125,9 +126,16 @@ public class RenderFragments extends Render<EntityFragments>
     @Override
     protected ResourceLocation getEntityTexture(EntityFragments entity)
     {
-        if(entity.isIce)
+        if (entity.isXmasBullet)
         {
-            return TEXTURE_ICE;
+            if (entity.isIce)
+            {
+                return TEXTURE_XMAS_ICE;
+            }
+            else if (entity.isFire)
+            {
+                return TEXTURE_XMAS_FIRE;
+            }
         }
         return TEXTURE;
     }
