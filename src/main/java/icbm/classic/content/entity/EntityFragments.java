@@ -320,7 +320,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             //Kill off projectiles that are too slow so we do not see matrix bullets
             else
             {
-                final double speedMin = 0.2;
+                final double speedMin = 0.5;
                 double speed = motionY * motionY + motionX * motionX + motionZ * motionZ;
 
                 if (speedMin * speedMin >= speed)
