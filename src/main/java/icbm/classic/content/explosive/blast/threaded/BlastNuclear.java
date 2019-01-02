@@ -87,7 +87,7 @@ public class BlastNuclear extends BlastThreaded
                 BlockPos prevPos = null;
 
                 //Trace from start to end
-                while (position.distance(x, y, z) <= this.getBlastRadius() && power > 0) //TODO replace distance check with SQ version
+                while (location.distance(x, y, z) <= this.getBlastRadius() && power > 0) //TODO replace distance check with SQ version
                 {
                     //Consume power per loop
                     power -= 0.3F * 0.75F * 5; //TODO why the magic numbers?
@@ -173,9 +173,9 @@ public class BlastNuclear extends BlastThreaded
 
                             if (r > distance && r - 3 < distance)
                             {
-                                Location spawnPosition = position.add(new Pos(x * 2, (y - 2) * 2, z * 2));
-                                float xDiff = (float) (spawnPosition.x() - position.x());
-                                float zDiff = (float) (spawnPosition.z() - position.z());
+                                Location spawnPosition = location.add(new Pos(x * 2, (y - 2) * 2, z * 2));
+                                float xDiff = (float) (spawnPosition.x() - location.x());
+                                float zDiff = (float) (spawnPosition.z() - location.z());
                                 world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, spawnPosition.x(), spawnPosition.y(), spawnPosition.z(),
                                         xDiff * 0.3 * world().rand.nextFloat(), -world().rand.nextFloat(), zDiff * 0.3 * world().rand.nextFloat()); //(float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, //0, 8F, 1.2F);
                             }
@@ -186,7 +186,7 @@ public class BlastNuclear extends BlastThreaded
 
             this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
 
-            ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.EXPLOSION.play(world, this.location.x(), this.location.y(), this.location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -206,7 +206,7 @@ public class BlastNuclear extends BlastThreaded
 
                     if (distance < r && distance > r - 1)
                     {
-                        Location targetPosition = this.position.add(new Pos(x, 0, z));
+                        Location targetPosition = this.location.add(new Pos(x, 0, z));
 
                         if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.05))
                         {
@@ -232,8 +232,8 @@ public class BlastNuclear extends BlastThreaded
                 //Place radio active blocks
                 if (this.isRadioactive)
                 {
-                    new BlastRot(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius(), this.energy).runBlast();
-                    new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), this.getBlastRadius()).runBlast();
+                    new BlastRot(world(), this.exploder, location.x(), location.y(), location.z(), this.getBlastRadius(), this.energy).runBlast();
+                    new BlastMutation(world(), this.exploder, location.x(), location.y(), location.z(), this.getBlastRadius()).runBlast();
 
                     if (this.world().rand.nextInt(3) == 0)
                     {
@@ -242,7 +242,7 @@ public class BlastNuclear extends BlastThreaded
                 }
 
                 //Play audio
-                ICBMSounds.EXPLOSION.play(world, this.position.x(), this.position.y(), this.position.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+                ICBMSounds.EXPLOSION.play(world, this.location.x(), this.location.y(), this.location.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
             }
             catch (Exception e)
@@ -252,7 +252,7 @@ public class BlastNuclear extends BlastThreaded
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = %s",
-                        world, getThread(), size, position);
+                        world, getThread(), size, location);
                 ICBMClassic.logger().error(msg, e);
             }
         }

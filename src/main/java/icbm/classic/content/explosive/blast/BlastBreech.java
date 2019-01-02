@@ -113,7 +113,7 @@ public class BlastBreech extends BlastTNT
             }
 
             //Play some audio
-            this.world().playSound(null, position.x(), position.y(), position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSound(null, location.x(), location.y(), location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 }

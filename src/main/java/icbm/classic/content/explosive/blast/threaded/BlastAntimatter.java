@@ -30,7 +30,7 @@ public class BlastAntimatter extends BlastThreaded
     public void doPreExplode()
     {
         super.doPreExplode();
-        ICBMSounds.ANTIMATTER.play(world, this.position.x(), this.position.y(), this.position.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
+        ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
@@ -40,7 +40,7 @@ public class BlastAntimatter extends BlastThreaded
         IBlockState blockState = world.getBlockState(blockPos);
         if (!blockState.getBlock().isAir(blockState, world, blockPos))
         {
-            final double dist = position.distance(blockPos);
+            final double dist = location.distance(blockPos);
             if (dist < this.getBlastRadius() - 1 || world().rand.nextFloat() > 0.7)
             {
                 if (blockState.getBlockHardness(this.world(), blockPos) >= 0 || destroyBedrock)
@@ -60,8 +60,8 @@ public class BlastAntimatter extends BlastThreaded
             {
                 for (int z = (int) -this.getBlastRadius(); z < this.getBlastRadius(); z++)
                 {
-                    final BlockPos blockPos = new BlockPos(position.xi() + x, position.yi() + y, position.zi() + z);
-                    final double dist = position.distance(blockPos);
+                    final BlockPos blockPos = new BlockPos(location.xi() + x, location.yi() + y, location.zi() + z);
+                    final double dist = location.distance(blockPos);
 
                     if (dist < this.getBlastRadius())
                     {

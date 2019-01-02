@@ -56,7 +56,7 @@ public abstract class BlastThreaded extends Blast
     {
         if (world instanceof WorldServer)
         {
-            Collections.sort(edits, new PosDistanceSorter(position, false));
+            Collections.sort(edits, new PosDistanceSorter(location, false));
 
             ((WorldServer) world).addScheduledTask(() -> {
                 doExplode();

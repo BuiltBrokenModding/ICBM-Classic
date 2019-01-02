@@ -25,16 +25,11 @@ public abstract class Explosive implements IExplosive
     private int fuseTime;
     /** Is this explosive disabled? */
     protected boolean isDisabled;
-    /** Is this explosive able to be pushed by other explosions? */
-    protected boolean isMobile = false;
 
     protected boolean hasBlock;
     protected boolean hasGrenade;
     protected boolean hasMissile;
 
-    public ResourceLocation missileModel;
-    public ResourceLocation missileTexture;
-    public boolean renderBodyForMissilTier = true;
     public float missileRenderScale = 1f; //0.00625f
 
     protected Explosive(String name, EnumTier tier)

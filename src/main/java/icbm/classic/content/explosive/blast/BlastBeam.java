@@ -37,9 +37,9 @@ public abstract class BlastBeam extends Blast
     {
         if (!this.world().isRemote)
         {
-            this.world().createExplosion(this.exploder, position.x(), position.y(), position.z(), 4F, true);
+            this.world().createExplosion(this.exploder, location.x(), location.y(), location.z(), 4F, true);
 
-            this.lightBeam = new EntityLightBeam(this.world(), position, 20 * 20, this.red, this.green, this.blue);
+            this.lightBeam = new EntityLightBeam(this.world(), location, 20 * 20, this.red, this.green, this.blue);
             this.world().spawnEntity(this.lightBeam);
 
             createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), 50, this.exploder));
@@ -56,7 +56,7 @@ public abstract class BlastBeam extends Blast
                 this.controller.endExplosion();
             }
 
-            if (this.canFocusBeam(this.world(), position))
+            if (this.canFocusBeam(this.world(), location))
             {
                 double dist;
 
@@ -74,7 +74,7 @@ public abstract class BlastBeam extends Blast
                             {
                                 continue;
                             }
-                            BlockPos blockPos = new BlockPos(position.x() + x, position.y() + y, position.z() + z);
+                            BlockPos blockPos = new BlockPos(location.x() + x, location.y() + y, location.z() + z);
                             IBlockState state = world.getBlockState(blockPos);
                             Block block = state.getBlock();
                             if (block == null || block.isAir(state, world, blockPos) || state.getBlockHardness(world, blockPos) < 0)
@@ -101,9 +101,9 @@ public abstract class BlastBeam extends Blast
             for (EntityFlyingBlock entity : this.feiBlocks)
             {
                 Pos entityPosition = new Pos(entity);
-                Pos centeredPosition = entityPosition.add(this.position.multiply(-1));
+                Pos centeredPosition = entityPosition.add(this.location.multiply(-1));
                 centeredPosition.rotate(2);
-                Location newPosition = this.position.add(centeredPosition);
+                Location newPosition = this.location.add(centeredPosition);
                 entity.motionX /= 3;
                 entity.motionY /= 3;
                 entity.motionZ /= 3;

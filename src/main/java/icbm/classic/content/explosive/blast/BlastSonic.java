@@ -77,11 +77,11 @@ public class BlastSonic extends Blast
 
         if (this.hasShockWave)
         {
-            ICBMSounds.HYPERSONIC.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.HYPERSONIC.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
         else
         {
-            ICBMSounds.SONICWAVE.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.SONICWAVE.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -103,7 +103,7 @@ public class BlastSonic extends Blast
                         while (it.hasNext())
                         {
                             BlockPos targetPosition = it.next();
-                            double distance = position.distance(targetPosition);
+                            double distance = location.distance(targetPosition);
 
                             if (distance > r || distance < r - 3)
                             {
@@ -151,7 +151,7 @@ public class BlastSonic extends Blast
                                             "\nThread = %s" +
                                             "\nSize = %s" +
                                             "\nPos = %s",
-                                    world, getThread(), size, position);
+                                    world, getThread(), size, location);
                             ICBMClassic.logger().error(msg);
                         }
                     }
@@ -164,13 +164,13 @@ public class BlastSonic extends Blast
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = %s",
-                        world, getThread(), size, position);
+                        world, getThread(), size, location);
                 ICBMClassic.logger().error(msg, e);
             }
         }
 
         int radius = 2 * this.callCount;
-        AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.x() + radius, position.y() + radius, position.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(location.x() - radius, location.y() - radius, location.z() - radius, location.x() + radius, location.y() + radius, location.z() + radius);
         List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
 
         synchronized (allEntities)
@@ -186,8 +186,8 @@ public class BlastSonic extends Blast
                 }
                 else
                 {
-                    double xDifference = entity.posX - position.x();
-                    double zDifference = entity.posZ - position.z();
+                    double xDifference = entity.posX - location.x();
+                    double zDifference = entity.posZ - location.z();
 
                     r = (int) this.getBlastRadius();
                     if (xDifference < 0)

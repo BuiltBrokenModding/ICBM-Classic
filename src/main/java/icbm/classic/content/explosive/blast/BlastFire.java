@@ -38,14 +38,14 @@ public class BlastFire extends Blast
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
                             float var14 = radius * (0.7F + world().rand.nextFloat() * 0.6F);
-                            double var15 = position.x();
-                            double var17 = position.y();
-                            double var19 = position.z();
+                            double var15 = location.x();
+                            double var17 = location.y();
+                            double var19 = location.z();
 
                             for (float var21 = 0.3F; var14 > 0.0F; var14 -= var21 * 0.75F)
                             {
                                 BlockPos targetPosition = new BlockPos(var15, var17, var19);
-                                double distanceFromCenter = position.distance(targetPosition);
+                                double distanceFromCenter = location.distance(targetPosition);
                                 IBlockState blockState = world().getBlockState(targetPosition);
                                 Block block = blockState.getBlock();
 
@@ -84,6 +84,6 @@ public class BlastFire extends Blast
             }
         }
 
-        ICBMSounds.EXPLOSION_FIRE.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+        ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
     }
 }

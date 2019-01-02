@@ -80,7 +80,7 @@ public class ExplosiveHandler
         while (it.hasNext())
         {
             Blast blast = it.next();
-            if (blast.world == world && (range < 0 || range > 0 && range > blast.position.distance(x, y, z)))
+            if (blast.world == world && (range < 0 || range > 0 && range > blast.location.distance(x, y, z)))
             {
                 ExplosiveHandler.onKill(blast);
                 it.remove();

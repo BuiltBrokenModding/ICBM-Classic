@@ -36,7 +36,7 @@ public class BlastEndothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
+        ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
     }
 
     @Override
@@ -46,12 +46,12 @@ public class BlastEndothermic extends BlastBeam
 
         if (!this.world().isRemote)
         {
-            if (this.canFocusBeam(this.world(), position) &&  isThreadCompleted())
+            if (this.canFocusBeam(this.world(), location) &&  isThreadCompleted())
             {
                 /*
                  * Freeze all nearby entities.
                  */
-                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position.x() - getBlastRadius(), position.y() - getBlastRadius(), position.z() - getBlastRadius(), position.x() + getBlastRadius(), position.y() + getBlastRadius(), position.z() + getBlastRadius()));
+                List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(location.x() - getBlastRadius(), location.y() - getBlastRadius(), location.z() - getBlastRadius(), location.x() + getBlastRadius(), location.y() + getBlastRadius(), location.z() + getBlastRadius()));
 
                 if (livingEntities != null && !livingEntities.isEmpty())
                 {
@@ -73,7 +73,7 @@ public class BlastEndothermic extends BlastBeam
                 ConcurrentLinkedQueue<BlockPos> list = getThreadResults();
                 for (BlockPos targetPosition : list)
                 {
-                    double distanceFromCenter = position.distance(targetPosition);
+                    double distanceFromCenter = location.distance(targetPosition);
 
                     if (distanceFromCenter > this.getBlastRadius())
                     {
@@ -121,7 +121,7 @@ public class BlastEndothermic extends BlastBeam
                     }
                 }
 
-                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+                ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
             if (!world().getGameRules().getBoolean("doDaylightCycle"))
             {

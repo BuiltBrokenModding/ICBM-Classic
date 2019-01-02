@@ -59,7 +59,7 @@ public class BlastEMP extends Blast
                     {
                         for (int z = (int) -this.getBlastRadius(); z < (int) this.getBlastRadius(); z++)
                         {
-                            final BlockPos blockPos = new BlockPos(x + position.xi(), y + position.yi(), z + position.zi());
+                            final BlockPos blockPos = new BlockPos(x + location.xi(), y + location.yi(), z + location.zi());
 
                             //Do distance check
                             double dist = MathHelper.sqrt(x * x + y * y + z * z);
@@ -72,7 +72,7 @@ public class BlastEMP extends Blast
                             if (world.isBlockLoaded(blockPos))
                             {
                                 //Generate some effects
-                                if (Math.round(position.x() + y) == position.yi())
+                                if (Math.round(location.x() + y) == location.yi())
                                 {
                                     world().spawnParticle(EnumParticleTypes.SMOKE_LARGE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
                                 }
@@ -135,8 +135,8 @@ public class BlastEMP extends Blast
             {
                 //Calculate bounds
                 AxisAlignedBB bounds = new AxisAlignedBB(
-                        position.x() - this.getBlastRadius(), position.y() - this.getBlastRadius(), position.z() - this.getBlastRadius(),
-                        position.x() + this.getBlastRadius(), position.y() + this.getBlastRadius(), position.z() + this.getBlastRadius());
+                        location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(),
+                        location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
 
                 //Get entities in bounds
                 List<Entity> entities = world().getEntitiesWithinAABB(Entity.class, bounds);
@@ -185,7 +185,7 @@ public class BlastEMP extends Blast
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 1, 3);
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 3, 3);
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
-            ICBMSounds.EMP.play(world, position.x(), position.y(), position.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.EMP.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 

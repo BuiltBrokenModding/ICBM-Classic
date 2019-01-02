@@ -24,7 +24,7 @@ public class BlastMutation extends Blast
 
         if (!this.world().isRemote)
         {
-            AxisAlignedBB bounds = new AxisAlignedBB(position.x() - this.getBlastRadius(), position.y() - this.getBlastRadius(), position.z() - this.getBlastRadius(), position.x() + this.getBlastRadius(), position.y() + this.getBlastRadius(), position.z() + this.getBlastRadius());
+            AxisAlignedBB bounds = new AxisAlignedBB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
             List<EntityLiving> entitiesNearby = world().getEntitiesWithinAABB(EntityLiving.class, bounds);
 
             for (EntityLiving entity : entitiesNearby)

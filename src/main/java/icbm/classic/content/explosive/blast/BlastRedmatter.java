@@ -117,9 +117,9 @@ public class BlastRedmatter extends Blast
             {
                 if (this.world().rand.nextInt(8) == 0)
                 {
-                    ICBMSounds.COLLAPSE.play(world, position.x() + (Math.random() - 0.5) * getBlastRadius(), position.y() + (Math.random() - 0.5) * getBlastRadius(), position.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
+                    ICBMSounds.COLLAPSE.play(world, location.x() + (Math.random() - 0.5) * getBlastRadius(), location.y() + (Math.random() - 0.5) * getBlastRadius(), location.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
                 }
-                ICBMSounds.REDMATTER.play(world, position.x(), position.y(), position.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
+                ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
         }
     }
@@ -137,8 +137,8 @@ public class BlastRedmatter extends Blast
                 {
                     for (int zr = -currentRadius; zr < currentRadius; zr++)
                     {
-                        final BlockPos blockPos = new BlockPos(position.xi() + xr, position.yi() + yr, position.zi() + zr);
-                        final double dist = position.distance(blockPos);
+                        final BlockPos blockPos = new BlockPos(location.xi() + xr, location.yi() + yr, location.zi() + zr);
+                        final double dist = location.distance(blockPos);
 
                         //We are looping in a shell orbit around the center
                         if (dist < currentRadius && dist > currentRadius - 2)
@@ -188,7 +188,7 @@ public class BlastRedmatter extends Blast
     protected void doEntityMovement()
     {
         float entityRadius = this.getBlastRadius() * 2;
-        Cube cube = new Cube(position.add(0.5).sub(entityRadius), position.add(0.5).add(entityRadius));
+        Cube cube = new Cube(location.add(0.5).sub(entityRadius), location.add(0.5).add(entityRadius));
         AxisAlignedBB bounds = cube.getAABB();
         List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
         boolean doExplosion = true;
@@ -227,21 +227,21 @@ public class BlastRedmatter extends Blast
         }
 
         //Calculate different from center
-        double xDifference = entity.posX - position.xi() + 0.5;
-        double yDifference = entity.posY - position.yi() + 0.5;
-        double zDifference = entity.posZ - position.zi() + 0.5;
+        double xDifference = entity.posX - location.xi() + 0.5;
+        double yDifference = entity.posY - location.yi() + 0.5;
+        double zDifference = entity.posZ - location.zi() + 0.5;
 
         /** The percentage of the closeness of the entity. */
         double xPercentage = 1 - (xDifference / radius);
         double yPercentage = 1 - (yDifference / radius);
         double zPercentage = 1 - (zDifference / radius);
-        double distancePercentage = this.position.distance(entity) / radius;
+        double distancePercentage = this.location.distance(entity) / radius;
 
         Pos entityPosition = new Pos(entity);
-        Pos centeredPosition = entityPosition.subtract(this.position);
+        Pos centeredPosition = entityPosition.subtract(this.location);
         centeredPosition = (Pos) centeredPosition.transform(new EulerAngle(1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random()));
 
-        Location newPosition = this.position.add(centeredPosition);
+        Location newPosition = this.location.add(centeredPosition);
         // Orbit Velocity
         entity.addVelocity(newPosition.x() - entityPosition.x(), 0, newPosition.z() - entityPosition.z());
         // Gravity Velocity (0.015 is barely enough to overcome y gravity so do not lower)
@@ -254,7 +254,7 @@ public class BlastRedmatter extends Blast
 
         boolean explosionCreated = false;
 
-        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(position) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
+        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
         {
             if (entity instanceof EntityExplosion)
             {
@@ -262,7 +262,7 @@ public class BlastRedmatter extends Blast
                 {
                     if (doAudio)
                     {
-                        ICBMSounds.EXPLOSION.play(world, position.x(), position.y(), position.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+                        ICBMSounds.EXPLOSION.play(world, location.x(), location.y(), location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
                     }
                     if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
                     {
@@ -289,7 +289,7 @@ public class BlastRedmatter extends Blast
                     this.controller.setDead();
 
                     //Create new to avoid doing packet syncing
-                    new BlastRedmatter(world(), entity, position.x(), position.y(), position.z(), radiusNew).runBlast();
+                    new BlastRedmatter(world(), entity, location.x(), location.y(), location.z(), radiusNew).runBlast();
                 }
                 //Kill explosion entity
                 ((EntityExplosion) entity).getBlast().isAlive = false;

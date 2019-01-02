@@ -113,7 +113,7 @@ public class BlastRot extends Blast
                                             "\nThread = %s" +
                                             "\nSize = %s" +
                                             "\nPos = %s",
-                                    world, getThread(), size, position);
+                                    world, getThread(), size, location);
                             ICBMClassic.logger().error(msg);
                         }
                     }
@@ -126,7 +126,7 @@ public class BlastRot extends Blast
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = %s",
-                        world, getThread(), size, position);
+                        world, getThread(), size, location);
                 ICBMClassic.logger().error(msg, e);
             }
         }

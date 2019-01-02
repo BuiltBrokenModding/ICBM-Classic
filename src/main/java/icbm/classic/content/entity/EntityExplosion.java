@@ -223,7 +223,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (blast != null)
         {
             this.blast.controller = this;
-            this.setPosition(blast.position.x(), !blast.isMovable() ? -1 : blast.y(), blast.position.z());
+            this.setPosition(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
             blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
         }
     }

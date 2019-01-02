@@ -69,7 +69,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         super.doPreExplode();
         if (!this.playShortSoundFX)
         {
-            ICBMSounds.DEBILITATION.play(world, this.position.x(), this.position.y(), this.position.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
     }
 
@@ -87,8 +87,8 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         {
             //Get bounding box for effect
             AxisAlignedBB bounds = new AxisAlignedBB(
-                    position.x() - radius, position.y() - radius, position.z() - radius,
-                    position.x() + radius, position.y() + radius, position.z() + radius);
+                    location.x() - radius, location.y() - radius, location.z() - radius,
+                    location.x() + radius, location.y() + radius, location.z() + radius);
             //TODO scale affect area with time, the graphics do not match the logic
             //TODO cache box, we do not need to recreate it each tick
 
@@ -100,12 +100,12 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
             {
                 if (this.isContagious)
                 {
-                    ICBMClassic.contagios_potion.poisonEntity(position.toPos(), entity);
+                    ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity);
                 }
 
                 if (this.isPoisonous)
                 {
-                    ICBMClassic.poisonous_potion.poisonEntity(position.toPos(), entity);
+                    ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
                 }
 
                 if (this.isConfuse)
@@ -120,7 +120,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         //Trigger secondary blast
         if (this.isMutate) //TODO why?
         {
-            new BlastMutation(world(), this.exploder, position.x(), position.y(), position.z(), radius).runBlast();
+            new BlastMutation(world(), this.exploder, location.x(), location.y(), location.z(), radius).runBlast();
         }
 
         //End explosion when we hit life timer
@@ -134,7 +134,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     {
         if (this.playShortSoundFX)
         {
-            ICBMSounds.GAS_LEAK.play(world, position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D,
+            ICBMSounds.GAS_LEAK.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D,
                     4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
         }
     }
@@ -159,7 +159,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
                 if (randomSpawnPoint.magnitude() <= radius)
                 {
                     //Offset by our center
-                    randomSpawnPoint = randomSpawnPoint.add(this.position);
+                    randomSpawnPoint = randomSpawnPoint.add(this.location);
 
                     //Call to spawn TODO maybe build a list of points, then spawn all at once?
                     ICBMClassic.proxy.spawnSmoke(world, randomSpawnPoint,

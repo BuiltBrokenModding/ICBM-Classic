@@ -1,6 +1,7 @@
 package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.explosive.handlers.*;
 import icbm.classic.content.explosive.handlers.missiles.*;
 import icbm.classic.prefab.tile.EnumTier;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public enum Explosives implements IStringSerializable
 {
-    /* 0  */CONDENSED(new ExCondensed("condensed", EnumTier.ONE)),
+    /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE, () -> new BlastTNT()).setFuseTime(1)),
     /* 1  */SHRAPNEL(new ExShrapnel("shrapnel", EnumTier.ONE)),
     /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
     /* 3  */DEBLITATION(new ExDebilitation("debilitation", EnumTier.ONE)),

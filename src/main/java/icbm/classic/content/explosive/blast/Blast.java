@@ -34,41 +34,57 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public abstract class Blast extends Explosion implements IBlast
 {
+
     //Thread stuff
     private ThreadExplosion thread;
     private ConcurrentLinkedQueue<BlockPos> threadResults;
     private boolean threadComplete = false;
 
     //TODO remove position as we are double storing location data
-    public Location position;
+    public Location location;
 
-    /** Host of the blast */
+    /**
+     * Host of the blast
+     */
     public EntityExplosion controller = null;
 
-    /** Is the blast alive, if false the blast is dead */
+    /**
+     * Is the blast alive, if false the blast is dead
+     */
     public boolean isAlive = true;
 
-    /** The amount of times the explosion has been called */
+    /**
+     * The amount of times the explosion has been called
+     */
     protected int callCount = 0;
 
     private boolean preExplode = false;
 
+    /**
+     * Only use the default if you plan to init required data
+     */
+    public Blast()
+    {
+        super(null, null,0, 0, 0, 0, false, false);
+
+    }
+
     public Blast(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size, false, true);
-        this.position = new Location(world, x, y, z);
+        this.location = new Location(world, x, y, z);
     }
 
     public Blast(Location pos, Entity entity, float size)
     {
         super(pos.world(), entity, pos.x(), pos.y(), pos.z(), size, false, true);
-        this.position = pos;
+        this.location = pos;
     }
 
     public Blast(Entity entity, float size)
     {
         super(entity.world, entity, entity.posX, entity.posY, entity.posZ, size, false, true);
-        this.position = new Location(entity);
+        this.location = new Location(entity);
     }
 
     /**
@@ -160,14 +176,36 @@ public abstract class Blast extends Explosion implements IBlast
      */
     public void onPositionUpdate(double posX, double posY, double posZ)
     {
-        this.x = posX;
-        this.y = posY;
-        this.z = posZ;
-        position = new Location(world(), posX, posY, posZ);
+        setPosition(posX, posY, posZ);
         debugEx(String.format("Blast#onPositionUpdate(%s, %s, %s) -> position has been updated, Blast: %s", this, posX, posY, posZ));
     }
 
-    /** Make the default functions useless. */
+    /**
+     * Called to set the position of the blast. Only call this for initialization, anything
+     * that happens during world tick should call {@link #onPositionUpdate(double, double, double)}
+     *
+     * @param posX
+     * @param posY
+     * @param posZ
+     */
+    public void setPosition(double posX, double posY, double posZ)
+    {
+        this.x = posX;
+        this.y = posY;
+        this.z = posZ;
+        location = new Location(world(), posX, posY, posZ);
+        //TODO super contains a vec3 also called position, we need to set that value instead of overriding the return
+    }
+
+    @Override
+    public Vec3d getPosition()
+    {
+        return this.location.toVec3d();
+    }
+
+    /**
+     * Make the default functions useless.
+     */
     @Override
     public void doExplosionA()
     {
@@ -262,10 +300,10 @@ public abstract class Blast extends Explosion implements IBlast
     {
         // Step 2: Damage all entities
         radius *= 2.0F;
-        Location minCoord = position.add(-radius - 1);
-        Location maxCoord = position.add(radius + 1);
+        Location minCoord = location.add(-radius - 1);
+        Location maxCoord = location.add(radius + 1);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
-        Vec3d var31 = new Vec3d(position.x(), position.y(), position.z());
+        Vec3d var31 = new Vec3d(location.x(), location.y(), location.z());
 
         for (int i = 0; i < allEntities.size(); ++i)
         {
@@ -287,13 +325,13 @@ public abstract class Blast extends Explosion implements IBlast
                 continue;
             }
 
-            double distance = entity.getDistance(position.x(), position.y(), position.z()) / radius;
+            double distance = entity.getDistance(location.x(), location.y(), location.z()) / radius;
 
             if (distance <= 1.0D)
             {
-                double xDifference = entity.posX - position.x();
-                double yDifference = entity.posY - position.y();
-                double zDifference = entity.posZ - position.z();
+                double xDifference = entity.posX - location.x();
+                double yDifference = entity.posY - location.y();
+                double zDifference = entity.posZ - location.z();
                 double var35 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                 xDifference /= var35;
                 yDifference /= var35;
@@ -356,25 +394,25 @@ public abstract class Blast extends Explosion implements IBlast
     @Override
     public World world()
     {
-        return this.position.world();
+        return this.location.world();
     }
 
     @Override
     public double x()
     {
-        return this.position.x();
+        return this.location.x();
     }
 
     @Override
     public double y()
     {
-        return this.position.y();
+        return this.location.y();
     }
 
     @Override
     public double z()
     {
-        return this.position.z();
+        return this.location.z();
     }
 
     @Override

@@ -153,9 +153,9 @@ public class BlastXmas extends Blast
             {
                 //Random location
                 float range = getBlastRadius() - 3;
-                double x = this.position.x() + 0.5 + (world.rand.nextFloat() * range - world.rand.nextFloat() * range);
-                double z = this.position.z() + 0.5 + (world.rand.nextFloat() * range - world.rand.nextFloat() * range);
-                double y = findEmptyY(x, this.position.y() + 2, z);
+                double x = this.location.x() + 0.5 + (world.rand.nextFloat() * range - world.rand.nextFloat() * range);
+                double z = this.location.z() + 0.5 + (world.rand.nextFloat() * range - world.rand.nextFloat() * range);
+                double y = findEmptyY(x, this.location.y() + 2, z);
 
                 //If empty spot, spawn mob
                 if (y >= 0)

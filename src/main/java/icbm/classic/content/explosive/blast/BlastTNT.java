@@ -50,6 +50,11 @@ public class BlastTNT extends Blast
         super(world, entity, x, y, z, power);
     }
 
+    public BlastTNT()
+    {
+        super();
+    }
+
     /**
      * Sets push type, defaults to damage entity
      *
@@ -79,7 +84,7 @@ public class BlastTNT extends Blast
         calculateDamage(); //TODO add listener(s) to control block break and placement
 
         //TODO move effect to Effect handler
-        this.world().playSound(null, this.position.x(), this.position.y(), this.position.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
 
         //TODO collect entities before applying effects, this way event can override
         switch (this.pushType)
@@ -131,9 +136,9 @@ public class BlastTNT extends Blast
                             float radialEnergy = this.getBlastRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
 
                             //Get starting point for ray
-                            double x = this.position.x();
-                            double y = this.position.y();
-                            double z = this.position.z();
+                            double x = this.location.x();
+                            double y = this.location.y();
+                            double z = this.location.z();
 
                             for (float step = 0.3F; radialEnergy > 0.0F; radialEnergy -= step * 0.75F)
                             {
@@ -200,9 +205,9 @@ public class BlastTNT extends Blast
                 double var11 = (yi + this.world().rand.nextFloat());
                 double var13 = (zi + this.world().rand.nextFloat());
 
-                double var151 = var9 - this.position.y();
-                double var171 = var11 - this.position.y();
-                double var191 = var13 - this.position.z();
+                double var151 = var9 - this.location.y();
+                double var171 = var11 - this.location.y();
+                double var191 = var13 - this.location.z();
 
                 double var211 = MathHelper.sqrt(var151 * var151 + var171 * var171 + var191 * var191);
                 var151 /= var211;
@@ -215,7 +220,7 @@ public class BlastTNT extends Blast
                 var171 *= var23;
                 var191 *= var23;
 
-                this.world().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (var9 + this.position.x() * 1.0D) / 2.0D, (var11 + this.position.y() * 1.0D) / 2.0D, (var13 + this.position.z() * 1.0D) / 2.0D, var151, var171, var191);
+                this.world().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (var9 + this.location.x() * 1.0D) / 2.0D, (var11 + this.location.y() * 1.0D) / 2.0D, (var13 + this.location.z() * 1.0D) / 2.0D, var151, var171, var191);
                 this.world().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var9, var11, var13, var151, var171, var191);
                 ///---------------------------------------------
 
@@ -245,9 +250,9 @@ public class BlastTNT extends Blast
     public void pushEntities(float radius, float force, int type) //TODO convert to delay action
     {
         // Step 2: Damage all entities
-        Pos minCoord = position.toPos();
+        Pos minCoord = location.toPos();
         minCoord = minCoord.add(-radius - 1);
-        Pos maxCoord = position.toPos();
+        Pos maxCoord = location.toPos();
         maxCoord = maxCoord.add(radius + 1);
 
         Cube region = new Cube(minCoord, maxCoord);
@@ -255,14 +260,14 @@ public class BlastTNT extends Blast
 
         for (Entity entity : entities)
         {
-            double var13 = entity.getDistance(position.x(), position.y(), position.z()) / radius;
+            double var13 = entity.getDistance(location.x(), location.y(), location.z()) / radius;
 
             if (var13 <= 1.0D)
             {
                 //Get delta
-                double xDifference = entity.posX - position.x();
-                double yDifference = entity.posY - position.y();
-                double zDifference = entity.posZ - position.z();
+                double xDifference = entity.posX - location.x();
+                double yDifference = entity.posY - location.y();
+                double zDifference = entity.posZ - location.z();
 
                 //Get magnitude
                 double mag = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);

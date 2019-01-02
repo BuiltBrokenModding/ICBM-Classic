@@ -26,7 +26,7 @@ public abstract class ThreadExplosion extends Thread //TODO replace with worker 
     {
         super(null, null, "ThreadExplosion-" + nextThreadID(), 0);
         this.blast = blast;
-        this.position = blast.position;
+        this.position = blast.location;
         this.radius = radius;
         this.energy = energy;
         this.source = source;

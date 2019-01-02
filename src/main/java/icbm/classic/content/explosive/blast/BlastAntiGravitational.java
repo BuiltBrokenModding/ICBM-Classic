@@ -54,7 +54,7 @@ public class BlastAntiGravitational extends Blast
 
                         if (r == 0)
                         {
-                            Collections.sort(results, new PosDistanceSorter(position, true));
+                            Collections.sort(results, new PosDistanceSorter(location, true));
                         }
                         int blocksToTake = 20;
 
@@ -101,7 +101,7 @@ public class BlastAntiGravitational extends Blast
                                     "\nThread = %s" +
                                     "\nSize = %s" +
                                     "\nPos = ",
-                            world, thread, size, position);
+                            world, thread, size, location);
                     ICBMClassic.logger().error(msg);
                 }
             }
@@ -112,18 +112,18 @@ public class BlastAntiGravitational extends Blast
                                 "\nThread = %s" +
                                 "\nSize = %s" +
                                 "\nPos = ",
-                        world, thread, size, position);
+                        world, thread, size, location);
                 ICBMClassic.logger().error(msg, e);
             }
         }
 
         int radius = (int) this.getBlastRadius();
-        AxisAlignedBB bounds = new AxisAlignedBB(position.x() - radius, position.y() - radius, position.z() - radius, position.y() + radius, 100, position.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(location.x() - radius, location.y() - radius, location.z() - radius, location.y() + radius, 100, location.z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities)
         {
-            if (!(entity instanceof EntityFlyingBlock) && entity.posY < 100 + position.y())
+            if (!(entity instanceof EntityFlyingBlock) && entity.posY < 100 + location.y())
             {
                 if (entity.motionY < 0.4)
                 {

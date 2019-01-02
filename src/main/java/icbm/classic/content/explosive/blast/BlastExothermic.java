@@ -27,7 +27,7 @@ public class BlastExothermic extends BlastBeam
     public void doExplode()
     {
         super.doExplode();
-        ICBMSounds.BEAM_CHARGING.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
+        ICBMSounds.BEAM_CHARGING.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
     }
 
     @Override
@@ -37,14 +37,14 @@ public class BlastExothermic extends BlastBeam
 
         if (!this.world().isRemote)
         {
-            ICBMSounds.POWER_DOWN.play(world, position.x(), position.y(), position.z(), 4.0F, 0.8F, true);
+            ICBMSounds.POWER_DOWN.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
 
-            if (this.canFocusBeam(this.world(), position) && isThreadCompleted())
+            if (this.canFocusBeam(this.world(), location) && isThreadCompleted())
             {
                 ConcurrentLinkedQueue<BlockPos> list = getThreadResults();
                 for (BlockPos targetPosition : list)
                 {
-                    double distanceFromCenter = position.distance(targetPosition);
+                    double distanceFromCenter = location.distance(targetPosition);
 
                     if (distanceFromCenter > this.getBlastRadius())
                     {
@@ -98,7 +98,7 @@ public class BlastExothermic extends BlastBeam
                     }
                 }
 
-                ICBMSounds.EXPLOSION_FIRE.play(world,position.x() + 0.5D, position.y() + 0.5D, position.z() + 0.5D, 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+                ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
 
             if(!world().getGameRules().getBoolean("doDaylightCycle")) //TODO add config
