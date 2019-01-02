@@ -1,6 +1,8 @@
 package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.content.explosive.blast.BlastShrapnel;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.explosive.handlers.*;
 import icbm.classic.content.explosive.handlers.missiles.*;
@@ -10,6 +12,7 @@ import net.minecraft.util.IStringSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Enum of explosives for use a metadata in items and quick reference of values
@@ -19,16 +22,16 @@ import java.util.List;
  */
 public enum Explosives implements IStringSerializable
 {
-    /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE, () -> new BlastTNT()).setFuseTime(1)),
-    /* 1  */SHRAPNEL(new ExShrapnel("shrapnel", EnumTier.ONE)),
+    /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE, () -> new BlastTNT().setPower(6)).setFuseTime(1)),
+    /* 1  */SHRAPNEL("shrapnel", EnumTier.ONE, () -> new BlastShrapnel().setFlaming().setPower(30)),
     /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
     /* 3  */DEBLITATION(new ExDebilitation("debilitation", EnumTier.ONE)),
     /* 4  */CHEMICAL(new ExChemical("chemical", EnumTier.ONE)),
-    /* 5  */ANVIL(new ExShrapnel("anvil", EnumTier.ONE)),
+    /* 5  */ANVIL("anvil", EnumTier.ONE, () -> new BlastShrapnel().setAnvil().setPower(25)),
     /* 6  */REPLUSIVE(new ExRepulsive("repulsive", EnumTier.ONE)),
     /* 7  */ATTRACTIVE(new ExRepulsive("attractive", EnumTier.ONE)),
 
-    /* 8  */FRAGMENTATION(new ExShrapnel("fragmentation", EnumTier.TWO)),
+    /* 8  */FRAGMENTATION("fragmentation", EnumTier.TWO, () -> new BlastShrapnel().setFlaming().setExplosive().setPower(15)),
     /* 9  */CONTAGIOUS(new ExChemical("contagious", EnumTier.TWO)),
     /* 10 */SONIC(new ExSonic("sonic", EnumTier.TWO)),
     /* 11 */BREACHING(new ExBreaching()),
@@ -63,6 +66,12 @@ public enum Explosives implements IStringSerializable
     {
         this.handler = handler;
     }
+
+    Explosives(String name, EnumTier tier, Supplier<Blast> factory)
+    {
+        this(new Explosion(name, tier, factory));
+    }
+
 
     public ItemStack getItemStack()
     {

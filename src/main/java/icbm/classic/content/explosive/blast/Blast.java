@@ -503,4 +503,10 @@ public abstract class Blast extends Explosion implements IBlast
             ICBMClassic.logger().info(msg);
         }
     }
+
+    public Blast setPower(float power)
+    {
+        this.size = power;
+        return null;
+    }
 }

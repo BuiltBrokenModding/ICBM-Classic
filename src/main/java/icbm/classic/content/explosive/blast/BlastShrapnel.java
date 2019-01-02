@@ -10,17 +10,24 @@ public class BlastShrapnel extends Blast
     private boolean isExplosive = false;
     private boolean isAnvil = false;
 
-    public BlastShrapnel(World world, Entity entity, double x, double y, double z, float size, boolean isFlaming, boolean isExplosive, boolean isAnvil)
+    public BlastShrapnel(){}
+
+    public BlastShrapnel setFlaming()
     {
-        this(world, entity, x, y, z, size);
-        this.causesFire = isFlaming;
-        this.isExplosive = isExplosive;
-        this.isAnvil = isAnvil;
+        this.causesFire = true; //TODO convert to factory
+        return this;
     }
 
-    public BlastShrapnel(World world, Entity entity, double x, double y, double z, float size)
+    public BlastShrapnel setExplosive()
     {
-        super(world, entity, x, y, z, size);
+        this.isExplosive = true; //TODO convert to factory
+        return this;
+    }
+
+    public BlastShrapnel setAnvil()
+    {
+        this.isAnvil = true; //TODO convert to factory
+        return this;
     }
 
     @Override
@@ -37,6 +44,7 @@ public class BlastShrapnel extends Blast
 
                 for (int ii = 0; ii < this.getBlastRadius(); ii++)
                 {
+                    //TODO convert to factory
                     EntityFragments arrow = new EntityFragments(world(), location.x(), location.y(), location.z(), this.isExplosive, this.isAnvil);
 
                     if (this.causesFire)
