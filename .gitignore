@@ -21,3 +21,4 @@ CompiledWith.txt
 output
 changelog.html
 .okhttpcache/
+.DS_Store
