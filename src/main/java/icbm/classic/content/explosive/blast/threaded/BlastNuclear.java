@@ -26,6 +26,8 @@ public class BlastNuclear extends BlastThreaded
     private boolean spawnMoreParticles = false;
     private boolean isRadioactive = false;
 
+    public BlastNuclear(){}
+
     public BlastNuclear(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);
@@ -36,6 +38,20 @@ public class BlastNuclear extends BlastThreaded
         this(world, entity, x, y, z, size);
         this.energy = energy;
     }
+
+    public BlastNuclear setEnergy(float energy)
+    {
+        this.energy = energy;
+        return this;
+    }
+
+    public BlastNuclear scale(float scale)
+    {
+        super.scale(scale);
+        this.energy *= scale;
+        return this;
+    }
+
 
     public BlastNuclear setNuclear()
     {

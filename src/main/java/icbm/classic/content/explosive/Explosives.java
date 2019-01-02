@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.explosive.blast.Blast;
 import icbm.classic.content.explosive.blast.BlastShrapnel;
 import icbm.classic.content.explosive.blast.BlastTNT;
+import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.content.explosive.handlers.*;
 import icbm.classic.content.explosive.handlers.missiles.*;
 import icbm.classic.prefab.tile.EnumTier;
@@ -36,10 +37,10 @@ public enum Explosives implements IStringSerializable
     /* 10 */SONIC(new ExSonic("sonic", EnumTier.TWO)),
     /* 11 */BREACHING(new ExBreaching()),
     /* 12 */REJUVENATION(new ExRejuvenation()),
-    /* 13 */THERMOBARIC(new ExNuclear("thermobaric", EnumTier.TWO)),
+    /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO, () -> new BlastNuclear().setEnergy(45).setPower(30)),
     /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)),
 
-    /* 15 */NUCLEAR(new ExNuclear("nuclear", EnumTier.THREE)),
+    /* 15 */NUCLEAR("nuclear", EnumTier.THREE, () -> new BlastNuclear().setNuclear().setEnergy(80).setPower(50)),
     /* 16 */EMP(new ExEMP()),
     /* 17 */EXOTHERMIC(new ExExothermic()),
     /* 18 */ENDOTHERMIC(new ExEndothermic()),

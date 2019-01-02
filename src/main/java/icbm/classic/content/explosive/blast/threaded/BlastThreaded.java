@@ -21,6 +21,7 @@ import java.util.List;
  */
 public abstract class BlastThreaded extends Blast
 {
+    public BlastThreaded(){}
     public BlastThreaded(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);

@@ -45,7 +45,7 @@ public class Explosion extends Explosive
             Blast blast = factory.get();
             blast.world = world; //TODO create set method
             blast.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-            blast.size *= scale;
+            blast.scale(scale);
             blast.exploder = entity;
 
             return blast;

@@ -507,6 +507,12 @@ public abstract class Blast extends Explosion implements IBlast
     public Blast setPower(float power)
     {
         this.size = power;
-        return null;
+        return this;
+    }
+
+    public Blast scale(float scale)
+    {
+        this.size *= scale;
+        return this;
     }
 }
