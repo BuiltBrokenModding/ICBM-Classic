@@ -1,6 +1,5 @@
 package icbm.classic.prefab.inventory;
 
-import icbm.classic.api.ISave;
 import icbm.classic.ICBMClassic;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -16,7 +15,7 @@ import java.util.*;
  * Simple inventory implementation
  * Created by robert on 5/1/2015.
  */
-public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Integer, ItemStack>>
+public class BasicInventory implements IInventory, Iterable<Map.Entry<Integer, ItemStack>>
 {
     /** Default slot max count */
     protected int slots;
@@ -229,7 +228,6 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
         return true;
     }
 
-    @Override
     public void load(NBTTagCompound nbt)
     {
         _loading = true;
@@ -252,7 +250,6 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
         _loading = false;
     }
 
-    @Override
     public NBTTagCompound save(NBTTagCompound nbt)
     {
         NBTTagList nbtList = new NBTTagList();
