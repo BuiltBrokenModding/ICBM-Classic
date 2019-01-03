@@ -42,7 +42,7 @@ public class BlastMine extends Blast
 
             if (this.callCount >= 20 * 2 && this.callCount % 2 == 0)
             {
-                new BlastShrapnel(this.world(), this.exploder, this.location.x(), this.location.y(), this.location.z(), this.getBlastRadius(), true, true, false).doExplode();
+                new BlastShrapnel().setFlaming().setExplosive().setPower(getBlastRadius()).setWorld(world).setPosition(x, y, z).runBlast();
             }
 
             if (this.callCount >= 20 * 2 + 20)
