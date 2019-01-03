@@ -1,6 +1,6 @@
 package icbm.classic.content.explosive.blast;
 
-import icbm.classic.api.explosion.IExplosiveIgnore;
+import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.entity.EntityExplosion;
@@ -218,9 +218,9 @@ public class BlastRedmatter extends Blast
         }
 
         //Ignore entities that mark themselves are ignorable
-        if (entity instanceof IExplosiveIgnore)
+        if (entity instanceof IBlastIgnore)
         {
-            if (((IExplosiveIgnore) entity).canIgnore(this))
+            if (((IBlastIgnore) entity).canIgnore(this)) //TODO pass in distance and deltas
             {
                 return false;
             }

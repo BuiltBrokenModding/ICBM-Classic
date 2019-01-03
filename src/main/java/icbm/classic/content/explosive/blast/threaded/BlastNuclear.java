@@ -245,6 +245,7 @@ public class BlastNuclear extends BlastThreaded
             {
                 //Attack entities
                 this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
+                //TODO hook into AS and apply radiation damage or fire a damage event to allow AS/proxy to hook
 
                 //Place radio active blocks
                 if (this.isRadioactive)

@@ -5,7 +5,7 @@ package icbm.classic.api.explosion;
  *
  * @author Calclavia
  */
-public interface IExplosiveIgnore
+public interface IBlastIgnore
 {
     /**
      * Can 'this' entity ignore the explosive
