@@ -24,14 +24,8 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     private boolean playShortSoundFX;
     private boolean isContagious, isPoisonous, isConfuse, isMutate;
 
-    public BlastChemical(World world, Entity entity, double x, double y, double z, float size)
+    public BlastChemical(int duration, boolean playShortSoundFX)
     {
-        super(world, entity, x, y, z, size);
-    }
-
-    public BlastChemical(World world, Entity entity, double x, double y, double z, float size, int duration, boolean playShortSoundFX)
-    {
-        this(world, entity, x, y, z, size);
         this.duration = duration / this.proceduralInterval();
         this.playShortSoundFX = playShortSoundFX;
     }

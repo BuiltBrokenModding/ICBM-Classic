@@ -2,6 +2,7 @@ package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.content.explosive.blast.BlastChemical;
 import icbm.classic.content.explosive.blast.BlastShrapnel;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
@@ -22,23 +23,40 @@ import java.util.List;
  */
 public enum Explosives implements IStringSerializable
 {
-    /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6)).setFuseTime(1)),
-    /* 1  */SHRAPNEL("shrapnel", EnumTier.ONE, () -> new BlastShrapnel().setFlaming().setBlastSize(30)),
+    /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE,
+            () -> new BlastTNT().setBlastSize(6)).setFuseTime(1)),
+
+    /* 1  */SHRAPNEL("shrapnel", EnumTier.ONE,
+            () -> new BlastShrapnel().setFlaming().setBlastSize(30)),
+
     /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
-    /* 3  */DEBLITATION(new ExDebilitation("debilitation", EnumTier.ONE)),
-    /* 4  */CHEMICAL(new ExChemical("chemical", EnumTier.ONE)),
-    /* 5  */ANVIL("anvil", EnumTier.ONE, () -> new BlastShrapnel().setAnvil().setBlastSize(25)),
+
+    /* 3  */DEBLITATION("debilitation", EnumTier.ONE,
+            () -> new BlastChemical(20 * 30, false).setConfuse().setBlastSize(20)),
+
+    /* 4  */CHEMICAL("chemical", EnumTier.ONE,
+            () -> new BlastChemical(20 * 30, false).setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20)),
+
+    /* 5  */ANVIL("anvil", EnumTier.ONE,
+            () -> new BlastShrapnel().setAnvil().setBlastSize(25)),
+
     /* 6  */REPLUSIVE(new ExRepulsive("repulsive", EnumTier.ONE)),
     /* 7  */ATTRACTIVE(new ExRepulsive("attractive", EnumTier.ONE)),
 
-    /* 8  */FRAGMENTATION("fragmentation", EnumTier.TWO, () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15)),
-    /* 9  */CONTAGIOUS(new ExChemical("contagious", EnumTier.TWO)),
+    //=================== Tier 2
+    /* 8  */FRAGMENTATION("fragmentation", EnumTier.TWO,
+            () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15)),
+
+    /* 9  */CONTAGIOUS("contagious", EnumTier.TWO,
+            () -> new BlastChemical(20 * 30, false).setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20)),
+
     /* 10 */SONIC(new ExSonic("sonic", EnumTier.TWO)),
     /* 11 */BREACHING(new ExBreaching()),
     /* 12 */REJUVENATION(new ExRejuvenation()),
     /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO, () -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
     /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)),
 
+    //=================== Tier 3
     /* 15 */NUCLEAR("nuclear", EnumTier.THREE, () -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50)),
     /* 16 */EMP(new ExEMP()),
     /* 17 */EXOTHERMIC(new ExExothermic()),
@@ -47,16 +65,19 @@ public enum Explosives implements IStringSerializable
     /* 20 */ENDER(new ExEnder()),
     /* 21 */HYPERSONIC(new ExSonic("hypersonic", EnumTier.THREE)), //TODO find Missile model
 
+    //=================== Tier 4
     /* 22 */ANTIMATTER(new ExAntimatter()),
     /* 23 */REDMATTER(new ExRedMatter()),
 
+
+    //=================== Missiles
     /* 24 */MISSILE(new MissileModule()),
     /* 25 */MISSILE_HOMING(new MissileHoming()),
     /* 26 */MISSILE_ANTI(new MissileAnti()),
     /* 27 */MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO)),
     /* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster()),
 
-
+    //=================== Special
     /* 29 */XMAS_ZOMBIE(new ExXMAS(true)),
     /* 30 */XMAS_SKELETON(new ExXMAS(false));
 
