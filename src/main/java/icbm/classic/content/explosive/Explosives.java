@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.content.explosive.blast.BlastChemical;
 import icbm.classic.content.explosive.blast.BlastShrapnel;
+import icbm.classic.content.explosive.blast.BlastSonic;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.content.explosive.handlers.*;
@@ -24,12 +25,12 @@ import java.util.List;
 public enum Explosives implements IStringSerializable
 {
     /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE,
-            () -> new BlastTNT().setBlastSize(6)).setFuseTime(1)),
+            () -> new BlastTNT().setBlastSize(6)).setFuseTime(1)), //TODO convert fully
 
     /* 1  */SHRAPNEL("shrapnel", EnumTier.ONE,
             () -> new BlastShrapnel().setFlaming().setBlastSize(30)),
 
-    /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)),
+    /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)), //TODO convert
 
     /* 3  */DEBLITATION("debilitation", EnumTier.ONE,
             () -> new BlastChemical(20 * 30, false).setConfuse().setBlastSize(20)),
@@ -53,7 +54,8 @@ public enum Explosives implements IStringSerializable
     /* 9  */CONTAGIOUS("contagious", EnumTier.TWO,
             () -> new BlastChemical(20 * 30, false).setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20)),
 
-    /* 10 */SONIC(new ExSonic("sonic", EnumTier.TWO)),
+    /* 10 */SONIC("sonic", EnumTier.TWO,
+            () -> new BlastSonic(30).setBlastSize(15)),
 
     /* 11 */BREACHING(new ExBreaching()),
 
@@ -73,7 +75,8 @@ public enum Explosives implements IStringSerializable
     /* 18 */ENDOTHERMIC(new ExEndothermic()),
     /* 19 */ANTI_GRAV(new ExAntiGravitational()),
     /* 20 */ENDER(new ExEnder()),
-    /* 21 */HYPERSONIC(new ExSonic("hypersonic", EnumTier.THREE)), //TODO find Missile model
+    /* 21 */HYPERSONIC("hypersonic", EnumTier.THREE,
+            () -> new BlastSonic(35).setShockWave().setBlastSize(20)), //TODO find Missile model
 
     //=================== Tier 4
     /* 22 */ANTIMATTER(new ExAntimatter()),

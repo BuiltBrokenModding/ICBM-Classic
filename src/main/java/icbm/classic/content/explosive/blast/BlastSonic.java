@@ -24,14 +24,13 @@ public class BlastSonic extends Blast
     private float energy;
     private boolean hasShockWave = false;
 
-    public BlastSonic(World world, Entity entity, double x, double y, double z, float size)
+    public BlastSonic()
     {
-        super(world, entity, x, y, z, size);
+
     }
 
-    public BlastSonic(World world, Entity entity, double x, double y, double z, float size, float energy)
+    public BlastSonic(float energy)
     {
-        this(world, entity, x, y, z, size);
         this.energy = energy;
     }
 
