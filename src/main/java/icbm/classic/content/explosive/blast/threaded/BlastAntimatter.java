@@ -14,14 +14,12 @@ public class BlastAntimatter extends BlastThreaded
 {
     private boolean destroyBedrock;
 
-    public BlastAntimatter(World world, Entity entity, double x, double y, double z, float size)
+    public BlastAntimatter()
     {
-        super(world, entity, x, y, z, size);
     }
 
-    public BlastAntimatter(World world, Entity entity, double x, double y, double z, float size, boolean destroyBedrock)
+    public BlastAntimatter(boolean destroyBedrock)
     {
-        this(world, entity, x, y, z, size);
         this.destroyBedrock = destroyBedrock;
     }
 

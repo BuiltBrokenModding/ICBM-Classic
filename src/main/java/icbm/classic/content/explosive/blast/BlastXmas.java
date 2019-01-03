@@ -26,9 +26,8 @@ public class BlastXmas extends Blast
 
     final boolean zombie;
 
-    public BlastXmas(World world, Entity entity, double x, double y, double z, float size, boolean zombie)
+    public BlastXmas(boolean zombie)
     {
-        super(world, entity, x, y, z, size);
         this.zombie = zombie;
     }
 

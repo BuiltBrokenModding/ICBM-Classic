@@ -2,7 +2,9 @@ package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.explosive.blast.*;
+import icbm.classic.content.explosive.blast.threaded.BlastAntimatter;
 import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.content.explosive.handlers.*;
 import icbm.classic.content.explosive.handlers.missiles.*;
@@ -66,7 +68,7 @@ public enum Explosives implements IStringSerializable
     /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO,
             () -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
 
-    /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)), //TODO convert, replace model with JSON
+    /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)), //TODO convert, replace model with JSON and custom entity
 
     //=================== Tier 3
     /* 15 */NUCLEAR("nuclear", EnumTier.THREE,
@@ -89,7 +91,10 @@ public enum Explosives implements IStringSerializable
             () -> new BlastSonic(35).setShockWave().setBlastSize(20)), //TODO find Missile model
 
     //=================== Tier 4
-    /* 22 */ANTIMATTER(new ExAntimatter()), //TODO convert
+    /* 22 */ANTIMATTER("antimatter", EnumTier.FOUR,
+            () -> new BlastAntimatter(ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).setBlastSize(ConfigBlast.ANTIMATTER_SIZE)),
+    //TODO this.setFuseTime(300);
+    //TODO add config (disable by default) for alarm audio
 
     /* 23 */REDMATTER("redMatter", EnumTier.FOUR,
             () -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS)),
@@ -103,8 +108,11 @@ public enum Explosives implements IStringSerializable
     /* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster()),
 
     //=================== Special
-    /* 29 */XMAS_ZOMBIE(new ExXMAS(true)),
-    /* 30 */XMAS_SKELETON(new ExXMAS(false));
+    /* 29 */XMAS_ZOMBIE("xmas.zombie", EnumTier.TWO,
+            () -> new BlastXmas(true).setBlastSize(5)),
+
+    /* 30 */XMAS_SKELETON("xmas.skeleton", EnumTier.TWO,
+            () -> new BlastXmas(false).setBlastSize(5));
 
     public final Explosive handler;
 
