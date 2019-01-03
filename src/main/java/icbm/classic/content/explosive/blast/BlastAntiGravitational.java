@@ -18,11 +18,6 @@ public class BlastAntiGravitational extends Blast
     protected ThreadSmallExplosion thread;
     protected Set<EntityFlyingBlock> flyingBlocks = new HashSet<EntityFlyingBlock>();
 
-    public BlastAntiGravitational(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
     @Override
     public void doPreExplode()
     {

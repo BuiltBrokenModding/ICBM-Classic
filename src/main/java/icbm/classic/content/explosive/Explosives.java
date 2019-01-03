@@ -2,10 +2,7 @@ package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastFactory;
-import icbm.classic.content.explosive.blast.BlastChemical;
-import icbm.classic.content.explosive.blast.BlastShrapnel;
-import icbm.classic.content.explosive.blast.BlastSonic;
-import icbm.classic.content.explosive.blast.BlastTNT;
+import icbm.classic.content.explosive.blast.*;
 import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.content.explosive.handlers.*;
 import icbm.classic.content.explosive.handlers.missiles.*;
@@ -33,10 +30,12 @@ public enum Explosives implements IStringSerializable
     /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)), //TODO convert
 
     /* 3  */DEBLITATION("debilitation", EnumTier.ONE,
-            () -> new BlastChemical(20 * 30, false).setConfuse().setBlastSize(20)),
+            () -> new BlastChemical(20 * 30, false)
+                    .setConfuse().setBlastSize(20)),
 
     /* 4  */CHEMICAL("chemical", EnumTier.ONE,
-            () -> new BlastChemical(20 * 30, false).setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20)),
+            () -> new BlastChemical(20 * 30, false)
+                    .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20)),
 
     /* 5  */ANVIL("anvil", EnumTier.ONE,
             () -> new BlastShrapnel().setAnvil().setBlastSize(25)),
@@ -52,35 +51,48 @@ public enum Explosives implements IStringSerializable
             () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15)),
 
     /* 9  */CONTAGIOUS("contagious", EnumTier.TWO,
-            () -> new BlastChemical(20 * 30, false).setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20)),
+            () -> new BlastChemical(20 * 30, false)
+                    .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20)),
 
     /* 10 */SONIC("sonic", EnumTier.TWO,
             () -> new BlastSonic(30).setBlastSize(15)),
 
-    /* 11 */BREACHING(new ExBreaching()),
+    /* 11 */BREACHING("breaching", EnumTier.TWO,
+            () -> new BlastBreech(7).setBlastSize(2.5)), //TODO this.setFuseTime(40);
 
-    /* 12 */REJUVENATION(new ExRejuvenation()),
+    /* 12 */REJUVENATION("rejuvenation", EnumTier.TWO,
+            () -> new BlastRegen().setBlastSize(16)),
 
     /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO,
             () -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
 
-    /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)),
+    /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)), //TODO convert, replace model with JSON
 
     //=================== Tier 3
     /* 15 */NUCLEAR("nuclear", EnumTier.THREE,
             () -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50)),
 
-    /* 16 */EMP(new ExEMP()),
-    /* 17 */EXOTHERMIC(new ExExothermic()),
-    /* 18 */ENDOTHERMIC(new ExEndothermic()),
-    /* 19 */ANTI_GRAV(new ExAntiGravitational()),
-    /* 20 */ENDER(new ExEnder()),
+    /* 16 */EMP("emp", EnumTier.THREE,
+            () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50)),
+
+    /* 17 */EXOTHERMIC(new ExExothermic()), //TODO convert
+
+    /* 18 */ENDOTHERMIC("endothermic", EnumTier.THREE,
+            () -> new BlastEndothermic().setBlastSize(50)), //TODO add custom fuze, exo has one but not endo
+
+    /* 19 */ANTI_GRAV("antiGravitational", EnumTier.THREE,
+            () -> new BlastAntiGravitational().setBlastSize(30)),
+
+    /* 20 */ENDER(new ExEnder()), //TODO convert, will need event handling... honestly should make a custom block/item for it
+
     /* 21 */HYPERSONIC("hypersonic", EnumTier.THREE,
             () -> new BlastSonic(35).setShockWave().setBlastSize(20)), //TODO find Missile model
 
     //=================== Tier 4
-    /* 22 */ANTIMATTER(new ExAntimatter()),
-    /* 23 */REDMATTER(new ExRedMatter()),
+    /* 22 */ANTIMATTER(new ExAntimatter()), //TODO convert
+
+    /* 23 */REDMATTER("redMatter", EnumTier.FOUR,
+            () -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS)),
 
 
     //=================== Missiles

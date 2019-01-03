@@ -16,9 +16,8 @@ public class BlastBreech extends BlastTNT
 {
     private int depth;
 
-    public BlastBreech(World world, Entity entity, double x, double y, double z, float size, int depth)
+    public BlastBreech(int depth)
     {
-        super(world, entity, x, y, z, size);
         this.damageToEntities = 13;
         this.depth = depth;
     }

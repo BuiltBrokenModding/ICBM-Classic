@@ -10,8 +10,6 @@ import net.minecraft.world.World;
 
 public class ExExothermic extends Explosion
 {
-
-
     public ExExothermic()
     {
         super("exothermic", EnumTier.THREE);

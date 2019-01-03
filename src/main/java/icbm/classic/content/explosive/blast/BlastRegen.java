@@ -14,13 +14,8 @@ import net.minecraft.world.gen.IChunkGenerator;
 
 public class BlastRegen extends Blast
 {
-    public BlastRegen(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
     @Override
-    public void doExplode()
+    public void doRunBlast() //TODO set up to scale
     {
         if (!world().isRemote)
         {

@@ -48,11 +48,6 @@ public class BlastRedmatter extends Blast
 
     public boolean coloredBeams = true;
 
-    public BlastRedmatter(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
     public float getScaleFactor()
     {
         return size / NORMAL_RADIUS;

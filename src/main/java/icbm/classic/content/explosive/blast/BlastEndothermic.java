@@ -24,9 +24,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BlastEndothermic extends BlastBeam
 {
-    public BlastEndothermic(World world, Entity entity, double x, double y, double z, float size)
+    public BlastEndothermic()
     {
-        super(world, entity, x, y, z, size);
         this.red = 0f;
         this.green = 0.3f;
         this.blue = 0.7f;

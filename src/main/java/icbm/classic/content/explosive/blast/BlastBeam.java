@@ -26,6 +26,7 @@ public abstract class BlastBeam extends Blast
     /** Radius in which the uplighting of blocks takes place */
     protected int radius = 5;
 
+    public BlastBeam(){}
     public BlastBeam(World world, Entity entity, double x, double y, double z, float size)
     {
         super(world, entity, x, y, z, size);

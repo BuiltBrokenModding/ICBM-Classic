@@ -28,11 +28,6 @@ public class BlastEMP extends Blast
     private boolean effectBlocks = false;
     private float power = 1f;
 
-    public BlastEMP(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
     public BlastEMP setEffectBlocks()
     {
         this.effectBlocks = true;
