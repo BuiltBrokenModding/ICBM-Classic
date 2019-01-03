@@ -1,8 +1,11 @@
 package icbm.classic.content.machines.emptower;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.explosive.blast.Blast;
 import icbm.classic.content.explosive.blast.BlastEMP;
 import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.lib.IGuiTile;
@@ -25,6 +28,7 @@ import java.util.List;
 
 public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
+
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
 
@@ -144,7 +148,9 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
     }
 
-    /** Reads a tile entity from NBT. */
+    /**
+     * Reads a tile entity from NBT.
+     */
     @Override
     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
     {
@@ -154,7 +160,9 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         this.empMode = par1NBTTagCompound.getByte("empMode");
     }
 
-    /** Writes a tile entity to NBT. */
+    /**
+     * Writes a tile entity to NBT.
+     */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
@@ -170,21 +178,40 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             if (isReady())
             {
+                BlastEMP emp = (BlastEMP) new BlastEMP()
+                        .setBlastWorld(world)
+                        .setPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
+                        .setBlastSize(empRadius);
+
+                //Apply settings
                 switch (this.empMode)
                 {
                     default:
-                        new BlastEMP(world, null, this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5, this.empRadius).setEffectBlocks().setEffectEntities().runBlast();
+                        emp.setEffectBlocks().setEffectEntities();
                         break;
                     case 1:
-                        new BlastEMP(world, null, this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5, this.empRadius).setEffectEntities().runBlast();
+                        emp.setEffectEntities();
                         break;
                     case 2:
-                        new BlastEMP(world, null, this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5, this.empRadius).setEffectBlocks().runBlast();
+                        emp.setEffectBlocks();
                         break;
                 }
-                this.extractEnergy();
-                this.cooldownTicks = getMaxCooldown();
-                return true;
+
+                //Finish and trigger
+                if (emp.buildBlast().runBlast() == BlastState.TRIGGERED)
+                {
+                    //Consume energy
+                    this.extractEnergy();
+
+                    //Reset timer
+                    this.cooldownTicks = getMaxCooldown();
+                    return true;
+                }
+                else
+                {
+                    ICBMClassic.logger().warn("TileEmpTower( DIM: " + world.provider.getDimension() + ", " + getPos() + ") EMP did not trigger, likely was blocked.");
+                    //TODO display some info to player to explain why blast failed and more detailed debug
+                }
             }
         }
         return false;
