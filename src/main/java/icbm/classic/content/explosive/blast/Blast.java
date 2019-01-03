@@ -8,6 +8,7 @@ import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveHandler;
 import icbm.classic.content.explosive.thread.ThreadExplosion;
 import icbm.classic.lib.transform.vector.Location;

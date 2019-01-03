@@ -40,8 +40,11 @@ public enum Explosives implements IStringSerializable
     /* 5  */ANVIL("anvil", EnumTier.ONE,
             () -> new BlastShrapnel().setAnvil().setBlastSize(25)),
 
-    /* 6  */REPLUSIVE(new ExRepulsive("repulsive", EnumTier.ONE)),
-    /* 7  */ATTRACTIVE(new ExRepulsive("attractive", EnumTier.ONE)),
+    /* 6  */REPLUSIVE("repulsive", EnumTier.ONE,
+            () -> new BlastTNT().setDestroyItems().setPushType(2).setBlastSize(2)), //TODO .setFuseTime(120)
+
+    /* 7  */ATTRACTIVE("attractive", EnumTier.ONE,
+            () -> new BlastTNT().setDestroyItems().setPushType(1).setBlastSize(2)), //TODO .setFuseTime(120)
 
     //=================== Tier 2
     /* 8  */FRAGMENTATION("fragmentation", EnumTier.TWO,
@@ -51,13 +54,20 @@ public enum Explosives implements IStringSerializable
             () -> new BlastChemical(20 * 30, false).setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20)),
 
     /* 10 */SONIC(new ExSonic("sonic", EnumTier.TWO)),
+
     /* 11 */BREACHING(new ExBreaching()),
+
     /* 12 */REJUVENATION(new ExRejuvenation()),
-    /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO, () -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
+
+    /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO,
+            () -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
+
     /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)),
 
     //=================== Tier 3
-    /* 15 */NUCLEAR("nuclear", EnumTier.THREE, () -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50)),
+    /* 15 */NUCLEAR("nuclear", EnumTier.THREE,
+            () -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50)),
+
     /* 16 */EMP(new ExEMP()),
     /* 17 */EXOTHERMIC(new ExExothermic()),
     /* 18 */ENDOTHERMIC(new ExEndothermic()),
