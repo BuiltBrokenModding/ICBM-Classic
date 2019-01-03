@@ -188,13 +188,14 @@ public abstract class Blast extends Explosion implements IBlast
      * @param posY
      * @param posZ
      */
-    public void setPosition(double posX, double posY, double posZ)
+    public Blast setPosition(double posX, double posY, double posZ)
     {
         this.x = posX;
         this.y = posY;
         this.z = posZ;
         location = new Location(world(), posX, posY, posZ);
         //TODO super contains a vec3 also called position, we need to set that value instead of overriding the return
+        return this;
     }
 
     @Override
@@ -513,6 +514,12 @@ public abstract class Blast extends Explosion implements IBlast
     public Blast scale(float scale)
     {
         this.size *= scale;
+        return this;
+    }
+
+    protected Blast setWorld(World world)
+    {
+        this.world = world;
         return this;
     }
 }

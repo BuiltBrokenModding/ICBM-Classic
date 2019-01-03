@@ -10,11 +10,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Explosion extends Explosive
 {
+
     private final Supplier<Blast> factory;
 
     protected Explosion(String name, EnumTier tier)
@@ -32,7 +32,7 @@ public class Explosion extends Explosive
     @Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
-        if(factory != null)
+        if (factory != null)
         {
             createNew(world, pos, entity, scale).runBlast();
         }
@@ -40,7 +40,7 @@ public class Explosion extends Explosive
 
     public Blast createNew(World world, BlockPos pos, Entity entity, float scale)
     {
-        if(factory != null)
+        if (factory != null)
         {
             Blast blast = factory.get();
             blast.world = world; //TODO create set method
@@ -53,17 +53,21 @@ public class Explosion extends Explosive
         return null;
     }
 
-    /** Called when launched. */
-    public void launch(EntityMissile missileObj)
+    /**
+     * Called when launched.
+     */
+    public void launch(EntityMissile missileObj) //TODO move to interface
     {
     }
 
-    /** Called every tick while flying. */
-    public void update(EntityMissile missileObj)
+    /**
+     * Called every tick while flying.
+     */
+    public void update(EntityMissile missileObj) //TODO move to interface
     {
     }
 
-    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer, EnumHand hand)
+    public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer, EnumHand hand) //TODO move to interface
     {
         return false;
     }
@@ -73,7 +77,7 @@ public class Explosion extends Explosive
      *
      * @return
      */
-    public boolean isCruise()
+    public boolean isCruise()  //TODO move to interface, or remove
     {
         return true;
     }

@@ -47,12 +47,6 @@ public abstract class Explosive implements IExplosive
 
     }
 
-    //@Override
-    //public final int getID()
-    //{
-    //    return ExplosiveRegistry.getID(this.getTranslationKey());
-    //}
-
 
     public String getTranslationKey()
     {
