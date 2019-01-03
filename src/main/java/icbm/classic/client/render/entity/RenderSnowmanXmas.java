@@ -28,8 +28,8 @@ public class RenderSnowmanXmas extends RenderLiving<EntityXmasSnowman>
     }
 
     @Override
-    public ModelSnowMan getMainModel()
+    public ModelSnowmanXmas getMainModel()
     {
-        return (ModelSnowMan) super.getMainModel();
+        return (ModelSnowmanXmas) super.getMainModel();
     }
 }
