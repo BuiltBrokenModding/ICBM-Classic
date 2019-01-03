@@ -1,6 +1,8 @@
 package icbm.classic.content.explosive.handlers;
 
-import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.prefab.tile.EnumTier;
@@ -10,12 +12,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.function.Supplier;
-
 public class Explosion extends Explosive
 {
-
-    private final Supplier<Blast> factory;
+    private final IBlastFactory factory;
 
     protected Explosion(String name, EnumTier tier)
     {
@@ -23,7 +22,7 @@ public class Explosion extends Explosive
         factory = null;
     }
 
-    public Explosion(String name, EnumTier tier, Supplier<Blast> factory)
+    public Explosion(String name, EnumTier tier, IBlastFactory factory)
     {
         super(name, tier);
         this.factory = factory;
@@ -38,17 +37,17 @@ public class Explosion extends Explosive
         }
     }
 
-    public Blast createNew(World world, BlockPos pos, Entity entity, float scale)
+    public IBlast createNew(World world, BlockPos pos, Entity entity, float scale)
     {
         if (factory != null)
         {
-            Blast blast = factory.get();
-            blast.world = world; //TODO create set method
-            blast.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-            blast.scale(scale);
-            blast.exploder = entity;
+            IBlastInit blast = factory.createNewBlast();
+            blast.setBlastWorld(world); //TODO create set method
+            blast.setBlastPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+            blast.scaleBlast(scale);
+            blast.setBlastSource(entity);
 
-            return blast;
+            return blast.buildBlast();
         }
         return null;
     }

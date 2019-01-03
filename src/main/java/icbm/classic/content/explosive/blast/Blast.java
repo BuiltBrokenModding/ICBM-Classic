@@ -1,7 +1,9 @@
 package icbm.classic.content.explosive.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.events.BlastBuildEvent;
+import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.config.ConfigDebug;
@@ -23,6 +25,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -32,7 +35,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Prefab for any Explosion/Blast object created
  */
-public abstract class Blast extends Explosion implements IBlast
+public abstract class Blast extends Explosion implements IBlastInit
 {
 
     //Thread stuff
@@ -60,12 +63,14 @@ public abstract class Blast extends Explosion implements IBlast
 
     private boolean preExplode = false;
 
+    private boolean hasBuilt = false;
+
     /**
      * Only use the default if you plan to init required data
      */
     public Blast()
     {
-        super(null, null,0, 0, 0, 0, false, false);
+        super(null, null, 0, 0, 0, 0, false, false);
 
     }
 
@@ -221,15 +226,13 @@ public abstract class Blast extends Explosion implements IBlast
         ICBMClassic.logger().error("Blast#doExplosionB(" + par1 + ") -> Something called the vanilla explosion method. This is not a supported behavior for ICBM explosions. Blast: " + this, new RuntimeException());
     }
 
-    /**
-     * Called to trigger the explosion
-     */
-    public void runBlast()
+    @Override
+    public BlastState runBlast()
     {
         //Forge event, allows for interaction and canceling the explosion
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this))
         {
-            return;
+            return BlastState.FORGE_EVENT_CANCEL;
         }
 
         //Play audio to confirm explosion triggered
@@ -253,6 +256,8 @@ public abstract class Blast extends Explosion implements IBlast
             debugEx("Blast#explode() -> Triggering full explosion, Blast: " + this);
             doRunBlast();
         }
+
+        return BlastState.TRIGGERED;
     }
 
     protected void doRunBlast()
@@ -505,21 +510,67 @@ public abstract class Blast extends Explosion implements IBlast
         }
     }
 
-    public Blast setPower(float power)
+    //================================================
+    //=====             Properties              ======
+    //================================================
+
+    @Override
+    public IBlastInit setBlastSource(Entity entity)
     {
-        this.size = power;
+        checkBuilt();
+        this.exploder = entity;
         return this;
     }
 
-    public Blast scale(float scale)
+    @Override
+    public Blast setBlastSize(double power)
     {
+        checkBuilt();
+        this.size = (float) power;
+        return this;
+    }
+
+    @Override
+    public Blast scaleBlast(double scale)
+    {
+        checkBuilt();
         this.size *= scale;
         return this;
     }
 
-    protected Blast setWorld(World world)
+    @Override
+    public Blast setBlastWorld(World world)
     {
+        checkBuilt();
         this.world = world;
+        return this;
+    }
+
+    @Override
+    public Blast setBlastPosition(double posX, double posY, double posZ)
+    {
+        checkBuilt();
+        setPosition(posX, posY, posZ);
+        return this;
+    }
+
+    private final void checkBuilt()
+    {
+        if (hasBuilt)
+        {
+            throw new RuntimeException("Can not init properties of a blast after it has built");
+        }
+    }
+
+    @Override
+    public Blast buildBlast()
+    {
+        if (hasBuilt)
+        {
+            throw new RuntimeException("Blast has already been built");
+        }
+        MinecraftForge.EVENT_BUS.post(new BlastBuildEvent(this));
+        hasBuilt = true;
         return this;
     }
 }

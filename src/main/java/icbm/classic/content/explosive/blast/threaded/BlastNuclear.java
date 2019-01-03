@@ -45,9 +45,10 @@ public class BlastNuclear extends BlastThreaded
         return this;
     }
 
-    public BlastNuclear scale(float scale)
+    @Override
+    public BlastNuclear scaleBlast(double scale)
     {
-        super.scale(scale);
+        super.scaleBlast(scale);
         this.energy *= scale;
         return this;
     }
