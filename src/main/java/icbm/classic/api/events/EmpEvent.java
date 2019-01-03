@@ -14,58 +14,12 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public abstract class EmpEvent extends Event
+public abstract class EmpEvent extends BlastEvent
 {
-    /** EMP blast that triggered the event */
-    public final IBlast emp_blast;
 
-    public EmpEvent(IBlast emp_blast)
+    public EmpEvent(IBlast blast)
     {
-        this.emp_blast = emp_blast;
-    }
-
-    /**
-     * Source of the blast.
-     */
-    public World world()
-    {
-        return emp_blast.world();
-    }
-
-    /**
-     * Source of the blast.
-     */
-    public double x()
-    {
-        return emp_blast.x();
-    }
-
-    /**
-     * Source of the blast.
-     */
-    public double y()
-    {
-        return emp_blast.y();
-    }
-
-    /**
-     * Source of the blast.
-     */
-    public double z()
-    {
-        return emp_blast.z();
-    }
-
-    /**
-     * Source of the blast.
-     * <p>
-     * Normally a Missile, Grenade, or Minecraft
-     *
-     * @return entity, can be null in some cases
-     */
-    public Entity getSourceEntity()
-    {
-        return emp_blast.getBlastSource();
+        super(blast);
     }
 
     /**
