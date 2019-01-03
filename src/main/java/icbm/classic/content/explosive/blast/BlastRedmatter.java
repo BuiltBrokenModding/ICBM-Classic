@@ -284,7 +284,7 @@ public class BlastRedmatter extends Blast
                     this.controller.setDead();
 
                     //Create new to avoid doing packet syncing
-                    new BlastRedmatter(world(), entity, location.x(), location.y(), location.z(), radiusNew).runBlast();
+                    new BlastRedmatter().setBlastSize(radiusNew).runBlast();
                 }
                 //Kill explosion entity
                 ((EntityExplosion) entity).getBlast().isAlive = false;
