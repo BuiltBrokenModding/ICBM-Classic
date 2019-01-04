@@ -1,5 +1,7 @@
 package icbm.classic;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.ExplosiveRegistryEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
@@ -7,6 +9,7 @@ import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.reg.ExplosiveRegistry;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
@@ -84,6 +87,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -424,6 +428,17 @@ public final class ICBMClassic
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
+
+        //Load data
+        ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
+        ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
+        explosiveRegistry.loadReg(new File(event.getModConfigurationDirectory(), "icbmclassic/explosive_reg.json"));
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
+
+        //Save registry, at this point everything should be registered
+        explosiveRegistry.saveReg();
     }
 
     @Mod.EventHandler

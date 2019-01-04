@@ -1,6 +1,7 @@
 package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
@@ -12,6 +13,7 @@ import net.minecraft.block.state.IBlockState;
  */
 public final class ICBMClassicAPI
 {
+    public static IExplosiveRegistry EXPLOSIVE_REGISTRY;
     /**
      * Called to register an EMP handler for the {@link Block}
      * and related {@link net.minecraft.block.state.IBlockState}
