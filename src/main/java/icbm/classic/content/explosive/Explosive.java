@@ -46,36 +46,6 @@ public abstract class Explosive implements IExplosive
     }
 
 
-    public String getTranslationKey()
-    {
-        return this.nameID;
-    }
-
-
-    public String getExplosiveName()
-    {
-        return LanguageUtility.getLocal("icbm.explosive." + this.nameID + ".name");
-    }
-
-
-    public String getGrenadeName()
-    {
-        return LanguageUtility.getLocal("icbm.grenade." + this.nameID + ".name");
-    }
-
-
-    public String getMissileName()
-    {
-        return LanguageUtility.getLocal("icbm.missile." + this.nameID + ".name");
-    }
-
-
-    public String getMinecartName()
-    {
-        return LanguageUtility.getLocal("icbm.minecart." + this.nameID + ".name");
-    }
-
-
     public EnumTier getTier()
     {
         return this.tier;

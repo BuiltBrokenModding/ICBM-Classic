@@ -1,4 +1,4 @@
-package icbm.classic.api.reg;
+package icbm.classic.api.reg.content;
 
 import net.minecraft.util.ResourceLocation;
 

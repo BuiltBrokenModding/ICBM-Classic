@@ -1,8 +1,8 @@
 package icbm.classic;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.ExplosiveRegistryEvent;
-import icbm.classic.api.reg.ExplosiveRegistryInitEvent;
+import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
+import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;

@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
-import icbm.classic.api.reg.IExplosiveContentRegistry;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;

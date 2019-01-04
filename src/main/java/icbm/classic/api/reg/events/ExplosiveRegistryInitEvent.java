@@ -1,5 +1,7 @@
-package icbm.classic.api.reg;
+package icbm.classic.api.reg.events;
 
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
+import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.Event;
 

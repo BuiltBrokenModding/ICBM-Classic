@@ -1,9 +1,11 @@
-package icbm.classic.api.reg;
+package icbm.classic.api.reg.events;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
+import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.Event;
 

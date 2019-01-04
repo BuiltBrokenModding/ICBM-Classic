@@ -2,6 +2,7 @@ package icbm.classic.api.reg;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collection;

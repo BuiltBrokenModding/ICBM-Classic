@@ -2,6 +2,7 @@ package icbm.classic.api.reg;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -46,6 +47,23 @@ public interface IExplosiveData
      */
     @Nullable
     EnumTier getTier();
+
+    /**
+     * Checks if the explosive is enabled. Users
+     * can disable explosives in the configs. As
+     * well other mods can disable explosives
+     * to allow items to still exist but functionality
+     * to be switched to a new version.
+     *
+     * @return true if enabled
+     */
+    boolean isEnabled();
+
+    /**
+     * Sets the enable status of
+     * @param b
+     */
+    void setEnabled(boolean b);
 
     /**
      * Called when this explosive is register to a content handler

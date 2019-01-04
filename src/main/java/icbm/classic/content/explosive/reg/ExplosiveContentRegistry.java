@@ -1,7 +1,7 @@
 package icbm.classic.content.explosive.reg;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveContentRegistry;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.util.ResourceLocation;
 

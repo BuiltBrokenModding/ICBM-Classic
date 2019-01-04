@@ -1,7 +1,7 @@
 package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.reg.IExplosiveContentRegistry;
+import icbm.classic.api.reg.content.*;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -24,10 +24,10 @@ public final class ICBMClassicAPI
      */
     public static IExplosiveRegistry EXPLOSIVE_REGISTRY;
 
-    public static IExplosiveContentRegistry EX_MISSILE_REGISTRY;
-    public static IExplosiveContentRegistry EX_GRENADE_REGISTRY;
-    public static IExplosiveContentRegistry EX_BLOCK_REGISTRY;
-    public static IExplosiveContentRegistry EX_MINECRT_REGISTRY;
+    public static IExMissileRegistry EX_MISSILE_REGISTRY;
+    public static IExGrenadeRegistry EX_GRENADE_REGISTRY;
+    public static IExBlockRegistry EX_BLOCK_REGISTRY;
+    public static IExMinecartRegistry EX_MINECRT_REGISTRY;
 
 
     //=========================
