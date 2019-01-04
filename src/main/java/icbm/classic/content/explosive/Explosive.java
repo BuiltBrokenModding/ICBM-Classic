@@ -30,8 +30,6 @@ public abstract class Explosive implements IExplosive
     protected boolean hasGrenade;
     protected boolean hasMissile;
 
-    public float missileRenderScale = 1f; //0.00625f
-
     protected Explosive(String name, EnumTier tier)
     {
         this.nameID = name;

@@ -4,6 +4,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * API reference class for ICBM-Classic mod
@@ -13,21 +14,47 @@ import net.minecraft.block.state.IBlockState;
  */
 public final class ICBMClassicAPI
 {
+
+    //=========================
+    //=== Registry ============
+    //=========================
+    /**
+     * Main handler for explosives, do not override as this will break the mod
+     */
     public static IExplosiveRegistry EXPLOSIVE_REGISTRY;
+
+
+    //=========================
+    //=== References ==========
+    //=========================
+    public static final String ID = "icbmclassic";
+
+
+    //=========================
+    //=== Content keys ========
+    //=========================
+    public static final ResourceLocation EX_MISSILE = new ResourceLocation(ID, "ex_missile");
+    public static final ResourceLocation EX_GRENADE = new ResourceLocation(ID, "ex_grenade");
+    public static final ResourceLocation EX_BLOCK = new ResourceLocation(ID, "ex_block");
+    public static final ResourceLocation EX_MINECART = new ResourceLocation(ID, "ex_minecart");
+
+
     /**
      * Called to register an EMP handler for the {@link Block}
      * and related {@link net.minecraft.block.state.IBlockState}
-     *
+     * <p>
      * Allows several receiver to be registered per block.
      *
      * @param block    - block
      * @param receiver - receiver
      */
+    @Deprecated //Will be placed in a registry/handler
     public void registerBlockEmpHandler(Block block, IEMPReceiver receiver)
     {
         //TODO implement
     }
 
+    @Deprecated //Will be placed in a registry/handler
     public static boolean hasEmpHandler(IBlockState iBlockState)
     {
         return false; //TODO implement

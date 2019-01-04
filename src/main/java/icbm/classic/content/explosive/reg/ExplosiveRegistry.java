@@ -1,19 +1,20 @@
 package icbm.classic.content.explosive.reg;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.gson.*;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.content.explosive.Explosives;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -21,19 +22,30 @@ import java.util.Map;
  */
 public class ExplosiveRegistry implements IExplosiveRegistry
 {
-    public final HashMap<ResourceLocation, ExplosiveData> explosiveBuilders = new HashMap();
+
+    //Map of explosion id to data
+    public final HashMap<ResourceLocation, ExplosiveData> explosiveData = new HashMap();
+
+    //Map of id to name, and its reverse
     public final Map<Integer, ResourceLocation> id_to_name = new HashMap();
     public final Map<ResourceLocation, Integer> name_to_id = new HashMap();
 
+    //Content types to set of IDs enabled for content
+    public final Map<ResourceLocation, Set<Integer>> contentToIds = new HashMap();
+
+
+    //Ids
     private int nextID = Explosives.values().length;
 
+    //Save file
     private File saveFile;
 
+    @Override
     public ExplosiveData register(ResourceLocation name, IBlastFactory blastFactory)
     {
         int assignedID;
 
-        if(name_to_id.containsKey(name))
+        if (name_to_id.containsKey(name))
         {
             assignedID = name_to_id.get(nextID);
         }
@@ -51,18 +63,58 @@ public class ExplosiveRegistry implements IExplosiveRegistry
         setReg(name, assignedID);
 
         //Store factory
-        explosiveBuilders.put(name, new ExplosiveData(name, assignedID).blastFactory(blastFactory));
+        explosiveData.put(name, new ExplosiveData(name, assignedID).blastFactory(blastFactory));
 
         //Return data
-        return explosiveBuilders.get(name);
+        return explosiveData.get(name);
     }
 
-    public void setReg(ResourceLocation name, int id)
+    @Override
+    public void enableContent(ResourceLocation contentID, ResourceLocation explosiveID)
+    {
+        final ExplosiveData data = explosiveData.get(explosiveID);
+        if (data != null)
+        {
+            //Add to enable list on object itself
+            data.enabledContent.add(contentID);
+
+            //Add ID to set of ids
+            if (contentToIds.get(contentID) == null)
+            {
+                contentToIds.put(contentID, new HashSet());
+            }
+            contentToIds.get(contentID).add(data.id);
+        }
+    }
+
+    @Override
+    public IExplosiveData getExplosiveData(ResourceLocation name)
+    {
+        return explosiveData.get(name);
+    }
+
+    @Override
+    public IExplosiveData getExplosiveData(int id)
+    {
+        final ResourceLocation name = id_to_name.get(id);
+        if (name != null)
+        {
+            return explosiveData.get(name);
+        }
+        return null;
+    }
+
+    @Override
+    public Set<Integer> getExplosivesEnabledForContent(ResourceLocation contentID)
+    {
+        return contentToIds.get(contentID);
+    }
+
+    protected void setReg(ResourceLocation name, int id)
     {
         id_to_name.put(id, name);
         name_to_id.put(name, id);
     }
-
 
     public void loadReg(final File file)
     {

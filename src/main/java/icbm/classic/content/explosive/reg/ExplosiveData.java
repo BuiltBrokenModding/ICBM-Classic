@@ -4,6 +4,9 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Handles storing data about an explosive in the {@link ExplosiveRegistry}
  *
@@ -16,6 +19,8 @@ public class ExplosiveData implements IExplosiveData
     public final int id;
 
     public IBlastFactory blastCreationFactory;
+
+    public final Set<ResourceLocation> enabledContent = new HashSet();
 
     public ExplosiveData(ResourceLocation regName, int id)
     {

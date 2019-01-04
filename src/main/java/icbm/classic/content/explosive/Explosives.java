@@ -114,6 +114,10 @@ public enum Explosives implements IStringSerializable
     /* 30 */XMAS_SKELETON("xmas.skeleton", EnumTier.TWO,
             () -> new BlastXmas(false).setBlastSize(5));
 
+    //TODO use a datafixer to flatten missiles into (ex, homing, anti, cluster)
+    //https://github.com/RS485/LogisticsPipes/blob/dev-mc1122/common/logisticspipes/datafixer/DataFixerSolidBlockItems.java
+    //https://github.com/RS485/LogisticsPipes/blob/dev-mc1122/common/logisticspipes/datafixer/LPDataFixer.java#L17-L19
+
     public final Explosive handler;
 
     Explosives(Explosive handler)
