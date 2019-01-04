@@ -2,7 +2,7 @@ package icbm.classic.content.explosive.handlers;
 
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.explosive.blast.BlastExothermic;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;

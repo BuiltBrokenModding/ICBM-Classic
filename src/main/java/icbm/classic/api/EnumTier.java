@@ -1,4 +1,4 @@
-package icbm.classic.prefab.tile;
+package icbm.classic.api;
 
 import net.minecraft.util.IStringSerializable;
 

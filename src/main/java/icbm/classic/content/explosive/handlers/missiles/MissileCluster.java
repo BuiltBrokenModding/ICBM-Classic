@@ -7,7 +7,7 @@ import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.blast.BlastTNT;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

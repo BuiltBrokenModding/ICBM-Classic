@@ -1,6 +1,8 @@
 package icbm.classic.content.explosive.reg;
 
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.reg.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.util.ResourceLocation;
 
@@ -15,17 +17,20 @@ import java.util.Set;
  */
 public class ExplosiveData implements IExplosiveData
 {
+
     public final ResourceLocation regName;
     public final int id;
+    public final EnumTier tier;
 
     public IBlastFactory blastCreationFactory;
 
     public final Set<ResourceLocation> enabledContent = new HashSet();
 
-    public ExplosiveData(ResourceLocation regName, int id)
+    public ExplosiveData(ResourceLocation regName, int id, EnumTier tier)
     {
         this.regName = regName;
         this.id = id;
+        this.tier = tier;
     }
 
     public ExplosiveData blastFactory(IBlastFactory factory)
@@ -50,5 +55,18 @@ public class ExplosiveData implements IExplosiveData
     public IBlastFactory getBlastFactory()
     {
         return blastCreationFactory;
+    }
+
+    @Override
+    public EnumTier getTier()
+    {
+        return tier;
+    }
+
+    @Override
+    public boolean onEnableContent(ResourceLocation contentID, IExplosiveContentRegistry registry)
+    {
+        enabledContent.add(contentID);
+        return true;
     }
 }

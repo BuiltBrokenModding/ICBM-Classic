@@ -8,7 +8,7 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.prefab.tile.BlockICBM;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;

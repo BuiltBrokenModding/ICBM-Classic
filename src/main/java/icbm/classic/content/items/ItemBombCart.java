@@ -6,7 +6,7 @@ import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;

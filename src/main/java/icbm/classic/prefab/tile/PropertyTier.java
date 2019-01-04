@@ -1,6 +1,7 @@
 package icbm.classic.prefab.tile;
 
 import com.google.common.collect.Lists;
+import icbm.classic.api.EnumTier;
 import net.minecraft.block.properties.PropertyEnum;
 
 /**

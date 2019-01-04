@@ -8,7 +8,7 @@ import icbm.classic.content.explosive.blast.threaded.BlastAntimatter;
 import icbm.classic.content.explosive.blast.threaded.BlastNuclear;
 import icbm.classic.content.explosive.handlers.*;
 import icbm.classic.content.explosive.handlers.missiles.*;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 

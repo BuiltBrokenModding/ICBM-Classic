@@ -3,7 +3,7 @@ package icbm.classic.content.machines.launcher.base;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.content.multiblock.MultiBlockHelper;
 import icbm.classic.prefab.tile.BlockICBM;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;

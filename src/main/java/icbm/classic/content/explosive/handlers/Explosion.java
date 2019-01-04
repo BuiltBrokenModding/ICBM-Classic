@@ -5,7 +5,7 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
@@ -39,10 +39,10 @@ public class Explosion extends Explosive
 
     public IBlast createNew(World world, BlockPos pos, Entity entity, float scale)
     {
-        if (factory != null)
+        if (factory != null) //TODO convert to handler interface
         {
             IBlastInit blast = factory.createNewBlast();
-            blast.setBlastWorld(world); //TODO create set method
+            blast.setBlastWorld(world);
             blast.setBlastPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             blast.scaleBlast(scale);
             blast.setBlastSource(entity);

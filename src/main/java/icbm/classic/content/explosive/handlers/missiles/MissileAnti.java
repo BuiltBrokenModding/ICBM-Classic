@@ -4,7 +4,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

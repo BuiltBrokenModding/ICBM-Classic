@@ -2,6 +2,7 @@ package icbm.classic;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.ExplosiveRegistryEvent;
+import icbm.classic.api.reg.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
@@ -434,7 +435,8 @@ public final class ICBMClassic
         ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
         explosiveRegistry.loadReg(new File(event.getModConfigurationDirectory(), "icbmclassic/explosive_reg.json"));
 
-        //Fire registry event
+        //Fire registry events
+        MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryInitEvent(explosiveRegistry));
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
 
         //Save registry, at this point everything should be registered

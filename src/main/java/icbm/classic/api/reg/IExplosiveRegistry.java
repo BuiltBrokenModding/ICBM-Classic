@@ -1,9 +1,10 @@
 package icbm.classic.api.reg;
 
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -16,10 +17,11 @@ public interface IExplosiveRegistry
      * Registers a new blast factory and explosion data instance
      *
      * @param name         - key to register with
+     * @param tier         - optional, defines the tier of the explosive
      * @param blastFactory - factory to use to make the blast
      * @return data created
      */
-    IExplosiveData register(ResourceLocation name, IBlastFactory blastFactory);
+    IExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory);
 
     /**
      * Gets the explosive data for the registry name
@@ -38,18 +40,26 @@ public interface IExplosiveRegistry
     IExplosiveData getExplosiveData(int id);
 
     /**
-     * Set of all ids enabled for the content
+     * All content registries that use the explosive registry.
      *
-     * @param contentID - content ID
-     * @return set of enabled explosives
+     * @return
      */
-    Set<Integer> getExplosivesEnabledForContent(ResourceLocation contentID);
+    Collection<IExplosiveContentRegistry> getContentRegistries();
 
     /**
-     * Enables content type for the explosion
+     * Gets the content registry for the ID
      *
-     * @param contentID   - ID of the content, see {@link icbm.classic.api.ICBMClassicAPI} for built in types
-     * @param explosiveID - registry name of the explosion
+     * @param contentID
+     * @return
      */
-    void enableContent(ResourceLocation contentID, ResourceLocation explosiveID);
+    IExplosiveContentRegistry getContentRegistry(ResourceLocation contentID);
+
+    /**
+     * Registers a new content type for explosives to exist as in game
+     *
+     * @param name     - unique ID
+     * @param registry - handler for registering
+     */
+    void registerContentRegistry(ResourceLocation name, IExplosiveContentRegistry registry);
+
 }

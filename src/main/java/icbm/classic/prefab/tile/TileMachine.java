@@ -4,6 +4,7 @@ import com.builtbroken.jlib.data.network.IByteBufWriter;
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.config.ConfigIC2;
 import icbm.classic.lib.IGuiTile;

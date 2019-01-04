@@ -4,7 +4,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.client.models.ModelSMine;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.blast.BlastMine;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.EnumTier;
 import icbm.classic.client.models.ModelICBM;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
