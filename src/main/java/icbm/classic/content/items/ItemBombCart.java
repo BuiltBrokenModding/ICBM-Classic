@@ -1,12 +1,14 @@
 package icbm.classic.content.items;
 
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.EnumTier;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
-import icbm.classic.api.EnumTier;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
@@ -53,7 +55,7 @@ public class ItemBombCart extends ItemICBMBase
 
             if (!worldIn.isRemote)
             {
-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(worldIn, pos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase) iblockstate.getBlock()).getRailDirection(worldIn, pos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
                 double d0 = 0.0D;
 
                 if (blockrailbase$enumraildirection.isAscending())
@@ -61,7 +63,7 @@ public class ItemBombCart extends ItemICBMBase
                     d0 = 0.5D;
                 }
 
-                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, Explosives.get(itemstack.getItemDamage()));
+                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.0625D + d0, (double) pos.getZ() + 0.5D, Explosives.get(itemstack.getItemDamage()));
 
                 if (itemstack.hasDisplayName())
                 {
@@ -85,7 +87,12 @@ public class ItemBombCart extends ItemICBMBase
     @Override
     public String getTranslationKey(ItemStack itemstack)
     {
-        return "icbm.minecart." + Explosives.get(itemstack.getItemDamage()).handler.getTranslationKey();
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
+        if (data != null)
+        {
+            return super.getTranslationKey() + data.getRegistryName();
+        }
+        return super.getTranslationKey(itemstack);
     }
 
     @Override

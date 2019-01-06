@@ -24,80 +24,80 @@ import java.util.List;
 public enum Explosives implements IStringSerializable
 {
     /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE,
-            () -> new BlastTNT().setBlastSize(6)).setFuseTime(1)), //TODO convert fully
+            (nbt) -> new BlastTNT().setBlastSize(6)).setFuseTime(1)), //TODO convert fully
 
     /* 1  */SHRAPNEL("shrapnel", EnumTier.ONE,
-            () -> new BlastShrapnel().setFlaming().setBlastSize(30)),
+            (nbt) -> new BlastShrapnel().setFlaming().setBlastSize(30)),
 
     /* 2  */INCENDIARY(new ExIncendiary("incendiary", EnumTier.ONE)), //TODO convert
 
     /* 3  */DEBLITATION("debilitation", EnumTier.ONE,
-            () -> new BlastChemical(20 * 30, false)
+            (nbt) -> new BlastChemical(20 * 30, false)
                     .setConfuse().setBlastSize(20)),
 
     /* 4  */CHEMICAL("chemical", EnumTier.ONE,
-            () -> new BlastChemical(20 * 30, false)
+            (nbt) -> new BlastChemical(20 * 30, false)
                     .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20)),
 
     /* 5  */ANVIL("anvil", EnumTier.ONE,
-            () -> new BlastShrapnel().setAnvil().setBlastSize(25)),
+            (nbt) -> new BlastShrapnel().setAnvil().setBlastSize(25)),
 
     /* 6  */REPLUSIVE("repulsive", EnumTier.ONE,
-            () -> new BlastTNT().setDestroyItems().setPushType(2).setBlastSize(2)), //TODO .setFuseTime(120)
+            (nbt) -> new BlastTNT().setDestroyItems().setPushType(2).setBlastSize(2)), //TODO .setFuseTime(120)
 
     /* 7  */ATTRACTIVE("attractive", EnumTier.ONE,
-            () -> new BlastTNT().setDestroyItems().setPushType(1).setBlastSize(2)), //TODO .setFuseTime(120)
+            (nbt) -> new BlastTNT().setDestroyItems().setPushType(1).setBlastSize(2)), //TODO .setFuseTime(120)
 
     //=================== Tier 2
     /* 8  */FRAGMENTATION("fragmentation", EnumTier.TWO,
-            () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15)),
+            (nbt) -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15)),
 
     /* 9  */CONTAGIOUS("contagious", EnumTier.TWO,
-            () -> new BlastChemical(20 * 30, false)
+            (nbt) -> new BlastChemical(20 * 30, false)
                     .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20)),
 
     /* 10 */SONIC("sonic", EnumTier.TWO,
-            () -> new BlastSonic(30).setBlastSize(15)),
+            (nbt) -> new BlastSonic(30).setBlastSize(15)),
 
     /* 11 */BREACHING("breaching", EnumTier.TWO,
-            () -> new BlastBreech(7).setBlastSize(2.5)), //TODO this.setFuseTime(40);
+            (nbt) -> new BlastBreech(7).setBlastSize(2.5)), //TODO this.setFuseTime(40);
 
     /* 12 */REJUVENATION("rejuvenation", EnumTier.TWO,
-            () -> new BlastRegen().setBlastSize(16)),
+            (nbt) -> new BlastRegen().setBlastSize(16)),
 
     /* 13 */THERMOBARIC("thermobaric", EnumTier.TWO,
-            () -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
+            (nbt) -> new BlastNuclear().setEnergy(45).setBlastSize(30)),
 
     /* 14 */SMINE(new ExSMine("sMine", EnumTier.TWO)), //TODO convert, replace model with JSON and custom entity
 
     //=================== Tier 3
     /* 15 */NUCLEAR("nuclear", EnumTier.THREE,
-            () -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50)),
+            (nbt) -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50)),
 
     /* 16 */EMP("emp", EnumTier.THREE,
-            () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50)),
+            (nbt) -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50)),
 
     /* 17 */EXOTHERMIC(new ExExothermic()), //TODO convert
 
     /* 18 */ENDOTHERMIC("endothermic", EnumTier.THREE,
-            () -> new BlastEndothermic().setBlastSize(50)), //TODO add custom fuze, exo has one but not endo
+            (nbt) -> new BlastEndothermic().setBlastSize(50)), //TODO add custom fuze, exo has one but not endo
 
     /* 19 */ANTI_GRAV("antiGravitational", EnumTier.THREE,
-            () -> new BlastAntiGravitational().setBlastSize(30)),
+            (nbt) -> new BlastAntiGravitational().setBlastSize(30)),
 
     /* 20 */ENDER(new ExEnder()), //TODO convert, will need event handling... honestly should make a custom block/item for it
 
     /* 21 */HYPERSONIC("hypersonic", EnumTier.THREE,
-            () -> new BlastSonic(35).setShockWave().setBlastSize(20)), //TODO find Missile model
+            (nbt) -> new BlastSonic(35).setShockWave().setBlastSize(20)), //TODO find Missile model
 
     //=================== Tier 4
     /* 22 */ANTIMATTER("antimatter", EnumTier.FOUR,
-            () -> new BlastAntimatter(ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).setBlastSize(ConfigBlast.ANTIMATTER_SIZE)),
+            (nbt) -> new BlastAntimatter(ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).setBlastSize(ConfigBlast.ANTIMATTER_SIZE)),
     //TODO this.setFuseTime(300);
     //TODO add config (disable by default) for alarm audio
 
     /* 23 */REDMATTER("redMatter", EnumTier.FOUR,
-            () -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS)),
+            (nbt) -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS)),
 
 
     //=================== Missiles
@@ -109,10 +109,10 @@ public enum Explosives implements IStringSerializable
 
     //=================== Special
     /* 29 */XMAS_ZOMBIE("xmas.zombie", EnumTier.TWO,
-            () -> new BlastXmas(true).setBlastSize(5)),
+            (nbt) -> new BlastXmas(true).setBlastSize(5)),
 
     /* 30 */XMAS_SKELETON("xmas.skeleton", EnumTier.TWO,
-            () -> new BlastXmas(false).setBlastSize(5));
+            (nbt) -> new BlastXmas(false).setBlastSize(5));
 
     //TODO use a datafixer to flatten missiles into (ex, homing, anti, cluster)
     //https://github.com/RS485/LogisticsPipes/blob/dev-mc1122/common/logisticspipes/datafixer/DataFixerSolidBlockItems.java

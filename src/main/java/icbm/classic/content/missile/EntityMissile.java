@@ -2,10 +2,11 @@ package icbm.classic.content.missile;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.explosion.IExplosiveContainer;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.IMissile;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
@@ -39,7 +40,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 /** @Author - Calclavia */
-public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IExplosiveContainer, IMissile
+public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IMissile
 {
     public static final float MISSILE_SPEED = 2;
     public Explosives explosiveID = Explosives.CONDENSED;
@@ -168,7 +169,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public String getEntityName()
     {
-        return this.explosiveID.handler.getMissileName();
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID.ordinal());
+        if (data != null)
+        {
+            return "icbm.missile." + data.getRegistryName();
+        }
+        return "icbm.missile";
     }
 
     @Override
@@ -725,16 +731,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return this.ticksInAir;
     }
 
-    @Override
     public Explosive getExplosiveType()
     {
         return this.explosiveID.handler;
     }
 
-    @Override
     public NBTTagCompound getExplosiveData()
     {
         return this.nbtData;
     }
-
 }

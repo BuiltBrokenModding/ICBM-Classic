@@ -82,4 +82,20 @@ public class ExplosiveData implements IExplosiveData
         enabledContent.add(contentID);
         return true;
     }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if(object instanceof ExplosiveData)
+        {
+            return ((ExplosiveData) object).id == id;
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(IExplosiveData o)
+    {
+        return Integer.compare(getRegistryID(), o.getRegistryID());
+    }
 }

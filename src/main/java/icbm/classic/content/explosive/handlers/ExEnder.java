@@ -1,14 +1,14 @@
 package icbm.classic.content.explosive.handlers;
 
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
-import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.blast.BlastEnderman;
 import icbm.classic.content.explosive.tile.TileEntityExplosive;
-import icbm.classic.api.EnumTier;
+import icbm.classic.content.missile.EntityMissile;
+import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class ExEnder extends Explosion
@@ -46,7 +45,7 @@ public class ExEnder extends Explosion
 
                         if (!world.isRemote)
                         {
-                            entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getExplosiveName())); //TODO translate
+                            //entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getExplosiveName())); //TODO translate
                         }
 
                         return true;
@@ -73,7 +72,7 @@ public class ExEnder extends Explosion
                     ((Location) link).writeIntNBT(missileObj.nbtData);
                     if (!missileObj.world.isRemote)
                     {
-                        entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getMissileName()));
+                        //entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getMissileName()));
                     }
                     return true;
                 }

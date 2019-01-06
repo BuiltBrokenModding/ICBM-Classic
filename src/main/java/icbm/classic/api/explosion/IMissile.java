@@ -10,7 +10,7 @@ import icbm.classic.lib.transform.vector.Pos;
  * @author Calclavia
  */
 @Deprecated //Will be recoded
-public interface IMissile extends IExplosiveContainer
+public interface IMissile
 {
     /**
      * Called to trigger the missile's explosion logic

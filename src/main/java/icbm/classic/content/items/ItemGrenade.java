@@ -1,5 +1,7 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.prefab.item.ItemICBMBase;
@@ -70,7 +72,12 @@ public class ItemGrenade extends ItemICBMBase
     @Override
     public String getTranslationKey(ItemStack itemstack)
     {
-        return this.getTranslationKey() + "." + Explosives.get(itemstack.getItemDamage()).handler.getTranslationKey();
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
+        if (data != null)
+        {
+            return super.getTranslationKey() + data.getRegistryName();
+        }
+        return super.getTranslationKey(itemstack);
     }
 
     @Override

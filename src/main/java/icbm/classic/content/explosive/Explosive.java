@@ -1,9 +1,8 @@
 package icbm.classic.content.explosive;
 
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.api.EnumTier;
 import icbm.classic.client.models.ModelICBM;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -12,10 +11,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import icbm.classic.api.explosion.IExplosive;
 
 /** The explosive registry class. Used to register explosions. */
-public abstract class Explosive implements IExplosive
+public abstract class Explosive
 {
     /** The unique identification name for this explosive. */
     private String nameID;

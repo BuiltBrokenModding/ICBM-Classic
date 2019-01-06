@@ -104,7 +104,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                 }
 
                 //Create seat if missile
-                if (!getMissileStack().isEmpty() && seat == null)
+                if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
                 {
                     seat = new EntityPlayerSeat(world);
                     seat.host = this;
@@ -273,8 +273,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     //Spawn entity
                     getWorld().spawnEntity(missile);
 
-                    //Grab rider
-                    if (seat != null && seat.getRidingEntity() != null)
+                                     //Grab rider
+                    if (seat != null && seat.getRidingEntity() != null) //TODO add hook to disable riding some missiles
                     {
                         Entity entity = seat.getRidingEntity();
                         seat.getRidingEntity().startRiding(null);

@@ -1,7 +1,9 @@
 package icbm.classic.api.reg.content;
 
+import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,4 +26,8 @@ public interface IExplosiveContentRegistry
      * @param explosiveID - registry name of the explosion
      */
     void enableContent(ResourceLocation explosiveID);
+
+    List<ResourceLocation> getExplosiveNames();
+
+    List<IExplosiveData> getExplosives();
 }

@@ -6,7 +6,12 @@ package icbm.classic.api.explosion;
  */
 public enum BlastState
 {
+    /** Triggered in main thread */
     TRIGGERED,
+    /** Triggered in worker thread */
     THREADING,
-    FORGE_EVENT_CANCEL
+    /** Forge TNT event canceled blast */
+    FORGE_EVENT_CANCEL,
+    /** No blast to trigger */
+    NULL
 }

@@ -30,6 +30,8 @@ public interface IBlast extends IWorldPosition
     /**
      * Called to scale the blast by the given amount.
      *
+     * Not all blasts can be scaled
+     *
      * @param scale
      * @return this
      */

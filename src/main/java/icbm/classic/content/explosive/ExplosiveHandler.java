@@ -1,7 +1,14 @@
 package icbm.classic.content.explosive;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.explosion.IBlastInit;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.explosive.blast.Blast;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -88,5 +95,36 @@ public class ExplosiveHandler
             }
         }
         return removeCount;
+    }
+
+    public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, int blastID, float scale, NBTTagCompound customData)
+    {
+        IBlast blast = createNew(cause, world, x, y, z, blastID, scale, customData);
+        if (blast != null)
+        {
+            return blast.runBlast();
+        }
+        return BlastState.NULL;
+    }
+
+    public static IBlast createNew(Entity cause, World world, double x, double y, double z, int blastID, float scale, NBTTagCompound customData)
+    {
+        final IExplosiveData explosiveData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(blastID);
+        return createNew(cause, world, x, y, z, explosiveData, scale, customData);
+    }
+
+    public static IBlast createNew(Entity cause, World world, double x, double y, double z, IExplosiveData data, float scale, NBTTagCompound customData)
+    {
+        if (data != null && data.getBlastFactory() != null) //TODO add way to hook blast builder to add custom blasts
+        {
+            IBlastInit blast = data.getBlastFactory().createNewBlast();
+            blast.setBlastWorld(world);
+            blast.setBlastPosition(x, y, z);
+            blast.scaleBlast(scale);
+            blast.setBlastSource(cause);
+
+            return blast.buildBlast();
+        }
+        return null;
     }
 }

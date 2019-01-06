@@ -14,7 +14,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import java.util.Iterator;
 import java.util.List;
@@ -121,7 +120,7 @@ public class BlastSonic extends Blast
                             {
                                 if (block == ICBMClassic.blockExplosive)
                                 {
-                                    BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive, 1);
+                                    BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive.getRegistryID(), 1);
                                 }
                                 else
                                 {

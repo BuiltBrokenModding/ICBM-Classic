@@ -41,7 +41,7 @@ public class Explosion extends Explosive
     {
         if (factory != null) //TODO convert to handler interface
         {
-            IBlastInit blast = factory.createNewBlast();
+            IBlastInit blast = factory.createNewBlast(null);
             blast.setBlastWorld(world);
             blast.setBlastPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             blast.scaleBlast(scale);

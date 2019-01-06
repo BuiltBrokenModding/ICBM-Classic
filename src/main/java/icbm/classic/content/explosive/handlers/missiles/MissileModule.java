@@ -12,7 +12,6 @@ public class MissileModule extends Missile
     {
         super("missileModule", EnumTier.ONE);
         this.hasBlock = false;
-        //this.missileModelPath = "missiles/tier1/missile_head_conventional.obj";
     }
 
     @Override

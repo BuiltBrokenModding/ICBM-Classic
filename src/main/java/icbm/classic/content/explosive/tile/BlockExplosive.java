@@ -1,6 +1,8 @@
 package icbm.classic.content.explosive.tile;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.transform.vector.Pos;
@@ -8,7 +10,6 @@ import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,7 +23,6 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
@@ -42,25 +42,30 @@ public class BlockExplosive extends BlockICBM
     @Override
     public int damageDropped(IBlockState state)
     {
-        return state.getValue(EX_PROP).ordinal();
+        return state.getValue(EX_PROP).getRegistryID();
     }
 
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
-        Explosives ex = Explosives.CONDENSED;
+        IExplosiveData explosiveData = null;
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityExplosive)
         {
-            ex = ((TileEntityExplosive) tile).explosive;
+            explosiveData = ((TileEntityExplosive) tile).explosive;
         }
-        return state.withProperty(EX_PROP, ex);
+
+        if (explosiveData != null)
+        {
+            return state.withProperty(EX_PROP, explosiveData);
+        }
+        return state;
     }
 
     @Override
     public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos)
     {
-        return state.getValue(EX_PROP) != Explosives.SMINE;
+        return true;
     }
 
     @Override
@@ -72,13 +77,13 @@ public class BlockExplosive extends BlockICBM
     @Override
     public boolean isTopSolid(IBlockState state)
     {
-        return state.getValue(EX_PROP) != Explosives.SMINE;
+        return true;
     }
 
     @Override
     public boolean isOpaqueCube(IBlockState state)
     {
-        return state.getValue(EX_PROP) != Explosives.SMINE;
+        return true;
     }
 
     @Override
@@ -93,42 +98,11 @@ public class BlockExplosive extends BlockICBM
         return new BlockStateContainer(this, ROTATION_PROP, EX_PROP);
     }
 
-    public static final class PropertyExplosive extends PropertyEnum<Explosives>
-    {
-        public PropertyExplosive()
-        {
-            super("explosive", Explosives.class, Explosives.getBlocksOnly());
-        }
-    }
-
-    /**
-     * Returns a bounding box from the pool of bounding boxes (this means this box can change after
-     * the pool has been cleared to be reused)
-     */
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess world, BlockPos pos)
-    {
-        TileEntity tileEntity = world.getTileEntity(pos);
-
-        if (tileEntity != null)
-        {
-            if (tileEntity instanceof TileEntityExplosive)
-            {
-                if (((TileEntityExplosive) tileEntity).explosive == Explosives.SMINE)
-                {
-                    return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 0.2, pos.getZ() + 1);
-                }
-            }
-        }
-
-        return super.getCollisionBoundingBox(blockState, world, pos);
-    }
-
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
         ItemStack stack = placer.getHeldItem(hand);
-        return getDefaultState().withProperty(ROTATION_PROP, facing).withProperty(EX_PROP, Explosives.get(stack.getItemDamage()));
+        return getDefaultState().withProperty(ROTATION_PROP, facing).withProperty(EX_PROP, ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(stack.getItemDamage()));
     }
 
     /** Called when the block is placed in the world. */
@@ -138,13 +112,13 @@ public class BlockExplosive extends BlockICBM
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEntityExplosive)
         {
-            Explosives ex = Explosives.get(itemStack.getItemDamage());
-            ((TileEntityExplosive) tile).explosive = ex;
+            int explosiveID = itemStack.getItemDamage();
+            ((TileEntityExplosive) tile).explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosiveID);
 
 
             if (world.getRedstonePowerFromNeighbors(pos) > 0)
             {
-                BlockExplosive.triggerExplosive(world, pos, ex, 0);
+                BlockExplosive.triggerExplosive(world, pos, explosiveID, 0);
             }
 
             // Check to see if there is fire nearby.
@@ -156,14 +130,16 @@ public class BlockExplosive extends BlockICBM
 
                 if (blockId == Blocks.FIRE || blockId == Blocks.FLOWING_LAVA || blockId == Blocks.LAVA)
                 {
-                    BlockExplosive.triggerExplosive(world, pos, ex, 2);
+                    BlockExplosive.triggerExplosive(world, pos, explosiveID, 2);
                     break;
                 }
             }
 
             if (entityLiving != null)
             {
-                ICBMClassic.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getName() + " placed " + ex.handler.getExplosiveName() + " in: " + pos);
+                //TODO turn into event and logger
+                ICBMClassic.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getName()
+                        + " placed " + ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosiveID).getRegistryID() + " in: " + pos);
             }
         }
     }
@@ -178,7 +154,7 @@ public class BlockExplosive extends BlockICBM
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEntityExplosive)
         {
-            Explosives explosiveID = ((TileEntityExplosive) tile).explosive;
+            int explosiveID = ((TileEntityExplosive) tile).explosive.getRegistryID();
 
             int power = world.getRedstonePowerFromNeighbors(pos);
             if (power > 0)
@@ -207,29 +183,26 @@ public class BlockExplosive extends BlockICBM
      * 1, exploded, 2 burned)
      */
 
-    public static void triggerExplosive(World world, BlockPos pos, Explosives explosiveID, int causeOfExplosion)
+    public static void triggerExplosive(World world, BlockPos pos, int explosiveID, int causeOfExplosion)
     {
         if (!world.isRemote)
         {
             TileEntity tileEntity = world.getTileEntity(pos);
 
-            if (tileEntity != null)
+            if (tileEntity instanceof TileEntityExplosive)
             {
-                if (tileEntity instanceof TileEntityExplosive)
+                ((TileEntityExplosive) tileEntity).exploding = true;
+                EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), explosiveID, (byte) ((TileEntityExplosive) tileEntity).getDirection().ordinal(), ((TileEntityExplosive) tileEntity).nbtData);
+
+                switch (causeOfExplosion)
                 {
-                    ((TileEntityExplosive) tileEntity).exploding = true;
-                    EntityExplosive eZhaDan = new EntityExplosive(world, new Pos(pos).add(0.5), ((TileEntityExplosive) tileEntity).explosive, (byte) ((TileEntityExplosive) tileEntity).getDirection().ordinal(), ((TileEntityExplosive) tileEntity).nbtData);
-
-                    switch (causeOfExplosion)
-                    {
-                        case 2:
-                            eZhaDan.setFire(100);
-                            break;
-                    }
-
-                    world.spawnEntity(eZhaDan);
-                    world.setBlockToAir(pos);
+                    case 2:
+                        entityExplosive.setFire(100);
+                        break;
                 }
+
+                world.spawnEntity(entityExplosive);
+                world.setBlockToAir(pos);
             }
         }
     }
@@ -240,7 +213,7 @@ public class BlockExplosive extends BlockICBM
     {
         if (world.getTileEntity(pos) instanceof TileEntityExplosive)
         {
-            BlockExplosive.triggerExplosive(world, pos, ((TileEntityExplosive) world.getTileEntity(pos)).explosive, 1);
+            BlockExplosive.triggerExplosive(world, pos, ((TileEntityExplosive) world.getTileEntity(pos)).explosive.getRegistryID(), 1);
         }
 
         super.onBlockExploded(world, pos, explosion);
@@ -265,15 +238,14 @@ public class BlockExplosive extends BlockICBM
         {
             if (entityPlayer.getHeldItem(hand).getItem() == Items.FLINT_AND_STEEL)
             {
-                Explosives explosiveID = ((TileEntityExplosive) tileEntity).explosive;
-                BlockExplosive.triggerExplosive(world, pos, explosiveID, 0);
+                BlockExplosive.triggerExplosive(world, pos, ((TileEntityExplosive) tileEntity).explosive.getRegistryID(), 0);
                 return true;
             }
         }
 
         if (tileEntity instanceof TileEntityExplosive)
         {
-            return ((TileEntityExplosive) tileEntity).explosive.handler.onBlockActivated(world, pos, entityPlayer, hand, facing, hitX, hitY, hitZ);
+            //return ((TileEntityExplosive) tileEntity).explosive.handler.onBlockActivated(world, pos, entityPlayer, hand, facing, hitX, hitY, hitZ); TODO fix
         }
 
         return false;

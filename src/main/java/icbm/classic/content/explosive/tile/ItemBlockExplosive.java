@@ -1,5 +1,7 @@
 package icbm.classic.content.explosive.tile;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemBlockAbstract;
@@ -138,7 +140,12 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     @Override
     public String getTranslationKey(ItemStack itemstack)
     {
-        return this.getTranslationKey() + "." + Explosives.get(itemstack.getItemDamage()).handler.getTranslationKey();
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
+        if (data != null)
+        {
+            return super.getTranslationKey() + data.getRegistryName();
+        }
+        return super.getTranslationKey(itemstack);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package icbm.classic.api.explosion;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
 
 /**
  * Separate interface for blasts that can be built from {@link IBlastFactory}
@@ -52,6 +55,15 @@ public interface IBlastInit extends IBlast
      * @return this
      */
     IBlastInit setBlastPosition(double x, double y, double z);
+
+    /**
+     * Sets the custom data to change properties of the blast
+     * not part of the normal blast chain of calls.
+     *
+     * @param customData - nbt save data
+     * @return this
+     */
+    IBlastInit setCustomData(@Nonnull NBTTagCompound customData);
 
     /**
      * Called last to complete the build of the blast. Once

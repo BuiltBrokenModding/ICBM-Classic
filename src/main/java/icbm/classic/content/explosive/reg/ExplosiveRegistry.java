@@ -23,7 +23,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 {
 
     //Map of explosion id to data
-    public final HashMap<ResourceLocation, ExplosiveData> explosiveData = new HashMap();
+    public final HashMap<ResourceLocation, IExplosiveData> explosiveData = new HashMap();
 
     //Map of id to name, and its reverse
     public final Map<Integer, ResourceLocation> id_to_name = new HashMap();
@@ -40,7 +40,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     private File saveFile;
 
     @Override
-    public ExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory)
+    public IExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory)
     {
         int assignedID;
 

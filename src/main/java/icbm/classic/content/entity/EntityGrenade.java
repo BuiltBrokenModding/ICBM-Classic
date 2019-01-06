@@ -1,5 +1,7 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
@@ -58,12 +60,12 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public String getName()
     {
-        if (this.explosiveID != null)
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID.ordinal());
+        if (data != null)
         {
-            return this.explosiveID.handler.getGrenadeName();
+            return "icbm.grenade." + data.getRegistryName();
         }
-
-        return "Grenade";
+        return "icbm.grenade";
     }
 
     @Override

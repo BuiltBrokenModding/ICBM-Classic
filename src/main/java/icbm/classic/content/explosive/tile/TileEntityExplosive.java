@@ -1,12 +1,12 @@
 package icbm.classic.content.explosive.tile;
 
-import icbm.classic.lib.network.IPacket;
-import icbm.classic.api.tile.IRotatable;
-import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.Explosives;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.items.ItemRemoteDetonator;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.IPacketIDReceiver;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -21,7 +21,7 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     /** Is the tile currently exploding */
     public boolean exploding = false;
     /** Explosive ID */
-    public Explosives explosive = Explosives.CONDENSED;
+    public IExplosiveData explosive = null;
     /** Extra explosive data */
     public NBTTagCompound nbtData = new NBTTagCompound();
 
@@ -30,7 +30,7 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
     {
         super.readFromNBT(par1NBTTagCompound);
-        this.explosive = Explosives.get(par1NBTTagCompound.getInteger("explosiveID"));
+        this.explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(par1NBTTagCompound.getInteger("explosiveID"));
         this.nbtData = par1NBTTagCompound.getCompoundTag("data");
     }
 
@@ -38,8 +38,11 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        par1NBTTagCompound.setInteger("explosiveID", this.explosive.ordinal());
-        par1NBTTagCompound.setTag("data", this.nbtData);
+        if(explosive != null)
+        {
+            par1NBTTagCompound.setInteger("explosiveID", this.explosive.getRegistryID());
+            par1NBTTagCompound.setTag("data", this.nbtData);
+        }
         return super.writeToNBT(par1NBTTagCompound);
     }
 
@@ -48,7 +51,7 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     {
         if (id == 1)
         {
-            explosive = Explosives.get(data.readInt());
+            explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(data.readInt());
             world.markBlockRangeForRenderUpdate(pos, pos);
             return true;
         }
@@ -58,7 +61,7 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
             if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
             {
                 ItemStack itemStack = player.inventory.getCurrentItem();
-                BlockExplosive.triggerExplosive(this.world, pos, this.explosive, 0);
+                BlockExplosive.triggerExplosive(this.world, pos, this.explosive.getRegistryID(), 0);
                 ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
             }
             return true;
@@ -94,15 +97,5 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     public void setDirection(EnumFacing facingDirection)
     {
         this.world.setBlockState(pos, getBlockType().getDefaultState().withProperty(BlockExplosive.ROTATION_PROP, facingDirection), 2);
-    }
-
-    public Explosive getExplosiveType()
-    {
-        return this.explosive.handler;
-    }
-
-    public NBTTagCompound getTagCompound()
-    {
-        return this.nbtData;
     }
 }

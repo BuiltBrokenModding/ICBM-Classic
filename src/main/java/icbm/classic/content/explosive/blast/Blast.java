@@ -8,7 +8,6 @@ import icbm.classic.api.explosion.IMissile;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.ExplosiveHandler;
 import icbm.classic.content.explosive.thread.ThreadExplosion;
 import icbm.classic.lib.transform.vector.Location;
@@ -30,6 +29,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -552,6 +552,12 @@ public abstract class Blast extends Explosion implements IBlastInit
     {
         checkBuilt();
         setPosition(posX, posY, posZ);
+        return this;
+    }
+
+    @Override
+    public IBlastInit setCustomData(@Nonnull NBTTagCompound customData)
+    {
         return this;
     }
 
