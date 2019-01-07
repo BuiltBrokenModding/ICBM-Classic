@@ -12,10 +12,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +26,11 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
 
     public int explosiveID;
     public NBTTagCompound blastNBT;
+
+    public CapabilityExplosive(int id)
+    {
+        this.explosiveID = id;
+    }
 
     @Nullable
     @Override
@@ -76,8 +79,14 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        explosiveID = nbt.getInteger("explosiveID");
-        blastNBT = nbt.getCompoundTag("blastData");
+        if (nbt.hasKey("explosiveID"))
+        {
+            explosiveID = nbt.getInteger("explosiveID");
+        }
+        if (blastNBT == null || nbt.hasKey("blastData"))
+        {
+            blastNBT = nbt.getCompoundTag("blastData");
+        }
     }
 
     public static void register()
@@ -104,6 +113,6 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
                         }
                     }
                 },
-                () -> new CapabilityExplosive());
+                () -> new CapabilityExplosive(-1));
     }
 }

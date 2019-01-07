@@ -3,6 +3,7 @@ package icbm.classic.content.items;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.lib.explosive.cap.CapabilityExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -10,9 +11,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemGrenade extends ItemICBMBase
@@ -23,6 +26,18 @@ public class ItemGrenade extends ItemICBMBase
         this.setMaxStackSize(16);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
+    }
+
+    @Override
+    @Nullable
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
+    {
+        CapabilityExplosive capabilityExplosive = new CapabilityExplosive(stack.getItemDamage());
+        if(nbt != null)
+        {
+            capabilityExplosive.deserializeNBT(nbt);
+        }
+        return capabilityExplosive;
     }
 
     @Override

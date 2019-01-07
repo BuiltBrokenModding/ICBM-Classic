@@ -8,6 +8,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.explosive.cap.CapabilityExplosive;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +17,7 @@ import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -23,16 +25,28 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBombCart extends ItemICBMBase
 {
-
     public ItemBombCart()
     {
         super("bombcart");
         this.setMaxStackSize(3);
         this.setHasSubtypes(true);
+    }
+
+    @Override
+    @Nullable
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
+    {
+        CapabilityExplosive capabilityExplosive = new CapabilityExplosive(stack.getItemDamage());
+        if(nbt != null)
+        {
+            capabilityExplosive.deserializeNBT(nbt);
+        }
+        return capabilityExplosive;
     }
 
     /**
