@@ -20,7 +20,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
  * By default {@link icbm.classic.content.explosive.blast.BlastEMP} will generate this object
  * for the target of the EMP.
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
 public abstract class CapabilityEmpInventory<H extends Object> implements IEMPReceiver

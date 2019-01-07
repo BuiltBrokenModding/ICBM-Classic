@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 /**
  * Basic version of the capability that acts as a placeholder
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
 public class CapabilityEmpChecker implements IEMPReceiver

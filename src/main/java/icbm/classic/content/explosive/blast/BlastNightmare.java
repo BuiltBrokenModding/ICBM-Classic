@@ -7,7 +7,7 @@ import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.world.World;
 
 /**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 10/2/2017.
  */
 public class BlastNightmare extends Blast

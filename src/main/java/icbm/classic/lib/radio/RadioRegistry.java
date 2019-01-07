@@ -13,7 +13,7 @@ import java.util.HashMap;
 /**
  * Map based system for radio waves being transmitted in an area
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 4/20/2016.
  */
 public final class RadioRegistry

@@ -9,7 +9,7 @@ import net.minecraftforge.oredict.OreDictionary;
 /**
  * Prefab for use in generating new sets of crafting items
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/20/2018.
  */
 public class ItemCrafting extends ItemICBMBase

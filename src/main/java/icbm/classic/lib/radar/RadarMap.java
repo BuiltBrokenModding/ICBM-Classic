@@ -12,7 +12,7 @@ import java.util.*;
  * System designed to track moving or stationary targets on a 2D map. Can be used to detect objects or visualize objects in an area. Mainly
  * used to track flying objects that are outside of the map bounds(Missile in ICBM).
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/5/2016.
  */
 public class RadarMap

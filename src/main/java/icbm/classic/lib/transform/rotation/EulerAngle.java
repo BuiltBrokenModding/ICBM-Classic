@@ -13,7 +13,7 @@ import net.minecraft.util.EnumFacing;
  * This object is not immutable like other vector objects. It is designed to take the player of storing 3 separate variables for rotation. Thus it will
  * also be setup to allow adjustments to rotation.
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/8/2016.
  * <p>
  * Original version by Calclavia

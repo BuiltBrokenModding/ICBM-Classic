@@ -9,7 +9,7 @@ import icbm.classic.content.explosive.handlers.ExIncendiary;
 import icbm.classic.content.explosive.handlers.ExSMine;
 
 /**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
 public final class ExplosiveRefs
