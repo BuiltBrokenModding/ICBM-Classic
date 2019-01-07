@@ -9,7 +9,6 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.IExplosiveRegistry;
-import icbm.classic.content.explosive.Explosives;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.*;

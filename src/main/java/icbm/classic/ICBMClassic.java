@@ -1,7 +1,6 @@
 package icbm.classic;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
@@ -10,7 +9,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.mobs.*;
-import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.explosive.ExplosiveInit;
 import icbm.classic.content.explosive.reg.*;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;
@@ -455,8 +454,10 @@ public final class ICBMClassic
         //Lock content types, done to prevent errors with adding content
         explosiveRegistry.lockNewContentTypes();
 
+        //Register internal first to reserve slots for backwards compatibility
+        ExplosiveInit.init();
+
         //Fire registry event for explosives
-        registerClassicExplosives();
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
 
         //Lock all registry, done to prevent errors in data generation for renders and content
@@ -464,11 +465,6 @@ public final class ICBMClassic
 
         //Save registry, at this point everything should be registered
         explosiveRegistry.saveReg();
-    }
-
-    private void registerClassicExplosives(IExplosiveRegistry registry)
-    {
-
     }
 
     @Mod.EventHandler
@@ -571,7 +567,7 @@ public final class ICBMClassic
                         }
                     }
 
-                    EntityBombCart cart = new EntityBombCart(world, x, y + heightDelta, z, Explosives.get(stack.getItemDamage()));
+                    EntityBombCart cart = new EntityBombCart(world, x, y + heightDelta, z, stack.getItemDamage());
 
                     if (stack.hasDisplayName())
                     {

@@ -3,7 +3,6 @@ package icbm.classic.content.machines.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.*;
 import icbm.classic.client.render.entity.RenderMissile;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.api.EnumTier;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

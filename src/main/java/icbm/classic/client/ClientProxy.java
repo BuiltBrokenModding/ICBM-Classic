@@ -9,7 +9,6 @@ import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.machines.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.machines.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.missile.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.machines.emptower.TESREMPTower;

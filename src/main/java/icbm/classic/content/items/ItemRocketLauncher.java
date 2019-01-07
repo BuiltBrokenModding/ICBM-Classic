@@ -5,7 +5,6 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.missile.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;

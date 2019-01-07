@@ -9,7 +9,6 @@ import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.machines.launcher.screen.TileLauncherScreen;

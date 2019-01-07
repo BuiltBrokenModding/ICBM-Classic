@@ -1,11 +1,15 @@
 package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.caps.IExplosiveProvider;
 import icbm.classic.api.reg.content.*;
 import icbm.classic.api.reg.IExplosiveRegistry;
+import icbm.classic.lib.emp.CapabilityEMP;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
 /**
  * API reference class for ICBM-Classic mod
@@ -43,6 +47,16 @@ public final class ICBMClassicAPI
     public static final ResourceLocation EX_GRENADE = new ResourceLocation(ID, "ex_grenade");
     public static final ResourceLocation EX_BLOCK = new ResourceLocation(ID, "ex_block");
     public static final ResourceLocation EX_MINECART = new ResourceLocation(ID, "ex_minecart");
+
+    //=========================
+    //=== Capabilities ========
+    //=========================
+
+    @CapabilityInject(IEMPReceiver.class)
+    public static Capability<IEMPReceiver> EMP_CAPABILITY = null;
+
+    @CapabilityInject(IExplosiveProvider.class)
+    public static Capability<IExplosiveProvider> EXPLOSIVE_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}

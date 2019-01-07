@@ -15,9 +15,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BlastExothermic extends BlastBeam
 {
-    public BlastExothermic(World world, Entity entity, double x, double y, double z, float size)
+    public BlastExothermic()
     {
-        super(world, entity, x, y, z, size);
         this.red = 0.7f;
         this.green = 0.3f;
         this.blue = 0;

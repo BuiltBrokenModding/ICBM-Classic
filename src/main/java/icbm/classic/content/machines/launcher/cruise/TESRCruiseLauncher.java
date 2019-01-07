@@ -4,7 +4,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModuleCruiseLauncherBottom;
 import icbm.classic.client.models.ModelCruiseLauncherTop;
 import icbm.classic.client.render.entity.RenderMissile;
-import icbm.classic.content.explosive.Explosives;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;

@@ -10,9 +10,8 @@ import net.minecraft.world.World;
 
 public class BlastFire extends Blast
 {
-    public BlastFire(World world, Entity entity, double x, double y, double z, float size)
+    public BlastFire()
     {
-        super(world, entity, x, y, z, size);
     }
 
     @Override

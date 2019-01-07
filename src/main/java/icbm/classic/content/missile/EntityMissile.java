@@ -10,7 +10,6 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.transform.vector.Pos;

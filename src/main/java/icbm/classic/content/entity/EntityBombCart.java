@@ -1,7 +1,6 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.prefab.tile.BlockICBM;
 import io.netty.buffer.ByteBuf;
@@ -21,14 +20,14 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
-    public Explosives explosive = Explosives.CONDENSED;
+    public int explosive = -1;
 
     public EntityBombCart(World par1World)
     {
         super(par1World);
     }
 
-    public EntityBombCart(World par1World, double x, double y, double z, Explosives explosive)
+    public EntityBombCart(World par1World, double x, double y, double z, int explosive)
     {
         super(par1World, x, y, z);
         this.explosive = explosive;
@@ -37,13 +36,13 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(explosive.ordinal());
+        data.writeInt(explosive);
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        explosive = Explosives.get(data.readInt());
+        explosive = data.readInt();
     }
 
     @Override
@@ -88,26 +87,28 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public ItemStack getCartItem()
     {
-        return new ItemStack(ICBMClassic.itemBombCart, 1, explosive.ordinal());
+        return new ItemStack(ICBMClassic.itemBombCart, 1, explosive);
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        nbt.setInteger("explosive", explosive.ordinal());
+        nbt.setInteger("explosive", explosive);
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        explosive = Explosives.get(nbt.getInteger("explosive"));
+        explosive = nbt.getInteger("explosive");
     }
 
     @Override
     public IBlockState getDefaultDisplayTile()
     {
-        return ICBMClassic.blockExplosive.getDefaultState().withProperty(BlockExplosive.EX_PROP, explosive).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
+        return ICBMClassic.blockExplosive.getDefaultState()
+                .withProperty(BlockExplosive.EX_PROP, explosive)
+                .withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
     }
 }

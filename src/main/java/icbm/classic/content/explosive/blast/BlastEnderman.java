@@ -1,5 +1,8 @@
 package icbm.classic.content.explosive.blast;
 
+import icbm.classic.api.explosion.IBlastInit;
+import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
@@ -8,12 +11,14 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class BlastEnderman extends Blast
@@ -21,15 +26,14 @@ public class BlastEnderman extends Blast
     public int duration = 20 * 8;
     private Pos teleportTarget;
 
-    public BlastEnderman(World world, Entity entity, double x, double y, double z, float size)
+    @Override
+    public IBlastInit setCustomData(@Nonnull NBTTagCompound customData)
     {
-        super(world, entity, x, y, z, size);
-    }
-
-    public BlastEnderman(World world, Entity entity, double x, double y, double z, float size, Pos teleportTarget)
-    {
-        super(world, entity, x, y, z, size);
-        this.teleportTarget = teleportTarget;
+        if (customData != null && customData.hasKey("x") && customData.hasKey("y") && customData.hasKey("z"))
+        {
+            teleportTarget = new Pos(customData);
+        }
+        return this;
     }
 
     @Override

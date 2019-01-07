@@ -1,7 +1,6 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.command.imp.SubCommand;
-import icbm.classic.content.explosive.Explosives;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;

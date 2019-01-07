@@ -1,12 +1,6 @@
 package icbm.classic.api;
 
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.config.ConfigBlast;
-import icbm.classic.content.explosive.blast.BlastRedmatter;
-import icbm.classic.content.explosive.handlers.ExEnder;
-import icbm.classic.content.explosive.handlers.ExExothermic;
-import icbm.classic.content.explosive.handlers.ExIncendiary;
-import icbm.classic.content.explosive.handlers.ExSMine;
 
 /**
  *
