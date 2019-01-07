@@ -1,6 +1,7 @@
 package icbm.classic;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
@@ -10,7 +11,7 @@ import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.reg.ExplosiveRegistry;
+import icbm.classic.content.explosive.reg.*;
 import icbm.classic.content.explosive.thread2.WorkerThreadManager;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.content.explosive.tile.ItemBlockExplosive;
@@ -103,6 +104,7 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public final class ICBMClassic
 {
+
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
 
     @Mod.Instance(ICBMClassic.DOMAIN)
@@ -430,17 +432,43 @@ public final class ICBMClassic
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 
-        //Load data
-        ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
-        ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
-        explosiveRegistry.loadReg(new File(event.getModConfigurationDirectory(), "icbmclassic/explosive_reg.json"));
+        handleExRegistry(event.getModConfigurationDirectory());
+    }
 
-        //Fire registry events
+    private void handleExRegistry(File configMainFolder)
+    {
+        //Init registry
+        final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
+        ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
+
+        ICBMClassicAPI.EX_BLOCK_REGISTRY = new ExBlockContentReg();
+        ICBMClassicAPI.EX_GRENADE_REGISTRY = new ExGrenadeContentReg();
+        ICBMClassicAPI.EX_MINECRT_REGISTRY = new ExMinecartContentReg();
+        ICBMClassicAPI.EX_MISSILE_REGISTRY = new ExMissileContentReg();
+
+        //Load data
+        explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
+
+        //Fire registry events for content types
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryInitEvent(explosiveRegistry));
+
+        //Lock content types, done to prevent errors with adding content
+        explosiveRegistry.lockNewContentTypes();
+
+        //Fire registry event for explosives
+        registerClassicExplosives();
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
+
+        //Lock all registry, done to prevent errors in data generation for renders and content
+        explosiveRegistry.lockRegistry();
 
         //Save registry, at this point everything should be registered
         explosiveRegistry.saveReg();
+    }
+
+    private void registerClassicExplosives(IExplosiveRegistry registry)
+    {
+
     }
 
     @Mod.EventHandler

@@ -1,11 +1,14 @@
 package icbm.classic.content.explosive.reg;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,10 +17,16 @@ import java.util.Set;
  */
 public class ExplosiveContentRegistry implements IExplosiveContentRegistry
 {
+
     public final ResourceLocation name;
 
     //set of IDs enabled for content
-    public final Set<Integer> enabledIDs = new HashSet();
+    private Set<Integer> enabledIDs = new HashSet();
+
+    private boolean locked = true;
+
+    private List<ResourceLocation> nameCache;
+    private List<IExplosiveData> dataCache;
 
     public ExplosiveContentRegistry(ResourceLocation name)
     {
@@ -33,6 +42,10 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
     @Override
     public void enableContent(ResourceLocation explosiveID)
     {
+        if (locked)
+        {
+            throw new RuntimeException(this + ": No content can be registered after registry phase");
+        }
         final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosiveID);
         if (data != null)
         {
@@ -46,5 +59,37 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
             //Add ID to set of ids
             enabledIDs.add(data.getRegistryID());
         }
+    }
+
+    @Override
+    public List<ResourceLocation> getExplosiveNames()
+    {
+        return nameCache;
+    }
+
+    @Override
+    public List<IExplosiveData> getExplosives()
+    {
+        return dataCache;
+    }
+
+    @Override
+    public void lockRegistry()
+    {
+        locked = true;
+        enabledIDs = ImmutableSet.copyOf(enabledIDs);
+
+        dataCache = enabledIDs.stream()
+                .map(id -> ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id))
+                .filter(e -> e != null)
+                .collect(ImmutableList.toImmutableList());
+
+        nameCache = dataCache.stream().map(data -> data.getRegistryName()).collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ExplosiveContentRegistry[" + name + "]";
     }
 }

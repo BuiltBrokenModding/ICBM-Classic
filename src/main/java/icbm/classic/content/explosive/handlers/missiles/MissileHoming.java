@@ -15,16 +15,16 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class MissileHoming extends Missile
+public class MissileHoming //extends Missile
 {
     public MissileHoming()
     {
-        super("homing", EnumTier.ONE);
-        this.hasBlock = false;
+        //super("homing", EnumTier.ONE);
+        //this.hasBlock = false;
         //this.missileModelPath = "missiles/tier1/missile_head_homing.obj";
     }
 
-    @Override
+    //@Override
     public void launch(EntityMissile missileObj)
     {
         if (!missileObj.world.isRemote)
@@ -44,7 +44,7 @@ public class MissileHoming extends Missile
         }
     }
 
-    @Override
+    //@Override
     public void update(EntityMissile missileObj)
     {
         if (missileObj.getTicksInAir() > missileObj.missileFlightTime / 2 && missileObj.missileType == MissileFlightType.PAD_LAUNCHER)
@@ -83,7 +83,7 @@ public class MissileHoming extends Missile
         }
     }
 
-    @Override
+    //@Override
     public boolean onInteract(EntityMissile missileObj, EntityPlayer entityPlayer, EnumHand hand)
     {
         if (!missileObj.world.isRemote && missileObj.getTicksInAir() <= 0)
@@ -115,13 +115,13 @@ public class MissileHoming extends Missile
         return false;
     }
 
-    @Override
+    //@Override
     public boolean isCruise()
     {
         return false;
     }
 
-    @Override
+    //@Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 4 * scale).setDestroyItems().runBlast();

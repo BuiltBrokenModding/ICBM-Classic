@@ -17,17 +17,17 @@ import java.util.List;
  *
  * @author Calclavia
  */
-public class MissileAnti extends Missile
+public class MissileAnti //extends Missile
 {
     public static final int ABMRange = 30;
 
     public MissileAnti()
     {
-        super("antiBallistic", EnumTier.TWO);
-        this.hasBlock = false;
+        //super("antiBallistic", EnumTier.TWO);
+        //this.hasBlock = false;
     }
 
-    @Override
+    //@Override
     public void update(EntityMissile missileAnti)
     {
         //if target is valid, move towards target
@@ -80,7 +80,7 @@ public class MissileAnti extends Missile
             for (EntityMissile missile : missiles)
             {
                 //Do not target other anti-missile missiles
-                if (missile.getExplosiveType() != this)
+                //if (missile.getExplosiveType() != this)
                 {
                     // Lock target onto missileObj missile
                     missileAnti.lockedTarget = missile;
@@ -92,13 +92,13 @@ public class MissileAnti extends Missile
         }
     }
 
-    @Override
+    //@Override
     public boolean isCruise()
     {
         return true;
     }
 
-    @Override
+    //@Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         //new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6).setDestroyItems().explode();

@@ -39,9 +39,17 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     //Save file
     private File saveFile;
 
+    private boolean locked = false;
+    private boolean lockNewContentTypes = false;
+
     @Override
     public IExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory)
     {
+        if (locked)
+        {
+            throw new RuntimeException("ExplosiveRegistry: new explosives can not be registered after registry phase");
+        }
+
         int assignedID;
 
         if (name_to_id.containsKey(name))
@@ -66,6 +74,17 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 
         //Return data
         return explosiveData.get(name);
+    }
+
+    public void lockRegistry()
+    {
+        locked = true;
+        getContentRegistries().forEach(reg -> reg.lockRegistry());
+    }
+
+    public void lockNewContentTypes()
+    {
+        lockNewContentTypes = true;
     }
 
     @Override
@@ -100,6 +119,30 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     @Override
     public void registerContentRegistry(ResourceLocation name, IExplosiveContentRegistry registry)
     {
+        //Check lock
+        if (locked || lockNewContentTypes)
+        {
+            throw new RuntimeException("ExplosiveRegistry: new explosive content types can not be registered after init phase");
+        }
+
+        //Check input data
+        if (registry == null)
+        {
+            throw new IllegalArgumentException("ExplosiveRegistry: content type should not be null, Name: " + name);
+        }
+
+        if (name == null)
+        {
+            throw new IllegalArgumentException("ExplosiveRegistry: name is required for content registry type, " + registry);
+        }
+
+        //Check duplicate
+        if (contentRegistry.containsKey(name) && contentRegistry.get(name) != null)
+        {
+            throw new RuntimeException("ExplosiveRegistry: duplicate content type detected for '" + name + "' Prev: " + contentRegistry.get(name) + "  New: " + registry);
+        }
+
+        //Insert
         contentRegistry.put(name, registry);
     }
 

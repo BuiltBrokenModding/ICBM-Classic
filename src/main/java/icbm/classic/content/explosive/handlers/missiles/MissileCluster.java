@@ -13,14 +13,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /** @author Calclavia */
-public class MissileCluster extends Missile
+public class MissileCluster //extends Missile
 {
     protected double spread = 30;
 
     public MissileCluster(String name, EnumTier tier)
     {
-        super(name, tier);
-        this.hasBlock = false;
+        //super(name, tier);
+        //this.hasBlock = false;
         //this.missileModelPath = "missiles/tier2/missile_head_cluster.obj";
     }
 
@@ -29,7 +29,7 @@ public class MissileCluster extends Missile
         return missileCluster.motionY < -0.5;  //TODO why use motion as the trigger?
     }
 
-    @Override
+    //@Override
     public void update(EntityMissile missileCluster)
     {
         //Check if we can trigger
@@ -146,13 +146,13 @@ public class MissileCluster extends Missile
     }
 
 
-    @Override
+    //@Override
     public void doCreateExplosion(World world, BlockPos pos, Entity entity, float scale)
     {
         new BlastTNT(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 6 * scale).setDestroyItems().runBlast();
     }
 
-    @Override
+    //@Override
     public boolean isCruise()
     {
         return false;

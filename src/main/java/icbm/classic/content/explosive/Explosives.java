@@ -21,7 +21,7 @@ import java.util.List;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/7/2017.
  */
-public enum Explosives implements IStringSerializable
+public enum Explosives
 {
     /* 0  */CONDENSED(new Explosion("condensed", EnumTier.ONE,
             (nbt) -> new BlastTNT().setBlastSize(6)).setFuseTime(1)), //TODO convert fully
@@ -130,46 +130,4 @@ public enum Explosives implements IStringSerializable
         this(new Explosion(name, tier, factory));
     }
 
-
-    public ItemStack getItemStack()
-    {
-        return this.getItemStack(1);
-    }
-
-    public ItemStack getItemStack(int amount)
-    {
-        if (handler instanceof Missile)
-        {
-            return new ItemStack(ICBMClassic.itemMissile, amount, ordinal());
-        }
-        return new ItemStack(ICBMClassic.blockExplosive, amount, ordinal());
-    }
-
-    public static Explosives get(int itemDamage)
-    {
-        if (itemDamage >= 0 && itemDamage < values().length)
-        {
-            return values()[itemDamage];
-        }
-        return CONDENSED;
-    }
-
-    @Override
-    public String getName()
-    {
-        return super.name().toLowerCase();
-    }
-
-    public static List<Explosives> getBlocksOnly()
-    {
-        List<Explosives> list = new ArrayList();
-        for (Explosives ex : values())
-        {
-            if (ex.handler.hasBlockForm())
-            {
-                list.add(ex);
-            }
-        }
-        return list;
-    }
 }

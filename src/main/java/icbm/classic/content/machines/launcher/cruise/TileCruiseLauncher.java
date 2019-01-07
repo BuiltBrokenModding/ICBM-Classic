@@ -15,7 +15,6 @@ import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.missile.EntityMissile;
 import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.handlers.Explosion;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.machines.launcher.TileLauncherPrefab;
 import icbm.classic.api.EnumTier;

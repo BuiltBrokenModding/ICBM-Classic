@@ -12,6 +12,7 @@ import java.util.Set;
  */
 public interface IExplosiveContentRegistry
 {
+
     /**
      * Set of all ids enabled for the content
      *
@@ -27,7 +28,22 @@ public interface IExplosiveContentRegistry
      */
     void enableContent(ResourceLocation explosiveID);
 
+    /**
+     * Gets a list of all explosives by name
+     * @return
+     */
     List<ResourceLocation> getExplosiveNames();
 
+    /**
+     * Gets a list of all explosives
+     * @return
+     */
     List<IExplosiveData> getExplosives();
+
+    /**
+     * Called at the end of registry phase to
+     * lock the registry, convert lists to immutable,
+     * and prevent late registration of content.
+     */
+    void lockRegistry();
 }
