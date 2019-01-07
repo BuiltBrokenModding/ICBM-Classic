@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -19,55 +20,60 @@ public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
 
     /** Called to transfer a stack from one inventory to the other eg. when shift clicking. */
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par1)
+    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex)
     {
-        ItemStack var2 = null;
-        Slot var3 = (Slot) this.inventorySlots.get(par1);
+        ItemStack targetItemStackCopy = null;
+        Slot targetSlot = (Slot) this.inventorySlots.get(slotIndex);
 
-        if (var3 != null && var3.getHasStack())
+        if (targetSlot != null && targetSlot.getHasStack())
         {
-            ItemStack var4 = var3.getStack();
-            var2 = var4.copy();
+            ItemStack targetItemStack = targetSlot.getStack();
+            targetItemStackCopy = targetItemStack.copy();
 
-            if (par1 > 1)
+            if (slotIndex > 1)
             {
-                if (this.getSlot(0).isItemValid(var4))
+                if (this.getSlot(0).isItemValid(targetItemStack))
                 {
-                    if (!this.mergeItemStack(var4, 0, 1, false))
+                    if (!this.mergeItemStack(targetItemStack, 0, 1, false))
                     {
-                        return null;
+                        return ItemStack.EMPTY;
                     }
                 }
-                else if (this.getSlot(1).isItemValid(var4))
+                else if (this.getSlot(1).isItemValid(targetItemStack))
                 {
-                    if (!this.mergeItemStack(var4, 1, 2, false))
+                    if (!this.mergeItemStack(targetItemStack, 1, 2, false))
                     {
-                        return null;
+                        return ItemStack.EMPTY;
                     }
                 }
             }
-            else if (!this.mergeItemStack(var4, 2, 36 + 2, false))
+            else if (!this.mergeItemStack(targetItemStack, 2, 36 + 2, false))
             {
-                return null;
+                return ItemStack.EMPTY;
             }
 
-            if (var4.getCount() == 0)
+            if (targetItemStack.getCount() == 0)
             {
-                var3.putStack((ItemStack) null);
+                targetSlot.putStack(ItemStack.EMPTY);
+                return ItemStack.EMPTY;
             }
             else
             {
-                var3.onSlotChanged();
+                targetSlot.onSlotChanged();
             }
 
-            if (var4.getCount() == var2.getCount())
+            if (targetItemStack.getCount() == targetItemStackCopy.getCount())
             {
-                return null;
+                return ItemStack.EMPTY;
             }
 
-            var3.onTake(par1EntityPlayer, var4);
+            targetSlot.onTake(par1EntityPlayer, targetItemStack);
         }
 
-        return var2;
+        if(targetItemStackCopy==null)
+        {
+            return ItemStack.EMPTY;
+        }
+        return targetItemStackCopy;
     }
 }
