@@ -1,5 +1,7 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityBombCart;
@@ -40,22 +42,17 @@ public class ItemDefuser extends ItemICBMElectrical
     {
         if (this.getEnergy(itemStack) >= ENERGY_COST)
         {
-            if (entity instanceof EntityExplosive)
+            if (ICBMClassicHelpers.isExplosive(entity))
             {
                 if (!entity.world.isRemote)
                 {
-                    EntityExplosive entityTNT = (EntityExplosive) entity;
-
-                    //TODO add drop handler to explosive
-                    EntityItem entityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(ICBMClassic.blockExplosive, 1, entityTNT.explosiveID));
-                    float var13 = 0.05F;
-                    Random random = new Random();
-                    entityItem.motionX = ((float) random.nextGaussian() * var13);
-                    entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
-                    entityItem.motionZ = ((float) random.nextGaussian() * var13);
-                    entity.world.spawnEntity(entityItem);
+                    IExplosive explosive = ICBMClassicHelpers.getExplosive(entity);
+                    if(explosive != null)
+                    {
+                        explosive.onDefuse();
+                    }
+                    entity.setDead();
                 }
-                entity.setDead();
             }
             else if (entity instanceof EntityTNTPrimed)
             {

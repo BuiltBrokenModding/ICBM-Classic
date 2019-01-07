@@ -1,6 +1,7 @@
 package icbm.classic.api;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.block.state.IBlockState;
@@ -71,6 +72,16 @@ public final class ICBMClassicHelpers
     public static IMissile getMissile(Entity entity)
     {
         return entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+    }
+
+    public static boolean isExplosive(Entity entity)
+    {
+        return entity != null && entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+    }
+
+    public static IExplosive getExplosive(Entity entity)
+    {
+        return entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
     }
 
     @Deprecated //Will be placed in a registry/handler

@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.explosive.cap.CapabilityExplosive;
+import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBlockAbstract;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,7 +37,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
-        CapabilityExplosive capabilityExplosive = new CapabilityExplosive(stack.getItemDamage());
+        CapabilityExplosive capabilityExplosive = new CapabilityExplosiveStack(stack);
         if(nbt != null)
         {
             capabilityExplosive.deserializeNBT(nbt);

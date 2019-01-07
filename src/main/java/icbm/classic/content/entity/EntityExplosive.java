@@ -1,36 +1,45 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.lib.emp.CapabilityEmpKill;
+import icbm.classic.lib.explosive.cap.CapabilityExplosive;
+import icbm.classic.lib.explosive.cap.CapabilityExplosiveEntity;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IFixableData;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.ModFixs;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
 
 public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData
 {
-    // How long the fuse is (in ticks)
-    public int fuse = 90;
 
-    // The ID of the explosive
-    public int explosiveID;
+    // How long the fuse is (in ticks)
+    public int fuse = -1;
 
     private byte orientation = 3;
 
-    public NBTTagCompound nbtData = new NBTTagCompound();
-
     public IEMPReceiver capabilityEMP;
+    public CapabilityExplosive capabilityExplosive;
 
     public EntityExplosive(World par1World)
     {
@@ -42,7 +51,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         capabilityEMP = new CapabilityEmpKill(this);
     }
 
-    public EntityExplosive(World par1World, Pos position, byte orientation, int explosiveID)
+    public EntityExplosive(World par1World, Pos position, byte orientation, ItemStack stack)
     {
         this(par1World);
         this.setPosition(position.x(), position.y(), position.z());
@@ -53,17 +62,9 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.prevPosX = position.x();
         this.prevPosY = position.y();
         this.prevPosZ = position.z();
-        this.explosiveID = explosiveID;
-        //this.fuse = explosiveID.handler.getFuseTimer(); TODO fix
+
+        this.capabilityExplosive = new CapabilityExplosiveEntity(this, stack);
         this.orientation = orientation;
-
-        //explosiveID.handler.onEntityCreated(par1World, this); TODO fix
-    }
-
-    public EntityExplosive(World par1World, Pos position, int explosiveID, byte orientation, NBTTagCompound nbtData)
-    {
-        this(par1World, position, orientation, explosiveID);
-        this.nbtData = nbtData;
     }
 
     @Override
@@ -73,16 +74,26 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         {
             return (T) capabilityEMP;
         }
+        else if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
+        {
+            return (T) capabilityExplosive;
+        }
         return super.getCapability(capability, facing);
     }
 
     @Override
     public String getName()
     {
-        return "Explosives";
+        if (capabilityExplosive != null && capabilityExplosive.getExplosiveData() != null)
+        {
+            return "Explosive[" + capabilityExplosive.getExplosiveData().getRegistryName() + "]";
+        }
+        return "Explosive";
     }
 
-    /** Called to update the entity's position/logic. */
+    /**
+     * Called to update the entity's position/logic.
+     */
     @Override
     public void onUpdate()
     {
@@ -96,7 +107,22 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 
-        if (this.fuse < 1)
+        //Init fuse
+        if(fuse == -1)
+        {
+            final IExplosiveData data = capabilityExplosive.getExplosiveData();
+            if(data != null)
+            {
+                this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, data.getRegistryID());
+            }
+            else
+            {
+                fuse = 90; //TODO config default
+            }
+        }
+
+        //Tick fuse
+        if (this.fuse-- < 1)
         {
             this.explode();
         }
@@ -105,34 +131,74 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
             //this.explosiveID.handler.onFuseTick(this.world, new Pos(this.posX, this.posY, this.posZ), this.fuse); TODO fix
         }
 
-        this.fuse--;
-
         super.onUpdate();
     }
 
     public void explode()
     {
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, this.explosiveID, 1, getExplosiveData());
+        ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, capabilityExplosive);
         this.setDead();
     }
 
-    /** (abstract) Protected helper method to read subclass entity data from NBT. */
+    /**
+     * (abstract) Protected helper method to read subclass entity data from NBT.
+     */
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.fuse = nbt.getByte("Fuse");
-        this.explosiveID = nbt.getInteger("explosiveID");
-        this.nbtData = nbt.getCompoundTag("data");
+        this.fuse = nbt.getByte("fuse");
+        capabilityExplosive.deserializeNBT(nbt.getCompoundTag("explosive"));
     }
 
-    /** (abstract) Protected helper method to write subclass entity data to NBT. */
+    /**
+     * (abstract) Protected helper method to write subclass entity data to NBT.
+     */
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setByte("Fuse", (byte) this.fuse);
-        nbt.setInteger("explosiveID", this.explosiveID);
-        nbt.setTag("data", this.nbtData);
+        nbt.setByte("fuse", (byte) this.fuse);
+        nbt.setTag("explosive", capabilityExplosive.serializeNBT());
+    }
+
+    public static void registerDataFixer()
+    {
+        ModFixs mf = FMLCommonHandler.instance().getDataFixer().init(ICBMClassic.DOMAIN, 1);
+        mf.registerFix(FixTypes.ENTITY, new IFixableData()
+        {
+            @Override
+            public int getFixVersion()
+            {
+                return 1;
+            }
+
+            @Override
+            public NBTTagCompound fixTagCompound(NBTTagCompound compound)
+            {
+                if(compound.hasKey("id") && compound.getString("id").equalsIgnoreCase())
+                {
+                    if(compound.hasKey("Fuse"))
+                    {
+                        compound.setString("fuse", compound.getString("Fuse"));
+                        compound.removeTag("Fuse");
+                    }
+
+                    if(compound.hasKey("explosiveID"))
+                    {
+                        NBTTagCompound exSave = new NBTTagCompound();
+                        exSave.setInteger(CapabilityExplosive.NBT_ID, compound.getInteger("explosiveID"));
+                        if(compound.hasKey("data"))
+                        {
+                            exSave.setTag(CapabilityExplosive.NBT_BLAST_DATA, compound.getTag("data"));
+                        }
+
+                        compound.removeTag("explosiveID");
+                        compound.removeTag("data");
+                    }
+                }
+                return compound;
+            }
+        });
     }
 
     @Override
@@ -150,14 +216,18 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         return true;
     }
 
-    /** Returns true if other Entities should be prevented from moving through this Entity. */
+    /**
+     * Returns true if other Entities should be prevented from moving through this Entity.
+     */
     @Override
     public boolean canBeCollidedWith()
     {
         return true;
     }
 
-    /** Returns true if this entity should push and be pushed by other entities when colliding. */
+    /**
+     * Returns true if this entity should push and be pushed by other entities when colliding.
+     */
     @Override
     public boolean canBePushed()
     {
@@ -179,21 +249,16 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.explosiveID);
         data.writeInt(this.fuse);
         data.writeByte(this.orientation);
+        ByteBufUtils.writeTag(data, capabilityExplosive.serializeNBT());
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        this.explosiveID = data.readInt();
         this.fuse = data.readInt();
         this.orientation = data.readByte();
-    }
-
-    public NBTTagCompound getExplosiveData()
-    {
-        return this.nbtData;
+        capabilityExplosive.deserializeNBT(ByteBufUtils.readTag(data));
     }
 }

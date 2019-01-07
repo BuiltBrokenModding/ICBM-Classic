@@ -1,6 +1,7 @@
 package icbm.classic.api.caps;
 
 import icbm.classic.api.reg.IExplosiveData;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
@@ -28,4 +29,17 @@ public interface IExplosive
      */
     @Nullable
     NBTTagCompound getCustomBlastData();
+
+    /**
+     * Gets the stack version of the explosive
+     *
+     * @return stack, or null if this has no stack
+     */
+    @Nullable
+    ItemStack toStack();
+
+    default void onDefuse()
+    {
+
+    }
 }

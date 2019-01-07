@@ -4,6 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.lib.explosive.cap.CapabilityExplosive;
+import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,7 +33,7 @@ public class ItemGrenade extends ItemICBMBase
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
-        CapabilityExplosive capabilityExplosive = new CapabilityExplosive(stack.getItemDamage());
+        CapabilityExplosive capabilityExplosive = new CapabilityExplosiveStack(stack);
         if(nbt != null)
         {
             capabilityExplosive.deserializeNBT(nbt);

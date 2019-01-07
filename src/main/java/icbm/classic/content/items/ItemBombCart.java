@@ -9,6 +9,7 @@ import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.explosive.cap.CapabilityExplosive;
+import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
@@ -41,7 +42,7 @@ public class ItemBombCart extends ItemICBMBase
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
-        CapabilityExplosive capabilityExplosive = new CapabilityExplosive(stack.getItemDamage());
+        CapabilityExplosive capabilityExplosive = new CapabilityExplosiveStack(stack);
         if(nbt != null)
         {
             capabilityExplosive.deserializeNBT(nbt);

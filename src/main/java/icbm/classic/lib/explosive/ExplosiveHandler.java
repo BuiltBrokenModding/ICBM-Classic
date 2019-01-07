@@ -7,6 +7,7 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.Blast;
+import icbm.classic.lib.explosive.cap.CapabilityExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -19,13 +20,14 @@ import java.util.Iterator;
 
 /**
  * Simple handler to track blasts in order to disable or remove
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 4/9/2018.
  */
 @Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
 public class ExplosiveHandler
 {
+
     public static final ArrayList<Blast> activeBlasts = new ArrayList();
 
     public static void add(Blast blast)
@@ -95,6 +97,15 @@ public class ExplosiveHandler
             }
         }
         return removeCount;
+    }
+
+    public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, CapabilityExplosive capabilityExplosive)
+    {
+        if (capabilityExplosive == null || capabilityExplosive.getExplosiveData() == null)
+        {
+            return BlastState.NULL;
+        }
+        return createExplosion(cause, world, x, y, z, capabilityExplosive.getExplosiveData().getRegistryID(), 1, capabilityExplosive.getCustomBlastData());
     }
 
     public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, int blastID, float scale, NBTTagCompound customData)

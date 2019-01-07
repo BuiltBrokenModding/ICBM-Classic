@@ -7,6 +7,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.emp.CapabilityEmpChecker;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -23,6 +24,8 @@ import javax.annotation.Nullable;
  */
 public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<NBTTagCompound>
 {
+    public static final String NBT_ID = "explosiveID";
+    public static final String NBT_BLAST_DATA = "blastData";
 
     public int explosiveID;
     public NBTTagCompound blastNBT;
@@ -50,6 +53,13 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
         return blastNBT;
     }
 
+    @Nullable
+    @Override
+    public ItemStack toStack()
+    {
+        return null;
+    }
+
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
     {
@@ -71,21 +81,21 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     public NBTTagCompound serializeNBT()
     {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        tagCompound.setInteger("explosiveID", explosiveID);
-        tagCompound.setTag("blastData", getCustomBlastData());
+        tagCompound.setInteger(NBT_ID, explosiveID);
+        tagCompound.setTag(NBT_BLAST_DATA, getCustomBlastData());
         return tagCompound;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey("explosiveID"))
+        if (nbt.hasKey(NBT_ID))
         {
-            explosiveID = nbt.getInteger("explosiveID");
+            explosiveID = nbt.getInteger(NBT_ID);
         }
-        if (blastNBT == null || nbt.hasKey("blastData"))
+        if (blastNBT == null || nbt.hasKey(NBT_BLAST_DATA))
         {
-            blastNBT = nbt.getCompoundTag("blastData");
+            blastNBT = nbt.getCompoundTag(NBT_BLAST_DATA);
         }
     }
 

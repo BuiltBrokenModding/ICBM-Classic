@@ -431,6 +431,9 @@ public final class ICBMClassic
         CapabilityMissile.register();
         CapabilityExplosive.register();
 
+        //Register data fixers
+        EntityExplosive.registerDataFixer();
+
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
