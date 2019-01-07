@@ -7,7 +7,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.config.ConfigIC2;
-import icbm.classic.lib.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;

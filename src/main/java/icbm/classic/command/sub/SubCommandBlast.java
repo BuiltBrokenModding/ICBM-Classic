@@ -3,7 +3,7 @@ package icbm.classic.command.sub;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.imp.SubCommand;
-import icbm.classic.content.explosive.ExplosiveHandler;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;

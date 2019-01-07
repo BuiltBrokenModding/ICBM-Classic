@@ -1,12 +1,11 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigMain;
-import icbm.classic.content.missile.MissileFlightType;
+import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.content.missile.EntityMissile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;

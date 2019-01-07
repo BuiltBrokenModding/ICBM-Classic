@@ -2,7 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.tile.IRotatable;
-import icbm.classic.content.explosive.ExplosiveHandler;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.lib.emp.CapabilityEmpKill;
 import icbm.classic.lib.transform.vector.Pos;

@@ -2,7 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigDebug;
-import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.content.blast.Blast;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;

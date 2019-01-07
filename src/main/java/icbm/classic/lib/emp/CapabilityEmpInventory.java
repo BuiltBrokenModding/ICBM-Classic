@@ -17,7 +17,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 /**
  * Used to wrapper an inventory capability to provide support to EMP the contents.
  * <p>
- * By default {@link icbm.classic.content.explosive.blast.BlastEMP} will generate this object
+ * By default {@link icbm.classic.content.blast.BlastEMP} will generate this object
  * for the target of the EMP.
  *
  *

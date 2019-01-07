@@ -3,7 +3,7 @@ package icbm.classic.client.render.entity;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.explosive.tile.BlockExplosive;
+import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

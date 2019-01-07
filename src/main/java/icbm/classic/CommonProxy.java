@@ -1,6 +1,6 @@
 package icbm.classic;
 
-import icbm.classic.lib.IGuiTile;
+import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

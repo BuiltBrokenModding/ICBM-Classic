@@ -2,7 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.explosive.ExplosiveHandler;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
