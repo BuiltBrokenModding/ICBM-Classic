@@ -4,9 +4,13 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
+import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.items.ItemRemoteDetonator;
+import icbm.classic.lib.explosive.ExplosiveHandler;
+import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,35 +19,41 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver, IRotatable
 {
-    /** Is the tile currently exploding */
-    public boolean exploding = false;
-    /** Explosive ID */
-    public IExplosiveData explosive = null;
-    /** Extra explosive data */
-    public NBTTagCompound nbtData = new NBTTagCompound();
 
-    /** Reads a tile entity from NBT. */
+    /**
+     * Is the tile currently exploding
+     */
+    public boolean exploding = false;
+
+    public CapabilityExplosiveStack capabilityExplosive;
+
+    /**
+     * Reads a tile entity from NBT.
+     */
     @Override
-    public void readFromNBT(NBTTagCompound par1NBTTagCompound)
+    public void readFromNBT(NBTTagCompound nbt)
     {
-        super.readFromNBT(par1NBTTagCompound);
-        this.explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(par1NBTTagCompound.getInteger("explosiveID"));
-        this.nbtData = par1NBTTagCompound.getCompoundTag("data");
+        super.readFromNBT(nbt);
+        capabilityExplosive = new CapabilityExplosiveStack(nbt.getCompoundTag(CapabilityExplosiveStack.NBT_STACK));
+        //this.explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(nbt.getInteger("explosiveID")); TODO data fixer
+        //this.nbtData = nbt.getCompoundTag("data");
     }
 
-    /** Writes a tile entity to NBT. */
+    /**
+     * Writes a tile entity to NBT.
+     */
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        if(explosive != null)
+        if (capabilityExplosive != null)
         {
-            par1NBTTagCompound.setInteger("explosiveID", this.explosive.getRegistryID());
-            par1NBTTagCompound.setTag("data", this.nbtData);
+            nbt.setTag(CapabilityExplosiveStack.NBT_STACK, capabilityExplosive.serializeNBT());
         }
-        return super.writeToNBT(par1NBTTagCompound);
+        return super.writeToNBT(nbt);
     }
 
     @Override
@@ -51,7 +61,16 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     {
         if (id == 1)
         {
-            explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(data.readInt());
+            ItemStack exStack = ByteBufUtils.readItemStack(data);
+            if (capabilityExplosive == null)
+            {
+                capabilityExplosive = new CapabilityExplosiveStack(exStack);
+            }
+            else
+            {
+                capabilityExplosive.stack = exStack;
+                capabilityExplosive.initData();
+            }
             world.markBlockRangeForRenderUpdate(pos, pos);
             return true;
         }
@@ -61,12 +80,26 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
             if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
             {
                 ItemStack itemStack = player.inventory.getCurrentItem();
-                BlockExplosive.triggerExplosive(this.world, pos, this.explosive.getRegistryID(), 0);
+
                 ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
             }
             return true;
         }
         return false;
+    }
+
+    public void trigger(boolean setFire)
+    {
+        exploding = true;
+        EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), getDirection(), capabilityExplosive.stack);
+
+        if (setFire)
+        {
+            entityExplosive.setFire(100);
+        }
+
+        world.spawnEntity(entityExplosive);
+        world.setBlockToAir(pos);
     }
 
     @Override

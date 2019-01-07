@@ -118,7 +118,7 @@ public class ExplosiveInit
         //=================== Tier 4
         ExplosiveRefs.ANTIMATTER = newEx("antimatter", EnumTier.FOUR,
                 () -> new BlastAntimatter(ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).setBlastSize(ConfigBlast.ANTIMATTER_SIZE));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTIMATTER.getRegistryName(), (world, x, y, z)-> 300);
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTIMATTER.getRegistryName(), (world, x, y, z) -> 300);
         //TODO add config (disable by default) for alarm audio
 
         ExplosiveRefs.REDMATTER = newEx("redMatter", EnumTier.FOUR, () -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS));
@@ -139,16 +139,17 @@ public class ExplosiveInit
 
     private static boolean enderMissileCoordSet(Entity entity, EntityPlayer player, EnumHand hand)
     {
-        if(entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        if (entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
         {
             final IExplosive provider = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
             final NBTTagCompound tag = provider.getCustomBlastData();
-            if(tag != null)
+            if (tag != null)
             {
-                final ItemStack itemStack = player.getHeldItem(hand);
-                if (itemStack.getItem() instanceof IWorldPosItem)
+                final ItemStack heldItem = player.getHeldItem(hand);
+                if (heldItem.getItem() instanceof IWorldPosItem)
                 {
-                    final IWorldPosition link = ((IWorldPosItem) itemStack.getItem()).getLocation(itemStack); //TODO capability
+                    final IWorldPosItem posItem = ((IWorldPosItem) heldItem.getItem());
+                    final IWorldPosition link = posItem.getLocation(heldItem);
 
                     if (link instanceof Location)
                     {
@@ -168,19 +169,24 @@ public class ExplosiveInit
 
     private static boolean enderBlockCoordSet(World world, BlockPos pos, EntityPlayer entityPlayer, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (entityPlayer.inventory.getCurrentItem() != null)
+        final ItemStack heldItem = entityPlayer.getHeldItem(hand);
+        if (heldItem.getItem() instanceof IWorldPosItem)
         {
-            if (entityPlayer.inventory.getCurrentItem().getItem() instanceof IWorldPosItem)
+            final IWorldPosItem posItem = ((IWorldPosItem) heldItem.getItem());
+            final IWorldPosition link = posItem.getLocation(heldItem);
+
+            if (link instanceof Location)
             {
-                IWorldPosition link = ((IWorldPosItem) entityPlayer.inventory.getCurrentItem().getItem()).getLocation(entityPlayer.inventory.getCurrentItem());
+                TileEntity tileEntity = world.getTileEntity(pos);
 
-                if (link instanceof Location)
+                if (tileEntity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing))
                 {
-                    TileEntity tileEntity = world.getTileEntity(pos);
-
-                    if (tileEntity instanceof TileEntityExplosive)
+                    IExplosive explosive = tileEntity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing);
+                    if( explosive != null)
                     {
-                        ((Location) link).writeIntNBT(((TileEntityExplosive) tileEntity).nbtData);
+                        NBTTagCompound tag = new NBTTagCompound();
+                        ((Location) link).writeIntNBT(tag);
+                        explosive.getCustomBlastData().setTag("", tag);
 
                         if (!world.isRemote)
                         {

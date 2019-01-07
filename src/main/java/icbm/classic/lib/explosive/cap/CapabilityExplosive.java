@@ -1,17 +1,13 @@
 package icbm.classic.lib.explosive.cap;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.lib.emp.CapabilityEmpChecker;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -24,11 +20,19 @@ import javax.annotation.Nullable;
  */
 public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<NBTTagCompound>
 {
-    public static final String NBT_ID = "explosiveID";
+    //Parent tag
+    public static final String NBT_EXPLOIVE = "explosive";
+
+    //Child tags
+    public static final String NBT_EXPLOSIVE_ID = "explosiveID";
     public static final String NBT_BLAST_DATA = "blastData";
 
     public int explosiveID;
     public NBTTagCompound blastNBT;
+
+    public CapabilityExplosive()
+    {
+    }
 
     public CapabilityExplosive(int id)
     {
@@ -81,7 +85,7 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     public NBTTagCompound serializeNBT()
     {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        tagCompound.setInteger(NBT_ID, explosiveID);
+        tagCompound.setInteger(NBT_EXPLOSIVE_ID, explosiveID);
         tagCompound.setTag(NBT_BLAST_DATA, getCustomBlastData());
         return tagCompound;
     }
@@ -89,9 +93,9 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey(NBT_ID))
+        if (nbt.hasKey(NBT_EXPLOSIVE_ID))
         {
-            explosiveID = nbt.getInteger(NBT_ID);
+            explosiveID = nbt.getInteger(NBT_EXPLOSIVE_ID);
         }
         if (blastNBT == null || nbt.hasKey(NBT_BLAST_DATA))
         {

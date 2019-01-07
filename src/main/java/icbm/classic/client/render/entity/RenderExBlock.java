@@ -42,7 +42,7 @@ public class RenderExBlock extends Render<EntityExplosive>
     {
         final IBlockState blockState = ICBMClassic.blockExplosive.getDefaultState()
                 .withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP) //TODO get direction from rotation
-                .withProperty(BlockExplosive.EX_PROP, ICBMClassicHelpers.getExplosive(entity.explosiveID, false));
+                .withProperty(BlockExplosive.EX_PROP, entity.getExplosiveData());
         final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
         GlStateManager.pushMatrix();

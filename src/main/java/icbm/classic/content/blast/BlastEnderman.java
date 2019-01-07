@@ -20,15 +20,19 @@ import java.util.List;
 
 public class BlastEnderman extends Blast
 {
+
+    public static final String NBT_LOCATION = "teleport_target";
     public int duration = 20 * 8;
     private Pos teleportTarget;
 
     @Override
     public IBlastInit setCustomData(@Nonnull NBTTagCompound customData)
     {
-        if (customData != null && customData.hasKey("x") && customData.hasKey("y") && customData.hasKey("z"))
+        if (customData != null && customData.hasKey(NBT_LOCATION))
         {
-            teleportTarget = new Pos(customData);
+            teleportTarget = new Pos(customData.getCompoundTag(NBT_LOCATION));
+            //TODO load world ID
+            //TODO data fixer, previous data was store raw as xyz
         }
         return this;
     }
@@ -151,8 +155,7 @@ public class BlastEnderman extends Blast
                             entity.setPosition(this.teleportTarget.x() + 0.5, this.teleportTarget.y() + 0.5, this.teleportTarget.z() + 0.5);
                         }
 
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         ICBMClassic.logger().error("Failed to teleport entity to the End.", e);
                     }
