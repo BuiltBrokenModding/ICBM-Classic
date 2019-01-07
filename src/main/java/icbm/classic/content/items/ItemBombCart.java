@@ -1,12 +1,12 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.explosive.cap.CapabilityExplosive;
 import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
@@ -138,7 +138,7 @@ public class ItemBombCart extends ItemICBMBase
             list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.ordinal());
 
             //TODO change over to a hook
-            ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+            ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
         }
     }
 }

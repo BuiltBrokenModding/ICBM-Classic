@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -96,7 +96,7 @@ public class RenderMissile extends Render<EntityMissile>
     public void renderMissile(int explosiveID, World world, double wx, double wy, double wz,
                               double x, double y, double z, float entityYaw, float partialTicks)
     {
-        renderMissile(new ItemStack(ICBMClassic.itemMissile, 1, explosiveID),
+        renderMissile(new ItemStack(ItemReg.itemMissile, 1, explosiveID),
                 world, wx, wy, wz,
                 x, y, z, entityYaw, partialTicks);
     }

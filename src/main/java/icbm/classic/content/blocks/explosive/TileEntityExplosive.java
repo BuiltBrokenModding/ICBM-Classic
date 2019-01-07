@@ -1,12 +1,9 @@
 package icbm.classic.content.blocks.explosive;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.items.ItemRemoteDetonator;
-import icbm.classic.lib.explosive.ExplosiveHandler;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -81,7 +78,7 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
             {
                 ItemStack itemStack = player.inventory.getCurrentItem();
 
-                ((ItemRemoteDetonator) ICBMClassic.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
+                ((ItemRemoteDetonator) ItemReg.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
             }
             return true;
         }

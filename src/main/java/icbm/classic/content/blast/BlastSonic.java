@@ -8,6 +8,7 @@ import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.blast.thread.ThreadLargeExplosion;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.blocks.explosive.TileEntityExplosive;
+import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -118,7 +119,7 @@ public class BlastSonic extends Blast
 
                             if (distance < r - 1 || this.world().rand.nextInt(3) > 0)
                             {
-                                if (block == ICBMClassic.blockExplosive)
+                                if (block == BlockReg.blockExplosive)
                                 {
                                     BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive.getRegistryID(), 1);
                                 }

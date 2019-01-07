@@ -1,6 +1,5 @@
 package icbm.classic;
 
-import icbm.classic.api.EntityRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
@@ -10,15 +9,13 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.CapabilityMissile;
-import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.blast.ExplosiveInit;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.explosive.cap.CapabilityExplosive;
 import icbm.classic.lib.explosive.reg.*;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.blocks.explosive.TileEntityExplosive;
-import icbm.classic.content.items.*;
 import icbm.classic.content.blocks.battery.BlockBattery;
 import icbm.classic.content.blocks.battery.TileEntityBattery;
 import icbm.classic.content.blocks.emptower.BlockEmpTower;
@@ -33,7 +30,6 @@ import icbm.classic.content.blocks.launcher.screen.BlockLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.BlockRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.blocks.multiblock.BlockMultiblock;
 import icbm.classic.content.blocks.multiblock.TileMulti;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -47,9 +43,6 @@ import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
-import icbm.classic.prefab.item.ItemBlockSubTypes;
-import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.LootEntryItemStack;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
@@ -61,16 +54,12 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootPool;
@@ -83,15 +72,11 @@ import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.xml.EntityRef;
 
-import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -143,171 +128,16 @@ public final class ICBMClassic
     //Mod support
     public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
 
-    // Blocks
-    public static Block blockGlassPlate;
-    public static Block blockGlassButton;
-    public static Block blockSpikes;
-    public static Block blockCamo; //TODO re-implement
-    public static Block blockConcrete;
-    public static Block blockReinforcedGlass;
-    public static Block blockExplosive;
-
-    public static Block blockLaunchBase;
-    public static Block blockLaunchScreen;
-    public static Block blockLaunchSupport;
-    public static Block blockRadarStation;
-    public static Block blockEmpTower;
-    public static Block blockCruiseLauncher; //TODO re-implement
-    public static Block blockMissileCoordinator; //TODO re-implement
-
-    public static Block blockBattery;
-
-    public static Block multiBlock;
-
-
-    // Items
-    public static Item itemAntidote;
-    public static Item itemSignalDisrupter;
-    public static Item itemTracker;
-    public static Item itemMissile;
-    public static Item itemDefuser;
-    public static Item itemRadarGun;
-    public static Item itemRemoteDetonator;
-    public static Item itemLaserDesignator;
-    public static Item itemRocketLauncher;
-    public static Item itemGrenade;
-    public static Item itemBombCart;
-    public static Item itemSulfurDust;
-    public static Item itemSaltpeterDust;
-    public static Item itemPoisonPowder;
-    public static Item itemBattery;
-
-    public static ItemCrafting itemIngot;
-    public static ItemCrafting itemIngotClump;
-    public static ItemCrafting itemPlate;
-    public static ItemCrafting itemCircuit;
-    public static ItemCrafting itemWire;
 
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
 
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event)
-    {
-        //Items
-        event.getRegistry().register(itemGrenade = new ItemGrenade());
-        event.getRegistry().register(itemBombCart = new ItemBombCart());
-        event.getRegistry().register(itemPoisonPowder = new ItemICBMBase("poisonPowder"));
-        event.getRegistry().register(itemSulfurDust = new ItemICBMBase("sulfurDust"));
-        event.getRegistry().register(itemSaltpeterDust = new ItemICBMBase("saltpeter"));
-        event.getRegistry().register(itemAntidote = new ItemAntidote());
-        event.getRegistry().register(itemSignalDisrupter = new ItemSignalDisrupter());
-        event.getRegistry().register(itemTracker = new ItemTracker());
-        event.getRegistry().register(itemDefuser = new ItemDefuser());
-        event.getRegistry().register(itemRadarGun = new ItemRadarGun());
-        event.getRegistry().register(itemRemoteDetonator = new ItemRemoteDetonator());
-        event.getRegistry().register(itemLaserDesignator = new ItemLaserDetonator());
-        event.getRegistry().register(itemRocketLauncher = new ItemRocketLauncher());
-        event.getRegistry().register(itemMissile = new ItemMissile());
-
-        //Block items
-        event.getRegistry().register(new ItemBlock(blockGlassPlate).setRegistryName(blockGlassPlate.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(blockGlassButton).setRegistryName(blockGlassButton.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockSpikes));
-        event.getRegistry().register(new ItemBlockSubTypes(blockConcrete));
-        event.getRegistry().register(new ItemBlock(blockReinforcedGlass).setRegistryName(blockReinforcedGlass.getRegistryName()));
-        event.getRegistry().register(new ItemBlockExplosive(blockExplosive).setRegistryName(blockExplosive.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(blockEmpTower).setRegistryName(blockEmpTower.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(blockRadarStation).setRegistryName(blockRadarStation.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchSupport));
-        event.getRegistry().register(new ItemBlockRotatedMultiTile(blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
-        event.getRegistry().register(new ItemBlockSubTypes(blockLaunchScreen));
-        event.getRegistry().register(new ItemBlockSubTypes(blockBattery));
-        event.getRegistry().register(new ItemBlock(blockCruiseLauncher).setRegistryName(blockCruiseLauncher.getRegistryName()));
-
-        //Crafting resources
-        if (ConfigItems.ENABLE_CRAFTING_ITEMS)
-        {
-            if (ConfigItems.ENABLE_INGOTS_ITEMS)
-            {
-                event.getRegistry().register(itemIngot = new ItemCrafting("ingot", "steel", "copper"));
-                event.getRegistry().register(itemIngotClump = new ItemCrafting("clump", "steel"));
-                itemIngot.registerOreNames();
-            }
-            if (ConfigItems.ENABLE_PLATES_ITEMS)
-            {
-                event.getRegistry().register(itemPlate = new ItemCrafting("plate", "steel", "iron"));
-                itemPlate.registerOreNames("iron");
-            }
-            if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
-            {
-                event.getRegistry().register(itemCircuit = new ItemCrafting("circuit", "basic", "advanced", "elite"));
-                itemCircuit.registerOreNames();
-            }
-            if (ConfigItems.ENABLE_WIRES_ITEMS)
-            {
-                event.getRegistry().register(itemWire = new ItemCrafting("wire", "copper", "gold"));
-                itemWire.registerOreNames();
-            }
-        }
-
-        //Optional items
-        if (ConfigItems.ENABLE_BATTERY)
-        {
-            event.getRegistry().register(itemBattery = new ItemBattery());
-        }
-
-        //update tab
-        CREATIVE_TAB.itemStack = new ItemStack(itemMissile);
-    }
-
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event)
-    {
-        event.getRegistry().register(blockGlassPlate = new BlockGlassPressurePlate());
-        event.getRegistry().register(blockGlassButton = new BlockGlassButton());
-        event.getRegistry().register(blockSpikes = new BlockSpikes());
-        event.getRegistry().register(blockConcrete = new BlockConcrete());
-        event.getRegistry().register(blockReinforcedGlass = new BlockReinforcedGlass());
-        //event.getRegistry().register(blockCombatRail = new BlockReinforcedRail());
-        event.getRegistry().register(blockExplosive = new BlockExplosive());
-
-        event.getRegistry().register(blockEmpTower = new BlockEmpTower());
-        event.getRegistry().register(blockRadarStation = new BlockRadarStation());
-        event.getRegistry().register(blockLaunchSupport = new BlockLaunchFrame());
-        event.getRegistry().register(blockLaunchBase = new BlockLauncherBase());
-        event.getRegistry().register(blockLaunchScreen = new BlockLaunchScreen());
-        event.getRegistry().register(multiBlock = new BlockMultiblock());
-        event.getRegistry().register(blockBattery = new BlockBattery());
-
-        event.getRegistry().register(blockCruiseLauncher = new BlockCruiseLauncher());
-
-        /*
-        blockCamo = manager.newBlock("icbmCCamouflage", TileCamouflage.class);
-        ICBMClassic.blockCruiseLauncher = ICBMClassic.INSTANCE.getManager().newBlock("icbmCCruiseLauncher", new TileCruiseLauncher());
-        ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
-        */
-
-        GameRegistry.registerTileEntity(TileEntityExplosive.class, PREFIX + "explosive");
-        GameRegistry.registerTileEntity(TileEMPTower.class, PREFIX + "emptower");
-        GameRegistry.registerTileEntity(TileRadarStation.class, PREFIX + "radarstation");
-        GameRegistry.registerTileEntity(TileLauncherFrame.class, PREFIX + "launcherframe");
-        GameRegistry.registerTileEntity(TileLauncherBase.class, PREFIX + "launcherbase");
-        GameRegistry.registerTileEntity(TileLauncherScreen.class, PREFIX + "launcherscreen");
-        GameRegistry.registerTileEntity(TileMulti.class, PREFIX + "multiblock");
-        GameRegistry.registerTileEntity(TileEntityBattery.class, PREFIX + "batterybox");
-        GameRegistry.registerTileEntity(TileCruiseLauncher.class, PREFIX + "cruiseLauncher");
-    }
 
 
 
-    @SubscribeEvent
-    public static void registerAllModels(ModelRegistryEvent event)
-    {
-        proxy.doLoadModels();
-    }
+
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
@@ -315,13 +145,13 @@ public final class ICBMClassic
         if (ConfigItems.ENABLE_INGOTS_ITEMS)
         {
             //Steel clump -> Steel ingot
-            GameRegistry.addSmelting(new ItemStack(itemIngotClump, 1, 0), new ItemStack(itemIngot, 1, 0), 0.1f);
+            GameRegistry.addSmelting(new ItemStack(ItemReg.itemIngotClump, 1, 0), new ItemStack(ItemReg.itemIngot, 1, 0), 0.1f);
         }
 
         if (ConfigItems.ENABLE_PLATES_ITEMS)
         {
             //Fix for removing recipe of plate
-            GameRegistry.addSmelting(itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
+            GameRegistry.addSmelting(ItemReg.itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
         }
     }
 
@@ -339,23 +169,23 @@ public final class ICBMClassic
                 {
                     if (ConfigItems.ENABLE_INGOTS_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.copper", itemIngot.getStack("copper", 10), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.steel", itemIngot.getStack("steel", 10), 20, 3));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.copper", ItemReg.itemIngot.getStack("copper", 10), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.steel", ItemReg.itemIngot.getStack("steel", 10), 20, 3));
                     }
                     if (ConfigItems.ENABLE_PLATES_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.steel", itemPlate.getStack("steel", 5), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.steel", ItemReg.itemPlate.getStack("steel", 5), 30, 3));
                     }
                     if (ConfigItems.ENABLE_WIRES_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.copper", itemWire.getStack("copper", 20), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.gold", itemWire.getStack("gold", 15), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.copper", ItemReg.itemWire.getStack("copper", 20), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.gold", ItemReg.itemWire.getStack("gold", 15), 30, 3));
                     }
                     if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.basic", itemCircuit.getStack("basic", 15), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.advanced", itemCircuit.getStack("advanced", 11), 30, 3));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.elite", itemCircuit.getStack("elite", 8), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.basic", ItemReg.itemCircuit.getStack("basic", 15), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.advanced", ItemReg.itemCircuit.getStack("advanced", 11), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.elite", ItemReg.itemCircuit.getStack("elite", 8), 30, 3));
                     }
                 }
             }
@@ -367,7 +197,7 @@ public final class ICBMClassic
                 LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
                 if (lootPool != null)
                 {
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(itemSulfurDust, 10, 0), 2, 0));
+                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(ItemReg.itemSulfurDust, 10, 0), 2, 0));
                 }
             }
         }
@@ -437,8 +267,8 @@ public final class ICBMClassic
 
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
-        OreDictionary.registerOre("dustSulfur", new ItemStack(itemSulfurDust));
-        OreDictionary.registerOre("dustSaltpeter", new ItemStack(itemSaltpeterDust));
+        OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
+        OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
 
         /** Potion Effects */ //TODO move to effect system
         PoisonToxin.INSTANCE = MobEffects.POISON;//new PoisonToxin(true, 5149489, "toxin");
@@ -446,9 +276,9 @@ public final class ICBMClassic
         PoisonFrostBite.INSTANCE = MobEffects.POISON;//new PoisonFrostBite(false, 5149489, "frostBite");
 
         /** Dispenser Handler */ //TODO move to its own class
-        if (itemGrenade != null)
+        if (ItemReg.itemGrenade != null)
         {
-            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemGrenade, new IBehaviorDispenseItem()
+            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ItemReg.itemGrenade, new IBehaviorDispenseItem()
             {
                 @Override
                 public ItemStack dispense(IBlockSource blockSource, ItemStack itemStack)
@@ -470,10 +300,10 @@ public final class ICBMClassic
             });
         }
 
-        if (itemBombCart != null)
+        if (ItemReg.itemBombCart != null)
         {
             //TODO move to its own class
-            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(itemBombCart, new BehaviorDefaultDispenseItem()
+            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ItemReg.itemBombCart, new BehaviorDefaultDispenseItem()
             {
                 private final BehaviorDefaultDispenseItem behaviourDefaultDispenseItem = new BehaviorDefaultDispenseItem();
 

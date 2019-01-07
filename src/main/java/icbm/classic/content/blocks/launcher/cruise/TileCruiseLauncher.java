@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.inventory.IInventoryProvider;
@@ -90,7 +91,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (this.getInventory().getStackInSlot(0).getItem() != ICBMClassic.itemMissile)
+        else if (this.getInventory().getStackInSlot(0).getItem() != ItemReg.itemMissile)
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
         }
@@ -280,7 +281,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         if (getTarget() != null && !getTarget().isZero())
         {
             //Validate if we have an item and a target
-            if (this.getInventory().getStackInSlot(0).getItem() == ICBMClassic.itemMissile) //TODO use capability
+            if (this.getInventory().getStackInSlot(0).getItem() == ItemReg.itemMissile) //TODO use capability
             {
                 //Validate that the item in the slot is a missile we can fire
                 if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(this.getInventory().getStackInSlot(0).getItemDamage()))

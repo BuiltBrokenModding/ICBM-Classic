@@ -1,6 +1,8 @@
 package icbm.classic.client;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -29,30 +31,30 @@ public class ICBMCreativeTab extends CreativeTabs
     public void init()
     {
         definedTabItemsInOrder.clear();
-        orderItem(ICBMClassic.blockLaunchBase);
-        orderItem(ICBMClassic.blockLaunchScreen);
-        orderItem(ICBMClassic.blockLaunchSupport);
-        orderItem(ICBMClassic.blockEmpTower);
-        orderItem(ICBMClassic.blockRadarStation);
-        orderItem(ICBMClassic.blockBattery);
+        orderItem(BlockReg.blockLaunchBase);
+        orderItem(BlockReg.blockLaunchScreen);
+        orderItem(BlockReg.blockLaunchSupport);
+        orderItem(BlockReg.blockEmpTower);
+        orderItem(BlockReg.blockRadarStation);
+        orderItem(BlockReg.blockBattery);
 
-        orderItem(ICBMClassic.blockConcrete);
-        orderItem(ICBMClassic.blockReinforcedGlass);
-        orderItem(ICBMClassic.blockSpikes);
+        orderItem(BlockReg.blockConcrete);
+        orderItem(BlockReg.blockReinforcedGlass);
+        orderItem(BlockReg.blockSpikes);
 
-        orderItem(ICBMClassic.itemRocketLauncher);
-        orderItem(ICBMClassic.itemRadarGun);
-        orderItem(ICBMClassic.itemRemoteDetonator);
-        orderItem(ICBMClassic.itemLaserDesignator);
-        orderItem(ICBMClassic.itemTracker);
-        orderItem(ICBMClassic.itemSignalDisrupter);
-        orderItem(ICBMClassic.itemDefuser);
-        orderItem(ICBMClassic.itemBattery);
+        orderItem(ItemReg.itemRocketLauncher);
+        orderItem(ItemReg.itemRadarGun);
+        orderItem(ItemReg.itemRemoteDetonator);
+        orderItem(ItemReg.itemLaserDesignator);
+        orderItem(ItemReg.itemTracker);
+        orderItem(ItemReg.itemSignalDisrupter);
+        orderItem(ItemReg.itemDefuser);
+        orderItem(ItemReg.itemBattery);
 
-        orderItem(ICBMClassic.blockExplosive);
-        orderItem(ICBMClassic.itemMissile);
-        orderItem(ICBMClassic.itemGrenade);
-        orderItem(ICBMClassic.itemBombCart);
+        orderItem(BlockReg.blockExplosive);
+        orderItem(ItemReg.itemMissile);
+        orderItem(ItemReg.itemGrenade);
+        orderItem(ItemReg.itemBombCart);
     }
 
     private void orderItem(Block item)

@@ -1,6 +1,5 @@
 package icbm.classic.content.blocks.launcher.base;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.ILauncherController;
@@ -14,6 +13,8 @@ import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
+import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
@@ -207,7 +208,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     @Override
     public boolean canStore(ItemStack stack, EnumFacing side)
     {
-        return stack != null && stack.getItem() == ICBMClassic.itemMissile;
+        return stack != null && stack.getItem() == ItemReg.itemMissile;
     }
 
     @Override
@@ -231,7 +232,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public boolean launchMissile(Pos target, int lockHeight)
     {
         final ItemStack stack = getMissileStack();
-        if (stack.getItem() == ICBMClassic.itemMissile)
+        if (stack.getItem() == ItemReg.itemMissile)
         {
             IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
             if (explosiveData != null)
@@ -384,7 +385,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
 
         if (!tryInsertMissile(player, hand, heldItem) && launchScreen != null)
         {
-            return ICBMClassic.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
+            return BlockReg.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
             //return launchScreen.onPlayerActivated(player, side, hit);
         }
 

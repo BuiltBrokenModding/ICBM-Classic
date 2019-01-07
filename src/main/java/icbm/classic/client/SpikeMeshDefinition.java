@@ -1,6 +1,6 @@
 package icbm.classic.client;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.content.reg.BlockReg;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -22,15 +22,15 @@ public class SpikeMeshDefinition implements ItemMeshDefinition
 
     private SpikeMeshDefinition()
     {
-        base = new ModelResourceLocation(ICBMClassic.blockSpikes.getRegistryName(), "inventory");
-        fire = new ModelResourceLocation(ICBMClassic.blockSpikes.getRegistryName() + "_fire", "inventory");
-        poison = new ModelResourceLocation(ICBMClassic.blockSpikes.getRegistryName() + "_poison", "inventory");
+        base = new ModelResourceLocation(BlockReg.blockSpikes.getRegistryName(), "inventory");
+        fire = new ModelResourceLocation(BlockReg.blockSpikes.getRegistryName() + "_fire", "inventory");
+        poison = new ModelResourceLocation(BlockReg.blockSpikes.getRegistryName() + "_poison", "inventory");
 
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.blockSpikes), base);
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.blockSpikes), base);
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.blockSpikes), fire);
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(ICBMClassic.blockSpikes), poison);
-        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(ICBMClassic.blockSpikes), this);
+        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockSpikes), base);
+        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockSpikes), base);
+        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockSpikes), fire);
+        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockSpikes), poison);
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockSpikes), this);
     }
 
     public static void init()

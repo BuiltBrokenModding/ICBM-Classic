@@ -3,8 +3,8 @@ package icbm.classic.content.items;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.api.EnumTier;
 import icbm.classic.prefab.item.ItemICBMBase;
@@ -78,7 +78,7 @@ public class ItemMissile extends ItemICBMBase
             list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
 
             //TODO add hook
-            ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+            ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
         }
     }
 }

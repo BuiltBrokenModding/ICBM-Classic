@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
@@ -34,7 +34,7 @@ public class RenderGrenade extends Render<EntityGrenade>
         //Set data
         entityItem.setWorld(entity.world);
         entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
-        entityItem.setItem(new ItemStack(ICBMClassic.itemGrenade, 1, entity.explosiveID));
+        entityItem.setItem(new ItemStack(ItemReg.itemGrenade, 1, entity.explosiveID));
 
         //render
         renderEntityItem.doRender(entityItem, x, y, z, par8, par9);

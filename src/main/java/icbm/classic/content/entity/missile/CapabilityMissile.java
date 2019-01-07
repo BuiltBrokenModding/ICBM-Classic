@@ -1,10 +1,9 @@
 package icbm.classic.content.entity.missile;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -55,7 +54,7 @@ public class CapabilityMissile implements IMissile
     @Override
     public ItemStack toStack()
     {
-        return new ItemStack(ICBMClassic.itemMissile, 1, missile.explosiveID);
+        return new ItemStack(ItemReg.itemMissile, 1, missile.explosiveID);
     }
 
     @Override
