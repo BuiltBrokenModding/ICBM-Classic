@@ -4,8 +4,9 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.ILauncherContainer;
-import icbm.classic.api.explosion.IMissile;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
@@ -37,16 +38,21 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
-/** @Author - Calclavia */
-public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IMissile
+/**
+ * @Author - Calclavia
+ */
+public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
 {
+
     public static final float MISSILE_SPEED = 2;
     public int explosiveID = -1;
     public int maxHeight = 200;
     public Pos targetPos = null;
     public Pos launcherPos = null;
 
-    /** State check to prevent the missile from blowing up twice */
+    /**
+     * State check to prevent the missile from blowing up twice
+     */
     public boolean isExploding = false;
 
     public boolean destroyNextTick = false;
@@ -89,6 +95,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public NBTTagCompound blastData = new NBTTagCompound();
 
     public IEMPReceiver capabilityEMP;
+    public final IMissile capabilityMissile = new CapabilityMissile(this);
 
     final int maxPreLaunchSmokeTimer = 50;
     public int preLaunchSmokeTimer = maxPreLaunchSmokeTimer;
@@ -134,7 +141,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             }
             return (T) capabilityEMP;
         }
+        else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
+        {
+            return (T) capabilityMissile;
+        }
         return super.getCapability(capability, facing);
+
     }
 
     @Override
@@ -189,7 +201,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.missileType = MissileFlightType.values()[additionalMissileData.readInt()];
     }
 
-    @Override
     public void launch(Pos target)
     {
         //Start motion
@@ -205,7 +216,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
         //Trigger events
         //TODO add generic event
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(this);
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(capabilityMissile);
 
         //Trigger code
         this.recalculatePath();
@@ -371,7 +382,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.spawnMissileSmoke();
 
         //Trigger events
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(this);
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(capabilityMissile);
 
         super.updateMotion();
     }
@@ -383,7 +394,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 && !(getPassengers().size() > 0)
                 && targetPos.distance(launcherPos) > 50
                 && !wasSimulated
-                && ( posY >= ConfigMissile.SIMULATION_START_HEIGHT || ( motionY <= 0 && this.ticksInAir > 20*5 ));
+                && (posY >= ConfigMissile.SIMULATION_START_HEIGHT || (motionY <= 0 && this.ticksInAir > 20 * 5));
     }
 
     @Override
@@ -555,7 +566,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
     }
 
-    /** Checks to see if an entity is touching the missile. If so, blow up! */
+    /**
+     * Checks to see if an entity is touching the missile. If so, blow up!
+     */
     @Override
     public AxisAlignedBB getCollisionBox(Entity entity)
     {
@@ -590,25 +603,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
-    public void triggerExplosion()
-    {
-        explodeNextTick = true;
-    }
-
-    @Override
-    public void destroyMissile(boolean fullExplosion)
-    {
-        destroyNextTick = true;
-        destroyWithFullExplosion = fullExplosion;
-    }
-
-    @Override
-    public boolean isExploding()
-    {
-        return isExploding;
-    }
-
-    @Override
     public void setDead()
     {
         if (!world.isRemote)
@@ -619,8 +613,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         super.setDead();
     }
 
-    @Override
-    public void doExplosion()
+    public BlastState doExplosion()
     {
         //Eject from riding
         dismountRidingEntity();
@@ -632,6 +625,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             // Make sure the missile is not already exploding
             if (!this.isExploding)
             {
+                //Log that the missile impacted
+                ICBMClassic.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+
                 //Make sure to note we are currently exploding
                 this.isExploding = true;
 
@@ -640,38 +636,21 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
                 if (!this.world.isRemote)
                 {
-                    ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosiveID, 1, blastData);
+                    return ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosiveID, 1, blastData);
                 }
-
-                //Log that the missile impacted
-                ICBMClassic.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+                return BlastState.TRIGGERED;
             }
-        }
-        catch (Exception e)
+            return BlastState.ALREADY_TRIGGERED;
+        } catch (Exception e)
         {
             ICBMClassic.logger().error("EntityMissile#normalExplode() - Unexpected error while triggering explosive on missile", e);
+            return BlastState.ERROR;
         }
     }
 
-    @Override
-    public void dropMissileAsItem()
-    {
-        if (!this.isExploding && !this.world.isRemote)
-        {
-            EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID));
-
-            float var13 = 0.05F;
-            Random random = new Random();
-            entityItem.motionX = ((float) random.nextGaussian() * var13);
-            entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
-            entityItem.motionZ = ((float) random.nextGaussian() * var13);
-            this.world.spawnEntity(entityItem);
-        }
-
-        this.setDead();
-    }
-
-    /** (abstract) Protected helper method to read subclass entity additionalMissileData from NBT. */
+    /**
+     * (abstract) Protected helper method to read subclass entity additionalMissileData from NBT.
+     */
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
@@ -688,7 +667,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.blastData = nbt.getCompoundTag("additionalMissileData");
     }
 
-    /** (abstract) Protected helper method to write subclass entity additionalMissileData to NBT. */
+    /**
+     * (abstract) Protected helper method to write subclass entity additionalMissileData to NBT.
+     */
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
@@ -711,11 +692,5 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         nbt.setInteger("missileType", this.missileType.ordinal());
         nbt.setInteger("preLaunchSmokeTimer", this.preLaunchSmokeTimer);
         nbt.setTag("additionalMissileData", this.blastData);
-    }
-
-    @Override
-    public int getTicksInAir()
-    {
-        return this.ticksInAir;
     }
 }

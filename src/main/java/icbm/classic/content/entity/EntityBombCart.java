@@ -1,7 +1,7 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.prefab.tile.BlockICBM;
@@ -110,7 +110,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     public IBlockState getDefaultDisplayTile()
     {
         return ICBMClassic.blockExplosive.getDefaultState()
-                .withProperty(BlockExplosive.EX_PROP, ICBMClassicAPI.getExplosive(explosive, false))
+                .withProperty(BlockExplosive.EX_PROP, ICBMClassicHelpers.getExplosive(explosive, false))
                 .withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
     }
 }

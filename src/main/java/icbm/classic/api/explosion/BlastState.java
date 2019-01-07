@@ -5,12 +5,35 @@ package icbm.classic.api.explosion;
  */
 public enum BlastState
 {
-    /** Triggered in main thread */
-    TRIGGERED,
-    /** Triggered in worker thread */
-    THREADING,
-    /** Forge TNT event canceled blast */
-    FORGE_EVENT_CANCEL,
-    /** No blast to trigger */
-    NULL
+    /**
+     * Triggered in main thread
+     */
+    TRIGGERED(true),
+    /**
+     * Triggered in worker thread
+     */
+    THREADING(true),
+    /**
+     * Forge TNT event canceled blast
+     */
+    FORGE_EVENT_CANCEL(false),
+    /**
+     * No blast to trigger
+     */
+    NULL(false),
+    /**
+     * Unexpected error
+     */
+    ERROR(false),
+    /**
+     * Blast was already triggered
+     */
+    ALREADY_TRIGGERED(true);
+
+    public final boolean good;
+
+    BlastState(boolean good)
+    {
+        this.good = good;
+    }
 }

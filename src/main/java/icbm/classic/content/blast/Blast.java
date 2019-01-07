@@ -4,7 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
-import icbm.classic.api.explosion.IMissile;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.EntityExplosion;

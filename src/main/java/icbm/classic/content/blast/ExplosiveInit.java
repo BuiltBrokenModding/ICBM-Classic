@@ -5,7 +5,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.IWorldPosition;
-import icbm.classic.api.caps.IExplosiveProvider;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.reg.IExplosiveData;
@@ -141,7 +141,7 @@ public class ExplosiveInit
     {
         if(entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
         {
-            final IExplosiveProvider provider = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+            final IExplosive provider = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
             final NBTTagCompound tag = provider.getCustomBlastData();
             if(tag != null)
             {

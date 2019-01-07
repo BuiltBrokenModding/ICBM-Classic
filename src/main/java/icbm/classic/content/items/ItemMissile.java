@@ -1,6 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
@@ -70,7 +71,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        IExplosiveData data = ICBMClassicAPI.getExplosive(stack.getItemDamage(), true);
+        IExplosiveData data = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
         if (data != null)
         {
             final EnumTier tierdata = data.getTier();

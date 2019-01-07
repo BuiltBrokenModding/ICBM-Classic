@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
  * Used in capabilities to provide an explosive for usage
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-public interface IExplosiveProvider
+public interface IExplosive
 {
 
     /**

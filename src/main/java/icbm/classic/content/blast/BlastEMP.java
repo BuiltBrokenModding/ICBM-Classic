@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.EmpEvent;
 import icbm.classic.lib.emp.CapabilityEMP;
@@ -77,7 +77,7 @@ public class BlastEMP extends Blast
                                 //Fire event to allow canceling action on entity
                                 if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, world, blockPos, iBlockState)))
                                 {
-                                    if (ICBMClassicAPI.hasEmpHandler(iBlockState))
+                                    if (ICBMClassicHelpers.hasEmpHandler(iBlockState))
                                     {
                                         //TODO implement
                                     }

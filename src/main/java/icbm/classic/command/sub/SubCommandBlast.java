@@ -1,6 +1,7 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.imp.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
@@ -67,7 +68,7 @@ public class SubCommandBlast extends SubCommand
                 throw new WrongUsageException("Scale must be greater than zero!");
             }
 
-            final IExplosiveData explosiveData = ICBMClassicAPI.getExplosive(explosive_id, true);
+            final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
 
             if (explosiveData  == null)
             {

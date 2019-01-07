@@ -1,7 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.ILauncherController;
 import icbm.classic.api.reg.IExplosiveData;
@@ -233,7 +233,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         final ItemStack stack = getMissileStack();
         if (stack.getItem() == ICBMClassic.itemMissile)
         {
-            IExplosiveData explosiveData = ICBMClassicAPI.getExplosive(stack.getItemDamage(), true);
+            IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
             if (explosiveData != null)
             {
                 // Apply inaccuracy

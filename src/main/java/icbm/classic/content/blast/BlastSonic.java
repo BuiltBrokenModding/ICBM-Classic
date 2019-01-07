@@ -1,7 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.explosion.IMissile;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.EntityFlyingBlock;

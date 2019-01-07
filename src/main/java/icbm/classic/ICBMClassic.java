@@ -8,8 +8,10 @@ import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.missile.CapabilityMissile;
 import icbm.classic.content.entity.mobs.*;
 import icbm.classic.content.blast.ExplosiveInit;
+import icbm.classic.lib.explosive.cap.CapabilityExplosive;
 import icbm.classic.lib.explosive.reg.*;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
@@ -426,6 +428,8 @@ public final class ICBMClassic
 
         //Register caps
         CapabilityEMP.register();
+        CapabilityMissile.register();
+        CapabilityExplosive.register();
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);

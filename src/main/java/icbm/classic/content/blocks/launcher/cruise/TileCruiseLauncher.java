@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.network.IPacket;
@@ -95,7 +96,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         else
         {
-            IExplosiveData explosiveData = ICBMClassicAPI.getExplosive(this.getInventory().getStackInSlot(0).getItemDamage(), true);
+            IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0).getItemDamage(), true);
             if (explosiveData == null)
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");

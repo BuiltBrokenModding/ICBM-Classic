@@ -1,14 +1,11 @@
 package icbm.classic.api;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.caps.IExplosiveProvider;
-import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.reg.content.*;
 import icbm.classic.api.reg.IExplosiveRegistry;
-import icbm.classic.lib.emp.CapabilityEMP;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -57,46 +54,11 @@ public final class ICBMClassicAPI
     @CapabilityInject(IEMPReceiver.class)
     public static Capability<IEMPReceiver> EMP_CAPABILITY = null;
 
-    @CapabilityInject(IExplosiveProvider.class)
-    public static Capability<IExplosiveProvider> EXPLOSIVE_CAPABILITY = null;
+    @CapabilityInject(IExplosive.class)
+    public static Capability<IExplosive> EXPLOSIVE_CAPABILITY = null;
 
-
-    //=========================
-    //=== Helpers =============
-    //=========================
-
-    /**
-     * Called to get explosive
-     *
-     * @param explosive
-     * @return explosive desired, or default TNT
-     */
-    public static IExplosiveData getExplosive(int explosive, boolean returnNull)
-    {
-        IExplosiveData data = EXPLOSIVE_REGISTRY.getExplosiveData(explosive);
-        if (data != null)
-        {
-            return data;
-        }
-        System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for ID[" + explosive + "] this may cause unexpected logic");
-        return returnNull ? null : ExplosiveRefs.CONDENSED;
-    }
-
-    public static IExplosiveData getExplosive(String name, boolean returnNull)
-    {
-        return getExplosive(new ResourceLocation(name), returnNull);
-    }
-
-    public static IExplosiveData getExplosive(ResourceLocation name, boolean returnNull)
-    {
-        IExplosiveData data = EXPLOSIVE_REGISTRY.getExplosiveData(name);
-        if (data != null)
-        {
-            return data;
-        }
-        System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for Name[" + name + "] this may cause unexpected logic");
-        return returnNull ? null : ExplosiveRefs.CONDENSED;
-    }
+    @CapabilityInject(IMissile.class)
+    public static Capability<IMissile> MISSILE_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}
@@ -113,9 +75,4 @@ public final class ICBMClassicAPI
         //TODO implement
     }
 
-    @Deprecated //Will be placed in a registry/handler
-    public static boolean hasEmpHandler(IBlockState iBlockState)
-    {
-        return false; //TODO implement
-    }
 }

@@ -2,7 +2,7 @@ package icbm.classic.lib.explosive.reg;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.data.EntityInteractionFunction;
-import icbm.classic.api.explosion.IMissile;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.reg.content.IExMissileRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

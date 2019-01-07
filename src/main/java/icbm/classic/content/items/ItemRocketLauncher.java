@@ -1,6 +1,6 @@
 package icbm.classic.content.items;
 
-import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.entity.missile.MissileFlightType;
@@ -87,7 +87,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                         if (inventoryStack.getItem() instanceof ItemMissile) //TODO add capability
                         {
                             final int explosiveID = inventoryStack.getItemDamage();
-                            final IExplosiveData exData = ICBMClassicAPI.getExplosive(explosiveID, true);
+                            final IExplosiveData exData = ICBMClassicHelpers.getExplosive(explosiveID, true);
 
                             if (exData != null)
                             {

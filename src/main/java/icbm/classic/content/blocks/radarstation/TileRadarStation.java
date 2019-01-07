@@ -1,6 +1,8 @@
 package icbm.classic.content.blocks.radarstation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.prefab.tile.IGuiTile;
@@ -44,7 +46,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
     public List<Entity> detectedEntities = new ArrayList<Entity>();
     /** List of all incoming missiles, in order of distance. */
-    private List<EntityMissile> incomingMissiles = new ArrayList<EntityMissile>();
+    private List<IMissile> incomingMissiles = new ArrayList();
 
     ExternalInventory inventory;
 
@@ -165,9 +167,10 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
         for (Entity entity : entities)
         {
-            if (entity instanceof EntityMissile) //TODO && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
+            if (ICBMClassicHelpers.isMissile(entity)) //TODO && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
             {
-                if (((EntityMissile) entity).getTicksInAir() > -1)
+                final IMissile newMissile = ICBMClassicHelpers.getMissile(entity);
+                if (newMissile != null && newMissile.getTicksInAir() > 1)
                 {
                     if (!this.detectedEntities.contains(entity))
                     {
@@ -179,27 +182,27 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                         if (this.incomingMissiles.size() > 0)
                         {
                             /** Sort in order of distance */
-                            double dist = new Pos((TileEntity) this).distance(new Pos(entity));
+                            double dist = new Pos((TileEntity) this).distance(newMissile);
 
                             for (int i = 0; i < this.incomingMissiles.size(); i++)
                             {
-                                EntityMissile missile = this.incomingMissiles.get(i);
+                                IMissile missile = this.incomingMissiles.get(i);
 
-                                if (dist < new Pos((TileEntity) this).distance((IPos3D) missile))
+                                if (dist < new Pos((TileEntity) this).distance(missile))
                                 {
-                                    this.incomingMissiles.add(i, (EntityMissile) entity);
+                                    this.incomingMissiles.add(i, missile);
                                     break;
                                 }
                                 else if (i == this.incomingMissiles.size() - 1)
                                 {
-                                    this.incomingMissiles.add((EntityMissile) entity);
+                                    this.incomingMissiles.add(missile);
                                     break;
                                 }
                             }
                         }
                         else
                         {
-                            this.incomingMissiles.add((EntityMissile) entity);
+                            this.incomingMissiles.add(newMissile);
                         }
                     }
                 }
@@ -353,7 +356,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 return Math.min(15, 5 + incomingMissiles.size());
             }
 
-            for (EntityMissile incomingMissile : this.incomingMissiles)
+            for (IMissile incomingMissile : this.incomingMissiles)
             {
                 Point position = new Point(incomingMissile.x(), incomingMissile.y());
                 EnumFacing missileTravelDirection = EnumFacing.DOWN;
