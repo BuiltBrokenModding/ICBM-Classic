@@ -27,6 +27,7 @@ import java.util.List;
 
 public class ItemBombCart extends ItemICBMBase
 {
+
     public ItemBombCart()
     {
         super("bombcart");
@@ -62,7 +63,7 @@ public class ItemBombCart extends ItemICBMBase
                     d0 = 0.5D;
                 }
 
-                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.0625D + d0, (double) pos.getZ() + 0.5D, Explosives.get(itemstack.getItemDamage()));
+                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.0625D + d0, (double) pos.getZ() + 0.5D, itemstack.getItemDamage());
 
                 if (itemstack.hasDisplayName())
                 {
@@ -99,12 +100,9 @@ public class ItemBombCart extends ItemICBMBase
     {
         if (tab == getCreativeTab())
         {
-            for (Explosives zhaPin : Explosives.values())
+            for (int id : ICBMClassicAPI.EX_MINECRT_REGISTRY.getExplosivesIDs())
             {
-                if (zhaPin.handler.hasMinecartForm())
-                {
-                    items.add(new ItemStack(this, 1, zhaPin.ordinal()));
-                }
+                items.add(new ItemStack(this, 1, id));
             }
         }
     }
@@ -118,10 +116,13 @@ public class ItemBombCart extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        EnumTier tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
-        list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.ordinal());
-        if (ICBMClassic.blockExplosive instanceof BlockExplosive)
+        IExplosiveData data = ICBMClassicAPI.getExplosive(stack.getItemDamage(), true);
+        if(data != null)
         {
+            final EnumTier tierdata = data.getTier();
+            list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.ordinal());
+
+            //TODO change over to a hook
             ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
         }
     }

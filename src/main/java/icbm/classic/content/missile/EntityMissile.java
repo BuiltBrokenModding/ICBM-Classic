@@ -10,6 +10,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.explosive.Explosive;
+import icbm.classic.content.explosive.ExplosiveHandler;
 import icbm.classic.lib.emp.CapabilityEMP;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.transform.vector.Pos;
@@ -41,7 +42,7 @@ import java.util.Random;
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData, IMissile
 {
     public static final float MISSILE_SPEED = 2;
-    public Explosives explosiveID = Explosives.CONDENSED;
+    public int explosiveID = -1;
     public int maxHeight = 200;
     public Pos targetPos = null;
     public Pos launcherPos = null;
@@ -86,7 +87,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     // Used for the rocket launcher preventing the players from killing themselves.
     private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
 
-    public NBTTagCompound nbtData = new NBTTagCompound();
+    public NBTTagCompound blastData = new NBTTagCompound();
 
     public IEMPReceiver capabilityEMP;
 
@@ -167,7 +168,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
     public String getEntityName()
     {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID.ordinal());
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID);
         if (data != null)
         {
             return "icbm.missile." + data.getRegistryName();
@@ -178,14 +179,14 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
-        additionalMissileData.writeInt(this.explosiveID.ordinal());
+        additionalMissileData.writeInt(this.explosiveID);
         additionalMissileData.writeInt(this.missileType.ordinal());
     }
 
     @Override
     public void readSpawnData(ByteBuf additionalMissileData)
     {
-        this.explosiveID = Explosives.get(additionalMissileData.readInt());
+        this.explosiveID = additionalMissileData.readInt();
         this.missileType = MissileFlightType.values()[additionalMissileData.readInt()];
     }
 
@@ -202,10 +203,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
         this.targetPos = target;
         this.targetHeight = this.targetPos != null ? this.targetPos.yi() : 0;
-        if (explosiveID != null && explosiveID.handler instanceof Explosion)
-        {
-            ((Explosion) explosiveID.handler).launch(this);
-        }
+
+        //Trigger events
+        //TODO add generic event
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(this);
 
         //Trigger code
         this.recalculatePath();
@@ -369,10 +370,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             preLaunchSmokeTimer--;
         }
         this.spawnMissileSmoke();
-        if (this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
-        {
-            ((Explosion) this.explosiveID.handler).update(this);
-        }
+
+        //Trigger events
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(this);
+
         super.updateMotion();
     }
 
@@ -434,7 +435,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
         //Allow missile to override interaction
-        if (this.explosiveID != null && ((Explosion) this.explosiveID.handler).onInteract(this, player, hand))
+        if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand))
         {
             return true;
         }
@@ -640,17 +641,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
                 if (!this.world.isRemote)
                 {
-                    //Create TNT explosion if no explosive exists
-                    if (this.explosiveID == null)
-                    {
-                        this.world.createExplosion(this, this.posX, this.posY, this.posZ, 5F, true);
-
-                    }
-                    //Triger normal explosion
-                    else
-                    {
-                        this.explosiveID.handler.createExplosion(this.world, new BlockPos(this.posX, this.posY, this.posZ), this, 1);
-                    }
+                    ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosiveID, 1, blastData);
                 }
 
                 //Log that the missile impacted
@@ -668,7 +659,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     {
         if (!this.isExploding && !this.world.isRemote)
         {
-            EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID.ordinal()));
+            EntityItem entityItem = new EntityItem(this.world, this.posX, this.posY, this.posZ, new ItemStack(ICBMClassic.itemMissile, 1, this.explosiveID));
 
             float var13 = 0.05F;
             Random random = new Random();
@@ -690,12 +681,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.launcherPos = new Pos(nbt.getCompoundTag("launcherPos"));
         this.acceleration = nbt.getFloat("acceleration");
         this.targetHeight = nbt.getInteger("targetHeight");
-        this.explosiveID = Explosives.get(nbt.getInteger("explosiveID"));
+        this.explosiveID = nbt.getInteger("explosiveID");
         this.ticksInAir = nbt.getInteger("ticksInAir");
         this.lockHeight = nbt.getDouble("lockHeight");
         this.missileType = MissileFlightType.get(nbt.getInteger("missileType"));
         this.preLaunchSmokeTimer = nbt.getInteger("preLaunchSmokeTimer");
-        this.nbtData = nbt.getCompoundTag("additionalMissileData");
+        this.blastData = nbt.getCompoundTag("additionalMissileData");
     }
 
     /** (abstract) Protected helper method to write subclass entity additionalMissileData to NBT. */
@@ -714,28 +705,18 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         nbt.setFloat("acceleration", this.acceleration);
-        nbt.setInteger("explosiveID", this.explosiveID.ordinal());
+        nbt.setInteger("explosiveID", this.explosiveID);
         nbt.setInteger("targetHeight", this.targetHeight);
         nbt.setInteger("ticksInAir", this.ticksInAir);
         nbt.setDouble("lockHeight", this.lockHeight);
         nbt.setInteger("missileType", this.missileType.ordinal());
         nbt.setInteger("preLaunchSmokeTimer", this.preLaunchSmokeTimer);
-        nbt.setTag("additionalMissileData", this.nbtData);
+        nbt.setTag("additionalMissileData", this.blastData);
     }
 
     @Override
     public int getTicksInAir()
     {
         return this.ticksInAir;
-    }
-
-    public Explosive getExplosiveType()
-    {
-        return this.explosiveID.handler;
-    }
-
-    public NBTTagCompound getExplosiveData()
-    {
-        return this.nbtData;
     }
 }

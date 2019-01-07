@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 
 public class BlockExplosive extends BlockICBM
 {
+
     public static final PropertyExplosive EX_PROP = new PropertyExplosive(); //TODO filter to block versions only
 
     public BlockExplosive()
@@ -104,7 +105,9 @@ public class BlockExplosive extends BlockICBM
         return getDefaultState().withProperty(ROTATION_PROP, facing).withProperty(EX_PROP, ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(stack.getItemDamage()));
     }
 
-    /** Called when the block is placed in the world. */
+    /**
+     * Called when the block is placed in the world.
+     */
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack)
     {
@@ -206,7 +209,9 @@ public class BlockExplosive extends BlockICBM
         }
     }
 
-    /** Called upon the block being destroyed by an explosion */
+    /**
+     * Called upon the block being destroyed by an explosion
+     */
     @Override
     public void onBlockExploded(World world, BlockPos pos, Explosion explosion)
     {
@@ -255,12 +260,9 @@ public class BlockExplosive extends BlockICBM
     {
         if (tab == getCreativeTab())
         {
-            for (Explosives zhaPin : Explosives.values())
+            for (int id : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosivesIDs())
             {
-                if (zhaPin.handler.hasBlockForm())
-                {
-                    items.add(new ItemStack(this, 1, zhaPin.ordinal()));
-                }
+                items.add(new ItemStack(this, 1, id));
             }
         }
     }

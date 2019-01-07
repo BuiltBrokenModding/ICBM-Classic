@@ -1,7 +1,9 @@
 package icbm.classic.api;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosiveProvider;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.*;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.lib.emp.CapabilityEMP;
@@ -13,8 +15,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 
 /**
  * API reference class for ICBM-Classic mod
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
 public final class ICBMClassicAPI
@@ -57,6 +59,28 @@ public final class ICBMClassicAPI
 
     @CapabilityInject(IExplosiveProvider.class)
     public static Capability<IExplosiveProvider> EXPLOSIVE_CAPABILITY = null;
+
+
+    //=========================
+    //=== Helpers =============
+    //=========================
+
+    /**
+     * Called to get explosive
+     *
+     * @param explosive
+     * @return explosive desired, or default TNT
+     */
+    public static IExplosiveData getExplosive(int explosive, boolean returnNull)
+    {
+        IExplosiveData data = EXPLOSIVE_REGISTRY.getExplosiveData(explosive);
+        if (data != null)
+        {
+            return data;
+        }
+        System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for ID[" + explosive + "] this may cause unexpected logic");
+        return returnNull ? null : ExplosiveRefs.CONDENSED;
+    }
 
     /**
      * Called to register an EMP handler for the {@link Block}

@@ -88,7 +88,7 @@ public class MissileCluster //extends Missile
     protected EntityMissile createMissile(EntityMissile missileCluster, int index)
     {
         EntityMissile missile = new EntityMissile(missileCluster.world);
-        missile.explosiveID = Explosives.CONDENSED;
+        //missile.explosiveID = Explosives.CONDENSED;
         return missile;
     }
 

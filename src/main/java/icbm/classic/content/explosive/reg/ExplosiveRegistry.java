@@ -33,7 +33,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 
 
     //Ids
-    private int nextID = Explosives.values().length;
+    private int nextID = 0;
 
     //Save file
     private File saveFile;

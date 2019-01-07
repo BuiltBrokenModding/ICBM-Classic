@@ -16,10 +16,9 @@ public interface IExplosiveContentRegistry
     /**
      * Set of all ids enabled for the content
      *
-     * @param contentID - content ID
      * @return set of enabled explosives
      */
-    Set<Integer> getExplosivesEnabledForContent(ResourceLocation contentID);
+    Set<Integer> getExplosivesIDs();
 
     /**
      * Enables content type for the explosion

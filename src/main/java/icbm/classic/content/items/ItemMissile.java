@@ -18,6 +18,7 @@ import java.util.List;
 
 public class ItemMissile extends ItemICBMBase
 {
+
     public ItemMissile()
     {
         super("missile");
@@ -54,12 +55,9 @@ public class ItemMissile extends ItemICBMBase
     {
         if (tab == getCreativeTab())
         {
-            for (Explosives explosive : Explosives.values())
+            for (int id : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosivesIDs())
             {
-                if (explosive.handler.hasMissileForm())
-                {
-                    items.add(new ItemStack(this, 1, explosive.ordinal()));
-                }
+                items.add(new ItemStack(this, 1, id));
             }
         }
     }
@@ -73,10 +71,13 @@ public class ItemMissile extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        EnumTier tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
-        list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
-        if (ICBMClassic.blockExplosive instanceof BlockExplosive)
+        IExplosiveData data = ICBMClassicAPI.getExplosive(stack.getItemDamage(), true);
+        if (data != null)
         {
+            final EnumTier tierdata = data.getTier();
+            list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
+
+            //TODO add hook
             ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
         }
     }

@@ -3,8 +3,12 @@ package icbm.classic.api.reg.content;
 import icbm.classic.api.data.EntityInteractionFunction;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.IMissile;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.InputMismatchException;
 import java.util.function.Consumer;
 
 /**
@@ -50,4 +54,11 @@ public interface IExMissileRegistry extends IExplosiveContentRegistry
     void setInteractionListener(ResourceLocation exName, EntityInteractionFunction function);
 
     //TODO add handling for insert into launcher (cruise launcher prevents cluster and homing)
+
+
+    void triggerLaunch(IMissile missile);
+
+    void triggerFlightUpdate(IMissile missile);
+
+    boolean onInteraction(Entity entity, EntityPlayer player, EnumHand hand);
 }

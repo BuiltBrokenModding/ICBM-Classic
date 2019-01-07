@@ -498,7 +498,7 @@ public final class ICBMClassic
                     {
                         EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
 
-                        EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), Explosives.get(itemStack.getItemDamage()));
+                        EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), itemStack.getItemDamage());
                         entity.setThrowableHeading(enumFacing.getXOffset(), 0.10000000149011612D, enumFacing.getZOffset(), 0.5F, 1.0F);
                         world.spawnEntity(entity);
                     }

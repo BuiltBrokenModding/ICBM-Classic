@@ -1,8 +1,12 @@
 package icbm.classic.content.explosive.reg;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.data.BlockActivateFunction;
+import icbm.classic.api.data.WorldPosIntSupplier;
+import icbm.classic.api.data.WorldTickFunction;
 import icbm.classic.api.reg.content.IExBlockRegistry;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 /**
  *
@@ -13,5 +17,35 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     public ExBlockContentReg()
     {
         super(ICBMClassicAPI.EX_BLOCK);
+    }
+
+    @Override
+    public void setFuseSupplier(ResourceLocation exName, WorldPosIntSupplier fuseTimer)
+    {
+
+    }
+
+    @Override
+    public void setFuseTickListener(ResourceLocation exName, WorldTickFunction function)
+    {
+
+    }
+
+    @Override
+    public void setActivationListener(ResourceLocation exName, BlockActivateFunction function)
+    {
+
+    }
+
+    @Override
+    public void tickFuse(World world, double posX, double posY, double posZ, int ticksExisted, int explosiveID)
+    {
+
+    }
+
+    @Override
+    public int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID)
+    {
+        return 0;
     }
 }

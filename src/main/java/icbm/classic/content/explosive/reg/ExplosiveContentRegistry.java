@@ -34,7 +34,7 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
     }
 
     @Override
-    public Set<Integer> getExplosivesEnabledForContent(ResourceLocation contentID)
+    public Set<Integer> getExplosivesIDs()
     {
         return enabledIDs;
     }

@@ -1,6 +1,9 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.content.explosive.ExplosiveHandler;
+import icbm.classic.content.explosive.reg.ExplosiveRegistry;
 import icbm.classic.content.explosive.tile.BlockExplosive;
 import icbm.classic.prefab.tile.BlockICBM;
 import io.netty.buffer.ByteBuf;
@@ -21,6 +24,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
     public int explosive = -1;
+    public NBTTagCompound data;
 
     public EntityBombCart(World par1World)
     {
@@ -50,7 +54,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     {
         // TODO add event
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        explosive.handler.createExplosion(world, new BlockPos(posX, posY, posZ), this, 1);
+        ExplosiveHandler.createExplosion(this, world, posX, posY, posZ, explosive, 1, data);
         this.setDead();
     }
 
@@ -108,7 +112,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     public IBlockState getDefaultDisplayTile()
     {
         return ICBMClassic.blockExplosive.getDefaultState()
-                .withProperty(BlockExplosive.EX_PROP, explosive)
+                .withProperty(BlockExplosive.EX_PROP, ICBMClassicAPI.getExplosive(explosive, false))
                 .withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
     }
 }

@@ -25,7 +25,7 @@ public class MissileNuclearCluster //extends MissileCluster
     protected EntityMissile createMissile(EntityMissile missileCluster, int index)
     {
         EntityMissile missile = new EntityMissile(missileCluster.world);
-        missile.explosiveID = Explosives.NUCLEAR;
+        //missile.explosiveID = Explosives.NUCLEAR;
         return missile;
     }
 

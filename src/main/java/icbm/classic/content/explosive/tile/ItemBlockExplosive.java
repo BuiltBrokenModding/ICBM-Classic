@@ -1,5 +1,6 @@
 package icbm.classic.content.explosive.tile;
 
+import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.LanguageUtility;
@@ -32,7 +33,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     @Override
     public void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
-        if (stack.getItemDamage() == Explosives.REDMATTER.ordinal())
+        if (stack.getItemDamage() == ExplosiveRefs.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
         {
             ///Shhh!!! tell no one this exists, tis a surprise
             boolean taunt = shouldTauntPlayer(player);

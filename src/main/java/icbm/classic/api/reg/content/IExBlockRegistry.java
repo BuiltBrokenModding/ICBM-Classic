@@ -4,6 +4,7 @@ import icbm.classic.api.data.BlockActivateFunction;
 import icbm.classic.api.data.WorldPosIntSupplier;
 import icbm.classic.api.data.WorldTickFunction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -48,4 +49,17 @@ public interface IExBlockRegistry extends IExplosiveContentRegistry
      * @param function
      */
     void setActivationListener(ResourceLocation exName, BlockActivateFunction function);
+
+    /**
+     * Called by objects to tick the fuse for the explosive
+     *
+     * @param world
+     * @param posX
+     * @param posY
+     * @param posZ
+     * @param ticksExisted
+     */
+    void tickFuse(World world, double posX, double posY, double posZ, int ticksExisted, int explosiveID);
+
+    int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID);
 }

@@ -2,6 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
@@ -10,7 +11,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -20,8 +20,8 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Is the entity that throws this 'thing' (snowball, ender pearl, eye of ender or potion) */
     protected EntityLivingBase thrower;
 
-    public Explosives explosiveID;
-    public NBTTagCompound nbtData = new NBTTagCompound();
+    public int explosiveID;
+    public NBTTagCompound blastData = new NBTTagCompound();
 
     public EntityGrenade(World par1World)
     {
@@ -30,14 +30,14 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         //this.renderDistanceWeight = 8;
     }
 
-    public EntityGrenade(World par1World, Pos position, Explosives explosiveID)
+    public EntityGrenade(World par1World, Pos position, int explosiveID)
     {
         this(par1World);
         this.setPosition(position.x(), position.y(), position.z());
         this.explosiveID = explosiveID;
     }
 
-    public EntityGrenade(World par1World, EntityLivingBase par2EntityLiving, Explosives explosiveID, float nengLiang)
+    public EntityGrenade(World par1World, EntityLivingBase par2EntityLiving, int explosiveID, float nengLiang)
     {
         this(par1World);
         this.thrower = par2EntityLiving;
@@ -59,7 +59,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public String getName()
     {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID.ordinal());
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID);
         if (data != null)
         {
             return "icbm.grenade." + data.getRegistryName();
@@ -70,13 +70,13 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.explosiveID.ordinal());
+        data.writeInt(this.explosiveID);
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        this.explosiveID = Explosives.get(data.readInt());
+        this.explosiveID = data.readInt();
     }
 
     /** Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction. */
@@ -196,16 +196,15 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
-        if (this.ticksExisted > Math.max(60, (explosiveID.handler.getFuseTimer())))
+        if (this.ticksExisted > ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, explosiveID))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            (explosiveID.handler).createExplosion(this.world, new BlockPos(this.posX, this.posY + 0.3f, this.posZ), this, 1);
+            ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY + 0.3f, this.posZ, explosiveID, 1, blastData);
             this.setDead();
-            return;
         }
         else
         {
-            (explosiveID.handler).onFuseTick(this.world, new Pos(this.posX, this.posY + 0.5, this.posZ), this.ticksExisted);
+            ICBMClassicAPI.EX_BLOCK_REGISTRY.tickFuse(world, posX, posY, posZ, ticksExisted, explosiveID);
         }
     }
 
@@ -233,16 +232,16 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.explosiveID = Explosives.get(nbt.getInteger("haoMa"));
-        this.nbtData = nbt.getCompoundTag("data");
+        this.explosiveID = nbt.getInteger("haoMa"); //TODO fix
+        this.blastData = nbt.getCompoundTag("data");
 
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("haoMa", this.explosiveID.ordinal());
-        nbt.setTag("data", this.nbtData);
+        nbt.setInteger("haoMa", this.explosiveID);
+        nbt.setTag("data", this.blastData);
 
     }
 }

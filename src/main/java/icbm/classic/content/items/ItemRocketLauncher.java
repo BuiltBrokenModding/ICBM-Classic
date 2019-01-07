@@ -1,6 +1,8 @@
 package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.LanguageUtility;
@@ -83,21 +85,22 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
                     if (inventoryStack != null)
                     {
-                        if (inventoryStack.getItem() instanceof ItemMissile)
+                        if (inventoryStack.getItem() instanceof ItemMissile) //TODO add capability
                         {
-                            int meta = inventoryStack.getItemDamage();
-                            Explosives ex = Explosives.get(meta);
+                            final int explosiveID = inventoryStack.getItemDamage();
+                            final IExplosiveData exData = ICBMClassicAPI.getExplosive(explosiveID, true);
 
-                            if (ex.handler != null)
+                            if (exData != null)
                             {
                                 // Limit the missile to tier two.
-                                if ((ex.handler.getTier().ordinal() <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode) && ((Explosion) ex.handler).isCruise() || ICBMClassic.runningAsDev)
+                                //TODO add hook to block firing some missiles from launcher
+                                if (exData.getTier().ordinal() <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode)
                                 {
                                     if(!world.isRemote)
                                     {
                                         EntityMissile entityMissile = new EntityMissile(player);
                                         entityMissile.missileType = MissileFlightType.HAND_LAUNCHER;
-                                        entityMissile.explosiveID = ex;
+                                        entityMissile.explosiveID = explosiveID;
                                         entityMissile.acceleration = 1;
                                         entityMissile.launch(null);
                                         world.spawnEntity(entityMissile);

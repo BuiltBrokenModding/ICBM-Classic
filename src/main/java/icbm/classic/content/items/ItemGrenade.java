@@ -50,10 +50,10 @@ public class ItemGrenade extends ItemICBMBase
     {
         if (!world.isRemote)
         {
-            final Explosives explosive = Explosives.get(itemStack.getItemDamage());
+            final int explosiveID = itemStack.getItemDamage(); //TODO validate
 
             world.playSound(null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-            world.spawnEntity(new EntityGrenade(world, entityLiving, explosive, (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack)));
+            world.spawnEntity(new EntityGrenade(world, entityLiving, explosiveID, (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack)));
 
             if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)
             {
@@ -102,12 +102,9 @@ public class ItemGrenade extends ItemICBMBase
     {
         if (tab == getCreativeTab())
         {
-            for (Explosives ex : Explosives.values())
+            for (int id : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosivesIDs())
             {
-                if (ex.handler.hasGrenadeForm())
-                {
-                    list.add(new ItemStack(this, 1, ex.ordinal()));
-                }
+                list.add(new ItemStack(this, 1, id));
             }
         }
     }
