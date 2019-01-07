@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import icbm.classic.api.EntityRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
@@ -88,6 +89,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.xml.EntityRef;
 
 import java.awt.*;
 import java.io.File;
@@ -131,11 +133,9 @@ public final class ICBMClassic
     public static final String TEXTURE_DIRECTORY = "textures/";
     public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
 
-    public static final int ENTITY_ID_PREFIX = 50;
     public static final int MAP_HEIGHT = 255;
 
     protected static Logger logger = LogManager.getLogger(DOMAIN);
-    private static int nextEntityID = ENTITY_ID_PREFIX;
 
 
     public static final PacketManager packetHandler = new PacketManager(DOMAIN);
@@ -301,53 +301,7 @@ public final class ICBMClassic
         GameRegistry.registerTileEntity(TileCruiseLauncher.class, PREFIX + "cruiseLauncher");
     }
 
-    @SubscribeEvent
-    public static void registerEntity(RegistryEvent.Register<EntityEntry> event)
-    {
-        event.getRegistry().register(buildEntityEntry(EntityFlyingBlock.class, "block.gravity", 128, 15));
-        event.getRegistry().register(buildEntityEntry(EntityFragments.class, "block.fragment", 40, 8));
-        event.getRegistry().register(buildEntityEntry(EntityExplosive.class, "block.explosive", 50, 5));
-        event.getRegistry().register(buildEntityEntry(EntityMissile.class, "missile", 500, 1));
-        event.getRegistry().register(buildEntityEntry(EntityExplosion.class, "holder.explosion", 100, 5));
-        event.getRegistry().register(buildEntityEntry(EntityLightBeam.class, "beam.light", 80, 5));
-        event.getRegistry().register(buildEntityEntry(EntityGrenade.class, "item.grenade", 50, 5));
-        event.getRegistry().register(buildEntityEntry(EntityBombCart.class, "cart.bomb", 50, 2));
-        event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, "holder.seat", 50, 2));
 
-        //Green team
-        event.getRegistry().register(buildMobEntry(EntityXmasSkeleton.class, "skeleton.xmas.elf", Color.GREEN, Color.CYAN));
-        event.getRegistry().register(buildMobEntry(EntityXmasSkeletonBoss.class, "skeleton.xmas.boss", Color.GREEN, Color.CYAN));
-        event.getRegistry().register(buildMobEntry(EntityXmasSnowman.class, "skeleton.xmas.snowman", Color.BLACK, Color.CYAN));
-
-        //Red team
-        event.getRegistry().register(buildMobEntry(EntityXmasZombie.class, "zombie.xmas.elf", Color.RED, Color.CYAN));
-        event.getRegistry().register(buildMobEntry(EntityXmasZombieBoss.class, "zombie.xmas.boss", Color.RED, Color.CYAN));
-        event.getRegistry().register(buildMobEntry(EntityXmasCreeper.class, "zombie.xmas.creeper", Color.RED, Color.CYAN));
-
-
-        event.getRegistry().register(buildEntityEntry(EntityXmasRPG.class, "skeleton.snowman.rocket", 64, 1));
-    }
-
-    private static EntityEntry buildEntityEntry(Class<? extends Entity> entityClass, String entityName, int trackingRange, int updateFrequency)
-    {
-        EntityEntryBuilder builder = EntityEntryBuilder.create();
-        builder.name(PREFIX + entityName);
-        builder.id(new ResourceLocation(DOMAIN, entityName), nextEntityID++);
-        builder.tracker(trackingRange, updateFrequency, true);
-        builder.entity(entityClass);
-        return builder.build();
-    }
-
-    private static EntityEntry buildMobEntry(Class<? extends Entity> entityClass, String entityName, Color p, Color s)
-    {
-        EntityEntryBuilder builder = EntityEntryBuilder.create();
-        builder.name(PREFIX + entityName);
-        builder.id(new ResourceLocation(DOMAIN, entityName), nextEntityID++);
-        builder.tracker(64, 1, true);
-        builder.egg(p.getRGB(), s.getRGB());
-        builder.entity(entityClass);
-        return builder.build();
-    }
 
     @SubscribeEvent
     public static void registerAllModels(ModelRegistryEvent event)
