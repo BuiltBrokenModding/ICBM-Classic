@@ -1,6 +1,8 @@
 package icbm.classic.content.machines.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.missile.MissileFlightType;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.IGuiTile;
@@ -33,16 +35,25 @@ import icbm.classic.api.explosion.LauncherType;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>
 {
-    /** Desired aim angle, updated every tick if target != null */
+
+    /**
+     * Desired aim angle, updated every tick if target != null
+     */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0);
-    /** Current aim angle, updated each tick */
+    /**
+     * Current aim angle, updated each tick
+     */
     protected final EulerAngle currentAim = new EulerAngle(0, 0, 0);
 
     protected static double ROTATION_SPEED = 10.0;
 
-    /** Last time rotation was updated, used in {@link EulerAngle#lerp(EulerAngle, double)} function for smooth rotation */
+    /**
+     * Last time rotation was updated, used in {@link EulerAngle#lerp(EulerAngle, double)} function for smooth rotation
+     */
     protected long lastRotationUpdate = System.nanoTime();
-    /** Percent of time that passed since last tick, should be 1.0 on a stable server */
+    /**
+     * Percent of time that passed since last tick, should be 1.0 on a stable server
+     */
     protected double deltaTime;
 
     ExternalInventory inventory;
@@ -85,16 +96,16 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         else
         {
-            final Explosion missile = (Explosion) Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage()).handler;
-            if (missile == null)
+            IExplosiveData explosiveData = ICBMClassicAPI.getExplosive(this.getInventory().getStackInSlot(0).getItemDamage(), true);
+            if (explosiveData == null)
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
             }
-            else if (!missile.isCruise())
+            else if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(explosiveData))//(!missile.isCruise()) //TODO add can support hook
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
             }
-            else if (missile.getTier().ordinal() > 3)
+            else if (explosiveData.getTier() == null) //TODO see if we really care
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissileTier");
             }
@@ -241,7 +252,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         currentAim.setPitch(buf.readDouble());
     }
 
-    /** Reads a tile entity from NBT. */
+    /**
+     * Reads a tile entity from NBT.
+     */
     @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
@@ -250,7 +263,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         currentAim.readFromNBT(nbt.getCompoundTag("currentAim"));
     }
 
-    /** Writes a tile entity to NBT. */
+    /**
+     * Writes a tile entity to NBT.
+     */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
@@ -265,12 +280,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         if (getTarget() != null && !getTarget().isZero())
         {
             //Validate if we have an item and a target
-            if (this.getInventory().getStackInSlot(0) != null && this.getInventory().getStackInSlot(0).getItem() == ICBMClassic.itemMissile)
+            if (this.getInventory().getStackInSlot(0).getItem() == ICBMClassic.itemMissile) //TODO use capability
             {
                 //Validate that the item in the slot is a missile we can fire
-                final Explosion missile = (Explosion) Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage()).handler;
-                if (missile != null && missile.isCruise() && missile.getTier().ordinal() <= 3)
+                if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(this.getInventory().getStackInSlot(0).getItemDamage()))
                 {
+                    //TODO add can support hook (check for cruise missile)
                     //Make sure we have enough energy
                     if (this.checkExtract())
                     {
@@ -325,10 +340,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
             EntityMissile entityMissile = new EntityMissile(world, xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 2);
             entityMissile.missileType = MissileFlightType.CRUISE_LAUNCHER;
-            entityMissile.explosiveID = Explosives.get(this.getInventory().getStackInSlot(0).getItemDamage());
+            entityMissile.explosiveID = this.getInventory().getStackInSlot(0).getItemDamage(); //TODO encode entire itemstack
             entityMissile.acceleration = 1;
             entityMissile.launch(null);
             world.spawnEntity(entityMissile);
+
+            //TODO we are missing the item NBT, this will prevent encoding data before using the missile
+
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens
             this.getInventory().decrStackSize(0, 1);
         }
@@ -360,14 +378,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         if (itemStack != null && itemStack.getItem() instanceof ItemMissile && this.getInventory().getStackInSlot(0) == null)
         {
-            if (Explosives.get(itemStack.getItemDamage()).handler instanceof Explosion)
+            if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(itemStack.getItemDamage()))
             {
-                Explosion missile = (Explosion) Explosives.get(itemStack.getItemDamage()).handler;
-
-                if (missile.isCruise() && missile.getTier().ordinal() <= EnumTier.THREE.ordinal())
-                {
-                    return true;
-                }
+                //TODO f (missile.isCruise() && missile.getTier().ordinal() <= EnumTier.THREE.ordinal())
+                return true;
             }
         }
         return false;

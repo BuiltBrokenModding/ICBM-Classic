@@ -34,7 +34,7 @@ public class RenderGrenade extends Render<EntityGrenade>
         //Set data
         entityItem.setWorld(entity.world);
         entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
-        entityItem.setItem(new ItemStack(ICBMClassic.itemGrenade, 1, entity.explosiveID.ordinal()));
+        entityItem.setItem(new ItemStack(ICBMClassic.itemGrenade, 1, entity.explosiveID));
 
         //render
         renderEntityItem.doRender(entityItem, x, y, z, par8, par9);

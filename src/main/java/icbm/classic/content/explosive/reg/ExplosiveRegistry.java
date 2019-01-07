@@ -1,5 +1,7 @@
 package icbm.classic.content.explosive.reg;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.*;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
@@ -13,9 +15,9 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
 public class ExplosiveRegistry implements IExplosiveRegistry
@@ -40,6 +42,8 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 
     private boolean locked = false;
     private boolean lockNewContentTypes = false;
+
+    private ImmutableSet<IExplosiveData> allExplosives;
 
     @Override
     public IExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory)
@@ -79,6 +83,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     {
         locked = true;
         getContentRegistries().forEach(reg -> reg.lockRegistry());
+        allExplosives = explosiveData.values().stream().filter(e -> e != null).collect(ImmutableSet.toImmutableSet());
     }
 
     public void lockNewContentTypes()
@@ -106,7 +111,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     @Override
     public Collection<IExplosiveContentRegistry> getContentRegistries()
     {
-        return contentRegistry.values();
+        return ImmutableList.copyOf(contentRegistry.values()); //TODO make immutable set
     }
 
     @Override
@@ -143,6 +148,12 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 
         //Insert
         contentRegistry.put(name, registry);
+    }
+
+    @Override
+    public Set<IExplosiveData> getExplosives()
+    {
+        return allExplosives;
     }
 
     protected void setReg(ResourceLocation name, int id)

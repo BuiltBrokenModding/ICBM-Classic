@@ -86,10 +86,7 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
             }
             GlStateManager.scale(2, 2, 2);
 
-
-            Explosives e = Explosives.get(launcher.getMissileStack().getItemDamage());
-
-            RenderMissile.INSTANCE.renderMissile(e, launcher, 0, 0, 0, 0, 0);
+            RenderMissile.INSTANCE.renderMissile(launcher.getMissileStack(), launcher, 0, 0, 0, 0, 0);
             GlStateManager.popMatrix();
         }
     }

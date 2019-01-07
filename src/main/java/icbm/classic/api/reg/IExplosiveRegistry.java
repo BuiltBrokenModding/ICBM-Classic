@@ -6,6 +6,7 @@ import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -63,4 +64,9 @@ public interface IExplosiveRegistry
      */
     void registerContentRegistry(ResourceLocation name, IExplosiveContentRegistry registry);
 
+    /**
+     * Gets all register explosives as an immutable set
+     * @return
+     */
+    Set<IExplosiveData> getExplosives();
 }

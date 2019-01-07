@@ -50,10 +50,9 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
             GL11.glRotatef(yaw, 0F, 1F, 0F);
             GL11.glRotatef(pitch - 90, 1F, 0F, 0F);
 
-            Explosives e = Explosives.get(launcher.cachedMissileStack.getItemDamage());
             try
             {
-                RenderMissile.INSTANCE.renderMissile(e, launcher, 0, 0, 0, 0, partialTicks);
+                RenderMissile.INSTANCE.renderMissile(launcher.cachedMissileStack, launcher, 0, 0, 0, 0, partialTicks);
             }
             catch (Exception e1)
             {

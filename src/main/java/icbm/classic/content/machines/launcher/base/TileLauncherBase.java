@@ -1,8 +1,10 @@
 package icbm.classic.content.machines.launcher.base;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.explosion.ILauncherController;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigLauncher;
@@ -232,8 +234,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         final ItemStack stack = getMissileStack();
         if (stack.getItem() == ICBMClassic.itemMissile)
         {
-            Explosive ex = Explosives.get(stack.getItemDamage()).handler;
-            if (ex.hasMissileForm())
+            IExplosiveData explosiveData = ICBMClassicAPI.getExplosive(stack.getItemDamage(), true);
+            if (explosiveData != null)
             {
                 // Apply inaccuracy
                 int inaccuracy = 30;
@@ -262,7 +264,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     EntityMissile missile = new EntityMissile(getWorld());
 
                     //Set data
-                    missile.explosiveID = Explosives.get(stack.getItemDamage());
+                    missile.explosiveID = explosiveData.getRegistryID();
                     missile.launcherPos = new Pos((TileEntity) this);
                     missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5);
 

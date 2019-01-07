@@ -25,8 +25,8 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
 
     private boolean locked = true;
 
-    private List<ResourceLocation> nameCache;
-    private List<IExplosiveData> dataCache;
+    private Set<ResourceLocation> nameCache;
+    private Set<IExplosiveData> dataCache;
 
     public ExplosiveContentRegistry(ResourceLocation name)
     {
@@ -62,13 +62,13 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
     }
 
     @Override
-    public List<ResourceLocation> getExplosiveNames()
+    public Set<ResourceLocation> getExplosiveNames()
     {
         return nameCache;
     }
 
     @Override
-    public List<IExplosiveData> getExplosives()
+    public Set<IExplosiveData> getExplosives()
     {
         return dataCache;
     }
@@ -82,9 +82,9 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
         dataCache = enabledIDs.stream()
                 .map(id -> ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id))
                 .filter(e -> e != null)
-                .collect(ImmutableList.toImmutableList());
+                .collect(ImmutableSet.toImmutableSet());
 
-        nameCache = dataCache.stream().map(data -> data.getRegistryName()).collect(ImmutableList.toImmutableList());
+        nameCache = dataCache.stream().map(data -> data.getRegistryName()).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override

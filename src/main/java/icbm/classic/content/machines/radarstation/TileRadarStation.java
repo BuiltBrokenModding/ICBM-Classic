@@ -165,7 +165,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
         for (Entity entity : entities)
         {
-            if (entity instanceof EntityMissile && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
+            if (entity instanceof EntityMissile) //TODO && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
             {
                 if (((EntityMissile) entity).getTicksInAir() > -1)
                 {

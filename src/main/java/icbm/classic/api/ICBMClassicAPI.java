@@ -82,6 +82,22 @@ public final class ICBMClassicAPI
         return returnNull ? null : ExplosiveRefs.CONDENSED;
     }
 
+    public static IExplosiveData getExplosive(String name, boolean returnNull)
+    {
+        return getExplosive(new ResourceLocation(name), returnNull);
+    }
+
+    public static IExplosiveData getExplosive(ResourceLocation name, boolean returnNull)
+    {
+        IExplosiveData data = EXPLOSIVE_REGISTRY.getExplosiveData(name);
+        if (data != null)
+        {
+            return data;
+        }
+        System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for Name[" + name + "] this may cause unexpected logic");
+        return returnNull ? null : ExplosiveRefs.CONDENSED;
+    }
+
     /**
      * Called to register an EMP handler for the {@link Block}
      * and related {@link net.minecraft.block.state.IBlockState}

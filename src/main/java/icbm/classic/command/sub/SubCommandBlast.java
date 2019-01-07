@@ -1,6 +1,9 @@
 package icbm.classic.command.sub;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.imp.SubCommand;
+import icbm.classic.content.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
@@ -11,11 +14,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
  */
 public class SubCommandBlast extends SubCommand
 {
+
     @Override
     public String getName()
     {
@@ -34,15 +37,12 @@ public class SubCommandBlast extends SubCommand
         if (args.length >= 1 && args[0].equalsIgnoreCase("list"))
         {
             String names = "Explosive Types: ";
-            for (int i = 0; i <= 23; i++)
+            for (IExplosiveData data : ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives())
             {
-                names += Explosives.get(i).name().toLowerCase();
-                if (i != 23)
-                {
-                    names += ", ";
-                }
+                names += data.getRegistryName();
+                names += ", ";
             }
-            sender.sendMessage(new TextComponentString(names));
+            sender.sendMessage(new TextComponentString(names.substring(names.length() - 2))); //-2 removes last ', ' ... because lazy
         }
         else if (args.length >= 1 && args[0].equalsIgnoreCase("spread"))
         {
@@ -67,18 +67,9 @@ public class SubCommandBlast extends SubCommand
                 throw new WrongUsageException("Scale must be greater than zero!");
             }
 
-            Explosives type = null;
-            for (int i = 0; i <= 23; i++)
-            {
-                Explosives ex = Explosives.get(i);
-                if (ex.getName().equalsIgnoreCase(explosive_id))
-                {
-                    type = ex;
-                    break;
-                }
-            }
+            final IExplosiveData explosiveData = ICBMClassicAPI.getExplosive(explosive_id, true);
 
-            if (type == null)
+            if (explosiveData  == null)
             {
                 throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
             }
@@ -107,8 +98,8 @@ public class SubCommandBlast extends SubCommand
 
             if (world != null)
             {
-                type.handler.createExplosion(world, new BlockPos(x, y, z), sender.getCommandSenderEntity(), scale);
-                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + type.name().toLowerCase() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
+                ExplosiveHandler.createExplosion(null, world, x, y, z, explosiveData.getRegistryID(), scale, null);
+                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + explosiveData.getRegistryName() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
             }
             else
             {
