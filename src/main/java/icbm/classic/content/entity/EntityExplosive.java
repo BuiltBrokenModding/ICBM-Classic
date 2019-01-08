@@ -34,6 +34,8 @@ import javax.annotation.Nullable;
 public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData
 {
 
+    public static final String NBT_FUSE = "Fuse";
+
     // How long the fuse is (in ticks)
     public int fuse = -1;
 
@@ -147,8 +149,8 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.fuse = nbt.getByte("fuse");
-        capabilityExplosive.deserializeNBT(nbt.getCompoundTag("explosive"));
+        this.fuse = nbt.getByte(NBT_FUSE);
+        capabilityExplosive.deserializeNBT(nbt.getCompoundTag(CapabilityExplosive.NBT_EXPLOIVE));
     }
 
     /**
@@ -157,8 +159,8 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setByte("fuse", (byte) this.fuse);
-        nbt.setTag("explosive", capabilityExplosive.serializeNBT());
+        nbt.setByte(NBT_FUSE, (byte) this.fuse);
+        nbt.setTag(CapabilityExplosive.NBT_EXPLOIVE, capabilityExplosive.serializeNBT());
     }
 
     public static void registerDataFixer()
@@ -178,16 +180,10 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
                 //Match to entity, we get all entity tags as input
                 if (compound.hasKey("id") && compound.getString("id").equalsIgnoreCase(EntityRefs.BLOCK_EXPLOSIVE.toString()))
                 {
-                    //OCD demands the letter be lowercase
-                    if (compound.hasKey("Fuse"))
-                    {
-                        compound.setString("fuse", compound.getString("Fuse"));
-                        compound.removeTag("Fuse");
-                    }
-
                     //Fix explosive ID save
                     if (compound.hasKey("explosiveID"))
                     {
+                        //Convert data
                         NBTTagCompound exSave = new NBTTagCompound();
                         exSave.setInteger(CapabilityExplosive.NBT_EXPLOSIVE_ID, compound.getInteger("explosiveID"));
                         if (compound.hasKey("data"))
@@ -195,8 +191,12 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
                             exSave.setTag(CapabilityExplosive.NBT_BLAST_DATA, compound.getTag("data"));
                         }
 
+                        //Remove old tags
                         compound.removeTag("explosiveID");
                         compound.removeTag("data");
+
+                        //Save
+                        compound.setTag(CapabilityExplosive.NBT_EXPLOIVE, exSave);
                     }
                 }
                 return compound;
