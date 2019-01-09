@@ -4,7 +4,7 @@ import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.explosive.cap.CapabilityExplosiveStack;
+import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.transform.vector.Pos;

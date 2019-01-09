@@ -11,7 +11,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.lib.explosive.ExplosiveHandler;
-import icbm.classic.lib.emp.CapabilityEMP;
+import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.entity.EntityProjectile;

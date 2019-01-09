@@ -1,7 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import icbm.classic.api.explosion.IBlast;
-import icbm.classic.lib.emp.CapabilityEmpKill;
+import icbm.classic.lib.capability.emp.CapabilityEmpKill;
 import icbm.classic.config.ConfigEMP;
 
 /**

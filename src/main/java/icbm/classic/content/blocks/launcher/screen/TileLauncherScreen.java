@@ -28,7 +28,7 @@ import net.minecraft.util.text.TextComponentString;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, IEnergyBufferProvider, IInventoryProvider<ExternalInventory>
+public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, IInventoryProvider<ExternalInventory>
 {
     // The missile launcher base in which this
     // screen is connected with
@@ -84,7 +84,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 launchDelay--;
             }
             //Only launch if redstone
-            else if (ticks % 10 == 0 && world.getRedstonePowerFromNeighbors(getPos()) > 0)
+            else if (ticks % 10 == 0 && world.getRedstonePowerFromNeighbors(getPos()) > 0) //TODO replace with countdown
             {
                 this.launch();
             }
@@ -107,18 +107,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     public PacketTile getGUIPacket()
     {
         return getDescPacket();
-    }
-
-    @Override
-    public void placeMissile(ItemStack itemStack)
-    {
-        if (this.launcherBase != null)
-        {
-            if (!this.launcherBase.isInvalid())
-            {
-                this.launcherBase.getInventory().setInventorySlotContents(0, itemStack);
-            }
-        }
     }
 
     @Override
@@ -162,7 +150,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     }
 
     // Checks if the missile is launchable
-    @Override
     public boolean canLaunch()
     {
         if (this.launcherBase != null && this.launcherBase.getMissileStack() != null)
@@ -176,7 +163,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     }
 
     /** Calls the missile launcher base to launch it's missile towards a targeted location */
-    @Override
     public void launch()
     {
         if (this.canLaunch() && this.launcherBase.launchMissile(this.getTarget(), this.lockHeight))
@@ -292,12 +278,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public LauncherType getLauncherType()
-    {
-        return LauncherType.TRADITIONAL;
-    }
-
-    @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
         return new ContainerLaunchScreen(player, this);
@@ -310,7 +290,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data)
+    public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data) //TODO pack as message object
     {
         if (isServer())
         {
@@ -320,7 +300,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
             if (getTier() == EnumTier.THREE && frequency == getFrequency() && launcherBase != null)
             {
                 //Laser detonator signal
-                if (messageHeader.equals("activateLauncherWithTarget"))
+                if (messageHeader.equals("activateLauncherWithTarget")) //TODO cache headers somewhere like API references
                 {
                     Pos pos = (Pos) data[0];
                     if (new Pos((IPos3D) this).distance(pos) < this.launcherBase.getRange())

@@ -93,7 +93,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
      */
     public ItemStack cachedMissileStack;
 
-    public final IMissileHolder missileHolder = null; //TODO wrapper to inventory
+    public final IMissileHolder missileHolder = null; //TODO wrapper to inventory or wrapper inventory to holder (likely better option)
     public final IMissileLauncher missileLauncher = null; //TODO implement, screen will now only set data instead of being the launcher
 
     /**
@@ -227,10 +227,34 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         return true;
     }
 
-    //@Override
+    //@Override TODO ?
     public String getInventoryName()
     {
         return LanguageUtility.getLocal("gui.launcherBase.name");
+    }
+
+    protected Pos applyInaccuracy(Pos target)
+    {
+        // Apply inaccuracy
+        int inaccuracy = 30; //TODO customize more
+
+        //Get value from support frame
+        if (this.supportFrame != null)
+        {
+            inaccuracy = this.supportFrame.getInaccuracy();
+        }
+
+        //TODO add distance based inaccuracy addition
+        //TODO add tier based inaccuracy, higher tier missiles have a high chance of hitting
+
+        //Randomize distance
+        inaccuracy = getWorld().rand.nextInt(inaccuracy);
+
+        //Randomize radius drop
+        angle.setYaw(getWorld().rand.nextFloat() * 360);
+
+        //Apply inaccuracy to target position and return
+        return target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
     }
 
     /**
@@ -248,41 +272,23 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         }
 
         final ItemStack stack = getMissileStack();
-        if (stack.getItem() == ItemReg.itemMissile)
+        if (stack.getItem() == ItemReg.itemMissile) //TODO capability
         {
             IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
             if (explosiveData != null)
             {
-                // Apply inaccuracy
-                int inaccuracy = 30;
-
-                //Get value from support frame
-                if (this.supportFrame != null)
-                {
-                    inaccuracy = this.supportFrame.getInaccuracy();
-                }
-
-                //Randomize distance
-                inaccuracy = getWorld().rand.nextInt(inaccuracy);
-
-                //Randomize radius drop
-                angle.setYaw(getWorld().rand.nextFloat() * 360);
-
-                //Update target
-                target = target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
+                target = applyInaccuracy(target);
 
                 //TODO add distance check? --- something seems to be missing
-                //TODO add distance based inaccuracy addition
-                //TODO add tier based inaccuracy, higher tier missiles have a high chance of hitting
 
                 if (isServer())
                 {
-                    EntityMissile missile = new EntityMissile(getWorld()); //TODO generate entity from item
+                    EntityMissile missile = new EntityMissile(getWorld()); //TODO generate entity from item using handler
 
                     //Set data
                     missile.explosiveID = explosiveData.getRegistryID();
-                    missile.launcherPos = new Pos((TileEntity) this);
-                    missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5);
+                    missile.launcherPos = new Pos((TileEntity) this); //TODO store our launcher instance or UUID
+                    missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5); //TODO store offset
 
                     //Trigger launch event
                     missile.capabilityMissile.launch(target.x(), target.y(), target.z(), lockHeight);
@@ -364,7 +370,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        getInventory().load(nbt.getCompoundTag("inventory"));
+        getInventory().load(nbt.getCompoundTag("inventory")); //TODO datafixer to replace inventory
     }
 
     /**

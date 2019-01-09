@@ -1,4 +1,4 @@
-package icbm.classic.lib.explosive.cap;
+package icbm.classic.lib.capability.ex;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,12 +1,10 @@
-package icbm.classic.lib.explosive.cap;
+package icbm.classic.lib.capability.ex;
 
-import icbm.classic.ICBMClassic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.

@@ -1,4 +1,4 @@
-package icbm.classic.lib.explosive.cap;
+package icbm.classic.lib.capability.ex;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
