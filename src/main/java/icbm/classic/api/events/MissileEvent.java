@@ -21,21 +21,40 @@ public abstract class MissileEvent extends Event
         this.entityMissile = entityMissile;
     }
 
-    public static class Launch extends MissileEvent
+    /**
+     * Called right after the missile sets up its launch
+     * data but before it is set into motion. Use this
+     * to change settings, target, or trigger additional
+     * logic.
+     */
+    public static class OnLaunched extends MissileEvent
     {
 
-        public Launch(IMissile missile, Entity entityMissile)
+        public OnLaunched(IMissile missile, Entity entityMissile)
         {
             super(missile, entityMissile);
         }
     }
 
+    /**
+     * Called right before the missile runs its impact code. Use
+     * this to cancel impact for special use cases. Such as
+     * having the missile pass through blocks, ignore friendly fire,
+     * or trigger a different explosion/result.
+     * <p>
+     * This is normally called from the ray trace impact
+     * function. The missile may be a tick away from the
+     * actual impact point. Keep this in mind when using
+     * the missile's position vs impact position from the
+     * ray hit.
+     */
     @Cancelable
-    public static class Impact extends MissileEvent
+    public static class PreImpact extends MissileEvent
     {
+
         public final RayTraceResult hit;
 
-        public Impact(IMissile missile, Entity entityMissile, RayTraceResult hit)
+        public PreImpact(IMissile missile, Entity entityMissile, RayTraceResult hit)
         {
             super(missile, entityMissile);
             this.hit = hit;

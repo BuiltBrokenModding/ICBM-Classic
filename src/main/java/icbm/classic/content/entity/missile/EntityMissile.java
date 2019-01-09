@@ -430,7 +430,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     protected boolean ignoreImpact(RayTraceResult hit)
     {
-        return MinecraftForge.EVENT_BUS.post(new MissileEvent.Impact(capabilityMissile, this, hit));
+        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(capabilityMissile, this, hit));
     }
 
     @Override

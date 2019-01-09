@@ -2,6 +2,8 @@ package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IMissileHolder;
+import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
@@ -33,6 +35,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -91,6 +94,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     public ItemStack cachedMissileStack;
 
     public final IMissileHolder missileHolder = null; //TODO wrapper to inventory
+    public final IMissileLauncher missileLauncher = null; //TODO implement, screen will now only set data instead of being the launcher
 
     /**
      * Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
@@ -237,6 +241,12 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
      */
     public boolean launchMissile(Pos target, int lockHeight)
     {
+        //Allow canceling missile launches
+        if (!MinecraftForge.EVENT_BUS.post(new LauncherEvent.OnLaunch(missileLauncher, missileHolder)))
+        {
+            return false;
+        }
+
         final ItemStack stack = getMissileStack();
         if (stack.getItem() == ItemReg.itemMissile)
         {
