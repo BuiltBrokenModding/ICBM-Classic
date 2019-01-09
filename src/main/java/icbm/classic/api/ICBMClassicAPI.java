@@ -1,8 +1,6 @@
 package icbm.classic.api;
 
-import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.caps.*;
 import icbm.classic.api.reg.content.*;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.block.Block;
@@ -32,6 +30,8 @@ public final class ICBMClassicAPI
     public static IExBlockRegistry EX_BLOCK_REGISTRY;
     public static IExMinecartRegistry EX_MINECRT_REGISTRY;
 
+    //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
+
 
     //=========================
     //=== References ==========
@@ -59,6 +59,12 @@ public final class ICBMClassicAPI
 
     @CapabilityInject(IMissile.class)
     public static Capability<IMissile> MISSILE_CAPABILITY = null;
+
+    @CapabilityInject(IMissileHolder.class)
+    public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;
+
+    @CapabilityInject(IMissileLauncher.class)
+    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}

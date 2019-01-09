@@ -30,9 +30,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import icbm.classic.api.explosion.ILauncherContainer;
-import icbm.classic.api.explosion.ILauncherController;
-import icbm.classic.api.explosion.LauncherType;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>
 {

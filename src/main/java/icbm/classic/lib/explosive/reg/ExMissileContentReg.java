@@ -45,7 +45,7 @@ public class ExMissileContentReg extends ExplosiveContentRegistry implements IEx
     @Override
     public void triggerLaunch(IMissile missile)
     {
-        MinecraftForge.EVENT_BUS.post(new MissileEvent.Launch(missile, missile.getHost()));
+        MinecraftForge.EVENT_BUS.post(new MissileEvent.Launch(missile, missile.getMissileEntity()));
     }
 
     @Override

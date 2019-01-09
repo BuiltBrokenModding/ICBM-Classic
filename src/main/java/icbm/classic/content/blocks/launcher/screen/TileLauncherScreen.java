@@ -2,8 +2,6 @@ package icbm.classic.content.blocks.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.energy.IEnergyBufferProvider;
-import icbm.classic.api.explosion.ILauncherController;
-import icbm.classic.api.explosion.LauncherType;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;

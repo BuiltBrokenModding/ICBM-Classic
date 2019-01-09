@@ -2,7 +2,6 @@ package icbm.classic.content.entity.missile;
 
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
@@ -10,7 +9,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -72,7 +70,7 @@ public class CapabilityMissile implements IMissile
     }
 
     @Override
-    public Entity getHost()
+    public Entity getMissileEntity()
     {
         return missile;
     }

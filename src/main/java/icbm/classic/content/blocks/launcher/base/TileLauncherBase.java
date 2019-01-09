@@ -1,8 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.explosion.ILauncherContainer;
-import icbm.classic.api.explosion.ILauncherController;
+import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
@@ -47,8 +46,9 @@ import java.util.List;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILauncherContainer, IInventoryProvider<ExternalInventory>
+public class TileLauncherBase extends TileMachine implements IMultiTileHost, IInventoryProvider<ExternalInventory>
 {
+
     public static List<BlockPos> northSouthMultiBlockCache = new ArrayList();
     public static List<BlockPos> eastWestMultiBlockCache = new ArrayList();
 
@@ -75,7 +75,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public TileLauncherFrame supportFrame = null;
     public TileLauncherScreen launchScreen = null;
 
-    /** Fake entity to allow player to mount the missile without using the missile entity itself */
+    /**
+     * Fake entity to allow player to mount the missile without using the missile entity itself
+     */
     public EntityPlayerSeat seat;
 
     // The tier of this launcher base
@@ -83,8 +85,12 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
 
     ExternalInventory inventory;
 
-    /** Client's render cached object, used in place of inventory to avoid affecting GUIs */
+    /**
+     * Client's render cached object, used in place of inventory to avoid affecting GUIs
+     */
     public ItemStack cachedMissileStack;
+
+    public final IMissileHolder missileHolder = null; //TODO wrapper to inventory
 
     /**
      * Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
@@ -274,7 +280,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     //Spawn entity
                     getWorld().spawnEntity(missile);
 
-                                     //Grab rider
+                    //Grab rider
                     if (seat != null && seat.getRidingEntity() != null) //TODO add hook to disable riding some missiles
                     {
                         Entity entity = seat.getRidingEntity();
@@ -341,7 +347,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         return ConfigLauncher.LAUNCHER_RANGE_TIER3;
     }
 
-    /** Reads a tile entity from NBT. */
+    /**
+     * Reads a tile entity from NBT.
+     */
     @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
@@ -349,7 +357,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
         getInventory().load(nbt.getCompoundTag("inventory"));
     }
 
-    /** Writes a tile entity to NBT. */
+    /**
+     * Writes a tile entity to NBT.
+     */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
@@ -447,12 +457,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
     public boolean canStore(ItemStack stack, int slot, EnumFacing side)
     {
         return slot == 0 && stack.getItem() instanceof ItemMissile;
-    }
-
-    @Override
-    public ILauncherController getController()
-    {
-        return launchScreen;
     }
 
     //==========================================

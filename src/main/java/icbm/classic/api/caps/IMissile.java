@@ -3,12 +3,11 @@ package icbm.classic.api.caps;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.ILauncherContainer;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
 
 /**
  * Capability added to entities to define them as missiles
@@ -37,12 +36,13 @@ public interface IMissile extends IWorldPosition
      *                      True will trigger a the missile's normal explosion
      *                      False will trigger a TNT explosion
      */
-    default void destroyMissile(boolean fullExplosion) //TODO at reason
+    default void destroyMissile(boolean fullExplosion) //TODO add reason as input data
     {
         if (!hasExploded() && !doExplosion().good)
         {
             dropMissileAsItem();
         }
+        //TODO trigger destroy event
     }
 
     /**
@@ -57,18 +57,20 @@ public interface IMissile extends IWorldPosition
         }
     }
 
+    @Nullable
     ItemStack toStack();
 
     /**
      * The amount of ticks this missile has been flying for. Returns -1 if the missile is not
      * flying.
      */
-    int getTicksInAir();
+    int getTicksInAir(); //TODO maybe change to a status? onGround, inAir, preFlight, impacted
 
     /**
      * Gets the launcher this missile is launched from.
      */
-    ILauncherContainer getLauncher();
+    @Nullable
+    ILauncherContainer getLauncher(); //TODO wrapper as getSourceOfLaunch so we can include launcher and player
 
     /**
      * Gets the entity that is host to this
@@ -76,7 +78,7 @@ public interface IMissile extends IWorldPosition
      *
      * @return
      */
-    Entity getHost();
+    Entity getMissileEntity();
 
     /**
      * Tells the missile to fly towards the specific target
@@ -86,10 +88,10 @@ public interface IMissile extends IWorldPosition
      * @param z          - target
      * @param lockHeight - height to above current to wait before turning towards target TODO change to distance for flat xz paths
      */
-    void launch(double x, double y, double z, double lockHeight);
+    void launch(double x, double y, double z, double lockHeight); //TODO add results
 
     /**
      * Called to launch without a target and fly strait from rotation data
      */
-    void launchNoTarget();
+    void launchNoTarget(); //TODO add results
 }
