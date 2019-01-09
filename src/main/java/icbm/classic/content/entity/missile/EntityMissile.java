@@ -4,6 +4,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.api.caps.IMissile;
@@ -27,7 +28,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -39,7 +42,9 @@ import java.util.LinkedList;
 import java.util.Random;
 
 /**
- * @Author - Calclavia
+ * Entity version of the missile
+ *
+ * @Author - Calclavia, Darkguardsman
  */
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
 {
@@ -145,6 +150,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             return (T) capabilityMissile;
         }
+        //TODO add explosive capability
         return super.getCapability(capability, facing);
 
     }
@@ -190,7 +196,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
-        additionalMissileData.writeInt(this.explosiveID);
+        additionalMissileData.writeInt(this.explosiveID); //TODO write full explosive data
         additionalMissileData.writeInt(this.missileType.ordinal());
     }
 
@@ -201,7 +207,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.missileType = MissileFlightType.values()[additionalMissileData.readInt()];
     }
 
-    public void launch(Pos target)
+    /**
+     * Used {@link #capabilityMissile} {@link CapabilityMissile#launch(double, double, double, double)}
+     *
+     * @param target
+     */
+    protected void launch(Pos target)
     {
         //Start motion
         if (ticksInAir <= 0)
@@ -241,9 +252,17 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
     }
 
-    public void launch(Pos target, int height)
+    /**
+     * Used {@link #capabilityMissile} {@link CapabilityMissile#launch(double, double, double, double)}
+     *
+     * @param target
+     */
+    protected void launch(Pos target, int height)
     {
-        this.lockHeight = height;
+        if (height > 0)
+        {
+            this.lockHeight = height;
+        }
         this.launch(target);
     }
 
@@ -413,6 +432,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
+    protected boolean ignoreImpact(RayTraceResult hit)
+    {
+        return MinecraftForge.EVENT_BUS.post(new MissileEvent.Impact(capabilityMissile, this, hit));
+    }
+
+    @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
         if (!world.isRemote && entityHit.getRidingEntity() != this)
@@ -421,7 +446,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             doExplosion();
         }
     }
-
 
     public ILauncherContainer getLauncher()
     {
@@ -475,9 +499,9 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return height / 2 + motionY;
     }
 
-    LinkedList<Pos> lastSmokePos = new LinkedList<>();
+    LinkedList<Pos> lastSmokePos = new LinkedList<>(); //TODO move up to top
 
-    private void spawnMissileSmoke()
+    private void spawnMissileSmoke() //TODO move to client proxy
     {
         if (this.world.isRemote)
         {

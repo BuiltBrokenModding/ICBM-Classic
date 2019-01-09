@@ -121,7 +121,7 @@ public class BlastSonic extends Blast
                             {
                                 if (block == BlockReg.blockExplosive)
                                 {
-                                    BlockExplosive.triggerExplosive(this.world(), targetPosition, ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).explosive.getRegistryID(), 1);
+                                    ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).trigger(false);
                                 }
                                 else
                                 {

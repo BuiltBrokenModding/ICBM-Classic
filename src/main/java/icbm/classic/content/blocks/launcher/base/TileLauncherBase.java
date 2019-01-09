@@ -261,7 +261,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
 
                 if (isServer())
                 {
-                    EntityMissile missile = new EntityMissile(getWorld());
+                    EntityMissile missile = new EntityMissile(getWorld()); //TODO generate entity from item
 
                     //Set data
                     missile.explosiveID = explosiveData.getRegistryID();
@@ -269,7 +269,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, ILa
                     missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5);
 
                     //Trigger launch event
-                    missile.launch(target, lockHeight);
+                    missile.capabilityMissile.launch(target.x(), target.y(), target.z(), lockHeight);
 
                     //Spawn entity
                     getWorld().spawnEntity(missile);

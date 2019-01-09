@@ -4,6 +4,8 @@ package icbm.classic.api.caps;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.ILauncherContainer;
+import icbm.classic.lib.transform.vector.Pos;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
  */
 public interface IMissile extends IWorldPosition
 {
+
     /**
      * Called to trigger the missile's explosion logic
      */
@@ -68,14 +71,25 @@ public interface IMissile extends IWorldPosition
     ILauncherContainer getLauncher();
 
     /**
-     * Launches the missile into a specific target.
+     * Gets the entity that is host to this
+     * missile capability.
      *
-     * @param target
+     * @return
      */
-    void launch(BlockPos target);
+    Entity getHost();
 
-    default void launch(BlockPos target, int height)
-    {
-        launch(target);
-    }
+    /**
+     * Tells the missile to fly towards the specific target
+     *
+     * @param x          - target
+     * @param y          - target
+     * @param z          - target
+     * @param lockHeight - height to above current to wait before turning towards target TODO change to distance for flat xz paths
+     */
+    void launch(double x, double y, double z, double lockHeight);
+
+    /**
+     * Called to launch without a target and fly strait from rotation data
+     */
+    void launchNoTarget();
 }

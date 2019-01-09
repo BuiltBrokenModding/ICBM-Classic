@@ -4,6 +4,8 @@ import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.ILauncherContainer;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.lib.transform.vector.Pos;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -70,9 +72,21 @@ public class CapabilityMissile implements IMissile
     }
 
     @Override
-    public void launch(BlockPos target)
+    public Entity getHost()
     {
+        return missile;
+    }
 
+    @Override
+    public void launch(double x, double y, double z, double height)
+    {
+        missile.launch(new Pos(x, y, z), (int) height);
+    }
+
+    @Override
+    public void launchNoTarget()
+    {
+        missile.launch(null, 0);
     }
 
     @Override
