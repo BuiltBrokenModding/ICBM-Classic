@@ -199,7 +199,7 @@ public abstract class Blast extends Explosion implements IBlastInit
         this.x = posX;
         this.y = posY;
         this.z = posZ;
-        location = new Location(world(), posX, posY, posZ);
+        location = new Location(world, posX, posY, posZ);
         //TODO super contains a vec3 also called position, we need to set that value instead of overriding the return
         return this;
     }
