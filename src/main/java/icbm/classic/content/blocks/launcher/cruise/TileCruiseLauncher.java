@@ -31,7 +31,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, ILauncherController, ILauncherContainer, IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
 
     /**
@@ -161,12 +161,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public void placeMissile(ItemStack itemStack)
-    {
-        getInventory().setInventorySlotContents(0, itemStack);
-    }
-
-    @Override
     public PacketTile getGUIPacket()
     {
         return new PacketTile("gui", 0, this).addData(getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
@@ -272,7 +266,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         return super.writeToNBT(nbt);
     }
 
-    @Override
+    //@Override
     public boolean canLaunch()
     {
         if (getTarget() != null && !getTarget().isZero())
@@ -319,17 +313,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         return true;
     }
-
-    @Override
-    public LauncherType getLauncherType()
-    {
-        return LauncherType.CRUISE;
-    }
-
     /**
      * Launches the missile
      */
-    @Override
+    //@Override
     public void launch()
     {
         if (this.canLaunch())
@@ -384,13 +371,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         return false;
     }
-
-    @Override
-    public ILauncherController getController()
-    {
-        return this;
-    }
-
 
     @Override
     public AxisAlignedBB getRenderBoundingBox()

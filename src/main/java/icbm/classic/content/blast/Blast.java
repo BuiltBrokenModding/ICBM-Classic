@@ -401,7 +401,7 @@ public abstract class Blast extends Explosion implements IBlastInit
     @Override
     public World world()
     {
-        return this.location.world();
+        return world;
     }
 
     @Override

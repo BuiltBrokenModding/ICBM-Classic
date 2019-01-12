@@ -64,12 +64,6 @@ public class CapabilityMissile implements IMissile
     }
 
     @Override
-    public ILauncherContainer getLauncher()
-    {
-        return null;
-    }
-
-    @Override
     public Entity getMissileEntity()
     {
         return missile;

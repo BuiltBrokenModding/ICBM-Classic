@@ -204,7 +204,7 @@ public class ClientReg
     protected static void registerCartRenders()
     {
         final String resourcePath = ItemReg.itemBombCart.getRegistryName().toString();
-        for (IExplosiveData data : ICBMClassicAPI.EX_MINECRT_REGISTRY.getExplosives())
+        for (IExplosiveData data : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives())
         {
             String properties_string = "explosive=" + data.getRegistryName();
             ModelLoader.setCustomModelResourceLocation(ItemReg.itemBombCart, data.getRegistryID(), new ModelResourceLocation(resourcePath, properties_string));

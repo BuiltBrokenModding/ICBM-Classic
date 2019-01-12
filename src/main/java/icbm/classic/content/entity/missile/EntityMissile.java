@@ -4,14 +4,14 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
-import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.entity.EntityProjectile;
@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -441,24 +440,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             super.onImpactEntity(entityHit, velocity);
             doExplosion();
         }
-    }
-
-    public ILauncherContainer getLauncher()
-    {
-        if (this.launcherPos != null)
-        {
-            TileEntity tileEntity = this.launcherPos.getTileEntity(this.world);
-
-            if (tileEntity != null && tileEntity instanceof ILauncherContainer)
-            {
-                if (!tileEntity.isInvalid())
-                {
-                    return (ILauncherContainer) tileEntity;
-                }
-            }
-        }
-
-        return null;
     }
 
     @Override

@@ -52,11 +52,16 @@ public class ExplosiveRegistry implements IExplosiveRegistry
             throw new RuntimeException("ExplosiveRegistry: new explosives can not be registered after registry phase");
         }
 
+        if(name.toString().contains("_"))
+        {
+            throw new IllegalArgumentException("ExplosiveRegistry: '" + name + "' can not contain underscores");
+        }
+
         int assignedID;
 
         if (name_to_id.containsKey(name))
         {
-            assignedID = name_to_id.get(nextID);
+            assignedID = name_to_id.get(name);
         }
         else
         {
@@ -78,11 +83,15 @@ public class ExplosiveRegistry implements IExplosiveRegistry
         return explosiveData.get(name);
     }
 
-    public void lockRegistry()
+    public void lockNewExplosives()
+    {
+        allExplosives = explosiveData.values().stream().filter(e -> e != null).collect(ImmutableSet.toImmutableSet());
+    }
+
+    public void completeLock()
     {
         locked = true;
         getContentRegistries().forEach(reg -> reg.lockRegistry());
-        allExplosives = explosiveData.values().stream().filter(e -> e != null).collect(ImmutableSet.toImmutableSet());
     }
 
     public void lockNewContentTypes()

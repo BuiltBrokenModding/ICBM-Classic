@@ -28,7 +28,7 @@ public final class ICBMClassicAPI
     public static IExMissileRegistry EX_MISSILE_REGISTRY;
     public static IExGrenadeRegistry EX_GRENADE_REGISTRY;
     public static IExBlockRegistry EX_BLOCK_REGISTRY;
-    public static IExMinecartRegistry EX_MINECRT_REGISTRY;
+    public static IExMinecartRegistry EX_MINECART_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 

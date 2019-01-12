@@ -1,16 +1,18 @@
 package icbm.classic.content.items;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.IWorldPosition;
-import icbm.classic.lib.network.IPacket;
+import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemAbstract;
-import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +33,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 6/13/2016.
  */
 public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacketIDReceiver
@@ -69,7 +70,7 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
         {
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
             TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
-            if (!(tileEntity instanceof ILauncherController))
+            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
             {
                 ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
             }
@@ -108,16 +109,30 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
         else
         {
             Location storedLocation = getLocation(stack);
-            if (storedLocation == null || !storedLocation.isAboveBedrock())
+            if(storedLocation == null)
+            {
+                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.null.name");
+                return EnumActionResult.SUCCESS;
+            }
+            else if (!storedLocation.isAboveBedrock())
             {
                 LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.name");
                 return EnumActionResult.SUCCESS;
             }
-            else if (tile instanceof ILauncherController)
+            else if(storedLocation.world != world)
             {
-                ((ILauncherController) tile).setTarget(storedLocation.toPos());
-                LanguageUtility.addChatToPlayer(player, "gps.data.transferred.name");
+                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.world.name");
                 return EnumActionResult.SUCCESS;
+            }
+            else if (ICBMClassicHelpers.isLauncher(tile, facing))
+            {
+                final IMissileLauncher launcher = ICBMClassicHelpers.getLauncher(tile, facing);
+                if(launcher != null)
+                {
+                    launcher.setTarget(storedLocation.x(), storedLocation.y(), storedLocation.z());
+                    LanguageUtility.addChatToPlayer(player, "gps.data.transferred.name");
+                    return EnumActionResult.SUCCESS;
+                }
             }
         }
         return EnumActionResult.PASS;

@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
@@ -49,7 +50,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         {
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
             TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
-            if (!(tileEntity instanceof ILauncherController))
+            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
             {
                 ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
             }

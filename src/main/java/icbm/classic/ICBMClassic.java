@@ -1,28 +1,31 @@
 package icbm.classic;
 
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
-import icbm.classic.content.entity.*;
-import icbm.classic.content.entity.missile.CapabilityMissile;
 import icbm.classic.content.blast.ExplosiveInit;
-import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.capability.ex.CapabilityExplosive;
-import icbm.classic.lib.explosive.reg.*;
-import icbm.classic.lib.thread.WorkerThreadManager;
+import icbm.classic.content.entity.EntityBombCart;
+import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.missile.CapabilityMissile;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
+import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
+import icbm.classic.lib.explosive.reg.*;
 import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.item.LootEntryItemStack;
 import net.minecraft.block.Block;
@@ -208,11 +211,17 @@ public final class ICBMClassic
 
         ICBMClassicAPI.EX_BLOCK_REGISTRY = new ExBlockContentReg();
         ICBMClassicAPI.EX_GRENADE_REGISTRY = new ExGrenadeContentReg();
-        ICBMClassicAPI.EX_MINECRT_REGISTRY = new ExMinecartContentReg();
+        ICBMClassicAPI.EX_MINECART_REGISTRY = new ExMinecartContentReg();
         ICBMClassicAPI.EX_MISSILE_REGISTRY = new ExMissileContentReg();
 
         //Load data
         explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
+
+        //Register default content types
+        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_BLOCK_REGISTRY);
+        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_GRENADE_REGISTRY);
+        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_MISSILE_REGISTRY);
+        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_MINECART_REGISTRY);
 
         //Fire registry events for content types
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryInitEvent(explosiveRegistry));
@@ -225,9 +234,18 @@ public final class ICBMClassic
 
         //Fire registry event for explosives
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
+        explosiveRegistry.lockNewExplosives();
+
+        //Do default content types per explosive
+        explosiveRegistry.getExplosives().forEach(ex -> ICBMClassicAPI.EX_BLOCK_REGISTRY.enableContent(ex.getRegistryName()));
+        explosiveRegistry.getExplosives().forEach(ex -> ICBMClassicAPI.EX_MISSILE_REGISTRY.enableContent(ex.getRegistryName()));
+        explosiveRegistry.getExplosives().forEach(ex -> ICBMClassicAPI.EX_MINECART_REGISTRY.enableContent(ex.getRegistryName()));
+        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() == EnumTier.ONE).forEach(ex -> ICBMClassicAPI.EX_GRENADE_REGISTRY.enableContent(ex.getRegistryName()));
+        //TODO configs to disable types per explosive
+        //TODO mesh mapper to match model to state
 
         //Lock all registry, done to prevent errors in data generation for renders and content
-        explosiveRegistry.lockRegistry();
+        explosiveRegistry.completeLock();
 
         //Save registry, at this point everything should be registered
         explosiveRegistry.saveReg();

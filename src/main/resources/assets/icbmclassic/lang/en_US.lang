@@ -410,6 +410,8 @@ death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty bla
 ## GPS
 gps.pos.set.name=GPS Data Saved
 gps.error.pos.invalid.name=Invalid Location
+gps.error.pos.invalid.world.name=Can't target another world
+gps.error.pos.invalid.null.name=No target set
 gps.data.transferred.name=Data transferred
 gps.cleared.name=GPS Data Cleared
 

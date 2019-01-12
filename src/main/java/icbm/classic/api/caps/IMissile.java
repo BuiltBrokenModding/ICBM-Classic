@@ -66,11 +66,8 @@ public interface IMissile extends IWorldPosition
      */
     int getTicksInAir(); //TODO maybe change to a status? onGround, inAir, preFlight, impacted
 
-    /**
-     * Gets the launcher this missile is launched from.
-     */
-    @Nullable
-    ILauncherContainer getLauncher(); //TODO wrapper as getSourceOfLaunch so we can include launcher and player
+
+    //TODO store location and source of missile launch
 
     /**
      * Gets the entity that is host to this

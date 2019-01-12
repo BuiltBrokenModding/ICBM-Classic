@@ -3,7 +3,6 @@ package icbm.classic.api.reg.content;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,6 +10,12 @@ import java.util.Set;
  */
 public interface IExplosiveContentRegistry
 {
+    /**
+     * Unique name of the content registry
+     *
+     * @return
+     */
+    ResourceLocation getRegistryName();
 
     /**
      * Set of all ids enabled for the content

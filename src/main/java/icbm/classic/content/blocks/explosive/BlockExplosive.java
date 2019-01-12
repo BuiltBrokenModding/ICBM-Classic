@@ -29,8 +29,7 @@ import net.minecraft.world.World;
 
 public class BlockExplosive extends BlockICBM
 {
-
-    public static final PropertyExplosive EX_PROP = new PropertyExplosive(); //TODO filter to block versions only
+    public static final PropertyExplosive EX_PROP = new PropertyExplosive();
 
     public BlockExplosive()
     {

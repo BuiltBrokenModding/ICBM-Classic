@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
 public interface IExplosiveRegistry
@@ -56,6 +55,17 @@ public interface IExplosiveRegistry
      */
     IExplosiveContentRegistry getContentRegistry(ResourceLocation contentID);
 
+
+    /**
+     * Registers a new content type for explosives to exist as in game
+     *
+     * @param registry - handler for registering
+     */
+    default void registerContentRegistry(IExplosiveContentRegistry registry)
+    {
+        registerContentRegistry(registry.getRegistryName(), registry);
+    }
+
     /**
      * Registers a new content type for explosives to exist as in game
      *
@@ -66,6 +76,7 @@ public interface IExplosiveRegistry
 
     /**
      * Gets all register explosives as an immutable set
+     *
      * @return
      */
     Set<IExplosiveData> getExplosives();

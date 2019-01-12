@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
-public class ExplosiveContentRegistry implements IExplosiveContentRegistry
+public abstract class ExplosiveContentRegistry implements IExplosiveContentRegistry
 {
 
     public final ResourceLocation name;
@@ -21,7 +21,7 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
     //set of IDs enabled for content
     private Set<Integer> enabledIDs = new HashSet();
 
-    private boolean locked = true;
+    private boolean locked = false;
 
     private Set<ResourceLocation> nameCache;
     private Set<IExplosiveData> dataCache;
@@ -29,6 +29,12 @@ public class ExplosiveContentRegistry implements IExplosiveContentRegistry
     public ExplosiveContentRegistry(ResourceLocation name)
     {
         this.name = name;
+    }
+
+    @Override
+    public ResourceLocation getRegistryName()
+    {
+        return name;
     }
 
     @Override

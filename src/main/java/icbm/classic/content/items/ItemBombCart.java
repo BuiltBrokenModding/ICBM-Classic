@@ -115,7 +115,7 @@ public class ItemBombCart extends ItemICBMBase
     {
         if (tab == getCreativeTab())
         {
-            for (int id : ICBMClassicAPI.EX_MINECRT_REGISTRY.getExplosivesIDs())
+            for (int id : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosivesIDs())
             {
                 items.add(new ItemStack(this, 1, id));
             }

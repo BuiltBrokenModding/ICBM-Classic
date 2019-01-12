@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import java.util.Collection;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 1/6/2019.
  */
 public class PropertyExplosive implements IProperty<IExplosiveData>
@@ -35,12 +34,12 @@ public class PropertyExplosive implements IProperty<IExplosiveData>
     @Override
     public Optional<IExplosiveData> parseValue(String value)
     {
-        return Optional.fromNullable(ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(new ResourceLocation(value)));
+        return Optional.fromNullable(ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(new ResourceLocation(value.replace("_", ":"))));
     }
 
     @Override
     public String getName(IExplosiveData value)
     {
-        return value.getRegistryName().toString();
+        return value.getRegistryName().toString().replaceAll(":", "_");
     }
 }
