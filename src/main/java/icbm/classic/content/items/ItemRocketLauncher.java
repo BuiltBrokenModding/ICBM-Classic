@@ -93,7 +93,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             {
                                 // Limit the missile to tier two.
                                 //TODO add hook to block firing some missiles from launcher
-                                if (exData.getTier().ordinal() <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode)
+                                if (exData.getTier().ordinal() + 1 <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode)
                                 {
                                     if(!world.isRemote)
                                     {
