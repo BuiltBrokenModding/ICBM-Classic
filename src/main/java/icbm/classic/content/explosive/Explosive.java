@@ -109,7 +109,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
      *
      * @return The Fuse
      */
-    public int getYinXin()
+    public int getFuseTime()
     {
         return fuseTime;
     }
@@ -120,7 +120,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
      * @param world
      * @param entity
      */
-    public void yinZhaQian(World world, Entity entity)
+    public void playFuseSound(World world, Entity entity)
     {
         world.playSoundAtEntity(entity, "random.fuse", 1.0F, 1.0F);
     }
@@ -130,7 +130,7 @@ public abstract class Explosive extends ExplosiveHandler implements IExplosive
      *
      * @param fuseTicks - The amount of ticks this explosive is on fuse
      */
-    public void onYinZha(World world, Pos position, int fuseTicks)
+    public void onFuseTick(World world, Pos position, int fuseTicks)
     {
         world.spawnParticle("smoke", position.x(), position.y() + 0.5D, position.z(), 0.0D, 0.0D, 0.0D);
     }
