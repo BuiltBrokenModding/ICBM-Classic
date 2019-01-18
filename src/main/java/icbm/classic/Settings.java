@@ -31,6 +31,11 @@ public class Settings
     public static String CAMO_BLOCK_TO_RENDER_AS_VINES = "minecraft:vines";
     public static Block _blockToUseForInsideIcon;
 
+    //Lag
+    public static boolean REMOVE_UNLOADED_EXPLOSIVES = false;
+    public static boolean EXPLOSIONS_DESTROY_EXPLOSIVES = false;
+    public static int MAXIMUM_CONCURRENT_EXPLOSIONS = -1;
+
 
     public static void load(Configuration configuration)
     {
@@ -62,6 +67,15 @@ public class Settings
                 "Allows changing the vine render to use glass instead for the see through part of camo blocks.");
         CAMO_BLOCK_TO_RENDER_AS_VINES = configuration.getString("vine_block", "camo_block", CAMO_BLOCK_TO_RENDER_AS_VINES,
                 "");
+
+        //Lag
+	    REMOVE_UNLOADED_EXPLOSIVES = configuration.getBoolean("remove_unloaded_explosives", "lag",
+		    Settings.REMOVE_UNLOADED_EXPLOSIVES, "If this is enabled, primed explosives will be remove if they are unloaded from the world");
+	    EXPLOSIONS_DESTROY_EXPLOSIVES = configuration.getBoolean("explosions_destroy_explosives", "lag",
+		    Settings.EXPLOSIONS_DESTROY_EXPLOSIVES, "If this is enabled, explosions will destroy other explosives around it");
+	    MAXIMUM_CONCURRENT_EXPLOSIONS = configuration.getInt("maximum_concurrent_explosions", "lag",
+		    Settings.MAXIMUM_CONCURRENT_EXPLOSIONS, -1, Integer.MAX_VALUE,
+		    "If this is enabled, no explosions will occur if the limit is reached");
     }
 
     public static Block getBlockToUseForInsideIcon()

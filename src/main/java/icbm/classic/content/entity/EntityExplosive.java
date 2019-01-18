@@ -4,11 +4,13 @@ import com.builtbroken.mc.api.tile.IRotatable;
 import com.builtbroken.mc.imp.transform.vector.Pos;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import icbm.classic.ICBMClassic;
+import icbm.classic.Settings;
 import icbm.classic.content.explosive.Explosive;
 import icbm.classic.content.explosive.Explosives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -28,18 +30,26 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
     public NBTTagCompound nbtData = new NBTTagCompound();
 
-    public EntityExplosive(World par1World)
+    public static int globalExplosiveCount =0;
+
+    public EntityExplosive(World world)
     {
-        super(par1World);
+        super(world);
         this.fuse = 0;
         this.preventEntitySpawning = true;
         this.setSize(0.98F, 0.98F);
         this.yOffset = this.height / 2.0F;
+
+	    globalExplosiveCount++;
+	    if (Settings.MAXIMUM_CONCURRENT_EXPLOSIONS > 0 && globalExplosiveCount > Settings.MAXIMUM_CONCURRENT_EXPLOSIONS)
+	    {
+	        setDead();
+	    }
     }
 
-    public EntityExplosive(World par1World, Pos position, byte orientation, Explosives explosiveID)
+    public EntityExplosive(World world, Pos position, byte orientation, Explosives explosiveID)
     {
-        this(par1World);
+        this(world);
         this.setPosition(position.x(), position.y(), position.z());
         float var8 = (float) (Math.random() * Math.PI * 2.0D);
         this.motionX = (-((float) Math.sin(var8)) * 0.02F);
@@ -52,12 +62,12 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.fuse = explosiveID.handler.getFuseTime();
         this.orientation = orientation;
 
-        explosiveID.handler.playFuseSound(par1World, this);
+        explosiveID.handler.playFuseSound(world, this);
     }
 
-    public EntityExplosive(World par1World, Pos position, Explosives explosiveID, byte orientation, NBTTagCompound nbtData)
+    public EntityExplosive(World world, Pos position, Explosives explosiveID, byte orientation, NBTTagCompound nbtData)
     {
-        this(par1World, position, orientation, explosiveID);
+        this(world, position, orientation, explosiveID);
         this.nbtData = nbtData;
     }
 
@@ -66,6 +76,16 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         return "Explosives";
     }
+
+	@Override
+	public boolean attackEntityFrom(DamageSource source, float f) {
+    	if(Settings.EXPLOSIONS_DESTROY_EXPLOSIVES && source.isExplosion())
+    	{
+		    this.setDead();
+		    return false;
+	    }
+		return super.attackEntityFrom(source, f);
+	}
 
 	/** Called to update the entity's position/logic. */
     @Override
@@ -80,6 +100,10 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
             {
                 ICBMClassic.blockExplosive.dropBlockAsItem(this.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ, this.explosiveID.ordinal(), 0);
                 this.setDead();
+                return;
+            }
+            else if(this.isDead)
+            {
                 return;
             }
         }
@@ -115,7 +139,14 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.setDead();
     }
 
-    /** (abstract) Protected helper method to read subclass entity data from NBT. */
+	@Override
+	public void setDead()
+	{
+		super.setDead();
+		globalExplosiveCount--;
+	}
+
+	/** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
@@ -128,9 +159,16 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setByte("Fuse", (byte) this.fuse);
-        nbt.setInteger("explosiveID", this.explosiveID.ordinal());
-        nbt.setTag("data", this.nbtData);
+    	if(Settings.REMOVE_UNLOADED_EXPLOSIVES)
+    	{
+		    worldObj.removeEntity(this);
+	    }
+	    else
+	    {
+		    nbt.setByte("Fuse", (byte) this.fuse);
+		    nbt.setInteger("explosiveID", this.explosiveID.ordinal());
+		    nbt.setTag("data", this.nbtData);
+	    }
     }
 
     @Override
