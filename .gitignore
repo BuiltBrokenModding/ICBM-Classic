@@ -6,6 +6,7 @@
 .settings/
 build/
 eclipse/
+run/
 *.iml
 *.iws
 *.ipr
