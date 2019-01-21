@@ -5,11 +5,11 @@
     "textures": {
       "particle": "icbmclassic:blocks/explosive_base_1",
       "down": "icbmclassic:blocks/explosive_bottom_1",
-      "up": "icbmclassic:blocks/explosive_condensed_top",
-      "north": "icbmclassic:blocks/explosive_condensed_side",
-      "east": "icbmclassic:blocks/explosive_condensed_side",
-      "south": "icbmclassic:blocks/explosive_condensed_side",
-      "west": "icbmclassic:blocks/explosive_condensed_side"
+      "up": "icbmclassic:blocks/explosive_attractive_top",
+      "north": "icbmclassic:blocks/explosive_attractive_side",
+      "east": "icbmclassic:blocks/explosive_attractive_side",
+      "south": "icbmclassic:blocks/explosive_attractive_side",
+      "west": "icbmclassic:blocks/explosive_attractive_side"
     }
   },
   "variants": {
@@ -20,7 +20,7 @@
       {}
     ],
     "explosive": {
-      "condensed": {
+      "attractive": {
       }
     },
     "rotation": {
