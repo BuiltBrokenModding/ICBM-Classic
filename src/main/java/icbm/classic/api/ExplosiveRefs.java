@@ -12,10 +12,10 @@ public final class ExplosiveRefs
     public static IExplosiveData CONDENSED;
     public static IExplosiveData SHRAPNEL;
     public static IExplosiveData INCENDIARY;
-    public static IExplosiveData DEBLITATION;
+    public static IExplosiveData DEBILITATION;
     public static IExplosiveData CHEMICAL;
     public static IExplosiveData ANVIL;
-    public static IExplosiveData REPLUSIVE;
+    public static IExplosiveData REPULSIVE;
     public static IExplosiveData ATTRACTIVE;
 
     //=================== Tier 2
@@ -25,14 +25,13 @@ public final class ExplosiveRefs
     public static IExplosiveData BREACHING;
     public static IExplosiveData REJUVENATION;
     public static IExplosiveData THERMOBARIC;
-    public static IExplosiveData SMINE;
 
     //=================== Tier 3
     public static IExplosiveData NUCLEAR;
     public static IExplosiveData EMP;
     public static IExplosiveData EXOTHERMIC;
     public static IExplosiveData ENDOTHERMIC;
-    public static IExplosiveData ANTI_GRAV;
+    public static IExplosiveData ANTI_GRAVITATIONAL;
     public static IExplosiveData ENDER;
     public static IExplosiveData HYPERSONIC;
 

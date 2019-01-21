@@ -6,6 +6,7 @@ import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -95,6 +96,15 @@ public final class ICBMClassicHelpers
     public static IMissileLauncher getLauncher(TileEntity tileEntity, EnumFacing side)
     {
         return tileEntity.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, side);
+    }
+
+    public static IExplosive getExplosive(ItemStack stack)
+    {
+        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        {
+            return stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+        }
+        return null;
     }
 
     @Deprecated //Will be placed in a registry/handler

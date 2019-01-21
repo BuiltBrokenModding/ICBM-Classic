@@ -1,0 +1,5 @@
+{
+  "parent": "icbmclassic:item/missiles/missile_1",
+  "model": "icbmclassic:missiles/tier1/missile_condensed.obj"
+}
+

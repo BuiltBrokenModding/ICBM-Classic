@@ -127,7 +127,7 @@ icbm.explosive.nuclear.name=Nuclear Explosives
 icbm.explosive.emp.name=EMP Explosives
 icbm.explosive.exothermic.name=Exothermic Explosives
 icbm.explosive.endothermic.name=Endothermic Explosives
-icbm.explosive.antiGravitational.name=Anti-Gravitational Explosives
+icbm.explosive.anti_gravitational.name=Anti-Gravitational Explosives
 icbm.explosive.ender.name=Ender Explosives
 icbm.explosive.hypersonic.name=Hypersonic Explosives
 
@@ -157,7 +157,7 @@ icbm.explosive.nuclear.info=Hi! I'm a nuclearholic..
 icbm.explosive.emp.info=Over 9000? Not anymore
 icbm.explosive.exothermic.info=You thought the sun was hot
 icbm.explosive.endothermic.info=They call me Mr.Freeze
-icbm.explosive.antiGravitational.info=I think your base looks better floating
+icbm.explosive.anti_gravitational.info=I think your base looks better floating
 icbm.explosive.ender.info=Lets relocate that base of yours
 icbm.explosive.hypersonic.info=I feel bad for your ears
 
@@ -202,7 +202,7 @@ icbm.missile.nuclear.name=Nuclear Missile
 icbm.missile.emp.name=EMP Missile
 icbm.missile.exothermic.name=Exothermic Missile
 icbm.missile.endothermic.name=Endothermic Missile
-icbm.missile.antiGravitational.name=Anti-Gravitational Missile
+icbm.missile.anti_gravitational.name=Anti-Gravitational Missile
 icbm.missile.ender.name=Ender Missile
 icbm.missile.hypersonic.name=Hypersonic Missile
 

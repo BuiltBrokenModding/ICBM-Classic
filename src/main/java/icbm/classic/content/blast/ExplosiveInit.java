@@ -12,7 +12,6 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
-import icbm.classic.content.blocks.explosive.TileEntityExplosive;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,7 +48,7 @@ public class ExplosiveInit
         );
 
 
-        ExplosiveRefs.DEBLITATION = newEx("debilitation", EnumTier.ONE,
+        ExplosiveRefs.DEBILITATION = newEx("debilitation", EnumTier.ONE,
                 () -> new BlastChemical(20 * 30, false)
                         .setConfuse().setBlastSize(20));
 
@@ -60,9 +59,9 @@ public class ExplosiveInit
         ExplosiveRefs.ANVIL = newEx("anvil", EnumTier.ONE,
                 () -> new BlastShrapnel().setAnvil().setBlastSize(25));
 
-        ExplosiveRefs.REPLUSIVE = newEx("repulsive", EnumTier.ONE,
+        ExplosiveRefs.REPULSIVE = newEx("repulsive", EnumTier.ONE,
                 () -> new BlastTNT().setDestroyItems().setPushType(2).setBlastSize(2));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REPLUSIVE.getRegistryName(), (world, x, y, z) -> 120);
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REPULSIVE.getRegistryName(), (world, x, y, z) -> 120);
 
 
         ExplosiveRefs.ATTRACTIVE = newEx("attractive", EnumTier.ONE,
@@ -107,7 +106,7 @@ public class ExplosiveInit
         ExplosiveRefs.ENDOTHERMIC = newEx("endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(50));
         //TODO add ice fuse animation
 
-        ExplosiveRefs.ANTI_GRAV = newEx("antiGravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));
+        ExplosiveRefs.ANTI_GRAVITATIONAL = newEx("anti_gravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));
 
         ExplosiveRefs.ENDER = newEx("ender", EnumTier.THREE, () -> new BlastEnderman().setBlastSize(30));
         ICBMClassicAPI.EX_MISSILE_REGISTRY.setInteractionListener(ExplosiveRefs.ENDER.getRegistryName(), ExplosiveInit::enderMissileCoordSet);

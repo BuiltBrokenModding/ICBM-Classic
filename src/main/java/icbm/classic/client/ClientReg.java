@@ -2,12 +2,14 @@ package icbm.classic.client;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
+import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.client.mapper.BlockModelMapperExplosive;
+import icbm.classic.client.mapper.ItemModelMapperExplosive;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.content.blocks.emptower.TESREMPTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
-import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
@@ -33,6 +35,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -42,6 +45,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -50,11 +54,28 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
 public class ClientReg
 {
+    private final static Map<IExplosiveData, ModelResourceLocation> grenadeModelMap = new HashMap();
+    private final static Map<IExplosiveData, ModelResourceLocation> missileModelMap = new HashMap();
+    private final static Map<IExplosiveData, ModelResourceLocation> blockModelMap = new HashMap();
+    private final static Map<IExplosiveData, ModelResourceLocation> itemBlockModelMap = new HashMap();
+    private final static Map<IExplosiveData, ModelResourceLocation> cartModelMap = new HashMap();
+
+    private static void clearModelCache()
+    {
+        grenadeModelMap.clear();
+        missileModelMap.clear();
+        blockModelMap.clear();
+        itemBlockModelMap.clear();
+        cartModelMap.clear();
+    }
 
     @SubscribeEvent
     public static void registerAllModels(ModelRegistryEvent event)
     {
         OBJLoader.INSTANCE.addDomain(ICBMClassic.DOMAIN);
+
+        //reset
+        clearModelCache();
 
         //Glass
         newBlockModel(BlockReg.blockReinforcedGlass, 0, "inventory", "");
@@ -151,23 +172,21 @@ public class ClientReg
 
     protected static void registerExBlockRenders()
     {
-        final String resourcePath = BlockReg.blockExplosive.getRegistryName().toString();
+        for (IExplosiveData data : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
+        {
+            //Add block state
+            final String resourcePath = data.getRegistryName().getNamespace() + ":explosives/" + data.getRegistryName().getPath();
+            blockModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
 
-        ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new DefaultStateMapper()
-        {
-            @Override
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                return new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties()));
-            }
-        });
-        for (IExplosiveData data : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosives())
-        {
-            IBlockState state = BlockReg.blockExplosive.getDefaultState().withProperty(BlockExplosive.EX_PROP, data).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
+            //Add item state
+            IBlockState state = BlockReg.blockExplosive.getDefaultState().withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
             String properties_string = getPropertyString(state.getProperties());
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlockReg.blockExplosive), data.getRegistryID(), new ModelResourceLocation(resourcePath, properties_string));
-
+            itemBlockModelMap.put(data, new ModelResourceLocation(resourcePath, properties_string));
         }
+        //Block state mapper
+        ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new BlockModelMapperExplosive(blockModelMap, blockModelMap.get(ExplosiveRefs.CONDENSED)));
+        //Item state mapper
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockExplosive), new ItemModelMapperExplosive(itemBlockModelMap, itemBlockModelMap.get(ExplosiveRefs.CONDENSED)));
     }
 
     protected static void registerLauncherPart(Block block)
@@ -192,36 +211,39 @@ public class ClientReg
 
     protected static void registerGrenadeRenders()
     {
-        final String resourcePath = ItemReg.itemGrenade.getRegistryName().toString();
-        for (IExplosiveData data : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosives())
+        for (IExplosiveData data : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            String properties_string = "explosive=" + data.getRegistryName();
-            ModelLoader.setCustomModelResourceLocation(ItemReg.itemGrenade, data.getRegistryID(), new ModelResourceLocation(resourcePath, properties_string));
-
+            final String resourcePath = data.getRegistryName().getNamespace() + ":grenades/" + data.getRegistryName().getPath();
+            grenadeModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
+
+        ModelLoader.registerItemVariants(ItemReg.itemGrenade, grenadeModelMap.values()
+                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemGrenade, new ItemModelMapperExplosive(grenadeModelMap, grenadeModelMap.get(ExplosiveRefs.CONDENSED)));
     }
 
     protected static void registerCartRenders()
     {
-        final String resourcePath = ItemReg.itemBombCart.getRegistryName().toString();
-        for (IExplosiveData data : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives())
+        for (IExplosiveData data : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            String properties_string = "explosive=" + data.getRegistryName();
-            ModelLoader.setCustomModelResourceLocation(ItemReg.itemBombCart, data.getRegistryID(), new ModelResourceLocation(resourcePath, properties_string));
+            final String resourcePath = data.getRegistryName().getNamespace() + ":bombcarts/" + data.getRegistryName().getPath();
+            cartModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
+        ModelLoader.registerItemVariants(ItemReg.itemBombCart, cartModelMap.values()
+                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemBombCart, new ItemModelMapperExplosive(cartModelMap, cartModelMap.get(ExplosiveRefs.CONDENSED)));
     }
 
     protected static void registerMissileRenders()
     {
-        final String resourcePath = ItemReg.itemMissile.getRegistryName().toString();
-        for (IExplosiveData data : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosives())
+        for (IExplosiveData data : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            ModelLoader.setCustomModelResourceLocation(ItemReg.itemMissile, data.getRegistryID(), new ModelResourceLocation(resourcePath + "_" + (data.getTier().ordinal() + 1), "explosive=" + data.getRegistryName()));
+            final String resourcePath = data.getRegistryName().getNamespace() + ":missiles/" + data.getRegistryName().getPath();
+            missileModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
-
-        //TODO register missile models that are not explosive based
-        // ModelLoader.setCustomModelResourceLocation(ICBMClassic.itemMissile, ex.ordinal(), new ModelResourceLocation(resourcePath, "explosive=" + ex.getName()));
-        //
+        ModelLoader.registerItemVariants(ItemReg.itemMissile, missileModelMap.values()
+                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ExplosiveRefs.CONDENSED)));
     }
 
     protected static void registerCraftingRender(ItemCrafting itemCrafting)

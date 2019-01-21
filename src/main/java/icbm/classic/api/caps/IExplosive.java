@@ -38,7 +38,10 @@ public interface IExplosive
     @Nullable
     ItemStack toStack();
 
-    default void onDefuse()
+    /**
+     * Called when the explosive is defused
+     */
+    default void onDefuse() //TODO add args on who defused and how
     {
 
     }
