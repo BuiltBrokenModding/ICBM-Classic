@@ -39,15 +39,15 @@ public class ItemMissile extends ItemICBMBase
         final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
         if (data != null)
         {
-            return super.getTranslationKey() + data.getRegistryName();
+            return "missile." + data.getRegistryName();
         }
-        return super.getTranslationKey(itemstack);
+        return "missile";
     }
 
     @Override
     public String getTranslationKey()
     {
-        return "icbm.missile";
+        return "missile";
     }
 
     @Override

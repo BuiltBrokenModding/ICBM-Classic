@@ -105,9 +105,15 @@ public class ItemBombCart extends ItemICBMBase
         final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
         if (data != null)
         {
-            return super.getTranslationKey() + data.getRegistryName();
+            return "bombcart." + data.getRegistryName();
         }
-        return super.getTranslationKey(itemstack);
+        return "bombcart";
+    }
+
+    @Override
+    public String getTranslationKey()
+    {
+        return "bombcart";
     }
 
     @Override

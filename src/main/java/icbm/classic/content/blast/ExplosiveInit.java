@@ -106,7 +106,7 @@ public class ExplosiveInit
         ExplosiveRefs.ENDOTHERMIC = newEx("endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(50));
         //TODO add ice fuse animation
 
-        ExplosiveRefs.ANTI_GRAVITATIONAL = newEx("anti_gravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));
+        ExplosiveRefs.ANTI_GRAVITATIONAL = newEx("antigravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));
 
         ExplosiveRefs.ENDER = newEx("ender", EnumTier.THREE, () -> new BlastEnderman().setBlastSize(30));
         ICBMClassicAPI.EX_MISSILE_REGISTRY.setInteractionListener(ExplosiveRefs.ENDER.getRegistryName(), ExplosiveInit::enderMissileCoordSet);
