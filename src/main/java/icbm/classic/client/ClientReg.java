@@ -181,7 +181,7 @@ public class ClientReg
             //Add item state
             IBlockState state = BlockReg.blockExplosive.getDefaultState().withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
             String properties_string = getPropertyString(state.getProperties());
-            itemBlockModelMap.put(data, new ModelResourceLocation(resourcePath, properties_string));
+            itemBlockModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         //Block state mapper
         ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new BlockModelMapperExplosive(blockModelMap, blockModelMap.get(ExplosiveRefs.CONDENSED)));
