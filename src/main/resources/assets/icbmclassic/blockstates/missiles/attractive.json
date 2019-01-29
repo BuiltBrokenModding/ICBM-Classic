@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:missiles/tier1/missile_attractive.obj",
+    "model": "icbmclassic:missiles/tier1/missile_attraction.obj",
     "transform": {
       "thirdperson_lefthand": {
         "rotation": [
