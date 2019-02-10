@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.config.ConfigBlast;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
@@ -121,7 +122,7 @@ public class BlastEndothermic extends BlastBeam
 
                 ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
-            if (!world().getGameRules().getBoolean("doDaylightCycle"))
+            if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))
             {
                 this.world().setWorldTime(1200);
             }

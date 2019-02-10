@@ -99,7 +99,7 @@ public class BlastExothermic extends BlastBeam
                 ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 6.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
 
-            if(!world().getGameRules().getBoolean("doDaylightCycle")) //TODO add config
+            if(ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))
             {
                 this.world().setWorldTime(18000);
             }
