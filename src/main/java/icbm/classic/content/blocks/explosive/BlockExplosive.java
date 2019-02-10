@@ -23,6 +23,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -36,6 +37,12 @@ public class BlockExplosive extends BlockICBM
         super("explosives", Material.TNT);
         setHardness(2);
         setSoundType(SoundType.CLOTH);
+    }
+
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
+    {
+        return getItem(world, pos, getActualState(state, world, pos));
     }
 
     @Override
@@ -113,8 +120,8 @@ public class BlockExplosive extends BlockICBM
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEntityExplosive)
         {
-            int explosiveID = itemStack.getItemDamage();
-            ((TileEntityExplosive) tile).capabilityExplosive = new CapabilityExplosiveStack(itemStack.copy());
+            TileEntityExplosive explosive = (TileEntityExplosive) tile;
+            explosive.capabilityExplosive = new CapabilityExplosiveStack(itemStack.copy());
 
             if (world.getRedstonePowerFromNeighbors(pos) > 0)
             {
@@ -139,7 +146,7 @@ public class BlockExplosive extends BlockICBM
             {
                 //TODO turn into event and logger
                 ICBMClassic.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getName()
-                        + " placed " + ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosiveID).getRegistryID() + " in: " + pos);
+                        + " placed " + ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosive.capabilityExplosive.explosiveID).getRegistryName() + " in: " + pos);
             }
         }
     }

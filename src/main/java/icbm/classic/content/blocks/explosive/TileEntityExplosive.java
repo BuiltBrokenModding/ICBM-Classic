@@ -1,30 +1,26 @@
 package icbm.classic.content.blocks.explosive;
 
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.items.ItemRemoteDetonator;
-import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
-import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.transform.vector.Pos;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.common.capabilities.Capability;
 
-public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver, IRotatable
+import javax.annotation.Nullable;
+
+public class TileEntityExplosive extends TileEntity implements IRotatable
 {
-
     /**
      * Is the tile currently exploding
      */
-    public boolean exploding = false;
+    public boolean hasBeenTriggered = false;
 
     public CapabilityExplosiveStack capabilityExplosive;
 
@@ -46,57 +42,45 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        if (capabilityExplosive != null)
+        if (capabilityExplosive != null && capabilityExplosive.stack != null)
         {
-            nbt.setTag(CapabilityExplosiveStack.NBT_STACK, capabilityExplosive.serializeNBT());
+            nbt.setTag(CapabilityExplosiveStack.NBT_STACK, capabilityExplosive.toStack().serializeNBT());
         }
         return super.writeToNBT(nbt);
     }
 
     @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        if (id == 1)
-        {
-            ItemStack exStack = ByteBufUtils.readItemStack(data);
-            if (capabilityExplosive == null)
-            {
-                capabilityExplosive = new CapabilityExplosiveStack(exStack);
-            }
-            else
-            {
-                capabilityExplosive.stack = exStack;
-                capabilityExplosive.initData();
-            }
-            world.markBlockRangeForRenderUpdate(pos, pos);
-            return true;
-        }
-        else if (id == 2 && !this.world.isRemote)
-        {
-            // Packet explode command
-            if (player.inventory.getCurrentItem().getItem() instanceof ItemRemoteDetonator)
-            {
-                ItemStack itemStack = player.inventory.getCurrentItem();
+        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY && capabilityExplosive != null || super.hasCapability(capability, facing);
+    }
 
-                ((ItemRemoteDetonator) ItemReg.itemRemoteDetonator).discharge(itemStack, ItemRemoteDetonator.ENERGY, true);
-            }
-            return true;
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
+        {
+            return (T) capabilityExplosive;
         }
-        return false;
+        return super.getCapability(capability, facing);
     }
 
     public void trigger(boolean setFire)
     {
-        exploding = true;
-        EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), getDirection(), capabilityExplosive.stack);
-
-        if (setFire)
+        if (!hasBeenTriggered)
         {
-            entityExplosive.setFire(100);
-        }
+            hasBeenTriggered = true;
+            EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), getDirection(), capabilityExplosive.stack);
 
-        world.spawnEntity(entityExplosive);
-        world.setBlockToAir(pos);
+            if (setFire)
+            {
+                entityExplosive.setFire(100);
+            }
+
+            world.spawnEntity(entityExplosive);
+            world.setBlockToAir(pos);
+        }
     }
 
     @Override
@@ -126,6 +110,8 @@ public class TileEntityExplosive extends TileEntity implements IPacketIDReceiver
     @Override
     public void setDirection(EnumFacing facingDirection)
     {
-        this.world.setBlockState(pos, getBlockType().getDefaultState().withProperty(BlockExplosive.ROTATION_PROP, facingDirection), 2);
+        IBlockState state = world.getBlockState(pos);
+        state = state.withProperty(BlockExplosive.ROTATION_PROP, facingDirection);
+        this.world.setBlockState(pos, state, 2);
     }
 }
