@@ -7,6 +7,7 @@ import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
+import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.ExplosiveInit;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.entity.EntityExplosive;
@@ -406,7 +407,7 @@ public final class ICBMClassic
             serverCommandManager.registerCommand(new CommandICBM("icbm"));
         }
 
-        WorkerThreadManager.INSTANCE = new WorkerThreadManager(4); //TODO add config TODO do (cpu cores - 1) as default config
+        WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
         WorkerThreadManager.INSTANCE.startThreads();
     }
 
