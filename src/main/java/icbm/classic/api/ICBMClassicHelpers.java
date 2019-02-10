@@ -31,6 +31,7 @@ public final class ICBMClassicHelpers
             return data;
         }
         System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for ID[" + explosive + "] this may cause unexpected logic");
+        new RuntimeException().printStackTrace();
         return returnNull ? null : ExplosiveRefs.CONDENSED;
     }
 

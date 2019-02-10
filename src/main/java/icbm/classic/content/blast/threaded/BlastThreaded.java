@@ -1,15 +1,13 @@
 package icbm.classic.content.blast.threaded;
 
 import icbm.classic.content.blast.Blast;
-import icbm.classic.lib.transform.BlockEditHandler;
-import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
+import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
+import icbm.classic.lib.transform.BlockEditHandler;
 import icbm.classic.lib.transform.PosDistanceSorter;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import java.util.Collections;
@@ -22,10 +20,6 @@ import java.util.List;
 public abstract class BlastThreaded extends Blast
 {
     public BlastThreaded(){}
-    public BlastThreaded(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
 
     @Override
     protected void doRunBlast()

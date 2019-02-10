@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.explosive;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
@@ -72,6 +73,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
         {
             hasBeenTriggered = true;
             EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), getDirection(), capabilityExplosive.stack);
+            //TODO check for tick rate, trigger directly if tick is less than 3
 
             if (setFire)
             {
@@ -80,6 +82,8 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
 
             world.spawnEntity(entityExplosive);
             world.setBlockToAir(pos);
+
+            ICBMClassic.logger().info("TileEntityExplosive: Triggered ITEM{" + capabilityExplosive.stack + "] " + capabilityExplosive.getExplosiveData().getRegistryName() + " at location " + getPos());
         }
     }
 

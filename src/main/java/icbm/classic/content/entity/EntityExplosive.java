@@ -7,11 +7,12 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
-import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
+import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -256,7 +257,14 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         this.fuse = data.readInt();
         this._facing = EnumFacing.byIndex(data.readByte());
-        capabilityExplosive.deserializeNBT(ByteBufUtils.readTag(data));
+        if (capabilityExplosive instanceof CapabilityExplosiveStack)
+        {
+            ((CapabilityExplosiveStack) capabilityExplosive).initData(ByteBufUtils.readTag(data));
+        }
+        else
+        {
+            capabilityExplosive = new CapabilityExplosiveStack(ByteBufUtils.readTag(data));
+        }
     }
 
     public IExplosiveData getExplosiveData()

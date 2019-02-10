@@ -47,7 +47,7 @@ public class BlastXmas extends Blast
             if (callCount > this.callCountEnd)
             {
                 spawnEntity(zombie ? new EntityXmasZombieBoss(world()) : new EntityXmasSkeletonBoss(world()), x, y + 4, z);
-                this.controller.endExplosion();
+                this.isAlive = false;
             }
         }
     }

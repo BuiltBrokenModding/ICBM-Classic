@@ -1,7 +1,10 @@
 package icbm.classic.api.explosion;
 
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
+
+import javax.annotation.Nullable;
 
 /**
  * Applied to the object that represents or wrappers the explosion/blast.
@@ -29,7 +32,7 @@ public interface IBlast extends IWorldPosition
 
     /**
      * Called to scale the blast by the given amount.
-     *
+     * <p>
      * Not all blasts can be scaled
      *
      * @param scale
@@ -47,7 +50,36 @@ public interface IBlast extends IWorldPosition
      */
     BlastState runBlast();
 
-    //TODO expose blast type/ID
+    /**
+     * Is the blast completed and
+     * can be marked as dead.
+     *
+     * @return true for completed
+     */
+    boolean isCompleted();
+
+    /**
+     * Data used to create the blast. Used
+     * for save state recovery
+     *
+     * @return
+     */
+    @Nullable
+    IExplosiveData getExplosiveData();
+
+    /**
+     * Entity controlling the blast.
+     * <p>
+     * Not all blasts have an entity that
+     * handles updates. Some are controlled
+     * by the thread system and others are
+     * fired as simple TNT like explosives
+     *
+     * @return controller
+     */
+    @Nullable
+    Entity getController();
+
     //TODO expose blast properties
     //TODO expose blast state (init, blocks, entity, done)
     //TODO expose threaded state if used

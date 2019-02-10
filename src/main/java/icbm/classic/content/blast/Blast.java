@@ -1,15 +1,18 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.explosion.IBlastRestore;
+import icbm.classic.api.explosion.IBlastTickable;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.models.ModelICBM;
 import icbm.classic.config.ConfigDebug;
+import icbm.classic.content.blast.thread.ThreadExplosion;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.lib.explosive.ExplosiveHandler;
-import icbm.classic.content.blast.thread.ThreadExplosion;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -30,13 +33,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Prefab for any Explosion/Blast object created
  */
-public abstract class Blast extends Explosion implements IBlastInit
+public abstract class Blast extends Explosion implements IBlastInit, IBlastRestore, IBlastTickable
 {
 
     //Thread stuff
@@ -50,7 +54,7 @@ public abstract class Blast extends Explosion implements IBlastInit
     /**
      * Host of the blast
      */
-    public EntityExplosion controller = null;
+    public Entity controller = null;
 
     /**
      * Is the blast alive, if false the blast is dead
@@ -66,31 +70,41 @@ public abstract class Blast extends Explosion implements IBlastInit
 
     private boolean hasBuilt = false;
 
+    private IExplosiveData explosiveData;
+
     /**
      * Only use the default if you plan to init required data
      */
     public Blast()
     {
         super(null, null, 0, 0, 0, 0, false, false);
-
     }
 
-    public Blast(World world, Entity entity, double x, double y, double z, float size)
+    public IExplosiveData getExplosiveData()
     {
-        super(world, entity, x, y, z, size, false, true);
-        this.location = new Location(world, x, y, z);
+        return explosiveData;
     }
 
-    public Blast(Location pos, Entity entity, float size)
+    @Override
+    public boolean onBlastTick(int ticksExisted)
     {
-        super(pos.world(), entity, pos.x(), pos.y(), pos.z(), size, false, true);
-        this.location = pos;
-    }
-
-    public Blast(Entity entity, float size)
-    {
-        super(entity.world, entity, entity.posX, entity.posY, entity.posZ, size, false, true);
-        this.location = new Location(entity);
+        if (ticksExisted == 1)
+        {
+            preExplode();
+        }
+        else if (ticksExisted % proceduralInterval() == 0)
+        {
+            if (!this.isCompleted())
+            {
+                onExplode();
+            }
+            else
+            {
+                postExplode();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -369,13 +383,15 @@ public abstract class Blast extends Explosion implements IBlastInit
         return false;
     }
 
-    public void readFromNBT(NBTTagCompound nbt)
+    @Override
+    public void load(NBTTagCompound nbt)
     {
         this.callCount = nbt.getInteger("callCount");
         this.size = nbt.getFloat("explosionSize");
     }
 
-    public void writeToNBT(NBTTagCompound nbt)
+    @Override
+    public void save(NBTTagCompound nbt)
     {
         nbt.setInteger("callCount", this.callCount);
         nbt.setFloat("explosionSize", this.size);
@@ -556,9 +572,37 @@ public abstract class Blast extends Explosion implements IBlastInit
     }
 
     @Override
+    public IBlastInit setExplosiveData(IExplosiveData data)
+    {
+        checkBuilt();
+        this.explosiveData = data;
+        return this;
+    }
+
+    @Override
     public IBlastInit setCustomData(@Nonnull NBTTagCompound customData)
     {
         return this;
+    }
+
+    @Override
+    public boolean isCompleted()
+    {
+        return !isAlive;
+    }
+
+    @Override
+    public IBlastInit setEntityController(Entity entityController)
+    {
+        this.controller = entityController;
+        return this;
+    }
+
+    @Nullable
+    @Override
+    public Entity getController()
+    {
+        return controller;
     }
 
     private final void checkBuilt()

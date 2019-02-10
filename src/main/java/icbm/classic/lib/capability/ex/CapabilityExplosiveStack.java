@@ -23,7 +23,17 @@ public class CapabilityExplosiveStack extends CapabilityExplosive
 
     public CapabilityExplosiveStack(NBTTagCompound tagCompound)
     {
-        stack = new ItemStack(tagCompound);
+        initData(tagCompound);
+    }
+
+    public void initData(NBTTagCompound tagCompound)
+    {
+        initData(new ItemStack(tagCompound));
+    }
+
+    public void initData(ItemStack stack)
+    {
+        this.stack = stack;
         initData();
     }
 

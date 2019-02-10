@@ -40,7 +40,7 @@ public final class RadarRegistry
         if (entity != null && !entity.isDead && entity.world != null && !entity.world.isRemote)
         {
             RadarMap map = getRadarMapForWorld(entity.world);
-            return map != null ? getRadarMapForWorld(entity.world).add(entity) : false;
+            return map != null && getRadarMapForWorld(entity.world).add(entity);
         }
         return false;
     }

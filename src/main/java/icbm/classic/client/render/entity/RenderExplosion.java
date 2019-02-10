@@ -1,8 +1,8 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.entity.EntityExplosion;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -40,35 +40,20 @@ public class RenderExplosion extends Render<EntityExplosion>
     @Override
     public void doRender(EntityExplosion entityExplosion, double x, double y, double z, float par8, float par9)
     {
-        if (entityExplosion.getBlast() != null)
+        // RedMatter Render
+        if (entityExplosion.getBlast() instanceof BlastRedmatter)
         {
-            // RedMatter Render
-            if (entityExplosion.getBlast() instanceof BlastRedmatter)
-            {
-                final BlastRedmatter redmatter = (BlastRedmatter) entityExplosion.getBlast();
-                final float scale = redmatter.getScaleFactor();
+            final BlastRedmatter redmatter = (BlastRedmatter) entityExplosion.getBlast();
+            final float scale = redmatter.getScaleFactor();
 
-                renderDisk(entityExplosion, redmatter, x, y, z, scale, par8, par9);
-                GlStateManager.color(1, 1, 1, 1);
+            renderDisk(entityExplosion, redmatter, x, y, z, scale, par8, par9);
+            GlStateManager.color(1, 1, 1, 1);
 
-                renderSphere(entityExplosion, redmatter, x, y, z, scale, par8, par9);
-                GlStateManager.color(1, 1, 1, 1);
+            renderSphere(entityExplosion, redmatter, x, y, z, scale, par8, par9);
+            GlStateManager.color(1, 1, 1, 1);
 
-                renderBeams(entityExplosion, redmatter, x, y, z, scale, par8, par9);
-                GlStateManager.color(1, 1, 1, 1);
-            }
-            else
-            {
-                if (entityExplosion.getBlast().getRenderModel() != null && entityExplosion.getBlast().getRenderResource() != null)
-                {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.translate((float) x, (float) y + 1F, (float) z);
-                    GlStateManager.rotate(entityExplosion.rotationPitch, 0.0F, 0.0F, 1.0F);
-                    this.bindTexture(entityExplosion.getBlast().getRenderResource());
-                    entityExplosion.getBlast().getRenderModel().render(entityExplosion, (float) x, (float) y, (float) z, par8, par9, 0.0625F);
-                    GlStateManager.popMatrix();
-                }
-            }
+            renderBeams(entityExplosion, redmatter, x, y, z, scale, par8, par9);
+            GlStateManager.color(1, 1, 1, 1);
         }
     }
 
@@ -202,7 +187,7 @@ public class RenderExplosion extends Render<EntityExplosion>
         int ticks = entityExplosion.ticksExisted % totalAnimationTime;
 
         //Controls rotation of beams
-        float rotationScale = (entityExplosion.ticksExisted % rotationAnimationTime) / (float) rotationAnimationTime ;
+        float rotationScale = (entityExplosion.ticksExisted % rotationAnimationTime) / (float) rotationAnimationTime;
 
         //Controls beam count and other factors based on animation phase time
         float timeScale;
@@ -310,6 +295,6 @@ public class RenderExplosion extends Render<EntityExplosion>
     @Override
     protected ResourceLocation getEntityTexture(EntityExplosion entity)
     {
-        return entity.getBlast().getRenderResource();
+        return GREY_TEXTURE;
     }
 }

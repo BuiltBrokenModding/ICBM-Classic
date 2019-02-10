@@ -1,23 +1,16 @@
 package icbm.classic.content.blast;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
 
 import java.util.List;
 
 public class BlastMutation extends Blast
 {
-    public BlastMutation(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
     @Override
     public void doExplode()
     {

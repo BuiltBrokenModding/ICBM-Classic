@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
@@ -252,7 +253,8 @@ public class BlastRedmatter extends Blast
         {
             if (entity instanceof EntityExplosion)
             {
-                if (((EntityExplosion) entity).getBlast() instanceof BlastAntimatter)
+                final IBlast blast = ((EntityExplosion) entity).getBlast();
+                if (blast instanceof BlastAntimatter)
                 {
                     if (doAudio)
                     {
@@ -264,7 +266,7 @@ public class BlastRedmatter extends Blast
                         return explosionCreated;
                     }
                 }
-                else if (((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
+                else if (blast instanceof BlastRedmatter)
                 {
                     //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
 
@@ -276,7 +278,7 @@ public class BlastRedmatter extends Blast
                     float radiusNew = (float) Math.cbrt(sizeA + sizeB);
 
                     //Average out timer
-                    this.callCount = (callCount + ((EntityExplosion) entity).getBlast().callCount) / 2;
+                    this.callCount = (callCount + ((BlastRedmatter)blast).callCount) / 2;
 
                     //Destroy current instance
                     this.isAlive = false;
@@ -286,7 +288,7 @@ public class BlastRedmatter extends Blast
                     new BlastRedmatter().setBlastSize(radiusNew).runBlast();
                 }
                 //Kill explosion entity
-                ((EntityExplosion) entity).getBlast().isAlive = false;
+                ((BlastRedmatter)blast).isAlive = false;
                 //Kill entity in the center of the ball
                 entity.setDead();
             }

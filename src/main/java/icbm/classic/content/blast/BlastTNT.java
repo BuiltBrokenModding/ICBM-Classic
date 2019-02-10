@@ -13,7 +13,6 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 
@@ -36,19 +35,6 @@ public class BlastTNT extends Blast
 
     /** Number of rays (or steps) to use for blast per axis (x, y, z) */
     public int raysPerAxis = 16;
-
-    /**
-     * @param world  - location
-     * @param entity - cause
-     * @param x      - location
-     * @param y      - location
-     * @param z      - location
-     * @param power  - Modifies power
-     */
-    public BlastTNT(World world, Entity entity, double x, double y, double z, float power)
-    {
-        super(world, entity, x, y, z, power);
-    }
 
     public BlastTNT()
     {
@@ -292,17 +278,17 @@ public class BlastTNT extends Blast
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt)
+    public void load(NBTTagCompound nbt)
     {
-        super.readFromNBT(nbt);
+        super.load(nbt);
         this.pushType = nbt.getInteger("pushType");
         this.destroyItem = nbt.getBoolean("destroyItem");
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public void save(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+        super.save(nbt);
         nbt.setInteger("pushType", this.pushType);
         nbt.setBoolean("destroyItem", this.destroyItem);
     }

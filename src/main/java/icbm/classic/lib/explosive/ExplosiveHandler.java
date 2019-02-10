@@ -103,6 +103,7 @@ public class ExplosiveHandler
     {
         if (capabilityExplosive == null || capabilityExplosive.getExplosiveData() == null)
         {
+            ICBMClassic.logger().error("ExplosiveHandler: Missing capability for explosive, cap: " + capabilityExplosive + "  cause: " + cause, new RuntimeException());
             return BlastState.NULL;
         }
         return createExplosion(cause, world, x, y, z, capabilityExplosive.getExplosiveData().getRegistryID(), 1, capabilityExplosive.getCustomBlastData());
@@ -133,9 +134,12 @@ public class ExplosiveHandler
             blast.setBlastPosition(x, y, z);
             blast.scaleBlast(scale);
             blast.setBlastSource(cause);
+            blast.setExplosiveData(data);
 
             return blast.buildBlast();
         }
+
+        ICBMClassic.logger().error("ExplosiveHandler: Failed to create blast, data: " + data + " factory: " + (data != null ? data.getBlastFactory() : " nil"), new RuntimeException());
         return null;
     }
 }

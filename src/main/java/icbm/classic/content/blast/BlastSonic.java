@@ -4,10 +4,9 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
-import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.blast.thread.ThreadLargeExplosion;
-import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.blocks.explosive.TileEntityExplosive;
+import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -210,7 +209,7 @@ public class BlastSonic extends Blast
 
         if (this.callCount > this.getBlastRadius())
         {
-            this.controller.endExplosion();
+            this.isAlive = false;
         }
     }
 

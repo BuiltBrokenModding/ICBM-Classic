@@ -8,12 +8,10 @@ import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -27,17 +25,6 @@ public class BlastNuclear extends BlastThreaded
     private boolean isRadioactive = false;
 
     public BlastNuclear(){}
-
-    public BlastNuclear(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
-    public BlastNuclear(World world, Entity entity, double x, double y, double z, float size, float energy)
-    {
-        this(world, entity, x, y, z, size);
-        this.energy = energy;
-    }
 
     public BlastNuclear setEnergy(float energy)
     {
@@ -250,8 +237,18 @@ public class BlastNuclear extends BlastThreaded
                 //Place radio active blocks
                 if (this.isRadioactive)
                 {
-                    new BlastRot(world(), this.exploder, location.x(), location.y(), location.z(), this.getBlastRadius(), this.energy).runBlast();
-                    new BlastMutation(world(), this.exploder, location.x(), location.y(), location.z(), this.getBlastRadius()).runBlast();
+                    new BlastRot(this.energy)
+                            .setBlastWorld(world())
+                            .setBlastSource(this.exploder)
+                            .setBlastPosition(location.x(), location.y(), location.z())
+                            .setBlastSize(this.getBlastRadius())
+                            .buildBlast().runBlast();  //TODO trigger from explosive handler
+                    new BlastMutation()
+                            .setBlastWorld(world())
+                            .setBlastSource(this.exploder)
+                            .setBlastPosition(location.x(), location.y(), location.z())
+                            .setBlastSize(this.getBlastRadius())
+                            .buildBlast().runBlast();  //TODO trigger from explosive handler
 
                     if (this.world().rand.nextInt(3) == 0)
                     {
@@ -277,16 +274,16 @@ public class BlastNuclear extends BlastThreaded
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt)
+    public void load(NBTTagCompound nbt)
     {
-        super.readFromNBT(nbt);
+        super.load(nbt);
         this.spawnMoreParticles = nbt.getBoolean("spawnMoreParticles");
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public void save(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+        super.save(nbt);
         nbt.setBoolean("spawnMoreParticles", this.spawnMoreParticles);
     }
 }

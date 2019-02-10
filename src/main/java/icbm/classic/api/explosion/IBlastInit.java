@@ -1,5 +1,6 @@
 package icbm.classic.api.explosion;
 
+import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -8,8 +9,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Separate interface for blasts that can be built from {@link IBlastFactory}
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 1/3/19.
  */
 public interface IBlastInit extends IBlast
@@ -46,7 +47,7 @@ public interface IBlastInit extends IBlast
 
     /**
      * Sets the blast's position. Should only be called
-     * on init of the blast. Use seperate methods to move
+     * on init of the blast. Use separate methods to move
      * or teleport the blast.
      *
      * @param x
@@ -64,6 +65,26 @@ public interface IBlastInit extends IBlast
      * @return this
      */
     IBlastInit setCustomData(@Nonnull NBTTagCompound customData);
+
+    /**
+     * Sets the entity that will control this blast.
+     * <p>
+     * This is called after {@link #buildBlast()} so do
+     * not lock after the blast is built. As controller
+     * may need to refresh or change dimensions.
+     *
+     * @param entityController
+     * @return this
+     */
+    IBlastInit setEntityController(Entity entityController);
+
+    /**
+     * Sets the explosive data used to create this blast
+     *
+     * @param data
+     * @return this
+     */
+    IBlastInit setExplosiveData(IExplosiveData data);
 
     /**
      * Called last to complete the build of the blast. Once

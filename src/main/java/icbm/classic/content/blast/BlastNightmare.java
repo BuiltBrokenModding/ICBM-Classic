@@ -1,10 +1,8 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityBat;
-import net.minecraft.world.World;
 
 /**
  *
@@ -12,11 +10,6 @@ import net.minecraft.world.World;
  */
 public class BlastNightmare extends Blast
 {
-    public BlastNightmare(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
-
     @Override
     protected void doExplode()
     {

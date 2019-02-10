@@ -27,7 +27,7 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     public static final String NBT_EXPLOSIVE_ID = "explosiveID";
     public static final String NBT_BLAST_DATA = "blastData";
 
-    public int explosiveID;
+    public int explosiveID; //TODO change over to resource location or include in save to check for issues using ID only for in memory
     public NBTTagCompound blastNBT;
 
     public CapabilityExplosive()

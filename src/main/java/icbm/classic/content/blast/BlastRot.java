@@ -6,10 +6,8 @@ import icbm.classic.content.blast.thread.ThreadLargeExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import java.util.Iterator;
@@ -23,14 +21,8 @@ public class BlastRot extends Blast
 {
     private float energy;
 
-    public BlastRot(World world, Entity entity, double x, double y, double z, float size)
+    public BlastRot(float energy)
     {
-        super(world, entity, x, y, z, size);
-    }
-
-    public BlastRot(World world, Entity entity, double x, double y, double z, float size, float energy)
-    {
-        this(world, entity, x, y, z, size);
         this.energy = energy;
     }
 
@@ -99,14 +91,14 @@ public class BlastRot extends Blast
                             }
                         }
 
-                        this.controller.endExplosion();
+                        isAlive = false;
 
                     }
                     else
                     {
                         isAlive = false;
 
-                        if(ConfigDebug.DEBUG_THREADS)
+                        if (ConfigDebug.DEBUG_THREADS)
                         {
                             String msg = String.format("BlastRot#doPostExplode() -> Thread failed to find blocks to edit. Either thread failed or no valid blocks were found in range." +
                                             "\nWorld = %s " +

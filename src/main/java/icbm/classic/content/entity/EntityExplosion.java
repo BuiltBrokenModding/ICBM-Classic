@@ -1,12 +1,16 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.explosion.*;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.Blast;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -21,10 +25,8 @@ import java.lang.reflect.Constructor;
  */
 public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData
 {
-    private Blast blast;
+    private IBlast blast;
     private double blastYOffset = 0;
-
-    private boolean endExplosion = false;
 
     public EntityExplosion(World world)
     {
@@ -108,13 +110,13 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void onUpdate()
     {
-        if (this.getBlast() == null || this.getBlast().controller != this || !this.getBlast().isAlive)
+        if (this.getBlast() == null || this.getBlast().getController() != this || this.getBlast().isCompleted())
         {
             this.setDead();
             return;
         }
 
-        if (this.getBlast().isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
+        if (this.getBlast() instanceof IBlastMovable && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
             //Slow entity down
             this.motionX *= .98;
@@ -142,23 +144,14 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
 
             //Update blast
-            getBlast().onPositionUpdate(posX, posY + blastYOffset, posZ);
+            ((IBlastMovable) getBlast()).onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
-        if (this.ticksExisted == 1)
+        if (blast instanceof IBlastTickable)
         {
-            this.getBlast().preExplode();
-        }
-        else if (this.ticksExisted % this.getBlast().proceduralInterval() == 0)
-        {
-            if (!this.endExplosion)
+            if (((IBlastTickable) blast).onBlastTick(ticksExisted))
             {
-                this.getBlast().onExplode();
-            }
-            else
-            {
-                this.setDead();
-                this.getBlast().postExplode();
+                setDead();
             }
         }
     }
@@ -169,12 +162,6 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         //Remove default movement
     }
 
-
-    public void endExplosion()
-    {
-        this.endExplosion = true;
-    }
-
     /** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
@@ -183,20 +170,58 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         {
             NBTTagCompound blastSave = nbt.getCompoundTag("blast");
             this.blastYOffset = nbt.getDouble("blastPosY");
-            if (this.getBlast() == null)
+            if (getBlast() == null)
             {
-                Class clazz = Class.forName(blastSave.getString("class"));
-                Constructor constructor = clazz.getConstructor(World.class, Entity.class, double.class, double.class, double.class, float.class);
-                //TODO save person who triggered the explosion
-                this.setBlast((Blast) constructor.newInstance(this.world, null, posX, posY + blastYOffset, posZ, 0));
+                //Legacy code
+                if (blastSave.hasKey("class"))
+                {
+                    Class clazz = Class.forName(blastSave.getString("class"));
+                    Constructor constructor = clazz.getConstructor();
+                    Blast blast = (Blast) constructor.newInstance();
+                    blast.setBlastWorld(world);
+                    blast.setPosition(posX, posY + blastYOffset, posZ);
+                    blast.setEntityController(this);
+                    blast.buildBlast();
+                }
+                else if (blastSave.hasKey("ex_id"))
+                {
+                    ResourceLocation id = new ResourceLocation(blastSave.getString("ex_id"));
+                    IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id);
+                    if (data != null)
+                    {
+                        final IBlastFactory factory = data.getBlastFactory(); //TODO convert load code to blast creation helper
+                        if (factory != null)
+                        {
+                            blast = factory.createNewBlast();
+                            ((IBlastInit) blast).setBlastWorld(world);
+                            ((IBlastInit) blast).setBlastPosition(posX, posY + blastYOffset, posZ);
+                            ((IBlastInit) blast).setEntityController(this);
+                            ((IBlastInit) blast).buildBlast();
+                        }
+                        else
+                        {
+                            ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
+                        }
+                    }
+                    else
+                    {
+                        ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
+                    }
+                }
+                else
+                {
+                    ICBMClassic.logger().error("EntityExplosion: Failed to read save state for explosion!");
+                }
             }
 
-            this.getBlast().readFromNBT(blastSave);
+            if (getBlast() instanceof IBlastRestore)
+            {
+                ((IBlastRestore) getBlast()).load(blastSave);
+            }
         }
         catch (Exception e)
         {
-            ICBMClassic.logger().error("ICBM error in loading an explosion!");
-            e.printStackTrace();
+            ICBMClassic.logger().error("EntityExplosion: Unexpected error restoring save state of explosion entity!", e);
         }
     }
 
@@ -204,15 +229,25 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setDouble("blastPosY", blastYOffset);
+        if (getBlast() != null && getBlast().getExplosiveData() != null) //TODO add save/load mechanic to bypass need for ex data
+        {
+            //Save position
+            nbt.setDouble("blastPosY", blastYOffset);
 
-        NBTTagCompound baoZhaNBT = new NBTTagCompound();
-        baoZhaNBT.setString("class", this.getBlast().getClass().getCanonicalName());
-        this.getBlast().writeToNBT(baoZhaNBT);
-        nbt.setTag("blast", baoZhaNBT);
+            //Save explosive data
+            NBTTagCompound blastSave = new NBTTagCompound();
+            if (getBlast() instanceof IBlastRestore)
+            {
+                ((IBlastRestore) getBlast()).save(blastSave);
+            }
+            blastSave.setString("ex_id", getBlast().getExplosiveData().getRegistryName().toString());
+
+            //Encode into NBT
+            nbt.setTag("blast", blastSave);
+        }
     }
 
-    public Blast getBlast()
+    public IBlast getBlast()
     {
         return blast;
     }
@@ -222,7 +257,10 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         this.blast = blast;
         if (blast != null)
         {
-            this.blast.controller = this;
+            if (blast instanceof IBlastInit)
+            {
+                ((Blast) this.blast).setEntityController(this);
+            }
             this.setPosition(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
             blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
         }

@@ -167,7 +167,7 @@ public class BlastEnderman extends Blast
 
         if (this.callCount > this.duration)
         {
-            this.controller.endExplosion();
+            this.isAlive = false;
         }
     }
 

@@ -128,7 +128,7 @@ public class BlastAntiGravitational extends Blast
 
         if (this.callCount > 20 * 120)
         {
-            this.controller.endExplosion();
+            this.isAlive = false;
         }
     }
 

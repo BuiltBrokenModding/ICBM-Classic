@@ -1,13 +1,12 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.content.blast.thread.ThreadLargeExplosion;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityLightBeam;
-import icbm.classic.content.blast.thread.ThreadLargeExplosion;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -27,10 +26,6 @@ public abstract class BlastBeam extends Blast
     protected int radius = 5;
 
     public BlastBeam(){}
-    public BlastBeam(World world, Entity entity, double x, double y, double z, float size)
-    {
-        super(world, entity, x, y, z, size);
-    }
 
     /** Called before an explosion happens */
     @Override
@@ -54,7 +49,7 @@ public abstract class BlastBeam extends Blast
         {
             if (this.callCount > 100 / this.proceduralInterval() && isThreadCompleted())
             {
-                this.controller.endExplosion();
+                this.isAlive = false;
             }
 
             if (this.canFocusBeam(this.world(), location))
@@ -96,7 +91,7 @@ public abstract class BlastBeam extends Blast
             }
             else
             {
-                this.controller.endExplosion();
+                this.isAlive = false;
             }
 
             for (EntityFlyingBlock entity : this.feiBlocks)

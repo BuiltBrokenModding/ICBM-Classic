@@ -112,13 +112,18 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         //Trigger secondary blast
         if (this.isMutate) //TODO why?
         {
-            new BlastMutation(world(), this.exploder, location.x(), location.y(), location.z(), radius).runBlast();
+            new BlastMutation()
+                    .setBlastWorld(world())
+                    .setBlastSource(this.exploder)
+                    .setBlastPosition(location.x(), location.y(), location.z())
+                    .setBlastSize(radius)
+                    .buildBlast().runBlast(); //TODO trigger from explosive handler
         }
 
         //End explosion when we hit life timer
         if (this.callCount > this.duration)
         {
-            this.controller.endExplosion();
+            this.isAlive = false;
         }
     }
 
@@ -170,9 +175,9 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt)
+    public void load(NBTTagCompound nbt)
     {
-        super.readFromNBT(nbt);
+        super.load(nbt);
         this.duration = nbt.getInteger("duration");
         this.isContagious = nbt.getBoolean("isContagious");
         this.isPoisonous = nbt.getBoolean("isPoisonous");
@@ -185,9 +190,9 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt)
+    public void save(NBTTagCompound nbt)
     {
-        super.writeToNBT(nbt);
+        super.save(nbt);
         nbt.setInteger("duration", this.duration);
         nbt.setBoolean("isContagious", this.isContagious);
         nbt.setBoolean("isPoisonous", this.isPoisonous);
