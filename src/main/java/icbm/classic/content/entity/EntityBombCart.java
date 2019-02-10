@@ -82,7 +82,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
         {
             return super.entityDropItem(getCartItem(), offsetY);
         }
-        return entityDropItem(stack, offsetY);
+        return super.entityDropItem(stack, offsetY);
     }
 
     @Override
