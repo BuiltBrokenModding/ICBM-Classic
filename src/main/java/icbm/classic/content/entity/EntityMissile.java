@@ -299,9 +299,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
             }
 
-            this.spawnMissileSmoke();
             this.protectionTime--;
         }
+        else
+        {
+	        this.spawnMissileSmoke();
+        }
+
         if (this.explosiveID != null && this.explosiveID.handler instanceof Explosion)
         {
             ((Explosion) this.explosiveID.handler).update(this);
