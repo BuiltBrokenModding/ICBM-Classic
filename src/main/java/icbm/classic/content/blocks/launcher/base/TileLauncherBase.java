@@ -266,7 +266,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     public boolean launchMissile(Pos target, int lockHeight)
     {
         //Allow canceling missile launches
-        if (!MinecraftForge.EVENT_BUS.post(new LauncherEvent.OnLaunch(missileLauncher, missileHolder)))
+        if (MinecraftForge.EVENT_BUS.post(new LauncherEvent.OnLaunch(missileLauncher, missileHolder)))
         {
             return false;
         }
