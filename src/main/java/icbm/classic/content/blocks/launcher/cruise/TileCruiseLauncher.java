@@ -94,12 +94,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         else
         {
-            IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0).getItemDamage(), true);
+            final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0).getItemDamage(), true);
             if (explosiveData == null)
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
             }
-            else if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(explosiveData))//(!missile.isCruise()) //TODO add can support hook
+            else if (!ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(explosiveData)) //TODO add check to disable some types
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
             }
