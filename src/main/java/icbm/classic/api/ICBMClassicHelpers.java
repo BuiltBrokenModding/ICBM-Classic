@@ -91,7 +91,7 @@ public final class ICBMClassicHelpers
 
     public static boolean isLauncher(TileEntity tileEntity, EnumFacing side)
     {
-        return tileEntity.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, side);
+        return tileEntity != null && tileEntity.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, side);
     }
 
     public static IMissileLauncher getLauncher(TileEntity tileEntity, EnumFacing side)
