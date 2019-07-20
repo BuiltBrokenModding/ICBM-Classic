@@ -2,12 +2,12 @@ package icbm.classic.lib.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.Blast;
-import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -99,7 +99,7 @@ public class ExplosiveHandler
         return removeCount;
     }
 
-    public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, CapabilityExplosive capabilityExplosive)
+    public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, IExplosive capabilityExplosive)
     {
         if (capabilityExplosive == null || capabilityExplosive.getExplosiveData() == null)
         {

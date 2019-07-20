@@ -5,11 +5,12 @@ import icbm.classic.api.EntityRefs;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
-import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.explosive.ExplosiveHandler;
@@ -36,14 +37,16 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 {
 
     public static final String NBT_FUSE = "Fuse";
+    public static final String NBT_EXPLOSIVE_STACK = "explosive_stack";
 
     // How long the fuse is (in ticks)
     public int fuse = -1;
 
     private EnumFacing _facing = EnumFacing.NORTH;
 
-    public IEMPReceiver capabilityEMP;
-    public CapabilityExplosive capabilityExplosive;
+    //Capabilities
+    public final IEMPReceiver capabilityEMP = new CapabilityEmpKill(this);
+    public final CapabilityExplosiveEntity capabilityExplosive = new CapabilityExplosiveEntity(this);
 
     public EntityExplosive(World par1World)
     {
@@ -51,7 +54,6 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.preventEntitySpawning = true;
         this.setSize(0.98F, 0.98F);
         //this.yOffset = this.height / 2.0F;
-        capabilityEMP = new CapabilityEmpKill(this);
     }
 
     public EntityExplosive(World par1World, Pos position, EnumFacing orientation, ItemStack stack)
@@ -65,33 +67,9 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         this.prevPosX = position.x();
         this.prevPosY = position.y();
         this.prevPosZ = position.z();
-
-        this.capabilityExplosive = new CapabilityExplosiveEntity(this, stack);
         this._facing = orientation;
-    }
 
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        if (capability == CapabilityEMP.EMP)
-        {
-            return (T) capabilityEMP;
-        }
-        else if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
-        {
-            return (T) capabilityExplosive;
-        }
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public String getName()
-    {
-        if (capabilityExplosive != null && capabilityExplosive.getExplosiveData() != null)
-        {
-            return "Explosive[" + capabilityExplosive.getExplosiveData().getRegistryName() + "]";
-        }
-        return "Explosive";
+        capabilityExplosive.setStack(stack);
     }
 
     /**
@@ -113,19 +91,11 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         //Init fuse
         if (fuse == -1)
         {
-            final IExplosiveData data = capabilityExplosive.getExplosiveData();
-            if (data != null)
-            {
-                this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, data.getRegistryID());
-            }
-            else
-            {
-                fuse = 90; //TODO config default
-            }
+            this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, getExplosiveData().getRegistryID());
         }
 
         //Tick fuse to render effects
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.tickFuse(world, posX, posY, posZ, this.fuse, capabilityExplosive.explosiveID);
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.tickFuse(world, posX, posY, posZ, this.fuse, getExplosiveData().getRegistryID());
 
         //Tick fuse
         if (this.fuse-- < 1)
@@ -140,7 +110,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         //TODO hook particles to blast, as well hook to explosive handler
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, capabilityExplosive);
+        ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, getExplosiveCap());
         this.setDead();
     }
 
@@ -151,7 +121,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         this.fuse = nbt.getByte(NBT_FUSE);
-        capabilityExplosive.deserializeNBT(nbt.getCompoundTag(CapabilityExplosive.NBT_EXPLOIVE));
+        getExplosiveCap().deserializeNBT(nbt.getCompoundTag(NBT_EXPLOSIVE_STACK));
     }
 
     /**
@@ -161,7 +131,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
         nbt.setByte(NBT_FUSE, (byte) this.fuse);
-        nbt.setTag(CapabilityExplosive.NBT_EXPLOIVE, capabilityExplosive.serializeNBT());
+        nbt.setTag(NBT_EXPLOSIVE_STACK, getExplosiveCap().serializeNBT());
     }
 
     public static void registerDataFixer()
@@ -184,20 +154,27 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
                     //Fix explosive ID save
                     if (compound.hasKey("explosiveID"))
                     {
-                        //Convert data
-                        NBTTagCompound exSave = new NBTTagCompound();
-                        exSave.setInteger(CapabilityExplosive.NBT_EXPLOSIVE_ID, compound.getInteger("explosiveID"));
-                        if (compound.hasKey("data"))
+                        int id = compound.getInteger("explosiveID");
+
+                        //Generate stack so we can serialize off it
+                        final ItemStack stack = new ItemStack(BlockReg.blockExplosive, 1, id);
+
+                        //Handle custom explosive data
+                        final IExplosive ex = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+                        if(ex instanceof CapabilityExplosiveStack)
                         {
-                            exSave.setTag(CapabilityExplosive.NBT_BLAST_DATA, compound.getTag("data"));
+                            if (compound.hasKey("data"))
+                            {
+                                ((CapabilityExplosiveStack)ex).setCustomData(compound.getCompoundTag("data"));
+                            }
                         }
 
                         //Remove old tags
                         compound.removeTag("explosiveID");
                         compound.removeTag("data");
 
-                        //Save
-                        compound.setTag(CapabilityExplosive.NBT_EXPLOIVE, exSave);
+                        //Save stack
+                        compound.setTag(NBT_EXPLOSIVE_STACK, stack.serializeNBT());
                     }
                 }
                 return compound;
@@ -249,7 +226,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         data.writeInt(this.fuse);
         data.writeByte(getDirection().ordinal());
-        ByteBufUtils.writeTag(data, capabilityExplosive.serializeNBT());
+        ByteBufUtils.writeTag(data, getExplosiveCap().serializeNBT());
     }
 
     @Override
@@ -257,26 +234,62 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         this.fuse = data.readInt();
         this._facing = EnumFacing.byIndex(data.readByte());
-        if (capabilityExplosive instanceof CapabilityExplosiveStack)
-        {
-            ((CapabilityExplosiveStack) capabilityExplosive).initData(ByteBufUtils.readTag(data));
-        }
-        else
-        {
-            capabilityExplosive = new CapabilityExplosiveStack(ByteBufUtils.readTag(data));
-        }
+        getExplosiveCap().deserializeNBT(ByteBufUtils.readTag(data));
+    }
+
+    public CapabilityExplosiveEntity getExplosiveCap()
+    {
+        return capabilityExplosive;
     }
 
     public IExplosiveData getExplosiveData()
     {
-        if (capabilityExplosive != null)
+        if (getExplosiveCap() != null)
         {
-            IExplosiveData data = capabilityExplosive.getExplosiveData();
+            final IExplosiveData data = getExplosiveCap().getExplosiveData();
             if (data != null)
             {
                 return data;
             }
         }
         return ExplosiveRefs.CONDENSED;
+    }
+
+    @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityEMP.EMP)
+        {
+            return (T) capabilityEMP;
+        }
+        else if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
+        {
+            return (T) getExplosiveCap();
+        }
+        return super.getCapability(capability, facing);
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityEMP.EMP)
+        {
+            return true;
+        }
+        else if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
+        {
+            return true;
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    public String getName()
+    {
+        if (getExplosiveData() != null)
+        {
+            return "Explosive[" + getExplosiveData().getRegistryName() + "]";
+        }
+        return "Explosive";
     }
 }

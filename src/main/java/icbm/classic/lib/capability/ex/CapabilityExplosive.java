@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<NBTTagCompound>
 {
     //Parent tag
-    public static final String NBT_EXPLOIVE = "explosive";
+    public static final String NBT_EXPLOSIVE = "explosive";
 
     //Child tags
     public static final String NBT_EXPLOSIVE_ID = "explosiveID";
@@ -57,6 +57,11 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
         return blastNBT;
     }
 
+    public void setCustomData(NBTTagCompound data)
+    {
+        blastNBT = data;
+    }
+
     @Nullable
     @Override
     public ItemStack toStack()
@@ -82,12 +87,19 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     }
 
     @Override
-    public NBTTagCompound serializeNBT()
+    public final NBTTagCompound serializeNBT()
     {
-        NBTTagCompound tagCompound = new NBTTagCompound();
+        final NBTTagCompound tagCompound = new NBTTagCompound();
+        serializeNBT(tagCompound);
+
         tagCompound.setInteger(NBT_EXPLOSIVE_ID, explosiveID);
         tagCompound.setTag(NBT_BLAST_DATA, getCustomBlastData());
         return tagCompound;
+    }
+
+    protected void serializeNBT(NBTTagCompound tag)
+    {
+
     }
 
     @Override

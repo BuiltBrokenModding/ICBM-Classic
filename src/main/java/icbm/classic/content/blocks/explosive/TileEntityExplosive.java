@@ -23,7 +23,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
      */
     public boolean hasBeenTriggered = false;
 
-    public CapabilityExplosiveStack capabilityExplosive;
+    public CapabilityExplosiveStack capabilityExplosive = new CapabilityExplosiveStack(null);
 
     /**
      * Reads a tile entity from NBT.
@@ -32,7 +32,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        capabilityExplosive = new CapabilityExplosiveStack(nbt.getCompoundTag(CapabilityExplosiveStack.NBT_STACK));
+
         //this.explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(nbt.getInteger("explosiveID")); TODO data fixer
         //this.nbtData = nbt.getCompoundTag("data");
     }
@@ -43,7 +43,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        if (capabilityExplosive != null && capabilityExplosive.stack != null)
+        if (capabilityExplosive != null && capabilityExplosive.toStack() != null)
         {
             nbt.setTag(CapabilityExplosiveStack.NBT_STACK, capabilityExplosive.toStack().serializeNBT());
         }
@@ -72,7 +72,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
         if (!hasBeenTriggered)
         {
             hasBeenTriggered = true;
-            EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), getDirection(), capabilityExplosive.stack);
+            EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), getDirection(), capabilityExplosive.toStack());
             //TODO check for tick rate, trigger directly if tick is less than 3
 
             if (setFire)
@@ -83,7 +83,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
             world.spawnEntity(entityExplosive);
             world.setBlockToAir(pos);
 
-            ICBMClassic.logger().info("TileEntityExplosive: Triggered ITEM{" + capabilityExplosive.stack + "] " + capabilityExplosive.getExplosiveData().getRegistryName() + " at location " + getPos());
+            ICBMClassic.logger().info("TileEntityExplosive: Triggered ITEM{" + capabilityExplosive.toStack() + "] " + capabilityExplosive.getExplosiveData().getRegistryName() + " at location " + getPos());
         }
     }
 

@@ -117,7 +117,7 @@ public class BlockExplosive extends BlockICBM
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack)
     {
-        TileEntity tile = world.getTileEntity(pos);
+        final TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEntityExplosive)
         {
             TileEntityExplosive explosive = (TileEntityExplosive) tile;
@@ -146,7 +146,7 @@ public class BlockExplosive extends BlockICBM
             {
                 //TODO turn into event and logger
                 ICBMClassic.logger().info("ICBMClassic>>BlockExplosive#onBlockPlacedBy: " + entityLiving.getName()
-                        + " placed " + ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosive.capabilityExplosive.explosiveID).getRegistryName() + " in: " + pos);
+                        + " placed " + explosive.capabilityExplosive.getExplosiveData().getRegistryName() + " in: " + pos);
             }
         }
     }

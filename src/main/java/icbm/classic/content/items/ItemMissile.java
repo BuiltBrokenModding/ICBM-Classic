@@ -3,7 +3,6 @@ package icbm.classic.content.items;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.entity.missile.CapabilityMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
@@ -39,7 +38,7 @@ public class ItemMissile extends ItemICBMBase
     {
         ItemStackCapProvider provider = new ItemStackCapProvider(stack);
         //provider.add("missile", ICBMClassicAPI.MISSILE_CAPABILITY, new CapabilityMissile()); //TODO create an itemstack version
-        provider.add(CapabilityExplosive.NBT_EXPLOIVE, ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
+        provider.add(CapabilityExplosive.NBT_EXPLOSIVE, ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
         return provider;
     }
 
