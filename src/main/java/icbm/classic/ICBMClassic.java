@@ -8,7 +8,7 @@ import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
-import icbm.classic.content.blast.ExplosiveInit;
+import icbm.classic.content.reg.ExplosiveInit;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityGrenade;

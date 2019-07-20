@@ -1,4 +1,4 @@
-package icbm.classic.content.blast;
+package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
@@ -10,6 +10,19 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigBlast;
+import icbm.classic.content.blast.BlastAntiGravitational;
+import icbm.classic.content.blast.BlastBreech;
+import icbm.classic.content.blast.BlastChemical;
+import icbm.classic.content.blast.BlastEMP;
+import icbm.classic.content.blast.BlastEnderman;
+import icbm.classic.content.blast.BlastEndothermic;
+import icbm.classic.content.blast.BlastExothermic;
+import icbm.classic.content.blast.BlastFire;
+import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.BlastRegen;
+import icbm.classic.content.blast.BlastShrapnel;
+import icbm.classic.content.blast.BlastSonic;
+import icbm.classic.content.blast.BlastTNT;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
 import icbm.classic.lib.transform.vector.Location;

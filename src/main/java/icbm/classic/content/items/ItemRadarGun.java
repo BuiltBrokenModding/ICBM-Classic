@@ -69,7 +69,7 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
         if (world.isRemote)
         {
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
-            TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
+            final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
             if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
             {
                 ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
