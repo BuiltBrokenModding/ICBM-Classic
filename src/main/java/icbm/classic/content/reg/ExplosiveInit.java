@@ -51,7 +51,7 @@ public class ExplosiveInit
     public static void init()
     {
         ExplosiveRefs.CONDENSED = newEx("condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (world, x, y, z) -> 1); //TODO add config
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (world, x, y, z) -> 100); //TODO add config
 
         ExplosiveRefs.SHRAPNEL = newEx("shrapnel", EnumTier.ONE, () -> new BlastShrapnel().setFlaming().setBlastSize(30));
 
