@@ -109,8 +109,8 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
             }
         }
 
-        //Trigger secondary blast
-        if (this.isMutate) //TODO why?
+        //Trigger secondary blast which mutates mobs similar to a lightning strike
+        if (this.isMutate)
         {
             new BlastMutation()
                     .setBlastWorld(world())

@@ -2,7 +2,7 @@ package icbm.classic.content.blast;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,7 +14,6 @@ public class BlastMutation extends Blast
     @Override
     public void doExplode()
     {
-
         if (!this.world().isRemote)
         {
             AxisAlignedBB bounds = new AxisAlignedBB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
@@ -28,21 +27,21 @@ public class BlastMutation extends Blast
                     newEntity.preventEntitySpawning = true;
                     newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
                     entity.setDead();
+                    world().spawnEntity(newEntity);
                 }
                 else if (entity instanceof EntityVillager)
                 {
-                    EntityZombie newEntity = new EntityZombie(world());
+                    EntityZombieVillager newEntity = new EntityZombieVillager(world());
                     newEntity.preventEntitySpawning = true;
                     newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
+                    newEntity.setForgeProfession(((EntityVillager)entity).getProfessionForge());
                     entity.setDead();
+                    world().spawnEntity(newEntity);
                 }
             }
         }
     }
 
-    @Override
-    public float getBlastRadius()
-    {
-        return 0;
-    }
+    @Override //disable the sound for this explosive
+    protected void playExplodeSound() {}
 }
