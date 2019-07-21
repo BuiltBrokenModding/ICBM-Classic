@@ -146,6 +146,7 @@ public class GuiEMPTower extends GuiContainerBase
         int containerPosY = (this.height - this.ySize) / 2;
 
         //Draw background
+        drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         containerWidth = (this.width - this.xSize) / 2;

@@ -154,6 +154,7 @@ public class GuiContainerBase extends GuiContainer
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
     {
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+        renderHoveredToolTip(p_73863_1_, p_73863_2_);
         if (fields != null && fields.size() > 0)
         {
             GL11.glDisable(GL11.GL_LIGHTING);
@@ -204,6 +205,7 @@ public class GuiContainerBase extends GuiContainer
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
+        drawDefaultBackground();
         this.containerWidth = (this.width - this.xSize) / 2;
         this.containerHeight = (this.height - this.ySize) / 2;
 

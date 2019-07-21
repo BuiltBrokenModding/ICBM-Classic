@@ -186,6 +186,7 @@ public class GuiRadarStation extends GuiContainerBase
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
+        drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

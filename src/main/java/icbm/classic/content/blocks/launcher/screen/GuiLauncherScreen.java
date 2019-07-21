@@ -204,6 +204,7 @@ public class GuiLauncherScreen extends GuiContainerBase
         int containerPosX = (this.width - this.xSize) / 2;
         int containerPosY = (this.height - this.ySize) / 2;
 
+        drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 

@@ -129,6 +129,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
     {
+        drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
