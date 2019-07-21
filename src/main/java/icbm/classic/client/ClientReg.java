@@ -47,6 +47,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
@@ -56,7 +57,7 @@ public class ClientReg
 {
     private final static Map<IExplosiveData, ModelResourceLocation> grenadeModelMap = new HashMap();
     private final static Map<IExplosiveData, ModelResourceLocation> missileModelMap = new HashMap();
-    private final static Map<IExplosiveData, ModelResourceLocation> blockModelMap = new HashMap();
+    private final static Map<IExplosiveData, Map<EnumFacing,ModelResourceLocation>> blockModelMap = new HashMap();
     private final static Map<IExplosiveData, ModelResourceLocation> itemBlockModelMap = new HashMap();
     private final static Map<IExplosiveData, ModelResourceLocation> cartModelMap = new HashMap();
 
@@ -175,8 +176,15 @@ public class ClientReg
         for (IExplosiveData data : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
             //Add block state
+            final HashMap<EnumFacing,ModelResourceLocation> facingModelMap = new HashMap<>();
             final String resourcePath = data.getRegistryName().getNamespace() + ":explosives/" + data.getRegistryName().getPath();
-            blockModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
+
+            for(EnumFacing facing : EnumFacing.VALUES)
+            {
+                facingModelMap.put(facing, new ModelResourceLocation(resourcePath, "explosive=" + data.getRegistryName().toString().replace(":", "_") + ",rotation=" + facing));
+            }
+
+            blockModelMap.put(data, facingModelMap);
 
             //Add item state
             //IBlockState state = BlockReg.blockExplosive.getDefaultState().withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
@@ -184,9 +192,14 @@ public class ClientReg
             itemBlockModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         //Block state mapper
-        ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new BlockModelMapperExplosive(blockModelMap, blockModelMap.get(ExplosiveRefs.CONDENSED)));
+        ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new BlockModelMapperExplosive(blockModelMap, blockModelMap.get(ExplosiveRefs.CONDENSED).get(EnumFacing.UP)));
         //Item state mapper
         ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockExplosive), new ItemModelMapperExplosive(itemBlockModelMap, itemBlockModelMap.get(ExplosiveRefs.CONDENSED)));
+        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockExplosive), itemBlockModelMap.values()
+                .stream()
+                .map(mrl -> new ResourceLocation(mrl.getNamespace(), mrl.getPath()))
+                .collect(Collectors.toList())
+                .toArray(new ResourceLocation[itemBlockModelMap.values().size()]));
     }
 
     protected static void registerLauncherPart(Block block)
