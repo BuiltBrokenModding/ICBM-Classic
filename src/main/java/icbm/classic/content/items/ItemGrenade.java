@@ -3,7 +3,6 @@ package icbm.classic.content.items;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;

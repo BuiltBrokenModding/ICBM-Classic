@@ -6,9 +6,6 @@ import icbm.classic.api.data.WorldTickFunction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
-
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */

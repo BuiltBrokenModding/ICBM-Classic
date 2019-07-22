@@ -3,7 +3,6 @@ package icbm.classic.client.render.entity;
 import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.mobs.ModelSnowmanXmas;
 import icbm.classic.content.entity.mobs.EntityXmasSnowman;
-import net.minecraft.client.model.ModelSnowMan;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

@@ -1,7 +1,6 @@
 package icbm.classic.lib.capability.launcher;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.data.LaunchStatus;
@@ -31,7 +30,7 @@ public class CapabilityMissileLauncher extends CapabilityPrefab implements IMiss
 
     public IMissileHolder holder;
     public Pos missileSpawnOffset;
-    public TileEntity host; 
+    public TileEntity host;
     //TODO we need to figure out how to define spawn position (launcher vs cruise launcher)
 
     public CapabilityMissileLauncher(IMissileHolder holder, Pos missileSpawnOffset)

@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
@@ -17,7 +16,6 @@ import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.api.EnumTier;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

@@ -1,6 +1,5 @@
 package icbm.classic.content.blocks.radarstation;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
