@@ -1,6 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -66,7 +68,18 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         {
             if (!player.world.isRemote)
             {
-                RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
+                int x = buf.readInt();
+                int y = buf.readInt();
+                int z = buf.readInt();
+                LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, new BlockPos(x, y, z), player);
+
+                if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
+                    return false;
+
+                if(event.pos == null) //someone set the pos in the event to null, use original data
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(x, y, z));
+                else
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(event.pos.getX(), event.pos.getY(), event.pos.getZ()));
             }
             else
             {

@@ -433,6 +433,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
+    protected void postImpact(RayTraceResult hit)
+    {
+        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(capabilityMissile, this, hit));
+    }
+
+    @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
         if (!world.isRemote && entityHit.getRidingEntity() != this)

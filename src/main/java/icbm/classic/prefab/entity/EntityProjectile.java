@@ -254,6 +254,8 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
                 {
                     handleBlockCollision(rayHit);
                 }
+
+                postImpact(rayHit);
             }
             updateMotion();
         }
@@ -263,6 +265,8 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
     {
         return false;
     }
+
+    protected void postImpact(RayTraceResult hit) {}
 
     /**
      * Called to see if collision checks should be ignored on the

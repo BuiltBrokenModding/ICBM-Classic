@@ -14,4 +14,13 @@ public class BlastBuildEvent extends BlastEvent<IBlastInit>
     {
         super(blast);
     }
+
+    /**
+     * Casts this event's blast to {@link IBlastInit} to allow changing its values
+     * @return The blast init
+     */
+    public IBlastInit getBlastInit()
+    {
+        return (IBlastInit)blast;
+    }
 }

@@ -26,11 +26,13 @@ public abstract class MissileEvent extends Event
      * data but before it is set into motion. Use this
      * to change settings, target, or trigger additional
      * logic.
+     * <p>
+     * Called after {@link LauncherEvent.PreLaunch}
      */
-    public static class OnLaunched extends MissileEvent
+    public static class PostLaunch extends MissileEvent
     {
 
-        public OnLaunched(IMissile missile, Entity entityMissile)
+        public PostLaunch(IMissile missile, Entity entityMissile)
         {
             super(missile, entityMissile);
         }
@@ -47,6 +49,8 @@ public abstract class MissileEvent extends Event
      * actual impact point. Keep this in mind when using
      * the missile's position vs impact position from the
      * ray hit.
+     * <p>
+     * Called before {@link PostImpact}
      */
     @Cancelable
     public static class PreImpact extends MissileEvent
@@ -55,6 +59,22 @@ public abstract class MissileEvent extends Event
         public final RayTraceResult hit;
 
         public PreImpact(IMissile missile, Entity entityMissile, RayTraceResult hit)
+        {
+            super(missile, entityMissile);
+            this.hit = hit;
+        }
+    }
+
+    /**
+     * Called right after the missile ran its impact code.
+     * <p>
+     * Called after {@link PreImpact}
+     */
+    public static class PostImpact extends MissileEvent
+    {
+        public final RayTraceResult hit;
+
+        public PostImpact(IMissile missile, Entity entityMissile, RayTraceResult hit)
         {
             super(missile, entityMissile);
             this.hit = hit;

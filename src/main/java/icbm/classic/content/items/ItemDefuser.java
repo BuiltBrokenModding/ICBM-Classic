@@ -2,6 +2,7 @@ package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.events.ExplosiveDefuseEvent;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -13,6 +14,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Random;
 
@@ -47,6 +49,9 @@ public class ItemDefuser extends ItemICBMElectrical
                     IExplosive explosive = ICBMClassicHelpers.getExplosive(entity);
                     if(explosive != null)
                     {
+                        if(MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive))) //event was canceled
+                            return false;
+
                         explosive.onDefuse();
                     }
                     entity.setDead();
@@ -54,6 +59,9 @@ public class ItemDefuser extends ItemICBMElectrical
             }
             else if (entity instanceof EntityTNTPrimed)
             {
+                if(MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity))) //event was canceled
+                    return false;
+
                 if (!entity.world.isRemote)
                 {
                     EntityItem entityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT));
@@ -68,6 +76,9 @@ public class ItemDefuser extends ItemICBMElectrical
             }
             else if (entity instanceof EntityBombCart)
             {
+                if(MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMBombCart(player, entity))) //event was canceled
+                    return false;
+
                 ((EntityBombCart) entity).killMinecart(DamageSource.GENERIC);
             }
 

@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.events.RemoteTriggerEvent;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -11,6 +12,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -41,7 +43,8 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote)
         {
-            RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncher");
+            if(!MinecraftForge.EVENT_BUS.post(new RemoteTriggerEvent(world, player, stack))) //event was not canceled
+                RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncher");
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }

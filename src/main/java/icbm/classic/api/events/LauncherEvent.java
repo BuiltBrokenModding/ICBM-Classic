@@ -25,13 +25,13 @@ public abstract class LauncherEvent extends Event
      * towards its target. Use this to cancel the launch
      * or change data.
      * <p>
-     * Called before {@link MissileEvent.OnLaunched}
+     * Called before {@link MissileEvent.PostLaunch}
      */
     @Cancelable
-    public static class OnLaunch extends LauncherEvent
+    public static class PreLaunch extends LauncherEvent
     {
 
-        public OnLaunch(IMissileLauncher launcher, IMissileHolder holder)
+        public PreLaunch(IMissileLauncher launcher, IMissileHolder holder)
         {
             super(launcher, holder);
         }

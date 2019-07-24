@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.events.RadarGunTraceEvent;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
@@ -26,6 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -144,8 +146,21 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
         ItemStack stack = player.inventory.getCurrentItem();
         if (stack != null && stack.getItem() == this)
         {
-            setLocation(stack, new Location(player.world, buf.readInt(), buf.readInt(), buf.readInt()));
+            int x = buf.readInt();
+            int y = buf.readInt();
+            int z = buf.readInt();
+            RadarGunTraceEvent event = new RadarGunTraceEvent(player.world, new BlockPos(x, y, z), player);
+
+            if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
+                return false;
+
+            if(event.pos == null) //someone set the pos in the event to null, use original data
+                setLocation(stack, new Location(player.world, x, y, z));
+            else
+                setLocation(stack, new Location(player.world, event.pos.getX(), event.pos.getY(), event.pos.getZ()));
+
             LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
+            System.out.println(getLocation(stack));
         }
         return true;
     }
