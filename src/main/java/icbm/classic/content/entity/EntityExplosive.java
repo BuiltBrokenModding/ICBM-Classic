@@ -136,8 +136,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
     public static void registerDataFixer()
     {
-        ModFixs mf = FMLCommonHandler.instance().getDataFixer().init(ICBMClassic.DOMAIN, 1);
-        mf.registerFix(FixTypes.ENTITY, new IFixableData()
+        ICBMClassic.modFixs.registerFix(FixTypes.ENTITY, new IFixableData()
         {
             @Override
             public int getFixVersion()

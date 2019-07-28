@@ -45,11 +45,13 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.*;
@@ -117,6 +119,7 @@ public final class ICBMClassic
 
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
 
+    public static ModFixs modFixs;
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
@@ -195,7 +198,9 @@ public final class ICBMClassic
         CapabilityExplosive.register();
 
         //Register data fixers
+        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMClassic.DOMAIN, 1);
         EntityExplosive.registerDataFixer();
+        modFixs.registerFix(FixTypes.BLOCK_ENTITY, new ExplosivesDataFixer());
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
@@ -312,9 +317,9 @@ public final class ICBMClassic
                     BlockPos blockpos = source.getBlockPos().offset(enumfacing);
                     IBlockState iblockstate = world.getBlockState(blockpos);
                     BlockRailBase.EnumRailDirection rail =
-                            iblockstate.getBlock() instanceof BlockRailBase
+                            (iblockstate.getBlock() instanceof BlockRailBase
                                     ? ((BlockRailBase) iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null)
-                                    : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                                            : BlockRailBase.EnumRailDirection.NORTH_SOUTH);
 
                     double heightDelta;
 
@@ -338,9 +343,9 @@ public final class ICBMClassic
 
                         IBlockState blockB = world.getBlockState(blockpos.down());
                         BlockRailBase.EnumRailDirection railB =
-                                blockB.getBlock() instanceof BlockRailBase ?
+                                (blockB.getBlock() instanceof BlockRailBase ?
                                         ((BlockRailBase) blockB.getBlock()).getRailDirection(world, blockpos.down(), blockB, null)
-                                        : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                                        : BlockRailBase.EnumRailDirection.NORTH_SOUTH);
 
                         if (enumfacing != EnumFacing.DOWN && railB.isAscending())
                         {
