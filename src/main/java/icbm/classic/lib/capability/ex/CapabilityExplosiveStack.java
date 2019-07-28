@@ -76,7 +76,7 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     @Override
     public NBTTagCompound serializeNBT()
     {
-        //Do not save the stack itself as we are saving to it's NBT
+        //Do not save the stack itself as we are saving to its NBT
         NBTTagCompound save = new NBTTagCompound();
         if (!getCustomBlastData().isEmpty())
         {

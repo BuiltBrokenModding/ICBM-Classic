@@ -7,6 +7,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -32,9 +33,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-
-        //this.explosive = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(nbt.getInteger("explosiveID")); TODO data fixer
-        //this.nbtData = nbt.getCompoundTag("data");
+        capabilityExplosive = new CapabilityExplosiveStack(new ItemStack((NBTTagCompound)nbt.getTag(CapabilityExplosiveStack.NBT_STACK)));
     }
 
     /**
