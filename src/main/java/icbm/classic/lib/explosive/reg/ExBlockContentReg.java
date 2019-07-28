@@ -6,6 +6,8 @@ import icbm.classic.api.data.WorldPosIntSupplier;
 import icbm.classic.api.data.WorldTickFunction;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.IExBlockRegistry;
+import icbm.classic.content.reg.BlockReg;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -28,6 +30,17 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     public ExBlockContentReg()
     {
         super(ICBMClassicAPI.EX_BLOCK);
+    }
+
+    @Override
+    public ItemStack getDeviceStack(ResourceLocation regName)
+    {
+        IExplosiveData ex = getExplosive(regName);
+        if(ex != null)
+        {
+            return new ItemStack(BlockReg.blockExplosive, 1, ex.getRegistryID());
+        }
+        return null;
     }
 
     @Override

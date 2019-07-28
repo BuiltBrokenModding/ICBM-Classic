@@ -1,6 +1,7 @@
 package icbm.classic.api.reg.content;
 
 import icbm.classic.api.reg.IExplosiveData;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Set;
@@ -50,6 +51,30 @@ public interface IExplosiveContentRegistry
      * @return
      */
     Set<IExplosiveData> getExplosives();
+
+    /**
+     * Gets a supported explosive by name
+     *
+     * @param regName - registry name of the explosive
+     * @return
+     */
+    IExplosiveData getExplosive(ResourceLocation regName);
+
+    /**
+     * Creates a new explosive device represented by
+     * this registry.
+     * <p>
+     * Ex: Missile stack
+     * <p>
+     * Note each registry should only have 1 item mapped to
+     * it as a time. If another item is desired then a
+     * registry should be created to mirror the previous
+     * registry.
+     *
+     * @param regName - registry name of the explosive
+     * @return new device stack
+     */
+    ItemStack getDeviceStack(ResourceLocation regName);
 
     /**
      * Called at the end of registry phase to

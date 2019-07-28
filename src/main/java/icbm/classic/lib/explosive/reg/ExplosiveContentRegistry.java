@@ -1,12 +1,15 @@
 package icbm.classic.lib.explosive.reg;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -18,13 +21,17 @@ public abstract class ExplosiveContentRegistry implements IExplosiveContentRegis
 
     public final ResourceLocation name;
 
-    //set of IDs enabled for content
-    private Set<Integer> enabledIDs = new HashSet();
+
 
     private boolean locked = false;
 
-    private Set<ResourceLocation> nameCache;
+    //set of IDs enabled for content
+    private Set<Integer> idCache;
+    private Set<ResourceLocation> nameCache = new HashSet();
     private Set<IExplosiveData> dataCache;
+
+    //Quick ref map
+    private Map<ResourceLocation, IExplosiveData> mapCache;
 
     public ExplosiveContentRegistry(ResourceLocation name)
     {
@@ -38,19 +45,13 @@ public abstract class ExplosiveContentRegistry implements IExplosiveContentRegis
     }
 
     @Override
-    public Set<Integer> getExplosivesIDs()
-    {
-        return enabledIDs;
-    }
-
-    @Override
-    public void enableContent(ResourceLocation explosiveID)
+    public void enableContent(ResourceLocation regName)
     {
         if (locked)
         {
             throw new RuntimeException(this + ": No content can be registered after registry phase");
         }
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosiveID);
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
         if (data != null)
         {
             //Add to enable list on object itself
@@ -61,8 +62,14 @@ public abstract class ExplosiveContentRegistry implements IExplosiveContentRegis
             }
 
             //Add ID to set of ids
-            enabledIDs.add(data.getRegistryID());
+            nameCache.add(regName);
         }
+    }
+
+    @Override
+    public Set<Integer> getExplosivesIDs()
+    {
+        return idCache;
     }
 
     @Override
@@ -78,17 +85,42 @@ public abstract class ExplosiveContentRegistry implements IExplosiveContentRegis
     }
 
     @Override
+    public IExplosiveData getExplosive(ResourceLocation regName)
+    {
+        if(mapCache != null)
+        {
+            return mapCache.get(regName);
+        }
+        return null;
+    }
+
+    @Override
     public void lockRegistry()
     {
         locked = true;
-        enabledIDs = ImmutableSet.copyOf(enabledIDs);
 
-        dataCache = enabledIDs.stream()
-                .map(id -> ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id))
-                .filter(e -> e != null)
-                .collect(ImmutableSet.toImmutableSet());
+        //Turn into immutable
+        nameCache = ImmutableSet.copyOf(nameCache);
 
-        nameCache = dataCache.stream().map(data -> data.getRegistryName()).collect(ImmutableSet.toImmutableSet());
+        //Generate reference map
+        final HashMap<ResourceLocation, IExplosiveData> map = new HashMap();
+        for(ResourceLocation name : nameCache)
+        {
+            final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(name);
+            if(data != null)
+            {
+                map.put(name, data);
+            }
+            else
+            {
+                throw new RuntimeException(this + ": Failed to locate explosive by name " + name);
+            }
+        }
+        mapCache = ImmutableMap.copyOf(map);
+
+        //Map ids to cache
+        idCache = map.values().stream().map(entry -> entry.getRegistryID()).collect(ImmutableSet.toImmutableSet());
+        dataCache = map.values().stream().collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
