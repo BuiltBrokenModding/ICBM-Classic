@@ -42,10 +42,10 @@ public final class ICBMClassicAPI
     //=========================
     //=== Content keys ========
     //=========================
-    public static final ResourceLocation EX_MISSILE = new ResourceLocation(ID, "ex_missile");
-    public static final ResourceLocation EX_GRENADE = new ResourceLocation(ID, "ex_grenade");
-    public static final ResourceLocation EX_BLOCK = new ResourceLocation(ID, "ex_block");
-    public static final ResourceLocation EX_MINECART = new ResourceLocation(ID, "ex_minecart");
+    public static final ResourceLocation EX_MISSILE = new ResourceLocation(ID, "missile");
+    public static final ResourceLocation EX_GRENADE = new ResourceLocation(ID, "grenade");
+    public static final ResourceLocation EX_BLOCK = new ResourceLocation(ID, "block");
+    public static final ResourceLocation EX_MINECART = new ResourceLocation(ID, "minecart");
 
     //=========================
     //=== Capabilities ========
