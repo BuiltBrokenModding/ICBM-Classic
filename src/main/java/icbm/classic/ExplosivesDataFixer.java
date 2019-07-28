@@ -17,15 +17,13 @@ public class ExplosivesDataFixer implements IFixableData
         {
             NBTTagCompound newNbt = new NBTTagCompound();
             int explosiveID = nbt.getInteger("explosiveID");
-            ItemStack stack;
 
-            if(explosiveID == 14) //the S-Mine was removed, make it be the default one
+            if(explosiveID == 14) //the S-Mine was removed, make it be the default explosive as a fallback
                 explosiveID = 0;
             else if(explosiveID > 14) //since it was removed, all the IDs need to move down by one
                 explosiveID--;
 
-            stack = new ItemStack(BlockReg.blockExplosive, 1, explosiveID);
-            newNbt.setTag(CapabilityExplosiveStack.NBT_STACK, stack.serializeNBT());
+            newNbt.setTag(CapabilityExplosiveStack.NBT_STACK, new ItemStack(BlockReg.blockExplosive, 1, explosiveID).serializeNBT());
             newNbt.setInteger("x", nbt.getInteger("x"));
             newNbt.setInteger("y", nbt.getInteger("y"));
             newNbt.setInteger("z", nbt.getInteger("z"));
