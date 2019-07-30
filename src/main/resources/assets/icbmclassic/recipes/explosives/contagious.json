@@ -1,7 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
-    "data": 9,
+    "explosive": "icbmclassic:contagious",
     "count": 2
   },
   "pattern": [
@@ -12,8 +11,8 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "c": {
-      "item": "icbmclassic:explosives",
-      "data": 4
+      "type" : "icbmclassic:explosive",
+      "explosive": "icbmclassic:chemical"
     },
     "r": {
       "item": "minecraft:rotten_flesh",

@@ -1,7 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
-    "data": 11,
+    "explosive": "icbmclassic:breaching",
     "count": 2
   },
   "pattern": [
@@ -9,11 +8,11 @@
     "grg",
     "grg"
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "icbmclassic:explosive",
   "key": {
     "r": {
-      "item": "icbmclassic:explosives",
-      "data": 0
+      "type" : "icbmclassic:explosive",
+      "explosive": "icbmclassic:condensed"
     },
     "g": {
       "item": "minecraft:gunpowder",
