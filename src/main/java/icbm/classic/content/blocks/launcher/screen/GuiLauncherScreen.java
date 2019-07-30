@@ -5,6 +5,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -29,6 +30,7 @@ public class GuiLauncherScreen extends GuiContainerBase
     private GuiTextField target_zCoord_field;
     private GuiTextField target_freq_field;
     private GuiTextField lock_height_field;
+    private GuiButton launch_button;
 
     private int containerWidth;
     private int containerHeight;
@@ -59,6 +61,8 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
         this.lock_height_field.setText(this.tileEntity.lockHeight + "");
+
+        addButton(new GuiButton(0, (guiLeft + xSize / 2) - 55, 260, 110, 20, LanguageUtility.getLocal("gui.launcherscreen.launch")));
 
         if (this.tileEntity.getTarget() == null)
         {
@@ -149,6 +153,13 @@ public class GuiLauncherScreen extends GuiContainerBase
             }
         }
 
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if(button.id == 0)
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", 4, this.tileEntity).addData(this.tileEntity.lockHeight));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

@@ -125,6 +125,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                         this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                         return true;
                     }
+                    break;
                 }
                 case 1:
                 {
@@ -140,6 +141,11 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 {
                     this.lockHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
                     return true;
+                }
+                case 4:
+                {
+                    if(canLaunch())
+                        launch();
                 }
             }
             return false;

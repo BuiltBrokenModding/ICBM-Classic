@@ -9,6 +9,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.api.EnumTier;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -108,6 +109,21 @@ public class BlockLaunchScreen extends BlockICBM
             }
         }
         return true;
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos)
+    {
+        if(!world.isRemote)
+        {
+            TileEntity te = world.getTileEntity(pos);
+
+            if(te instanceof TileLauncherScreen && world.isBlockPowered(pos))
+            {
+                if(((TileLauncherScreen)te).canLaunch())
+                    ((TileLauncherScreen)te).launch();
+            }
+        }
     }
 
     @Nullable

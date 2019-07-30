@@ -166,7 +166,7 @@ public class PacketTile extends PacketBase<PacketTile>
                 }
                 catch (IndexOutOfBoundsException e)
                 {
-                    ICBMClassic.logger().error(new PacketTileReadException(location, "Packet was read past it's size."));
+                    ICBMClassic.logger().error(new PacketTileReadException(location, "Packet was read past its size."));
                     ICBMClassic.logger().error("Error: ", e);
                 }
                 catch (NullPointerException e)

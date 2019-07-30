@@ -349,6 +349,7 @@ gui.launcherscreen.statusInvalid=Target is invalid!
 gui.launcherscreen.statusClose=Target too close!
 gui.launcherscreen.statusFar=Target too far!
 gui.launcherscreen.statusReady=Ready to launch!
+gui.launcherscreen.launch=Launch
 
 
 gui.launcherCruise.name=Cruise Launcher
