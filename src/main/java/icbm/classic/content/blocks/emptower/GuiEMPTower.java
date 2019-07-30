@@ -65,7 +65,7 @@ public class GuiEMPTower extends GuiContainerBase
                 break;
         }
 
-        ICBMClassic.packetHandler.sendToServer(new PacketTile("mode_C>S", 2, this.tileEntity).addData(this.tileEntity.empMode));
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("mode_C>S", TileEMPTower.CHANGE_MODE_PACKET_ID, this.tileEntity).addData(this.tileEntity.empMode));
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
@@ -79,7 +79,7 @@ public class GuiEMPTower extends GuiContainerBase
         {
             int radius = Math.min(Math.max(Integer.parseInt(this.textFieldBanJing.getText()), 10), TileEMPTower.MAX_RADIUS);
             this.tileEntity.empRadius = radius;
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", 1, this.tileEntity).addData(this.tileEntity.empRadius));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", TileEMPTower.CHANGE_RADIUS_PACKET_ID, this.tileEntity).addData(this.tileEntity.empRadius));
         }
         catch (NumberFormatException e)
         {

@@ -32,6 +32,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     // screen is connected with
     public TileLauncherBase launcherBase = null;
 
+    public static final int DESCRIPTION_PACKET_ID = 0;
+    public static final int SET_FREQUENCY_PACKET_ID = 1;
+    public static final int SET_TARGET_PACKET_ID = 2;
+    public static final int LOCK_HEIGHT_PACKET_ID = 3;
+    public static final int LAUNCH_PACKET_ID = 4;
+
     /** Height to wait before missile curves */
     public short lockHeight = 3;
 
@@ -114,7 +120,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         {
             switch (id)
             {
-                case 0:
+                case DESCRIPTION_PACKET_ID:
                 {
                     if (isClient())
                     {
@@ -127,22 +133,22 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                     }
                     break;
                 }
-                case 1:
+                case SET_FREQUENCY_PACKET_ID:
                 {
                     this.setFrequency(data.readInt());
                     return true;
                 }
-                case 2:
+                case SET_TARGET_PACKET_ID:
                 {
                     this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     return true;
                 }
-                case 3:
+                case LOCK_HEIGHT_PACKET_ID:
                 {
                     this.lockHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
                     return true;
                 }
-                case 4:
+                case LAUNCH_PACKET_ID:
                 {
                     if(canLaunch())
                         launch();

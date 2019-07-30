@@ -73,7 +73,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         {
             Pos newTarget = new Pos(parseInt(this.textFieldX.getText()), parseInt(this.textFieldY.getText()), parseInt(this.textFieldZ.getText()));
             this.tileEntity.setTarget(newTarget);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", 2, tileEntity).addData(tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileCruiseLauncher.SET_TARGET_PACKET_ID, tileEntity).addData(tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -83,7 +83,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         {
             short newFrequency = (short) Math.max(Short.parseShort(this.textFieldFreq.getText()), 0);
             this.tileEntity.setFrequency(newFrequency);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", 1,tileEntity).addData(tileEntity.getFrequency()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileCruiseLauncher.SET_FREQUENCY_PACKET_ID, tileEntity).addData(tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {

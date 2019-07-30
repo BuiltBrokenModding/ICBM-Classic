@@ -102,7 +102,7 @@ public class GuiLauncherScreen extends GuiContainerBase
             Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", 2, this.tileEntity).addData(this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileLauncherScreen.SET_TARGET_PACKET_ID, this.tileEntity).addData(this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
         }
         catch (NumberFormatException e)
         {
@@ -114,7 +114,7 @@ public class GuiLauncherScreen extends GuiContainerBase
             short newFrequency = (short) Math.max(Short.parseShort(this.target_freq_field.getText()), 0);
 
             this.tileEntity.setFrequency(newFrequency);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", 1, this.tileEntity).addData(this.tileEntity.getFrequency()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileLauncherScreen.SET_FREQUENCY_PACKET_ID, this.tileEntity).addData(this.tileEntity.getFrequency()));
         }
         catch (NumberFormatException e)
         {
@@ -126,7 +126,7 @@ public class GuiLauncherScreen extends GuiContainerBase
             short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.lock_height_field.getText()), Short.MAX_VALUE), 3);
 
             this.tileEntity.lockHeight = newGaoDu;
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("lock_height_C>S", 3, this.tileEntity).addData(this.tileEntity.lockHeight));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("lock_height_C>S", TileLauncherScreen.LOCK_HEIGHT_PACKET_ID, this.tileEntity).addData(this.tileEntity.lockHeight));
         }
         catch (NumberFormatException e)
         {
@@ -159,7 +159,7 @@ public class GuiLauncherScreen extends GuiContainerBase
     protected void actionPerformed(GuiButton button) throws IOException
     {
         if(button.id == 0)
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", 4, this.tileEntity).addData(this.tileEntity.lockHeight));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", TileLauncherScreen.LAUNCH_PACKET_ID, this.tileEntity).addData(this.tileEntity.lockHeight));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

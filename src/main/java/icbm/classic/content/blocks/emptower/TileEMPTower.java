@@ -31,6 +31,9 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
 
+    public static final int CHANGE_RADIUS_PACKET_ID = 1;
+    public static final int CHANGE_MODE_PACKET_ID = 2;
+
     public static List<BlockPos> tileMapCache = new ArrayList();
 
     static
@@ -109,12 +112,12 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             switch (id)
             {
-                case 1: //TODO constant
+                case CHANGE_RADIUS_PACKET_ID:
                 {
                     empRadius = data.readInt();
                     return true;
                 }
-                case 2://TODO constant
+                case CHANGE_MODE_PACKET_ID:
                 {
                     empMode = data.readByte();
                     return true;

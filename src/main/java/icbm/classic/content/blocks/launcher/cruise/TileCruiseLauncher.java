@@ -34,6 +34,10 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
 
+    public static final int DESCRIPTION_PACKET_ID = 0;
+    public static final int SET_FREQUENCY_PACKET_ID = 1;
+    public static final int SET_TARGET_PACKET_ID = 2;
+
     /**
      * Desired aim angle, updated every tick if target != null
      */
@@ -163,7 +167,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", 0, this).addData(getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -176,13 +180,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 switch (id)
                 {
                     //set frequency packet from GUI
-                    case 1:
+                    case SET_FREQUENCY_PACKET_ID:
                     {
                         this.setFrequency(data.readInt());
                         return true;
                     }
                     //Set target packet from GUI
-                    case 2:
+                    case SET_TARGET_PACKET_ID:
                     {
                         this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                         return true;
@@ -194,7 +198,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 switch (id)
                 {
                     //GUI description packet
-                    case 0:
+                    case DESCRIPTION_PACKET_ID:
                     {
                         setEnergy(data.readInt());
                         this.setFrequency(data.readInt());

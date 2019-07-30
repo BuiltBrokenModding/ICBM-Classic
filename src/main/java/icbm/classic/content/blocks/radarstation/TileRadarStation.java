@@ -36,6 +36,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public final static int MAX_DETECTION_RANGE = 500;
 
     public final static int GUI_PACKET_ID = 1;
+    public static final int SET_SAFETY_RANGE_PACKET_ID = 2;
+    public static final int SET_ALARM_RANGE_PACKET_ID = 3;
+    public static final int SET_FREQUENCY_PACKET_ID = 4;
 
     public float rotation = 0;
     public int alarmRange = 100;
@@ -325,17 +328,17 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             }
             else if (!this.world.isRemote)
             {
-                if (ID == 2)
+                if (ID == SET_SAFETY_RANGE_PACKET_ID)
                 {
                     this.safetyRange = data.readInt();
                     return true;
                 }
-                else if (ID == 3)
+                else if (ID == SET_ALARM_RANGE_PACKET_ID)
                 {
                     this.alarmRange = data.readInt();
                     return true;
                 }
-                else if (ID == 4)
+                else if (ID == SET_FREQUENCY_PACKET_ID)
                 {
                     this.setFrequency(data.readInt());
                     return true;
