@@ -51,6 +51,7 @@ item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection, or m
 
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %s rockets
+item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
 
 ## Crafting items
 item.icbmclassic:ingot.steel.name=Steel Ingot
