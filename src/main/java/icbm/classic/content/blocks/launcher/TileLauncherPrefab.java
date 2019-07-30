@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.launcher;
 
+import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.tile.IRadioWaveReceiver;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.lib.transform.region.Cube;
@@ -9,6 +10,7 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.tile.TileFrequency;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
 
 public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver
 {
@@ -67,8 +69,13 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
      */
     public void setTarget(Pos target)
     {
-        this._targetPos = target.floor();
-        updateClient = true;
+        LauncherSetTargetEvent event = new LauncherSetTargetEvent(this, target);
+
+        if(!MinecraftForge.EVENT_BUS.post(event))
+        {
+            this._targetPos = (event.target == null ? target : event.target).floor();
+            updateClient = true;
+        }
     }
 
     @Override

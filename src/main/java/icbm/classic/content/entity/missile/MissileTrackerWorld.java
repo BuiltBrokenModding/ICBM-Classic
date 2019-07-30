@@ -1,6 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -8,6 +9,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.MinecraftForge;
+
 import org.apache.logging.log4j.Level;
 
 import java.util.Iterator;
@@ -155,8 +158,11 @@ public class MissileTrackerWorld extends WorldSavedData
                 int waitTime = currentLoadedChunks.get(i).timeLeft - 1;
                 if (waitTime <= 0)
                 {
-                    ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPos);
-                    currentLoadedChunks.remove(i);
+                    if(!MinecraftForge.EVENT_BUS.post(new MissileChunkEvent.Unload(new LoadedChunkPair(chunkPos, waitTime), chunkLoadTicket)))
+                    {
+                        ForgeChunkManager.unforceChunk(chunkLoadTicket, chunkPos);
+                        currentLoadedChunks.remove(i);
+                    }
                 }
                 else
                 {
@@ -228,8 +234,14 @@ public class MissileTrackerWorld extends WorldSavedData
                 return;
             }
         }
-        currentLoadedChunks.add(new LoadedChunkPair(chunkPos, forceTime));
-        ForgeChunkManager.forceChunk(ticket, chunkPos);
+
+        LoadedChunkPair pair = new LoadedChunkPair(chunkPos, forceTime);
+
+        if(!MinecraftForge.EVENT_BUS.post(new MissileChunkEvent.Load(pair, ticket)))
+        {
+            currentLoadedChunks.add(pair);
+            ForgeChunkManager.forceChunk(ticket, chunkPos);
+        }
     }
 
     @Override

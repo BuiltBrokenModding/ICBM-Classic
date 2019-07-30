@@ -6,6 +6,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.MissileEvent;
+import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
@@ -28,6 +29,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -41,6 +45,7 @@ import java.util.LinkedList;
  *
  * @Author - Calclavia, Darkguardsman
  */
+@EventBusSubscriber(modid=ICBMClassic.DOMAIN)
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
 {
 
@@ -458,13 +463,20 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         //Handle player riding missile
-        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player))
+        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(this, player)))
         {
             player.startRiding(this);
             return true;
         }
 
         return false;
+    }
+
+    @SubscribeEvent
+    public static void onEntityMount(EntityMountEvent event)
+    {
+        if(event.isDismounting() && event.getEntityBeingMounted() instanceof EntityMissile && event.getEntityMounting() instanceof EntityPlayer)
+            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile)event.getEntity(), (EntityPlayer)event.getEntityMounting())));
     }
 
     @Override
