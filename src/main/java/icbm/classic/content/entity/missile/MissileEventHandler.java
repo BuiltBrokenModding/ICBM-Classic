@@ -22,9 +22,11 @@ public class MissileEventHandler
     @SubscribeEvent
     public static void onEntityMount(EntityMountEvent event)
     {
-        if (event.isDismounting() && event.getEntityBeingMounted() instanceof EntityMissile && event.getEntityMounting() instanceof EntityPlayer)
+        if (event.isDismounting()
+                && event.getEntityBeingMounted() instanceof EntityMissile
+                && event.getEntityMounting() instanceof EntityPlayer)
         {
-            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile) event.getEntity(), (EntityPlayer) event.getEntityMounting())));
+            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile) event.getEntityBeingMounted(), (EntityPlayer) event.getEntityMounting())));
         }
     }
 
