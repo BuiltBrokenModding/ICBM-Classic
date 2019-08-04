@@ -39,9 +39,13 @@ public class MissileEventHandler
             if (map != null)
             {
                 map.collectEntitiesInChunk(chunk.x, chunk.z, (radarEntity -> {
-                    if (radarEntity.entity instanceof EntityMissile && !((EntityMissile) radarEntity.entity).wasSimulated)
+                    if (radarEntity.entity instanceof EntityMissile)
                     {
-                        MissileTrackerHandler.simulateMissile((EntityMissile) radarEntity.entity);
+                        final EntityMissile missile = (EntityMissile) radarEntity.entity;
+                        if(!missile.wasSimulated && missile.missileType == MissileFlightType.PAD_LAUNCHER)
+                        {
+                            MissileTrackerHandler.simulateMissile((EntityMissile) radarEntity.entity);
+                        }
                     }
                 }));
             }
