@@ -318,6 +318,16 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isWithinX(x) && isWithinY(y) && isWithinZ(z);
     }
 
+    public boolean isWithin(IPos3D pos)
+    {
+        return isWithinX(pos.x()) && isWithinY(pos.y()) && isWithinZ(pos.z());
+    }
+
+    public boolean isWithinInt(IPos3D pos)
+    {
+        return isWithinX(pos.xi()) && isWithinY(pos.yi()) && isWithinZ(pos.zi());
+    }
+
 
     /**
      * Checks to see if a line segment is within the defined line. Assume the lines overlap each other.

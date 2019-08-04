@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -30,9 +31,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,7 +44,6 @@ import java.util.LinkedList;
  *
  * @Author - Calclavia, Darkguardsman
  */
-@EventBusSubscriber(modid = ICBMClassic.DOMAIN)
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
 {
 
@@ -215,11 +212,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
         if (targetPos != null && targetHeight >= 0)
         {
-            int deltaX = targetPos.xi() - (int)Math.floor(posX);
-            int deltaY = targetPos.yi() - (int)Math.floor(posY);
-            int deltaZ = targetPos.zi() - (int)Math.floor(posZ);
+            int deltaX = targetPos.xi() - (int) Math.floor(posX);
+            int deltaY = targetPos.yi() - (int) Math.floor(posY);
+            int deltaZ = targetPos.zi() - (int) Math.floor(posZ);
 
-            if(inRange(1, deltaY) && inRange(1, deltaX) && inRange(1, deltaZ))
+            if (inRange(1, deltaY) && inRange(1, deltaX) && inRange(1, deltaZ))
             {
                 doExplosion();
             }
@@ -433,11 +430,30 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     protected boolean shouldSimulate()
     {
         //TODO predict position, if traveling into unloaded chunk simulate
-        return launcherPos != null
-                && !(getPassengers().size() > 0)
-                && targetPos.distance(launcherPos) > 50
-                && !wasSimulated
-                && (posY >= ConfigMissile.SIMULATION_START_HEIGHT || (motionY <= 0 && this.ticksInAir > 20 * 5));
+
+        if (launcherPos != null)
+        {
+            if (getPassengers().stream().anyMatch(entity -> entity instanceof EntityPlayerMP))
+            {
+                return false;
+            }
+            else if (wasSimulated)
+            {
+                return false;
+            }
+            else if (posY >= ConfigMissile.SIMULATION_START_HEIGHT)
+            {
+                return true;
+            }
+
+            //About to enter an unloaded chunk
+            final BlockPos pos = getPredictedPosition(1).toBlockPos();
+            if (!world.isBlockLoaded(pos))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -494,15 +510,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         return false;
-    }
-
-    @SubscribeEvent
-    public static void onEntityMount(EntityMountEvent event)
-    {
-        if (event.isDismounting() && event.getEntityBeingMounted() instanceof EntityMissile && event.getEntityMounting() instanceof EntityPlayer)
-        {
-            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile) event.getEntity(), (EntityPlayer) event.getEntityMounting())));
-        }
     }
 
     @Override

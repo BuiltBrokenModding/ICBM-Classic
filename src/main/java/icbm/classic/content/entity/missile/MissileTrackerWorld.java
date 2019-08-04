@@ -221,6 +221,8 @@ public class MissileTrackerWorld extends WorldSavedData
 
         //Spawn entity
         missile.world().spawnEntity(missile);
+
+        System.out.println("Missile spawned from simulator: " + missile);
     }
 
     //Helper method for forcing a chunk (chunkloading)
