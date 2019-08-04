@@ -86,7 +86,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        IExplosiveData data = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
+        final IExplosiveData data = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
         if (data != null)
         {
             final EnumTier tierdata = data.getTier();

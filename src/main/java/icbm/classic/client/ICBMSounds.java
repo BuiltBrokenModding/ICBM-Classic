@@ -35,7 +35,8 @@ public enum ICBMSounds
     POWER_DOWN("powerdown"),
     TARGET_LOCKED("targetlocked"),
     REDMATTER("redmatter"),
-    SONICWAVE("sonicwave");
+    SONICWAVE("sonicwave"),
+    MISSILE_LAUNCH("missilelaunch");
 
     private final ResourceLocation location;
     private SoundEvent sound;

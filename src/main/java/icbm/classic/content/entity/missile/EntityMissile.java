@@ -9,6 +9,7 @@ import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
@@ -234,8 +235,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.updateMotion();
 
         //Play audio
-        //this.world.playSound(posX, posY, posZ, ICBMClassic.PREFIX + "missilelaunch", 4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
-
+        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ,4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
         //Trigger events
         // TODO add an event system here
         RadarRegistry.add(this);
