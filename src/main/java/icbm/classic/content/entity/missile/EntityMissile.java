@@ -46,7 +46,7 @@ import java.util.LinkedList;
  *
  * @Author - Calclavia, Darkguardsman
  */
-@EventBusSubscriber(modid=ICBMClassic.DOMAIN)
+@EventBusSubscriber(modid = ICBMClassic.DOMAIN)
 public class EntityMissile extends EntityProjectile implements IEntityAdditionalSpawnData
 {
 
@@ -65,7 +65,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public boolean destroyWithFullExplosion = false;
     public boolean explodeNextTick = false;
 
-    public int targetHeight = 0;
+    public int targetHeight = -1;
     // Difference
     public double deltaPathX;
     public double deltaPathY;
@@ -208,6 +208,30 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.missileType = MissileFlightType.values()[additionalMissileData.readInt()];
     }
 
+    @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+
+        if (targetPos != null && targetHeight >= 0)
+        {
+            int deltaX = targetPos.xi() - (int)Math.floor(posX);
+            int deltaY = targetPos.yi() - (int)Math.floor(posY);
+            int deltaZ = targetPos.zi() - (int)Math.floor(posZ);
+
+            if(inRange(1, deltaY) && inRange(1, deltaX) && inRange(1, deltaZ))
+            {
+                doExplosion();
+            }
+        }
+    }
+
+    private boolean inRange(int range, int value)
+    {
+        return value <= range && value >= -range;
+    }
+
+
     /**
      * Used {@link #capabilityMissile} {@link CapabilityMissile#launch(double, double, double, double)}
      *
@@ -224,7 +248,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         //Update data
         this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
         this.targetPos = target;
-        this.targetHeight = this.targetPos != null ? this.targetPos.yi() : 0;
+        this.targetHeight = this.targetPos != null ? this.targetPos.yi() : -1;
 
         //Trigger events
         //TODO add generic event
@@ -235,7 +259,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.updateMotion();
 
         //Play audio
-        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ,4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ, 4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
         //Trigger events
         // TODO add an event system here
         RadarRegistry.add(this);
@@ -475,8 +499,10 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @SubscribeEvent
     public static void onEntityMount(EntityMountEvent event)
     {
-        if(event.isDismounting() && event.getEntityBeingMounted() instanceof EntityMissile && event.getEntityMounting() instanceof EntityPlayer)
-            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile)event.getEntity(), (EntityPlayer)event.getEntityMounting())));
+        if (event.isDismounting() && event.getEntityBeingMounted() instanceof EntityMissile && event.getEntityMounting() instanceof EntityPlayer)
+        {
+            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile) event.getEntity(), (EntityPlayer) event.getEntityMounting())));
+        }
     }
 
     @Override
@@ -660,7 +686,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 return BlastState.TRIGGERED;
             }
             return BlastState.ALREADY_TRIGGERED;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             ICBMClassic.logger().error("EntityMissile#normalExplode() - Unexpected error while triggering explosive on missile", e);
             return BlastState.ERROR;
