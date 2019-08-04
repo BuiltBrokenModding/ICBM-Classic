@@ -5,6 +5,7 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -90,21 +91,24 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
             //Loop all entities
             for (EntityLivingBase entity : allEntities)
             {
-                if (this.isContagious)
+                if(!(entity instanceof EntityPlayer)|| !((EntityPlayer) entity).isCreative())
                 {
-                    ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity);
-                }
+                    if (this.isContagious)
+                    {
+                        ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity);
+                    }
 
-                if (this.isPoisonous)
-                {
-                    ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
-                }
+                    if (this.isPoisonous)
+                    {
+                        ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
+                    }
 
-                if (this.isConfuse)
-                {
-                    entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
-                    entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
-                    entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
+                    if (this.isConfuse)
+                    {
+                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
+                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
+                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
+                    }
                 }
             }
         }
