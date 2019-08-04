@@ -256,7 +256,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.updateMotion();
 
         //Play audio
-        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ, 4F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ, 1F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
+
         //Trigger events
         // TODO add an event system here
         RadarRegistry.add(this);
@@ -419,7 +420,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         {
             preLaunchSmokeTimer--;
         }
+
+        //Handle effects
         this.spawnMissileSmoke();
+        ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, 1F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
+
 
         //Trigger events
         ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(capabilityMissile);

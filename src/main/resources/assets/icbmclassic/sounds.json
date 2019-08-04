@@ -192,7 +192,7 @@
     "subtitle": "subtitle.icbmclassic:missile.movement",
     "sounds": [
       {
-        "name": "icbmclassic:missileinair",
+        "name": "icbmclassic:missileinair_short",
         "sream": false
       }
     ]

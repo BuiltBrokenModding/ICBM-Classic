@@ -1,5 +1,6 @@
 package icbm.classic.api;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.caps.IMissileLauncher;
@@ -30,8 +31,11 @@ public final class ICBMClassicHelpers
         {
             return data;
         }
-        System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for ID[" + explosive + "] this may cause unexpected logic");
-        new RuntimeException().printStackTrace();
+        if(ICBMClassic.runningAsDev)
+        {
+            ICBMClassic.logger().error("ICBMClassicAPI: Error - Failed to locate explosive for " +
+                    "ID[" + explosive + "] this may cause unexpected logic", new RuntimeException());
+        }
         return returnNull ? null : ExplosiveRefs.CONDENSED;
     }
 
