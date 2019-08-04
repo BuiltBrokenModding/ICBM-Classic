@@ -132,6 +132,7 @@ public class GuiContainerBase extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
         for (Entry<Rectangle, String> entry : this.tooltips.entrySet())
         {
             if (entry.getKey().isWithin(new Point(mouseX - this.guiLeft, mouseY - this.guiTop)))

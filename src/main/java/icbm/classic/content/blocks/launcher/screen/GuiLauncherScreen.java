@@ -62,7 +62,7 @@ public class GuiLauncherScreen extends GuiContainerBase
         this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
         this.lock_height_field.setText(this.tileEntity.lockHeight + "");
 
-        addButton(new GuiButton(0, (guiLeft + xSize / 2) - 55, 260, 110, 20, LanguageUtility.getLocal("gui.launcherscreen.launch")));
+        launch_button = addButton(new GuiButton(0, guiLeft + (xSize / 2) - 55, guiTop + 140, 110, 20, LanguageUtility.getLocal("gui.launcherscreen.launch")));
 
         if (this.tileEntity.getTarget() == null)
         {
@@ -206,7 +206,8 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         // Shows the status of the missile launcher
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.status") + " " + this.tileEntity.getStatus(), 12, 125, 4210752);
-        this.fontRenderer.drawString("Energy: " + this.tileEntity.getEnergy() + "/" + this.tileEntity.getEnergyBufferSize(), 12, 150, 4210752);
+
+        //this.fontRenderer.drawString("Energy: " + this.tileEntity.getEnergy() + "/" + this.tileEntity.getEnergyBufferSize(), 12, 150, 4210752);
     }
 
     @Override
