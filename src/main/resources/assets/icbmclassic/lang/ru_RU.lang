@@ -31,8 +31,8 @@ item.icbmclassic:defuser.info=Обезвреживает взрывчатые в
 item.icbmclassic:laserDetonator.name=Лазерный указатель
 item.icbmclassic:laserDetonator.info.info=Удаленный запуск ракеты
 
-item.icbmclassic:tracker.name=отслежыватель
-item.icbmclassic:tracker.info=Отслеживать объекты и, настраивает самонаводящиеся ракеты
+item.icbmclassic:tracker.name=Отслеживатель
+item.icbmclassic:tracker.info=Отслеживает объекты и настраивает самонаводящиеся ракеты
 
 item.icbmclassic:signalDisrupter.name=Глушитель сигналов
 item.icbmclassic:signalDisrupter.info=Приспособление для предотвращения обнаружения или запусков ракет
@@ -44,28 +44,28 @@ item.icbmclassic:rocketLauncher.info=Запускает ракеты, запус
 tile.icbmclassic:launcherBase.0.name=Пусковая установка T1
 tile.icbmclassic:launcherBase.1.name=Пусковая установка T2
 tile.icbmclassic:launcherBase.2.name=Пусковая установка T3
-tile.icbmclassic:launcherBase.info=Хранут ракету перед запуском
+tile.icbmclassic:launcherBase.info=Хранит ракету перед запуском
 
 tile.icbmclassic:launcherScreen.0.name=Панель управления пусковой установкой T1
 tile.icbmclassic:launcherScreen.1.name=Панель управления пусковой установкой T2
 tile.icbmclassic:launcherScreen.2.name=Панель управления пусковой установкой T3
 tile.icbmclassic:launcherScreen.info=Используется для запуска ракет из пусковых установок
 
-tile.icbmclassic:launcherFrame.0.name=Воспомогательный каркас  T1
-tile.icbmclassic:launcherFrame.1.name=Воспомогательный каркас  T2
-tile.icbmclassic:launcherFrame.2.name=Воспомогательный каркас  T3
-tile.icbmclassic:launcherFrame.info=Увеличивает точность ракеты
+tile.icbmclassic:launcherFrame.0.name=Воспомогательный каркас T1
+tile.icbmclassic:launcherFrame.1.name=Воспомогательный каркас T2
+tile.icbmclassic:launcherFrame.2.name=Воспомогательный каркас T3
+tile.icbmclassic:launcherFrame.info=Увеличивает точность ракет
 tile.icbmclassic:radarStation.name=Радарная установка
-tile.icbmclassic:radarStation.info=Обнаруживает ракеты в полете
+tile.icbmclassic:radarStation.info=Обнаруживает ракеты во время полета
 
 tile.icbmclassic:empTower.name=EMP Башня
-tile.icbmclassic:empTower.info=Удаляет энергию из плиток, объектов и устройств
+tile.icbmclassic:empTower.info=Поглощает энергию из плиток, объектов и устройств
 
 tile.icbmclassic:cruiseLauncher.name=Компактная пусковая установка
 tile.icbmclassic:cruiseLauncher.info=Запускает ракету без точных координат
 
-tile.icbmclassic:missileCoordinator.name=Вычислитель траэктории
-tile.icbmclassic:missileCoordinator.info=Over Вычесляет траэкторию поллета ракеты
+tile.icbmclassic:missileCoordinator.name=Вычислитель траектории
+tile.icbmclassic:missileCoordinator.info=Очень большой калькулятор, который расчитывает траекторию полета ракет
 
 ## Blocks
 tile.icbmclassic:reinforcedRail.name=Усиленная железная дорога
@@ -74,21 +74,21 @@ tile.icbmclassic:reinforcedRail.info=Усиленные против взрыв�
 ## ICBM Explosives
 
 ## Block Form
-icbm.explosive.condensed.name=Конденсированные взрывчатые вещества
-icbm.explosive.shrapnel.name=Шрапнельные взрывчатые вещества
-icbm.explosive.incendiary.name=Ослабивающая бомба
+icbm.explosive.condensed.name=Конденсированное взрывчатое вещество
+icbm.explosive.shrapnel.name=Шрапнельное взрывчатое вещество
+icbm.explosive.incendiary.name=Ослабевающая бомба
 icbm.explosive.debilitation.name=Зажигательная бомба
 
 icbm.explosive.chemical.name=Химические взрывчатые вещества
 icbm.explosive.anvil.name=Бомба "Наковальня"
 icbm.explosive.repulsive.name=Отталкивающая бомба
-icbm.explosive.attractive.name=притягивающая бомба
+icbm.explosive.attractive.name=Притягивающая бомба
 
 icbm.explosive.fragmentation.name=Осколочная бомба
 icbm.explosive.contagious.name=Заразная бомба
 icbm.explosive.sonic.name=Звуковая бомба
 icbm.explosive.breaching.name=Разрушительная бомба
-icbm.explosive.rejuvenation.name=Омоложивающая бомба
+icbm.explosive.rejuvenation.name=Омолаживающая бомба
 icbm.explosive.thermobaric.name=Термобарическая бомба
 
 icbm.explosive.nuclear.name=Ядерная бомба
@@ -116,10 +116,10 @@ icbm.explosive.repulsive.info=Отталкивает всех
 icbm.explosive.attractive.info=Притягивает всех
 
 icbm.explosive.fragmentation.info=Разрушает пейзаж высокоскоростными фрагментами
-icbm.explosive.contagious.info=Вы когда-нибудь слышали чуму?
+icbm.explosive.contagious.info=Вы когда-нибудь слышали о чуме?
 icbm.explosive.sonic.info=Кто должен быть ниндзя, прокрасться после такого шума
 icbm.explosive.breaching.info=Когда вам нужна дверь
-icbm.explosive.rejuvenation.info=Вы не можете быть обвинены в ущербе, если его не найти ...
+icbm.explosive.rejuvenation.info=Вас не обвинят в использовании ракет, если воронок нет...
 icbm.explosive.thermobaric.info=Мини-ядерное оружие в банке или, по крайней мере, так близко, как Север может получить
 
 icbm.explosive.nuclear.info=Здравствуй! Я ядерный.
@@ -127,10 +127,10 @@ icbm.explosive.emp.info=Больше 9000? Уже нет
 icbm.explosive.exothermic.info=Ты думал, что солнце горячее
 icbm.explosive.endothermic.info=Меня зовут мистер Фриз
 icbm.explosive.antiGravitational.info=Я думаю, что ваша база выглядит лучше
-icbm.explosive.ender.info=Позволяет переместить эту базу
-icbm.explosive.hypersonic.info=Я чувствую себя плохо для ваших ушей
+icbm.explosive.ender.info=Позволяет переместить вашу базу
+icbm.explosive.hypersonic.info=Мне жалко ваши уши
 
-icbm.explosive.antimatter.info=материя + антиматерия = ничего
+icbm.explosive.antimatter.info=Материя + Антиматерия = Ничего
 
 ##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
 icbm.explosive.redMatter.info.count=11
@@ -152,17 +152,17 @@ icbm.explosive.sMine.info=Bouncing betty with, the kick of a fat guy
 icbm.missile.condensed.name=Обычная ракета
 icbm.missile.shrapnel.name=Осколочная ракета
 icbm.missile.incendiary.name=Зажигательная ракета
-icbm.missile.debilitation.name=Остабительная ракета
+icbm.missile.debilitation.name=Ослабительная ракета
 icbm.missile.chemical.name=Химическая ракета
 icbm.missile.anvil.name=Ракета "Наковальня"
 icbm.missile.repulsive.name=Отталкивающая ракета
 icbm.missile.attractive.name=Притягивательная ракета
 
 icbm.missile.fragmentation.name=Дробленная ракета
-icbm.missile.contagious.name=Инфекционная Ракета
+icbm.missile.contagious.name=Инфекционная ракета
 icbm.missile.sonic.name=Звуковая ракета
 icbm.missile.breaching.name=Разрушительная ракета
-icbm.missile.rejuvenation.name=Восстонавливающая ракета
+icbm.missile.rejuvenation.name=Восстанавливающая ракета
 icbm.missile.thermobaric.name=Термобарическая ракета
 
 icbm.missile.nuclear.name=Ядерная ракета
@@ -197,7 +197,7 @@ icbm.grenade.attractive.name=Притягивающая ракета
 icbm.minecart.condensed.name=Взрывчатая вагонетка
 icbm.minecart.shrapnel.name=Осколочная вагонетка
 icbm.minecart.incendiary.name=Зажигательная вагонетка
-icbm.minecart.debilitation.name=Ослабивающая вагонетка
+icbm.minecart.debilitation.name=Ослабевающая вагонетка
 icbm.minecart.chemical.name=Химическая вагонетка
 icbm.minecart.anvil.name=Вагонетка "Наковальня"
 icbm.minecart.repulsive.name=Отталкивающая вагонетка
@@ -207,7 +207,7 @@ icbm.minecart.fragmentation.name=Фрагментирующая вагонетк
 icbm.minecart.contagious.name=Заразная вагонетка
 icbm.minecart.sonic.name=Звуковая вагонетка
 icbm.minecart.breaching.name=Разрушительная вагонетка
-icbm.minecart.rejuvenation.name=Восстонавливающая вагонетка
+icbm.minecart.rejuvenation.name=Восстанавливающая вагонетка
 icbm.minecart.thermobaric.name=Термобарическая вагонетка
 
 ## ICBM Misc Blocks
@@ -230,7 +230,7 @@ message.tracker.nowtrack=Отслеживание:
 message.tracker.nopower=Отслеживатель разрядисля!
 message.tracker.banned=Отслеживатель запрещен на данной территории
 
-message.defuser.nopower=Обезвреживатель разрядисля!
+message.defuser.nopower=Обезвреживатель разрядился!
 
 message.designator.callTime=Вызов воздушного удара в:
 message.designator.blast=Входящий воздушный удар!
@@ -242,17 +242,17 @@ message.designator.nopower=Лазерный указатель разредил�
 
 message.designator.noFreq=Частота лазерного указателя не установлена!
 
-message.radarGun.scanned=Сканирование координат: X:%x, Y:%y, Z:%z - Distance: %d
-message.radarGun.nopower=Радарная пушка разредилась!
+message.radarGun.scanned=Сканирование координат: X:%x, Y:%y, Z:%z - Расстояние: %d
+message.radarGun.nopower=Радарная пушка разрядилась!
 message.radarGun.transfer=Информация о координатах передана!
 message.radarGun.noCoords=Вы должны сканировать координаты!
 message.launcher.protected=Регион защищен.
 message.detonator.locked=Удаленный доступ к: X:%x, Y:%y, Z:%z
-message.detonator.nopower=Удаленный доступ разредился!
+message.detonator.nopower=Детонатор разрядился!
 message.radar.redstone=Радиационная красная пыль, все побочные излучения:
 
 ## GUI stuff
-gui.misc.nopower=Недостаточно электричество!
+gui.misc.nopower=Недостаточно электричества!
 gui.misc.idle=Холостой ход
 gui.misc.freq=Частота:
 gui.misc.XCoord=X-Координата:
@@ -282,10 +282,10 @@ gui.empTower.name=ЕМП башня
 gui.empTower.missiles=Ракеты
 gui.empTower.elec=Электричество
 gui.empTower.both=И то и другое
-gui.empTower.radius=Радиус ЕМП: %p Блоков
-gui.empTower.effect=ЕМП еффект:
+gui.empTower.radius=Радиус ЕМП: %p блоков
+gui.empTower.effect=ЕМП эффект:
 gui.empTower.effectDebilitate=Излучающая электроника
-gui.empTower.effectDisrupt=Уничтожить ракеты
+gui.empTower.effectDisrupt=Уничтожение ракет
 gui.empTower.effectDeplete=Уничтожение электричества
 gui.empTower.mode=Режим:
 gui.empTower.ready=Готовность к выстрелу!
@@ -303,37 +303,37 @@ gui.launcherScreen.statusEmpty=Ракетная установка пуста!
 gui.launcherScreen.statusInvalid=Недопустимая цель.!
 gui.launcherScreen.statusClose=Цель слишком близко!
 gui.launcherScreen.statusFar=Цель слишком далеко!
-gui.launcherScreen.statusReady=Готовность к запусу!
+gui.launcherScreen.statusReady=Ракета готова к запуску!
 
 
 gui.launcherCruise.name=Компактная пусковая устанока
 
 gui.launcherCruise.statusNoPower=Нет энергии!
 gui.launcherCruise.statusEmpty=Нет ракеты!
-gui.launcherCruise.invalidMissile=Недеопустимый предмет!
+gui.launcherCruise.invalidMissile=Недопустимый предмет!
 gui.launcherCruise.invalidMissileTier=Недопустимый уровень ракеты!
 gui.launcherCruise.notCruiseMissile=Недопустимый тип ракеты!
 gui.launcherCruise.statusInvalid=Неверная цель!
 gui.launcherCruise.targetToClose=Цель слишком далеко!
-gui.launcherCruise.noRoom=3на3 не чисто!
+gui.launcherCruise.noRoom=Недостаточно места!
 gui.launcherCruise.statusReady=Готовность!
 
 ## Chat warning if user tries to fire by hand, %1 is status message from GUI
 chat.launcher.status=Статус: %1
-chat.launcher.failedToFire=Предупреждение не может выстрелить из-за ошибки состояния!
+chat.launcher.failedToFire=Ошибка: не удалось выстрелить!
 chat.launcher.toolTargetSet=Данные о цели переданы.
-chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
+chat.launcher.toolWorldNotMatch=Цель находится в другом измерении!
 chat.launcher.noTargetInTool=Инструмент не содержит никаких данных о цели!
 chat.launcher.toolFrequencySet=Частота установлена на %1
 
 gui.coordinator.name=Координатор ракеты
 gui.coordinator.sim=Симулятор пути
-gui.coordinator.from=ИЗ:
-gui.coordinator.to=К:
-gui.coordinator.displace=смещение: %p Метров
-gui.coordinator.arc=дуга: %p Метров
-gui.coordinator.time=Время: %p Секунд
-gui.coordinator.direction=направление:
+gui.coordinator.from=Из:
+gui.coordinator.to=В:
+gui.coordinator.displace=Смещение: %p метров
+gui.coordinator.arc=Дуга: %p метров
+gui.coordinator.time=Время: %p секунд
+gui.coordinator.direction=Направление:
 gui.coordinator.wip=Дополнительные функции в ближайшее время!
 
 gui.assembler.name=Ракетный стол
@@ -344,7 +344,7 @@ gui.radar.on=Радар влючен!
 gui.radar.nopower=Нет электричества!
 
 gui.terminal.name=Терминал
-gui.platform.ammo=амуниция
+gui.platform.ammo=Аммуниция
 gui.platform.upgrades=Улучшения
 gui.platform.joules=из %j
 gui.platform.access=User Access
@@ -358,5 +358,5 @@ info.radarGun.meters=Метров
 info.detonator.linked=Связанный взрыв:
 info.detonator.noLink=Не связанный взрыв
 info.misc.tier=Уровень взрыва
-info.tracker.tooltip=Левое нажитие на моба(Или игрока), и я укажу на это.
+info.tracker.tooltip=ЛКМ на моба (или игрока), и я буду указывать на него.
 
