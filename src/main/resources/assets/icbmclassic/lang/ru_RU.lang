@@ -1,4 +1,4 @@
-## Master language file
+## Russian language file
 itemGroup.icbmclassic=ICBM-Classic
 
 potion.toxin=Токсин
@@ -40,37 +40,55 @@ item.icbmclassic:signalDisrupter.info=Приспособление для пре
 item.icbmclassic:rocketLauncher.name=Пусковая установка
 item.icbmclassic:rocketLauncher.info=Запускает ракеты, запускает ракеты того уровня, что и сама.
 
+## Crafting items
+item.icbmclassic:ingot.steel.name=Стальной слиток
+item.icbmclassic:ingot.copper.name=Медный слиток
+
+item.icbmclassic:clump.steel.name=Кусок стали
+
+item.icbmclassic:plate.iron.name=Железная пластина
+item.icbmclassic:plate.steel.name=Стальная пластина
+
+item.icbmclassic:wire.copper.name=Медный провод
+item.icbmclassic:wire.gold.name=Золотой провод
+
+item.icbmclassic:circuit.basic.name=Основная электросхема
+item.icbmclassic:circuit.advanced.name=Продвинутая электросхема
+item.icbmclassic:circuit.elite.name=Элитная электросхема
+
 ## ICBM Machines
-tile.icbmclassic:launcherBase.0.name=Пусковая установка T1
-tile.icbmclassic:launcherBase.1.name=Пусковая установка T2
-tile.icbmclassic:launcherBase.2.name=Пусковая установка T3
-tile.icbmclassic:launcherBase.info=Хранит ракету перед запуском
+tile.icbmclassic:launcherbase.0.name=Пусковая установка T1
+tile.icbmclassic:launcherbase.1.name=Пусковая установка T2
+tile.icbmclassic:launcherbase.2.name=Пусковая установка T3
+tile.icbmclassic:launcherbase.info=Хранит ракету перед запуском
 
-tile.icbmclassic:launcherScreen.0.name=Панель управления пусковой установкой T1
-tile.icbmclassic:launcherScreen.1.name=Панель управления пусковой установкой T2
-tile.icbmclassic:launcherScreen.2.name=Панель управления пусковой установкой T3
-tile.icbmclassic:launcherScreen.info=Используется для запуска ракет из пусковых установок
+tile.icbmclassic:launcherscreen.0.name=Панель управления пусковой установкой T1
+tile.icbmclassic:launcherscreen.1.name=Панель управления пусковой установкой T2
+tile.icbmclassic:launcherscreen.2.name=Панель управления пусковой установкой T3
+tile.icbmclassic:launcherscreen.info=Используется для запуска ракет из пусковых установок
 
-tile.icbmclassic:launcherFrame.0.name=Воспомогательный каркас T1
-tile.icbmclassic:launcherFrame.1.name=Воспомогательный каркас T2
-tile.icbmclassic:launcherFrame.2.name=Воспомогательный каркас T3
-tile.icbmclassic:launcherFrame.info=Увеличивает точность ракет
-tile.icbmclassic:radarStation.name=Радарная установка
-tile.icbmclassic:radarStation.info=Обнаруживает ракеты во время полета
+tile.icbmclassic:launcherframe.0.name=Воспомогательный каркас T1
+tile.icbmclassic:launcherframe.1.name=Воспомогательный каркас T2
+tile.icbmclassic:launcherframe.2.name=Воспомогательный каркас T3
+tile.icbmclassic:launcherframe.info=Увеличивает точность ракет
+tile.icbmclassic:radarstation.name=Радарная установка
+tile.icbmclassic:radarstation.info=Обнаруживает ракеты во время полета
 
-tile.icbmclassic:empTower.name=EMP Башня
-tile.icbmclassic:empTower.info=Поглощает энергию из плиток, объектов и устройств
+tile.icbmclassic:emptower.name=EMP Башня
+tile.icbmclassic:emptower.info=Поглощает энергию из плиток, объектов и устройств
 
-tile.icbmclassic:cruiseLauncher.name=Компактная пусковая установка
-tile.icbmclassic:cruiseLauncher.info=Запускает ракету без точных координат
+tile.icbmclassic:cruiselauncher.name=Компактная пусковая установка
+tile.icbmclassic:cruiselauncher.info=Запускает ракету без точных координат
 
-tile.icbmclassic:missileCoordinator.name=Вычислитель траектории
-tile.icbmclassic:missileCoordinator.info=Очень большой калькулятор, который расчитывает траекторию полета ракет
+tile.icbmclassic:missilecoordinator.name=Вычислитель траектории
+tile.icbmclassic:missilecoordinator.info=Очень большой калькулятор, который расчитывает траекторию полета ракет
 
 ## Blocks
 tile.icbmclassic:reinforcedRail.name=Усиленная железная дорога
 tile.icbmclassic:reinforcedRail.info=Более взрывоустойчивые рельсы
 
+tile.icbmclassic:redmatter.ore.name=Руда красной материи
+tile.icbmclassic:redmatter.ore.info=Положи на место! Оно может взорваться!
 ## ICBM Explosives
 
 ## Block Form
@@ -209,6 +227,16 @@ icbm.minecart.sonic.name=Звуковая вагонетка
 icbm.minecart.breaching.name=Разрушительная вагонетка
 icbm.minecart.rejuvenation.name=Восстанавливающая вагонетка
 icbm.minecart.thermobaric.name=Термобарическая вагонетка
+
+icbm.minecart.nuclear.name=Ядерная вагонетка
+icbm.minecart.emp.name=ЕМП вагонетка
+icbm.minecart.exothermic.name=Экзотермическая вагонетка
+icbm.minecart.endothermic.name=Эндотермическая вагонетка
+icbm.minecart.antiGravitational.name=Анти-гравитационная вагонетка
+icbm.minecart.ender.name=Вагонетка с эндер взрывчаткой
+icbm.minecart.hypersonic.name=Гиперзвуковая вагонетка
+
+icbm.minecart.sMine.name=Вагонетка с С-Миной
 
 ## ICBM Misc Blocks
 tile.icbmclassic:concrete.0.name=Бетон
