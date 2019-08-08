@@ -1,297 +1,389 @@
 ## Russian language file
-itemGroup.ICBM=ICBM
+itemGroup.icbmclassic=ICBM-Classic
 
-potion.toxin=\u0422\u043E\u043A\u0441\u0438\u043D
-potion.virus=\u0412\u0438\u0440\u0443\u0441
-potion.frostBite=\u041C\u043E\u0440\u043E\u0437\u043D\u044B\u0439 \u0443\u043A\u0443\u0441
-potion.radiation=\u041E\u0431\u043B\u0443\u0447\u0435\u043D\u0438\u0435
+potion.toxin=Токсин
+potion.virus=Вирус
+potion.frostBite=Заморозка
+potion.radiation=Радиация
 
 ## Items
-item.icbm:sulfurDust.name=\u0421\u0435\u0440\u0430
-item.icbm:saltpeter.name=\u0421\u0435\u043B\u0438\u0442\u0440\u0430
-item.icbm:poisonPowder.name=\u042F\u0434\u043E\u0432\u0438\u0442\u044B\u0439 \u043F\u043E\u0440\u043E\u0448\u043E\u043A
-item.icbm:antidote.name=\u041F\u0440\u043E\u0442\u0438\u0432\u043E\u044F\u0434\u0438\u0435
-item.icbm:radarGun.name=\u0418\u0437\u043C\u0435\u0440\u0438\u0442\u0435\u043B\u044C
-item.icbm:remoteDetonator.name=\u0414\u0438\u0441\u0442\u0430\u043D\u0446\u0438\u043E\u043D\u043D\u044B\u0439 \u0434\u0435\u0442\u043E\u043D\u0430\u0442\u043E\u0440
-item.icbm:defuser.name=\u0421\u0430\u043F\u0451\u0440
-item.icbm:laserDesignator.name=\u041B\u0430\u0437\u0435\u0440\u043D\u044B\u0439 \u0446\u0435\u043B\u0435\u0443\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C
-item.icbm:tracker.name=\u041F\u0440\u0435\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C
-item.icbm:signalDisrupter.name=\u0413\u0435\u043D\u0435\u0440\u0430\u0442\u043E\u0440 \u043F\u043E\u043C\u0435\u0445
-item.icbm:computer.name=\u0422\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441
-item.icbm:rocketLauncher.name=\u0420\u0435\u0430\u043A\u0442\u0438\u0432\u043D\u0430\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0430
+item.icbmclassic:sulfurDust.name=Сера
+item.icbmclassic:sulfurDust.info=Используется при создании пороха
+
+item.icbmclassic:saltpeter.name=Селитра
+item.icbmclassic:saltpeter.info=Используется при создании пороха
+
+item.icbmclassic:poisonPowder.name=Ядовитый порошок
+item.icbmclassic:poisonPowder.info=Используется при создании взрывчатых веществ
+
+item.icbmclassic:antidote.name=Антидот
+item.icbmclassic:antidote.info=Снимает все эффекты
+
+item.icbmclassic:radarGun.name=Радар-пушка
+item.icbmclassic:radarGun.info=Сохраняет GPS данные
+
+item.icbmclassic:remoteDetonator.name=Удаленный детонатор
+item.icbmclassic:radarGun.info.info=Удаленный запуск ракеты
+
+item.icbmclassic:defuser.name=Дефузер
+item.icbmclassic:defuser.info=Обезвреживает взрывчатые вещества
+
+item.icbmclassic:laserDetonator.name=Лазерный указатель
+item.icbmclassic:laserDetonator.info.info=Удаленный запуск ракеты
+
+item.icbmclassic:tracker.name=Отслеживатель
+item.icbmclassic:tracker.info=Отслеживает объекты и настраивает самонаводящиеся ракеты
+
+item.icbmclassic:signalDisrupter.name=Глушитель сигналов
+item.icbmclassic:signalDisrupter.info=Приспособление для предотвращения обнаружения или запусков ракет
+
+item.icbmclassic:rocketLauncher.name=Пусковая установка
+item.icbmclassic:rocketLauncher.info=Запускает ракеты, запускает ракеты того уровня, что и сама.
+
+## Crafting items
+item.icbmclassic:ingot.steel.name=Стальной слиток
+item.icbmclassic:ingot.copper.name=Медный слиток
+
+item.icbmclassic:clump.steel.name=Кусок стали
+
+item.icbmclassic:plate.iron.name=Железная пластина
+item.icbmclassic:plate.steel.name=Стальная пластина
+
+item.icbmclassic:wire.copper.name=Медный провод
+item.icbmclassic:wire.gold.name=Золотой провод
+
+item.icbmclassic:circuit.basic.name=Основная электросхема
+item.icbmclassic:circuit.advanced.name=Продвинутая электросхема
+item.icbmclassic:circuit.elite.name=Элитная электросхема
 
 ## ICBM Machines
-icbm.machine.0.name=\u041F\u0443\u0441\u043A\u043E\u0432\u0430\u044F \u043F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430 T1
-icbm.machine.1.name=\u041F\u0443\u0441\u043A\u043E\u0432\u0430\u044F \u043F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430 T2
-icbm.machine.2.name=\u041F\u0443\u0441\u043A\u043E\u0432\u0430\u044F \u043F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430 T3
-icbm.machine.3.name=\u041F\u0430\u043D\u0435\u043B\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0443\u0441\u043A\u043E\u043C T1
-icbm.machine.4.name=\u041F\u0430\u043D\u0435\u043B\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0443\u0441\u043A\u043E\u043C T2
-icbm.machine.5.name=\u041F\u0430\u043D\u0435\u043B\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0443\u0441\u043A\u043E\u043C T3
-icbm.machine.6.name=\u041E\u043F\u043E\u0440\u043D\u0430\u044F \u0440\u0430\u043C\u043A\u0430 T1
-icbm.machine.7.name=\u041E\u043F\u043E\u0440\u043D\u0430\u044F \u0440\u0430\u043C\u043A\u0430 T2
-icbm.machine.8.name=\u041E\u043F\u043E\u0440\u043D\u0430\u044F \u0440\u0430\u043C\u043A\u0430 T3
-icbm.machine.9.name=\u0420\u0430\u0434\u0438\u043E\u043B\u043E\u043A\u0430\u0446\u0438\u043E\u043D\u043D\u0430\u044F \u0441\u0442\u0430\u043D\u0446\u0438\u044F
-icbm.machine.10.name=\u042D\u041C\u0418-\u0431\u0430\u0448\u043D\u044F
-icbm.machine.11.name=\u041A\u0440\u044B\u043B\u0430\u0442\u0430\u044F \u043F\u0443\u0441\u043A\u043E\u0432\u0430\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0430
-icbm.machine.12.name=\u041A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u043E\u0440 \u0440\u0430\u043A\u0435\u0442
+tile.icbmclassic:launcherbase.0.name=Пусковая установка T1
+tile.icbmclassic:launcherbase.1.name=Пусковая установка T2
+tile.icbmclassic:launcherbase.2.name=Пусковая установка T3
+tile.icbmclassic:launcherbase.info=Хранит ракету перед запуском
+
+tile.icbmclassic:launcherscreen.0.name=Панель управления пусковой установкой T1
+tile.icbmclassic:launcherscreen.1.name=Панель управления пусковой установкой T2
+tile.icbmclassic:launcherscreen.2.name=Панель управления пусковой установкой T3
+tile.icbmclassic:launcherscreen.info=Используется для запуска ракет из пусковых установок
+
+tile.icbmclassic:launcherframe.0.name=Воспомогательный каркас T1
+tile.icbmclassic:launcherframe.1.name=Воспомогательный каркас T2
+tile.icbmclassic:launcherframe.2.name=Воспомогательный каркас T3
+tile.icbmclassic:launcherframe.info=Увеличивает точность ракет
+tile.icbmclassic:radarstation.name=Радарная установка
+tile.icbmclassic:radarstation.info=Обнаруживает ракеты во время полета
+
+tile.icbmclassic:emptower.name=EMP Башня
+tile.icbmclassic:emptower.info=Поглощает энергию из плиток, объектов и устройств
+
+tile.icbmclassic:cruiselauncher.name=Компактная пусковая установка
+tile.icbmclassic:cruiselauncher.info=Запускает ракету без точных координат
+
+tile.icbmclassic:missilecoordinator.name=Вычислитель траектории
+tile.icbmclassic:missilecoordinator.info=Очень большой калькулятор, который расчитывает траекторию полета ракет
 
 ## Blocks
-tile.icbm:sulfurOre.name=\u0421\u0435\u0440\u043D\u0430\u044F \u0440\u0443\u0434\u0430
-tile.icbm:missileAssembler.name=\u0421\u0431\u043E\u0440\u0449\u0438\u043A \u0440\u0430\u043A\u0435\u0442
-tile.icbm:reinforcedRail.name=\u0410\u0440\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u0440\u0435\u043B\u044C\u0441\u044B
+tile.icbmclassic:reinforcedRail.name=Усиленная железная дорога
+tile.icbmclassic:reinforcedRail.info=Более взрывоустойчивые рельсы
 
+tile.icbmclassic:redmatter.ore.name=Руда красной материи
+tile.icbmclassic:redmatter.ore.info=Положи на место! Оно может взорваться!
 ## ICBM Explosives
 
 ## Block Form
-icbm.explosive.condensed.name=\u041A\u043E\u043D\u0434\u0435\u043D\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.shrapnel.name=\u041E\u0441\u043A\u043E\u043B\u043E\u0447\u043D\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.incendiary.name=\u0417\u0430\u0436\u0438\u0433\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.debilitation.name=\u041E\u0441\u043B\u0430\u0431\u043B\u044F\u044E\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.chemical.name=\u0425\u0438\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.anvil.name=\u0412\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430-\u043D\u0430\u043A\u043E\u0432\u0430\u043B\u044C\u043D\u044F
-icbm.explosive.repulsive.name=\u041E\u0442\u0442\u0430\u043B\u043A\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.attractive.name=\u041F\u0440\u0438\u0442\u044F\u0433\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
+icbm.explosive.condensed.name=Конденсированное взрывчатое вещество
+icbm.explosive.shrapnel.name=Шрапнельное взрывчатое вещество
+icbm.explosive.incendiary.name=Ослабевающая бомба
+icbm.explosive.debilitation.name=Зажигательная бомба
 
-icbm.explosive.fragmentation.name=\u0414\u0440\u043E\u0431\u044F\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.contagious.name=\u0418\u043D\u0444\u0438\u0446\u0438\u0440\u0443\u044E\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.sonic.name=\u0417\u0432\u0443\u043A\u043E\u0432\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.breaching.name=\u0420\u0430\u0437\u0440\u0443\u0448\u0430\u044E\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.rejuvenation.name=\u0412\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u044F\u044E\u0449\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.thermobaric.name=\u0422\u0435\u0440\u043C\u043E\u0431\u0430\u0440\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
+icbm.explosive.chemical.name=Химические взрывчатые вещества
+icbm.explosive.anvil.name=Бомба "Наковальня"
+icbm.explosive.repulsive.name=Отталкивающая бомба
+icbm.explosive.attractive.name=Притягивающая бомба
 
-icbm.explosive.nuclear.name=\u042F\u0434\u0435\u0440\u043D\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.emp.name=\u042D\u041C\u0418-\u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.exothermic.name=\u042D\u043A\u0437\u043E\u0442\u0435\u0440\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.endothermic.name=\u042D\u043D\u0434\u043E\u0442\u0435\u0440\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.antiGravitational.name=\u0410\u043D\u0442\u0438\u0433\u0440\u0430\u0432\u0438\u0442\u0430\u0446\u0438\u043E\u043D\u043D\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
-icbm.explosive.ender.name=\u0412\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430 \u041A\u0440\u0430\u044F
-icbm.explosive.hypersonic.name=\u0421\u0432\u0435\u0440\u0445\u0437\u0432\u0443\u043A\u043E\u0432\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430
+icbm.explosive.fragmentation.name=Осколочная бомба
+icbm.explosive.contagious.name=Заразная бомба
+icbm.explosive.sonic.name=Звуковая бомба
+icbm.explosive.breaching.name=Разрушительная бомба
+icbm.explosive.rejuvenation.name=Омолаживающая бомба
+icbm.explosive.thermobaric.name=Термобарическая бомба
 
-icbm.explosive.antimatter.name=\u0412\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430 \u0438\u0437 \u0430\u043D\u0442\u0438\u043C\u0430\u0442\u0435\u0440\u0438\u0438
-icbm.explosive.redMatter.name=\u0412\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430 \u0438\u0437 \u043A\u0440\u0430\u0441\u043D\u043E\u0439 \u043C\u0430\u0442\u0435\u0440\u0438\u0438
+icbm.explosive.nuclear.name=Ядерная бомба
+icbm.explosive.emp.name=ЕМП бомба
+icbm.explosive.exothermic.name=Экзотермическая бомба
+icbm.explosive.endothermic.name=Эндотермическая бомба
+icbm.explosive.antiGravitational.name=Анти-гравитационная бомба
+icbm.explosive.ender.name=Эндэр бомба
+icbm.explosive.hypersonic.name=Гиперзвуковая бомба
 
-icbm.explosive.sMine.name=\u041F\u0440\u044B\u0433\u0430\u044E\u0449\u0430\u044F \u0411\u0435\u0442\u0442\u0438
+icbm.explosive.antimatter.name=Заряд антиматерии
+icbm.explosive.redMatter.name=Заряд красной материи
+
+icbm.explosive.sMine.name=С-Мина
+
+## Explosive Info
+icbm.explosive.condensed.info=Чуть более разрушительная версия TNT
+icbm.explosive.shrapnel.info=Осколки в заграждении металлических фрагментов
+icbm.explosive.incendiary.info=Поджигает все вокруг
+icbm.explosive.debilitation.info=Дезориентирует всех вокруг
+
+icbm.explosive.chemical.info=Нельзя бороться, если вы не можете дышать
+icbm.explosive.anvil.info=Как дела, док
+icbm.explosive.repulsive.info=Отталкивает всех
+icbm.explosive.attractive.info=Притягивает всех
+
+icbm.explosive.fragmentation.info=Разрушает пейзаж высокоскоростными фрагментами
+icbm.explosive.contagious.info=Вы когда-нибудь слышали о чуме?
+icbm.explosive.sonic.info=Кто должен быть ниндзя, прокрасться после такого шума
+icbm.explosive.breaching.info=Когда вам нужна дверь
+icbm.explosive.rejuvenation.info=Вас не обвинят в использовании ракет, если воронок нет...
+icbm.explosive.thermobaric.info=Мини-ядерное оружие в банке или, по крайней мере, так близко, как Север может получить
+
+icbm.explosive.nuclear.info=Здравствуй! Я ядерный.
+icbm.explosive.emp.info=Больше 9000? Уже нет
+icbm.explosive.exothermic.info=Ты думал, что солнце горячее
+icbm.explosive.endothermic.info=Меня зовут мистер Фриз
+icbm.explosive.antiGravitational.info=Я думаю, что ваша база выглядит лучше
+icbm.explosive.ender.info=Позволяет переместить вашу базу
+icbm.explosive.hypersonic.info=Мне жалко ваши уши
+
+icbm.explosive.antimatter.info=Материя + Антиматерия = Ничего
+
+##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
+icbm.explosive.redMatter.info.count=11
+icbm.explosive.redMatter.info.0=Yogscast? Diggy diggy hole
+icbm.explosive.redMatter.info.1=Be a shame if your base was compacted into nothing
+icbm.explosive.redMatter.info.2=Voltz special... The Bomb
+icbm.explosive.redMatter.info.3=The wheels on the bus go round and round
+icbm.explosive.redMatter.info.4=Did a cow just fly by the window?
+icbm.explosive.redMatter.info.5=Oh god it's sucking me in
+icbm.explosive.redMatter.info.6=There is no escape
+icbm.explosive.redMatter.info.7=Not even light....
+icbm.explosive.redMatter.info.8=Into the void
+icbm.explosive.redMatter.info.9=Oh? You think you can escape
+icbm.explosive.redMatter.info.10=Oh baby come back
+
+icbm.explosive.sMine.info=Bouncing betty with, the kick of a fat guy
 
 ## Missile Form
-icbm.missile.condensed.name=\u041E\u0431\u044B\u0447\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.shrapnel.name=\u041E\u0441\u043A\u043E\u043B\u043E\u0447\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.incendiary.name=\u0417\u0430\u0436\u0438\u0433\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.debilitation.name=\u041E\u0441\u043B\u0430\u0431\u043B\u044F\u044E\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.chemical.name=\u0425\u0438\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.anvil.name=\u0420\u0430\u043A\u0435\u0442\u0430-\u043D\u0430\u043A\u043E\u0432\u0430\u043B\u044C\u043D\u044F
-icbm.missile.repulsive.name=\u041E\u0442\u0442\u0430\u043B\u043A\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.attractive.name=\u041F\u0440\u0438\u0442\u044F\u0433\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
+icbm.missile.condensed.name=Обычная ракета
+icbm.missile.shrapnel.name=Осколочная ракета
+icbm.missile.incendiary.name=Зажигательная ракета
+icbm.missile.debilitation.name=Ослабительная ракета
+icbm.missile.chemical.name=Химическая ракета
+icbm.missile.anvil.name=Ракета "Наковальня"
+icbm.missile.repulsive.name=Отталкивающая ракета
+icbm.missile.attractive.name=Притягивательная ракета
 
-icbm.missile.fragmentation.name=\u0414\u0440\u043E\u0431\u044F\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.contagious.name=\u0418\u043D\u0444\u0438\u0446\u0438\u0440\u0443\u044E\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.sonic.name=\u0417\u0432\u0443\u043A\u043E\u0432\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.breaching.name=\u0420\u0430\u0437\u0440\u0443\u0448\u0430\u044E\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.rejuvenation.name=\u0412\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u044F\u044E\u0449\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.thermobaric.name=\u0422\u0435\u0440\u043C\u043E\u0431\u0430\u0440\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
+icbm.missile.fragmentation.name=Дробленная ракета
+icbm.missile.contagious.name=Инфекционная ракета
+icbm.missile.sonic.name=Звуковая ракета
+icbm.missile.breaching.name=Разрушительная ракета
+icbm.missile.rejuvenation.name=Восстанавливающая ракета
+icbm.missile.thermobaric.name=Термобарическая ракета
 
-icbm.missile.nuclear.name=\u042F\u0434\u0435\u0440\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.emp.name=\u042D\u041C\u0418-\u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.exothermic.name=\u042D\u043A\u0437\u043E\u0442\u0435\u0440\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.endothermic.name=\u042D\u043D\u0434\u043E\u0442\u0435\u0440\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.antiGravitational.name=\u0410\u043D\u0442\u0438-\u0433\u0440\u0430\u0432\u0438\u0442\u0430\u0446\u0438\u043E\u043D\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.ender.name=\u0420\u0430\u043A\u0435\u0442\u0430 \u041A\u0440\u0430\u044F
-icbm.missile.hypersonic.name=\u0421\u0432\u0435\u0440\u0445\u0437\u0432\u0443\u043A\u043E\u0432\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
+icbm.missile.nuclear.name=Ядерная ракета
+icbm.missile.emp.name=ЕМП ракета
+icbm.missile.exothermic.name=Экзотермическая ракета
+icbm.missile.endothermic.name=Эндотермическая ракета
+icbm.missile.antiGravitational.name=Анти-гравитационная ракета
+icbm.missile.ender.name=Эндер ракета
+icbm.missile.hypersonic.name=Гиперзвуковая ракета
 
-icbm.missile.antimatter.name=\u0420\u0430\u043A\u0435\u0442\u0430 \u0438\u0437 \u0430\u043D\u0442\u0438\u043C\u0430\u0442\u0435\u0440\u0438\u0438
-icbm.missile.redMatter.name=\u0420\u0430\u043A\u0435\u0442\u0430 \u0438\u0437 \u043A\u0440\u0430\u0441\u043D\u043E\u0439 \u043C\u0430\u0442\u0435\u0440\u0438\u0438
+icbm.missile.antimatter.name=Ракета с зарядом антиматерии
+icbm.missile.redMatter.name=Ракета с зарядом красной материи
 
 ## Special Missiles
-icbm.missile.missileModule.name=\u0420\u0430\u043A\u0435\u0442\u043D\u044B\u0439 \u043C\u043E\u0434\u0443\u043B\u044C
-icbm.missile.antiBallistic.name=\u0410\u043D\u0442\u0438-\u0431\u0430\u043B\u043B\u0438\u0441\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.cluster.name=\u041A\u043B\u0430\u0441\u0442\u0435\u0440\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.nuclearCluster.name=\u041A\u043B\u0430\u0441\u0442\u0435\u0440\u043D\u0430\u044F \u044F\u0434\u0435\u0440\u043D\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-icbm.missile.homing.name=\u0441\u0430\u043C\u043E\u043D\u0430\u0432\u043E\u0434\u044F\u0449\u0430\u044F\u0441\u044F \u0440\u0430\u043A\u0435\u0442\u0430
+icbm.missile.missileModule.name=Ракетный модуль
+icbm.missile.antiBallistic.name=Анти-баллистический модуль
+icbm.missile.cluster.name=Кластерная ракета
+icbm.missile.nuclearCluster.name=Ядерная кластерная ракета
+icbm.missile.homing.name=Самонаводящаяся ракета
 
 ## Grenades
-icbm.grenade.condensed.name=\u041E\u0431\u044B\u0447\u043D\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
-icbm.grenade.shrapnel.name=\u041E\u0441\u043A\u043E\u043B\u043E\u0447\u043D\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
-icbm.grenade.incendiary.name=\u0417\u0430\u0436\u0438\u0433\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
-icbm.grenade.debilitation.name=\u041E\u0441\u043B\u0430\u0431\u043B\u044F\u044E\u0449\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
-icbm.grenade.chemical.name=\u0425\u0438\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
-icbm.grenade.anvil.name=\u0413\u0440\u0430\u043D\u0430\u0442\u0430-\u043D\u0430\u043A\u043E\u0432\u0430\u043B\u044C\u043D\u044F
-icbm.grenade.repulsive.name=\u041E\u0442\u0442\u0430\u043B\u043A\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
-icbm.grenade.attractive.name=\u041F\u0440\u0438\u0442\u044F\u0433\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0433\u0440\u0430\u043D\u0430\u0442\u0430
+icbm.grenade.condensed.name=Обычная граната
+icbm.grenade.shrapnel.name=Осколочная граната
+icbm.grenade.incendiary.name=Зажигательная граната
+icbm.grenade.debilitation.name=Ослабляющая граната
+icbm.grenade.chemical.name=Химическая граната
+icbm.grenade.anvil.name=Граната "Наковальня"
+icbm.grenade.repulsive.name=Отталкивающая ракета
+icbm.grenade.attractive.name=Притягивающая ракета
 
 ## Explosive Minecarts
-icbm.minecart.condensed.name=\u0412\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u044B\u0439 \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.shrapnel.name=\u041E\u0441\u043A\u043E\u043B\u043E\u0447\u043D\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.incendiary.name=\u0417\u0430\u0436\u0438\u0433\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.debilitation.name=\u041E\u0441\u043B\u0430\u0431\u043B\u044F\u044E\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.chemical.name=\u0425\u0438\u043C\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.anvil.name=\u0412\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430-\u043D\u0430\u043A\u043E\u0432\u0430\u043B\u044C\u043D\u044F
-icbm.minecart.repulsive.name=\u041E\u0442\u0442\u0430\u043B\u043A\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.attractive.name=\u041F\u0440\u0438\u0442\u044F\u0433\u0438\u0432\u0430\u044E\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
+icbm.minecart.condensed.name=Взрывчатая вагонетка
+icbm.minecart.shrapnel.name=Осколочная вагонетка
+icbm.minecart.incendiary.name=Зажигательная вагонетка
+icbm.minecart.debilitation.name=Ослабевающая вагонетка
+icbm.minecart.chemical.name=Химическая вагонетка
+icbm.minecart.anvil.name=Вагонетка "Наковальня"
+icbm.minecart.repulsive.name=Отталкивающая вагонетка
+icbm.minecart.attractive.name=Притягивающая вагонетка
 
-icbm.minecart.fragmentation.name=\u0414\u0440\u043E\u0431\u044F\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.contagious.name=\u0418\u043D\u0444\u0438\u0446\u0438\u0440\u0443\u044E\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.sonic.name=\u0417\u0432\u0443\u043A\u043E\u0432\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.breaching.name=\u0420\u0430\u0437\u0440\u0443\u0448\u0430\u044E\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.rejuvenation.name=\u0412\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u044F\u044E\u0449\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
-icbm.minecart.thermobaric.name=\u0422\u0435\u0440\u043C\u043E\u0431\u0430\u0440\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0432\u0430\u0433\u043E\u043D\u0435\u0442\u043A\u0430
+icbm.minecart.fragmentation.name=Фрагментирующая вагонетка
+icbm.minecart.contagious.name=Заразная вагонетка
+icbm.minecart.sonic.name=Звуковая вагонетка
+icbm.minecart.breaching.name=Разрушительная вагонетка
+icbm.minecart.rejuvenation.name=Восстанавливающая вагонетка
+icbm.minecart.thermobaric.name=Термобарическая вагонетка
+
+icbm.minecart.nuclear.name=Ядерная вагонетка
+icbm.minecart.emp.name=ЕМП вагонетка
+icbm.minecart.exothermic.name=Экзотермическая вагонетка
+icbm.minecart.endothermic.name=Эндотермическая вагонетка
+icbm.minecart.antiGravitational.name=Анти-гравитационная вагонетка
+icbm.minecart.ender.name=Вагонетка с эндер взрывчаткой
+icbm.minecart.hypersonic.name=Гиперзвуковая вагонетка
+
+icbm.minecart.sMine.name=Вагонетка с С-Миной
 
 ## ICBM Misc Blocks
-tile.icbm:oreSulfur.name=\u0421\u0435\u0440\u043D\u0430\u044F \u0440\u0443\u0434\u0430
-tile.icbm:concrete.0.name=\u0411\u0435\u0442\u043E\u043D
-tile.icbm:concrete.1.name=\u041F\u043B\u043E\u0442\u043D\u044B\u0439 \u0431\u0435\u0442\u043E\u043D
-tile.icbm:concrete.2.name=\u0423\u043A\u0440\u0435\u043F\u043B\u0451\u043D\u043D\u044B\u0439 \u0431\u0435\u0442\u043E\u043D
-tile.icbm:reinforcedGlass.name=\u0410\u0440\u043C\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0435 \u0441\u0442\u0435\u043A\u043B\u043E
-tile.icbm:glassPressurePlate.name=\u0421\u0442\u0435\u043A\u043B\u044F\u043D\u043D\u0430\u044F \u043D\u0430\u0436\u0438\u043C\u043D\u0430\u044F \u043F\u043B\u0430\u0441\u0442\u0438\u043D\u0430
-tile.icbm:glassButton.name=\u0421\u0442\u0435\u043A\u043B\u044F\u043D\u043D\u0430\u044F \u043A\u043D\u043E\u043F\u043A\u0430
-tile.icbm:camouflage.name=\u041A\u0430\u043C\u0443\u0444\u043B\u044F\u0436
-tile.icbm:proximityDetector.name=\u0414\u0435\u0442\u0435\u043A\u0442\u043E\u0440 \u0441\u0431\u043B\u0438\u0436\u0435\u043D\u0438\u044F
-tile.icbm:spikes.0.name=\u0428\u0438\u043F\u044B
-tile.icbm:spikes.1.name=\u042F\u0434\u043E\u0432\u0438\u0442\u044B\u0435 \u0448\u0438\u043F\u044B
-tile.icbm:spikes.2.name=\u0413\u043E\u0440\u044F\u0449\u0438\u0435 \u0448\u0438\u043F\u044B
+tile.icbmclassic:concrete.0.name=Бетон
+tile.icbmclassic:concrete.1.name=Компактный бетон
+tile.icbmclassic:concrete.2.name=Укрепленный бетон
 
-## ICBM Sentry
-## Translated by Adaptivity
-tile.icbm:turret.gunTurret.name=\u041E\u0440\u0443\u0434\u0438\u0439\u043D\u0430\u044F \u0431\u0430\u0448\u043D\u044F
-tile.icbm:turret.railgun.name=\u0420\u0435\u043B\u044C\u0441\u043E\u0442\u0440\u043E\u043D
-tile.icbm:turret.antiAircraftTurret.name=\u0417\u0435\u043D\u0438\u0442\u043D\u0430\u044F \u0431\u0430\u0448\u043D\u044F
-tile.icbm:turret.laserTurret.name=\u041B\u0430\u0437\u0435\u0440\u043D\u0430\u044F \u0431\u0430\u0448\u043D\u044F
-tile.icbm:turret.autoBow.name=\u0410\u0440\u0431\u0430\u043B\u0435\u0442\u043D\u0430\u044F \u0431\u0430\u0448\u043D\u044F
-tile.icbm:turretPlatform.name=\u041F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430 \u0431\u0430\u0448\u043D\u0438
+tile.icbmclassic:reinforcedGlass.name=Укрепленное стекло
+tile.icbmclassic:glassPressurePlate.name=Стеклянная нажимная плита
+tile.icbmclassic:glassButton.name=Стеклянная кнопка
+tile.icbmclassic:camouflage.name=Камуфляж
+tile.icbmclassic:proximityDetector.name=Бесконтактный детектор
 
-item.icbm:bulletShell.name=\u0413\u0438\u043B\u044C\u0437\u0430
-item.icbm:bullet.name=\u041F\u0443\u043B\u044F
-item.icbm:bulletRailgun.name=\u041F\u0443\u043B\u044F \u0440\u0435\u043B\u044C\u0441\u043E\u0442\u0440\u043E\u043D\u0430
-item.icbm:bulletAntimatter.name=\u041F\u0443\u043B\u044F \u0430\u043D\u0442\u0438\u043C\u0430\u0442\u0435\u0440\u0438\u0438
-item.icbm:bulletInfinite.name=\u0411\u0435\u0441\u043A\u043E\u043D\u0435\u0447\u043D\u0430\u044F \u043F\u0443\u043B\u044F
-
-item.icbm:targetCard.name=\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435: \u00AB\u0414\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C\u00BB
-item.icbm:shellCollector.name=\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435: \u00AB\u0421\u0431\u043E\u0440\u0449\u0438\u043A \u0433\u0438\u043B\u044C\u0437\u00BB
-
-entity.turretseat.name=ICBM \u0441\u0438\u0434\u0435\u043D\u044C\u0435 \u0431\u0430\u0448\u043D\u0438
-
-## Deaths
-death.attack.bullet=%1$s \u0431\u044B\u043B \u0440\u0430\u0441\u0441\u0442\u0440\u0435\u043B\u044F\u043D \u0432 \u0448\u0432\u0435\u0439\u0446\u0430\u0440\u0441\u043A\u0438\u0439 \u0441\u044B\u0440!
-death.attack.laser=%1$s \u0432\u044B\u043F\u0430\u0440\u0438\u043B\u0438 \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E \u043B\u0430\u0437\u0435\u0440\u043E\u0432!
+tile.icbmclassic:spikes.0.name=Шипы
+tile.icbmclassic:spikes.1.name=Ядовитые шипы
+tile.icbmclassic:spikes.2.name=Подожженные шипы
 
 ## Chat messages
-message.tracker.nowtrack=\u0422\u0435\u043F\u0435\u0440\u044C \u043F\u0440\u0435\u0441\u043B\u0435\u0434\u0443\u0435\u0442:
-message.tracker.nopower=\u0423 \u043F\u0440\u0435\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E!
-message.tracker.banned=\u041F\u0440\u0435\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u0437\u0430\u043F\u0440\u0435\u0449\u0451\u043D \u043D\u0430 \u044D\u0442\u043E\u0439 \u0442\u0435\u0440\u0440\u0438\u0442\u043E\u0440\u0438\u0438!
+message.tracker.nowtrack=Отслеживание:
+message.tracker.nopower=Отслеживатель разрядисля!
+message.tracker.banned=Отслеживатель запрещен на данной территории
 
-message.defuser.nopower=\u0423 \u0441\u0430\u043F\u0451\u0440\u0430 \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E!
+message.defuser.nopower=Обезвреживатель разрядился!
 
-message.designator.callTime=\u0412\u043E\u0437\u0434\u0443\u0448\u043D\u043E\u0439 \u0443\u0434\u0430\u0440 \u0447\u0435\u0440\u0435\u0437:
-message.designator.blast=\u041F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F \u0432\u043E\u0437\u0434\u0443\u0448\u043D\u044B\u0439 \u0443\u0434\u0430\u0440!
-message.designator.setFreq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430 \u043B\u0430\u0437\u0435\u0440\u043D\u043E\u0433\u043E \u0446\u0435\u043B\u0435\u0443\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430 \u043D\u0430:
-message.designator.failFreq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430 \u0434\u043E\u043B\u0436\u043D\u0430 \u0431\u044B\u0442\u044C \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0443\u043B\u044F.
-message.designator.callBlast=\u0412\u043E\u0437\u0434\u0443\u0448\u043D\u044B\u0439 \u0443\u0434\u0430\u0440 \u043F\u043E \u0443\u043A\u0430\u0437\u0430\u043D\u043D\u043E\u0439 \u043F\u043E\u0437\u0438\u0446\u0438\u0438!
-message.designator.nopower=\u0423 \u043B\u0430\u0437\u0435\u0440\u043D\u043E\u0433\u043E \u0446\u0435\u043B\u0435\u0443\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044F \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E!
-message.designator.noFreq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430 \u0434\u043B\u044F \u043B\u0430\u0437\u0435\u0440\u043D\u043E\u0433\u043E \u0446\u0435\u043B\u0435\u0443\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044F \u043D\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430!
+message.designator.callTime=Вызов воздушного удара в:
+message.designator.blast=Входящий воздушный удар!
+message.designator.setFreq=Частота лазерного указателя:
+message.designator.failFreq=Частота должна быть больше нуля.
 
-message.radarGun.scanned=\u041E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u044B: X:%x, Y:%y, Z:%z - \u0414\u0438\u0441\u0442\u0430\u043D\u0446\u0438\u044F: %d
-message.radarGun.nopower=\u0423 \u0438\u0437\u043C\u0435\u0440\u0438\u0442\u0435\u043B\u044F \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E!
-message.radarGun.transfer=\u041A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u044B \u043F\u0435\u0440\u0435\u0434\u0430\u043D\u044B!
-message.radarGun.noCoords=\u0412\u044B \u0434\u043E\u043B\u0436\u043D\u044B \u043E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u044B!
-message.launcher.protected=\u0420\u0435\u0433\u0438\u043E\u043D \u0437\u0430\u0449\u0438\u0449\u0451\u043D.
-message.detonator.locked=\u0414\u0438\u0441\u0442\u0430\u043D\u0446\u0438\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430 \u043D\u0430: X:%x, Y:%y, Z:%z
-message.detonator.nopower=\u0423 \u0434\u0438\u0441\u0442\u0430\u043D\u0446\u0438\u043E\u043D\u043D\u043E\u0433\u043E \u0434\u0435\u0442\u043E\u043D\u0430\u0442\u043E\u0440\u0430 \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E!
-message.radar.redstone=Radar redstone all side emission:
+message.designator.callBlast=Вызов авиаудара в указанное положение!
+message.designator.nopower=Лазерный указатель разредился!
+
+message.designator.noFreq=Частота лазерного указателя не установлена!
+
+message.radarGun.scanned=Сканирование координат: X:%x, Y:%y, Z:%z - Расстояние: %d
+message.radarGun.nopower=Радарная пушка разрядилась!
+message.radarGun.transfer=Информация о координатах передана!
+message.radarGun.noCoords=Вы должны сканировать координаты!
+message.launcher.protected=Регион защищен.
+message.detonator.locked=Удаленный доступ к: X:%x, Y:%y, Z:%z
+message.detonator.nopower=Детонатор разрядился!
+message.radar.redstone=Радиационная красная пыль, все побочные излучения:
 
 ## GUI stuff
-gui.misc.nopower=\u041D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u0430!
-gui.misc.idle=\u041F\u0440\u043E\u0441\u0442\u043E\u0439
-gui.misc.freq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430:
-gui.misc.XCoord=X-\u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u0430:
-gui.misc.YCoord=Y-\u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u0430:
-gui.misc.ZCoord=Z-\u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u0430:
+gui.misc.nopower=Недостаточно электричества!
+gui.misc.idle=Холостой ход
+gui.misc.freq=Частота:
+gui.misc.XCoord=X-Координата:
+gui.misc.YCoord=Y-Координата:
+gui.misc.ZCoord=Z-Координата:
 gui.misc.x=X:
 gui.misc.y=Y:
 gui.misc.z=Z:
-gui.misc.status=\u0421\u0442\u0430\u0442\u0443\u0441:
-gui.misc.voltage=\u041D\u0430\u043F\u0440\u044F\u0436\u0435\u043D\u0438\u0435:
+gui.misc.status=Статус:
+gui.misc.voltage=Напряжение:
 
-gui.tracker.freq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430
-gui.detector.name=\u0414\u0435\u0442\u0435\u043A\u0442\u043E\u0440 \u0441\u0431\u043B\u0438\u0436\u0435\u043D\u0438\u044F
-gui.detector.all=\u0412\u0441\u0435
-gui.detector.players=\u0418\u0433\u0440\u043E\u043A\u0438
-gui.detector.mobs=\u041C\u043E\u0431\u044B
-gui.detector.range=\u0414\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C \u043E\u0431\u043D\u0430\u0440\u0443\u0436\u0435\u043D\u0438\u044F
-gui.detector.min=\u041C\u0438\u043D.
-gui.detector.max=\u041C\u0430\u043A\u0441.
-gui.detector.exclude=\u0418\u0441\u043A\u043B\u044E\u0447\u0438\u0442\u044C
-gui.detector.include=\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C
-gui.detector.target=\u0426\u0435\u043B\u044C:
-gui.detector.on=\u0412\u043A\u043B.
-gui.detector.status=\u0421\u0442\u0430\u0442\u0443\u0441:
+gui.tracker.freq=Частота
+gui.detector.name=Бесконтактный детектор
+gui.detector.all=Все
+gui.detector.players=Игроки
+gui.detector.mobs=Мобы
+gui.detector.range=Радиус поиска
+gui.detector.min=Минимум
+gui.detector.max=Максимум
+gui.detector.exclude=Исключают
+gui.detector.include=Включают
+gui.detector.target=Цель:
+gui.detector.on=Вкл
+gui.detector.status=Статус:
 
-gui.empTower.name=\u042D\u041C\u0418-\u0431\u0430\u0448\u043D\u044F
-gui.empTower.missiles=\u0420\u0430\u043A\u0435\u0442\u044B
-gui.empTower.elec=\u042D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E
-gui.empTower.both=\u041E\u0431\u0430
-gui.empTower.radius=\u042D\u041C\u0418 \u0440\u0430\u0434\u0438\u0443\u0441: %p \u0431\u043B\u043E\u043A\u043E\u0432(\u0430)
-gui.empTower.effect=\u042D\u041C\u0418 \u044D\u0444\u0444\u0435\u043A\u0442:
-gui.empTower.effectDebilitate=\u041E\u0441\u043B\u0430\u0431\u043B\u044F\u0442\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0438\u043A\u0443
-gui.empTower.effectDisrupt=\u0420\u0430\u0437\u0440\u0443\u0448\u0430\u0442\u044C \u0440\u0430\u043A\u0435\u0442\u044B
-gui.empTower.effectDeplete=\u0418\u0441\u0447\u0435\u0440\u043F\u044B\u0432\u0430\u0442\u044C \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E
-gui.empTower.mode=\u0420\u0435\u0436\u0438\u043C:
-gui.empTower.ready=\u0413\u043E\u0442\u043E\u0432\u0430 \u043A \u042D\u041C\u0418-\u0443\u0434\u0430\u0440\u0443!
+gui.empTower.name=ЕМП башня
+gui.empTower.missiles=Ракеты
+gui.empTower.elec=Электричество
+gui.empTower.both=И то и другое
+gui.empTower.radius=Радиус ЕМП: %p блоков
+gui.empTower.effect=ЕМП эффект:
+gui.empTower.effectDebilitate=Излучающая электроника
+gui.empTower.effectDisrupt=Уничтожение ракет
+gui.empTower.effectDeplete=Уничтожение электричества
+gui.empTower.mode=Режим:
+gui.empTower.ready=Готовность к выстрелу!
 
-gui.launcherBase.name=\u041F\u0443\u0441\u043A\u043E\u0432\u0430\u044F \u043F\u043B\u0430\u0442\u0444\u043E\u0440\u043C\u0430
-gui.launcherBase.place=\u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0440\u0430\u043A\u0435\u0442\u0443
-gui.launcherScreen.name=\u041F\u0430\u043D\u0435\u043B\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0443\u0441\u043A\u043E\u043C
-gui.launcherScreen.detHeight=\u0414\u0435\u0442\u043E\u043D\u0430\u0446\u0438\u043E\u043D\u043D\u0430\u044F \u0432\u044B\u0441\u043E\u0442\u0430:
-gui.launcherScreen.lockHeight=\u0417\u0430\u0445\u0432\u0430\u0442 \u0432\u044B\u0441\u043E\u0442\u044B:
-gui.launcherScreen.target=\u0426\u0435\u043B\u0435\u0432\u0430\u044F \u0440\u0430\u043A\u0435\u0442\u0430
-gui.launcherScreen.inaccuracy=\u041D\u0435\u0442\u043E\u0447\u043D\u043E\u0441\u0442\u044C: %p \u0431\u043B\u043E\u043A\u043E\u0432
-gui.launcherScreen.statusMissing=\u041D\u0435\u0442 \u0441\u043E\u0435\u0434\u0438\u043D\u0435\u043D\u0438\u044F!
-gui.launcherScreen.statusNoPower=\u041D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u0430!
-gui.launcherScreen.statusEmpty=\u0421\u0438\u043B\u043E\u0441 \u0440\u0430\u043A\u0435\u0442\u044B \u043F\u0443\u0441\u0442!
-gui.launcherScreen.statusInvalid=\u0426\u0435\u043B\u044C \u043D\u0435 \u0432\u0435\u0440\u043D\u0430!
-gui.launcherScreen.statusClose=\u0426\u0435\u043B\u044C \u0441\u043B\u0438\u0448\u043A\u043E\u043C \u0431\u043B\u0438\u0437\u043A\u043E!
-gui.launcherScreen.statusFar=\u0426\u0435\u043B\u044C \u0441\u043B\u0438\u0448\u043A\u043E\u043C \u0434\u0430\u043B\u0435\u043A\u043E!
-gui.launcherScreen.statusReady=\u0413\u043E\u0442\u043E\u0432\u0430 \u043A \u0437\u0430\u043F\u0443\u0441\u043A\u0443!
-gui.launcherCruise.name=\u041A\u0440\u044B\u043B\u0430\u0442\u0430\u044F \u043F\u0443\u0441\u043A\u043E\u0432\u0430\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0430
-gui.launcherCruise.statusNoPower=\u041D\u0435\u0442 \u043F\u0438\u0442\u0430\u043D\u0438\u044F!
-gui.launcherCruise.statusEmpty=\u0421\u0438\u043B\u043E\u0441 \u043F\u0443\u0441\u0442!
-gui.launcherCruise.statusInvalid=\u041D\u0435\u0432\u0435\u0440\u043D\u0430\u044F \u0446\u0435\u043B\u044C!
-gui.launcherCruise.statusReady=\u0413\u043E\u0442\u043E\u0432\u043D\u043E\u0441\u0442\u044C!
+gui.launcherBase.name=Пусковая платформа
+gui.launcherBase.place=Поставить ракету
+gui.launcherScreen.name=Панель управления пусковой установкой
+gui.launcherScreen.detHeight=Высота детонации:
+gui.launcherScreen.lockHeight=Высота блокировки:
+gui.launcherScreen.target=Ракетная цель
+gui.launcherScreen.inaccuracy=Погрешность: %p блоков
+gui.launcherScreen.statusMissing=Нет подключения!
+gui.launcherScreen.statusNoPower=Недостаточно электричество!
+gui.launcherScreen.statusEmpty=Ракетная установка пуста!
+gui.launcherScreen.statusInvalid=Недопустимая цель.!
+gui.launcherScreen.statusClose=Цель слишком близко!
+gui.launcherScreen.statusFar=Цель слишком далеко!
+gui.launcherScreen.statusReady=Ракета готова к запуску!
 
-gui.coordinator.name=\u041A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u043E\u0440 \u0440\u0430\u043A\u0435\u0442
-gui.coordinator.sim=\u0421\u0438\u043C\u0443\u043B\u044F\u0442\u043E\u0440 \u043F\u0443\u0442\u0438
-gui.coordinator.from=\u0418\u0437:
-gui.coordinator.to=\u0412:
-gui.coordinator.displace=\u0421\u043C\u0435\u0449\u0435\u043D\u0438\u0435: %p \u043C\u0435\u0442\u0440\u043E\u0432(\u0430)
-gui.coordinator.arc=\u0414\u0443\u0433\u0430: %p \u043C\u0435\u0442\u0440\u043E\u0432(\u0430)
-gui.coordinator.time=\u0412\u0440\u0435\u043C\u044F: %p \u0441\u0435\u043A\u0443\u043D\u0434(\u0430-\u044B)
-gui.coordinator.direction=\u041D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435:
-gui.coordinator.wip=\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E\u0441\u0442\u0438 \u0443\u0436\u0435 \u0441\u043A\u043E\u0440\u043E!
 
-gui.assembler.name=\u0420\u0430\u043A\u0435\u0442\u043D\u044B\u0439 \u0441\u0442\u043E\u043B
-gui.radar.coords=\u041A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u044B:
-gui.radar.zoneSafe=\u0411\u0435\u0437\u043E\u043F\u0430\u0441\u043D\u0430\u044F \u0437\u043E\u043D\u0430:
-gui.radar.zoneAlarm=\u0417\u043E\u043D\u0430 \u0442\u0440\u0435\u0432\u043E\u0433\u0438:
-gui.radar.on=\u0420\u0430\u0434\u0430\u0440 \u0432\u043A\u043B\u044E\u0447\u0451\u043D!
-gui.radar.nopower=\u041D\u0435\u0442 \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u0430!
+gui.launcherCruise.name=Компактная пусковая устанока
 
-gui.terminal.name=\u0422\u0435\u0440\u043C\u0438\u043D\u0430\u043B
-gui.platform.ammo=\u0411\u043E\u0435\u043F\u0440\u0438\u043F\u0430\u0441\u044B
-gui.platform.upgrades=\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u044F
-gui.platform.joules=\u0438\u0437 %j
-gui.platform.access=\u041F\u043E\u043B\u044C\u0437\u043E\u0432. \u0434\u043E\u0441\u0442\u0443\u043F
+gui.launcherCruise.statusNoPower=Нет энергии!
+gui.launcherCruise.statusEmpty=Нет ракеты!
+gui.launcherCruise.invalidMissile=Недопустимый предмет!
+gui.launcherCruise.invalidMissileTier=Недопустимый уровень ракеты!
+gui.launcherCruise.notCruiseMissile=Недопустимый тип ракеты!
+gui.launcherCruise.statusInvalid=Неверная цель!
+gui.launcherCruise.targetToClose=Цель слишком далеко!
+gui.launcherCruise.noRoom=Недостаточно места!
+gui.launcherCruise.statusReady=Готовность!
+
+## Chat warning if user tries to fire by hand, %1 is status message from GUI
+chat.launcher.status=Статус: %1
+chat.launcher.failedToFire=Ошибка: не удалось выстрелить!
+chat.launcher.toolTargetSet=Данные о цели переданы.
+chat.launcher.toolWorldNotMatch=Цель находится в другом измерении!
+chat.launcher.noTargetInTool=Инструмент не содержит никаких данных о цели!
+chat.launcher.toolFrequencySet=Частота установлена на %1
+
+gui.coordinator.name=Координатор ракеты
+gui.coordinator.sim=Симулятор пути
+gui.coordinator.from=Из:
+gui.coordinator.to=В:
+gui.coordinator.displace=Смещение: %p метров
+gui.coordinator.arc=Дуга: %p метров
+gui.coordinator.time=Время: %p секунд
+gui.coordinator.direction=Направление:
+gui.coordinator.wip=Дополнительные функции в ближайшее время!
+
+gui.assembler.name=Ракетный стол
+gui.radar.coords=Координаты:
+gui.radar.zoneSafe=Безопасная зона:
+gui.radar.zoneAlarm=Зона тревоги:
+gui.radar.on=Радар влючен!
+gui.radar.nopower=Нет электричества!
+
+gui.terminal.name=Терминал
+gui.platform.ammo=Аммуниция
+gui.platform.upgrades=Улучшения
+gui.platform.joules=из %j
+gui.platform.access=User Access
 
 ## Tooltips
-info.misc.freq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430:
-info.tracker.tracking=\u041F\u0440\u0435\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u0435:
-info.designator.noFreq=\u0427\u0430\u0441\u0442\u043E\u0442\u0430: \u041D\u0435 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0430
-info.radarGun.savedCoords=\u0421\u043E\u0445\u0440\u0430\u043D\u0451\u043D\u043D\u044B\u0435 \u043A\u043E\u043E\u0440\u0434\u0438\u043D\u0430\u0442\u044B:
-info.radarGun.meters=\u041C\u0435\u0442\u0440\u043E\u0432(\u0430)
-info.detonator.linked=\u0421\u043E\u0435\u0434\u0438\u043D\u0451\u043D\u043D\u0430\u044F \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0430:
-info.detonator.noLink=\u041D\u0435\u0442 \u0441\u043E\u0435\u0434\u0438\u043D\u0451\u043D\u043D\u043E\u0439 \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0438
-info.misc.tier=\u0423\u0440\u043E\u0432\u0435\u043D\u044C \u0432\u0437\u0440\u044B\u0432\u0447\u0430\u0442\u043A\u0438
-info.rocketlauncher.tooltip=\u042D\u0442\u0430 \u0440\u0435\u0430\u043A\u0442\u0438\u0432\u043D\u0430\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0430 \u043C\u043E\u0436\u0435\u0442 \u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0442\u044C \u0440\u0430\u043A\u0435\u0442\u044B %s \u0443\u0440\u043E\u0432\u043D\u044F
-info.tracker.tooltip=\u041B\u041A\u041C \u043F\u043E \u043C\u043E\u0431\u0443 (\u0438\u0433\u0440\u043E\u043A\u0443), \u0438 \u042F \u0431\u0443\u0434\u0443 \u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u044C \u0437\u0430 \u043D\u0438\u043C.
-
-info.upgrade.range=\u0423\u043B\u0443\u0447\u0448\u0430\u0435\u0442 \u0434\u0438\u0430\u043F\u0430\u0437\u043E\u043D \u043F\u0440\u0435\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F \u0442\u0443\u0440\u0435\u043B\u0438.
-info.upgrade.collect=\u041F\u043E\u0437\u0432\u043E\u043B\u044F\u0435\u0442 \u0442\u0443\u0440\u0435\u043B\u0438 \u0441\u043E\u0431\u0438\u0440\u0430\u0442\u044C \u0432\u044B\u0431\u0440\u043E\u0448\u0435\u043D\u043D\u044B\u0435 \u0433\u0438\u043B\u044C\u0437\u044B.
-info.upgrade.sentry=\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 \u0434\u043B\u044F \u0442\u0443\u0440\u0435\u043B\u0438
-
-info.turretdenied.waila=\u0423 \u0432\u0430\u0441 \u043D\u0435\u0442 \u0434\u043E\u0441\u0442\u0443\u043F\u0430 \u043A %u
+info.misc.freq=Частота:
+info.tracker.tracking=Отслеживание:
+info.designator.noFreq=Частота: Не установлена
+info.radarGun.savedCoords=Сохраненные координаты:
+info.radarGun.meters=Метров
+info.detonator.linked=Связанный взрыв:
+info.detonator.noLink=Не связанный взрыв
+info.misc.tier=Уровень взрыва
+info.tracker.tooltip=ЛКМ на моба (или игрока), и я буду указывать на него.
