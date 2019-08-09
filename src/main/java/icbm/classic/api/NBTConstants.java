@@ -32,6 +32,8 @@ public class NBTConstants
     public static final String FUSE = "Fuse";
     public static final String GRAVITY = "gravity";
     public static final String GREEN = "green";
+    @Deprecated //legacy
+    public static final String HAO_MA = "haoMa";
     public static final String HEALTH = "health";
     public static final String HOST_POS = "hostPos";
     public static final String HZ = "hz";

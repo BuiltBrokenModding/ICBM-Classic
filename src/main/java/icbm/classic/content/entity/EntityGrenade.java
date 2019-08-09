@@ -233,7 +233,11 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.explosiveID = nbt.getInteger("haoMa"); //TODO fix
+        if(nbt.hasKey(NBTConstants.HAO_MA))
+            this.explosiveID = nbt.getInteger(NBTConstants.HAO_MA);
+        else
+            this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
+
         this.blastData = nbt.getCompoundTag(NBTConstants.DATA);
 
     }
@@ -241,7 +245,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("haoMa", this.explosiveID);
+        nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
         nbt.setTag(NBTConstants.DATA, this.blastData);
 
     }
