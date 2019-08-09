@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.blocks.emptower.TileEMPTower.EMPMode;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.prefab.gui.GuiContainerBase;
@@ -55,13 +56,13 @@ public class GuiEMPTower extends GuiContainerBase
         switch (par1GuiButton.id)
         {
             case 0:
-                this.tileEntity.empMode = 1;
+                this.tileEntity.empMode = EMPMode.MISSILES_ONLY;
                 break;
             case 1:
-                this.tileEntity.empMode = 2;
+                this.tileEntity.empMode = EMPMode.ELECTRICITY_ONLY;
                 break;
             case 2:
-                this.tileEntity.empMode = 0;
+                this.tileEntity.empMode = EMPMode.ALL;
                 break;
         }
 
@@ -109,11 +110,11 @@ public class GuiEMPTower extends GuiContainerBase
         // Shows the EMP mode of the EMP Tower
         String mode = LanguageUtility.getLocal("gui.empTower.effectDebilitate");
 
-        if (this.tileEntity.empMode == 1)
+        if (this.tileEntity.empMode == EMPMode.MISSILES_ONLY)
         {
             mode = LanguageUtility.getLocal("gui.empTower.effectDisrupt");
         }
-        else if (this.tileEntity.empMode == 2)
+        else if (this.tileEntity.empMode == EMPMode.ELECTRICITY_ONLY)
         {
             mode = LanguageUtility.getLocal("gui.empTower.effectDeplete");
         }

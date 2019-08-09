@@ -45,8 +45,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public float rotation = 0;
     private float rotationDelta;
 
-    // The EMP mode. 0 = All, 1 = Missiles Only, 2 = Electricity Only
-    public byte empMode = 0; //TODO move to enum
+    public EMPMode empMode = EMPMode.ALL;
 
     private int cooldownTicks = 0;
 
@@ -120,7 +119,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                 }
                 case CHANGE_MODE_PACKET_ID:
                 {
-                    empMode = data.readByte();
+                    empMode = EMPMode.values()[data.readByte()];
                     return true;
                 }
             }
@@ -134,7 +133,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         super.writeDescPacket(buf);
         buf.writeInt(empRadius);
-        buf.writeByte(empMode);
+        buf.writeByte((byte)empMode.ordinal());
     }
 
     @Override
@@ -142,7 +141,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         super.readDescPacket(buf);
         empRadius = buf.readInt();
-        empMode = buf.readByte();
+        empMode = EMPMode.values()[buf.readByte()];
     }
 
     @Override
@@ -160,7 +159,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         super.readFromNBT(par1NBTTagCompound);
 
         this.empRadius = par1NBTTagCompound.getInteger(NBTConstants.EMP_RADIUS);
-        this.empMode = par1NBTTagCompound.getByte(NBTConstants.EMP_MODE);
+        this.empMode = EMPMode.values()[par1NBTTagCompound.getByte(NBTConstants.EMP_MODE)];
     }
 
     /**
@@ -170,7 +169,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
         par1NBTTagCompound.setInteger(NBTConstants.EMP_RADIUS, this.empRadius);
-        par1NBTTagCompound.setByte(NBTConstants.EMP_MODE, this.empMode);
+        par1NBTTagCompound.setByte(NBTConstants.EMP_MODE, (byte)this.empMode.ordinal());
         return super.writeToNBT(par1NBTTagCompound);
     }
 
@@ -192,10 +191,10 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                     default:
                         emp.setEffectBlocks().setEffectEntities();
                         break;
-                    case 1:
+                    case MISSILES_ONLY:
                         emp.setEffectEntities();
                         break;
-                    case 2:
+                    case ELECTRICITY_ONLY:
                         emp.setEffectBlocks();
                         break;
                 }
@@ -312,5 +311,10 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public Object getClientGuiElement(int ID, EntityPlayer player)
     {
         return new GuiEMPTower(player, this);
+    }
+
+    public static enum EMPMode
+    {
+        ALL, MISSILES_ONLY, ELECTRICITY_ONLY;
     }
 }

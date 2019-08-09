@@ -26,8 +26,7 @@ import java.util.List;
  */
 public class BlastTNT extends Blast
 {
-    /** 0- No push, 1 - Attract, 2 - Repel */
-    private int pushType = 0; //TODO change to enum
+    private PushType pushType = PushType.NO_PUSH;
     /** Do destroy items */
     private boolean destroyItem = false;
 
@@ -48,7 +47,7 @@ public class BlastTNT extends Blast
      * @param type
      * @return this
      */
-    public BlastTNT setPushType(int type)
+    public BlastTNT setPushType(PushType type)
     {
         this.pushType = type;
         return this;
@@ -76,7 +75,7 @@ public class BlastTNT extends Blast
         //TODO collect entities before applying effects, this way event can override
         switch (this.pushType)
         {
-            case 0:
+            case NO_PUSH:
                 this.doDamageEntities(this.getBlastRadius(), damageToEntities, this.destroyItem);
                 break;
             default:
@@ -234,7 +233,7 @@ public class BlastTNT extends Blast
         }
     }
 
-    public void pushEntities(float radius, float force, int type) //TODO convert to delay action
+    public void pushEntities(float radius, float force, PushType type) //TODO convert to delay action
     {
         // Step 2: Damage all entities
         Pos minCoord = location.toPos();
@@ -264,12 +263,12 @@ public class BlastTNT extends Blast
                 yDifference /= mag;
                 zDifference /= mag;
 
-                if (type == 1)
+                if (type == PushType.ATTRACT)
                 {
                     double modifier = var13 * force * (entity instanceof EntityPlayer ? 0.5 : 1);
                     entity.addVelocity(-xDifference * modifier, -yDifference * modifier, -zDifference * modifier);
                 }
-                else if (type == 2)
+                else if (type == PushType.REPEL)
                 {
                     double modifier = (1.0D - var13) * force * (entity instanceof EntityPlayer ? 0.5 : 1);
                     entity.addVelocity(xDifference * modifier, yDifference * modifier, zDifference * modifier);
@@ -282,7 +281,7 @@ public class BlastTNT extends Blast
     public void load(NBTTagCompound nbt)
     {
         super.load(nbt);
-        this.pushType = nbt.getInteger(NBTConstants.PUSH_TYPE);
+        this.pushType = PushType.values()[nbt.getInteger(NBTConstants.PUSH_TYPE)];
         this.destroyItem = nbt.getBoolean(NBTConstants.DESTROY_ITEM);
     }
 
@@ -290,7 +289,12 @@ public class BlastTNT extends Blast
     public void save(NBTTagCompound nbt)
     {
         super.save(nbt);
-        nbt.setInteger(NBTConstants.PUSH_TYPE, this.pushType);
+        nbt.setInteger(NBTConstants.PUSH_TYPE, this.pushType.ordinal());
         nbt.setBoolean(NBTConstants.DESTROY_ITEM, this.destroyItem);
+    }
+
+    public static enum PushType
+    {
+        NO_PUSH, ATTRACT, REPEL;
     }
 }

@@ -23,6 +23,7 @@ import icbm.classic.content.blast.BlastRegen;
 import icbm.classic.content.blast.BlastShrapnel;
 import icbm.classic.content.blast.BlastSonic;
 import icbm.classic.content.blast.BlastTNT;
+import icbm.classic.content.blast.BlastTNT.PushType;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
 import icbm.classic.lib.transform.vector.Location;
@@ -58,27 +59,27 @@ public class ExplosiveInit
         ExplosiveRefs.INCENDIARY = newEx("incendiary", EnumTier.ONE, () -> new BlastFire().setBlastSize(14));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ExplosiveRefs.INCENDIARY.getRegistryName(),
                 (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
-        );
+                );
 
 
         ExplosiveRefs.DEBILITATION = newEx("debilitation", EnumTier.ONE,
                 () -> new BlastChemical(20 * 30, false)
-                        .setConfuse().setBlastSize(20));
+                .setConfuse().setBlastSize(20));
 
         ExplosiveRefs.CHEMICAL = newEx("chemical", EnumTier.ONE,
                 () -> new BlastChemical(20 * 30, false)
-                        .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
+                .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
 
         ExplosiveRefs.ANVIL = newEx("anvil", EnumTier.ONE,
                 () -> new BlastShrapnel().setAnvil().setBlastSize(25));
 
         ExplosiveRefs.REPULSIVE = newEx("repulsive", EnumTier.ONE,
-                () -> new BlastTNT().setDestroyItems().setPushType(2).setBlastSize(2));
+                () -> new BlastTNT().setDestroyItems().setPushType(PushType.REPEL).setBlastSize(2));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REPULSIVE.getRegistryName(), (world, x, y, z) -> 120);
 
 
         ExplosiveRefs.ATTRACTIVE = newEx("attractive", EnumTier.ONE,
-                () -> new BlastTNT().setDestroyItems().setPushType(1).setBlastSize(2));
+                () -> new BlastTNT().setDestroyItems().setPushType(PushType.ATTRACT).setBlastSize(2));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ATTRACTIVE.getRegistryName(), (world, x, y, z) -> 120);
 
         //=================== Tier 2
@@ -87,7 +88,7 @@ public class ExplosiveInit
 
         ExplosiveRefs.CONTAGIOUS = newEx("contagious", EnumTier.TWO,
                 () -> new BlastChemical(20 * 30, false)
-                        .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
+                .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
 
         ExplosiveRefs.SONIC = newEx("sonic", EnumTier.TWO,
                 () -> new BlastSonic(30).setBlastSize(15));
@@ -114,7 +115,7 @@ public class ExplosiveInit
         ExplosiveRefs.EXOTHERMIC = newEx("exothermic", EnumTier.THREE, () -> new BlastExothermic().setBlastSize(50));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ExplosiveRefs.EXOTHERMIC.getRegistryName(),
                 (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
-        );
+                );
 
         ExplosiveRefs.ENDOTHERMIC = newEx("endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(50));
         //TODO add ice fuse animation
