@@ -4,6 +4,8 @@ import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos2D;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.Pos2D;
+
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -47,7 +49,7 @@ public class Point extends Pos2D<Point> implements IByteBufWriter, IPos2D
 
     public Point(NBTTagCompound nbt)
     {
-        this(nbt.getDouble("x"), nbt.getDouble("y"));
+        this(nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y));
     }
 
     public NBTTagCompound toNBT()
@@ -57,8 +59,8 @@ public class Point extends Pos2D<Point> implements IByteBufWriter, IPos2D
 
     public NBTTagCompound save(NBTTagCompound nbt)
     {
-        nbt.setDouble("x", x());
-        nbt.setDouble("y", y());
+        nbt.setDouble(NBTConstants.X, x());
+        nbt.setDouble(NBTConstants.Y, y());
         return nbt;
     }
 

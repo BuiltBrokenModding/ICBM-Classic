@@ -1,6 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -110,9 +111,9 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
      */
     public float getBroadCastHz(ItemStack stack)
     {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("hz"))
+        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBTConstants.HZ))
         {
-            return stack.getTagCompound().getFloat("hz");
+            return stack.getTagCompound().getFloat(NBTConstants.HZ);
         }
         return 0;
     }
@@ -129,6 +130,6 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         {
             stack.setTagCompound(new NBTTagCompound());
         }
-        stack.getTagCompound().setFloat("hz", hz);
+        stack.getTagCompound().setFloat(NBTConstants.HZ, hz);
     }
 }

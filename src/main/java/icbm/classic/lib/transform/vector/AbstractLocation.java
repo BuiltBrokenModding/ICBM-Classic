@@ -2,6 +2,7 @@ package icbm.classic.lib.transform.vector;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -45,7 +46,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      */
     public AbstractLocation(NBTTagCompound nbt)
     {
-        this(DimensionManager.getWorld(nbt.getInteger("dimension")), nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+        this(DimensionManager.getWorld(nbt.getInteger(NBTConstants.DIMENSION)), nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
 
     /**
@@ -147,10 +148,10 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
     @Override
     public NBTTagCompound writeNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("dimension", world != null && world.provider != null ? world.provider.getDimension() : 0);
-        nbt.setDouble("x", x());
-        nbt.setDouble("y", y());
-        nbt.setDouble("z", z());
+        nbt.setInteger(NBTConstants.DIMENSION, world != null && world.provider != null ? world.provider.getDimension() : 0);
+        nbt.setDouble(NBTConstants.X, x());
+        nbt.setDouble(NBTConstants.Y, y());
+        nbt.setDouble(NBTConstants.Z, z());
         return nbt;
     }
 

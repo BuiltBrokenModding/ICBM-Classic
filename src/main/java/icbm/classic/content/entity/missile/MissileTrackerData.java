@@ -1,5 +1,6 @@
 package icbm.classic.content.entity.missile;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -11,10 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class MissileTrackerData
 {
-    private static final String NBT_TICKS = "ticks";
-    private static final String NBT_TARGET = "target";
-    private static final String NBT_MISSILE_DATA = "data";
-
     public int preLoadChunkTimer;   //Seconds before the missiles spawns in the loaded chunk
 
     public int ticksLeftToTarget;   //Seconds left before the missile reaches the target area (1 Tick = 1 Second)
@@ -38,16 +35,16 @@ public class MissileTrackerData
     //Helper methods for saving and loading
     public void readFromNBT(NBTTagCompound nbt)
     {
-        ticksLeftToTarget = nbt.getInteger(NBT_TICKS);
-        targetPos = new Pos(nbt.getCompoundTag(NBT_TARGET));
-        missileData = nbt.getCompoundTag(NBT_MISSILE_DATA);
+        ticksLeftToTarget = nbt.getInteger(NBTConstants.TICKS);
+        targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
+        missileData = nbt.getCompoundTag(NBTConstants.DATA);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger(NBT_TICKS, ticksLeftToTarget);
-        nbt.setTag(NBT_TARGET, targetPos.writeNBT(new NBTTagCompound()));
-        nbt.setTag(NBT_MISSILE_DATA, missileData);
+        nbt.setInteger(NBTConstants.TICKS, ticksLeftToTarget);
+        nbt.setTag(NBTConstants.TARGET, targetPos.writeNBT(new NBTTagCompound()));
+        nbt.setTag(NBTConstants.DATA, missileData);
         return nbt;
     }
 }

@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.events.RemoteTriggerEvent;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;
@@ -70,9 +71,9 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
      */
     public float getBroadCastHz(ItemStack stack)
     {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("hz"))
+        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBTConstants.HZ))
         {
-            return stack.getTagCompound().getFloat("hz");
+            return stack.getTagCompound().getFloat(NBTConstants.HZ);
         }
         return 0;
     }
@@ -89,6 +90,6 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         {
             stack.setTagCompound(new NBTTagCompound());
         }
-        stack.getTagCompound().setFloat("hz", hz);
+        stack.getTagCompound().setFloat(NBTConstants.HZ, hz);
     }
 }

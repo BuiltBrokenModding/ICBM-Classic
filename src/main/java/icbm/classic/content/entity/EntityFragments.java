@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.content.entity.mobs.EntityXmasMob;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -506,16 +507,16 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setByte("shake", (byte) this.arrowShake);
-        nbt.setBoolean("isExplosive", this.isExplosive);
+        nbt.setByte(NBTConstants.SHAKE, (byte) this.arrowShake);
+        nbt.setBoolean(NBTConstants.IS_EXPLOSIVE, this.isExplosive);
     }
 
     /** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.arrowShake = nbt.getByte("shake") & 255;
-        this.isExplosive = nbt.getBoolean("isExplosive");
+        this.arrowShake = nbt.getByte(NBTConstants.SHAKE) & 255;
+        this.isExplosive = nbt.getBoolean(NBTConstants.IS_EXPLOSIVE);
     }
 
     /** Called by a player entity when they collide with an entity */

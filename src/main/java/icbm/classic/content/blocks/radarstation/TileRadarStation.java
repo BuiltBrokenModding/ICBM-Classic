@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.radarstation;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.entity.missile.EntityMissile;
@@ -390,18 +391,18 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.safetyRange = nbt.getInteger("safetyBanJing");
-        this.alarmRange = nbt.getInteger("alarmBanJing");
-        this.emitAll = nbt.getBoolean("emitAll");
+        this.safetyRange = nbt.getInteger(NBTConstants.SAFETY_RADIUS);
+        this.alarmRange = nbt.getInteger(NBTConstants.ALARM_RADIUS);
+        this.emitAll = nbt.getBoolean(NBTConstants.EMIT_ALL);
     }
 
     /** Writes a tile entity to NBT. */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("safetyBanJing", this.safetyRange);
-        nbt.setInteger("alarmBanJing", this.alarmRange);
-        nbt.setBoolean("emitAll", this.emitAll);
+        nbt.setInteger(NBTConstants.SAFETY_RADIUS, this.safetyRange);
+        nbt.setInteger(NBTConstants.ALARM_RADIUS, this.alarmRange);
+        nbt.setBoolean(NBTConstants.EMIT_ALL, this.emitAll);
         return super.writeToNBT(nbt);
     }
 

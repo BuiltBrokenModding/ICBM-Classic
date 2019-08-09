@@ -1,6 +1,7 @@
 package icbm.classic.prefab.item;
 
 import icbm.classic.config.ConfigMain;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
@@ -83,13 +84,13 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        setEnergy(compound.getInteger("energy"));
+        setEnergy(compound.getInteger(NBTConstants.ENERGY));
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("energy", getEnergy());
+        compound.setInteger(NBTConstants.ENERGY, getEnergy());
         return super.writeToNBT(compound);
     }
 

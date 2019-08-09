@@ -1,6 +1,7 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Pos;
@@ -233,7 +234,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         this.explosiveID = nbt.getInteger("haoMa"); //TODO fix
-        this.blastData = nbt.getCompoundTag("data");
+        this.blastData = nbt.getCompoundTag(NBTConstants.DATA);
 
     }
 
@@ -241,7 +242,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
         nbt.setInteger("haoMa", this.explosiveID);
-        nbt.setTag("data", this.blastData);
+        nbt.setTag(NBTConstants.DATA, this.blastData);
 
     }
 }

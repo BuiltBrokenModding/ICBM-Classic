@@ -1,6 +1,7 @@
 package icbm.classic.prefab.entity;
 
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -130,13 +131,13 @@ public abstract class EntityBase extends Entity implements IWorldPosition
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        setHealth(nbt.getFloat("health"));
+        setHealth(nbt.getFloat(NBTConstants.HEALTH));
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setFloat("health", this.getHealth());
+        nbt.setFloat(NBTConstants.HEALTH, this.getHealth());
     }
 
     @Override

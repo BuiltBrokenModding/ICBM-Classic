@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.lib.transform.vector.Pos;
@@ -117,11 +118,11 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         if (this.isMutate)
         {
             new BlastMutation()
-                    .setBlastWorld(world())
-                    .setBlastSource(this.exploder)
-                    .setBlastPosition(location.x(), location.y(), location.z())
-                    .setBlastSize(radius)
-                    .buildBlast().runBlast(); //TODO trigger from explosive handler
+            .setBlastWorld(world())
+            .setBlastSource(this.exploder)
+            .setBlastPosition(location.x(), location.y(), location.z())
+            .setBlastSize(radius)
+            .buildBlast().runBlast(); //TODO trigger from explosive handler
         }
 
         //End explosion when we hit life timer
@@ -182,29 +183,29 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     public void load(NBTTagCompound nbt)
     {
         super.load(nbt);
-        this.duration = nbt.getInteger("duration");
-        this.isContagious = nbt.getBoolean("isContagious");
-        this.isPoisonous = nbt.getBoolean("isPoisonous");
-        this.isConfuse = nbt.getBoolean("isConfuse");
-        this.isMutate = nbt.getBoolean("isMutate");
-        this.red = nbt.getFloat("red");
-        this.green = nbt.getFloat("green");
-        this.blue = nbt.getFloat("blue");
-        this.playShortSoundFX = nbt.getBoolean("playShortSoundFX");
+        this.duration = nbt.getInteger(NBTConstants.DURATION);
+        this.isContagious = nbt.getBoolean(NBTConstants.IS_CONTAGIOUS);
+        this.isPoisonous = nbt.getBoolean(NBTConstants.IS_POISONOUS);
+        this.isConfuse = nbt.getBoolean(NBTConstants.IS_CONFUSE);
+        this.isMutate = nbt.getBoolean(NBTConstants.IS_MUTATE);
+        this.red = nbt.getFloat(NBTConstants.RED);
+        this.green = nbt.getFloat(NBTConstants.GREEN);
+        this.blue = nbt.getFloat(NBTConstants.BLUE);
+        this.playShortSoundFX = nbt.getBoolean(NBTConstants.PLAY_SHORT_SOUND_FX);
     }
 
     @Override
     public void save(NBTTagCompound nbt)
     {
         super.save(nbt);
-        nbt.setInteger("duration", this.duration);
-        nbt.setBoolean("isContagious", this.isContagious);
-        nbt.setBoolean("isPoisonous", this.isPoisonous);
-        nbt.setBoolean("isConfuse", this.isConfuse);
-        nbt.setBoolean("isMutate", this.isMutate);
-        nbt.setFloat("red", this.red);
-        nbt.setFloat("green", this.green);
-        nbt.setFloat("blue", this.blue);
-        nbt.setBoolean("playShortSoundFX", this.playShortSoundFX);
+        nbt.setInteger(NBTConstants.DURATION, this.duration);
+        nbt.setBoolean(NBTConstants.IS_CONTAGIOUS, this.isContagious);
+        nbt.setBoolean(NBTConstants.IS_POISONOUS, this.isPoisonous);
+        nbt.setBoolean(NBTConstants.IS_CONFUSE, this.isConfuse);
+        nbt.setBoolean(NBTConstants.IS_MUTATE, this.isMutate);
+        nbt.setFloat(NBTConstants.RED, this.red);
+        nbt.setFloat(NBTConstants.GREEN, this.green);
+        nbt.setFloat(NBTConstants.BLUE, this.blue);
+        nbt.setBoolean(NBTConstants.PLAY_SHORT_SOUND_FX, this.playShortSoundFX);
     }
 }

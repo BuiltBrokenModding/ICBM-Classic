@@ -2,6 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.explosion.*;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
@@ -168,14 +169,14 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
         try
         {
-            NBTTagCompound blastSave = nbt.getCompoundTag("blast");
-            this.blastYOffset = nbt.getDouble("blastPosY");
+            NBTTagCompound blastSave = nbt.getCompoundTag(NBTConstants.BLAST);
+            this.blastYOffset = nbt.getDouble(NBTConstants.BLAST_POS_Y);
             if (getBlast() == null)
             {
                 //Legacy code
-                if (blastSave.hasKey("class"))
+                if (blastSave.hasKey(NBTConstants.CLASS))
                 {
-                    Class clazz = Class.forName(blastSave.getString("class"));
+                    Class clazz = Class.forName(blastSave.getString(NBTConstants.CLASS));
                     Constructor constructor = clazz.getConstructor();
                     Blast blast = (Blast) constructor.newInstance();
                     blast.setBlastWorld(world);
@@ -183,9 +184,9 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
                     blast.setEntityController(this);
                     blast.buildBlast();
                 }
-                else if (blastSave.hasKey("ex_id"))
+                else if (blastSave.hasKey(NBTConstants.EX_ID))
                 {
-                    ResourceLocation id = new ResourceLocation(blastSave.getString("ex_id"));
+                    ResourceLocation id = new ResourceLocation(blastSave.getString(NBTConstants.EX_ID));
                     IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id);
                     if (data != null)
                     {
@@ -232,7 +233,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (getBlast() != null && getBlast().getExplosiveData() != null) //TODO add save/load mechanic to bypass need for ex data
         {
             //Save position
-            nbt.setDouble("blastPosY", blastYOffset);
+            nbt.setDouble(NBTConstants.BLAST_POS_Y, blastYOffset);
 
             //Save explosive data
             NBTTagCompound blastSave = new NBTTagCompound();
@@ -240,10 +241,10 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             {
                 ((IBlastRestore) getBlast()).save(blastSave);
             }
-            blastSave.setString("ex_id", getBlast().getExplosiveData().getRegistryName().toString());
+            blastSave.setString(NBTConstants.EX_ID, getBlast().getExplosiveData().getRegistryName().toString());
 
             //Encode into NBT
-            nbt.setTag("blast", blastSave);
+            nbt.setTag(NBTConstants.BLAST, blastSave);
         }
     }
 

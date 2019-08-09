@@ -1,6 +1,8 @@
 package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -24,10 +26,10 @@ public abstract class Shape3D
 
     public Shape3D(NBTTagCompound nbt)
     {
-        this(new Pos(nbt.getCompoundTag("center")));
-        yaw = nbt.getDouble("yaw");
-        pitch = nbt.getDouble("pitch");
-        roll = nbt.getDouble("roll");
+        this(new Pos(nbt.getCompoundTag(NBTConstants.CENTER)));
+        yaw = nbt.getDouble(NBTConstants.YAW);
+        pitch = nbt.getDouble(NBTConstants.PITCH);
+        roll = nbt.getDouble(NBTConstants.ROLL);
     }
 
     /**

@@ -1,6 +1,7 @@
 package icbm.classic.content.blast.threaded;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastMutation;
 import icbm.classic.content.blast.BlastRot;
@@ -238,17 +239,17 @@ public class BlastNuclear extends BlastThreaded
                 if (this.isRadioactive)
                 {
                     new BlastRot(this.energy)
-                            .setBlastWorld(world())
-                            .setBlastSource(this.exploder)
-                            .setBlastPosition(location.x(), location.y(), location.z())
-                            .setBlastSize(this.getBlastRadius())
-                            .buildBlast().runBlast();  //TODO trigger from explosive handler
+                    .setBlastWorld(world())
+                    .setBlastSource(this.exploder)
+                    .setBlastPosition(location.x(), location.y(), location.z())
+                    .setBlastSize(this.getBlastRadius())
+                    .buildBlast().runBlast();  //TODO trigger from explosive handler
                     new BlastMutation()
-                            .setBlastWorld(world())
-                            .setBlastSource(this.exploder)
-                            .setBlastPosition(location.x(), location.y(), location.z())
-                            .setBlastSize(this.getBlastRadius())
-                            .buildBlast().runBlast();  //TODO trigger from explosive handler
+                    .setBlastWorld(world())
+                    .setBlastSource(this.exploder)
+                    .setBlastPosition(location.x(), location.y(), location.z())
+                    .setBlastSize(this.getBlastRadius())
+                    .buildBlast().runBlast();  //TODO trigger from explosive handler
 
                     if (this.world().rand.nextInt(3) == 0)
                     {
@@ -263,10 +264,10 @@ public class BlastNuclear extends BlastThreaded
             catch (Exception e)
             {
                 String msg = String.format("BlastNuclear#doPostExplode() ->  Unexpected error while running post detonation code " +
-                                "\nWorld = %s " +
-                                "\nThread = %s" +
-                                "\nSize = %s" +
-                                "\nPos = %s",
+                        "\nWorld = %s " +
+                        "\nThread = %s" +
+                        "\nSize = %s" +
+                        "\nPos = %s",
                         world, getThread(), size, location);
                 ICBMClassic.logger().error(msg, e);
             }
@@ -277,13 +278,13 @@ public class BlastNuclear extends BlastThreaded
     public void load(NBTTagCompound nbt)
     {
         super.load(nbt);
-        this.spawnMoreParticles = nbt.getBoolean("spawnMoreParticles");
+        this.spawnMoreParticles = nbt.getBoolean(NBTConstants.SPAWN_MORE_PARTICLES);
     }
 
     @Override
     public void save(NBTTagCompound nbt)
     {
         super.save(nbt);
-        nbt.setBoolean("spawnMoreParticles", this.spawnMoreParticles);
+        nbt.setBoolean(NBTConstants.SPAWN_MORE_PARTICLES, this.spawnMoreParticles);
     }
 }

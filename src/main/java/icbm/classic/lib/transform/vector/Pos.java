@@ -2,6 +2,7 @@ package icbm.classic.lib.transform.vector;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -68,7 +69,7 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
 
     public Pos(NBTTagCompound nbt)
     {
-        this(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+        this(nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
 
     public Pos(ByteBuf data)

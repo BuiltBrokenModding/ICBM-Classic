@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
@@ -158,8 +159,8 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         super.readFromNBT(par1NBTTagCompound);
 
-        this.empRadius = par1NBTTagCompound.getInteger("empRadius");
-        this.empMode = par1NBTTagCompound.getByte("empMode");
+        this.empRadius = par1NBTTagCompound.getInteger(NBTConstants.EMP_RADIUS);
+        this.empMode = par1NBTTagCompound.getByte(NBTConstants.EMP_MODE);
     }
 
     /**
@@ -168,8 +169,8 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        par1NBTTagCompound.setInteger("empRadius", this.empRadius);
-        par1NBTTagCompound.setByte("empMode", this.empMode);
+        par1NBTTagCompound.setInteger(NBTConstants.EMP_RADIUS, this.empRadius);
+        par1NBTTagCompound.setByte(NBTConstants.EMP_MODE, this.empMode);
         return super.writeToNBT(par1NBTTagCompound);
     }
 

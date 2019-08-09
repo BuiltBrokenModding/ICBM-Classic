@@ -2,6 +2,7 @@ package icbm.classic.lib.transform.vector;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +31,7 @@ public class Location extends AbstractLocation<Location> implements IWorldPositi
 
     public Location(NBTTagCompound nbt)
     {
-        this(DimensionManager.getWorld(nbt.getInteger("dimension")), nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+        this(DimensionManager.getWorld(nbt.getInteger(NBTConstants.DIMENSION)), nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
 
     public Location(ByteBuf data)

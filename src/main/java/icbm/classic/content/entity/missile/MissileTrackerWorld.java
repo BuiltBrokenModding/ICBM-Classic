@@ -1,6 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,10 +24,6 @@ import java.util.LinkedList;
  */
 public class MissileTrackerWorld extends WorldSavedData
 {
-    //NBT keys
-    private static final String NBT_MISSILE = "missiles";
-    private static final String NBT_MISSILE_SPAWN = "spawns";
-
     //Constants
     private final int speedPerSecond = 10; //10 blocks per second
     private final int unloadChunkCooldown = 60; //1 minute
@@ -250,7 +247,7 @@ public class MissileTrackerWorld extends WorldSavedData
     public void readFromNBT(NBTTagCompound nbt)
     {
         //Load missiles
-        NBTTagList list = nbt.getTagList(NBT_MISSILE, 10);
+        NBTTagList list = nbt.getTagList(NBTConstants.MISSILES, 10);
         for (int i = 0; i < list.tagCount(); i++)
         {
             NBTTagCompound missileSave = list.getCompoundTagAt(i);
@@ -259,7 +256,7 @@ public class MissileTrackerWorld extends WorldSavedData
         }
 
         //Load missiles that will spawn
-        list = nbt.getTagList(NBT_MISSILE_SPAWN, 10);
+        list = nbt.getTagList(NBTConstants.SPAWNS, 10);
         for (int i = 0; i < list.tagCount(); i++)
         {
             NBTTagCompound missileSave = list.getCompoundTagAt(i);
@@ -279,7 +276,7 @@ public class MissileTrackerWorld extends WorldSavedData
             mtd.writeToNBT(compound);
             list.appendTag(compound);
         }
-        nbt.setTag(NBT_MISSILE, list);
+        nbt.setTag(NBTConstants.MISSILES, list);
 
         //Save missiles that will spawn
         list = new NBTTagList();
@@ -289,7 +286,7 @@ public class MissileTrackerWorld extends WorldSavedData
             mtd.writeToNBT(compound);
             list.appendTag(compound);
         }
-        nbt.setTag(NBT_MISSILE_SPAWN, list);
+        nbt.setTag(NBTConstants.SPAWNS, list);
 
         return nbt;
     }
@@ -303,7 +300,7 @@ public class MissileTrackerWorld extends WorldSavedData
         //if(chunkLoadTicket != null)
         //{
         //    ForgeChunkManager.releaseTicket(chunkLoadTicket);
-            chunkLoadTicket = null;
+        chunkLoadTicket = null;
         //}
         currentLoadedChunks.clear();
     }

@@ -1,5 +1,6 @@
 package icbm.classic.prefab.entity;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -493,75 +494,75 @@ public abstract class EntityProjectile extends EntityBase implements IProjectile
     {
         if (tilePos != null)
         {
-            nbt.setInteger("xTilePos", this.tilePos.getX());
-            nbt.setInteger("yTilePos", this.tilePos.getY());
-            nbt.setInteger("zTilePos", this.tilePos.getZ());
+            nbt.setInteger(NBTConstants.X_TILE_POS, this.tilePos.getX());
+            nbt.setInteger(NBTConstants.Y_TILE_POS, this.tilePos.getY());
+            nbt.setInteger(NBTConstants.Z_TILE_POS, this.tilePos.getZ());
         }
-        nbt.setByte("sideTilePos", (byte) this.sideTile.ordinal());
+        nbt.setByte(NBTConstants.SIDE_TILE_POS, (byte) this.sideTile.ordinal());
 
         if (blockInside != null)
         {
-            nbt.setInteger("inTileState", Block.getStateId(blockInside));
+            nbt.setInteger(NBTConstants.IN_TILE_STATE, Block.getStateId(blockInside));
         }
 
-        nbt.setShort("life", (short) this.ticksInGround);
-        nbt.setByte("inGround", (byte) (this.inGround ? 1 : 0));
+        nbt.setShort(NBTConstants.LIFE, (short) this.ticksInGround);
+        nbt.setByte(NBTConstants.IN_GROUND, (byte) (this.inGround ? 1 : 0));
         if (sourceOfProjectile != null)
         {
-            nbt.setTag("sourcePos", sourceOfProjectile.toNBT());
+            nbt.setTag(NBTConstants.SOURCE_POS, sourceOfProjectile.toNBT());
         }
         if (shootingEntity != null)
         {
-            nbt.setString("Shooter-UUID", shootingEntity.getUniqueID().toString());
+            nbt.setString(NBTConstants.SHOOTER_UUID, shootingEntity.getUniqueID().toString());
         }
     }
 
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey("xTile"))
+        if (nbt.hasKey(NBTConstants.X_TILE))
         {
             //Legacy
-            tilePos = new BlockPos(nbt.getShort("xTile"), nbt.getShort("yTile"), nbt.getShort("zTile"));
+            tilePos = new BlockPos(nbt.getShort(NBTConstants.X_TILE), nbt.getShort(NBTConstants.Y_TILE), nbt.getShort(NBTConstants.Z_TILE));
         }
-        else if (nbt.hasKey("xTilePos"))
+        else if (nbt.hasKey(NBTConstants.X_TILE_POS))
         {
-            tilePos = new BlockPos(nbt.getInteger("xTilePos"), nbt.getInteger("yTilePos"), nbt.getInteger("zTilePos"));
+            tilePos = new BlockPos(nbt.getInteger(NBTConstants.X_TILE_POS), nbt.getInteger(NBTConstants.Y_TILE_POS), nbt.getInteger(NBTConstants.Z_TILE_POS));
         }
 
-        if (nbt.hasKey("sideTile"))
+        if (nbt.hasKey(NBTConstants.SIDE_TILE))
         {
             //Legacy
-            this.sideTile = EnumFacing.byIndex(nbt.getShort("sideTile"));
+            this.sideTile = EnumFacing.byIndex(nbt.getShort(NBTConstants.SIDE_TILE));
         }
         else
         {
-            this.sideTile = EnumFacing.byIndex(nbt.getByte("sideTilePos"));
+            this.sideTile = EnumFacing.byIndex(nbt.getByte(NBTConstants.SIDE_TILE_POS));
         }
-        this.ticksInGround = nbt.getShort("life");
-        if (nbt.hasKey("inTile"))
+        this.ticksInGround = nbt.getShort(NBTConstants.LIFE);
+        if (nbt.hasKey(NBTConstants.IN_TILE))
         {
             //Legacy
-            Block block = Block.getBlockById(nbt.getByte("inTile"));
+            Block block = Block.getBlockById(nbt.getByte(NBTConstants.IN_TILE));
             if (block != null)
             {
-                int meta = nbt.getByte("inData");
+                int meta = nbt.getByte(NBTConstants.IN_DATA);
                 this.blockInside = block.getStateFromMeta(meta);
             }
         }
-        else if (nbt.hasKey("inTileState"))
+        else if (nbt.hasKey(NBTConstants.IN_TILE_STATE))
         {
-            this.blockInside = Block.getStateById(nbt.getInteger("inTileState"));
+            this.blockInside = Block.getStateById(nbt.getInteger(NBTConstants.IN_TILE_STATE));
         }
 
-        this.inGround = nbt.getByte("inGround") == 1;
-        if (nbt.hasKey("sourcePos"))
+        this.inGround = nbt.getByte(NBTConstants.IN_GROUND) == 1;
+        if (nbt.hasKey(NBTConstants.SOURCE_POS))
         {
-            sourceOfProjectile = new Pos(nbt.getCompoundTag("sourcePos"));
+            sourceOfProjectile = new Pos(nbt.getCompoundTag(NBTConstants.SOURCE_POS));
         }
-        if (nbt.hasKey("Shooter-UUID"))
+        if (nbt.hasKey(NBTConstants.SHOOTER_UUID))
         {
-            shootingEntityUUID = UUID.fromString(nbt.getString("Shooter-UUID"));
+            shootingEntityUUID = UUID.fromString(nbt.getString(NBTConstants.SHOOTER_UUID));
         }
     }
 

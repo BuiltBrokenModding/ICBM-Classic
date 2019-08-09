@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.reg.ItemReg;
@@ -255,8 +256,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        getInventory().load(nbt.getCompoundTag("inventory"));
-        currentAim.readFromNBT(nbt.getCompoundTag("currentAim"));
+        getInventory().load(nbt.getCompoundTag(NBTConstants.INVENTORY));
+        currentAim.readFromNBT(nbt.getCompoundTag(NBTConstants.CURRENT_AIM));
     }
 
     /**
@@ -265,8 +266,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setTag("inventory", getInventory().save(new NBTTagCompound()));
-        nbt.setTag("currentAim", currentAim.writeNBT(new NBTTagCompound()));
+        nbt.setTag(NBTConstants.INVENTORY, getInventory().save(new NBTTagCompound()));
+        nbt.setTag(NBTConstants.CURRENT_AIM, currentAim.writeNBT(new NBTTagCompound()));
         return super.writeToNBT(nbt);
     }
 

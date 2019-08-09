@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -281,15 +282,15 @@ public class BlastTNT extends Blast
     public void load(NBTTagCompound nbt)
     {
         super.load(nbt);
-        this.pushType = nbt.getInteger("pushType");
-        this.destroyItem = nbt.getBoolean("destroyItem");
+        this.pushType = nbt.getInteger(NBTConstants.PUSH_TYPE);
+        this.destroyItem = nbt.getBoolean(NBTConstants.DESTROY_ITEM);
     }
 
     @Override
     public void save(NBTTagCompound nbt)
     {
         super.save(nbt);
-        nbt.setInteger("pushType", this.pushType);
-        nbt.setBoolean("destroyItem", this.destroyItem);
+        nbt.setInteger(NBTConstants.PUSH_TYPE, this.pushType);
+        nbt.setBoolean(NBTConstants.DESTROY_ITEM, this.destroyItem);
     }
 }

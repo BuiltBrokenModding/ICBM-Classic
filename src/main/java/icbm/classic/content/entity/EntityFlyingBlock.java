@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -147,7 +148,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
                 }
             }
         }
-        */
+         */
     }
 
     public void setBlock()
@@ -190,19 +191,19 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     {
         if (_blockState != null)
         {
-            nbttagcompound.setTag("blockState", NBTUtil.writeBlockState(new NBTTagCompound(), _blockState));
+            nbttagcompound.setTag(NBTConstants.BLOCK_STATE, NBTUtil.writeBlockState(new NBTTagCompound(), _blockState));
         }
-        nbttagcompound.setFloat("gravity", this.gravity);
+        nbttagcompound.setFloat(NBTConstants.GRAVITY, this.gravity);
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbttagcompound)
     {
-        if (nbttagcompound.hasKey("blockState"))
+        if (nbttagcompound.hasKey(NBTConstants.BLOCK_STATE))
         {
-           _blockState = NBTUtil.readBlockState(nbttagcompound.getCompoundTag("blockState"));
+            _blockState = NBTUtil.readBlockState(nbttagcompound.getCompoundTag(NBTConstants.BLOCK_STATE));
         }
-        this.gravity = nbttagcompound.getFloat("gravity");
+        this.gravity = nbttagcompound.getFloat(NBTConstants.GRAVITY);
     }
 
     @Override

@@ -3,6 +3,7 @@ package icbm.classic.content.entity.missile;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.MissileEvent;
@@ -713,16 +714,16 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.targetPos = new Pos(nbt.getCompoundTag("target"));
-        this.launcherPos = new Pos(nbt.getCompoundTag("launcherPos"));
-        this.acceleration = nbt.getFloat("acceleration");
-        this.targetHeight = nbt.getInteger("targetHeight");
-        this.explosiveID = nbt.getInteger("explosiveID");
-        this.ticksInAir = nbt.getInteger("ticksInAir");
-        this.lockHeight = nbt.getDouble("lockHeight");
-        this.missileType = MissileFlightType.get(nbt.getInteger("missileType"));
-        this.preLaunchSmokeTimer = nbt.getInteger("preLaunchSmokeTimer");
-        this.blastData = nbt.getCompoundTag("additionalMissileData");
+        this.targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
+        this.launcherPos = new Pos(nbt.getCompoundTag(NBTConstants.LAUNCHER_POS));
+        this.acceleration = nbt.getFloat(NBTConstants.ACCELERATION);
+        this.targetHeight = nbt.getInteger(NBTConstants.TARGET_HEIGHT);
+        this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
+        this.ticksInAir = nbt.getInteger(NBTConstants.TICKS_IN_AIR);
+        this.lockHeight = nbt.getDouble(NBTConstants.LOCK_HEIGHT);
+        this.missileType = MissileFlightType.get(nbt.getInteger(NBTConstants.MISSILE_TYPE));
+        this.preLaunchSmokeTimer = nbt.getInteger(NBTConstants.PRE_LAUNCH_SMOKE_TIMER);
+        this.blastData = nbt.getCompoundTag(NBTConstants.ADDITIONAL_MISSILE_DATA);
     }
 
     /**
@@ -734,21 +735,21 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         super.writeEntityToNBT(nbt);
         if (this.targetPos != null)
         {
-            nbt.setTag("target", this.targetPos.toNBT());
+            nbt.setTag(NBTConstants.TARGET, this.targetPos.toNBT());
         }
 
         if (this.launcherPos != null)
         {
-            nbt.setTag("launcherPos", this.launcherPos.toNBT());
+            nbt.setTag(NBTConstants.LAUNCHER_POS, this.launcherPos.toNBT());
         }
 
-        nbt.setFloat("acceleration", this.acceleration);
-        nbt.setInteger("explosiveID", this.explosiveID);
-        nbt.setInteger("targetHeight", this.targetHeight);
-        nbt.setInteger("ticksInAir", this.ticksInAir);
-        nbt.setDouble("lockHeight", this.lockHeight);
-        nbt.setInteger("missileType", this.missileType.ordinal());
-        nbt.setInteger("preLaunchSmokeTimer", this.preLaunchSmokeTimer);
-        nbt.setTag("additionalMissileData", this.blastData);
+        nbt.setFloat(NBTConstants.ACCELERATION, this.acceleration);
+        nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
+        nbt.setInteger(NBTConstants.TARGET_HEIGHT, this.targetHeight);
+        nbt.setInteger(NBTConstants.TICKS_IN_AIR, this.ticksInAir);
+        nbt.setDouble(NBTConstants.LOCK_HEIGHT, this.lockHeight);
+        nbt.setInteger(NBTConstants.MISSILE_TYPE, this.missileType.ordinal());
+        nbt.setInteger(NBTConstants.PRE_LAUNCH_SMOKE_TIMER, this.preLaunchSmokeTimer);
+        nbt.setTag(NBTConstants.ADDITIONAL_MISSILE_DATA, this.blastData);
     }
 }

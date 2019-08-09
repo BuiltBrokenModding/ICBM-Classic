@@ -1,6 +1,7 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.explosive.ExplosiveHandler;
@@ -97,14 +98,14 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        nbt.setInteger("explosive", explosive);
+        nbt.setInteger(NBTConstants.EXPLOSIVE, explosive);
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        explosive = nbt.getInteger("explosive");
+        explosive = nbt.getInteger(NBTConstants.EXPLOSIVE);
     }
 
     @Override

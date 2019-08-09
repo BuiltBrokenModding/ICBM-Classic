@@ -1,6 +1,7 @@
 package icbm.classic.lib.capability.launcher;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.data.LaunchStatus;
@@ -101,37 +102,37 @@ public class CapabilityMissileLauncher extends CapabilityPrefab implements IMiss
     @Override
     protected void save(NBTTagCompound tag)
     {
-        tag.setDouble("target_x", target_x);
-        tag.setDouble("target_y", target_y);
-        tag.setDouble("target_z", target_z);
+        tag.setDouble(NBTConstants.TARGET_X, target_x);
+        tag.setDouble(NBTConstants.TARGET_Y, target_y);
+        tag.setDouble(NBTConstants.TARGET_Z, target_z);
     }
 
     @Override
     protected void load(NBTTagCompound nbt)
     {
-        target_x = nbt.getDouble("target_x");
-        target_y = nbt.getDouble("target_y");
-        target_z = nbt.getDouble("target_z");
+        target_x = nbt.getDouble(NBTConstants.TARGET_X);
+        target_y = nbt.getDouble(NBTConstants.TARGET_Y);
+        target_z = nbt.getDouble(NBTConstants.TARGET_Z);
     }
 
 
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IMissileLauncher.class, new Capability.IStorage<IMissileLauncher>()
-                {
-                    @Nullable
-                    @Override
-                    public NBTBase writeNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, EnumFacing side)
-                    {
-                        return null;
-                    }
+        {
+            @Nullable
+            @Override
+            public NBTBase writeNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, EnumFacing side)
+            {
+                return null;
+            }
 
-                    @Override
-                    public void readNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, EnumFacing side, NBTBase nbt)
-                    {
+            @Override
+            public void readNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, EnumFacing side, NBTBase nbt)
+            {
 
-                    }
-                },
-                () -> new CapabilityMissileLauncher(null, null));
+            }
+        },
+        () -> new CapabilityMissileLauncher(null, null));
     }
 }

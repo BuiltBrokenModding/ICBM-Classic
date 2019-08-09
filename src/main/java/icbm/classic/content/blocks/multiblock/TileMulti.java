@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.multiblock;
 
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigIC2;
@@ -23,13 +24,11 @@ import java.lang.ref.WeakReference;
  * Created by Dark on 8/9/2015.
  */
 @Optional.InterfaceList({
-        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
-        @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
+    @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
+    @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
 })
 public class TileMulti extends TileEntity implements IMultiTile, IEnergySink
 {
-    public static final String NBT_HOST_POS = "hostPos";
-
     private WeakReference<IMultiTileHost> hostWeakReference;
     private BlockPos hostPosition = null;
 
@@ -94,9 +93,9 @@ public class TileMulti extends TileEntity implements IMultiTile, IEnergySink
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        if (compound.hasKey(NBT_HOST_POS))
+        if (compound.hasKey(NBTConstants.HOST_POS))
         {
-            int[] data = compound.getIntArray(NBT_HOST_POS);
+            int[] data = compound.getIntArray(NBTConstants.HOST_POS);
             hostPosition = new BlockPos(data[0], data[1], data[2]);
         }
     }
@@ -106,7 +105,7 @@ public class TileMulti extends TileEntity implements IMultiTile, IEnergySink
     {
         if (hostPosition != null)
         {
-            compound.setIntArray(NBT_HOST_POS, new int[]{hostPosition.getX(), hostPosition.getY(), hostPosition.getZ()});
+            compound.setIntArray(NBTConstants.HOST_POS, new int[]{hostPosition.getX(), hostPosition.getY(), hostPosition.getZ()});
         }
         return super.writeToNBT(compound);
     }

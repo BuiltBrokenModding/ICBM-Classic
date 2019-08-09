@@ -6,6 +6,7 @@ import ic2.api.energy.tile.IEnergySink;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.config.ConfigIC2;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -39,8 +40,8 @@ import java.util.List;
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
 @Optional.InterfaceList({
-        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
-        @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
+    @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
+    @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
 })
 public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile, IEnergySink
 {
@@ -123,13 +124,13 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        _tier = EnumTier.get(compound.getInteger("tier"));
+        _tier = EnumTier.get(compound.getInteger(NBTConstants.TIER));
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("tier", _tier.ordinal());
+        compound.setInteger(NBTConstants.TIER, _tier.ordinal());
         return super.writeToNBT(compound);
     }
 

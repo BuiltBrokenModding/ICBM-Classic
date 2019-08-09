@@ -4,6 +4,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
 import com.builtbroken.jlib.data.vector.Pos3D;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -64,7 +65,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public AbstractPos(NBTTagCompound nbt)
     {
-        this(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+        this(nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
 
     public AbstractPos(ByteBuf data)
@@ -239,18 +240,18 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public NBTTagCompound writeNBT(NBTTagCompound nbt)
     {
-        nbt.setDouble("x", x());
-        nbt.setDouble("y", y());
-        nbt.setDouble("z", z());
+        nbt.setDouble(NBTConstants.X, x());
+        nbt.setDouble(NBTConstants.Y, y());
+        nbt.setDouble(NBTConstants.Z, z());
         return nbt;
     }
 
 
     public NBTTagCompound writeIntNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("x", xi());
-        nbt.setInteger("y", yi());
-        nbt.setInteger("z", zi());
+        nbt.setInteger(NBTConstants.X, xi());
+        nbt.setInteger(NBTConstants.Y, yi());
+        nbt.setInteger(NBTConstants.Z, zi());
         return nbt;
     }
 

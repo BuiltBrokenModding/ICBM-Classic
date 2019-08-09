@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.battery;
 
 import icbm.classic.prefab.tile.IGuiTile;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.ExternalInventory;
@@ -120,14 +121,14 @@ public class TileEntityBattery extends TileMachine implements IInventoryProvider
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        getInventory().load(compound.getCompoundTag("inventory"));
+        getInventory().load(compound.getCompoundTag(NBTConstants.INVENTORY));
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("tier", _tier.ordinal());
-        compound.setTag("inventory", getInventory().save(new NBTTagCompound()));
+        compound.setInteger(NBTConstants.TIER, _tier.ordinal());
+        compound.setTag(NBTConstants.INVENTORY, getInventory().save(new NBTTagCompound()));
         return super.writeToNBT(compound);
     }
 }

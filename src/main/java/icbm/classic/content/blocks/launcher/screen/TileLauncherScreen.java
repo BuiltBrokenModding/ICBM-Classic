@@ -14,6 +14,7 @@ import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.api.EnumTier;
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -248,16 +249,16 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
     {
         super.readFromNBT(par1NBTTagCompound);
-        //this.tier = par1NBTTagCompound.getInteger("tier");
-        this.lockHeight = par1NBTTagCompound.getShort("targetHeight");
+        //this.tier = par1NBTTagCompound.getInteger(NBTConstants.TIER);
+        this.lockHeight = par1NBTTagCompound.getShort(NBTConstants.TARGET_HEIGHT);
     }
 
     /** Writes a tile entity to NBT. */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
-        //par1NBTTagCompound.setInteger("tier", this.tier);
-        par1NBTTagCompound.setShort("targetHeight", this.lockHeight);
+        //par1NBTTagCompound.setInteger(NBTConstants.TIER, this.tier);
+        par1NBTTagCompound.setShort(NBTConstants.TARGET_HEIGHT, this.lockHeight);
         return super.writeToNBT(par1NBTTagCompound);
     }
 

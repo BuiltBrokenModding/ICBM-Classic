@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;
@@ -386,15 +387,15 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     @Override
     public void load(NBTTagCompound nbt)
     {
-        this.callCount = nbt.getInteger("callCount");
-        this.size = nbt.getFloat("explosionSize");
+        this.callCount = nbt.getInteger(NBTConstants.CALL_COUNT);
+        this.size = nbt.getFloat(NBTConstants.EXPLOSION_SIZE);
     }
 
     @Override
     public void save(NBTTagCompound nbt)
     {
-        nbt.setInteger("callCount", this.callCount);
-        nbt.setFloat("explosionSize", this.size);
+        nbt.setInteger(NBTConstants.CALL_COUNT, this.callCount);
+        nbt.setFloat(NBTConstants.EXPLOSION_SIZE, this.size);
     }
 
     public boolean isMovable()

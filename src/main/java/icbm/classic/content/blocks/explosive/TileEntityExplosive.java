@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
@@ -33,7 +34,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        capabilityExplosive = new CapabilityExplosiveStack(new ItemStack((NBTTagCompound)nbt.getTag(CapabilityExplosiveStack.NBT_STACK)));
+        capabilityExplosive = new CapabilityExplosiveStack(new ItemStack((NBTTagCompound)nbt.getTag(NBTConstants.EXPLOSIVE_STACK)));
     }
 
     /**
@@ -44,7 +45,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     {
         if (capabilityExplosive != null && capabilityExplosive.toStack() != null)
         {
-            nbt.setTag(CapabilityExplosiveStack.NBT_STACK, capabilityExplosive.toStack().serializeNBT());
+            nbt.setTag(NBTConstants.EXPLOSIVE_STACK, capabilityExplosive.toStack().serializeNBT());
         }
         return super.writeToNBT(nbt);
     }

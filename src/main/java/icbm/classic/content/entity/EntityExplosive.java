@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.EntityRefs;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
@@ -26,8 +27,6 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IFixableData;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.ModFixs;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -35,10 +34,6 @@ import javax.annotation.Nullable;
 
 public class EntityExplosive extends Entity implements IRotatable, IEntityAdditionalSpawnData
 {
-
-    public static final String NBT_FUSE = "Fuse";
-    public static final String NBT_EXPLOSIVE_STACK = "explosive_stack";
-
     // How long the fuse is (in ticks)
     public int fuse = -1;
 
@@ -120,8 +115,8 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.fuse = nbt.getByte(NBT_FUSE);
-        getExplosiveCap().deserializeNBT(nbt.getCompoundTag(NBT_EXPLOSIVE_STACK));
+        this.fuse = nbt.getByte(NBTConstants.FUSE);
+        getExplosiveCap().deserializeNBT(nbt.getCompoundTag(NBTConstants.EXPLOSIVE_STACK));
     }
 
     /**
@@ -130,8 +125,8 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setByte(NBT_FUSE, (byte) this.fuse);
-        nbt.setTag(NBT_EXPLOSIVE_STACK, getExplosiveCap().serializeNBT());
+        nbt.setByte(NBTConstants.FUSE, (byte) this.fuse);
+        nbt.setTag(NBTConstants.EXPLOSIVE_STACK, getExplosiveCap().serializeNBT());
     }
 
     public static void registerDataFixer()
@@ -148,12 +143,12 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
             public NBTTagCompound fixTagCompound(NBTTagCompound compound)
             {
                 //Match to entity, we get all entity tags as input
-                if (compound.hasKey("id") && compound.getString("id").equalsIgnoreCase(EntityRefs.BLOCK_EXPLOSIVE.toString()))
+                if (compound.hasKey(NBTConstants.ID) && compound.getString(NBTConstants.ID).equalsIgnoreCase(EntityRefs.BLOCK_EXPLOSIVE.toString()))
                 {
                     //Fix explosive ID save
-                    if (compound.hasKey("explosiveID"))
+                    if (compound.hasKey(NBTConstants.EXPLOSIVE_ID))
                     {
-                        int id = compound.getInteger("explosiveID");
+                        int id = compound.getInteger(NBTConstants.EXPLOSIVE_ID);
 
                         //Generate stack so we can serialize off it
                         final ItemStack stack = new ItemStack(BlockReg.blockExplosive, 1, id);
@@ -162,18 +157,18 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
                         final IExplosive ex = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
                         if(ex instanceof CapabilityExplosiveStack)
                         {
-                            if (compound.hasKey("data"))
+                            if (compound.hasKey(NBTConstants.DATA))
                             {
-                                ((CapabilityExplosiveStack)ex).setCustomData(compound.getCompoundTag("data"));
+                                ((CapabilityExplosiveStack)ex).setCustomData(compound.getCompoundTag(NBTConstants.DATA));
                             }
                         }
 
                         //Remove old tags
-                        compound.removeTag("explosiveID");
-                        compound.removeTag("data");
+                        compound.removeTag(NBTConstants.EXPLOSIVE_ID);
+                        compound.removeTag(NBTConstants.DATA);
 
                         //Save stack
-                        compound.setTag(NBT_EXPLOSIVE_STACK, stack.serializeNBT());
+                        compound.setTag(NBTConstants.EXPLOSIVE_STACK, stack.serializeNBT());
                     }
                 }
                 return compound;

@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.events.LauncherEvent;
@@ -370,7 +371,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        getInventory().load(nbt.getCompoundTag("inventory")); //TODO datafixer to replace inventory
+        getInventory().load(nbt.getCompoundTag(NBTConstants.INVENTORY)); //TODO datafixer to replace inventory
     }
 
     /**
@@ -379,7 +380,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setTag("inventory", getInventory().save(new NBTTagCompound()));
+        nbt.setTag(NBTConstants.INVENTORY, getInventory().save(new NBTTagCompound()));
         return super.writeToNBT(nbt);
     }
 
