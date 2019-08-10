@@ -5,6 +5,7 @@ import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -156,9 +157,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
     {
-        return false; //Don't kill tile
+        return !(oldState.getBlock() == BlockReg.blockRadarStation && newState.getBlock() == BlockReg.blockRadarStation); //Don't kill tile if the radar station is still there
     }
 
     private void doScan() //TODO document and thread
