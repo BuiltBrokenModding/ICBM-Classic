@@ -89,7 +89,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     @Override
     public boolean onBlastTick(int ticksExisted)
     {
-        if (ticksExisted == 1)
+        if (!preExplode)
         {
             preExplode();
         }
@@ -255,7 +255,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         playExplodeSound();
 
         //Start explosion
-        if (this.proceduralInterval() > 0)
+        if (this.spawnExplosiveEntity())
         {
             debugEx("Blast#explode() -> Triggering interval based explosion, Blast: " + this);
             if (!this.world().isRemote)
@@ -311,6 +311,11 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     public int proceduralInterval()
     {
         return -1;
+    }
+
+    public boolean spawnExplosiveEntity()
+    {
+        return proceduralInterval() > 1;
     }
 
     protected void doDamageEntities(float radius, float power)

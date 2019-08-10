@@ -14,12 +14,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 10/8/2018.
  */
 public abstract class BlastThreaded extends Blast
 {
-    public BlastThreaded(){}
+    public BlastThreaded()
+    {
+    }
 
     @Override
     protected void doRunBlast()
@@ -41,10 +42,12 @@ public abstract class BlastThreaded extends Blast
         return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
     }
 
-    public boolean doRun(int loops, List<BlockPos> edits)
-    {
-        return false;
-    }
+    /**
+     * @param loops - current loop count
+     * @param edits - list of blocks to edit
+     * @return true to run another iteration
+     */
+    public abstract boolean doRun(int loops, List<BlockPos> edits);
 
 
     protected void onWorkerThreadComplete(List<BlockPos> edits)
