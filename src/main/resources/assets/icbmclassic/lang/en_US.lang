@@ -206,7 +206,7 @@ missile.icbmclassic:ender.name=Ender Missile
 missile.icbmclassic:hypersonic.name=Hypersonic Missile
 
 missile.icbmclassic:antimatter.name=Antimatter Missile
-missile.icbmclassic:redMatter.name=Red Matter Missile
+missile.icbmclassic:redmatter.name=Red Matter Missile
 
 ## Special Missiles
 missile.icbmclassic:missileModule.name=Missile Module
@@ -252,7 +252,7 @@ bombcart.icbmclassic:ender.name=Ender Minecart
 bombcart.icbmclassic:hypersonic.name=Hypersonic Minecart
 
 bombcart.icbmclassic:antimatter.name=Antimatter Minecart
-bombcart.icbmclassic:redMatter.name=Red Matter Minecart
+bombcart.icbmclassic:redmatter.name=Red Matter Minecart
 
 
 ## ICBM Misc Blocks
@@ -269,6 +269,8 @@ tile.icbmclassic:proximityDetector.name=Proximity Detector
 tile.icbmclassic:spikes.0.name=Spikes
 tile.icbmclassic:spikes.1.name=Poison Spikes
 tile.icbmclassic:spikes.2.name=Flammable Spikes
+
+tile.icbmclassic:batterybox.0.name=Battery Box
 
 ## Chat messages
 message.tracker.nowtrack=Now tracking:
