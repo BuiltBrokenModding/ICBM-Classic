@@ -1,5 +1,7 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.api.EntityRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
@@ -12,6 +14,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IFixableData;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -233,11 +237,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        if(nbt.hasKey(NBTConstants.HAO_MA))
-            this.explosiveID = nbt.getInteger(NBTConstants.HAO_MA);
-        else
-            this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
-
+        this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
         this.blastData = nbt.getCompoundTag(NBTConstants.DATA);
 
     }
@@ -247,6 +247,36 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     {
         nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
         nbt.setTag(NBTConstants.DATA, this.blastData);
+    }
 
+    public static void registerDataFixer()
+    {
+        ICBMClassic.modFixs.registerFix(FixTypes.ENTITY, new IFixableData()
+        {
+            @Override
+            public NBTTagCompound fixTagCompound(NBTTagCompound tag)
+            {
+                if(tag.hasKey(NBTConstants.ID) && tag.getString(NBTConstants.ID).equalsIgnoreCase(EntityRefs.GRENADE.toString()))
+                {
+                    String oldKey = "haoMa";
+
+                    if(tag.hasKey(oldKey))
+                    {
+                        int explosiveID = tag.getInteger(oldKey);
+
+                        tag.removeTag(oldKey); //remove the old entry to not have legacy data. the method name may be misleading, but it actually just removes the key from the tag map
+                        tag.setInteger(NBTConstants.EXPLOSIVE_ID, explosiveID);
+                    }
+                }
+
+                return tag;
+            }
+
+            @Override
+            public int getFixVersion()
+            {
+                return 1;
+            }
+        });
     }
 }

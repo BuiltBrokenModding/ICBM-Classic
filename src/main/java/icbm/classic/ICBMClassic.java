@@ -200,6 +200,7 @@ public final class ICBMClassic
         //Register data fixers
         modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMClassic.DOMAIN, 1);
         EntityExplosive.registerDataFixer();
+        EntityGrenade.registerDataFixer();
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new ExplosivesDataFixer());
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
