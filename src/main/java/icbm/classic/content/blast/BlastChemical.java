@@ -23,6 +23,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     private float red = 1, green = 1, blue = 1;
     private boolean playShortSoundFX;
     private boolean isContagious, isPoisonous, isConfuse, isMutate;
+    private AxisAlignedBB bounds;
 
     public BlastChemical(int duration, boolean playShortSoundFX)
     {
@@ -58,6 +59,14 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     }
 
     @Override
+    public Blast setPosition(double posX, double posY, double posZ)
+    {
+        final Blast returnValue = super.setPosition(posX, posY, posZ);
+        setEffectBounds(); //only change effect bounding box when position changes
+        return returnValue;
+    }
+
+    @Override
     public void doPreExplode()
     {
         super.doPreExplode();
@@ -70,8 +79,6 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     @Override
     public void doExplode()
     {
-        final float radius = this.getBlastRadius();
-
         //Trigger effects for user feedback
         generateGraphicEffect();
         generateAudioEffect();
@@ -79,12 +86,10 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         //Only run potion effect application for the following types
         if (isContagious || isPoisonous || isConfuse)
         {
-            //Get bounding box for effect
-            AxisAlignedBB bounds = new AxisAlignedBB(
-                    location.x() - radius, location.y() - radius, location.z() - radius,
-                    location.x() + radius, location.y() + radius, location.z() + radius);
             //TODO scale affect area with time, the graphics do not match the logic
-            //TODO cache box, we do not need to recreate it each tick
+
+            if(bounds == null) //just to be sure
+                setEffectBounds();
 
             //Get all living entities
             List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
@@ -121,7 +126,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
             .setBlastWorld(world())
             .setBlastSource(this.exploder)
             .setBlastPosition(location.x(), location.y(), location.z())
-            .setBlastSize(radius)
+            .setBlastSize(getBlastRadius())
             .buildBlast().runBlast(); //TODO trigger from explosive handler
         }
 
@@ -171,6 +176,14 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
                 }
             }
         }
+    }
+
+    private void setEffectBounds()
+    {
+        final float radius = this.getBlastRadius();
+        bounds = new AxisAlignedBB(
+                location.x() - radius, location.y() - radius, location.z() - radius,
+                location.x() + radius, location.y() + radius, location.z() + radius);
     }
 
     @Override
