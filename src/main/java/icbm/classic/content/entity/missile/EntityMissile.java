@@ -104,7 +104,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     final int maxPreLaunchSmokeTimer = 50;
     public int preLaunchSmokeTimer = maxPreLaunchSmokeTimer;
     public int launcherHasAirBelow = -1;
-
+    private LinkedList<Pos> lastSmokePos = new LinkedList<>();
 
     public EntityMissile(World w)
     {
@@ -532,8 +532,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
         return height / 2 + motionY;
     }
-
-    LinkedList<Pos> lastSmokePos = new LinkedList<>(); //TODO move up to top
 
     private void spawnMissileSmoke() //TODO move to client proxy
     {
