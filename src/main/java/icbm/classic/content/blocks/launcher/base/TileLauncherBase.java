@@ -17,7 +17,6 @@ import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.ExternalInventory;
@@ -36,6 +35,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -228,10 +229,10 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         return true;
     }
 
-    //@Override TODO ?
-    public String getInventoryName()
+    @Override
+    public ITextComponent getDisplayName()
     {
-        return LanguageUtility.getLocal("gui.launcherBase.name");
+        return new TextComponentTranslation("gui.launcherBase.name");
     }
 
     protected Pos applyInaccuracy(Pos target)
