@@ -362,13 +362,13 @@ gui.launcherCruise.targetToClose=目标过近!
 gui.launcherCruise.noRoom=3x3的空间必须为空!
 gui.launcherCruise.statusReady=准备就绪!
 
-## Chat warning if user tries to fire by hand, %1 is status message from GUI
-chat.launcher.status=状态: %1
+## Chat warning if user tries to fire by hand, %s is status message from GUI
+chat.launcher.status=状态: %s
 chat.launcher.failedToFire=警告: 状态错误，导弹无法发射
 chat.launcher.toolTargetSet=成功导出坐标数据
 chat.launcher.toolWorldNotMatch=坐标不在同一个世界
 chat.launcher.noTargetInTool=没有坐标数据
-chat.launcher.toolFrequencySet=频率设定为 %1
+chat.launcher.toolFrequencySet=频率设定为 %s
 
 gui.coordinator.name=导弹协调器
 gui.coordinator.sim=路径模拟器

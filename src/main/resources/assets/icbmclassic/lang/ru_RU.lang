@@ -318,13 +318,13 @@ gui.launcherCruise.targetToClose=Цель слишком далеко!
 gui.launcherCruise.noRoom=3на3 не чисто!
 gui.launcherCruise.statusReady=Готовность!
 
-## Chat warning if user tries to fire by hand, %1 is status message from GUI
-chat.launcher.status=Статус: %1
+## Chat warning if user tries to fire by hand, %s is status message from GUI
+chat.launcher.status=Статус: %s
 chat.launcher.failedToFire=Предупреждение не может выстрелить из-за ошибки состояния!
 chat.launcher.toolTargetSet=Данные о цели переданы.
 chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
 chat.launcher.noTargetInTool=Инструмент не содержит никаких данных о цели!
-chat.launcher.toolFrequencySet=Частота установлена на %1
+chat.launcher.toolFrequencySet=Частота установлена на %s
 
 gui.coordinator.name=Координатор ракеты
 gui.coordinator.sim=Симулятор пути

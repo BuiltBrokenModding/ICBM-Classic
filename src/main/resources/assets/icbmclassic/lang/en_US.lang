@@ -367,13 +367,13 @@ gui.launcherCruise.targetToClose=Target to close!
 gui.launcherCruise.noRoom=3x3 not clear!
 gui.launcherCruise.statusReady=Ready!
 
-## Chat warning if user tries to fire by hand, %1 is status message from GUI
-chat.launcher.status=Status: %1
+## Chat warning if user tries to fire by hand, %s is status message from GUI
+chat.launcher.status=Status: %s
 chat.launcher.failedToFire=Warning can not fire missile due to status error!
 chat.launcher.toolTargetSet=Target data transferred from tool.
 chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
 chat.launcher.noTargetInTool=Tool does not contain any target data!
-chat.launcher.toolFrequencySet=Frequency set to %1
+chat.launcher.toolFrequencySet=Frequency set to %s
 
 gui.coordinator.name=Missile Coordinator
 gui.coordinator.sim=Path Simulator

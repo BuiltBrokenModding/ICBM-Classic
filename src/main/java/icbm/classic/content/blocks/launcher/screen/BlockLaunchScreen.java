@@ -67,20 +67,20 @@ public class BlockLaunchScreen extends BlockICBM
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
 
-                        String translation = LanguageUtility.getLocal("chat.launcher.status"); //TODO replace %1 with %s in translation file
-                        translation = translation.replace("%1", screen.getStatus());
+                        String translation = LanguageUtility.getLocal("chat.launcher.status");
+                        translation = translation.replace("%s", screen.getStatus());
                         player.sendMessage(new TextComponentString(translation));
                     }
                 }
                 else if (stack.getItem() instanceof ItemRemoteDetonator)
                 {
                     ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + screen.getFrequency())));
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.getFrequency())));
                 }
                 else if (stack.getItem() instanceof ItemLaserDetonator)
                 {
                     ((ItemLaserDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%1", "" + screen.getFrequency())));
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.getFrequency())));
                 }
                 else if (stack.getItem() instanceof IWorldPosItem)
                 {
