@@ -65,7 +65,10 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void onUpdate()
     {
-
+        if (ticksExisted > 20 * 60 * 5)
+        {
+            setDead();
+        }
     }
 
     @Override

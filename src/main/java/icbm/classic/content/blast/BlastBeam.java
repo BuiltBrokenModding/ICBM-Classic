@@ -7,13 +7,9 @@ import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
-import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,12 +23,26 @@ import java.util.Set;
  */
 public abstract class BlastBeam extends Blast implements IBlastTickable
 {
-    protected Set<EntityFlyingBlock> flyingBLocks = new HashSet<EntityFlyingBlock>();
+    protected final Set<EntityFlyingBlock> flyingBlocks = new HashSet();
+    protected final List<BlockPos> blocksToRemove = new ArrayList();
+
     protected EntityLightBeam lightBeam;
     protected float red, green, blue;
 
-    private boolean firstThread = true;
-    private boolean secondThread = true;
+    private boolean hasDoneSetup = false;
+
+    private boolean hasStartedFirstThread = false;
+    private boolean hasCompletedFirstThread = false;
+
+    private boolean hasGeneratedFlyingBLocks = false;
+
+    private boolean hasStartedSecondThread = false;
+    private boolean hasCompetedSecondThread = false;
+
+    private boolean hasEnabledGravityForFlyingBlocks = false;
+
+    private boolean hasPlacedBlocks = false;
+
     private int secondThreadTimer = 20 * 20;
 
     public BlastBeam()
@@ -40,38 +50,102 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     }
 
     @Override
-    protected void setupBlast()
+    protected boolean doExplode(int callCount)
     {
-        if (!this.world().isRemote)
+        if (!hasDoneSetup)
         {
+            hasDoneSetup = true;
+
+            //Play audio
             ICBMSounds.BEAM_CHARGING.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
 
-            //Basic explsoion
+            //Basic explosion
             //TODO remove basic in favor of thread
             this.world().createExplosion(this.exploder, location.x(), location.y(), location.z(), 4F, true);
-
-            //Run first thread
-            WorkerThreadManager.INSTANCE.addWork(getFirstThread());
 
             //Create beam
             this.lightBeam = new EntityLightBeam(this.world(), location, this.red, this.green, this.blue);
             this.world().spawnEntity(this.lightBeam);
         }
+
+        //Start first thread if not already started
+        if (!hasStartedFirstThread)
+        {
+            hasStartedFirstThread = true;
+            WorkerThreadManager.INSTANCE.addWork(getFirstThread());
+        }
+
+        //When first thread is completed start floating blocks and ticking down to start second thread
+        if (hasCompletedFirstThread && !hasStartedSecondThread)
+        {
+            //Spawn flying blocks
+            if (!hasGeneratedFlyingBLocks)
+            {
+                hasGeneratedFlyingBLocks = true;
+
+                //Edit blocks and queue spawning
+                for (BlockPos blockPos : blocksToRemove)
+                {
+                    final IBlockState state = world.getBlockState(blockPos); //TODO filter what can turn into a flying block
+
+                    //Remove block
+                    if (world.setBlockToAir(blockPos))
+                    {
+                        //Create an spawn
+                        final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
+                        entity.gravity = -entity.gravity;
+                        if (world.spawnEntity(entity))
+                        {
+                            flyingBlocks.add(entity);
+                        }
+                    }
+                }
+
+                blocksToRemove.clear();
+            }
+
+            //Delay second thread start
+            if (secondThreadTimer-- <= 0)
+            {
+                hasStartedSecondThread = true;
+                WorkerThreadManager.INSTANCE.addWork(getSecondThread());
+            }
+        }
+
+        if (hasCompetedSecondThread)
+        {
+            if (!hasEnabledGravityForFlyingBlocks)
+            {
+                hasEnabledGravityForFlyingBlocks = true;
+                flyingBlocks.forEach(entity -> entity.gravity = Math.abs(entity.gravity));
+            }
+
+            if (!hasPlacedBlocks)
+            {
+                hasPlacedBlocks = true;
+                mutateBlocks(blocksToRemove);
+                blocksToRemove.clear();
+            }
+        }
+        return hasPlacedBlocks;
     }
 
     protected IThreadWork getFirstThread()
     {
         return new ThreadWorkBlast((steps, edits) -> collectFlyingBlocks(edits), edits -> {
-            makeBlocksFly(edits);
-            firstThread = false;
+
+            blocksToRemove.addAll(edits);
+            hasGeneratedFlyingBLocks = false;
+            hasCompletedFirstThread = true;
         });
     }
 
     protected IThreadWork getSecondThread()
     {
         return new ThreadWorkBlast((steps, edits) -> collectBlocksToMutate(edits), edits -> {
-            mutateBlocks(edits);
-            secondThread = false;
+            blocksToRemove.addAll(edits);
+            hasPlacedBlocks = false;
+            hasCompetedSecondThread = true;
         });
     }
 
@@ -81,42 +155,9 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         return false;
     }
 
-    protected void makeBlocksFly(final List<BlockPos> edits)
-    {
-        final List<Entity> spawnList = new ArrayList(edits.size());
-
-        //Edit blocks and queue spawning
-        for (BlockPos blockPos : edits)
-        {
-            //Remove block
-            if (world.setBlockToAir(blockPos))
-            //TODO add event to cancel flying blocks
-            //TODO add config to disable flying block generation
-            {
-                final IBlockState state = world.getBlockState(blockPos); //TODO filter what can turn into a flying block
-
-                //Create an spawn
-                final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
-                entity.pitchChange = 50 * this.world().rand.nextFloat(); //TODO unmagic number
-                spawnList.add(entity);
-            }
-        }
-
-        //Spawn entities at the start of the next tick
-        ((WorldServer) world).addScheduledTask(() -> {
-            spawnList.forEach(entity -> {
-                if (this.world().spawnEntity(entity))
-                {
-                    //Track
-                    this.flyingBLocks.add((EntityFlyingBlock) entity);
-                }
-            });
-        });
-    }
-
     public boolean collectBlocksToMutate(List<BlockPos> edits)
     {
-        collectBlocks(edits, (int) getBlastRadius());
+        collectBlocks(edits, (int) getBlastRadius() / 4);
         return false;
     }
 
@@ -154,39 +195,6 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     }
 
     protected abstract void mutateBlocks(List<BlockPos> edits);
-
-    @Override
-    public boolean onBlastTick(int ticksExisted)
-    {
-        if (!this.world().isRemote)
-        {
-            if (!firstThread && secondThread && secondThreadTimer-- <= 0)
-            {
-                //Run second thread
-                WorkerThreadManager.INSTANCE.addWork(getSecondThread());
-            }
-            for (EntityFlyingBlock entity : this.flyingBLocks)
-            {
-                Pos entityPosition = new Pos(entity);
-                Pos centeredPosition = entityPosition.add(this.location.multiply(-1));
-                centeredPosition.rotate(2);
-                Location newPosition = this.location.add(centeredPosition);
-                entity.motionX /= 3;
-                entity.motionY /= 3;
-                entity.motionZ /= 3;
-                entity.addVelocity((newPosition.x() - entityPosition.x()) * 0.5, 0.09, (newPosition.z() - entityPosition.z()) * 0.5);
-                entity.yawChange += 3 * this.world().rand.nextFloat();
-            }
-
-            //End blast
-            if (!isAlive || !firstThread && !secondThread)
-            {
-                onBlastCompleted();
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void onBlastCompleted()

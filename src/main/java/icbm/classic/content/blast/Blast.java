@@ -149,16 +149,19 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
      */
     public boolean onBlastTick(int ticksExisted)
     {
-        //Do setup work
-        doFirstSetup();
-
-        //Do ticks
-        if (isAlive)
+        if(!world.isRemote)
         {
-            if (this.isCompleted() || this.doExplode(callCount++))
+            //Do setup work
+            doFirstSetup();
+
+            //Do ticks
+            if (isAlive)
             {
-                completeBlast();
-                return true;
+                if (this.isCompleted() || this.doExplode(callCount++))
+                {
+                    completeBlast();
+                    return true;
+                }
             }
         }
         return false;
