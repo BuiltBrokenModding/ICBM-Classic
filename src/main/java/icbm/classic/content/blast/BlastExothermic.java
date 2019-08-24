@@ -79,9 +79,9 @@ public class BlastExothermic extends BlastBeam
     }
 
     @Override
-    public void doPostExplode()
+    public void onBlastCompleted()
     {
-        super.doPostExplode();
+        super.onBlastCompleted();
 
         //Change time of day
         if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))

@@ -19,7 +19,6 @@ import icbm.classic.content.blast.BlastEndothermic;
 import icbm.classic.content.blast.BlastExothermic;
 import icbm.classic.content.blast.BlastFire;
 import icbm.classic.content.blast.BlastRedmatter;
-import icbm.classic.content.blast.BlastRegen;
 import icbm.classic.content.blast.BlastShrapnel;
 import icbm.classic.content.blast.BlastSonic;
 import icbm.classic.content.blast.BlastTNT;
@@ -91,14 +90,11 @@ public class ExplosiveInit
                 .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
 
         ExplosiveRefs.SONIC = newEx("sonic", EnumTier.TWO,
-                () -> new BlastSonic(30).setBlastSize(15));
+                () -> new BlastSonic().setBlastSize(15));
 
         ExplosiveRefs.BREACHING = newEx("breaching", EnumTier.TWO,
                 () -> new BlastBreech(7).setBlastSize(2.5));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(), (world, x, y, z) -> 40);
-
-        ExplosiveRefs.REJUVENATION = newEx("rejuvenation", EnumTier.TWO,
-                () -> new BlastRegen().setBlastSize(16));
 
         ExplosiveRefs.THERMOBARIC = newEx("thermobaric", EnumTier.TWO,
                 () -> new BlastNuclear().setEnergy(45).setBlastSize(30));
@@ -126,7 +122,7 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_MISSILE_REGISTRY.setInteractionListener(ExplosiveRefs.ENDER.getRegistryName(), ExplosiveInit::enderMissileCoordSet);
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setActivationListener(ExplosiveRefs.ENDER.getRegistryName(), ExplosiveInit::enderBlockCoordSet);
 
-        ExplosiveRefs.HYPERSONIC = newEx("hypersonic", EnumTier.THREE, () -> new BlastSonic(35).setShockWave().setBlastSize(20)); //TODO find Missile model
+        ExplosiveRefs.HYPERSONIC = newEx("hypersonic", EnumTier.THREE, () -> new BlastSonic().setShockWave().setBlastSize(20)); //TODO find Missile model
 
         //=================== Tier 4
         ExplosiveRefs.ANTIMATTER = newEx("antimatter", EnumTier.FOUR,

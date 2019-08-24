@@ -40,7 +40,7 @@ public class BlastEMP extends Blast
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         if (!world().isRemote)
         {
@@ -181,6 +181,7 @@ public class BlastEMP extends Blast
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
             ICBMSounds.EMP.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
+        return true;
     }
 
     protected float empEntity(Entity entity, float powerEntity, IEMPReceiver receiver)

@@ -2,6 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.NBTConstants;
+import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.lib.transform.vector.Pos;
@@ -13,7 +14,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
-public class BlastChemical extends Blast //TODO recode to separate out sub types
+public class BlastChemical extends Blast implements IBlastTickable //TODO recode to separate out sub types
 {
     public static final int PARTICLES_TO_SPAWN = 200; //TODO maybe add a config?
     public static final int TICKS_BETWEEN_RUNS = 5;
@@ -27,7 +28,7 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
 
     public BlastChemical(int duration, boolean playShortSoundFX)
     {
-        this.duration = duration / this.proceduralInterval();
+        this.duration = duration;
         this.playShortSoundFX = playShortSoundFX;
     }
 
@@ -67,74 +68,81 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
     }
 
     @Override
-    public void doPreExplode()
+    public void setupBlast()
     {
-        super.doPreExplode();
-        if (!this.playShortSoundFX)
-        {
-            ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
-        }
+        super.setupBlast();
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
-        //Trigger effects for user feedback
-        generateGraphicEffect();
-        generateAudioEffect();
-
-        //Only run potion effect application for the following types
-        if (isContagious || isPoisonous || isConfuse)
+        //Play start audio
+        if (callCount == 0 && !this.playShortSoundFX)
         {
-            //TODO scale affect area with time, the graphics do not match the logic
+            ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        }
 
-            if(bounds == null) //just to be sure
-                setEffectBounds();
+        //Do gas effect
+        if (callCount % TICKS_BETWEEN_RUNS == 0)
+        {
+            //Trigger effects for user feedback
+            generateGraphicEffect();
+            generateAudioEffect();
 
-            //Get all living entities
-            List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
-
-            //Loop all entities
-            for (EntityLivingBase entity : allEntities)
+            //Only run potion effect application for the following types
+            if (isContagious || isPoisonous || isConfuse)
             {
-                if(!(entity instanceof EntityPlayer)|| !((EntityPlayer) entity).isCreative())
+                //TODO scale affect area with time, the graphics do not match the logic
+
+                if (bounds == null) //just to be sure
                 {
-                    if (this.isContagious)
-                    {
-                        ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity);
-                    }
+                    setEffectBounds();
+                }
 
-                    if (this.isPoisonous)
-                    {
-                        ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
-                    }
+                //Get all living entities
+                List<EntityLivingBase> allEntities = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
 
-                    if (this.isConfuse)
+                //Loop all entities
+                for (EntityLivingBase entity : allEntities)
+                {
+                    if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
                     {
-                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
-                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
-                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
+                        if (this.isContagious)
+                        {
+                            ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity);
+                        }
+
+                        if (this.isPoisonous)
+                        {
+                            ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
+                        }
+
+                        if (this.isConfuse)
+                        {
+                            entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
+                            entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
+                            entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
+                        }
                     }
                 }
             }
+
+            //Trigger secondary blast which mutates mobs similar to a lightning strike
+            if (this.isMutate)
+            {
+                new BlastMutation()
+                        .setBlastWorld(world())
+                        .setBlastSource(this.exploder)
+                        .setBlastPosition(location.x(), location.y(), location.z())
+                        .setBlastSize(getBlastRadius())
+                        .buildBlast().runBlast(); //TODO trigger from explosive handler
+            }
+
+            //End explosion when we hit life timer
+            return this.callCount > this.duration;
         }
 
-        //Trigger secondary blast which mutates mobs similar to a lightning strike
-        if (this.isMutate)
-        {
-            new BlastMutation()
-            .setBlastWorld(world())
-            .setBlastSource(this.exploder)
-            .setBlastPosition(location.x(), location.y(), location.z())
-            .setBlastSize(getBlastRadius())
-            .buildBlast().runBlast(); //TODO trigger from explosive handler
-        }
-
-        //End explosion when we hit life timer
-        if (this.callCount > this.duration)
-        {
-            this.isAlive = false;
-        }
+        return false;
     }
 
     protected void generateAudioEffect()
@@ -184,12 +192,6 @@ public class BlastChemical extends Blast //TODO recode to separate out sub types
         bounds = new AxisAlignedBB(
                 location.x() - radius, location.y() - radius, location.z() - radius,
                 location.x() + radius, location.y() + radius, location.z() + radius);
-    }
-
-    @Override
-    public int proceduralInterval()
-    {
-        return TICKS_BETWEEN_RUNS;
     }
 
     @Override

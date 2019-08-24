@@ -24,9 +24,9 @@ public class BlastAntimatter extends BlastThreaded
 
     /** Called before an explosion happens */
     @Override
-    public void doPreExplode()
+    public void setupBlast()
     {
-        super.doPreExplode();
+        super.setupBlast();
         ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
@@ -71,9 +71,9 @@ public class BlastAntimatter extends BlastThreaded
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
-        super.doExplode();
+        super.doExplode(callCount);
 
         // TODO: Render antimatter shockwave
         /*
@@ -86,12 +86,13 @@ public class BlastAntimatter extends BlastThreaded
          * distance > this.getRadius() - 1 && worldObj.rand.nextFloat() > 0.5) {
          * ParticleSpawner.spawnParticle("antimatter", worldObj, targetPosition); } } } } } }
          */
+        return false;
     }
 
     @Override
-    public void doPostExplode()
+    public void onBlastCompleted()
     {
-        super.doPostExplode();
+        super.onBlastCompleted();
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 

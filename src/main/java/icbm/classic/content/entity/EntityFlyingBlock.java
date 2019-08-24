@@ -95,7 +95,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     @Override
     public void onUpdate()
     {
-        if (_blockState == null)
+        if (_blockState == null || ticksExisted > 20 * 60)
         {
             this.setDead();
             return;
@@ -109,6 +109,8 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         }
 
         this.motionY -= gravity;
+
+        if(isWet())
 
         if (this.collided)
         {
@@ -129,7 +131,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
             this.pitchChange -= 2;
         }
 
-        if ((this.onGround && this.ticksExisted > 40))
+        if ((this.onGround && this.ticksExisted > 20))
         {
             this.setBlock();
             return;

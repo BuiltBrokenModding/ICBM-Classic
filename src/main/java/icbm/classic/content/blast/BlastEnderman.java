@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.api.explosion.IBlastInit;
+import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
@@ -18,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class BlastEnderman extends Blast
+public class BlastEnderman extends Blast implements IBlastTickable
 {
 
     public static final String NBT_LOCATION = "teleport_target";
@@ -38,7 +39,7 @@ public class BlastEnderman extends Blast
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         if (this.world().isRemote)
         {
@@ -165,16 +166,13 @@ public class BlastEnderman extends Blast
 
         this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F);
 
-        if (this.callCount > this.duration)
-        {
-            this.isAlive = false;
-        }
+        return this.callCount > this.duration;
     }
 
     @Override
-    public void doPostExplode()
+    public void onBlastCompleted()
     {
-        super.doPostExplode();
+        super.onBlastCompleted();
 
         if (!this.world().isRemote)
         {
@@ -185,17 +183,6 @@ public class BlastEnderman extends Blast
                 this.world().spawnEntity(enderman);
             }
         }
-    }
-
-    /**
-     * The interval in ticks before the next procedural call of this explosive
-     *
-     * @return - Return -1 if this explosive does not need proceudral calls
-     */
-    @Override
-    public int proceduralInterval()
-    {
-        return 1;
     }
 
     @Override

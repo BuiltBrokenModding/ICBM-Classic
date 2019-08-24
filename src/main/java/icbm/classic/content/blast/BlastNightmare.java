@@ -11,7 +11,7 @@ import net.minecraft.entity.passive.EntityBat;
 public class BlastNightmare extends Blast
 {
     @Override
-    protected void doExplode()
+    protected boolean doExplode(int callCount)
     {
         if(!world().isRemote)
         {
@@ -42,5 +42,6 @@ public class BlastNightmare extends Blast
             //TODO replace torches with bone torch set for random halloween colors and low light levels
             //TODO have monsters move towards players
         }
+        return true;
     }
 }

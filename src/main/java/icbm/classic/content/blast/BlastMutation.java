@@ -12,7 +12,7 @@ import java.util.List;
 public class BlastMutation extends Blast
 {
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         if (!this.world().isRemote)
         {
@@ -40,6 +40,7 @@ public class BlastMutation extends Blast
                 }
             }
         }
+        return false;
     }
 
     @Override //disable the sound for this explosive

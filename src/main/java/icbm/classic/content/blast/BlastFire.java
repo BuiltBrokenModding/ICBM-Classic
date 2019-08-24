@@ -13,7 +13,7 @@ public class BlastFire extends Blast
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         if (!this.world().isRemote)
         {
@@ -82,5 +82,6 @@ public class BlastFire extends Blast
         }
 
         ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+        return true;
     }
 }

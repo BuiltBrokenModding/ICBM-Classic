@@ -149,9 +149,9 @@ public class BlastNuclear extends BlastThreaded
 
 
     @Override
-    public void doPreExplode()
+    public void setupBlast()
     {
-        super.doPreExplode();
+        super.setupBlast();
         if (this.world() != null)
         {
             if (this.spawnMoreParticles)
@@ -196,9 +196,9 @@ public class BlastNuclear extends BlastThreaded
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
-        super.doExplode();
+        super.doExplode(callCount);
         int r = this.callCount;
 
         if (this.world().isRemote)
@@ -221,12 +221,13 @@ public class BlastNuclear extends BlastThreaded
                 }
             }
         }
+        return false;
     }
 
     @Override
-    public void doPostExplode()
+    public void onBlastCompleted()
     {
-        super.doPostExplode();
+        super.onBlastCompleted();
         if (world() != null && !world().isRemote)
         {
             try

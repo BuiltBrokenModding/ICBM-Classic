@@ -40,19 +40,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     }
 
     @Override
-    protected void doRunBlast()
-    {
-
-    }
-
-    @Override
-    public boolean spawnExplosiveEntity()
-    {
-        return true;
-    }
-
-    @Override
-    protected void doPreExplode()
+    protected void setupBlast()
     {
         if (!this.world().isRemote)
         {
@@ -186,14 +174,14 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
                 entity.motionX /= 3;
                 entity.motionY /= 3;
                 entity.motionZ /= 3;
-                entity.addVelocity((newPosition.x() - entityPosition.x()) * 0.5 * this.proceduralInterval(), 0.09 * this.proceduralInterval(), (newPosition.z() - entityPosition.z()) * 0.5 * this.proceduralInterval());
+                entity.addVelocity((newPosition.x() - entityPosition.x()) * 0.5, 0.09, (newPosition.z() - entityPosition.z()) * 0.5);
                 entity.yawChange += 3 * this.world().rand.nextFloat();
             }
 
             //End blast
             if (!isAlive || !firstThread && !secondThread)
             {
-                doPostExplode();
+                onBlastCompleted();
                 return true;
             }
         }
@@ -201,13 +189,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     }
 
     @Override
-    public void doExplode()
-    {
-
-    }
-
-    @Override
-    protected void doPostExplode()
+    protected void onBlastCompleted()
     {
         ICBMSounds.POWER_DOWN.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
 

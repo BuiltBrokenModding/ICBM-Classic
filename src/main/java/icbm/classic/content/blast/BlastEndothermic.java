@@ -80,9 +80,9 @@ public class BlastEndothermic extends BlastBeam
     }
 
     @Override
-    protected void doPostExplode()
+    protected void onBlastCompleted()
     {
-        super.doPostExplode();
+        super.onBlastCompleted();
 
         //Freeze all nearby entities.
         final List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(location.x() - getBlastRadius(), location.y() - getBlastRadius(), location.z() - getBlastRadius(), location.x() + getBlastRadius(), location.y() + getBlastRadius(), location.z() + getBlastRadius()));

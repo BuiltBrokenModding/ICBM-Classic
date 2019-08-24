@@ -2,6 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
+import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.entity.EntityExplosion;
@@ -27,7 +28,7 @@ import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.List;
 
-public class BlastRedmatter extends Blast
+public class BlastRedmatter extends Blast implements IBlastTickable
 {
     //Constants, do not change as they modify render and effect scales
     public static final float NORMAL_RADIUS = 70;
@@ -63,7 +64,7 @@ public class BlastRedmatter extends Blast
     }
 
     @Override
-    public void doPreExplode()
+    public void setupBlast()
     {
         if (!this.world().isRemote)
         {
@@ -72,7 +73,7 @@ public class BlastRedmatter extends Blast
     }
 
     @Override
-    protected void doPostExplode()
+    protected void onBlastCompleted()
     {
         //Kill host TODO see if this is really needed
         AxisAlignedBB bounds = new AxisAlignedBB(this.x - this.size, this.y - this.size, this.z - this.size, this.x + this.size, this.y + this.size, this.z + this.size);
@@ -93,14 +94,14 @@ public class BlastRedmatter extends Blast
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         if (!this.world().isRemote)
         {
             //Limit life span of the blast
             if (DO_DESPAWN && callCount >= lifeSpan)
             {
-                this.postExplode(); //kill explosion
+                this.completeBlast(); //kill explosion
             }
 
             //Do actions
@@ -117,6 +118,7 @@ public class BlastRedmatter extends Blast
                 ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
             }
         }
+        return false;
     }
 
     protected void doDestroyBlocks()
@@ -323,17 +325,6 @@ public class BlastRedmatter extends Blast
             super("icbm.redmatter");
             this.blastRedmatter = blastRedmatter;
         }
-    }
-
-    /**
-     * The interval in ticks before the next procedural call of this explosive
-     *
-     * @return - Return -1 if this explosive does not need proceudral calls
-     */
-    @Override
-    public int proceduralInterval()
-    {
-        return 1;
     }
 
     @Override

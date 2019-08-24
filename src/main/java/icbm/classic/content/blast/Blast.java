@@ -9,7 +9,6 @@ import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastRestore;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.client.models.ModelICBM;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadExplosion;
 import icbm.classic.content.entity.EntityExplosion;
@@ -21,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +28,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,7 +37,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Prefab for any Explosion/Blast object created
  */
-public abstract class Blast extends Explosion implements IBlastInit, IBlastRestore, IBlastTickable
+public abstract class Blast extends Explosion implements IBlastInit, IBlastRestore
 {
 
     //Thread stuff
@@ -67,7 +63,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
      */
     protected int callCount = 0;
 
-    private boolean preExplode = false;
+    private boolean hasSetupBlast = false;
 
     private boolean hasBuilt = false;
 
@@ -81,27 +77,90 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         super(null, null, 0, 0, 0, 0, false, false);
     }
 
+    @Override
     public IExplosiveData getExplosiveData()
     {
         return explosiveData;
     }
 
     @Override
-    public boolean onBlastTick(int ticksExisted)
+    public BlastState runBlast()
     {
-        if (!preExplode)
+        try
         {
-            preExplode();
-        }
-        else if (ticksExisted % proceduralInterval() == 0)
-        {
-            if (!this.isCompleted())
+            if (!this.world().isRemote)
             {
-                onExplode();
+                //Forge event, allows for interaction and canceling the explosion
+                if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this))
+                {
+                    return BlastState.FORGE_EVENT_CANCEL;
+                }
+
+                //Play audio to confirm explosion triggered
+                playExplodeSound();
+
+                //Start explosion
+                if (this instanceof IBlastTickable)
+                {
+                    if (!this.world().spawnEntity(new EntityExplosion(this)))
+                    {
+                        ICBMClassic.logger().error("Blast#explode() -> Failed to spawn explosion entity to control blast, Blast: " + this);
+                        isAlive = false;
+                        return BlastState.TRIGGERED;
+                    }
+
+                    //Failed to spawn entity
+                    ICBMClassic.logger().error(this + ": Failed to spawn explosive entity to handle ticking");
+                    return BlastState.ERROR;
+                }
+                else
+                {
+                    //Do setup tasks
+                    this.doFirstSetup();
+
+                    //Call explosive, only complete if true
+                    if (this.doExplode(-1))
+                    {
+                        this.completeBlast();
+                    }
+                }
             }
             else
             {
-                postExplode();
+                clientRunBlast();
+            }
+            return BlastState.TRIGGERED;
+        }
+        catch (Exception e)
+        {
+            ICBMClassic.logger().error(this + ": Unexpected error running blast", e);
+            return BlastState.ERROR;
+        }
+    }
+
+    //Handles client only stuff
+    protected void clientRunBlast()
+    {
+
+    }
+
+    /**
+     * Called by ticking explosives
+     *
+     * @param ticksExisted
+     * @return
+     */
+    public boolean onBlastTick(int ticksExisted)
+    {
+        //Do setup work
+        doFirstSetup();
+
+        //Do ticks
+        if (isAlive)
+        {
+            if (this.isCompleted() || this.doExplode(callCount++))
+            {
+                completeBlast();
                 return true;
             }
         }
@@ -109,72 +168,38 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     }
 
     /**
-     * Internal call to run setup code for the blast
-     */
-    protected void doPreExplode()
-    {
-    }
-
-    /**
      * Called to start the blast and run setup code
      */
-    public final void preExplode()
+    public final void doFirstSetup()
     {
-        debugEx(String.format("Blast#preExplode() -> Blast: %s, IsAlive: %s, HasBeenCalledBefore: %s", this, isAlive, preExplode));
-        if (isAlive && !preExplode)
+        if (isAlive && !hasSetupBlast)
         {
-            preExplode = true;
+            hasSetupBlast = true;
             ExplosiveHandler.add(this);
-            this.doPreExplode();
+            this.setupBlast();
         }
     }
 
-    /**
-     * Internal call to run the blast code
-     */
-    @Deprecated
-    protected void doExplode()
+    protected void setupBlast()
     {
-
-    }
-
-    protected void doExplode(int callCount)
-    {
-        doExplode();
     }
 
     /**
-     * Called to trigger the main blast code
+     * Called each tick of the blast
+     *
+     * @param callCount - call count or -1 to indicate this is not a ticking explosive
+     * @return true to finish, false to continue/indicate the blast is doing something external like a thread
      */
-    public final void onExplode()
+    protected boolean doExplode(int callCount)
     {
-        if (!preExplode)
-        {
-            debugEx(String.format("Blast#onExplode() -> preExplode() was never called, Blast: %s, IsAlive: %s, CallCount: %s", this, isAlive, callCount));
-            preExplode();
-        }
-        debugEx(String.format("Blast#onExplode() -> Blast: %s, IsAlive: %s, CallCount: %s", this, isAlive, callCount));
-        if (isAlive)
-        {
-            this.doExplode(callCount++);
-        }
-    }
-
-    /**
-     * Internal call for running post blast code
-     * Do not se the entity or blast dead. This is completed
-     * in the {@link #postExplode()} method.
-     */
-    protected void doPostExplode()
-    {
+        return false;
     }
 
     /**
      * Called to kill the blast and run last min code
      */
-    public final void postExplode()
+    public final void completeBlast()
     {
-        debugEx(String.format("Blast#postExplode() -> Blast: %s, IsAlive: %s", this, isAlive));
         if (isAlive)
         {
             //Mark as dead to prevent blast running
@@ -184,8 +209,17 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
             ExplosiveHandler.remove(this);
 
             //Run post code
-            this.doPostExplode();
+            this.onBlastCompleted();
         }
+    }
+
+    /**
+     * Internal call for running post blast code
+     * Do not se the entity or blast dead. This is completed
+     * in the {@link #completeBlast()} method.
+     */
+    protected void onBlastCompleted()
+    {
     }
 
     /**
@@ -198,7 +232,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     public void onPositionUpdate(double posX, double posY, double posZ)
     {
         setPosition(posX, posY, posZ);
-        debugEx(String.format("Blast#onPositionUpdate(%s, %s, %s) -> position has been updated, Blast: %s", this, posX, posY, posZ));
     }
 
     /**
@@ -242,47 +275,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         ICBMClassic.logger().error("Blast#doExplosionB(" + par1 + ") -> Something called the vanilla explosion method. This is not a supported behavior for ICBM explosions. Blast: " + this, new RuntimeException());
     }
 
-    @Override
-    public BlastState runBlast()
-    {
-        //Forge event, allows for interaction and canceling the explosion
-        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this))
-        {
-            return BlastState.FORGE_EVENT_CANCEL;
-        }
-
-        //Play audio to confirm explosion triggered
-        playExplodeSound();
-
-        //Start explosion
-        if (this.spawnExplosiveEntity())
-        {
-            debugEx("Blast#explode() -> Triggering interval based explosion, Blast: " + this);
-            if (!this.world().isRemote)
-            {
-                if (!this.world().spawnEntity(new EntityExplosion(this)))
-                {
-                    ICBMClassic.logger().error("Blast#explode() -> Failed to spawn explosion entity to control blast, Blast: " + this);
-                    isAlive = false;
-                }
-            }
-        }
-        else
-        {
-            debugEx("Blast#explode() -> Triggering full explosion, Blast: " + this);
-            doRunBlast();
-        }
-
-        return BlastState.TRIGGERED;
-    }
-
-    protected void doRunBlast()
-    {
-        this.preExplode();
-        this.doExplode();
-        this.postExplode();
-    }
-
     protected void playExplodeSound()
     {
         this.world.playSound((EntityPlayer) null,
@@ -301,21 +293,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     public float getBlastRadius()
     {
         return Math.max(3, this.size);
-    }
-
-    /**
-     * The interval in ticks before the next procedural call of this explosive
-     *
-     * @return - Return -1 if this explosive does not need procedural calls
-     */
-    public int proceduralInterval()
-    {
-        return -1;
-    }
-
-    public boolean spawnExplosiveEntity()
-    {
-        return proceduralInterval() > 1;
     }
 
     protected void doDamageEntities(float radius, float power)
@@ -406,18 +383,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     public boolean isMovable()
     {
         return false;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public ModelICBM getRenderModel()
-    {
-        return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public ResourceLocation getRenderResource()
-    {
-        return null;
     }
 
     @Override
@@ -523,14 +488,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     public ThreadExplosion getThread()
     {
         return thread;
-    }
-
-    protected final void debugEx(String msg)
-    {
-        if (ConfigDebug.DEBUG_EXPLOSIVES)
-        {
-            ICBMClassic.logger().info(msg);
-        }
     }
 
     //================================================

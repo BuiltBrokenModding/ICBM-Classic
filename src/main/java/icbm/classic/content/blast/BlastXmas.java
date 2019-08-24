@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.entity.mobs.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +19,7 @@ import java.util.Set;
  *
  * Created by Dark(DarkGuardsman, Robert) on 12/29/2018.
  */
-public class BlastXmas extends Blast
+public class BlastXmas extends Blast implements IBlastTickable
 {
     public int callCountEnd = 20;
 
@@ -30,7 +31,7 @@ public class BlastXmas extends Blast
     }
 
     @Override
-    protected void doExplode(int callCount)
+    protected boolean doExplode(int callCount)
     {
         if (!world.isRemote)
         {
@@ -47,15 +48,10 @@ public class BlastXmas extends Blast
             if (callCount > this.callCountEnd)
             {
                 spawnEntity(zombie ? new EntityXmasZombieBoss(world()) : new EntityXmasSkeletonBoss(world()), x, y + 4, z);
-                this.isAlive = false;
+                return true;
             }
         }
-    }
-
-    @Override
-    public int proceduralInterval()
-    {
-        return 1;
+        return false;
     }
 
     public void generateGround()

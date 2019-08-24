@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.blast.thread.ThreadSmallExplosion;
 import icbm.classic.lib.transform.PosDistanceSorter;
@@ -12,13 +13,13 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 
-public class BlastAntiGravitational extends Blast
+public class BlastAntiGravitational extends Blast implements IBlastTickable
 {
     protected ThreadSmallExplosion thread;
     protected Set<EntityFlyingBlock> flyingBlocks = new HashSet<EntityFlyingBlock>();
 
     @Override
-    public void doPreExplode()
+    public void setupBlast()
     {
         if (!this.world().isRemote)
         {
@@ -30,7 +31,7 @@ public class BlastAntiGravitational extends Blast
     }
 
     @Override
-    public void doExplode() //TODO rewrite entire method
+    public boolean doExplode(int callCount) //TODO rewrite entire method
     {
         int r = this.callCount;
 
@@ -126,30 +127,16 @@ public class BlastAntiGravitational extends Blast
             }
         }
 
-        if (this.callCount > 20 * 120)
-        {
-            this.isAlive = false;
-        }
+        return this.callCount > 20 * 120;
     }
 
     @Override
-    protected void doPostExplode()
+    protected void onBlastCompleted()
     {
         for (EntityFlyingBlock entity : flyingBlocks)
         {
             entity.gravity = 0.045f;
         }
-    }
-
-    /**
-     * The interval in ticks before the next procedural call of this explosive
-     *
-     * @return - Return -1 if this explosive does not need proceudral calls
-     */
-    @Override
-    public int proceduralInterval()
-    {
-        return 1;
     }
 
     @Override

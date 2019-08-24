@@ -29,7 +29,7 @@ public class BlastShrapnel extends Blast
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         if (!world().isRemote)
         {
@@ -67,5 +67,6 @@ public class BlastShrapnel extends Blast
                 }
             }
         }
+        return false;
     }
 }

@@ -15,4 +15,16 @@ public interface IBlastTickable extends IBlast
      * @return true to set dead
      */
     boolean onBlastTick(int ticksExisted);
+
+    /**
+     * Should the tickable blast be controlled
+     * by an explosive entity
+     *
+     * @return
+     */
+    default boolean spawnEntity()
+    {
+        //TODO consider making a method to create the ticking entity (or system) so we can have a different version per explosive
+        return true;
+    }
 }

@@ -18,23 +18,10 @@ import java.util.List;
  */
 public abstract class BlastThreaded extends Blast
 {
+    private boolean hasThreadStarted = false;
+
     public BlastThreaded()
     {
-    }
-
-    @Override
-    protected void doRunBlast()
-    {
-        this.preExplode();
-    }
-
-    @Override
-    protected void doPreExplode()
-    {
-        if (!this.world().isRemote)
-        {
-            WorkerThreadManager.INSTANCE.addWork(getWorkerTask());
-        }
     }
 
     protected IThreadWork getWorkerTask()
@@ -57,21 +44,26 @@ public abstract class BlastThreaded extends Blast
             Collections.sort(edits, new PosDistanceSorter(location, false));
 
             ((WorldServer) world).addScheduledTask(() -> {
-                doExplode();
+                doExplode(-1); //TODO why do we call doExplode instead of like post thread run
                 BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
-                doPostExplode();
+                onBlastCompleted();
             });
         }
     }
 
     @Override
-    protected void doExplode()
+    protected boolean doExplode(int callCount)
     {
-
+        if (!hasThreadStarted)
+        {
+            hasThreadStarted = true;
+            WorkerThreadManager.INSTANCE.addWork(getWorkerTask());
+        }
+        return false;
     }
 
     @Override
-    protected void doPostExplode()
+    protected void onBlastCompleted()
     {
 
     }

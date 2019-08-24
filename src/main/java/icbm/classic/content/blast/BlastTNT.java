@@ -65,7 +65,7 @@ public class BlastTNT extends Blast
     }
 
     @Override
-    public void doExplode()
+    public boolean doExplode(int callCount)
     {
         calculateDamage(); //TODO add listener(s) to control block break and placement
 
@@ -88,6 +88,7 @@ public class BlastTNT extends Blast
 
         //Destroy blocks
         doDestroyBlocks(); //TODO add listener(s) to control block break and placement
+        return true;
     }
 
     /**

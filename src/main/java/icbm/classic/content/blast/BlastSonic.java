@@ -2,6 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadLargeExplosion;
@@ -11,26 +12,24 @@ import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fluids.BlockFluidBase;
+import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class BlastSonic extends Blast
+public class BlastSonic extends Blast implements IBlastTickable
 {
-    private float energy;
     private boolean hasShockWave = false;
 
     public BlastSonic()
     {
 
-    }
-
-    public BlastSonic(float energy)
-    {
-        this.energy = energy;
     }
 
     public Blast setShockWave()
@@ -39,11 +38,8 @@ public class BlastSonic extends Blast
         return this;
     }
 
-    @Override
-    public void doPreExplode()
+    public void firstTick()
     {
-        if (!this.world().isRemote)
-        {
             /* TODO re-add?
             if (this.hasShockWave)
             {
@@ -70,8 +66,8 @@ public class BlastSonic extends Blast
                 }
             } */
 
-            createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), this.energy, this.exploder));
-        }
+        //TODO remove thread
+        createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), getBlastRadius() * 2, this.exploder));
 
         if (this.hasShockWave)
         {
@@ -84,30 +80,30 @@ public class BlastSonic extends Blast
     }
 
     @Override
-    public void doExplode() //TODO Rewrite this entire method
+    public boolean doExplode(int callCount) //TODO Rewrite this entire method
     {
-        int r = this.callCount;
-
-        if (world() != null && !this.world().isRemote)
+        if (callCount <= 0)
         {
-            try
+            firstTick();
+        }
+        final int radius = Math.max(1, this.callCount); //TODO scale off of size & callcout
+        if (callCount % 4 == 0)
+        {
+            if (isThreadCompleted())
             {
-                if (isThreadCompleted())
+                if (!getThreadResults().isEmpty())
                 {
-                    if (!getThreadResults().isEmpty())
+                    final Iterator<BlockPos> it = getThreadResults().iterator();
+                    //TODO rewrite this to not be threaded, instead iterate out each tick and remove X number of blocks
+
+                    while (it.hasNext())
                     {
-                        Iterator<BlockPos> it = getThreadResults().iterator();
+                        final BlockPos targetPosition = it.next();
 
-                        while (it.hasNext())
+                        final double distance = location.distance(targetPosition);
+
+                        if (distance <=  radius)
                         {
-                            BlockPos targetPosition = it.next();
-                            double distance = location.distance(targetPosition);
-
-                            if (distance > r || distance < r - 3)
-                            {
-                                continue;
-                            }
-
                             final IBlockState blockState = world.getBlockState(targetPosition);
                             final Block block = blockState.getBlock();
 
@@ -116,7 +112,7 @@ public class BlastSonic extends Blast
                                 continue;
                             }
 
-                            if (distance < r - 1 || this.world().rand.nextInt(3) > 0)
+                            if (distance < radius - 1 || this.world().rand.nextInt(3) > 0)
                             {
                                 if (block == BlockReg.blockExplosive)
                                 {
@@ -127,100 +123,75 @@ public class BlastSonic extends Blast
                                     this.world().setBlockToAir(targetPosition);
                                 }
 
-                                if (this.world().rand.nextFloat() < 0.3 * (this.getBlastRadius() - r))
+                                if (!(block instanceof BlockFluidBase || block instanceof IFluidBlock)
+                                        && this.world().rand.nextFloat() < 0.3 * (this.getBlastRadius() - radius))
                                 {
-                                    EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
-                                    this.world().spawnEntity(entity);
+                                    final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
                                     entity.yawChange = 50 * this.world().rand.nextFloat();
                                     entity.pitchChange = 100 * this.world().rand.nextFloat();
+
+                                    this.world().spawnEntity(entity);
                                 }
 
                                 it.remove();
                             }
                         }
                     }
-                    else
-                    {
-                        isAlive = false;
-                        if(ConfigDebug.DEBUG_THREADS)
-                        {
-                            String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find blocks to edit. Either thread failed or no valid blocks were found in range." +
-                                            "\nWorld = %s " +
-                                            "\nThread = %s" +
-                                            "\nSize = %s" +
-                                            "\nPos = %s",
-                                    world, getThread(), size, location);
-                            ICBMClassic.logger().error(msg);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                String msg = String.format("BlastSonic#doPostExplode() ->  Unexpected error while running post detonation code " +
-                                "\nWorld = %s " +
-                                "\nThread = %s" +
-                                "\nSize = %s" +
-                                "\nPos = %s",
-                        world, getThread(), size, location);
-                ICBMClassic.logger().error(msg, e);
-            }
-        }
-
-        int radius = 2 * this.callCount;
-        AxisAlignedBB bounds = new AxisAlignedBB(location.x() - radius, location.y() - radius, location.z() - radius, location.x() + radius, location.y() + radius, location.z() + radius);
-        List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
-
-        synchronized (allEntities)
-        {
-            for (Iterator it = allEntities.iterator(); it.hasNext(); )
-            {
-                Entity entity = (Entity) it.next();
-
-                if (entity instanceof IMissile) //TODO why?
-                {
-                    ((IMissile) entity).destroyMissile(true);
-                    break; //TODO why stop looping entities?
                 }
                 else
                 {
-                    double xDifference = entity.posX - location.x();
-                    double zDifference = entity.posZ - location.z();
-
-                    r = (int) this.getBlastRadius();
-                    if (xDifference < 0)
+                    isAlive = false;
+                    if (ConfigDebug.DEBUG_THREADS)
                     {
-                        r = (int) -this.getBlastRadius();
+                        String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find blocks to edit. Either thread failed or no valid blocks were found in range." +
+                                        "\nWorld = %s " +
+                                        "\nThread = %s" +
+                                        "\nSize = %s" +
+                                        "\nPos = %s",
+                                world, getThread(), size, location);
+                        ICBMClassic.logger().error(msg);
                     }
-
-                    entity.motionX += (r - xDifference) * 0.02 * this.world().rand.nextFloat();
-                    entity.motionY += 3 * this.world().rand.nextFloat();
-
-                    r = (int) this.getBlastRadius();
-                    if (zDifference < 0)
-                    {
-                        r = (int) -this.getBlastRadius();
-                    }
-
-                    entity.motionZ += (r - zDifference) * 0.02 * this.world().rand.nextFloat();
                 }
             }
         }
 
-        if (this.callCount > this.getBlastRadius())
-        {
-            this.isAlive = false;
-        }
-    }
+        final int entityEffectRadius = 2 * this.callCount; //TODO scale to radius
+        final AxisAlignedBB bounds = new AxisAlignedBB(
+                location.x() - entityEffectRadius, location.y() - entityEffectRadius, location.z() - entityEffectRadius,
+                location.x() + entityEffectRadius, location.y() + entityEffectRadius, location.z() + entityEffectRadius);
 
-    /**
-     * The interval in ticks before the next procedural call of this explosive
-     *
-     * @return - Return -1 if this explosive does not need proceudral calls
-     */
-    @Override
-    public int proceduralInterval()
-    {
-        return 4;
+        final List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
+        for (Entity entity : allEntities)
+        {
+            if (entity instanceof IMissile)
+            {
+                ((IMissile) entity).destroyMissile(true); //TODO change from guided to dummy fire
+            }
+            else if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
+            {
+                //Get difference
+                double xDelta = entity.posX - location.x();
+                double yDelta = entity.posY - location.y();
+                double zDelta = entity.posZ - location.z();
+
+                //Normalize
+                float distance = MathHelper.sqrt(xDelta * xDelta + yDelta * yDelta + zDelta * zDelta);
+                xDelta = xDelta / (double) distance;
+                yDelta = yDelta / (double) distance;
+                zDelta = zDelta / (double) distance;
+
+                //Scale
+                final double scale = Math.max(0, (1 - (distance / getBlastRadius()))) * 3;
+                xDelta *= scale;
+                yDelta *= scale;
+                zDelta *= scale;
+
+                entity.motionX += xDelta * this.world().rand.nextFloat();
+                entity.motionY += yDelta * this.world().rand.nextFloat();
+                entity.motionZ += zDelta * this.world().rand.nextFloat();
+            }
+        }
+
+        return this.callCount > this.getBlastRadius();
     }
 }
