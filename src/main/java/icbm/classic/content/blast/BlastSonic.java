@@ -102,38 +102,34 @@ public class BlastSonic extends Blast implements IBlastTickable
 
                         final double distance = location.distance(targetPosition);
 
-                        if (distance <=  radius)
+                        //Only act on blocks inside the current radius TODO scale radius separate from ticks so we can control block creation
+                        if (distance <= radius)
                         {
+                            //Remove
+                            it.remove();
+
+                            //Get data
                             final IBlockState blockState = world.getBlockState(targetPosition);
                             final Block block = blockState.getBlock();
 
-                            if (block == Blocks.AIR || blockState.getBlockHardness(world, targetPosition) < 0)
+                            //Only act on movable blocks
+                            if (block != Blocks.AIR && blockState.getBlockHardness(world, targetPosition) >= 0)
                             {
-                                continue;
-                            }
-
-                            if (distance < radius - 1 || this.world().rand.nextInt(3) > 0)
-                            {
+                                //Trigger explosions
                                 if (block == BlockReg.blockExplosive)
                                 {
                                     ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).trigger(false);
                                 }
-                                else
-                                {
-                                    this.world().setBlockToAir(targetPosition);
-                                }
 
+                                //Destroy block
+                                this.world().setBlockToAir(targetPosition);
+
+                                //Create floating block
                                 if (!(block instanceof BlockFluidBase || block instanceof IFluidBlock)
-                                        && this.world().rand.nextFloat() < 0.3 * (this.getBlastRadius() - radius))
+                                        && this.world().rand.nextFloat() < 0.1)
                                 {
-                                    final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), targetPosition, blockState);
-                                    entity.yawChange = 50 * this.world().rand.nextFloat();
-                                    entity.pitchChange = 100 * this.world().rand.nextFloat();
-
-                                    this.world().spawnEntity(entity);
+                                    this.world().spawnEntity(new EntityFlyingBlock(this.world(), targetPosition, blockState));
                                 }
-
-                                it.remove();
                             }
                         }
                     }
@@ -186,9 +182,9 @@ public class BlastSonic extends Blast implements IBlastTickable
                 yDelta *= scale;
                 zDelta *= scale;
 
-                entity.motionX += xDelta * this.world().rand.nextFloat();
-                entity.motionY += yDelta * this.world().rand.nextFloat();
-                entity.motionZ += zDelta * this.world().rand.nextFloat();
+                entity.motionX += xDelta * this.world().rand.nextFloat() * 0.2;
+                entity.motionY += Math.abs(yDelta * this.world().rand.nextFloat()) * 1;
+                entity.motionZ += zDelta * this.world().rand.nextFloat() * 0.2;
             }
         }
 
