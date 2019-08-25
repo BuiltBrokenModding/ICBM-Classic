@@ -90,7 +90,7 @@ public class BlockCruiseLauncher extends BlockICBM
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
                         String translation = LanguageUtility.getLocal("chat.launcher.status");
-                        translation = translation.replace("%1", launcher.getStatus());
+                        translation = translation.replace("%s", launcher.getStatus());
                         player.sendMessage(new TextComponentString(translation));
                     }
                 }
