@@ -108,12 +108,12 @@ public class ExplosiveInit
         ExplosiveRefs.EMP = newEx("emp", EnumTier.THREE,
                 () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50));
 
-        ExplosiveRefs.EXOTHERMIC = newEx("exothermic", EnumTier.THREE, () -> new BlastExothermic().setBlastSize(50));
+        ExplosiveRefs.EXOTHERMIC = newEx("exothermic", EnumTier.THREE, () -> new BlastExothermic().setBlastSize(30));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ExplosiveRefs.EXOTHERMIC.getRegistryName(),
                 (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
                 );
 
-        ExplosiveRefs.ENDOTHERMIC = newEx("endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(50));
+        ExplosiveRefs.ENDOTHERMIC = newEx("endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(30));
         //TODO add ice fuse animation
 
         ExplosiveRefs.ANTI_GRAVITATIONAL = newEx("antigravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));

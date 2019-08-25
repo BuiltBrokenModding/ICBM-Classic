@@ -43,7 +43,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
     private boolean hasPlacedBlocks = false;
 
-    private int secondThreadTimer = 20 * 20;
+    private int secondThreadTimer = 20 * 5;
 
     public BlastBeam()
     {
@@ -151,20 +151,20 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
     public boolean collectFlyingBlocks(List<BlockPos> edits)
     {
-        collectBlocks(edits, (int) Math.max(1, getBlastRadius() / 10));
+        collectBlocks(edits, (int) Math.max(5, getBlastRadius() / 10));
         return false;
     }
 
     public boolean collectBlocksToMutate(List<BlockPos> edits)
     {
-        collectBlocks(edits, (int) getBlastRadius() / 4);
+        collectBlocks(edits, (int) getBlastRadius());
         return false;
     }
 
     //TODO make generic and recycle as a generic collector
     protected void collectBlocks(List<BlockPos> edits, int r)
     {
-        final int rs = r * r;
+        final int radiusSQ = r * r;
         final BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
 
         for (int x = -r; x < r; x++)
@@ -173,8 +173,8 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             {
                 for (int z = -r; z < r; z++)
                 {
-                    final double dist = (x * x + y * y + z * z);
-                    if (dist <= rs && this.world().rand.nextInt(2) > 0)
+                    final double distanceSQ = (x * x + y * y + z * z);
+                    if (distanceSQ <= radiusSQ)
                     {
                         //Update position
                         blockPos.setPos(location.x() + x, location.y() + y, location.z() + z);
