@@ -94,11 +94,17 @@ public class BlastBreach extends BlastTNT
                         Block block = state.getBlock();
                         if (!block.isAir(state, world(), p.toBlockPos()))
                         {
-                            float e = block.getExplosionResistance(world(), p.toBlockPos(), this.exploder, this);
-                            if (e < 40)
+                            // get explosion resistance, take the square root of it and then half that to make it weaker
+                            double e = Math.sqrt(block.getExplosionResistance(world(), p.toBlockPos(), this.exploder, this)) / 2;
+
+                            if (e <= energy) // if there is energy (force) left to break it
                             {
-                                energy -= e;
-                                getAffectedBlockPositions().add(p.toBlockPos());
+                                energy -= e; // reduce the remaining energy
+                                getAffectedBlockPositions().add(p.toBlockPos()); // mark block for destroying
+                            }
+                            else
+                            {
+                                break; // block blast from continuing
                             }
                         }
                         if (energy <= 0)
