@@ -95,6 +95,18 @@ public class ICBMCreativeTab extends CreativeTabs
         NonNullList<ItemStack> temp_list = NonNullList.create();
         item.getSubItems(this, temp_list);
 
+        if(item instanceof ItemBlockExplosive || item instanceof ItemMissile || item instanceof ItemBombCart)
+        {
+            temp_list.sort((e1, e2) -> {
+                final EnumTier tier1 = ICBMClassicHelpers.getExplosive(e1.getItemDamage(), true).getTier();
+                final EnumTier tier2 = ICBMClassicHelpers.getExplosive(e2.getItemDamage(), true).getTier();
+
+                if(tier1 != null && tier2 != null)
+                    return tier1.ordinal() - tier2.ordinal();
+                else return 0;
+            });
+        }
+
         //Merge into list with null check
         mergeIntoList(item, list, temp_list);
     }
