@@ -47,7 +47,7 @@ public class MissileTrackerWorld extends WorldSavedData
         missileList = new LinkedList<>();
         currentLoadedChunks = new LinkedList<>();
         missileSpawnList = new LinkedList<>();
-        ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE, null);
+        ForgeChunkManager.setForcedChunkLoadingCallback(ICBMClassic.INSTANCE, (tickets, world) -> {});
     }
 
     /**
