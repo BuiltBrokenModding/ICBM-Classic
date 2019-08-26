@@ -1,7 +1,9 @@
 package icbm.classic.content.blocks.explosive;
 
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
@@ -48,6 +50,13 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     @Override
     public void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
+        final IExplosiveData data = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
+        if (data != null)
+        {
+            final EnumTier tierdata = data.getTier();
+            list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
+        }
+
         if (stack.getItemDamage() == ExplosiveRefs.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
         {
             ///Shhh!!! tell no one this exists, tis a surprise

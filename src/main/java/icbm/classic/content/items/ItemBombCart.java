@@ -1,13 +1,10 @@
 package icbm.classic.content.items;
 
-import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.block.BlockRailBase;
@@ -137,14 +134,7 @@ public class ItemBombCart extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        IExplosiveData data = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
-        if(data != null)
-        {
-            final EnumTier tierdata = data.getTier();
-            list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.ordinal());
-
-            //TODO change over to a hook
-            ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
-        }
+        //TODO change over to a hook
+        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 }

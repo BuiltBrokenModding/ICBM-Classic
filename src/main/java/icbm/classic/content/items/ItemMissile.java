@@ -1,13 +1,10 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.api.EnumTier;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
@@ -86,14 +83,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        final IExplosiveData data = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
-        if (data != null)
-        {
-            final EnumTier tierdata = data.getTier();
-            list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
-
-            //TODO add hook
-            ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
-        }
+        //TODO add hook
+        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 }
