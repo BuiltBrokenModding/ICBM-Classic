@@ -34,43 +34,57 @@ public class MissileTrackerHandler
      */
     public static void simulateMissile(EntityMissile missile)
     {
-        getHandler(missile.world, true).simulateMissile(missile);
+        getOrCreateHandler(missile.world, true).simulateMissile(missile);
     }
 
     /**
      * Gets the handler for the world
      * <p>
      * Will load the handler if save data exists in the world. If not
-     * it will create a new handler for use.
+     * it will create a new handler for use. May return NULL if
+     * create is false and the handler was not found!
      *
      * @param world  - world instance
      * @param create - build handler if missing
      * @return handler
      */
-    public static MissileTrackerWorld getHandler(World world, boolean create)
+    public static MissileTrackerWorld getOrCreateHandler(World world, boolean create)
     {
+        String trackerName = DATA_SAVE_ID + world.provider.getDimension();
         //Get handler from map
         if (dimToHandlerMap.containsKey(world.provider.getDimension()))
         {
             return dimToHandlerMap.get(world.provider.getDimension());
         }
 
-        //Try to get handler from world save
-        MissileTrackerWorld instance = (MissileTrackerWorld) world.getPerWorldStorage().getOrLoadData(MissileTrackerWorld.class, DATA_SAVE_ID);
-
         if (create)
         {
+            //Try to get handler from world save
+            MissileTrackerWorld instance = (MissileTrackerWorld) world.getPerWorldStorage().getOrLoadData(MissileTrackerWorld.class, trackerName);
+
             //If missing create
             if (instance == null)
             {
-                instance = new MissileTrackerWorld(DATA_SAVE_ID);
-                world.getPerWorldStorage().setData(DATA_SAVE_ID, instance);
+                instance = new MissileTrackerWorld(trackerName);
+                world.getPerWorldStorage().setData(trackerName, instance);
             }
 
             dimToHandlerMap.put(world.provider.getDimension(), instance);
+            return instance;
         }
+        else
+        {
+            return dimToHandlerMap.getOrDefault(world.provider.getDimension(), null);
+        }
+    }
 
-        return instance;
+    @SubscribeEvent
+    public static void onWorldLoad(WorldEvent.Load event)
+    {
+        if (!event.getWorld().isRemote)
+        {
+            getOrCreateHandler(event.getWorld(),true); // load handlers, to make missiles continue their flight
+        }
     }
 
     @SubscribeEvent
@@ -78,7 +92,7 @@ public class MissileTrackerHandler
     {
         if (!event.getWorld().isRemote)
         {
-            MissileTrackerWorld handler = getHandler(event.getWorld(), false);
+            MissileTrackerWorld handler = getOrCreateHandler(event.getWorld(), false);
             if (handler != null)
             {
                 handler.destroy();
@@ -92,7 +106,7 @@ public class MissileTrackerHandler
     {
         if (!event.world.isRemote)
         {
-            MissileTrackerWorld handler = getHandler(event.world, false);
+            MissileTrackerWorld handler = getOrCreateHandler(event.world, false);
             if (handler != null)
             {
                 handler.onWorldTick(event.world);
