@@ -94,7 +94,7 @@ public class ExplosiveInit
 
         ExplosiveRefs.BREACHING = newEx("breaching", EnumTier.TWO,
                 () -> new BlastBreach(7).setBlastSize(2.5));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(), (world, x, y, z) -> 40);
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(), (world, x, y, z) -> 0);
 
         ExplosiveRefs.THERMOBARIC = newEx("thermobaric", EnumTier.TWO,
                 () -> new BlastNuclear().setEnergy(45).setBlastSize(30));
