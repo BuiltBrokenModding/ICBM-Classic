@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MFaSheDi0 extends ModelBase
+public class ModelTier1LauncherBottom extends ModelBase
 {
     // fields
     ModelRenderer Shape1;
@@ -14,7 +14,7 @@ public class MFaSheDi0 extends ModelBase
     ModelRenderer Shape8;
     ModelRenderer Shape13;
 
-    public MFaSheDi0()
+    public ModelTier1LauncherBottom()
     {
         textureWidth = 128;
         textureHeight = 128;

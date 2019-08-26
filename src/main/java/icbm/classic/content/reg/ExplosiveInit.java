@@ -11,7 +11,7 @@ import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.blast.BlastAntiGravitational;
-import icbm.classic.content.blast.BlastBreech;
+import icbm.classic.content.blast.BlastBreach;
 import icbm.classic.content.blast.BlastChemical;
 import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.content.blast.BlastEnderman;
@@ -93,7 +93,7 @@ public class ExplosiveInit
                 () -> new BlastSonic().setBlastSize(15));
 
         ExplosiveRefs.BREACHING = newEx("breaching", EnumTier.TWO,
-                () -> new BlastBreech(7).setBlastSize(2.5));
+                () -> new BlastBreach(7).setBlastSize(2.5));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(), (world, x, y, z) -> 40);
 
         ExplosiveRefs.THERMOBARIC = newEx("thermobaric", EnumTier.TWO,

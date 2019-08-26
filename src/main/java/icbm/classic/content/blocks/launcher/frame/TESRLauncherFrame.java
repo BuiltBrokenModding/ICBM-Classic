@@ -1,7 +1,7 @@
 package icbm.classic.content.blocks.launcher.frame;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.MFaSheJia;
+import icbm.classic.client.models.ModelLauncerFrame;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class TESRLauncherFrame extends TileEntitySpecialRenderer<TileLauncherFrame>
 {
-    public static final MFaSheJia MODEL = new MFaSheJia();
+    public static final ModelLauncerFrame MODEL = new ModelLauncerFrame();
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
 
     @Override

@@ -21,14 +21,14 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
     public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/launcher_1.png");
     public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/launcher_2.png");
 
-    public static final MFaSheDi0 modelBase0 = new MFaSheDi0();
-    public static final MFaSheDiRail0 modelRail0 = new MFaSheDiRail0();
+    public static final ModelTier1LauncherBottom modelBase0 = new ModelTier1LauncherBottom();
+    public static final ModelTier1LauncherRail modelRail0 = new ModelTier1LauncherRail();
 
-    public static final MFaSheDi1 modelBase1 = new MFaSheDi1();
-    public static final MFaSheDiRail1 modelRail1 = new MFaSheDiRail1();
+    public static final ModelTier2LauncherBottom modelBase1 = new ModelTier2LauncherBottom();
+    public static final ModelTier2LauncherRail modelRail1 = new ModelTier2LauncherRail();
 
-    public static final MFaSheDi2 modelBase2 = new MFaSheDi2();
-    public static final MFaSheDiRail2 modelRail2 = new MFaSheDiRail2();
+    public static final ModelTier3LauncherBottom modelBase2 = new ModelTier3LauncherBottom();
+    public static final ModelTier3LauncherRail modelRail2 = new ModelTier3LauncherRail();
 
     @Override
     public void render(TileLauncherBase launcher, double x, double y, double z, float partialTicks, int destroyStage, float alpha)

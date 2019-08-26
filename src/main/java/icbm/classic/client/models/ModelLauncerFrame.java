@@ -5,13 +5,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MFaSheJia extends ModelBase
+public class ModelLauncerFrame extends ModelBase
 {
     // fields
     ModelRenderer Shape18;
     ModelRenderer Shape19;
 
-    public MFaSheJia()
+    public ModelLauncerFrame()
     {
         textureWidth = 128;
         textureHeight = 128;

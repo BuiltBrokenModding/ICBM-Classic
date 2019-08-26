@@ -5,13 +5,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MFaSheShiMuo0 extends ModelBase
+public class ModelTier1LauncherScreen extends ModelBase
 {
     // fields
     ModelRenderer Shape4;
     ModelRenderer Shape5;
 
-    public MFaSheShiMuo0()
+    public ModelTier1LauncherScreen()
     {
         textureWidth = 128;
         textureHeight = 128;

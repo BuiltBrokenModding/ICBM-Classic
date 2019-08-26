@@ -1,9 +1,10 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.client.models.MFaSheShiMuo0;
-import icbm.classic.client.models.MFaSheShiMuo1;
-import icbm.classic.client.models.MFaSheShiMuo2;
+import icbm.classic.client.models.ModelRocketLauncher;
+import icbm.classic.client.models.ModelTier1LauncherScreen;
+import icbm.classic.client.models.ModelTier2LauncherScreen;
+import icbm.classic.client.models.ModelTier3LauncherScreen;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -21,9 +22,9 @@ public class TESRLauncherScreen extends TileEntitySpecialRenderer<TileLauncherSc
     public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_1.png");
     public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_2.png");
 
-    public static final MFaSheShiMuo0 model0 = new MFaSheShiMuo0();
-    public static final MFaSheShiMuo1 model1 = new MFaSheShiMuo1();
-    public static final MFaSheShiMuo2 model2 = new MFaSheShiMuo2();
+    public static final ModelTier1LauncherScreen model0 = new ModelTier1LauncherScreen();
+    public static final ModelTier2LauncherScreen model1 = new ModelTier2LauncherScreen();
+    public static final ModelTier3LauncherScreen model2 = new ModelTier3LauncherScreen();
 
     @Override
     @SideOnly(Side.CLIENT)

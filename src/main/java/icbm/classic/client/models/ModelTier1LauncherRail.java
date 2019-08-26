@@ -5,7 +5,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MFaSheDiRail0 extends ModelBase
+public class ModelTier1LauncherRail extends ModelBase
 {
     // fields
     ModelRenderer Shape7;
@@ -20,7 +20,7 @@ public class MFaSheDiRail0 extends ModelBase
     ModelRenderer Shape16;
     ModelRenderer Shape17;
 
-    public MFaSheDiRail0()
+    public ModelTier1LauncherRail()
     {
         textureWidth = 128;
         textureHeight = 128;

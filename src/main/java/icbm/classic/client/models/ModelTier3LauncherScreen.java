@@ -5,7 +5,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MFaSheShiMuo2 extends ModelBase
+public class ModelTier3LauncherScreen extends ModelBase
 {
     // fields
     ModelRenderer Shape27;
@@ -13,7 +13,7 @@ public class MFaSheShiMuo2 extends ModelBase
     ModelRenderer Shape30;
     ModelRenderer Shape31;
 
-    public MFaSheShiMuo2()
+    public ModelTier3LauncherScreen()
     {
         textureWidth = 256;
         textureHeight = 256;

@@ -10,11 +10,11 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 
-public class BlastBreech extends BlastTNT
+public class BlastBreach extends BlastTNT
 {
     private int depth;
 
-    public BlastBreech(int depth)
+    public BlastBreach(int depth)
     {
         this.damageToEntities = 13;
         this.depth = depth;
