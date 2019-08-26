@@ -101,7 +101,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public IEMPReceiver capabilityEMP;
     public final IMissile capabilityMissile = new CapabilityMissile(this);
 
-    final int maxPreLaunchSmokeTimer = 50;
+    final int maxPreLaunchSmokeTimer = 20;
     public int preLaunchSmokeTimer = maxPreLaunchSmokeTimer;
     public int launcherHasAirBelow = -1;
     private LinkedList<Pos> lastSmokePos = new LinkedList<>();
@@ -209,6 +209,11 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public void onUpdate()
     {
+        if (preLaunchSmokeTimer > 0)
+        {
+            this.prevRotationPitch = 90;
+        }
+
         super.onUpdate();
 
         if (targetPos != null && targetHeight >= 0)
@@ -408,7 +413,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             }
             else
             {
-                motionY = 0.015f;
+                motionY = 0.001f;
                 this.lockHeight -= motionY;
                 posY = launcherPos.y() + 2.2f;
                 this.prevRotationPitch = 90f;
@@ -462,7 +467,6 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return false;
     }
 
-    @Override
     protected void decreaseMotion()
     {
         if (this.missileType != MissileFlightType.PAD_LAUNCHER && ticksInAir > 1000)
@@ -545,7 +549,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                     {
                         if (launcherHasAirBelow == -1)
                         {
-                            BlockPos bp = new BlockPos(Math.signum(this.posX) * Math.floor(Math.abs(this.posX)), this.posY - 3, Math.signum(this.posZ) * Math.floor(Math.abs(this.posZ)));
+                            BlockPos bp = new BlockPos(Math.signum(this.posX) * Math.floor(Math.abs(this.posX)), this.posY - 2, Math.signum(this.posZ) * Math.floor(Math.abs(this.posZ)));
                             launcherHasAirBelow = world.isAirBlock(bp) ? 1 : 0;
                         }
                         Pos position = new Pos((IPos3D) this);
@@ -562,17 +566,25 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                         double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
                         position = position.add(x, y, z);
 
-                        if (preLaunchSmokeTimer > 0 && ticksInAir <= maxPreLaunchSmokeTimer)
+                        if (preLaunchSmokeTimer > 0 && ticksInAir <= maxPreLaunchSmokeTimer) // pre-launch phase
                         {
+                            Pos launcherSmokePosition = position.sub(0, 2, 0);
                             if (launcherHasAirBelow == 1)
                             {
-                                position = position.sub(0, 2, 0);
                                 Pos velocity = new Pos(0, -1, 0).addRandom(world.rand, 0.5);
                                 for (int i = 0; i < 10; i++)
                                 {
-                                    ICBMClassic.proxy.spawnSmoke(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
-                                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+                                    // smoke below the launcher
+                                    ICBMClassic.proxy.spawnSmoke(this.world, launcherSmokePosition, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
+                                    launcherSmokePosition = launcherSmokePosition.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                                 }
+                            }
+
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Pos velocity = new Pos(0, 0.25, 0).addRandom(world.rand, 0.125);
+                                // smoke below the launcher
+                                ICBMClassic.proxy.spawnSmoke(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 5, 40);
                             }
                         }
                         else
