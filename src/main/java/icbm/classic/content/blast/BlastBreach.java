@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 
 public class BlastBreach extends BlastTNT
@@ -51,6 +52,12 @@ public class BlastBreach extends BlastTNT
                 else
                 {
                     direction = this.exploder.getAdjustedHorizontalFacing();
+
+                    // fixes explosion going backwards when the missile flies east or west.
+                    if (direction == EnumFacing.EAST || direction == EnumFacing.WEST)
+                    {
+                        direction = direction.getOpposite();
+                    }
                 }
             }
 
@@ -61,8 +68,12 @@ public class BlastBreach extends BlastTNT
                 {
                     //Reset energy per line
                     float energy = 4 * size + depth * 3;
+
+                    //reduce power from center outwards
+                    double centerDst = Math.sqrt(h*h + w*w);
+                    energy*=1-centerDst/4;
+
                     //TODO convert magic numbers into defined logic
-                    //TODO reduce by distance from center
 
                     //Loop depth
                     for (int i = 0; i < this.depth; i++)
@@ -95,7 +106,7 @@ public class BlastBreach extends BlastTNT
                         if (!block.isAir(state, world(), p.toBlockPos()))
                         {
                             // get explosion resistance, take the square root of it and then half that to make it weaker
-                            double e = Math.sqrt(block.getExplosionResistance(world(), p.toBlockPos(), this.exploder, this)) / 2;
+                            double e = Math.sqrt(block.getExplosionResistance(world(), p.toBlockPos(), this.exploder, this)) / 4;
 
                             if (e <= energy) // if there is energy (force) left to break it
                             {
@@ -107,6 +118,9 @@ public class BlastBreach extends BlastTNT
                                 break; // block blast from continuing
                             }
                         }
+                        energy *= 0.65; // reduce the blast power by a percentage for every block it travelled
+                        energy--;
+
                         if (energy <= 0)
                         {
                             break;
