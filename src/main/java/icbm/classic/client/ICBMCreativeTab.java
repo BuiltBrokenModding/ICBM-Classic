@@ -1,6 +1,11 @@
 package icbm.classic.client;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.EnumTier;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
+import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.block.Block;
@@ -28,9 +33,11 @@ public class ICBMCreativeTab extends CreativeTabs
         super(name);
     }
 
+    //call during FMLInitializationEvent as registries need to be frozen for this
     public void init()
     {
         definedTabItemsInOrder.clear();
+        //define items in order
         orderItem(BlockReg.blockLaunchBase);
         orderItem(BlockReg.blockLaunchScreen);
         orderItem(BlockReg.blockLaunchSupport);
@@ -55,6 +62,21 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(ItemReg.itemMissile);
         orderItem(ItemReg.itemGrenade);
         orderItem(ItemReg.itemBombCart);
+
+        //Collect any non-defined items
+        for (Item item : Item.REGISTRY) //registries are frozen during FMLInitializationEvent, can safely iterate
+        {
+            if (item != null)
+            {
+                for (CreativeTabs tab : item.getCreativeTabs())
+                {
+                    if (tab == this && !definedTabItemsInOrder.contains(item))
+                    {
+                        orderItem(item);
+                    }
+                }
+            }
+        }
     }
 
     private void orderItem(Block item)
@@ -70,23 +92,8 @@ public class ICBMCreativeTab extends CreativeTabs
     @Override
     public void displayAllRelevantItems(NonNullList<ItemStack> list)
     {
-        //Insert defined items in order
+        //Insert items in order
         definedTabItemsInOrder.forEach(item -> collectSubItems(item, list));
-
-        //Collect any non-defined items
-        for (Item item : Item.REGISTRY)
-        {
-            if (item != null)
-            {
-                for (CreativeTabs tab : item.getCreativeTabs())
-                {
-                    if (tab == this && !definedTabItemsInOrder.contains(item))
-                    {
-                        collectSubItems(item, list);
-                    }
-                }
-            }
-        }
     }
 
     protected void collectSubItems(Item item, NonNullList<ItemStack> list)
