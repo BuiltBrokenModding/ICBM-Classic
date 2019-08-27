@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Used by Exothermic and Endothermic explosions.
@@ -23,6 +24,7 @@ import java.util.Set;
  */
 public abstract class BlastBeam extends Blast implements IBlastTickable
 {
+
     protected final Set<EntityFlyingBlock> flyingBlocks = new HashSet();
     protected final List<BlockPos> blocksToRemove = new ArrayList();
 
@@ -132,7 +134,8 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
     protected IThreadWork getFirstThread()
     {
-        return new ThreadWorkBlast((steps, edits) -> collectFlyingBlocks(edits), edits -> {
+        return new ThreadWorkBlast((steps, edits) -> collectFlyingBlocks(edits), edits ->
+        {
 
             blocksToRemove.addAll(edits);
             hasGeneratedFlyingBLocks = false;
@@ -142,56 +145,51 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
     protected IThreadWork getSecondThread()
     {
-        return new ThreadWorkBlast((steps, edits) -> collectBlocksToMutate(edits), edits -> {
+        return new ThreadWorkBlast((steps, edits) -> collectBlocksToMutate(edits), edits ->
+        {
             blocksToRemove.addAll(edits);
             hasPlacedBlocks = false;
             hasCompetedSecondThread = true;
         });
     }
 
-    public boolean collectFlyingBlocks(List<BlockPos> edits)
+    public boolean collectFlyingBlocks(Consumer<BlockPos> edits)
     {
         collectBlocks(edits, (int) Math.max(5, getBlastRadius() / 10));
         return false;
     }
 
-    public boolean collectBlocksToMutate(List<BlockPos> edits)
+    public boolean collectBlocksToMutate(Consumer<BlockPos> edits)
     {
         collectBlocks(edits, (int) getBlastRadius());
         return false;
     }
 
     //TODO make generic and recycle as a generic collector
-    protected void collectBlocks(List<BlockPos> edits, int r)
+    protected void collectBlocks(Consumer<BlockPos> edits, int r)
     {
         final int radiusSQ = r * r;
         final BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
 
-        for (int x = -r; x < r; x++)
+        BlastHelpers.loopInRadius(r, (x, y, z) ->
         {
-            for (int y = -r; y < r; y++)
+            final double distanceSQ = (x * x + y * y + z * z);
+            if (distanceSQ <= radiusSQ)
             {
-                for (int z = -r; z < r; z++)
+                //Update position
+                blockPos.setPos(location.x() + x, location.y() + y, location.z() + z);
+
+                //Get block
+                final IBlockState state = world.getBlockState(blockPos);
+                final Block block = state.getBlock();
+
+                //Validate TODO rework to not access blockstates, instead just collect positions
+                if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
                 {
-                    final double distanceSQ = (x * x + y * y + z * z);
-                    if (distanceSQ <= radiusSQ)
-                    {
-                        //Update position
-                        blockPos.setPos(location.x() + x, location.y() + y, location.z() + z);
-
-                        //Get block
-                        final IBlockState state = world.getBlockState(blockPos);
-                        final Block block = state.getBlock();
-
-                        //Validate
-                        if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
-                        {
-                            edits.add(blockPos.toImmutable());
-                        }
-                    }
+                    edits.accept(blockPos.toImmutable());
                 }
             }
-        }
+        });
     }
 
     protected abstract void mutateBlocks(List<BlockPos> edits);
