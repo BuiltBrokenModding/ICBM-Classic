@@ -51,7 +51,7 @@ public class BlastEnderman extends Blast implements IBlastTickable
                 {
                     for (int y = -r; y < r; y++)
                     {
-                        Location targetPosition = location.add(new Pos(x, y, z));
+                        Location targetPosition = location.add(new Pos(x, y, z)); //TODO replace with mutable blockpos
 
                         double distance = targetPosition.distance(location);
 
@@ -176,7 +176,7 @@ public class BlastEnderman extends Blast implements IBlastTickable
 
         if (!this.world().isRemote)
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++) //TODO check for safe location to spawn
             {
                 EntityEnderman enderman = new EntityEnderman(world());
                 enderman.setPosition(this.location.x(), this.location.y(), this.location.z());

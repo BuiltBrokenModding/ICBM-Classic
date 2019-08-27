@@ -12,6 +12,7 @@ import net.minecraft.world.WorldServer;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 10/8/2018.
@@ -34,7 +35,7 @@ public abstract class BlastThreaded extends Blast
      * @param edits - list of blocks to edit
      * @return true to run another iteration
      */
-    public abstract boolean doRun(int loops, List<BlockPos> edits);
+    public abstract boolean doRun(int loops, Consumer<BlockPos> edits);
 
 
     protected void onWorkerThreadComplete(List<BlockPos> edits)

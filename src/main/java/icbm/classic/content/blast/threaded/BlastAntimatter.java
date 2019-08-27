@@ -1,6 +1,7 @@
 package icbm.classic.content.blast.threaded;
 
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.blast.BlastRedmatter;
 import net.minecraft.block.state.IBlockState;
@@ -8,9 +9,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BlastAntimatter extends BlastThreaded
 {
+
     private boolean destroyBedrock;
 
     public BlastAntimatter()
@@ -22,7 +25,9 @@ public class BlastAntimatter extends BlastThreaded
         this.destroyBedrock = destroyBedrock;
     }
 
-    /** Called before an explosion happens */
+    /**
+     * Called before an explosion happens
+     */
     @Override
     public void setupBlast()
     {
@@ -34,10 +39,12 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public void destroyBlock(BlockPos blockPos)
     {
-        IBlockState blockState = world.getBlockState(blockPos);
+        final IBlockState blockState = world.getBlockState(blockPos);
         if (!blockState.getBlock().isAir(blockState, world, blockPos))
         {
             final double dist = location.distance(blockPos);
+            //TODO change to not use sqrt for better performance
+            //TODO maybe do the random in the thread?
             if (dist < this.getBlastRadius() - 1 || world().rand.nextFloat() > 0.7)
             {
                 if (blockState.getBlockHardness(this.world(), blockPos) >= 0 || destroyBedrock)
@@ -49,24 +56,10 @@ public class BlastAntimatter extends BlastThreaded
     }
 
     @Override
-    public boolean doRun(int loops, List<BlockPos> edits)
+    public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
-        for (int x = (int) -this.getBlastRadius(); x < this.getBlastRadius(); x++)
-        {
-            for (int y = (int) -this.getBlastRadius(); y < this.getBlastRadius(); y++)
-            {
-                for (int z = (int) -this.getBlastRadius(); z < this.getBlastRadius(); z++)
-                {
-                    final BlockPos blockPos = new BlockPos(location.xi() + x, location.yi() + y, location.zi() + z);
-                    final double dist = location.distance(blockPos);
-
-                    if (dist < this.getBlastRadius())
-                    {
-                        edits.add(blockPos);
-                    }
-                }
-            }
-        }
+        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->
+                edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z)));
         return false;
     }
 

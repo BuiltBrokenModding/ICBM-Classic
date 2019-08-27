@@ -16,10 +16,10 @@ import java.util.function.Consumer;
 public class ThreadWorkBlast implements IThreadWork
 {
     public List<BlockPos> editPositions = new ArrayList();
-    public BiFunction<Integer, List<BlockPos>, Boolean> runFunction;
+    public BiFunction<Integer, Consumer<BlockPos>, Boolean> runFunction;
     public Consumer<List<BlockPos>> onComplete;
 
-    public ThreadWorkBlast(BiFunction<Integer, List<BlockPos>, Boolean> runFunction, Consumer<List<BlockPos>> onComplete)
+    public ThreadWorkBlast(BiFunction<Integer, Consumer<BlockPos>, Boolean> runFunction, Consumer<List<BlockPos>> onComplete)
     {
         this.runFunction = runFunction;
         this.onComplete = onComplete;
@@ -28,7 +28,7 @@ public class ThreadWorkBlast implements IThreadWork
     @Override
     public boolean doRun(int steps)
     {
-        return runFunction.apply(steps, editPositions);
+        return runFunction.apply(steps, (blockPos) -> editPositions.add(blockPos));
     }
 
     @Override
