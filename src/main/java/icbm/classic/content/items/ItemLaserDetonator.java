@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import com.sun.istack.internal.NotNull;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
@@ -12,12 +13,15 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -45,20 +49,43 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         this.setNoRepair();
     }
 
+    private final int maxCooldownTicks = 20;
+    private int cooldownRemaining = 0;
+
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
         ItemStack stack = player.getHeldItem(handIn);
-        if (world.isRemote)
+        if (world.isRemote && cooldownRemaining <= 0)
         {
+            cooldownRemaining = maxCooldownTicks;
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
-            TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
-            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
+            if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) // ignore failed raytraces
             {
-                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
-            }
+                TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
+                if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
+                {
+                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+                }
+            }// TODO else: add message stating that the raytrace failed
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+    }
+
+    @Override
+    public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entityLiving) {
+
+        if (world.isRemote) // when releasing the right mouse button, reset the cooldown to allow immediate reuse of item
+            cooldownRemaining = 0;
+        return super.onItemUseFinish(stack, world, entityLiving);
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+        if (world.isRemote && cooldownRemaining > 0) // when holding the right mouse button, trigger item use every second
+            cooldownRemaining--;
+
+        super.onUpdate(stack, world, entity, itemSlot, isSelected);
     }
 
     @Override

@@ -302,7 +302,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
 
     @Override
     public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data) //TODO pack as message object
-    {
+    {// TODO make sure other launchers don't trigger when a laser designator is used
         if (isServer())
         {
             //Floor frequency as we do not care about sub ranges
