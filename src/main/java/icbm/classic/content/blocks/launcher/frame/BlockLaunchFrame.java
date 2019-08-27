@@ -16,6 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -110,6 +111,24 @@ public class BlockLaunchFrame extends BlockICBM
             return ((TileLauncherFrame) tile).onPlayerRightClick(playerIn, hand, playerIn.getHeldItem(hand));
         }
         return false;
+    }
+
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
+    {
+        TileEntity te = world.getTileEntity(pos);
+
+        if(te instanceof TileLauncherFrame)
+        {
+            switch(((TileLauncherFrame)te)._tier)
+            {
+                case TWO: return new ItemStack(this, 1, EnumTier.TWO.ordinal());
+                case THREE: return new ItemStack(this, 1, EnumTier.THREE.ordinal());
+                default: return new ItemStack(this, 1, EnumTier.ONE.ordinal());
+            }
+        }
+
+        return new ItemStack(this, 1, EnumTier.ONE.ordinal());
     }
 
     @Override
