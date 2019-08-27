@@ -72,9 +72,9 @@ public class BlockConcrete extends Block
         switch (blockState.getValue(TYPE_PROP))
         {
             case COMPACT:
-                return 38;
+                return 280;
             case REINFORCED:
-                return 48;
+                return 2800; //obsidian is 2000
             default:
             case NORMAL:
                 return 28;
