@@ -23,7 +23,7 @@ public abstract class EntityICBM extends Entity implements IWorldPosition
     /** Does the entity have HP to take damage. */
     protected boolean hasHealth = false;
 
-    private static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityLivingBase.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityBase.class, DataSerializers.FLOAT);
 
     public EntityICBM(World world)
     {
