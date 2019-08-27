@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -50,7 +51,7 @@ public class BlastNuclear extends BlastThreaded
     }
 
     @Override
-    public boolean doRun(int loops, List<BlockPos> edits)
+    public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
         //How many steps to go per rotation
         final int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.getBlastRadius()));
@@ -116,7 +117,7 @@ public class BlastNuclear extends BlastThreaded
                             //If we still have power, break the block
                             if (power > 0f)
                             {
-                                edits.add(blockPos);
+                                edits.accept(blockPos);
                             }
                         }
                     }
@@ -239,12 +240,13 @@ public class BlastNuclear extends BlastThreaded
                 //Place radio active blocks
                 if (this.isRadioactive)
                 {
-                    new BlastRot(this.energy)
+                    new BlastRot()
                     .setBlastWorld(world())
                     .setBlastSource(this.exploder)
                     .setBlastPosition(location.x(), location.y(), location.z())
                     .setBlastSize(this.getBlastRadius())
                     .buildBlast().runBlast();  //TODO trigger from explosive handler
+
                     new BlastMutation()
                     .setBlastWorld(world())
                     .setBlastSource(this.exploder)
