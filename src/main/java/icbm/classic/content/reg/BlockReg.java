@@ -77,14 +77,14 @@ public class BlockReg
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
         */
 
-        GameRegistry.registerTileEntity(TileEntityExplosive.class, ICBMClassic.PREFIX + "explosive");
-        GameRegistry.registerTileEntity(TileEMPTower.class, ICBMClassic.PREFIX + "emptower");
-        GameRegistry.registerTileEntity(TileRadarStation.class, ICBMClassic.PREFIX + "radarstation");
-        GameRegistry.registerTileEntity(TileLauncherFrame.class, ICBMClassic.PREFIX + "launcherframe");
-        GameRegistry.registerTileEntity(TileLauncherBase.class, ICBMClassic.PREFIX + "launcherbase");
-        GameRegistry.registerTileEntity(TileLauncherScreen.class, ICBMClassic.PREFIX + "launcherscreen");
-        GameRegistry.registerTileEntity(TileMulti.class, ICBMClassic.PREFIX + "multiblock");
-        GameRegistry.registerTileEntity(TileEntityBattery.class, ICBMClassic.PREFIX + "batterybox");
-        GameRegistry.registerTileEntity(TileCruiseLauncher.class, ICBMClassic.PREFIX + "cruiseLauncher");
+        GameRegistry.registerTileEntity(TileEntityExplosive.class, new ResourceLocation(ICBMClassic.DOMAIN, "explosive"));
+        GameRegistry.registerTileEntity(TileEMPTower.class, new ResourceLocation(ICBMClassic.DOMAIN, "emptower"));
+        GameRegistry.registerTileEntity(TileRadarStation.class, new ResourceLocation(ICBMClassic.DOMAIN, "radarstation"));
+        GameRegistry.registerTileEntity(TileLauncherFrame.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherframe"));
+        GameRegistry.registerTileEntity(TileLauncherBase.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherbase"));
+        GameRegistry.registerTileEntity(TileLauncherScreen.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherscreen"));
+        GameRegistry.registerTileEntity(TileMulti.class, new ResourceLocation(ICBMClassic.DOMAIN, "multiblock"));
+        GameRegistry.registerTileEntity(TileEntityBattery.class, new ResourceLocation(ICBMClassic.DOMAIN, "batterybox"));
+        GameRegistry.registerTileEntity(TileCruiseLauncher.class, new ResourceLocation(ICBMClassic.DOMAIN, "cruiseLauncher"));
     }
 }
