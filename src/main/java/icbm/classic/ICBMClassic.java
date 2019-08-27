@@ -323,7 +323,7 @@ public final class ICBMClassic
     }
 
     @Mod.EventHandler
-    public void serverStarting(FMLServerStoppingEvent event)
+    public void serverStopping(FMLServerStoppingEvent event)
     {
         WorkerThreadManager.INSTANCE.killThreads();
     }
