@@ -125,7 +125,7 @@ public class ClientReg
         newItemModel(ItemReg.itemDefuser, 0, "inventory", "");
         newItemModel(ItemReg.itemRadarGun, 0, "inventory", "");
         newItemModel(ItemReg.itemRemoteDetonator, 0, "inventory", "");
-        newItemModel(ItemReg.itemLaserDesignator, 0, "inventory", "");
+        newItemModel(ItemReg.itemLaserDetonator, 0, "inventory", "");
         newItemModel(ItemReg.itemRocketLauncher, 0, "inventory", "");
         newItemModel(ItemReg.itemBattery, 0, "inventory", "");
 

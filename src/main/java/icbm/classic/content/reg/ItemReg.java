@@ -36,7 +36,7 @@ public class ItemReg
     @ObjectHolder(ICBMClassic.PREFIX + "remoteDetonator")
     public static Item itemRemoteDetonator;
     @ObjectHolder(ICBMClassic.PREFIX + "laserDetonator")
-    public static Item itemLaserDesignator;
+    public static Item itemLaserDetonator;
     @ObjectHolder(ICBMClassic.PREFIX + "rocketLauncher")
     public static Item itemRocketLauncher;
     @ObjectHolder(ICBMClassic.PREFIX + "grenade")
