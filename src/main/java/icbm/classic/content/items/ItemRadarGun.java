@@ -68,13 +68,26 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
+        if (player.isSneaking()) // also clear the gps coord if the play is shift-rightclicking in the air
+        {
+            if (!world.isRemote) {
+                ItemStack stack = player.getHeldItem(handIn);
+                stack.setTagCompound(null);
+                stack.setItemDamage(0);
+                LanguageUtility.addChatToPlayer(player, "gps.cleared.name");
+                player.inventoryContainer.detectAndSendChanges();
+            }
+            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
+        }
+
         if (world.isRemote)
         {
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
-            final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
-            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
-            {
-                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+            if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) { // TODO add message saying that the gps target is out of range.
+                final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
+                if (!(ICBMClassicHelpers.isLauncher(tileEntity, null))) {
+                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+                }
             }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
@@ -111,30 +124,40 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
         else
         {
             Location storedLocation = getLocation(stack);
-            if(storedLocation == null)
+
+
+            if (ICBMClassicHelpers.isLauncher(tile, facing))
             {
-                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.null.name");
-                return EnumActionResult.SUCCESS;
-            }
-            else if (!storedLocation.isAboveBedrock())
-            {
-                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.name");
-                return EnumActionResult.SUCCESS;
-            }
-            else if(storedLocation.world != world)
-            {
-                LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.world.name");
-                return EnumActionResult.SUCCESS;
-            }
-            else if (ICBMClassicHelpers.isLauncher(tile, facing))
-            {
-                final IMissileLauncher launcher = ICBMClassicHelpers.getLauncher(tile, facing);
-                if(launcher != null)
+                if(storedLocation == null)
                 {
-                    launcher.setTarget(storedLocation.x(), storedLocation.y(), storedLocation.z());
-                    LanguageUtility.addChatToPlayer(player, "gps.data.transferred.name");
+                    LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.null.name");
                     return EnumActionResult.SUCCESS;
                 }
+                else if (!storedLocation.isAboveBedrock())
+                {
+                    LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.name");
+                    return EnumActionResult.SUCCESS;
+                }
+                else if(storedLocation.world != world)
+                {
+                    LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.world.name");
+                    return EnumActionResult.SUCCESS;
+                }
+                else
+                {
+                    final IMissileLauncher launcher = ICBMClassicHelpers.getLauncher(tile, facing);
+                    if (launcher != null)
+                    {
+                        launcher.setTarget(storedLocation.x(), storedLocation.y(), storedLocation.z());
+                        LanguageUtility.addChatToPlayer(player, "gps.data.transferred.name");
+                        return EnumActionResult.SUCCESS;
+                    }
+                }
+            }
+            else // otherwise, save the currently clicked block as a location
+            {
+                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(pos));
+                return EnumActionResult.SUCCESS;
             }
         }
         return EnumActionResult.PASS;
