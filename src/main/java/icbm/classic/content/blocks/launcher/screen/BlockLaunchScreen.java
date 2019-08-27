@@ -172,11 +172,10 @@ public class BlockLaunchScreen extends BlockICBM
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
-        IBlockState state = super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
         ItemStack stack = placer.getHeldItem(hand);
 
-        //Set tier
-        return state.withProperty(TIER_PROP, EnumTier.get(stack.getItemDamage()));
+        //set tier and horizontal facing. latter seems to be the other way around as for other BlockICBMs, so super is not called and the rotation is set here instead
+        return getDefaultState().withProperty(TIER_PROP, EnumTier.get(stack.getItemDamage())).withProperty(ROTATION_PROP, placer.getHorizontalFacing().getOpposite());
     }
 
     @Override
