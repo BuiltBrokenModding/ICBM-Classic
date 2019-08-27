@@ -188,7 +188,7 @@ public class ClientReg
 
             //Add item state
             //IBlockState state = BlockReg.blockExplosive.getDefaultState().withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
-           // String properties_string = getPropertyString(state.getProperties());
+            // String properties_string = getPropertyString(state.getProperties());
             itemBlockModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         //Block state mapper
@@ -275,12 +275,14 @@ public class ClientReg
 
     protected static void newBlockModel(Block block, int meta, String varient, String sub)
     {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName() + sub, varient));
+        if(block != null) //incase the block was disabled via config or doesn't exist due to something else
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), meta, new ModelResourceLocation(block.getRegistryName() + sub, varient));
     }
 
     protected static void newItemModel(Item item, int meta, String varient, String sub)
     {
-        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName() + sub, varient));
+        if(item != null) //incase the item was disabled via config or doesn't exist due to something else
+            ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName() + sub, varient));
     }
 
     public static String getPropertyString(Map<IProperty<?>, Comparable<?>> values, String... extrasArgs)
