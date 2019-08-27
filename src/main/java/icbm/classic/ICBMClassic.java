@@ -258,9 +258,15 @@ public final class ICBMClassic
 
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
+        ItemReg.itemIngot.registerOreNames();
+        ItemReg.itemPlate.registerOreNames("iron");
+        ItemReg.itemCircuit.registerOreNames();
+        ItemReg.itemWire.registerOreNames();
         OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
         OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
 
+        //update tab
+        ICBMClassic.CREATIVE_TAB.itemStack = new ItemStack(ItemReg.itemMissile);
         /** Potion Effects */ //TODO move to effect system
         PoisonToxin.INSTANCE = MobEffects.POISON;//new PoisonToxin(true, 5149489, "toxin");
         PoisonContagion.INSTANCE = MobEffects.POISON;//new PoisonContagion(false, 5149489, "virus");
