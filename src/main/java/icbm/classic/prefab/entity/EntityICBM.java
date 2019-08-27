@@ -18,14 +18,14 @@ import net.minecraft.world.World;
  * Base entity class to be shared by most entities
  * Created by robert on 1/24/2015.
  */
-public abstract class EntityBase extends Entity implements IWorldPosition
+public abstract class EntityICBM extends Entity implements IWorldPosition
 {
     /** Does the entity have HP to take damage. */
     protected boolean hasHealth = false;
 
     private static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityLivingBase.class, DataSerializers.FLOAT);
 
-    public EntityBase(World world)
+    public EntityICBM(World world)
     {
         super(world);
     }
