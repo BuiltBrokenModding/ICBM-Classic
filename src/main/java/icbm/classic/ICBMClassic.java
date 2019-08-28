@@ -10,8 +10,6 @@ import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.reg.ExplosiveInit;
-import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.entity.missile.CapabilityMissile;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
@@ -20,6 +18,9 @@ import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.datafix.EntityExplosiveDataFixer;
+import icbm.classic.datafix.EntityGrenadeDataFixer;
+import icbm.classic.datafix.TileExplosivesDataFixer;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.energy.system.EnergySystem;
@@ -194,9 +195,9 @@ public final class ICBMClassic
 
         //Register data fixers
         modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMClassic.DOMAIN, 1);
-        EntityExplosive.registerDataFixer();
-        EntityGrenade.registerDataFixer();
-        modFixs.registerFix(FixTypes.BLOCK_ENTITY, new ExplosivesDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
+        modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);

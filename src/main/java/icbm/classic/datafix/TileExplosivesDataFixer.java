@@ -1,19 +1,20 @@
-package icbm.classic;
+package icbm.classic.datafix;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
-public class ExplosivesDataFixer implements IFixableData
+public class TileExplosivesDataFixer implements IFixableData
 {
     @Override
     public NBTTagCompound fixTagCompound(NBTTagCompound nbt)
     {
         String id = nbt.getString(NBTConstants.ID);
 
-        if(id.equals("icbmclassic:explosive"))
+        if(id.equals(ICBMClassic.PREFIX + "explosive"))
         {
             NBTTagCompound newNbt = new NBTTagCompound();
             int explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);

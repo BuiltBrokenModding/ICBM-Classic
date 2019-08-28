@@ -1,19 +1,14 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.EntityRefs;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
@@ -23,8 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.datafix.FixTypes;
-import net.minecraft.util.datafix.IFixableData;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -127,53 +120,6 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     {
         nbt.setByte(NBTConstants.FUSE, (byte) this.fuse);
         nbt.setTag(NBTConstants.EXPLOSIVE_STACK, getExplosiveCap().serializeNBT());
-    }
-
-    public static void registerDataFixer()
-    {
-        ICBMClassic.modFixs.registerFix(FixTypes.ENTITY, new IFixableData()
-        {
-            @Override
-            public int getFixVersion()
-            {
-                return 1;
-            }
-
-            @Override
-            public NBTTagCompound fixTagCompound(NBTTagCompound compound)
-            {
-                //Match to entity, we get all entity tags as input
-                if (compound.hasKey(NBTConstants.ID) && compound.getString(NBTConstants.ID).equalsIgnoreCase(EntityRefs.BLOCK_EXPLOSIVE.toString()))
-                {
-                    //Fix explosive ID save
-                    if (compound.hasKey(NBTConstants.EXPLOSIVE_ID))
-                    {
-                        int id = compound.getInteger(NBTConstants.EXPLOSIVE_ID);
-
-                        //Generate stack so we can serialize off it
-                        final ItemStack stack = new ItemStack(BlockReg.blockExplosive, 1, id);
-
-                        //Handle custom explosive data
-                        final IExplosive ex = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-                        if(ex instanceof CapabilityExplosiveStack)
-                        {
-                            if (compound.hasKey(NBTConstants.DATA))
-                            {
-                                ((CapabilityExplosiveStack)ex).setCustomData(compound.getCompoundTag(NBTConstants.DATA));
-                            }
-                        }
-
-                        //Remove old tags
-                        compound.removeTag(NBTConstants.EXPLOSIVE_ID);
-                        compound.removeTag(NBTConstants.DATA);
-
-                        //Save stack
-                        compound.setTag(NBTConstants.EXPLOSIVE_STACK, stack.serializeNBT());
-                    }
-                }
-                return compound;
-            }
-        });
     }
 
     @Override
