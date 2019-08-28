@@ -54,7 +54,7 @@ public class MissileTrackerWorld extends WorldSavedData
      * Called to simulate the missile
      * @param missile
      */
-    protected void simulateMissile(EntityMissile missile)
+    void simulateMissile(EntityMissile missile)
     {
         if(ConfigDebug.DEBUG_MISSILE_TRACKER)
             ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
@@ -115,19 +115,19 @@ public class MissileTrackerWorld extends WorldSavedData
                     if (chunkLoadTicket != null) //If we are allowed to load chunks, lets load the chunk the target location is in and the adjacent ones
                     {
                         ChunkPos currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, (int) missile.targetPos.z() >> 4);
-                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        forceChunk(currentLoadedChunk, chunkLoadTicket);
 
                         currentLoadedChunk = new ChunkPos(1 + ((int) missile.targetPos.x() >> 4), (int) missile.targetPos.z() >> 4);
-                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        forceChunk(currentLoadedChunk, chunkLoadTicket);
 
                         currentLoadedChunk = new ChunkPos(-1 + ((int) missile.targetPos.x() >> 4), (int) missile.targetPos.z() >> 4);
-                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        forceChunk(currentLoadedChunk, chunkLoadTicket);
 
                         currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, 1 + ((int) missile.targetPos.z() >> 4));
-                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        forceChunk(currentLoadedChunk, chunkLoadTicket);
 
                         currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, -1 + ((int) missile.targetPos.z() >> 4));
-                        forceChunk(currentLoadedChunk, unloadChunkCooldown, chunkLoadTicket);
+                        forceChunk(currentLoadedChunk, chunkLoadTicket);
 
                     }
                     else
@@ -219,22 +219,23 @@ public class MissileTrackerWorld extends WorldSavedData
         //Spawn entity
         missile.world().spawnEntity(missile);
 
-        System.out.println("Missile spawned from simulator: " + missile);
+        if(ConfigDebug.DEBUG_MISSILE_TRACKER)
+            ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Missile spawned by missile tracker: " + missile);
     }
 
     //Helper method for forcing a chunk (chunkloading)
-    private void forceChunk(ChunkPos chunkPos, Integer forceTime, ForgeChunkManager.Ticket ticket)
+    private void forceChunk(ChunkPos chunkPos, ForgeChunkManager.Ticket ticket)
     {
-        for (int i = 0; i < currentLoadedChunks.size(); i++)
+        for (int i = 0; i < currentLoadedChunks.size(); i++) // check if the chunk that should be loaded is loaded already. If so then just reset the remaining time.
         {
             if (currentLoadedChunks.get(i).chunkPos == chunkPos)
             {
-                currentLoadedChunks.set(i, new LoadedChunkPair(chunkPos, forceTime));
+                currentLoadedChunks.set(i, new LoadedChunkPair(chunkPos, unloadChunkCooldown));
                 return;
             }
         }
 
-        LoadedChunkPair pair = new LoadedChunkPair(chunkPos, forceTime);
+        LoadedChunkPair pair = new LoadedChunkPair(chunkPos, unloadChunkCooldown);
 
         if(!MinecraftForge.EVENT_BUS.post(new MissileChunkEvent.Load(pair, ticket)))
         {
@@ -291,17 +292,13 @@ public class MissileTrackerWorld extends WorldSavedData
         return nbt;
     }
 
-    // save data and then clear buffers
+    // clear buffers
     public void destroy()
     {
         this.missileList.clear();
         this.missileSpawnList.clear();
 
-        //if(chunkLoadTicket != null)
-        //{
-        //    ForgeChunkManager.releaseTicket(chunkLoadTicket);
         chunkLoadTicket = null;
-        //}
         currentLoadedChunks.clear();
     }
 }

@@ -19,10 +19,10 @@ import java.util.HashMap;
 public class MissileTrackerHandler
 {
     /** World save data key */
-    public static final String DATA_SAVE_ID = ICBMClassic.DOMAIN + "MissileTracker";
+    private static final String DATA_SAVE_ID = ICBMClassic.DOMAIN + "MissileTracker";
 
     /** Map of handlers per dimension <DimensionID, Handler> */
-    public static final HashMap<Integer, MissileTrackerWorld> dimToHandlerMap = new HashMap();
+    private static final HashMap<Integer, MissileTrackerWorld> dimToHandlerMap = new HashMap<>();
 
     /**
      * Called to simulate the missile
