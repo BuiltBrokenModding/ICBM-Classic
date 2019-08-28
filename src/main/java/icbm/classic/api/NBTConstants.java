@@ -1,12 +1,7 @@
 package icbm.classic.api;
 
 import icbm.classic.ICBMClassic;
-import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Level;
-import sun.rmi.runtime.Log;
-
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 
@@ -19,7 +14,7 @@ public class NBTConstants
      * FAILING THIS CHECK WILL RESULT IN A CRASH!
      *
      */
-    public static void EnsureThatAllTagNamesAreDistinct()
+    public static void ensureThatAllTagNamesAreDistinct()
     {
         Field[] fields = NBTConstants.class.getDeclaredFields(); // grab all fields
         LinkedList<String> alreadySeen = new LinkedList<>(); // keep track of all already seen fields

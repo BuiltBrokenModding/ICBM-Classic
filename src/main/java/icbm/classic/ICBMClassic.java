@@ -183,7 +183,7 @@ public final class ICBMClassic
     public void preInit(FMLPreInitializationEvent event)
     {
         //Verify that our nbt tag strings are distinct. If this fails then this will crash Minecraft!
-        NBTConstants.EnsureThatAllTagNamesAreDistinct();
+        NBTConstants.ensureThatAllTagNamesAreDistinct();
 
         proxy.preInit();
         EnergySystem.register(new EnergySystemFE());
