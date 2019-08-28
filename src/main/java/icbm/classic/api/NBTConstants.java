@@ -1,7 +1,46 @@
 package icbm.classic.api;
 
+import icbm.classic.ICBMClassic;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
+import net.minecraftforge.common.MinecraftForge;
+import org.apache.logging.log4j.Level;
+import sun.rmi.runtime.Log;
+
+import java.lang.reflect.Field;
+import java.util.LinkedList;
+
 public class NBTConstants
 {
+    /* Verifies that the nbt tag constants are distinct (only exist once).
+     * This ensures that save files don't get corrupted. (Imagine writing a byte-array and an integer with the
+     * same name and then trying to load that again)
+     *
+     * FAILING THIS CHECK WILL RESULT IN A CRASH!
+     *
+     */
+    public static void EnsureThatAllTagNamesAreDistinct()
+    {
+        Field[] fields = NBTConstants.class.getDeclaredFields(); // grab all fields
+        LinkedList<String> alreadySeen = new LinkedList<>(); // keep track of all already seen fields
+        for (Field field : fields) { // iterate the fields
+            try {
+                String value = (String)field.get(null); // get the field's value
+                if (alreadySeen.contains(value)) { // check if an equal value was seen before
+                    // crash the game to prevent save corruptions
+                    ICBMClassic.logger().log(Level.FATAL, "FAILED AND NBT INIT CHECK! This is a severe problem as it can cause save data to get messed up. Because of this the game is going to crash now. Please report this! Conflicting value: " + value);
+                    throw new RuntimeException( "ICBM Classic failed an nbt init check! Fatal conflict: " + value);
+                }
+                else
+                {
+                    alreadySeen.add(value); // add value to check against it later
+                }
+            } catch (IllegalAccessException ex) {
+                ICBMClassic.logger().log(Level.ERROR, "Illegal access exception thrown while checking nbt tags!" + ex.toString());
+            }
+        }
+    }
+
     public static final String ACCELERATION = "acceleration";
     public static final String ADDITIONAL_MISSILE_DATA = "additionalMissileData";
     public static final String ALARM_RADIUS = "alarmBanJing"; //ban jing = radius

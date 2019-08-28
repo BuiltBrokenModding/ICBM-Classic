@@ -2,6 +2,7 @@ package icbm.classic;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
 import icbm.classic.client.ICBMCreativeTab;
@@ -180,6 +181,9 @@ public final class ICBMClassic
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        //Verify that our nbt tag strings are distinct. If this fails then this will crash Minecraft!
+        NBTConstants.EnsureThatAllTagNamesAreDistinct();
+
         proxy.preInit();
         EnergySystem.register(new EnergySystemFE());
 
