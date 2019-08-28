@@ -38,7 +38,7 @@ public class NBTConstants
 
     public static final String ACCELERATION = "acceleration";
     public static final String ADDITIONAL_MISSILE_DATA = "additionalMissileData";
-    public static final String ALARM_RADIUS = "alarmBanJing"; //ban jing = radius
+    public static final String ALARM_RADIUS = "alarmRadius";
     public static final String BLAST = "blast";
     public static final String BLAST_DATA = "blastData";
     public static final String BLAST_POS_Y = "blastPosY";
@@ -95,7 +95,7 @@ public class NBTConstants
     public static final String PUSH_TYPE = "pushType";
     public static final String RED = "red";
     public static final String ROLL = "roll";
-    public static final String SAFETY_RADIUS = "safetyBanJing"; //ban jing = radius
+    public static final String SAFETY_RADIUS = "safetyRadius";
     public static final String SHAKE = "shake";
     public static final String SHOOTER_UUID = "Shooter-UUID";
     @Deprecated //legacy

@@ -21,6 +21,7 @@ import icbm.classic.content.reg.ItemReg;
 import icbm.classic.datafix.EntityExplosiveDataFixer;
 import icbm.classic.datafix.EntityGrenadeDataFixer;
 import icbm.classic.datafix.TileExplosivesDataFixer;
+import icbm.classic.datafix.TileRadarStationDataFixer;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.energy.system.EnergySystem;
@@ -198,6 +199,7 @@ public final class ICBMClassic
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
+        modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileRadarStationDataFixer());
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
