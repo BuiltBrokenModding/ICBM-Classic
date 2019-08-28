@@ -23,7 +23,6 @@ public final class ExplosiveRefs
     public static IExplosiveData CONTAGIOUS;
     public static IExplosiveData SONIC;
     public static IExplosiveData BREACHING;
-    public static IExplosiveData REJUVENATION;
     public static IExplosiveData THERMOBARIC;
 
     //=================== Tier 3

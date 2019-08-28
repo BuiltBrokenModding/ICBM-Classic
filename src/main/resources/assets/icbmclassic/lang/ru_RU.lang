@@ -106,7 +106,6 @@ icbm.explosive.fragmentation.name=Осколочная бомба
 icbm.explosive.contagious.name=Заразная бомба
 icbm.explosive.sonic.name=Звуковая бомба
 icbm.explosive.breaching.name=Разрушительная бомба
-icbm.explosive.rejuvenation.name=Омолаживающая бомба
 icbm.explosive.thermobaric.name=Термобарическая бомба
 
 icbm.explosive.nuclear.name=Ядерная бомба
@@ -137,7 +136,6 @@ icbm.explosive.fragmentation.info=Разрушает пейзаж высокос
 icbm.explosive.contagious.info=Вы когда-нибудь слышали о чуме?
 icbm.explosive.sonic.info=Кто должен быть ниндзя, прокрасться после такого шума
 icbm.explosive.breaching.info=Когда вам нужна дверь
-icbm.explosive.rejuvenation.info=Вас не обвинят в использовании ракет, если воронок нет...
 icbm.explosive.thermobaric.info=Мини-ядерное оружие в банке или, по крайней мере, так близко, как Север может получить
 
 icbm.explosive.nuclear.info=Здравствуй! Я ядерный.
@@ -180,7 +178,6 @@ icbm.missile.fragmentation.name=Дробленная ракета
 icbm.missile.contagious.name=Инфекционная ракета
 icbm.missile.sonic.name=Звуковая ракета
 icbm.missile.breaching.name=Разрушительная ракета
-icbm.missile.rejuvenation.name=Восстанавливающая ракета
 icbm.missile.thermobaric.name=Термобарическая ракета
 
 icbm.missile.nuclear.name=Ядерная ракета
@@ -225,7 +222,6 @@ icbm.minecart.fragmentation.name=Фрагментирующая вагонетк
 icbm.minecart.contagious.name=Заразная вагонетка
 icbm.minecart.sonic.name=Звуковая вагонетка
 icbm.minecart.breaching.name=Разрушительная вагонетка
-icbm.minecart.rejuvenation.name=Восстанавливающая вагонетка
 icbm.minecart.thermobaric.name=Термобарическая вагонетка
 
 icbm.minecart.nuclear.name=Ядерная вагонетка

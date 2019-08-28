@@ -121,7 +121,6 @@ explosive.icbmclassic:fragmentation.name=Fragmentation Explosives
 explosive.icbmclassic:contagious.name=Contagious Explosives
 explosive.icbmclassic:sonic.name=Sonic Explosives
 explosive.icbmclassic:breaching.name=Breaching Explosives
-explosive.icbmclassic:rejuvenation.name=Rejuvenation Explosives
 explosive.icbmclassic:thermobaric.name=Thermobaric Explosives
 
 explosive.icbmclassic:nuclear.name=Nuclear Explosives
@@ -151,7 +150,6 @@ explosive.icbmclassic:fragmentation.info=Devastates the landscape, with high vel
 explosive.icbmclassic:contagious.info=Have you ever heard the plague?
 explosive.icbmclassic:sonic.info=Who needs to be a ninja to, sneak in after that much noise
 explosive.icbmclassic:breaching.info=When you need a door
-explosive.icbmclassic:rejuvenation.info=You can't be blamed for damage, if there's none to be found...
 explosive.icbmclassic:thermobaric.info=Mini-nuke in a can, or at least as close, as the North can get
 
 explosive.icbmclassic:nuclear.info=Hi! I'm a nuclearholic..
@@ -194,7 +192,6 @@ missile.icbmclassic:fragmentation.name=Fragmentation Missile
 missile.icbmclassic:contagious.name=Contagious Missile
 missile.icbmclassic:sonic.name=Sonic Missile
 missile.icbmclassic:breaching.name=Breaching Missile
-missile.icbmclassic:rejuvenation.name=Rejuvenation Missile
 missile.icbmclassic:thermobaric.name=Thermobaric Missile
 
 missile.icbmclassic:nuclear.name=Nuclear Missile
@@ -240,7 +237,6 @@ bombcart.icbmclassic:fragmentation.name=Fragmentation Minecart
 bombcart.icbmclassic:contagious.name=Contagious Minecart
 bombcart.icbmclassic:sonic.name=Sonic Minecart
 bombcart.icbmclassic:breaching.name=Breaching Minecart
-bombcart.icbmclassic:rejuvenation.name=Rejuvenation Minecart
 bombcart.icbmclassic:thermobaric.name=Thermobaric Minecart
 
 bombcart.icbmclassic:nuclear.name=Nuclear Minecart

@@ -48,7 +48,6 @@ icbm.explosive.fragmentation.name=Explosivo de Fragmentaci\u00F3n
 icbm.explosive.contagious.name=Explosivo Contagioso
 icbm.explosive.sonic.name=Explosivo S\u00F3nico
 icbm.explosive.breaching.name=Explosivo Penetrante
-icbm.explosive.rejuvenation.name=Explosivo Rejuvenecedor
 icbm.explosive.thermobaric.name=Explosivo Termob\u00E1rico
 
 icbm.explosive.nuclear.name=Explosivo Nuclear
@@ -77,7 +76,6 @@ icbm.missile.fragmentation.name=Misil de Fragmentaci\u00F3n
 icbm.missile.contagious.name=Misil Contagioso
 icbm.missile.sonic.name=Misil S\u00F3nico
 icbm.missile.breaching.name=Misil Penetrante
-icbm.missile.rejuvenation.name=Misil Rejuvenecedor
 icbm.missile.thermobaric.name=Misil Termob\u00E1rico
 
 icbm.missile.nuclear.name=Misil Nuclear
@@ -121,7 +119,6 @@ icbm.minecart.fragmentation.name=Carro Minero de Fragmentacion
 icbm.minecart.contagious.name=Carro Minero Contagioso
 icbm.minecart.sonic.name=Carro Minero S\u00F3nico
 icbm.minecart.breaching.name=Carro Minero Penetrante
-icbm.minecart.rejuvenation.name=Carro Minero Rejuvenecedor
 icbm.minecart.thermobaric.name=Carro Minero Termob\u00E1rico
 
 ## ICBM Misc Blocks

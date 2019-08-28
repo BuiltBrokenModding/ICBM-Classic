@@ -120,7 +120,6 @@ icbm.explosive.fragmentation.name=破坏炸药
 icbm.explosive.contagious.name=病毒炸药
 icbm.explosive.sonic.name=噪音炸药
 icbm.explosive.breaching.name=冲击炸药
-icbm.explosive.rejuvenation.name=治疗炸药
 icbm.explosive.thermobaric.name=温压炸药
 
 icbm.explosive.nuclear.name=核弹
@@ -150,7 +149,6 @@ icbm.explosive.fragmentation.info=用大量的爆破弹片轰炸一大片区域
 icbm.explosive.contagious.info=你听说过瘟疫吗？
 icbm.explosive.sonic.info=谁想成为一个忍者，在制造出大量噪音之后偷偷溜进敌人的老巢
 icbm.explosive.breaching.info=当你打不开门的时候，炸墙或许是个不错的选择
-icbm.explosive.rejuvenation.info=没有人会因造成伤害而受到指责，如果根本没有找到任何损伤的话...
 icbm.explosive.thermobaric.info=迷你核弹
 
 icbm.explosive.nuclear.info=世界核平！
@@ -195,7 +193,6 @@ icbm.missile.fragmentation.name=破坏导弹
 icbm.missile.contagious.name=病毒导弹
 icbm.missile.sonic.name=噪音导弹
 icbm.missile.breaching.name=冲击导弹
-icbm.missile.rejuvenation.name=治疗导弹
 icbm.missile.thermobaric.name=温压导弹
 
 icbm.missile.nuclear.name=核弹
@@ -247,7 +244,6 @@ icbm.minecart.fragmentation.name=破坏弹矿车
 icbm.minecart.contagious.name=病毒弹矿车
 icbm.minecart.sonic.name=声波弹矿车
 icbm.minecart.breaching.name=冲击弹矿车
-icbm.minecart.rejuvenation.name=治疗弹矿车
 icbm.minecart.thermobaric.name=温压弹矿车
 
 icbm.minecart.xmas.zombie.name=僵尸弹矿车

@@ -28,10 +28,6 @@ public class ConfigBlast
     @Config.Comment("Allows red matter explosions to be moved")
     public static boolean REDMATTER_MOVEMENT = true;
 
-    @Config.Name("rejuvenation_regen_structures")
-    @Config.Comment("Regenerates structures such as villages and dungeons in the current chunk")
-    public static boolean REJUVENATION_REGEN_STRUCTURES = true;
-
     @Config.Name("allow_day_night_switch")
     @Config.Comment("Allows explosives to change time of day")
     public static boolean ALLOW_DAY_NIGHT = true;

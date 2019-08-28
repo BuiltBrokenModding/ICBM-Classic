@@ -57,7 +57,6 @@ icbm.explosive.fragmentation.name=Splitternder Sprengstoff
 icbm.explosive.contagious.name=Ansteckender Sprengstoff
 icbm.explosive.sonic.name=Schallsprengstoff
 icbm.explosive.breaching.name=Durchschlagssprengstoff
-icbm.explosive.rejuvenation.name=Revitalisierungssprengstoff
 icbm.explosive.thermobaric.name=Thermobarischer Sprengstoff
 
 icbm.explosive.nuclear.name=Atomarer Sprengstoff
@@ -87,7 +86,6 @@ icbm.missile.fragmentation.name=Splitterrakete
 icbm.missile.contagious.name=Ansteckende Rakete
 icbm.missile.sonic.name=Schallrakete
 icbm.missile.breaching.name=Durchschlagsrakete
-icbm.missile.rejuvenation.name=Revitalisierungsrakete
 icbm.missile.thermobaric.name=Thermobarische Rakete
 
 icbm.missile.nuclear.name=Atomrakete
@@ -133,7 +131,6 @@ icbm.minecart.fragmentation.name=Splitterlore
 icbm.minecart.contagious.name=Ansteckede Lore
 icbm.minecart.sonic.name=Schall-Lore
 icbm.minecart.breaching.name=Durchbrechende Lore
-icbm.minecart.rejuvenation.name=Revitalisierungslore
 icbm.minecart.thermobaric.name=Thermobarische Lore
 
 ## ICBM Misc Blocks
