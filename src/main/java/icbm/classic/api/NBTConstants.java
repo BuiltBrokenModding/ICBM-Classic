@@ -31,7 +31,7 @@ public class NBTConstants
                     alreadySeen.add(value); // add value to check against it later
                 }
             } catch (IllegalAccessException ex) {
-                ICBMClassic.logger().log(Level.ERROR, "Illegal access exception thrown while checking nbt tags!" + ex.toString());
+                ICBMClassic.logger().log(Level.ERROR, "Illegal access exception thrown while checking nbt tags! Please report this!" + ex.toString());
             }
         }
     }
