@@ -108,10 +108,11 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     @Override
     public IExplosiveData getExplosiveData(int id)
     {
-        final ResourceLocation name = id_to_name.get(id);
-        if (name != null)
-        {
-            return explosiveData.get(name);
+        if(id_to_name.containsKey(id)) {
+            final ResourceLocation name = id_to_name.get(id);
+            if (name != null) {
+                return explosiveData.get(name);
+            }
         }
         return null;
     }

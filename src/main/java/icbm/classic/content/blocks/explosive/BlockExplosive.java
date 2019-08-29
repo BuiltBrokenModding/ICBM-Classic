@@ -27,6 +27,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
 
 public class BlockExplosive extends BlockICBM
 {
@@ -108,7 +109,17 @@ public class BlockExplosive extends BlockICBM
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
         ItemStack stack = placer.getHeldItem(hand);
-        return getDefaultState().withProperty(ROTATION_PROP, facing).withProperty(EX_PROP, ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(stack.getItemDamage()));
+        IBlockState state = getDefaultState().withProperty(ROTATION_PROP, facing);
+        IExplosiveData prop = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(stack.getItemDamage());
+        if(prop != null) {
+            return state.withProperty(EX_PROP, prop);
+        }
+        else { // if the explosives id doesnt exist, then fallback to the one with the id 0
+            prop = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(0);
+            ICBMClassic.logger().log(Level.ERROR, "Unable to get explosives kind, choosing "+prop.getRegistryName().toString()+" as a fallback.");
+            stack.setItemDamage(0);
+            return state.withProperty(EX_PROP, prop);
+        }
     }
 
     /**
