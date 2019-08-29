@@ -1,14 +1,16 @@
 package icbm.classic.content.blast.threaded;
 
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.blast.BlastRedmatter;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class BlastAntimatter extends BlastThreaded
@@ -32,34 +34,92 @@ public class BlastAntimatter extends BlastThreaded
     public void setupBlast()
     {
         super.setupBlast();
+        AntimatterBlast_DoBlockUpdates = ConfigBlast.BLAST_DO_BLOCKUPDATES;
         ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
+    private final IBlockState replaceState = Blocks.AIR.getDefaultState();
+
+    private boolean AntimatterBlast_DoBlockUpdates = false;
+    private static final int antimatterWaterCleanupRange = 5; // antimatter water cleanup antimatterWaterCleanupRange
+    private boolean makeHoles = false;
     @Override
     public void destroyBlock(BlockPos blockPos)
     {
         final IBlockState blockState = world.getBlockState(blockPos);
-        if (!blockState.getBlock().isAir(blockState, world, blockPos))
+        if (blockState.getBlock() != Blocks.AIR)
         {
-            final double dist = location.distance(blockPos);
-            //TODO change to not use sqrt for better performance
-            //TODO maybe do the random in the thread?
-            if (dist < this.getBlastRadius() - 1 || world().rand.nextFloat() > 0.7)
+            final double deltaX = blockPos.getX()-location.x();
+            if(deltaX > getBlastRadius() - 5)
+                makeHoles = true;
+
+            //final double deltaZ = blockPos.getZ()-blockPos.getZ();
+            //final double dist = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ); // omit Y since its not as important as X,Z and saves some performance
+            if(makeHoles) {
+
+                //TODO change to not use sqrt for better performance
+                //TODO maybe do the random in the thread? (although rolling the random numbers only happens at the end so it doesn't matter that much)
+
+                if (world().rand.nextFloat() < .6)// * (this.getBlastRadius() - dist))
+                    world.setBlockState(blockPos, replaceState, 3);
+
+                return; // dont clean up water anymore from this point on
+            }
+            else
             {
-                if (blockState.getBlockHardness(this.world(), blockPos) >= 0 || destroyBedrock)
-                {
-                    world.setBlockToAir(blockPos);
+                world.setBlockState(blockPos, replaceState, AntimatterBlast_DoBlockUpdates ? 3 : 2);
+            }
+
+            if(AntimatterBlast_DoBlockUpdates) {
+                // handle sand and gravel (check if the above block is sand or gravel and then destroy it and check the above
+                destroyFallingBlocksRecursively(blockPos.up());
+
+                // remove water ahead of the blast, to significantly reduce the water issues
+                for (int x = -antimatterWaterCleanupRange; x <= antimatterWaterCleanupRange; x++) {
+                    for (int y = -antimatterWaterCleanupRange; y <= antimatterWaterCleanupRange; y++) {
+                        for (int z = -antimatterWaterCleanupRange; z <= antimatterWaterCleanupRange; z++) {
+                            final BlockPos bp2 = new BlockPos(blockPos.getX() + x, blockPos.getY() + 1, blockPos.getZ() + z);
+                            final IBlockState bs2 = world.getBlockState(bp2);
+                            final Block b = bs2.getBlock();
+                            if (b == Blocks.WATER || b == Blocks.FLOWING_WATER) {
+                                world.setBlockToAir(bp2);
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    /*
+     *  Checks the current block and if it is sand or gravel then destroys it.
+     *  Continues upwards as long as there is sand or gravel.
+     */
+    private void destroyFallingBlocksRecursively(BlockPos currentBp)
+    {
+        Block currentBlock = world.getBlockState(currentBp).getBlock();
+        if (currentBlock == Blocks.SAND || currentBlock == Blocks.GRAVEL)
+        {
+            BlockPos above = currentBp.up();
+            destroyFallingBlocksRecursively(above); // check above block
+
+            world.setBlockState(currentBp, replaceState, 3); // destroy current
         }
     }
 
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
-        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->
-                edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z)));
+        int ymin = -this.getPos().getY();
+        int ymax = 255-this.getPos().getY();
+        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->{
+
+                if (y >= ymin && y < ymax)
+                {
+                    edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
+                }
+        });
         return false;
     }
 

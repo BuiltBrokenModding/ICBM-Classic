@@ -20,6 +20,10 @@ public class ConfigBlast
     @Config.Comment("Should antimatter ignore hardness checks for unbreakable, allows destroying bedrock and warded stone")
     public static boolean ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = true;
 
+    @Config.Name("blast_do_block_updates")
+    @Config.Comment("Whether or not the big explosions trigger block updates for all blocks.\nSetting this to false leads to performance improvements, especially when dealing with a lot of water.")
+    public static boolean BLAST_DO_BLOCKUPDATES = false;
+
     @Config.Name("exothermic_create_netherrack")
     @Config.Comment("Allows the exothermic to place netherrack in the world")
     public static boolean EXOTHERMIC_CREATE_NETHER_RACK = true;
