@@ -126,7 +126,7 @@ public class ExplosiveInit
 
         //=================== Tier 4
         ExplosiveRefs.ANTIMATTER = newEx("antimatter", EnumTier.FOUR,
-                () -> new BlastAntimatter(ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS).setBlastSize(ConfigBlast.ANTIMATTER_SIZE));
+                () -> new BlastAntimatter().setBlastSize(ConfigBlast.ANTIMATTER_SIZE));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTIMATTER.getRegistryName(), (world, x, y, z) -> 300);
         //TODO add config (disable by default) for alarm audio
 

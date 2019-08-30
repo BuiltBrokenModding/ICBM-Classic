@@ -22,11 +22,6 @@ public class BlastAntimatter extends BlastThreaded
     {
     }
 
-    public BlastAntimatter(boolean destroyBedrock)
-    {
-        this.destroyBedrock = destroyBedrock;
-    }
-
     /**
      * Called before an explosion happens
      */
@@ -50,6 +45,9 @@ public class BlastAntimatter extends BlastThreaded
         final IBlockState blockState = world.getBlockState(blockPos);
         if (blockState.getBlock() != Blocks.AIR)
         {
+            if(blockState.getBlock().getBlockHardness(blockState, world, blockPos) < 0.0F && !ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS) //unbreakable
+                return;
+
             final double deltaX = blockPos.getX()-location.x();
             if(deltaX > getBlastRadius() - 5)
                 makeHoles = true;
