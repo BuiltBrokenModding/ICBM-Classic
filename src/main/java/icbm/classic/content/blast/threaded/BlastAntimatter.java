@@ -1,5 +1,6 @@
 package icbm.classic.content.blast.threaded;
 
+import icbm.classic.api.events.BlastCancelEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
@@ -10,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.function.Consumer;
 
@@ -155,7 +157,8 @@ public class BlastAntimatter extends BlastThreaded
         {
             if (((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
             {
-                entity.setDead();
+                if(!MinecraftForge.EVENT_BUS.post(new BlastCancelEvent(this, ((EntityExplosion) entity).getBlast())))
+                    entity.setDead();
                 return true;
             }
         }
