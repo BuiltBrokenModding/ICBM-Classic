@@ -17,8 +17,12 @@ public class ConfigBlast
     public static int ANTIMATTER_SIZE = 55;
 
     @Config.Name("antimatter_break_unbreakable")
-    @Config.Comment("Should antimatter ignore hardness checks for unbreakable, allows destroying bedrock and warded stone")
+    @Config.Comment({"Should antimatter ignore hardness checks for unbreakable, allows destroying bedrock and warded stone.", "This config option does nothing if 'antimatter_break_blocks' is set to false."})
     public static boolean ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = true;
+
+    @Config.Name("antimatter_break_blocks")
+    @Config.Comment("Whether or not antimatter destroys blocks when detonating.")
+    public static boolean ANTIMATTER_BLOCK_DAMAGE = false;
 
     @Config.Name("blast_do_block_updates")
     @Config.Comment("Whether or not the big explosions trigger block updates for all blocks.\nSetting this to false leads to performance improvements, especially when dealing with a lot of water.")

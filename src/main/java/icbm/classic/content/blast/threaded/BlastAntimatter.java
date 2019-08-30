@@ -40,6 +40,9 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public void destroyBlock(BlockPos blockPos)
     {
+        if(!ConfigBlast.ANTIMATTER_BLOCK_DAMAGE)
+            return;
+
         final IBlockState blockState = world.getBlockState(blockPos);
         if (blockState.getBlock() != Blocks.AIR)
         {
