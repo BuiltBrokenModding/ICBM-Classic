@@ -8,6 +8,10 @@ config.icbmclassic:blast.title=Blast
 config.icbmclassic:emp.title=EMP
 config.icbmclassic:missile.title=Missile
 config.icbmclassic:battery.title=Battery
+config.icbmclassic:thread.title=Thread
+config.icbmclassic:item.title=Item
+config.icbmclassic:ic2.title=Industrial Craft 2
+config.icbmclassic:debug.title=Debug
 
 ## Potions
 potion.toxin=Toxin
