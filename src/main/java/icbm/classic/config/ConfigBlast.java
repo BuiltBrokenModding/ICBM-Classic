@@ -24,6 +24,10 @@ public class ConfigBlast
     @Config.Comment("Whether or not antimatter destroys blocks when detonating.")
     public static boolean ANTIMATTER_BLOCK_DAMAGE = false;
 
+    @Config.Name("antimatter_entity_damage")
+    @Config.Comment("Whether or not antimatter should damage entities when detonating")
+    public static boolean ANTIMATTER_ENTITY_DAMAGE = false;
+
     @Config.Name("blast_do_block_updates")
     @Config.Comment("Whether or not the big explosions trigger block updates for all blocks.\nSetting this to false leads to performance improvements, especially when dealing with a lot of water.")
     public static boolean BLAST_DO_BLOCKUPDATES = false;

@@ -160,6 +160,6 @@ public class BlastAntimatter extends BlastThreaded
             }
         }
 
-        return false;
+        return !ConfigBlast.ANTIMATTER_ENTITY_DAMAGE; //if entity damage is enabled, return false so the entity damage logic can continue and vice versa
     }
 }
