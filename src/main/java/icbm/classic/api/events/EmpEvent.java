@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  */
 public abstract class EmpEvent extends BlastEvent
 {
-
     public EmpEvent(IBlast blast)
     {
         super(blast);

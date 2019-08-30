@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  */
 public abstract class LauncherEvent extends Event
 {
-
     public final IMissileLauncher launcher;
     public final IMissileHolder holder;
 
@@ -30,7 +29,6 @@ public abstract class LauncherEvent extends Event
     @Cancelable
     public static class PreLaunch extends LauncherEvent
     {
-
         public PreLaunch(IMissileLauncher launcher, IMissileHolder holder)
         {
             super(launcher, holder);

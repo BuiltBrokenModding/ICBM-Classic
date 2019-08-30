@@ -7,8 +7,8 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class MissileRideEvent extends Event
 {
-    public EntityMissile missile;
-    public EntityPlayer player;
+    public final EntityMissile missile;
+    public final EntityPlayer player;
 
     public MissileRideEvent(EntityMissile missile, EntityPlayer player)
     {

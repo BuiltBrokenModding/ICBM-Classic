@@ -15,8 +15,8 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 @Cancelable
 public class RadarGunTraceEvent extends Event
 {
-    public World world;
-    public EntityPlayer player;
+    public final World world;
+    public final EntityPlayer player;
     public BlockPos pos;
 
     public RadarGunTraceEvent(World world, BlockPos pos, EntityPlayer player)

@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 @Cancelable
 public class LauncherSetTargetEvent extends Event
 {
-    public TileLauncherPrefab launcher;
+    public final TileLauncherPrefab launcher;
     public Pos target;
 
     public LauncherSetTargetEvent(TileLauncherPrefab launcher, Pos target)

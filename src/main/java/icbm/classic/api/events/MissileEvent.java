@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  */
 public abstract class MissileEvent extends Event
 {
-
     public final IMissile missile;
     public final Entity entityMissile;
 
@@ -31,7 +30,6 @@ public abstract class MissileEvent extends Event
      */
     public static class PostLaunch extends MissileEvent
     {
-
         public PostLaunch(IMissile missile, Entity entityMissile)
         {
             super(missile, entityMissile);
@@ -55,7 +53,6 @@ public abstract class MissileEvent extends Event
     @Cancelable
     public static class PreImpact extends MissileEvent
     {
-
         public final RayTraceResult hit;
 
         public PreImpact(IMissile missile, Entity entityMissile, RayTraceResult hit)

@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class MissileChunkEvent extends Event
 {
-    public LoadedChunkPair pair;
-    public ForgeChunkManager.Ticket ticket;
+    public final LoadedChunkPair pair;
+    public final ForgeChunkManager.Ticket ticket;
 
     public MissileChunkEvent(LoadedChunkPair pair, ForgeChunkManager.Ticket ticket)
     {

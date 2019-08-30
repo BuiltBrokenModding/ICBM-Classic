@@ -14,9 +14,9 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 @Cancelable
 public class RemoteTriggerEvent extends Event
 {
-    public World world;
-    public EntityPlayer player;
-    public ItemStack stack;
+    public final World world;
+    public final EntityPlayer player;
+    public final ItemStack stack;
 
     public RemoteTriggerEvent(World world, EntityPlayer player, ItemStack stack)
     {

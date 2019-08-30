@@ -14,8 +14,8 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  */
 public class ExplosiveDefuseEvent extends Event
 {
-    public EntityPlayer player;
-    public Entity entityToDefuse;
+    public final EntityPlayer player;
+    public final Entity entityToDefuse;
 
     public ExplosiveDefuseEvent(EntityPlayer player, Entity entityToDefuse)
     {
@@ -30,7 +30,7 @@ public class ExplosiveDefuseEvent extends Event
     @Cancelable
     public static class ICBMExplosive extends ExplosiveDefuseEvent
     {
-        public IExplosive explosive;
+        public final IExplosive explosive;
 
         public ICBMExplosive(EntityPlayer player, Entity entityToDefuse, IExplosive explosive)
         {
