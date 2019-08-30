@@ -15,8 +15,11 @@ import java.util.function.Consumer;
 
 public class BlastAntimatter extends BlastThreaded
 {
+    private final IBlockState replaceState = Blocks.AIR.getDefaultState();
 
-    private boolean destroyBedrock;
+    private boolean antimatterDoBlockUpdates = false;
+    private static final int antimatterWaterCleanupRange = 5; // antimatter water cleanup antimatterWaterCleanupRange
+    private boolean makeHoles = false;
 
     public BlastAntimatter()
     {
@@ -29,16 +32,11 @@ public class BlastAntimatter extends BlastThreaded
     public void setupBlast()
     {
         super.setupBlast();
-        AntimatterBlast_DoBlockUpdates = ConfigBlast.BLAST_DO_BLOCKUPDATES;
+        antimatterDoBlockUpdates = ConfigBlast.BLAST_DO_BLOCKUPDATES;
         ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
-    private final IBlockState replaceState = Blocks.AIR.getDefaultState();
-
-    private boolean AntimatterBlast_DoBlockUpdates = false;
-    private static final int antimatterWaterCleanupRange = 5; // antimatter water cleanup antimatterWaterCleanupRange
-    private boolean makeHoles = false;
     @Override
     public void destroyBlock(BlockPos blockPos)
     {
@@ -66,10 +64,10 @@ public class BlastAntimatter extends BlastThreaded
             }
             else
             {
-                world.setBlockState(blockPos, replaceState, AntimatterBlast_DoBlockUpdates ? 3 : 2);
+                world.setBlockState(blockPos, replaceState, antimatterDoBlockUpdates ? 3 : 2);
             }
 
-            if(AntimatterBlast_DoBlockUpdates) {
+            if(antimatterDoBlockUpdates) {
                 // handle sand and gravel (check if the above block is sand or gravel and then destroy it and check the above
                 destroyFallingBlocksRecursively(blockPos.up());
 
@@ -113,10 +111,10 @@ public class BlastAntimatter extends BlastThreaded
         int ymax = 255-this.getPos().getY();
         BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->{
 
-                if (y >= ymin && y < ymax)
-                {
-                    edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
-                }
+            if (y >= ymin && y < ymax)
+            {
+                edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
+            }
         });
         return false;
     }
