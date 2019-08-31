@@ -33,7 +33,7 @@ item.icbmclassic:poisonPowder.name=Poison Powder
 item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 
 item.icbmclassic:antidote.name=Antidote
-item.icbmclassic:antidote.info=Cures all affects
+item.icbmclassic:antidote.info=Cures all effects
 
 item.icbmclassic:radarGun.name=Radar Gun
 item.icbmclassic:radarGun.info=Stores GPS data
@@ -96,17 +96,17 @@ tile.icbmclassic:emptower.name=EMP Tower
 tile.icbmclassic:emptower.info=Drains energy from tiles, entities and devices
 
 tile.icbmclassic:cruiselauncher.name=Cruise Launcher
-tile.icbmclassic:cruiselauncher.info=Dummy fires a missile without target data
+tile.icbmclassic:cruiselauncher.info=Dummy-fires a missile without target data
 
 tile.icbmclassic:missilecoordinator.name=Missile Coordinator
-tile.icbmclassic:missilecoordinator.info=Over sized calculator, calculates flight paths
+tile.icbmclassic:missilecoordinator.info=Oversized calculator. Calculates flight paths
 
 ## Blocks
 tile.icbmclassic:reinforcedRail.name=Reinforced Rail
 tile.icbmclassic:reinforcedRail.info=Hardened against explosives
 
-tile.icbmclassic:redmatter.ore.name=Redmatter ore
-tile.icbmclassic:redmatter.ore.info=On Shiz, How did you get that! Put it down, it could explode!
+tile.icbmclassic:redmatter.ore.name=Redmatter Ore
+tile.icbmclassic:redmatter.ore.info=Oh shiz, how did you get that? Put it down, it could explode!
 
 ## ICBM Explosives
 
@@ -138,8 +138,6 @@ explosive.icbmclassic:hypersonic.name=Hypersonic Explosives
 explosive.icbmclassic:antimatter.name=Antimatter Explosives
 explosive.icbmclassic:redmatter.name=Red Matter Explosives
 
-explosive.icbmclassic:sMine.name=S-Mine
-
 ## Explosive Info
 explosive.icbmclassic:condensed.info=Slightly more destructive version of TNT
 explosive.icbmclassic:shrapnel.info=Erupts in a barrage of metal fragments
@@ -151,20 +149,20 @@ explosive.icbmclassic:repulsive.info=Pushes everyone away
 explosive.icbmclassic:attractive.info=Pulls everyone in
 
 explosive.icbmclassic:fragmentation.info=Devastates the landscape with high velocity fragments
-explosive.icbmclassic:contagious.info=Have you ever heard the plague?
+explosive.icbmclassic:contagious.info=Have you ever heard of the plague?
 explosive.icbmclassic:sonic.info=Who needs to be a ninja to sneak in after that much noise?
 explosive.icbmclassic:breaching.info=When you need a door
-explosive.icbmclassic:thermobaric.info=Mini-nuke in a can or at least as close as the North can get
+explosive.icbmclassic:thermobaric.info=Mini-nuke in a can. Or at least as close as the North can get
 
 explosive.icbmclassic:nuclear.info=Hi! I'm a nuclearholic..
 explosive.icbmclassic:emp.info=Over 9000? Not anymore
 explosive.icbmclassic:exothermic.info=You thought the sun was hot
-explosive.icbmclassic:endothermic.info=They call me Mr.Freeze
+explosive.icbmclassic:endothermic.info=They call me Mr. Freeze
 explosive.icbmclassic:antigravitational.info=I think your base looks better floating
-explosive.icbmclassic:ender.info=Lets relocate that base of yours
+explosive.icbmclassic:ender.info=Let's relocate that base of yours
 explosive.icbmclassic:hypersonic.info=I feel bad for your ears
 
-explosive.icbmclassic:antimatter.info=matter + antimatter = no matter
+explosive.icbmclassic:antimatter.info=Matter + antimatter = No matter
 
 ##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
 explosive.icbmclassic:redMatter.info.count=11
@@ -180,7 +178,7 @@ explosive.icbmclassic:redMatter.info.8=Into the void
 explosive.icbmclassic:redMatter.info.9=Oh? You think you can escape
 explosive.icbmclassic:redMatter.info.10=Oh baby come back
 
-explosive.icbmclassic:sMine.info=Bouncing betty with the kick of a fat guy
+explosive.icbmclassic:sMine.info=Bouncing Betty with the kick of a fat guy
 
 ## Missile Form
 missile.icbmclassic:condensed.name=Conventional Missile
@@ -281,18 +279,18 @@ message.defuser.nopower=Defuser out of electricity!
 
 message.designator.callTime=Calling air strike in:
 message.designator.blast=Incoming air strike!
-message.designator.setFreq=Laser designator frequency Set:
+message.designator.setFreq=Laser Designator frequency set:
 message.designator.failFreq=Frequency must be greater than zero.
 message.designator.callBlast=Calling air strike into designated position!
 message.designator.nopower=Laser designator out of electricity!
 message.designator.noFreq=Laser designator frequency not set!
 
-message.radarGun.scanned=Scanned Coordinates: X:%x Y:%y Z:%z - Distance: %d
-message.radarGun.nopower=Radar gun out of electricity!
+message.radarGun.scanned=Scanned coordinates: X:%x Y:%y Z:%z - Distance: %d
+message.radarGun.nopower=Radar Gun out of electricity!
 message.radarGun.transfer=Coordinate information transferred!
 message.radarGun.noCoords=You must scan a coordinate!
 message.launcher.protected=Region is being protected.
-message.detonator.locked=Remote Locked to: X:%x Y:%y Z:%z
+message.detonator.locked=Remote locked to: X:%x Y:%y Z:%z
 message.detonator.nopower=Remote out of electricity!
 message.radar.redstone.on=Radar set to emit redstone
 message.radar.redstone.off=Radar set to not emit redstone
@@ -369,7 +367,7 @@ gui.launcherCruise.statusReady=Ready!
 
 ## Chat warning if user tries to fire by hand, %s is status message from GUI
 chat.launcher.status=Status: %s
-chat.launcher.failedToFire=Warning can not fire missile due to status error!
+chat.launcher.failedToFire=Warning: Cannot fire missile due to status error!
 chat.launcher.toolTargetSet=Target data transferred from tool.
 chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
 chat.launcher.noTargetInTool=Tool does not contain any target data!
@@ -379,9 +377,9 @@ gui.coordinator.name=Missile Coordinator
 gui.coordinator.sim=Path Simulator
 gui.coordinator.from=From:
 gui.coordinator.to=To:
-gui.coordinator.displace=Displacement: %p Meters
-gui.coordinator.arc=Arc: %p Meters
-gui.coordinator.time=Time: %p Seconds
+gui.coordinator.displace=Displacement: %p meters
+gui.coordinator.arc=Arc: %p meters
+gui.coordinator.time=Time: %p seconds
 gui.coordinator.direction=Direction:
 gui.coordinator.wip=More features coming soon!
 
@@ -389,8 +387,8 @@ gui.radar.coords=Coordinates:
 gui.radar.range=Range
 gui.radar.range.trigger=Trigger:
 gui.radar.range.detection=Detection:
-gui.radar.on=Radar On!
-gui.radar.nopower=No Electricity!
+gui.radar.on=Radar on!
+gui.radar.nopower=No electricity!
 
 gui.terminal.name=Terminal
 gui.platform.ammo=Ammunition
@@ -401,21 +399,21 @@ gui.platform.access=User Access
 ## Tooltips
 info.misc.freq=Frequency:
 info.tracker.tracking=Tracking:
-info.designator.noFreq=Frequency: Not Set
-info.radarGun.savedCoords=Saved Coordinates:
+info.designator.noFreq=Frequency: Not set
+info.radarGun.savedCoords=Saved coordinates:
 info.radarGun.meters=Meters
-info.detonator.linked=Linked Explosive:
-info.detonator.noLink=No Linked Explosive
-info.misc.tier=Explosive Tier
-info.tracker.tooltip=Left Click on a mob (players aswell) and I Will point to it.
+info.detonator.linked=Linked explosive:
+info.detonator.noLink=No Linked explosive
+info.misc.tier=Explosive tier
+info.tracker.tooltip=Left-click on a mob (players aswell) and I will point to it.
 
 ## Death messages
 death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty black hole.
 
 ## GPS
-gps.pos.set.name=GPS Data Saved
-gps.error.pos.invalid.name=Invalid Location
+gps.pos.set.name=GPS data saved
+gps.error.pos.invalid.name=Invalid location
 gps.error.pos.invalid.world.name=Can't target another world
 gps.error.pos.invalid.null.name=No target set
 gps.data.transferred.name=Data transferred
-gps.cleared.name=GPS Data Cleared
+gps.cleared.name=GPS data cleared
