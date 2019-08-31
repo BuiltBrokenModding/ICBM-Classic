@@ -110,6 +110,12 @@ tile.icbmclassic:redmatter.ore.info=Oh shiz, how did you get that? Put it down, 
 
 ## ICBM Explosives
 
+## Tiers
+tier.icbmclassic.one=One
+tier.icbmclassic.two=Two
+tier.icbmclassic.three=Three
+tier.icbmclassic.four=Four
+
 ## Block Form
 explosive.icbmclassic:condensed.name=Condensed Explosives
 explosive.icbmclassic:shrapnel.name=Shrapnel Explosives

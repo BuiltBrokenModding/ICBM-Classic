@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
@@ -54,7 +55,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         if (data != null)
         {
             final EnumTier tierdata = data.getTier();
-            list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
+            list.add(TextFormatting.DARK_RED + LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getTooltipColor() + tierdata.getLocalizedName());
         }
 
         if (stack.getItemDamage() == ExplosiveRefs.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg

@@ -1,6 +1,8 @@
 package icbm.classic.api;
 
+import icbm.classic.lib.LanguageUtility;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.text.TextFormatting;
 
 /**
  *
@@ -8,15 +10,32 @@ import net.minecraft.util.IStringSerializable;
  */
 public enum EnumTier implements IStringSerializable
 {
-    ONE,
-    TWO,
-    THREE,
-    FOUR;
+    ONE(TextFormatting.GREEN),
+    TWO(TextFormatting.YELLOW),
+    THREE(TextFormatting.GOLD),
+    FOUR(TextFormatting.RED);
+
+    private TextFormatting tooltipColor;
+
+    private EnumTier(TextFormatting tooltipColor)
+    {
+        this.tooltipColor = tooltipColor;
+    }
+
+    public TextFormatting getTooltipColor()
+    {
+        return tooltipColor;
+    }
 
     @Override
     public String toString()
     {
         return this.getName();
+    }
+
+    public String getLocalizedName()
+    {
+        return LanguageUtility.getLocal("tier.icbmclassic." + getName());
     }
 
     public String getName()

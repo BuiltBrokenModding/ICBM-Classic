@@ -110,6 +110,12 @@ tile.icbmclassic:redmatter.ore.info=Oh Scheißendreck, wie bist du denn daran ge
 
 ## ICBM Explosives
 
+## Tiers
+tier.icbmclassic.one=Eins
+tier.icbmclassic.two=Zwei
+tier.icbmclassic.three=Drei
+tier.icbmclassic.four=Vier
+
 ## Block Form
 explosive.icbmclassic:condensed.name=Verdichteter Sprengstoff
 explosive.icbmclassic:shrapnel.name=Schrapnellsprengstoff
