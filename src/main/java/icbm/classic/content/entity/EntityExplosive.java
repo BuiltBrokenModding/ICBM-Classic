@@ -76,6 +76,13 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 
+        if (this.onGround)
+        {
+            this.motionX *= 0.699999988079071D;
+            this.motionZ *= 0.699999988079071D;
+            this.motionY *= -0.5D;
+        }
+
         //Init fuse
         if (fuse == -1)
         {
