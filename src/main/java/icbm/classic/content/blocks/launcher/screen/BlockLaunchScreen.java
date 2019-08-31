@@ -59,11 +59,7 @@ public class BlockLaunchScreen extends BlockICBM
                 ItemStack stack = player.getHeldItem(hand);
                 if (stack.getItem() == Items.REDSTONE)
                 {
-                    if (screen.canLaunch())
-                    {
-                        screen.launch();
-                    }
-                    else
+                    if (!screen.launch()) //canLaunch is called in launch and launch returns false if cannot launch
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
 
@@ -119,10 +115,7 @@ public class BlockLaunchScreen extends BlockICBM
             TileEntity te = world.getTileEntity(pos);
 
             if(te instanceof TileLauncherScreen && world.isBlockPowered(pos))
-            {
-                if(((TileLauncherScreen)te).canLaunch())
-                    ((TileLauncherScreen)te).launch();
-            }
+                ((TileLauncherScreen)te).launch(); //canLaunch gets called by launch
         }
     }
 

@@ -151,8 +151,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 }
                 case LAUNCH_PACKET_ID:
                 {
-                    if(canLaunch())
-                        launch();
+                    launch(); //canLaunch is called by launch
                 }
             }
             return false;
@@ -173,8 +172,11 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         return false;
     }
 
-    /** Calls the missile launcher base to launch it's missile towards a targeted location */
-    public void launch()
+    /**
+     * Calls the missile launcher base to launch it's missile towards a targeted location
+     * @return true if launched, false if not
+     */
+    public boolean launch()
     {
         if (this.canLaunch() && this.launcherBase.launchMissile(this.getTarget(), this.lockHeight))
         {
@@ -197,7 +199,10 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
 
             //Mark client for update
             updateClient = true;
+            return true;
         }
+
+        return false;
     }
 
     /**

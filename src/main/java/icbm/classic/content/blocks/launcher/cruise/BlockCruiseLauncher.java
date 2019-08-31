@@ -83,11 +83,7 @@ public class BlockCruiseLauncher extends BlockICBM
                 ItemStack stack = player.getHeldItem(hand);
                 if (stack.getItem() == Items.REDSTONE)
                 {
-                    if (launcher.canLaunch())
-                    {
-                        launcher.launch();
-                    }
-                    else
+                    if (!launcher.launch()) //canLaunch is called in launch and launch returns false if cannot launch
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
                         String translation = LanguageUtility.getLocal("chat.launcher.status");

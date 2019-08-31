@@ -326,9 +326,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
     /**
      * Launches the missile
+     * @return true if launched, false if not
      */
     //@Override
-    public void launch()
+    public boolean launch()
     {
         if (this.canLaunch())
         {
@@ -345,7 +346,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
             //Clear slot last so we can still access data as needed or roll back changes if a crash happens
             this.getInventory().decrStackSize(0, 1);
+            return true;
         }
+
+        return false;
     }
 
     // Is the target too close?
