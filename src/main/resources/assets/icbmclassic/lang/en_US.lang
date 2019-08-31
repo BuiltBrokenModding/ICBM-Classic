@@ -144,6 +144,61 @@ explosive.icbmclassic:hypersonic.name=Hypersonic Explosives
 explosive.icbmclassic:antimatter.name=Antimatter Explosives
 explosive.icbmclassic:redmatter.name=Red Matter Explosives
 
+## Missile Form
+missile.icbmclassic:condensed.name=Conventional Missile
+missile.icbmclassic:shrapnel.name=Shrapnel Missile
+missile.icbmclassic:incendiary.name=Incendiary Missile
+missile.icbmclassic:debilitation.name=Debilitation Missile
+missile.icbmclassic:chemical.name=Chemical Missile
+missile.icbmclassic:anvil.name=Anvil Missile
+missile.icbmclassic:repulsive.name=Repulsive Missile
+missile.icbmclassic:attractive.name=Attractive Missile
+
+missile.icbmclassic:fragmentation.name=Fragmentation Missile
+missile.icbmclassic:contagious.name=Contagious Missile
+missile.icbmclassic:sonic.name=Sonic Missile
+missile.icbmclassic:breaching.name=Breaching Missile
+missile.icbmclassic:thermobaric.name=Thermobaric Missile
+
+missile.icbmclassic:nuclear.name=Nuclear Missile
+missile.icbmclassic:emp.name=EMP Missile
+missile.icbmclassic:exothermic.name=Exothermic Missile
+missile.icbmclassic:endothermic.name=Endothermic Missile
+missile.icbmclassic:antigravitational.name=Anti-Gravitational Missile
+missile.icbmclassic:ender.name=Ender Missile
+missile.icbmclassic:hypersonic.name=Hypersonic Missile
+
+missile.icbmclassic:antimatter.name=Antimatter Missile
+missile.icbmclassic:redmatter.name=Red Matter Missile
+
+## Explosive Minecarts
+bombcart.icbmclassic:condensed.name=Explosive Cart
+bombcart.icbmclassic:shrapnel.name=Shrapnel Minecart
+bombcart.icbmclassic:incendiary.name=Incendiary Minecart
+bombcart.icbmclassic:debilitation.name=Debilitation Minecart
+bombcart.icbmclassic:chemical.name=Chemical Minecart
+bombcart.icbmclassic:anvil.name=Anvil Minecart
+bombcart.icbmclassic:repulsive.name=Repulsive Minecart
+bombcart.icbmclassic:attractive.name=Attractive Minecart
+bombcart.icbmclassic:nightmare.name=Nightmare Minecart
+
+bombcart.icbmclassic:fragmentation.name=Fragmentation Minecart
+bombcart.icbmclassic:contagious.name=Contagious Minecart
+bombcart.icbmclassic:sonic.name=Sonic Minecart
+bombcart.icbmclassic:breaching.name=Breaching Minecart
+bombcart.icbmclassic:thermobaric.name=Thermobaric Minecart
+
+bombcart.icbmclassic:nuclear.name=Nuclear Minecart
+bombcart.icbmclassic:emp.name=EMP Minecart
+bombcart.icbmclassic:exothermic.name=Exothermic Minecart
+bombcart.icbmclassic:endothermic.name=Endothermic Minecart
+bombcart.icbmclassic:antigravitational.name=Anti-Gravitational Minecart
+bombcart.icbmclassic:ender.name=Ender Minecart
+bombcart.icbmclassic:hypersonic.name=Hypersonic Minecart
+
+bombcart.icbmclassic:antimatter.name=Antimatter Minecart
+bombcart.icbmclassic:redmatter.name=Red Matter Minecart
+
 ## Explosive Info
 explosive.icbmclassic:condensed.info=Slightly more destructive version of TNT
 explosive.icbmclassic:shrapnel.info=Erupts in a barrage of metal fragments
@@ -184,35 +239,6 @@ explosive.icbmclassic:redMatter.info.8=Into the void
 explosive.icbmclassic:redMatter.info.9=Oh? You think you can escape
 explosive.icbmclassic:redMatter.info.10=Oh baby come back
 
-explosive.icbmclassic:sMine.info=Bouncing Betty with the kick of a fat guy
-
-## Missile Form
-missile.icbmclassic:condensed.name=Conventional Missile
-missile.icbmclassic:shrapnel.name=Shrapnel Missile
-missile.icbmclassic:incendiary.name=Incendiary Missile
-missile.icbmclassic:debilitation.name=Debilitation Missile
-missile.icbmclassic:chemical.name=Chemical Missile
-missile.icbmclassic:anvil.name=Anvil Missile
-missile.icbmclassic:repulsive.name=Repulsive Missile
-missile.icbmclassic:attractive.name=Attractive Missile
-
-missile.icbmclassic:fragmentation.name=Fragmentation Missile
-missile.icbmclassic:contagious.name=Contagious Missile
-missile.icbmclassic:sonic.name=Sonic Missile
-missile.icbmclassic:breaching.name=Breaching Missile
-missile.icbmclassic:thermobaric.name=Thermobaric Missile
-
-missile.icbmclassic:nuclear.name=Nuclear Missile
-missile.icbmclassic:emp.name=EMP Missile
-missile.icbmclassic:exothermic.name=Exothermic Missile
-missile.icbmclassic:endothermic.name=Endothermic Missile
-missile.icbmclassic:antigravitational.name=Anti-Gravitational Missile
-missile.icbmclassic:ender.name=Ender Missile
-missile.icbmclassic:hypersonic.name=Hypersonic Missile
-
-missile.icbmclassic:antimatter.name=Antimatter Missile
-missile.icbmclassic:redmatter.name=Red Matter Missile
-
 ## Special Missiles
 missile.icbmclassic:missileModule.name=Missile Module
 missile.icbmclassic:antiBallistic.name=Anti-ballistic Missile
@@ -229,34 +255,6 @@ grenade.icbmclassic:chemical.name=Chemical Grenade
 grenade.icbmclassic:anvil.name=Anvil Grenade
 grenade.icbmclassic:repulsive.name=Repulsive Grenade
 grenade.icbmclassic:attractive.name=Attractive Grenade
-
-## Explosive Minecarts
-bombcart.icbmclassic:condensed.name=Explosive Cart
-bombcart.icbmclassic:shrapnel.name=Shrapnel Minecart
-bombcart.icbmclassic:incendiary.name=Incendiary Minecart
-bombcart.icbmclassic:debilitation.name=Debilitation Minecart
-bombcart.icbmclassic:chemical.name=Chemical Minecart
-bombcart.icbmclassic:anvil.name=Anvil Minecart
-bombcart.icbmclassic:repulsive.name=Repulsive Minecart
-bombcart.icbmclassic:attractive.name=Attractive Minecart
-bombcart.icbmclassic:nightmare.name=Nightmare Minecart
-
-bombcart.icbmclassic:fragmentation.name=Fragmentation Minecart
-bombcart.icbmclassic:contagious.name=Contagious Minecart
-bombcart.icbmclassic:sonic.name=Sonic Minecart
-bombcart.icbmclassic:breaching.name=Breaching Minecart
-bombcart.icbmclassic:thermobaric.name=Thermobaric Minecart
-
-bombcart.icbmclassic:nuclear.name=Nuclear Minecart
-bombcart.icbmclassic:emp.name=EMP Minecart
-bombcart.icbmclassic:exothermic.name=Exothermic Minecart
-bombcart.icbmclassic:endothermic.name=Endothermic Minecart
-bombcart.icbmclassic:antigravitational.name=Anti-Gravitational Minecart
-bombcart.icbmclassic:ender.name=Ender Minecart
-bombcart.icbmclassic:hypersonic.name=Hypersonic Minecart
-
-bombcart.icbmclassic:antimatter.name=Antimatter Minecart
-bombcart.icbmclassic:redmatter.name=Red Matter Minecart
 
 
 ## ICBM Misc Blocks
