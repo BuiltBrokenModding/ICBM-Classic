@@ -134,18 +134,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
-            if (translation.contains(","))
-            {
-                String[] split = translation.split(",");
-                for (String s : split)
-                {
-                    list.add(s.trim());
-                }
-            }
-            else
-            {
-                list.add(translation);
-            }
+            list.addAll(LanguageUtility.splitByLine(translation));
         }
     }
 

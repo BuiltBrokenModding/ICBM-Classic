@@ -84,18 +84,7 @@ public abstract class ItemAbstract extends Item
         String translation = translate ? LanguageUtility.getLocal(translationKey) : translationKey;
         if (!translate || !translation.isEmpty() && !translation.equals(translationKey))
         {
-            if (translation.contains(","))
-            {
-                String[] split = translation.split(",");
-                for (String s : split)
-                {
-                    list.add(s.trim());
-                }
-            }
-            else if (addKeyIfEmpty)
-            {
-                list.add(translation);
-            }
+            list.addAll(LanguageUtility.splitByLine(translation));
         }
     }
 

@@ -48,13 +48,13 @@ item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
 
 item.icbmclassic:tracker.name=Tracker
-item.icbmclassic:tracker.info=Track entities and, set homing missiles
+item.icbmclassic:tracker.info=Track entities and set homing missiles
 
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
-item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection, or missile launches
+item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or missile launches
 
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
-item.icbmclassic:rocketLauncher.info=This rocket launcher can, fire up to Tier %s rockets
+item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s rockets
 item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
 
 ## Crafting items
@@ -96,7 +96,7 @@ tile.icbmclassic:emptower.name=EMP Tower
 tile.icbmclassic:emptower.info=Drains energy from tiles, entities and devices
 
 tile.icbmclassic:cruiselauncher.name=Cruise Launcher
-tile.icbmclassic:cruiselauncher.info=Dummy fires a missile, without target data
+tile.icbmclassic:cruiselauncher.info=Dummy fires a missile without target data
 
 tile.icbmclassic:missilecoordinator.name=Missile Coordinator
 tile.icbmclassic:missilecoordinator.info=Over sized calculator, calculates flight paths
@@ -106,7 +106,7 @@ tile.icbmclassic:reinforcedRail.name=Reinforced Rail
 tile.icbmclassic:reinforcedRail.info=Hardened against explosives
 
 tile.icbmclassic:redmatter.ore.name=Redmatter ore
-tile.icbmclassic:redmatter.ore.info=On Shiz, How did you get that!, Put it down, it could explode!
+tile.icbmclassic:redmatter.ore.info=On Shiz, How did you get that! Put it down, it could explode!
 
 ## ICBM Explosives
 
@@ -150,11 +150,11 @@ explosive.icbmclassic:anvil.info=Whats up doc
 explosive.icbmclassic:repulsive.info=Pushes everyone away
 explosive.icbmclassic:attractive.info=Pulls everyone in
 
-explosive.icbmclassic:fragmentation.info=Devastates the landscape, with high velocity fragments
+explosive.icbmclassic:fragmentation.info=Devastates the landscape with high velocity fragments
 explosive.icbmclassic:contagious.info=Have you ever heard the plague?
-explosive.icbmclassic:sonic.info=Who needs to be a ninja to, sneak in after that much noise
+explosive.icbmclassic:sonic.info=Who needs to be a ninja to sneak in after that much noise?
 explosive.icbmclassic:breaching.info=When you need a door
-explosive.icbmclassic:thermobaric.info=Mini-nuke in a can, or at least as close, as the North can get
+explosive.icbmclassic:thermobaric.info=Mini-nuke in a can or at least as close as the North can get
 
 explosive.icbmclassic:nuclear.info=Hi! I'm a nuclearholic..
 explosive.icbmclassic:emp.info=Over 9000? Not anymore
@@ -180,7 +180,7 @@ explosive.icbmclassic:redMatter.info.8=Into the void
 explosive.icbmclassic:redMatter.info.9=Oh? You think you can escape
 explosive.icbmclassic:redMatter.info.10=Oh baby come back
 
-explosive.icbmclassic:sMine.info=Bouncing betty with, the kick of a fat guy
+explosive.icbmclassic:sMine.info=Bouncing betty with the kick of a fat guy
 
 ## Missile Form
 missile.icbmclassic:condensed.name=Conventional Missile
@@ -287,12 +287,12 @@ message.designator.callBlast=Calling air strike into designated position!
 message.designator.nopower=Laser designator out of electricity!
 message.designator.noFreq=Laser designator frequency not set!
 
-message.radarGun.scanned=Scanned Coordinates: X:%x, Y:%y, Z:%z - Distance: %d
+message.radarGun.scanned=Scanned Coordinates: X:%x Y:%y Z:%z - Distance: %d
 message.radarGun.nopower=Radar gun out of electricity!
 message.radarGun.transfer=Coordinate information transferred!
 message.radarGun.noCoords=You must scan a coordinate!
 message.launcher.protected=Region is being protected.
-message.detonator.locked=Remote Locked to: X:%x, Y:%y, Z:%z
+message.detonator.locked=Remote Locked to: X:%x Y:%y Z:%z
 message.detonator.nopower=Remote out of electricity!
 message.radar.redstone.on=Radar set to emit redstone
 message.radar.redstone.off=Radar set to not emit redstone
@@ -407,7 +407,7 @@ info.radarGun.meters=Meters
 info.detonator.linked=Linked Explosive:
 info.detonator.noLink=No Linked Explosive
 info.misc.tier=Explosive Tier
-info.tracker.tooltip=Left Click on a mob (players aswell), and I Will point to it.
+info.tracker.tooltip=Left Click on a mob (players aswell) and I Will point to it.
 
 ## Death messages
 death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty black hole.
