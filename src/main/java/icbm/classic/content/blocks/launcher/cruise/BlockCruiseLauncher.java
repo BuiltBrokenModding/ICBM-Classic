@@ -6,6 +6,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.tile.BlockICBM;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -121,5 +122,17 @@ public class BlockCruiseLauncher extends BlockICBM
             }
         }
         return true;
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos)
+    {
+        if(!world.isRemote)
+        {
+            TileEntity te = world.getTileEntity(pos);
+
+            if(te instanceof TileCruiseLauncher && world.isBlockPowered(pos))
+                ((TileCruiseLauncher)te).launch(); //canLaunch gets called by launch
+        }
     }
 }

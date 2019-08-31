@@ -34,10 +34,10 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
-
     public static final int DESCRIPTION_PACKET_ID = 0;
     public static final int SET_FREQUENCY_PACKET_ID = 1;
     public static final int SET_TARGET_PACKET_ID = 2;
+    public static final int LAUNCH_PACKET_ID = 3;
 
     /**
      * Desired aim angle, updated every tick if target != null
@@ -190,6 +190,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                     case SET_TARGET_PACKET_ID:
                     {
                         this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                        return true;
+                    }
+                    //launch missile
+                    case LAUNCH_PACKET_ID:
+                    {
+                        launch();
                         return true;
                     }
                 }

@@ -5,6 +5,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -24,6 +25,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
     private GuiTextField textFieldZ;
     private GuiTextField textFieldY;
     private GuiTextField textFieldFreq;
+    private GuiButton launch_button;
 
     public GuiCruiseLauncher(EntityPlayer player, TileCruiseLauncher tileEntity)
     {
@@ -45,6 +47,8 @@ public class GuiCruiseLauncher extends GuiContainerBase
         this.textFieldY.setMaxStringLength(6);
 
         this.textFieldFreq.setText(this.tileEntity.getFrequency() + "");
+
+        launch_button = addButton(new GuiButton(0, guiLeft + 69, guiTop + 60, 70, 20, LanguageUtility.getLocal("gui.launcherscreen.launch")));
 
         if (this.tileEntity.getTarget() == null)
         {
@@ -99,6 +103,13 @@ public class GuiCruiseLauncher extends GuiContainerBase
         this.textFieldZ.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.textFieldY.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.textFieldFreq.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if(button.id == 0)
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", TileCruiseLauncher.LAUNCH_PACKET_ID, this.tileEntity));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
