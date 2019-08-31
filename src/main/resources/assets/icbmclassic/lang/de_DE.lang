@@ -1,203 +1,301 @@
-## Translated by Vexatos
-itemGroup.ICBM=ICBM
+## Translated by Vexatos & bl4ckscor3
+itemGroup.icbmclassic=ICBM-Classic
 
+## Config
+config.icbmclassic:main.title=Generell
+config.icbmclassic:launcher.title=Startplattform
+config.icbmclassic:blast.title=Explosion
+config.icbmclassic:emp.title=EMP
+config.icbmclassic:missile.title=Rakete
+config.icbmclassic:battery.title=Batterie
+config.icbmclassic:thread.title=Thread
+config.icbmclassic:item.title=Item
+config.icbmclassic:ic2.title=Industrial Craft 2
+config.icbmclassic:debug.title=Debug
+
+## Potions
 potion.toxin=Toxin
 potion.virus=Virus
 potion.frostBite=Erfrierung
 potion.radiation=Strahlung
 
 ## Items
-item.icbm:sulfurDust.name=Schwefel
-item.icbm:saltpeter.name=Salpeter
-item.icbm:poisonPowder.name=Giftpulver
-item.icbm:antidote.name=Gegengift
-item.icbm:radarGun.name=Radarpistole
-item.icbm:remoteDetonator.name=Fernz\u00FCnder
-item.icbm:defuser.name=Entsch\u00E4rfer
-item.icbm:laserDesignator.name=Laser-Zielerfasser
-item.icbm:tracker.name=Tracker
-item.icbm:signalDisrupter.name=Signalst\u00F6rer
-item.icbm:computer.name=Taktik-Interface
-item.icbm:rocketLauncher.name=Raketenwerfer
+item.icbmclassic:battery.name=Batterie
+item.icbmclassic:battery.info=Wird zum Speichern und Transportieren von Strom verwendet.
+
+item.icbmclassic:sulfurDust.name=Schwefel
+item.icbmclassic:sulfurDust.info=Wird in der Herstellung von Schwarzpulver verwendet
+
+item.icbmclassic:saltpeter.name=Salpeter
+item.icbmclassic:saltpeter.info=Wird in der Herstellung von Schwarzpulver verwendet
+
+item.icbmclassic:poisonPowder.name=Giftpulver
+item.icbmclassic:poisonPowder.info=Wird in der Herstellung von Sprengstoff verwendet
+
+item.icbmclassic:antidote.name=Gegengift
+item.icbmclassic:antidote.info=Heilt alle Effekte
+
+item.icbmclassic:radarGun.name=Radarpistole
+item.icbmclassic:radarGun.info=Speichert GPS-Daten
+
+item.icbmclassic:remoteDetonator.name=Fernzünder
+item.icbmclassic:radarGun.info.info=Zündet Raketen fern
+
+item.icbmclassic:defuser.name=Entschärfer
+item.icbmclassic:defuser.info=Entfernt Sprengstoff sicher, auch nach dem Auslösen
+
+item.icbmclassic:laserDetonator.name=Laser-Zielerfasser
+item.icbmclassic:laserDetonator.info.info=Zündet Raketen fern
+
+item.icbmclassic:tracker.name=Tracker
+item.icbmclassic:tracker.info=Verfolgt Mobs und setzt Verfolgungsraketen
+
+item.icbmclassic:signalDisrupter.name=Signalstörer
+item.icbmclassic:signalDisrupter.info=Stört Frequenzen zur Verhinderung von Erkennungen oder Raketenstarts
+
+item.icbmclassic:rocketLauncher.name=Raketenwerfer
+item.icbmclassic:rocketLauncher.info=Dieser Raketenwerfer kann Raketen bis Stufe %s werfen
+item.icbmclassic:rocketLauncher.info.creative=Creative: Umgeht Stufen-Restriktion
+
+## Crafting items
+item.icbmclassic:ingot.steel.name=Stahlbarren
+item.icbmclassic:ingot.copper.name=Kupferbarren
+
+item.icbmclassic:clump.steel.name=Stahlklumpen
+
+item.icbmclassic:plate.iron.name=Eisenplatte
+item.icbmclassic:plate.steel.name=Stahlplatte
+
+item.icbmclassic:wire.copper.name=Kupferdraht
+item.icbmclassic:wire.gold.name=Golddraht
+
+item.icbmclassic:circuit.basic.name=Einfache Schaltung
+item.icbmclassic:circuit.advanced.name=Fortgeschrittene Schaltung
+item.icbmclassic:circuit.elite.name=Elite-Schaltung
 
 ## ICBM Machines
-icbm.machine.0.name=Startplattform Stufe 1
-icbm.machine.1.name=Startplattform Stufe 2
-icbm.machine.2.name=Startplattform Stufe 3
-icbm.machine.3.name=Abschuss-Steuerpult Stufe 1
-icbm.machine.4.name=Abschuss-Steuerpult Stufe 2
-icbm.machine.5.name=Abschuss-Steuerpult Stufe 3
-icbm.machine.6.name=Startplatforms-St\u00FCtzgestell Stufe 1
-icbm.machine.7.name=Startplatforms-St\u00FCtzgestell Stufe 2
-icbm.machine.8.name=Startplatforms-St\u00FCtzgestell Stufe 3
-icbm.machine.9.name=Radarstation
-icbm.machine.10.name=EMP-Turm
-icbm.machine.11.name=Mobile Abschussrampe
-icbm.machine.12.name=Raketen-Koordinator
+tile.icbmclassic:launcherbase.0.name=Startplattform Stufe 1
+tile.icbmclassic:launcherbase.1.name=Startplattform Stufe 2
+tile.icbmclassic:launcherbase.2.name=Startplattform Stufe 3
+tile.icbmclassic:launcherbase.info=Hält Raketen vor dem Start am Platz
+
+tile.icbmclassic:launcherscreen.0.name=Abschuss-Steuerpult Stufe 1
+tile.icbmclassic:launcherscreen.1.name=Abschuss-Steuerpult Stufe 2
+tile.icbmclassic:launcherscreen.2.name=Abschuss-Steuerpult Stufe 3
+tile.icbmclassic:launcherscreen.info=Wird zum Starten von Raketen aus Startplattformen benutzt
+
+tile.icbmclassic:launcherframe.0.name=Startplatform-Stützgestell Stufe 1
+tile.icbmclassic:launcherframe.1.name=Startplatform-Stützgestell Stufe 2
+tile.icbmclassic:launcherframe.2.name=Startplatform-Stützgestell Stufe 3
+tile.icbmclassic:launcherframe.info=Verbessert die Genauigkeit von Raketen
+
+tile.icbmclassic:radarstation.name=Radarstation
+tile.icbmclassic:radarstation.info=Entdeckt fliegende Raketen
+
+tile.icbmclassic:emptower.name=EMP-Turm
+tile.icbmclassic:emptower.info=Entleert die Energievorräte von Tiles, Entities und Geräten
+
+tile.icbmclassic:cruiselauncher.name=Mobile Abschussrampe
+tile.icbmclassic:cruiselauncher.info=Feuert eine Rakete ohne Zieldaten ab
+
+tile.icbmclassic:missilecoordinator.name=Raketen-Koordinator
+tile.icbmclassic:missilecoordinator.info=Übergroßer Taschenrechner, der Flugpfade berechnet
 
 ## Blocks
-tile.icbm:sulfurOre.name=Schwefelerz
-tile.icbm:missileAssembler.name=Raketenassembler
-tile.icbm:reinforcedRail.name=Verst\u00E4rkte Schiene
+tile.icbmclassic:reinforcedRail.name=Verstärkte Schiene
+tile.icbmclassic:reinforcedRail.info=Hält Explosionen besser stand
+
+tile.icbmclassic:redmatter.ore.name=Rotmaterienerz
+tile.icbmclassic:redmatter.ore.info=Oh Scheißendreck, wie bist du denn daran gekommen? Tu' das weg, es könnte explodieren!
 
 ## ICBM Explosives
 
 ## Block Form
-icbm.explosive.condensed.name=Verdichteter Sprengstoff
-icbm.explosive.shrapnel.name=Schrapnellsprengstoff
-icbm.explosive.incendiary.name=Brennender Sprengstoff
-icbm.explosive.debilitation.name=Entkr\u00E4ftender Sprengstoff
-icbm.explosive.chemical.name=Chemischer Sprengstoff
-icbm.explosive.anvil.name=Amboss-Sprengstoff
-icbm.explosive.repulsive.name=Absto\u00DFender Sprengstoff
-icbm.explosive.attractive.name=Anziehener Sprengstoff
-icbm.explosive.nightmare.name=Albtraum Sprengstoff
+explosive.icbmclassic:condensed.name=Verdichteter Sprengstoff
+explosive.icbmclassic:shrapnel.name=Schrapnellsprengstoff
+explosive.icbmclassic:incendiary.name=Brennender Sprengstoff
+explosive.icbmclassic:debilitation.name=Entkräftender Sprengstoff
+explosive.icbmclassic:chemical.name=Chemischer Sprengstoff
+explosive.icbmclassic:anvil.name=Amboss-Sprengstoff
+explosive.icbmclassic:repulsive.name=Abstoßender Sprengstoff
+explosive.icbmclassic:attractive.name=Anziehender Sprengstoff
 
-icbm.explosive.fragmentation.name=Splitternder Sprengstoff
-icbm.explosive.contagious.name=Ansteckender Sprengstoff
-icbm.explosive.sonic.name=Schallsprengstoff
-icbm.explosive.breaching.name=Durchschlagssprengstoff
-icbm.explosive.thermobaric.name=Thermobarischer Sprengstoff
+explosive.icbmclassic:fragmentation.name=Splitternder Sprengstoff
+explosive.icbmclassic:contagious.name=Ansteckender Sprengstoff
+explosive.icbmclassic:sonic.name=Schallsprengstoff
+explosive.icbmclassic:breaching.name=Durchschlagssprengstoff
+explosive.icbmclassic:thermobaric.name=Thermobarischer Sprengstoff
 
-icbm.explosive.nuclear.name=Atomarer Sprengstoff
-icbm.explosive.emp.name=EMP-Sprengstoff
-icbm.explosive.exothermic.name=Exothermer Sprengstoff
-icbm.explosive.endothermic.name=Endothermer Sprengstoff
-icbm.explosive.antiGravitational.name=Anti-Schwerkraft-Sprengstoff
-icbm.explosive.ender.name=Endersprengstoff
-icbm.explosive.hypersonic.name=Hyperschallsprengstoff
+explosive.icbmclassic:nuclear.name=Atomarer Sprengstoff
+explosive.icbmclassic:emp.name=EMP-Sprengstoff
+explosive.icbmclassic:exothermic.name=Exothermer Sprengstoff
+explosive.icbmclassic:endothermic.name=Endothermer Sprengstoff
+explosive.icbmclassic:antigravitational.name=Anti-Schwerkraft-Sprengstoff
+explosive.icbmclassic:ender.name=Endersprengstoff
+explosive.icbmclassic:hypersonic.name=Hyperschallsprengstoff
 
-icbm.explosive.antimatter.name=Antimateriensprengstoff
-icbm.explosive.redMatter.name=Rotmateriensprengstoff
-
-icbm.explosive.sMine.name=S-Mine
+explosive.icbmclassic:antimatter.name=Antimateriensprengstoff
+explosive.icbmclassic:redmatter.name=Rotmateriensprengstoff
 
 ## Missile Form
-icbm.missile.condensed.name=Konventionelle Rakete
-icbm.missile.shrapnel.name=Schrapnellrakete
-icbm.missile.incendiary.name=Brandrakete
-icbm.missile.debilitation.name=Entkr\u00E4ftende Rakete
-icbm.missile.chemical.name=Chemische Rakete
-icbm.missile.anvil.name=Amboss-Rakete
-icbm.missile.repulsive.name=Absto\u00DFende Rakete
-icbm.missile.attractive.name=Anziehende Rakete
+missile.icbmclassic:condensed.name=Konventionelle Rakete
+missile.icbmclassic:shrapnel.name=Schrapnellrakete
+missile.icbmclassic:incendiary.name=Brandrakete
+missile.icbmclassic:debilitation.name=Entkräftende Rakete
+missile.icbmclassic:chemical.name=Chemische Rakete
+missile.icbmclassic:anvil.name=Amboss-Rakete
+missile.icbmclassic:repulsive.name=Abstoßende Rakete
+missile.icbmclassic:attractive.name=Anziehende Rakete
 
-icbm.missile.fragmentation.name=Splitterrakete
-icbm.missile.contagious.name=Ansteckende Rakete
-icbm.missile.sonic.name=Schallrakete
-icbm.missile.breaching.name=Durchschlagsrakete
-icbm.missile.thermobaric.name=Thermobarische Rakete
+missile.icbmclassic:fragmentation.name=Splitterrakete
+missile.icbmclassic:contagious.name=Ansteckende Rakete
+missile.icbmclassic:sonic.name=Schallrakete
+missile.icbmclassic:breaching.name=Durchschlagsrakete
+missile.icbmclassic:thermobaric.name=Thermobarische Rakete
 
-icbm.missile.nuclear.name=Atomrakete
-icbm.missile.emp.name=EMP-Rakete
-icbm.missile.exothermic.name=Exotherme Rakete
-icbm.missile.endothermic.name=Endotherme Rakete
-icbm.missile.antiGravitational.name=Anti-Schwerkraft-Rakete
-icbm.missile.ender.name=Enderrakete
-icbm.missile.hypersonic.name=Hyperschallrakete
+missile.icbmclassic:nuclear.name=Atomrakete
+missile.icbmclassic:emp.name=EMP-Rakete
+missile.icbmclassic:exothermic.name=Exotherme Rakete
+missile.icbmclassic:endothermic.name=Endotherme Rakete
+missile.icbmclassic:antigravitational.name=Anti-Schwerkraft-Rakete
+missile.icbmclassic:ender.name=Enderrakete
+missile.icbmclassic:hypersonic.name=Hyperschallrakete
 
-icbm.missile.antimatter.name=Antimaterienrakete
-icbm.missile.redMatter.name=Rotmaterienrakete
-
-## Special Missiles
-icbm.missile.missileModule.name=Raketenmodul
-icbm.missile.antiBallistic.name=Flugabwehrrakete
-icbm.missile.cluster.name=Streurakete
-icbm.missile.nuclearCluster.name=Atomare Streurakete
-icbm.missile.homing.name=Verfolgungsrakete
-
-## Grenades
-icbm.grenade.condensed.name=Konventionelle Granate
-icbm.grenade.shrapnel.name=Schrapnellgranate
-icbm.grenade.incendiary.name=Brandgranate
-icbm.grenade.debilitation.name=Entkr\u00E4ftende Granate
-icbm.grenade.chemical.name=Chemische Granate
-icbm.grenade.anvil.name=Ambossgranate
-icbm.grenade.repulsive.name=Absto\u00DFende Granate
-icbm.grenade.attractive.name=Anziehende Granate
+missile.icbmclassic:antimatter.name=Antimaterienrakete
+missile.icbmclassic:redmatter.name=Rotmaterienrakete
 
 ## Explosive Minecarts
-icbm.minecart.condensed.name=Explosive Lore
-icbm.minecart.shrapnel.name=Schrapnelllore
-icbm.minecart.incendiary.name=Brandlore
-icbm.minecart.debilitation.name=Entkr\u00E4ftende Lore
-icbm.minecart.chemical.name=Chemische Lore
-icbm.minecart.anvil.name=Amboss-Lore
-icbm.minecart.repulsive.name=Absto\u00DFende Lore
-icbm.minecart.attractive.name=Anziehende Lore
-icbm.minecart.nightmare.name=Albtraum Lore
+bombcart.icbmclassic:condensed.name=Explosive Lore
+bombcart.icbmclassic:shrapnel.name=Schrapnelllore
+bombcart.icbmclassic:incendiary.name=Brandlore
+bombcart.icbmclassic:debilitation.name=Enträftende Lore
+bombcart.icbmclassic:chemical.name=Chemische Lore
+bombcart.icbmclassic:anvil.name=Amboss-Lore
+bombcart.icbmclassic:repulsive.name=Abstoßende Lore
+bombcart.icbmclassic:attractive.name=Anziehende Lore
 
-icbm.minecart.fragmentation.name=Splitterlore
-icbm.minecart.contagious.name=Ansteckede Lore
-icbm.minecart.sonic.name=Schall-Lore
-icbm.minecart.breaching.name=Durchbrechende Lore
-icbm.minecart.thermobaric.name=Thermobarische Lore
+bombcart.icbmclassic:fragmentation.name=Splitterlore
+bombcart.icbmclassic:contagious.name=Ansteckende Lore
+bombcart.icbmclassic:sonic.name=Schalllore
+bombcart.icbmclassic:breaching.name=Durchschlagslore
+bombcart.icbmclassic:thermobaric.name=Thermobarische Lore
+
+bombcart.icbmclassic:nuclear.name=Atomlore
+bombcart.icbmclassic:emp.name=EMP-Lore
+bombcart.icbmclassic:exothermic.name=Exotherme Lore
+bombcart.icbmclassic:endothermic.name=Endotherme Lore
+bombcart.icbmclassic:antigravitational.name=Anti-Schwerkraft-Lore
+bombcart.icbmclassic:ender.name=Enderlore
+bombcart.icbmclassic:hypersonic.name=Hyperschalllore
+
+bombcart.icbmclassic:antimatter.name=Antimaterienlore
+bombcart.icbmclassic:redmatter.name=Rotmaterienlore
+
+## Explosive Info
+explosive.icbmclassic:condensed.info=Leicht zerstörendere Version von TNT
+explosive.icbmclassic:shrapnel.info=Bricht in einem Trommelfeuer aus Metallfragmenten aus
+explosive.icbmclassic:incendiary.info=Setzt die Umgebung in Brand
+explosive.icbmclassic:debilitation.info=Verwirrung und Desorientierung für alle in naher Umgebung
+explosive.icbmclassic:chemical.info=Du kannst nicht kämpfen wenn du nicht atmen kannst
+explosive.icbmclassic:anvil.info=Was ist los doc
+explosive.icbmclassic:repulsive.info=Stößt alle weg
+explosive.icbmclassic:attractive.info=Zieht alle an
+
+explosive.icbmclassic:fragmentation.info=Verwüstet die Landschaft mit extrem schnellen Fragmenten
+explosive.icbmclassic:contagious.info=Hast du je von der Plage gehört?
+explosive.icbmclassic:sonic.info=Wer braucht ein Ninja zu sein um nach so viel Lärm einzusteigen?
+explosive.icbmclassic:breaching.info=Wenn du eine Tür benötigst
+explosive.icbmclassic:thermobaric.info=Mini-Atombombe in der Dose, oder zumindest so nah wie der Norden kommen kann
+
+explosive.icbmclassic:nuclear.info=Hi! Ich bin ein Atomoholiker..
+explosive.icbmclassic:emp.info=Über 9000? Jetzt nicht mehr
+explosive.icbmclassic:exothermic.info=Und du dachtest die Sonne wäre heiß
+explosive.icbmclassic:endothermic.info=Sie nennen mich Mr. Frost
+explosive.icbmclassic:antigravitational.info=Ich glaube deine Base sieht schwebend besser aus
+explosive.icbmclassic:ender.info=Lass mich deine Basis verlegen
+explosive.icbmclassic:hypersonic.info=Ich habe Mitleid mit deinen Ohren
+
+explosive.icbmclassic:antimatter.info=Materie + Antimaterie = Keine Materie
+
+##Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
+explosive.icbmclassic:redMatter.info.count=11
+explosive.icbmclassic:redMatter.info.0=Yogscast? Diggy diggy hole
+explosive.icbmclassic:redMatter.info.1=Wäre schade, wenn deine Base ins Nichts verschwinden würde
+explosive.icbmclassic:redMatter.info.2=Voltz-Spezial... Die Bombe
+explosive.icbmclassic:redMatter.info.3=Die Räder des Busses drehen sich immer weiter
+explosive.icbmclassic:redMatter.info.4=Ist da gerade eine Kuh am Fenster vorbeigeflogen?
+explosive.icbmclassic:redMatter.info.5=Oh Gott es saugt mich ein
+explosive.icbmclassic:redMatter.info.6=Es gibt kein Entkommen
+explosive.icbmclassic:redMatter.info.7=Nicht mal Licht....
+explosive.icbmclassic:redMatter.info.8=In das Nichts
+explosive.icbmclassic:redMatter.info.9=Oh? Du denkst du kannst entkommen
+explosive.icbmclassic:redMatter.info.10=Oh Baby, komm' zurück
+
+explosive.icbmclassic:sMine.info=Bouncing Betty mit dem Kick eines Fetten
+
+## Special Missiles
+missile.icbmclassic:missileModule.name=Raketenmodul
+missile.icbmclassic:antiBallistic.name=Flugabwehrrakete
+missile.icbmclassic:cluster.name=Streurakete
+missile.icbmclassic:nuclearCluster.name=Atomare Streurakete
+missile.icbmclassic:homing.name=Verfolgungsrakete
+
+## Grenades
+grenade.icbmclassic:condensed.name=Konventionelle Granate
+grenade.icbmclassic:shrapnel.name=Schrapnellgranate
+grenade.icbmclassic:incendiary.name=Brandgranate
+grenade.icbmclassic:debilitation.name=Entkräftende Granate
+grenade.icbmclassic:chemical.name=Chemische Granate
+grenade.icbmclassic:anvil.name=Amboss-Granate
+grenade.icbmclassic:repulsive.name=Abstoßende Granate
+grenade.icbmclassic:attractive.name=Anziehende Granate
+
 
 ## ICBM Misc Blocks
-tile.icbm:oreSulfur.name=Schwefelerz
-tile.icbm:concrete.0.name=Beton
-tile.icbm:concrete.1.name=Kompakter Beton
-tile.icbm:concrete.2.name=Verst\u00E4rkter Beton
-tile.icbm:reinforcedGlass.name=Verst\u00E4rktes Glas
-tile.icbm:glassPressurePlate.name=Glasdruckplatte
-tile.icbm:glassButton.name=Glasknopf
-tile.icbm:camouflage.name=Tarnmaterial
-tile.icbm:proximityDetector.name=Umgebungs-Scanner
-tile.icbm:spikes.0.name=Stacheln
-tile.icbm:spikes.1.name=Giftstacheln
-tile.icbm:spikes.2.name=Entz\u00FCndende Stacheln
+tile.icbmclassic:concrete.0.name=Beton
+tile.icbmclassic:concrete.1.name=Kompakter Beton
+tile.icbmclassic:concrete.2.name=Verstärkter Beton
 
-## ICBM Sentry
-## Translated by Calclavia and Vexatos
-tile.icbm:turret.gunTurret.name=Gesch\u00FCtzturm
-tile.icbm:turret.railgun.name=Railgun
-tile.icbm:turret.antiAircraftTurret.name=Flugabwehrgesch\u00FCtzturm
-tile.icbm:turret.laserTurret.name=Lasergesch\u00FCtzturm
-tile.icbm:turret.autoBow.name=Armbrustgesch\u00FCtzturm
-tile.icbm:turretPlatform.name=Gesch\u00FCtzturmbasis
+tile.icbmclassic:reinforcedGlass.name=Verstärktes Glas
+tile.icbmclassic:glassPressurePlate.name=Glasdruckplatte
+tile.icbmclassic:glassButton.name=Glasknopf
+tile.icbmclassic:camouflage.name=Tarnmaterial
+tile.icbmclassic:proximityDetector.name=Umgebungsscanner
 
-item.icbm:bulletShell.name=Patronenh\u00FClse
-item.icbm:bullet.name=Geschoss
-item.icbm:bulletRailgun.name=Railgun-Geschoss
-item.icbm:bulletAntimatter.name=Antimaterien-Geschoss
-item.icbm:bulletInfinite.name=Unendliches Geschoss
+tile.icbmclassic:spikes.0.name=Stacheln
+tile.icbmclassic:spikes.1.name=Giftstacheln
+tile.icbmclassic:spikes.2.name=Entzündliche Stacheln
 
-item.icbm:targetCard.name=Reichweiten-Upgrade
-item.icbm:shellCollector.name=H\u00FClsensammelupgrade
-
-entity.turretseat.name=Gesch\u00FCtzturmsitz
-
-## Deaths
-death.attack.bullet=%1$s wurde zu einem Schweizer K\u00E4se geschossen!
-death.attack.laser=%1$s wude von Lasern vaporisiert!
+tile.icbmclassic:batterybox.0.name=Batteriebox
 
 ## Chat messages
-message.tracker.nowtrack=Nun Verfolgend:
-message.tracker.nopower=Tracker hat nicht gen\u00FCgend Energie!
-message.tracker.banned=Ein Tracker ist in diesem Bereich verboten!
+message.tracker.nowtrack=Verfolge nun:
+message.tracker.nopower=Tracker hat nicht genügend Energie!
+message.tracker.banned=Tracker ist in diesem Bereich verboten!
 
-message.defuser.nopower=Entsch\u00E4rfer hat nicht gen\u00FCgend Energie!
+message.defuser.nopower=Entschärfer hat nicht genügend Energie!
 
 message.designator.callTime=Rufe Luftschlag in:
 message.designator.blast=Luftschlag kommt!
 message.designator.setFreq=Laser-Zielerfasser-Frequenz eingestellt:
-message.designator.failFreq=Frequenz muss gr\u00F6\u00DFer als null sein.
+message.designator.failFreq=Frequenz muss größer als Null sein.
 message.designator.callBlast=Rufe Luftschlag zu erfasster Position!
-message.designator.nopower=Laser-Zielerfasser hat nicht gen\u00FCgend Energie!
+message.designator.nopower=Laser-Zielerfasser hat nicht genügend Energie!
 message.designator.noFreq=Laser-Zielerfasser hat keine Frequenz eingestellt!
 
-message.radarGun.scanned=Koordinaten gescannt: X:%x, Y:%y, Z:%z - Entfernung: %d
-message.radarGun.nopower=Radarpistole hat nicht gen\u00FCgend Energie!
-message.radarGun.transfer=Koordinateninformation \u00FCbertragen!
+message.radarGun.scanned=Gescannte Koordinaten: X:%x Y:%y Z:%z - Distanz: %d
+message.radarGun.nopower=Radarpistole hat nicht genügend Energie!
+message.radarGun.transfer=Koordinateninformation übertragen!
 message.radarGun.noCoords=Du musst eine Koordinate scannen!
-message.launcher.protected=Region wird gesch\u00FCtzt.
-message.detonator.locked=Fernz\u00FCnder gebunden an: X:%x, Y:%y, Z:%z
-message.detonator.nopower=Fernz\u00FCnder hat nicht gen\u00FCgend Energie!
-message.radar.redstone=Radar-Redstone-Emission auf allen Seiten:
+message.launcher.protected=Region wird geschützt.
+message.detonator.locked=Fernzünder gebunden an: X:%x Y:%y Z:%z
+message.detonator.nopower=Fernzünder hat nicht genügend Energie!
+message.radar.redstone.on=Radar gibt ein Redstonesignal ab
+message.radar.redstone.off=Radar gibt kein Redstonesignal ab
 
 ## GUI stuff
-gui.misc.nopower=Nicht gen\u00FCgend Energie!
-gui.misc.idle=Bereit
+gui.misc.nopower=Nicht genügend Energie!
+gui.misc.idle=Untätig
 gui.misc.freq=Frequenz:
 gui.misc.XCoord=X-Koord:
 gui.misc.YCoord=Y-Koord:
@@ -207,17 +305,19 @@ gui.misc.y=Y:
 gui.misc.z=Z:
 gui.misc.status=Status:
 gui.misc.voltage=Spannung:
+gui.misc.missile=Rakete[%d, %d]
+gui.misc.object=Objekt[%d, %d]
 
 gui.tracker.freq=Frequenz
-gui.detector.name=Umgebungs-Scanner
+gui.detector.name=Umgebungsscanner
 gui.detector.all=Alles
 gui.detector.players=Spieler
-gui.detector.mobs=Lebendes
+gui.detector.mobs=Mobs
 gui.detector.range=Erkennungsradius
 gui.detector.min=Min
 gui.detector.max=Max
-gui.detector.exclude=Ausschlie\u00DFen
-gui.detector.include=Einschlie\u00DFen
+gui.detector.exclude=Ausschließen
+gui.detector.include=Einschließen
 gui.detector.target=Ziel:
 gui.detector.on=An
 gui.detector.status=Status:
@@ -226,35 +326,52 @@ gui.empTower.name=EMP-Turm
 gui.empTower.missiles=Raketen
 gui.empTower.elec=Energie
 gui.empTower.both=Beides
-gui.empTower.radius=EMP-Radius: %p Bl\u00F6cke
+gui.empTower.radius=EMP-Radius: %p Blöcke
 gui.empTower.effect=EMP-Effekt:
-gui.empTower.effectDebilitate=Elektronik schw\u00E4chen
-gui.empTower.effectDisrupt=Raketen st\u00F6ren
-gui.empTower.effectDeplete=Energie ersch\u00F6pfen
+gui.empTower.effectDebilitate=Elektronik schwächen
+gui.empTower.effectDisrupt=Raketen stören
+gui.empTower.effectDeplete=Energie erschöpfen
 gui.empTower.mode=Modus:
 gui.empTower.ready=Bereit zum Feuern!
 
 gui.launcherBase.name=Abschussplattform
 gui.launcherBase.place=Platziere Rakete
-gui.launcherScreen.name=Abschuss-Steuerpult
-gui.launcherScreen.detHeight=Detonationsh\u00F6he:
-gui.launcherScreen.lockHeight=Feste H\u00F6he:
-gui.launcherScreen.target=Raketenziel
-gui.launcherScreen.inaccuracy=Ungenauigkeit: %p Bl\u00F6cke
-gui.launcherScreen.statusMissing=Nicht verbunden!
-gui.launcherScreen.statusNoPower=Zu wenig Energie!
-gui.launcherScreen.statusEmpty=Raketensilo ist leer!
-gui.launcherScreen.statusInvalid=Ziel ist ung\u00FCltig!
-gui.launcherScreen.statusClose=Ziel zu nah!
-gui.launcherScreen.statusFar=Ziel zu weit entfernt!
-gui.launcherScreen.statusReady=Bereit zum Start!
-gui.launcherCruise.name=Mobile Rampe
+gui.launcherscreen.name=Abschuss-Steuerpult
+gui.launcherscreen.detHeight=Detonationshöhe:
+gui.launcherscreen.lockHeight=Feste Höhe:
+gui.launcherscreen.target=Raketenziel
+gui.launcherscreen.inaccuracy=Ungenauigkeit: %p Blöcke
+gui.launcherscreen.statusMissing=Nicht verbunden!
+gui.launcherscreen.statusNoPower=Zu wenig Energie!
+gui.launcherscreen.statusEmpty=Raketensilo ist leer!
+gui.launcherscreen.statusInvalid=Ziel ist ungültig!
+gui.launcherscreen.statusClose=Ziel zu nah!
+gui.launcherscreen.statusFar=Ziel zu weit entfernt!
+gui.launcherscreen.statusReady=Bereit zum Start!
+gui.launcherscreen.launch=Starten
+
+
+gui.launcherCruise.name=Mobile Abschussrampe
+
 gui.launcherCruise.statusNoPower=Keine Energie!
-gui.launcherCruise.statusEmpty=Silo leer!
-gui.launcherCruise.statusInvalid=Ziel ung\u00FCltig!
+gui.launcherCruise.statusEmpty=Keine rakete!
+gui.launcherCruise.invalidMissile=Ungültiges Item!
+gui.launcherCruise.invalidMissileTier=Ungültige Raketenstufe!
+gui.launcherCruise.notCruiseMissile=Ungültiger Raketentyp!
+gui.launcherCruise.statusInvalid=Ungültiges Ziel!
+gui.launcherCruise.targetToClose=Ziel zu nah!
+gui.launcherCruise.noRoom=3x3 nicht frei!
 gui.launcherCruise.statusReady=Bereit!
 
-gui.coordinator.name=Raketen-Koordinator
+## Chat warning if user tries to fire by hand, %s is status message from GUI
+chat.launcher.status=Status: %s
+chat.launcher.failedToFire=Warnung! Kann Rakete wegen Statusfehler nicht abschießen!
+chat.launcher.toolTargetSet=Zieldaten von Tool übertragen.
+chat.launcher.toolWorldNotMatch=Welt der Zieldaten ist nicht die gleiche wie diese Welt!
+chat.launcher.noTargetInTool=Tool beinhaltet keine Zieldaten!
+chat.launcher.toolFrequencySet=Frequenz zu %s gesetzt
+
+gui.coordinator.name=Raketenkoordinator
 gui.coordinator.sim=Pfadsimulator
 gui.coordinator.from=Von:
 gui.coordinator.to=Bis:
@@ -262,13 +379,13 @@ gui.coordinator.displace=Abstand: %p Meter
 gui.coordinator.arc=Weg: %p Meter
 gui.coordinator.time=Zeit: %p Sekunden
 gui.coordinator.direction=Richtung:
-gui.coordinator.wip=Mehr Funktionen kommen!
+gui.coordinator.wip=Neue Funktionen kommen bald!
 
-gui.assembler.name=Raketentisch
 gui.radar.coords=Koordinaten:
-gui.radar.zoneSafe=Sicherheitszone:
-gui.radar.zoneAlarm=Alarmzone:
-gui.radar.on=Radar An!
+gui.radar.range=Reichweite
+gui.radar.range.trigger=Auslöser:
+gui.radar.range.detection=Detektion:
+gui.radar.on=Radar an!
 gui.radar.nopower=Keine Energie!
 
 gui.terminal.name=Terminal
@@ -279,18 +396,22 @@ gui.platform.access=Nutzerzugriff
 
 ## Tooltips
 info.misc.freq=Frequenz:
-info.tracker.tracking=Verfolgend:
+info.tracker.tracking=Verfolgen:
 info.designator.noFreq=Frequenz: Nicht gesetzt
-info.radarGun.savedCoords=Gespeicherte Koordinaten:
+info.radarGun.savedCoords=Gespeicherte Koordination:
 info.radarGun.meters=Meter
-info.detonator.linked=Verbundener Sprengsatz:
-info.detonator.noLink=Kein verbundener Sprengsatz
-info.misc.tier=Explosivstufe
-info.rocketlauncher.tooltip=Dieser Raketenwerfer kann Raketen bis Stufe %s abfeuern
-info.tracker.tooltip=Linksklicke ein Lebewesen (auch Spieler) und der Tracker wird in dessen Richtung zeigen.
+info.detonator.linked=Verbundener Sprengstoff:
+info.detonator.noLink=Kein verbundener Sprengstoff
+info.misc.tier=Sprengstoffstufe
+info.tracker.tooltip=Linksklicke einen Mob (auch Spieler) und ich werde in dessen Richtung zeigen.
 
-info.upgrade.range=Erh\u00F6ht die Zielreichweite des Gesch\u00Fctzturms.
-info.upgrade.collect=Erlaubt dem Gesch\u00FCtzturm, ausgeworfene H\u00FClsen wieder aufzusammeln.
-info.upgrade.sentry=Ein Upgrade f\u00FCr einen Gesch\u00FCtzturm
+## Death messages
+death.attack.icbm.redmatter=%s wurde von der immensen Masse eines mächtigen Schwarzen Loches vernichtet.
 
-info.turretdenied.waila=%u: Du hast keinen Zugriff
+## GPS
+gps.pos.set.name=GPS-Daten gespeichert
+gps.error.pos.invalid.name=Ungültige Position
+gps.error.pos.invalid.world.name=Kann keine andere Welt anvisieren
+gps.error.pos.invalid.null.name=Kein Ziel gesetzt
+gps.data.transferred.name=Daten übertragen
+gps.cleared.name=GPS-Daten gelöscht
