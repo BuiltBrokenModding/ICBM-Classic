@@ -97,35 +97,45 @@ public abstract class ExplosiveContentRegistry implements IExplosiveContentRegis
     @Override
     public void lockRegistry()
     {
-        locked = true;
-
-        //Turn into immutable
-        nameCache = ImmutableSet.copyOf(nameCache);
-
-        //Generate reference map
-        final HashMap<ResourceLocation, IExplosiveData> map = new HashMap();
-        for(ResourceLocation name : nameCache)
+        if(!locked)
         {
-            final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(name);
-            if(data != null)
-            {
-                map.put(name, data);
-            }
-            else
-            {
-                throw new RuntimeException(this + ": Failed to locate explosive by name " + name);
-            }
-        }
-        mapCache = ImmutableMap.copyOf(map);
+            locked = true;
 
-        //Map ids to cache
-        idCache = map.values().stream().map(entry -> entry.getRegistryID()).collect(ImmutableSet.toImmutableSet());
-        dataCache = map.values().stream().collect(ImmutableSet.toImmutableSet());
+            //Turn into immutable
+            nameCache = ImmutableSet.copyOf(nameCache);
+
+            //Generate reference map
+            final HashMap<ResourceLocation, IExplosiveData> map = new HashMap();
+            for(ResourceLocation name : nameCache)
+            {
+                final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(name);
+                if(data != null)
+                {
+                    map.put(name, data);
+                }
+                else
+                {
+                    throw new RuntimeException(this + ": Failed to locate explosive by name " + name);
+                }
+            }
+            mapCache = ImmutableMap.copyOf(map);
+
+            //Map ids to cache
+            idCache = map.values().stream().map(entry -> entry.getRegistryID()).collect(ImmutableSet.toImmutableSet());
+            dataCache = map.values().stream().collect(ImmutableSet.toImmutableSet());
+        }
+        else
+            throw new RuntimeException(this + ": Registry was locked twice!");
     }
 
     @Override
     public String toString()
     {
         return "ExplosiveContentRegistry[" + name + "]";
+    }
+
+    public boolean isLocked()
+    {
+        return locked;
     }
 }

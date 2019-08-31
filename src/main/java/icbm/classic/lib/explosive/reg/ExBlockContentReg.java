@@ -46,28 +46,33 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     @Override
     public void lockRegistry()
     {
-        super.lockRegistry();
-        fuseSetSupplierMap.forEach((regName, func) -> {
-            final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
-            if (data != null)
-            {
-                fuseSetSupplier.addKey(data.getRegistryID(), func);
-            }
-        });
-        fuseTickCallbackMap.forEach((regName, func) -> {
-            final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
-            if (data != null)
-            {
-                fuseTickCallback.addKey(data.getRegistryID(), func);
-            }
-        });
-        blockActiviationCallbackMap.forEach((regName, func) -> {
-            final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
-            if (data != null)
-            {
-                blockActiviationCallback.addKey(data.getRegistryID(), func);
-            }
-        });
+        if(!isLocked())
+        {
+            super.lockRegistry();
+            fuseSetSupplierMap.forEach((regName, func) -> {
+                final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
+                if (data != null)
+                {
+                    fuseSetSupplier.addKey(data.getRegistryID(), func);
+                }
+            });
+            fuseTickCallbackMap.forEach((regName, func) -> {
+                final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
+                if (data != null)
+                {
+                    fuseTickCallback.addKey(data.getRegistryID(), func);
+                }
+            });
+            blockActiviationCallbackMap.forEach((regName, func) -> {
+                final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
+                if (data != null)
+                {
+                    blockActiviationCallback.addKey(data.getRegistryID(), func);
+                }
+            });
+        }
+        else
+            throw new RuntimeException(this + ": Registry was locked twice!");
     }
 
     @Override

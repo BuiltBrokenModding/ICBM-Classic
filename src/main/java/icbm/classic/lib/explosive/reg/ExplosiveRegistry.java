@@ -40,6 +40,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     private File saveFile;
 
     private boolean locked = false;
+    private boolean allExplosivesLocked = false;
     private boolean lockNewContentTypes = false;
 
     private ImmutableSet<IExplosiveData> allExplosives;
@@ -85,18 +86,34 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 
     public void lockNewExplosives()
     {
-        allExplosives = explosiveData.values().stream().filter(e -> e != null).collect(ImmutableSet.toImmutableSet());
+        if(!allExplosivesLocked)
+        {
+            allExplosivesLocked = true;
+            allExplosives = explosiveData.values().stream().filter(e -> e != null).collect(ImmutableSet.toImmutableSet());
+        }
+        else
+            throw new RuntimeException(this + ": New explosives were locked twice!");
     }
 
     public void completeLock()
     {
-        locked = true;
-        getContentRegistries().forEach(reg -> reg.lockRegistry());
+        if(!locked)
+        {
+            locked = true;
+            getContentRegistries().forEach(reg -> reg.lockRegistry());
+        }
+        else
+            throw new RuntimeException(this + ": Registries were locked twice!");
     }
 
     public void lockNewContentTypes()
     {
-        lockNewContentTypes = true;
+        if(!lockNewContentTypes)
+        {
+            lockNewContentTypes = true;
+        }
+        else
+            throw new RuntimeException(this + ": New content types were locked twice!");
     }
 
     @Override
