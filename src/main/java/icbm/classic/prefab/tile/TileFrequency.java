@@ -1,7 +1,6 @@
 package icbm.classic.prefab.tile;
 
 import icbm.classic.api.NBTConstants;
-import icbm.classic.prefab.item.TilePoweredMachine;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**

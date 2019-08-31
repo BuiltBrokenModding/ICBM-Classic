@@ -1,11 +1,10 @@
-package icbm.classic.prefab.item;
+package icbm.classic.prefab.tile;
 
 import icbm.classic.config.ConfigMain;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
-import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
