@@ -137,4 +137,9 @@ public class CommonProxy implements IGuiHandler
     {
 
     }
+
+    public void spawnAirParticle(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int age)
+    {
+
+    }
 }
