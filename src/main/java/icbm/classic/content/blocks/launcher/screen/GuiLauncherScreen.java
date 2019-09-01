@@ -158,7 +158,7 @@ public class GuiLauncherScreen extends GuiContainerBase
     @Override
     protected void actionPerformed(GuiButton button) throws IOException
     {
-        if(button.id == 0)
+        if(button.id == launch_button.id)
             ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", TileLauncherScreen.LAUNCH_PACKET_ID, this.tileEntity).addData(this.tileEntity.lockHeight));
     }
 
