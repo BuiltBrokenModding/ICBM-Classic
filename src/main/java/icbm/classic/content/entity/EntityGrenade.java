@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
@@ -197,7 +198,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
-        if (this.ticksExisted > ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, explosiveID))
+        if (this.ticksExisted > ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, EnumExplosiveType.GRENADE, posX, posY, posZ, explosiveID))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
             ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY + 0.3f, this.posZ, explosiveID, 1, blastData);

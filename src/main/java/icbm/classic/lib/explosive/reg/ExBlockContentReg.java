@@ -1,8 +1,9 @@
 package icbm.classic.lib.explosive.reg;
 
+import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.data.BlockActivateFunction;
-import icbm.classic.api.data.WorldPosIntSupplier;
+import icbm.classic.api.data.WorldTypePosIntSupplier;
 import icbm.classic.api.data.WorldTickFunction;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.IExBlockRegistry;
@@ -19,11 +20,11 @@ import java.util.HashMap;
  */
 public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBlockRegistry
 {
-    private final HashMap<ResourceLocation, WorldPosIntSupplier> fuseSetSupplierMap = new HashMap();
+    private final HashMap<ResourceLocation, WorldTypePosIntSupplier> fuseSetSupplierMap = new HashMap();
     private final HashMap<ResourceLocation, WorldTickFunction> fuseTickCallbackMap = new HashMap();
     private final HashMap<ResourceLocation, BlockActivateFunction> blockActiviationCallbackMap = new HashMap();
 
-    private final IntHashMap<WorldPosIntSupplier> fuseSetSupplier = new IntHashMap();
+    private final IntHashMap<WorldTypePosIntSupplier> fuseSetSupplier = new IntHashMap();
     private final IntHashMap<WorldTickFunction> fuseTickCallback = new IntHashMap();
     private final IntHashMap<BlockActivateFunction> blockActiviationCallback = new IntHashMap();
 
@@ -76,7 +77,7 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     }
 
     @Override
-    public void setFuseSupplier(ResourceLocation exName, WorldPosIntSupplier fuseTimer)
+    public void setFuseSupplier(ResourceLocation exName, WorldTypePosIntSupplier fuseTimer)
     {
         fuseSetSupplierMap.put(exName, fuseTimer);
     }
@@ -104,12 +105,12 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     }
 
     @Override
-    public int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID)
+    public int getFuseTime(World world, EnumExplosiveType type, double posX, double posY, double posZ, int explosiveID)
     {
-        final WorldPosIntSupplier function = fuseSetSupplier.lookup(explosiveID);
+        final WorldTypePosIntSupplier function = fuseSetSupplier.lookup(explosiveID);
         if (function != null)
         {
-            return function.get(world, posX, posY, posZ);
+            return function.get(world, type, posX, posY, posZ);
         }
         return 100;
     }

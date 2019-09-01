@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
@@ -86,7 +87,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         //Init fuse
         if (fuse == -1)
         {
-            this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, getExplosiveData().getRegistryID());
+            this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, EnumExplosiveType.BLOCK, posX, posY, posZ, getExplosiveData().getRegistryID());
         }
 
         //Tick fuse to render effects

@@ -1,7 +1,8 @@
 package icbm.classic.api.reg.content;
 
+import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.data.BlockActivateFunction;
-import icbm.classic.api.data.WorldPosIntSupplier;
+import icbm.classic.api.data.WorldTypePosIntSupplier;
 import icbm.classic.api.data.WorldTickFunction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -22,7 +23,7 @@ public interface IExBlockRegistry extends IExplosiveContentRegistry
      * @param exName
      * @param fuseTimer
      */
-    void setFuseSupplier(ResourceLocation exName, WorldPosIntSupplier fuseTimer);
+    void setFuseSupplier(ResourceLocation exName, WorldTypePosIntSupplier fuseTimer);
 
     /**
      * Called to set a function to invoke each tick of an explosive block's fuse.
@@ -58,5 +59,5 @@ public interface IExBlockRegistry extends IExplosiveContentRegistry
      */
     void tickFuse(World world, double posX, double posY, double posZ, int ticksExisted, int explosiveID);
 
-    int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID);
+    int getFuseTime(World world, EnumExplosiveType type, double posX, double posY, double posZ, int explosiveID);
 }
