@@ -196,6 +196,8 @@ public class ExplosiveInit
                 (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER : 100
                 );
 
+        ((ExplosiveRegistry) ICBMClassicAPI.EX_BLOCK_REGISTRY).lockForce();
+
         //=================== Missiles
         ///* 24 */MISSILE(new MissileModule());
         ///* 25 */MISSILE_HOMING(new MissileHoming());
