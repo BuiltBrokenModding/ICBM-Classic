@@ -81,6 +81,7 @@ public class NBTConstants
     public static final String IS_EXPLOSIVE = "isExplosive";
     public static final String IS_MUTATE = "isMutate";
     public static final String IS_POISONOUS = "isPoisonous";
+    public static final String IS_VISIBLE = "isVisible";
     public static final String ITEMS = "Items";
     public static final String LAUNCHER_POS = "launcherPos";
     public static final String LIFE = "life";
