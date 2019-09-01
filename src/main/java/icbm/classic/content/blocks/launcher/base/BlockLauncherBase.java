@@ -116,11 +116,11 @@ public class BlockLauncherBase extends BlockICBM
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
     {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity tileEntity = world.getTileEntity(pos);
 
-        if(te instanceof TileLauncherBase)
+        if(tileEntity instanceof TileLauncherBase)
         {
-            switch(((TileLauncherBase)te)._tier)
+            switch(((TileLauncherBase)tileEntity)._tier)
             {
                 case TWO: return new ItemStack(this, 1, EnumTier.TWO.ordinal());
                 case THREE: return new ItemStack(this, 1, EnumTier.THREE.ordinal());

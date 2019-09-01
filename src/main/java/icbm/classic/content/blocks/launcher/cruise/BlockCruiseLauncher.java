@@ -125,10 +125,10 @@ public class BlockCruiseLauncher extends BlockICBM
     {
         if(!world.isRemote)
         {
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity tileEntity = world.getTileEntity(pos);
 
-            if(te instanceof TileCruiseLauncher && world.isBlockPowered(pos))
-                ((TileCruiseLauncher)te).launch(); //canLaunch gets called by launch
+            if(tileEntity instanceof TileCruiseLauncher && world.isBlockPowered(pos))
+                ((TileCruiseLauncher)tileEntity).launch(); //canLaunch gets called by launch
         }
     }
 }
