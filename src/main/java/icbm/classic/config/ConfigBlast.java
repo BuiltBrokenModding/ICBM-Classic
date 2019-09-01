@@ -20,13 +20,9 @@ public class ConfigBlast
     @Config.Comment({"Should antimatter ignore hardness checks for unbreakable, allows destroying bedrock and warded stone.", "This config option does nothing if 'antimatter_break_blocks' is set to false."})
     public static boolean ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS = true;
 
-    @Config.Name("antimatter_break_blocks")
-    @Config.Comment("Whether or not antimatter destroys blocks when detonating.")
-    public static boolean ANTIMATTER_BLOCK_DAMAGE = false;
-
-    @Config.Name("antimatter_entity_damage")
-    @Config.Comment("Whether or not antimatter should damage entities when detonating")
-    public static boolean ANTIMATTER_ENTITY_DAMAGE = false;
+    @Config.Name("antimatter_block_and_ent_dmg_on_redmatter")
+    @Config.Comment("Whether or not antimatter damages blocks and entities when detonating and killing a black hole (caused by red matter explosives)")
+    public static boolean ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER = false;
 
     @Config.Name("blast_do_block_updates")
     @Config.Comment("Whether or not the big explosions trigger block updates for all blocks.\nSetting this to false leads to performance improvements, especially when dealing with a lot of water.")

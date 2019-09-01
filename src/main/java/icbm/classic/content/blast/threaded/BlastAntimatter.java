@@ -42,7 +42,7 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public void destroyBlock(BlockPos blockPos)
     {
-        if(!ConfigBlast.ANTIMATTER_BLOCK_DAMAGE)
+        if(!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER)
             return;
 
         final IBlockState blockState = world.getBlockState(blockPos);
@@ -163,6 +163,6 @@ public class BlastAntimatter extends BlastThreaded
             }
         }
 
-        return !ConfigBlast.ANTIMATTER_ENTITY_DAMAGE; //if entity damage is enabled, return false so the entity damage logic can continue and vice versa
+        return !ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER; //if entity damage is enabled, return false so the entity damage logic can continue and vice versa
     }
 }
