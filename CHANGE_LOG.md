@@ -4,11 +4,7 @@ This log contains changes made to the project. Each entry contains changed made 
 If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
 
 # Versions
-## 3.3.1
-### Runtime Changes
-* Added: Support for Atomic science uranium in nuke recipe
-
-#4.0.0
+# 4.0.0
 ### Runtime Changes
  * Added: Launch button to launcher control panels
  * Added: Launch button to cruise launcher
@@ -62,6 +58,10 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Improved: Some class names
  
  * Removed: Unused model files
+
+## 3.3.1
+### Runtime Changes
+* Added: Support for Atomic science uranium in nuke recipe
 
 ## 3.3.0
 ### Runtime Changes
