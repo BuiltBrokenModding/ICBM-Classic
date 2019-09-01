@@ -20,7 +20,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Fixed: Orientation of placed down anvil explosive
  * Fixed: Contagious explosive removing mobs instead of mutating them
  * Fixed: Contagious explosive making too much sound
- * Fixed: Russian language file
+ * Fixed: Russian, German and English language files
  * Fixed: Radar station not properly getting removed from the world causing other blocks to behave unexpectedly
  * Fixed: Disabling items in config causing a crash
  * Fixed: Warning with EntityDataManager
@@ -28,11 +28,15 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Fixed: Launcher control panels facing away from the player when placing them down
  * Fixed: Configuration option to disallow antimatter blast from destroying unbreakable blocks not working
  * Fixed: Explosives sliding around after being ignited
+ * Fixed: Missile module not ignoring "Flint and Steel" damage value
 
  * Improved: Item tooltips
  * Improved: Performance at several parts of the mod
  * Improved: Creative tab sorting
  * Improved: Render of explosives (now flash like vanilla TNT and expand shortly before exploding)
+ * Improved: Chemical explosives: (now only damages in air-range, meaning it wont pass through walls anymore.
+             Damage is only applied where particles are spawned. Damage has been tweaked and scales with the time you are inside                the area of effect. Added kill messages, etc.)
+ * Improved: Antimatter blast behaviour. This includes optimizations, including making it work better with water.
  
  * Removed: S-Mine
  * Removed: Missile Module
@@ -48,6 +52,9 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Added: NBTConstants file for all nbt keys
  * Added: Enums for TNT blast's push type and EMP tower's EMP mode
  * Added: @ObjectHolder annotation for blocks and items
+ * Added: Additional smoke variant that doesn't move upwards after time.
+ * Added: Fallback for loading a world with an explosive that no longer exists. (Otherwise the game would crash)
+ * Added: Code that verifies that we are not using the same NBT save string twice for two different things.
 
  * Fixed: LanguageUtility#splitByLine not splitting correctly
 
