@@ -6,43 +6,57 @@ import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import org.apache.logging.log4j.Level;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class BlastGasBase extends Blast implements IBlastTickable
 {
+    //Cache damage
+    public static final DamageSource CONTAGIUS_DAMAGE = new DamageSource("icbm.contagious");
+    public static final DamageSource CHEMICAL_DAMAGE = new DamageSource("icbm.chemical");
+
+    //Settings
     private static final int TICKS_BETWEEN_RUNS = 5;
 
+    //Cache usage
+    private static final BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
+
+
     private int duration;
-    /**
-     * Color of particles
-     */
+
+    // Color of particles
     private float red = 1, green = 1, blue = 1;
     private boolean playShortSoundFX;
-    private boolean visible = true, applyConfusionEffect, applyPoisonEffect, applyContagiousEffect, mutateEntities;
-    private List<BlockPos> affectedBlocks;
-    private int lastRadius = 0;
-    private HashMap<EntityLivingBase, Integer> damagedEntites;
+    private boolean applyConfusionEffect, applyPoisonEffect, applyContagiousEffect, mutateEntities;
 
+    private int lastRadius = 0;
+
+    //AOE
+    private HashSet<BlockPos> affectedBlocks = new HashSet();
+    private Queue<BlockPos> edgeBlocks = new LinkedList();
+
+    //Damage tracker for entities effected
+    private HashMap<EntityLivingBase, Integer> impactedEntityMap = new HashMap();
+    //TODO turn into entity capability to prevent damage stacking of several explosives
+    //TODO use weak refs to not hold instances
 
     public BlastGasBase(int duration, boolean playShortSoundFX)
     {
         this.duration = duration;
         this.playShortSoundFX = playShortSoundFX;
-        this.affectedBlocks = new ArrayList<>();
-        this.damagedEntites = new HashMap<>();
     }
 
     private double sizePercentageOverTime(int timePassed)
@@ -55,12 +69,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
         this.red = r;
         this.green = g;
         this.blue = b;
-        return this;
-    }
-
-    public BlastGasBase setInvisible()
-    {
-        this.visible = false;
         return this;
     }
 
@@ -84,18 +92,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
     }
 
     @Override
-    public Blast setPosition(double posX, double posY, double posZ)
-    {
-        return super.setPosition(posX, posY, posZ);
-    }
-
-    @Override
-    public void setupBlast()
-    {
-        super.setupBlast();
-    }
-
-    @Override
     public boolean doExplode(int callCount)
     {
         //Play start audio
@@ -113,65 +109,61 @@ public class BlastGasBase extends Blast implements IBlastTickable
             //generateGraphicEffect();
             generateAudioEffect();
 
+            //Spawn particles
+            //affectedBlocks.forEach(pos -> spawnGasParticles(pos));
 
             //Only run potion effect application for the following types
             if (applyConfusionEffect || applyContagiousEffect || applyPoisonEffect || mutateEntities)
             {
-                double radius = this.getBlastRadius();
-                AxisAlignedBB bounds = new AxisAlignedBB(
+                final double radius = this.getBlastRadius();
+
+                //Max bounds
+                final AxisAlignedBB bounds = new AxisAlignedBB(
                         location.x() - radius, location.y() - radius, location.z() - radius,
                         location.x() + radius, location.y() + radius, location.z() + radius);
-                List<EntityLivingBase> bbents = world().getEntitiesWithinAABB(EntityLivingBase.class, bounds);
 
-                //Get all living entities in range of the explosive effect
-                List<EntityLivingBase> affectedEntities = new ArrayList<>();
-                for (EntityLivingBase ent : bbents)
-                {
-                    for (BlockPos block : affectedBlocks)
-                    {
-                        if (block.equals(ent.getPosition()))
-                        {
-                            affectedEntities.add(ent);
-                            break;
-                        }
-                    }
-                }
+                final List<EntityLivingBase> entityList = world()
+                        .getEntitiesWithinAABB(EntityLivingBase.class, bounds, this::canGasEffect);
 
                 //Loop all entities
-                for (EntityLivingBase entity : affectedEntities)
+                for (EntityLivingBase entity : entityList)
                 {
-                    if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
+                    //Track entities
+                    if (!impactedEntityMap.containsKey(entity))
                     {
-                        if (!damagedEntites.containsKey(entity))
-                            damagedEntites.put(entity, 1);
-                        else
-                            damagedEntites.replace(entity, damagedEntites.get(entity) + 1);
+                        impactedEntityMap.put(entity, 1);
+                    }
+                    else
+                    {
+                        impactedEntityMap.replace(entity, impactedEntityMap.get(entity) + 1);
+                    }
 
-                        int hitCount = damagedEntites.get(entity);
-                        if (this.applyContagiousEffect)
-                        {
-                            ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity, 3);
-                            if (hitCount > 10)
-                            {
-                                entity.attackEntityFrom(new DamageSource("icbm.contagious"), (hitCount - 10f) / 5);
-                            }
-                        }
+                    //Scale damage with hit count
+                    final int hitCount = impactedEntityMap.get(entity);
 
-                        if (this.applyPoisonEffect)
+                    if (this.applyContagiousEffect)
+                    {
+                        ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity, 3);
+                        if (hitCount > 10)
                         {
-                            ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
-                            if (hitCount > 20)
-                            {
-                                entity.attackEntityFrom(new DamageSource("icbm.chemical"), (hitCount - 10f) / 10);
-                            }
+                            entity.attackEntityFrom(CONTAGIUS_DAMAGE, (hitCount - 10f) / 5);
                         }
+                    }
 
-                        if (this.applyConfusionEffect)
+                    if (this.applyPoisonEffect)
+                    {
+                        ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
+                        if (hitCount > 20)
                         {
-                            entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
-                            entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
-                            entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
+                            entity.attackEntityFrom(CHEMICAL_DAMAGE, (hitCount - 10f) / 10);
                         }
+                    }
+
+                    if (this.applyConfusionEffect)
+                    {
+                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
+                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
+                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
                     }
                 }
             }
@@ -194,6 +186,39 @@ public class BlastGasBase extends Blast implements IBlastTickable
         return false;
     }
 
+    /**
+     * Checking that the entity can be harmed or an effect can be applied
+     *
+     * @param entity
+     * @return
+     */
+    private boolean canGasEffect(EntityLivingBase entity)
+    {
+        //Ignore dead things
+        if (entity.isEntityAlive())
+        {
+            //Always ignore non-gameplay characters
+            if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative())
+            {
+                return false;
+            }
+
+            //Check that we can harm the entity
+            else if (applyContagiousEffect && entity.isEntityInvulnerable(CONTAGIUS_DAMAGE)) //TODO add ignore list for zombies and skeletons
+            {
+                return false;
+            }
+            else if (applyPoisonEffect && entity.isEntityInvulnerable(CHEMICAL_DAMAGE))
+            {
+                return false;
+            }
+
+            //Check that the entity is in range
+            return affectedBlocks.contains(checkPos.setPos(entity));
+        }
+        return false;
+    }
+
     private void generateAudioEffect()
     {
         if (this.playShortSoundFX)
@@ -205,48 +230,101 @@ public class BlastGasBase extends Blast implements IBlastTickable
 
     private void setEffectBoundsAndSpawnParticles(int timePassed)
     {
-        final int radius = (int) (this.getBlastRadius() * sizePercentageOverTime(timePassed));
+        final int maxSize = (int) Math.ceil(this.getBlastRadius());
+        //Get and validate radius
+        final int radius = (int) Math.floor(maxSize * sizePercentageOverTime(timePassed));
         if (lastRadius == radius)
+        {
             return;
-
+        }
         lastRadius = radius;
 
-        final double maxDstSquarde = radius * radius;
-        List<BlockPos> affected = new ArrayList<>();
-        affected.add(this.getPos());
-        List<BlockPos> lastGrown = new ArrayList<>();
-        lastGrown.add(this.getPos());
-        for (int i = 0; i < radius; i++) // grow once per radius size
+        //Get radius sq for distance checks
+        final int currentDistanceSQ = radius * radius;
+
+        //Init path data
+        if (affectedBlocks.isEmpty())
         {
-            List<BlockPos> currentGrown = new ArrayList<>();
-            for (BlockPos bp : lastGrown)
+            affectedBlocks.add(getPos());
+            edgeBlocks.add(getPos());
+        }
+
+        if (edgeBlocks.isEmpty())
+        {
+            affectedBlocks
+                    .stream()
+                    .filter((pos) -> Math.random() > 0.5)
+                    .forEach(pos -> edgeBlocks.add(pos));
+        }
+
+        //Track blocks we pathed but didn't need
+        final HashSet<BlockPos> hasPathed = new HashSet();
+        //Track blocks we need to path next tick
+        final Queue<BlockPos> nextSet = new LinkedList();
+
+
+        //Loop edges from last tick
+        while (edgeBlocks.peek() != null)
+        {
+            //Current edge block
+            final BlockPos edge = edgeBlocks.poll();
+
+            //Loop all 6 sides of the edge
+            for (EnumFacing facing : EnumFacing.values())
             {
-                List<BlockPos> dirs = new ArrayList<>();
-                dirs.add(bp.up());
-                dirs.add(bp.down());
-                dirs.add(bp.north());
-                dirs.add(bp.east());
-                dirs.add(bp.south());
-                dirs.add(bp.west());
+                //Move our check pos to current target
+                checkPos.setPos(edge);
+                checkPos.move(facing);
 
-                for (BlockPos dir : dirs)
+                //Don't repath
+                if (!hasPathed.contains(checkPos) && !affectedBlocks.contains(checkPos))
                 {
-                    if (!affected.contains(dir) && !currentGrown.contains(dir) && dir.distanceSq(getPos()) < maxDstSquarde && !world.getBlockState(dir).isFullBlock())
+                    //Check that it is in range
+                    if (isInRange(checkPos, currentDistanceSQ))
                     {
-                        if (visible && !affectedBlocks.contains(dir))
-                            for (int j = 0; j < 5; j++)
-                                ICBMClassic.proxy.spawnAirParticle(world, new Pos(dir),
-                                        (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2 - 0.1, (Math.random() - 0.5) / 2,
-                                        this.red, this.green, this.blue, 7.0F, (int) (world.rand.nextFloat() * 40 + duration));
+                        //Validate
+                        if (isValidPath(checkPos))
+                        {
+                            final BlockPos pos = checkPos.toImmutable();
+                            affectedBlocks.add(pos);
+                            nextSet.add(pos);
 
-                        currentGrown.add(dir);
+                            spawnGasParticles(pos);
+                        }
+                        //Ignore if invalid
+                        else
+                        {
+                            hasPathed.add(checkPos.toImmutable());
+                        }
                     }
                 }
             }
-            affected.addAll(currentGrown);
-            lastGrown = new ArrayList<>(currentGrown);
         }
-        affectedBlocks = affected;
+
+        //Add next set to follow up queue
+        edgeBlocks.addAll(nextSet);
+    }
+
+    private boolean isValidPath(BlockPos pos)
+    {
+        IBlockState blockState = world.getBlockState(pos);
+        return !blockState.isFullBlock();
+    }
+
+    private boolean isInRange(BlockPos pos, int radiusSq)
+    {
+        return (int) Math.floor(pos.distanceSq(xi(), yi(), zi())) <= radiusSq;
+    }
+
+    private void spawnGasParticles(BlockPos pos)
+    {
+        for (int j = 0; j < 1; j++) //TODO send packet to client to spawn all 5 at once
+        {
+            ICBMClassic.proxy.spawnAirParticle(world, new Pos(pos),
+                    (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2 - 0.1, (Math.random() - 0.5) / 2,
+                    this.red, this.green, this.blue,
+                    7.0F, duration);
+        }
     }
 
     @Override
@@ -258,7 +336,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
         this.applyPoisonEffect = nbt.getBoolean(NBTConstants.IS_POISONOUS);
         this.applyConfusionEffect = nbt.getBoolean(NBTConstants.IS_CONFUSE);
         this.mutateEntities = nbt.getBoolean(NBTConstants.IS_MUTATE);
-        this.visible = nbt.getBoolean(NBTConstants.IS_VISIBLE);
         this.red = nbt.getFloat(NBTConstants.RED);
         this.green = nbt.getFloat(NBTConstants.GREEN);
         this.blue = nbt.getFloat(NBTConstants.BLUE);
@@ -274,7 +351,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
         nbt.setBoolean(NBTConstants.IS_POISONOUS, this.applyPoisonEffect);
         nbt.setBoolean(NBTConstants.IS_CONFUSE, this.applyConfusionEffect);
         nbt.setBoolean(NBTConstants.IS_MUTATE, this.mutateEntities);
-        nbt.setBoolean(NBTConstants.IS_VISIBLE, this.visible);
         nbt.setFloat(NBTConstants.RED, this.red);
         nbt.setFloat(NBTConstants.GREEN, this.green);
         nbt.setFloat(NBTConstants.BLUE, this.blue);

@@ -51,7 +51,7 @@ public class ParticleAirICBM extends ParticleSmokeNormal
             this.setExpired();
         }
 
-        this.setParticleTextureIndex(7 - this.particleAge * 16 / this.particleMaxAge);
+        this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
         this.move(this.motionX, this.motionY, this.motionZ);
 
         if (this.posY == this.prevPosY)
