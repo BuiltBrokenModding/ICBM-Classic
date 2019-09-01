@@ -10,10 +10,22 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigBlast;
-import icbm.classic.content.blast.*;
+import icbm.classic.content.blast.BlastAntiGravitational;
+import icbm.classic.content.blast.BlastBreach;
+import icbm.classic.content.blast.BlastEMP;
+import icbm.classic.content.blast.BlastEnderman;
+import icbm.classic.content.blast.BlastEndothermic;
+import icbm.classic.content.blast.BlastExothermic;
+import icbm.classic.content.blast.BlastFire;
+import icbm.classic.content.blast.BlastGasBase;
+import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.BlastShrapnel;
+import icbm.classic.content.blast.BlastSonic;
+import icbm.classic.content.blast.BlastTNT;
 import icbm.classic.content.blast.BlastTNT.PushType;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
+import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +57,7 @@ public class ExplosiveInit
     public static void init()
     {
         //=================== Tier 1
-        ExplosiveRefs.CONDENSED = newEx("condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6));
+        ExplosiveRefs.CONDENSED = newEx(0,"condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(),
                 (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONDENSED : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONDENSED : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.CONVENTIONAL : 100
                 );
@@ -192,8 +204,13 @@ public class ExplosiveInit
         ///* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster())
     }
 
-    private static IExplosiveData newEx(String name, EnumTier tier, IBlastFactory factory)
+    private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)
     {
+        if(id != -1)
+        {
+            //Setup old IDs so saves work
+            ((ExplosiveRegistry) ICBMClassicAPI.EX_BLOCK_REGISTRY).forceID(new ResourceLocation(ICBMClassic.DOMAIN, name), id);
+        }
         return ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(new ResourceLocation(ICBMClassic.DOMAIN, name), tier, factory);
     }
 
