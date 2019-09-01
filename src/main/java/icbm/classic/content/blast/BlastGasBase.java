@@ -13,18 +13,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class BlastGasBase extends Blast implements IBlastTickable
 {
-    public static final int PARTICLES_TO_SPAWN = 200; //TODO maybe add a config?
-    public static final int TICKS_BETWEEN_RUNS = 5;
+    private static final int TICKS_BETWEEN_RUNS = 5;
 
     private int duration;
     /**
@@ -35,12 +34,15 @@ public class BlastGasBase extends Blast implements IBlastTickable
     private boolean visible = true, applyConfusionEffect, applyPoisonEffect, applyContagiousEffect, mutateEntities;
     private List<BlockPos> affectedBlocks;
     private int lastRadius = 0;
+    private HashMap<EntityLivingBase, Integer> damagedEntites;
+
 
     public BlastGasBase(int duration, boolean playShortSoundFX)
     {
         this.duration = duration;
         this.playShortSoundFX = playShortSoundFX;
         this.affectedBlocks = new ArrayList<>();
+        this.damagedEntites = new HashMap<>();
     }
 
     private double sizePercentageOverTime(int timePassed)
@@ -76,9 +78,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
 
     public BlastGasBase setContagious()
     {
-        this.applyPoisonEffect = true;
         this.applyContagiousEffect = true;
-        this.applyConfusionEffect = true;
         this.mutateEntities = true;
         return this;
     }
@@ -117,8 +117,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
             //Only run potion effect application for the following types
             if (applyConfusionEffect || applyContagiousEffect || applyPoisonEffect || mutateEntities)
             {
-                //TODO scale affect area with time, the graphics do not match the logic
-
                 double radius = this.getBlastRadius();
                 AxisAlignedBB bounds = new AxisAlignedBB(
                         location.x() - radius, location.y() - radius, location.z() - radius,
@@ -144,14 +142,28 @@ public class BlastGasBase extends Blast implements IBlastTickable
                 {
                     if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
                     {
+                        if (!damagedEntites.containsKey(entity))
+                            damagedEntites.put(entity, 1);
+                        else
+                            damagedEntites.replace(entity, damagedEntites.get(entity) + 1);
+
+                        int hitCount = damagedEntites.get(entity);
                         if (this.applyContagiousEffect)
                         {
-                            ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity);
+                            ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity, 3);
+                            if (hitCount > 10)
+                            {
+                                entity.attackEntityFrom(new DamageSource("icbm.contagious"), (hitCount - 10f) / 5);
+                            }
                         }
 
                         if (this.applyPoisonEffect)
                         {
                             ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
+                            if (hitCount > 20)
+                            {
+                                entity.attackEntityFrom(new DamageSource("icbm.chemical"), (hitCount - 10f) / 10);
+                            }
                         }
 
                         if (this.applyConfusionEffect)
@@ -198,7 +210,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
             return;
 
         lastRadius = radius;
-        long start = System.currentTimeMillis();
 
         final double maxDstSquarde = radius * radius;
         List<BlockPos> affected = new ArrayList<>();
@@ -220,15 +231,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
 
                 for (BlockPos dir : dirs)
                 {
-                    IBlockState bs = world.getBlockState(dir);
-                    Block b = bs.getBlock();
-                    ArrayList<Block> passthroughBlocks = new ArrayList<Block>();
-                    passthroughBlocks.add(Blocks.AIR);
-                    passthroughBlocks.add(Blocks.WATER);
-                    passthroughBlocks.add(Blocks.FLOWING_WATER);
-                    passthroughBlocks.clear();
-                    boolean isPassthough = !bs.isFullBlock() || passthroughBlocks.contains(b);
-                    if (!affected.contains(dir) && !currentGrown.contains(dir) && dir.distanceSq(getPos()) < maxDstSquarde && !bs.isFullBlock())
+                    if (!affected.contains(dir) && !currentGrown.contains(dir) && dir.distanceSq(getPos()) < maxDstSquarde && !world.getBlockState(dir).isFullBlock())
                     {
                         if (visible && !affectedBlocks.contains(dir))
                             for (int j = 0; j < 5; j++)
@@ -244,8 +247,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
             lastGrown = new ArrayList<>(currentGrown);
         }
         affectedBlocks = affected;
-        long delta = System.currentTimeMillis() - start;
-        ICBMClassic.logger().log(Level.INFO, "Time taken: " + delta + "ms.");
     }
 
     @Override
