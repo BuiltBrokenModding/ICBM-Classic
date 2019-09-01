@@ -415,6 +415,8 @@ info.tracker.tooltip=Linksklicke einen Mob (auch Spieler) und ich werde in desse
 
 ## Death messages
 death.attack.icbm.redmatter=%s wurde von der immensen Masse eines mächtigen Schwarzen Loches vernichtet.
+death.attack.icbm.chemical=%s fühlt sich plotzlich nicht mehr so gut.
+death.attack.icbm.contagious=%s hat zu viel von dem grünen Zeug eingeatmet.
 
 ## GPS
 gps.pos.set.name=GPS-Daten gespeichert

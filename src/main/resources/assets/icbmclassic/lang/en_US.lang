@@ -417,6 +417,8 @@ info.tracker.tooltip=Left-click on a mob (players aswell) and I will point to it
 
 ## Death messages
 death.attack.icbm.redmatter=%s was crushed by the immense mass of the mighty black hole.
+death.attack.icbm.chemical=%s suddenly started feeling not so well.
+death.attack.icbm.contagious=%s breathed in too much of the green stuff.
 
 ## GPS
 gps.pos.set.name=GPS data saved
