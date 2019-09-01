@@ -5,6 +5,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.items.ItemGrenade;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
@@ -102,8 +103,16 @@ public class ICBMCreativeTab extends CreativeTabs
         NonNullList<ItemStack> temp_list = NonNullList.create();
         item.getSubItems(this, temp_list);
 
+        //this sorting process leads to the tiers being sorted, but also the metadata being in the correct order within the tiers
+        //example:
+        //      tier 1: metadata 0, 1, 5
+        //      tier 2: metadata 2, 7
+        //      tier 3: metadata 3, 6
+        //      tier 4: metadata 4
+        //      end result: 0, 1, 5, 2, 7, 3, 6, 4
         if(item instanceof ItemBlockExplosive || item instanceof ItemMissile || item instanceof ItemBombCart)
         {
+            //sort by tier first
             temp_list.sort((e1, e2) -> {
                 final EnumTier tier1 = ICBMClassicHelpers.getExplosive(e1.getItemDamage(), true).getTier();
                 final EnumTier tier2 = ICBMClassicHelpers.getExplosive(e2.getItemDamage(), true).getTier();
@@ -112,6 +121,19 @@ public class ICBMCreativeTab extends CreativeTabs
                     return tier1.ordinal() - tier2.ordinal();
                 else return 0;
             });
+            //then sort by damage, but keep the tiers themselves sorted
+            temp_list.sort((e1, e2) -> {
+                final EnumTier tier1 = ICBMClassicHelpers.getExplosive(e1.getItemDamage(), true).getTier();
+                final EnumTier tier2 = ICBMClassicHelpers.getExplosive(e2.getItemDamage(), true).getTier();
+
+                if(tier1 != tier2) //if the two entries are different tiers, do not sort them as mixing up tiers is not wanted
+                    return 0;
+                else return e1.getItemDamage() - e2.getItemDamage();
+            });
+        }
+        else if(item instanceof ItemGrenade)
+        {
+            temp_list.sort((e1, e2) -> e1.getItemDamage() - e2.getItemDamage());
         }
 
         //Merge into list with null check
