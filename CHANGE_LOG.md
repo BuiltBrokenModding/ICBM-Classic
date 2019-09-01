@@ -34,7 +34,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Improved: Performance at several parts of the mod
  * Improved: Creative tab sorting
  * Improved: Render of explosives (now flash like vanilla TNT and expand shortly before exploding)
- * Improved: Chemical explosives: (now only damages in air-range, meaning it wont pass through walls anymore.
+ * Improved: Chemical explosives (now only damages in air-range, meaning it wont pass through walls anymore.
              Damage is only applied where particles are spawned. Damage has been tweaked and scales with the time you are inside                the area of effect. Added kill messages, etc.)
  * Improved: Antimatter blast behaviour. This includes optimizations, including making it work better with water.
  
