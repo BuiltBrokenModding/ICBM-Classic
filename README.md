@@ -14,10 +14,11 @@ Curse: https://minecraft.curseforge.com/projects/icbm-classic
 
 # Credits
 Credits are a work in progress and will need to be recreated
+* bl4ckscor3 - code
 * Calcalvia - orginal author
 * DarkGuardsman/DarkCow - current author
 * Dmod - buildscripts
+* GHXX - code
 * Graugger - assets
 * M1W3st - assets
 * Tgame14 - code
-* GHXX - code
