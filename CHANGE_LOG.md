@@ -8,6 +8,61 @@ If this is a problem, use exact build numbers to track changes. As each build lo
 ### Runtime Changes
 * Added: Support for Atomic science uranium in nuke recipe
 
+#4.0.0
+### Runtime Changes
+ * Added: Launch button to launcher control panels
+ * Added: Launch button to cruise launcher
+ * Added: Tooltip to rocket launcher to indicate that it can fire any missile when the player is in creative mode
+ * Added: Configuration option to dis-/allow antimatter blast destroying blocks (set to not destroy blocks by default)
+ * Added: Configuration option to dis-/allow antimatter blast killing entities (set to not kill entities by default)
+ * Added: Configuration options to set the amount of time bomb carts, explosives, and grenades should take to explode after being ignited (seperate config options per bomb cart/explosive/grenade type)
+
+ * Changed: Explosion resistance of concrete blocks (reinforced concrete is now more resistant than vanilla obsidian)
+
+ * Fixed: Gui background and tooltips not being drawn
+ * Fixed: Several minor things in English and German localization
+ * Fixed: Orientation of placed down anvil explosive
+ * Fixed: Contagious explosive removing mobs instead of mutating them
+ * Fixed: Contagious explosive making too much sound
+ * Fixed: Russian language file
+ * Fixed: Radar station not properly getting removed from the world causing other blocks to behave unexpectedly
+ * Fixed: Disabling items in config causing a crash
+ * Fixed: Warning with EntityDataManager
+ * Fixed: Pick block for launcher base and launcher frame
+ * Fixed: Launcher control panels facing away from the player when placing them down
+ * Fixed: Configuration option to disallow antimatter blast from destroying unbreakable blocks not working
+ * Fixed: Explosives sliding around after being ignited
+
+ * Improved: Item tooltips
+ * Improved: Performance at several parts of the mod
+ * Improved: Creative tab sorting
+ * Improved: Render of explosives (now flash like vanilla TNT and expand shortly before exploding)
+ 
+ * Removed: S-Mine
+ * Removed: Missile Module
+ * Removed; Homing Missile
+ * Removed: Anti-ballistic Missile
+ * Removed: Cluster Missile
+ * Removed: Nuclear Cluster Missile
+ * Removed: Rejuvenation Explosives and Missile
+
+### Development Changes
+ * Added: Several events (BlastCancelEvent, ExplosiveDefuseEvent, LaserRemoteTriggerEvent, LauncherSetTargetEvent, MissileChunkEvent, MissileRideEvent, RadarGunTraceEvent, RemoteTriggerEvent)
+ * Added: Data fixers for explosives and more to be compatible with releases below this version
+ * Added: NBTConstants file for all nbt keys
+ * Added: Enums for TNT blast's push type and EMP tower's EMP mode
+ * Added: @ObjectHolder annotation for blocks and items
+
+ * Fixed: LanguageUtility#splitByLine not splitting correctly
+
+ * Changed: Chinese class/method/field/variable names to be in English
+
+ * Improved: Code
+ * Improved: Language file handling
+ * Improved: Some class names
+ 
+ * Removed: Unused model files
+
 ## 3.3.0
 ### Runtime Changes
 * Added: Worker thread system (generates several threads to do blast calculations)
