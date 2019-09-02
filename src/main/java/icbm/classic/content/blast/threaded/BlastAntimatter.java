@@ -77,18 +77,14 @@ public class BlastAntimatter extends BlastThreaded
                 destroyFallingBlocksRecursively(blockPos.up());
 
                 // remove water ahead of the blast, to significantly reduce the water issues
-                for (int x = -antimatterWaterCleanupRange; x <= antimatterWaterCleanupRange; x++) {
-                    for (int y = -antimatterWaterCleanupRange; y <= antimatterWaterCleanupRange; y++) {
-                        for (int z = -antimatterWaterCleanupRange; z <= antimatterWaterCleanupRange; z++) {
-                            final BlockPos bp2 = new BlockPos(blockPos.getX() + x, blockPos.getY() + 1, blockPos.getZ() + z);
-                            final IBlockState bs2 = world.getBlockState(bp2);
-                            final Block b = bs2.getBlock();
-                            if (b == Blocks.WATER || b == Blocks.FLOWING_WATER) {
-                                world.setBlockToAir(bp2);
-                            }
-                        }
+                BlastHelpers.loopInRadius(antimatterWaterCleanupRange, (x, y, z) -> {
+                    final BlockPos bp2 = new BlockPos(blockPos.getX() + x, blockPos.getY() + 1, blockPos.getZ() + z);
+                    final IBlockState bs2 = world.getBlockState(bp2);
+                    final Block b = bs2.getBlock();
+                    if (b == Blocks.WATER || b == Blocks.FLOWING_WATER) {
+                        world.setBlockToAir(bp2);
                     }
-                }
+                });
             }
         }
     }
