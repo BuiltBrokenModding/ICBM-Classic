@@ -575,7 +575,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                                 for (int i = 0; i < 10; i++)
                                 {
                                     // smoke below the launcher
-                                    ICBMClassic.proxy.spawnSmoke(this.world, launcherSmokePosition, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
+                                    ICBMClassic.proxy.spawnAirParticle(this.world, launcherSmokePosition, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
                                     launcherSmokePosition = launcherSmokePosition.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                                 }
                             }
@@ -584,7 +584,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                             {
                                 Pos velocity = new Pos(0, 0.25, 0).addRandom(world.rand, 0.125);
                                 // smoke below the launcher
-                                ICBMClassic.proxy.spawnSmoke(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 5, 40);
+                                ICBMClassic.proxy.spawnAirParticle(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 5, 40);
                             }
                         }
                         else
@@ -596,12 +596,12 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                                 lastPos = lastSmokePos.get(0);
                                 lastSmokePos.remove(0);
                             }
-                            ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX * 0.75, -this.motionY * 0.75, -this.motionZ * 0.75, 1, 0.75f, 0, 5, 10);
+                            ICBMClassic.proxy.spawnAirParticle(this.world, position, -this.motionX * 0.75, -this.motionY * 0.75, -this.motionZ * 0.75, 1, 0.75f, 0, 5, 10);
                             if (ticksInAir > 5 && lastPos != null)
                             {
                                 for (int i = 0; i < 10; i++)
                                 {
-                                    ICBMClassic.proxy.spawnSmoke(this.world, lastPos, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 240);
+                                    ICBMClassic.proxy.spawnAirParticle(this.world, lastPos, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 100);
                                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                                 }
                             }
@@ -627,7 +627,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
                 for (int i = 0; i < 10; i++)
                 {
-                    ICBMClassic.proxy.spawnSmoke(this.world, position, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 240);
+                    ICBMClassic.proxy.spawnAirParticle(this.world, position, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 100);
                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                 }
             }
