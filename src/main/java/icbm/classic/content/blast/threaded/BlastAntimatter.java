@@ -46,7 +46,7 @@ public class BlastAntimatter extends BlastThreaded
             return;
 
         final IBlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() != Blocks.AIR)
+        if (!blockState.getBlock().isAir(blockState, world, blockPos))
         {
             if(blockState.getBlock().getBlockHardness(blockState, world, blockPos) < 0.0F && !ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS) //unbreakable
                 return;

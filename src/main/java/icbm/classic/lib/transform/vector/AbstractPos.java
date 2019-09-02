@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -415,7 +414,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
     {
         BlockPos pos = toBlockPos();
         IBlockState block = world.getBlockState(pos);
-        return block == null || block == Blocks.AIR || block.getBlock().isAir(block, world, toBlockPos()) || block.getBlock().isReplaceable(world, toBlockPos());
+        return block == null || block.getBlock().isAir(block, world, pos) || block.getBlock().isAir(block, world, toBlockPos()) || block.getBlock().isReplaceable(world, toBlockPos());
     }
 
     /**
@@ -471,7 +470,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
     public float getHardness(World world)
     {
         IBlockState state = getBlockState(world);
-        if (state != null && state.getBlock() != Blocks.AIR)
+        if (state != null && !state.getBlock().isAir(state, world, toBlockPos()))
         {
             return state.getBlock().getBlockHardness(state, world, toBlockPos());
         }
@@ -555,7 +554,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
     {
         BlockPos pos = toBlockPos();
         IBlockState state = world.getBlockState(pos);
-        if (state != null && state.getBlock() != Blocks.AIR)
+        if (state != null && !state.getBlock().isAir(state, world, toBlockPos()))
         {
             world.notifyBlockUpdate(pos, state, state, 3);
         }

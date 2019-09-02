@@ -8,7 +8,6 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.ILocation;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -93,7 +92,7 @@ public class Location extends AbstractLocation<Location> implements IWorldPositi
     public boolean isSideSolid(EnumFacing side)
     {
         IBlockState state = getBlockState();
-        if (state != null && state.getBlock() != Blocks.AIR)
+        if (state != null && !state.getBlock().isAir(state, world, toBlockPos()))
         {
             BlockFaceShape shape = state.getBlockFaceShape(world, toBlockPos(), side);
             return shape != null && shape == BlockFaceShape.SOLID;

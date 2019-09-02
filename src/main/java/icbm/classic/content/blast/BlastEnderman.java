@@ -8,7 +8,6 @@ import icbm.classic.ICBMClassic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
@@ -57,7 +56,7 @@ public class BlastEnderman extends Blast implements IBlastTickable
 
                         if (distance < r && distance > r - 1)
                         {
-                            if (targetPosition.getBlock(world()) != Blocks.AIR)
+                            if (!targetPosition.getBlock(world()).isAir(targetPosition.getBlockState(world()), world(), targetPosition.toBlockPos()))
                             {
                                 continue;
                             }

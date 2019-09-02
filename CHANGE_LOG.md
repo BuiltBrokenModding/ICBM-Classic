@@ -34,9 +34,10 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Improved: Performance at several parts of the mod
  * Improved: Creative tab sorting
  * Improved: Render of explosives (now flash like vanilla TNT and expand shortly before exploding)
- * Improved: Chemical explosives (now only damages in air-range, meaning it wont pass through walls anymore.
-             Damage is only applied where particles are spawned. Damage has been tweaked and scales with the time you are inside                the area of effect. Added kill messages, etc.)
- * Improved: Antimatter blast behaviour. This includes optimizations, including making it work better with water.
+ * Improved: Chemical explosives (now only damages in air-range, meaning it wont pass through walls anymore
+             Damage is only applied where particles are spawned. Damage has been tweaked and scales with the time you are
+             inside the area of effect. Added kill messages, etc.)
+ * Improved: Antimatter blast behaviour. This includes optimizations, including making it work better with water
  
  * Removed: S-Mine
  * Removed: Missile Module
@@ -52,9 +53,9 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Added: NBTConstants file for all nbt keys
  * Added: Enums for TNT blast's push type and EMP tower's EMP mode
  * Added: @ObjectHolder annotation for blocks and items
- * Added: Additional smoke variant that doesn't move upwards after time.
+ * Added: Additional smoke variant that doesn't move upwards after time
  * Added: Fallback for loading a world with an explosive that no longer exists. (Otherwise the game would crash)
- * Added: Code that verifies that we are not using the same NBT save string twice for two different things.
+ * Added: Code that verifies that we are not using the same NBT save string twice for two different things
 
  * Fixed: LanguageUtility#splitByLine not splitting correctly
 
@@ -63,6 +64,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Improved: Code
  * Improved: Language file handling
  * Improved: Some class names
+ * Improved: Checks of equality with Blocks.AIR. They are now using Block#isAir for compatbility
  
  * Removed: Unused model files
 

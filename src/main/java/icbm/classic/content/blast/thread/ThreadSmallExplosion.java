@@ -5,7 +5,6 @@ import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -53,9 +52,9 @@ public class ThreadSmallExplosion extends ThreadExplosion
                         {
                             BlockPos targetPosition = new BlockPos(var15, var17, var19);
                             IBlockState state = this.position.world().getBlockState(targetPosition);
-                            Block blockID = state.getBlock();
+                            Block block = state.getBlock();
 
-                            if (blockID != Blocks.AIR)
+                            if (!block.isAir(state, world, targetPosition))
                             {
                                 float resistance = 0;
 
@@ -65,7 +64,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                                 }
                                 else
                                 {
-                                    resistance = blockID.getExplosionResistance(world, targetPosition, source, blast);
+                                    resistance = block.getExplosionResistance(world, targetPosition, source, blast);
                                 }
                                 // TODO rather than remove power divert a percentage to the
                                 // sides, and then calculate how much is absorbed by the block

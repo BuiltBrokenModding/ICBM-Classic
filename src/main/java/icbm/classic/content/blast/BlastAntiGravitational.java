@@ -7,7 +7,6 @@ import icbm.classic.content.blast.thread.ThreadSmallExplosion;
 import icbm.classic.lib.transform.PosDistanceSorter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -56,7 +55,7 @@ public class BlastAntiGravitational extends Blast implements IBlastTickable
                         for (BlockPos targetPosition : results)
                         {
                             final IBlockState blockState = world.getBlockState(targetPosition);
-                            if (blockState.getBlock() != Blocks.AIR)
+                            if (!blockState.getBlock().isAir(blockState, world, targetPosition))
                             {
                                 float hardness = blockState.getBlockHardness(world, targetPosition);
                                 if (hardness >= 0 && hardness < 1000)
@@ -92,10 +91,10 @@ public class BlastAntiGravitational extends Blast implements IBlastTickable
                 else
                 {
                     String msg = String.format("BlastAntiGravitational#doPostExplode() -> Failed to run due to null thread" +
-                                    "\nWorld = %s " +
-                                    "\nThread = %s" +
-                                    "\nSize = %s" +
-                                    "\nPos = ",
+                            "\nWorld = %s " +
+                            "\nThread = %s" +
+                            "\nSize = %s" +
+                            "\nPos = ",
                             world, thread, size, location);
                     ICBMClassic.logger().error(msg);
                 }
@@ -103,10 +102,10 @@ public class BlastAntiGravitational extends Blast implements IBlastTickable
             catch (Exception e)
             {
                 String msg = String.format("BlastAntiGravitational#doPostExplode() ->  Unexpected error while running post detonation code " +
-                                "\nWorld = %s " +
-                                "\nThread = %s" +
-                                "\nSize = %s" +
-                                "\nPos = ",
+                        "\nWorld = %s " +
+                        "\nThread = %s" +
+                        "\nSize = %s" +
+                        "\nPos = ",
                         world, thread, size, location);
                 ICBMClassic.logger().error(msg, e);
             }

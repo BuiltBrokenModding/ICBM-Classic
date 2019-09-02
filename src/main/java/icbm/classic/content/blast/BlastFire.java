@@ -46,7 +46,7 @@ public class BlastFire extends Blast
                                 IBlockState blockState = world().getBlockState(targetPosition);
                                 Block block = blockState.getBlock();
 
-                                if (block != Blocks.AIR)
+                                if (!block.isAir(blockState, world, targetPosition))
                                 {
                                     var14 -= (block.getExplosionResistance(world(), targetPosition, this.exploder, this) + 0.3F) * var21;
                                 }

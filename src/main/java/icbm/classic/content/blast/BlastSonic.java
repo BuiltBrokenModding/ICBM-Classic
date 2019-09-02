@@ -13,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -40,7 +39,7 @@ public class BlastSonic extends Blast implements IBlastTickable
 
     public void firstTick()
     {
-            /* TODO re-add?
+        /* TODO re-add?
             if (this.hasShockWave)
             {
                 for (int x = (int) (-this.getRadius() * 2); x < this.getRadius() * 2; ++x)
@@ -113,7 +112,7 @@ public class BlastSonic extends Blast implements IBlastTickable
                             final Block block = blockState.getBlock();
 
                             //Only act on movable blocks
-                            if (block != Blocks.AIR && blockState.getBlockHardness(world, targetPosition) >= 0)
+                            if (!block.isAir(blockState, world, targetPosition) && blockState.getBlockHardness(world, targetPosition) >= 0)
                             {
                                 //Trigger explosions
                                 if (block == BlockReg.blockExplosive)
@@ -140,10 +139,10 @@ public class BlastSonic extends Blast implements IBlastTickable
                     if (ConfigDebug.DEBUG_THREADS)
                     {
                         String msg = String.format("BlastSonic#doPostExplode() -> Thread failed to find blocks to edit. Either thread failed or no valid blocks were found in range." +
-                                        "\nWorld = %s " +
-                                        "\nThread = %s" +
-                                        "\nSize = %s" +
-                                        "\nPos = %s",
+                                "\nWorld = %s " +
+                                "\nThread = %s" +
+                                "\nSize = %s" +
+                                "\nPos = %s",
                                 world, getThread(), size, location);
                         ICBMClassic.logger().error(msg);
                     }
