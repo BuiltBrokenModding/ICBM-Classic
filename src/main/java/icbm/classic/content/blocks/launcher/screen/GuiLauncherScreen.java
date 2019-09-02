@@ -123,9 +123,9 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         try
         {
-            short newGaoDu = (short) Math.max(Math.min(Short.parseShort(this.lock_height_field.getText()), Short.MAX_VALUE), 3);
+            short newHeight = (short) Math.max(Math.min(Short.parseShort(this.lock_height_field.getText()), Short.MAX_VALUE), 3);
 
-            this.tileEntity.lockHeight = newGaoDu;
+            this.tileEntity.lockHeight = newHeight;
             ICBMClassic.packetHandler.sendToServer(new PacketTile("lock_height_C>S", TileLauncherScreen.LOCK_HEIGHT_PACKET_ID, this.tileEntity).addData(this.tileEntity.lockHeight));
         }
         catch (NumberFormatException e)
