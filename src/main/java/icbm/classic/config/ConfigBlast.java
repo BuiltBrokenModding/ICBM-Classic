@@ -130,7 +130,7 @@ public class ConfigBlast
         public class Explosives
         {
             @Config.RangeInt(min = 0, max = Integer.MAX_VALUE)
-            public int CONDENSED = 100;
+            public int CONDENSED = 0;
 
             @Config.RangeInt(min = 0, max = Integer.MAX_VALUE)
             public int SHRAPNEL = 100;
