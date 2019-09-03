@@ -101,8 +101,8 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     public IEMPReceiver capabilityEMP;
     public final IMissile capabilityMissile = new CapabilityMissile(this);
 
-    final int maxPreLaunchSmokeTimer = 20;
-    public int preLaunchSmokeTimer = maxPreLaunchSmokeTimer;
+    private final int maxPreLaunchSmokeTimer = 20;
+    public int preLaunchSmokeTimer = getMaxPreLaunchSmokeTimer();
     public int launcherHasAirBelow = -1;
     private LinkedList<Pos> lastSmokePos = new LinkedList<>();
 
@@ -418,7 +418,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 posY = launcherPos.y() + 2.2f;
                 this.prevRotationPitch = 90f;
                 this.rotationPitch = 90f;
-                spawnMissileSmoke();
+                ICBMClassic.proxy.spawnMissileSmoke(this);
                 this.ticksInAir = 0;
             }
         }
@@ -428,7 +428,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         }
 
         //Handle effects
-        this.spawnMissileSmoke();
+        ICBMClassic.proxy.spawnMissileSmoke(this);
         ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, (float)Math.min(1, ticksInAir / 40F) * 1F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, true);
 
 
@@ -537,101 +537,14 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         return height / 2 + motionY;
     }
 
-    private void spawnMissileSmoke() //TODO move to client proxy
+    public LinkedList<Pos> getLastSmokePos()
     {
-        if (this.world.isRemote)
-        {
-            if (this.missileType == MissileFlightType.PAD_LAUNCHER)
-            {
-                if (this.motionY > -1)
-                {
-                    if (this.world.isRemote && this.motionY > -1)
-                    {
-                        if (launcherHasAirBelow == -1)
-                        {
-                            BlockPos bp = new BlockPos(Math.signum(this.posX) * Math.floor(Math.abs(this.posX)), this.posY - 2, Math.signum(this.posZ) * Math.floor(Math.abs(this.posZ)));
-                            launcherHasAirBelow = world.isAirBlock(bp) ? 1 : 0;
-                        }
-                        Pos position = new Pos((IPos3D) this);
-                        // The distance of the smoke relative
-                        // to the missile.
-                        double distance = -1.2f;
-                        // The delta Y of the smoke.
-                        double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
-                        // The horizontal distance of the
-                        // smoke.
-                        double dH = Math.cos(Math.toRadians(this.rotationPitch)) * distance;
-                        // The delta X and Z.
-                        double x = Math.sin(Math.toRadians(this.rotationYaw)) * dH;
-                        double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
-                        position = position.add(x, y, z);
+        return lastSmokePos;
+    }
 
-                        if (preLaunchSmokeTimer > 0 && ticksInAir <= maxPreLaunchSmokeTimer) // pre-launch phase
-                        {
-                            Pos launcherSmokePosition = position.sub(0, 2, 0);
-                            if (launcherHasAirBelow == 1)
-                            {
-                                Pos velocity = new Pos(0, -1, 0).addRandom(world.rand, 0.5);
-                                for (int i = 0; i < 10; i++)
-                                {
-                                    // smoke below the launcher
-                                    ICBMClassic.proxy.spawnAirParticle(this.world, launcherSmokePosition, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
-                                    launcherSmokePosition = launcherSmokePosition.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
-                                }
-                            }
-
-                            for (int i = 0; i < 5; i++)
-                            {
-                                Pos velocity = new Pos(0, 0.25, 0).addRandom(world.rand, 0.125);
-                                // smoke below the launcher
-                                ICBMClassic.proxy.spawnAirParticle(this.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 5, 40);
-                            }
-                        }
-                        else
-                        {
-                            lastSmokePos.add(position);
-                            Pos lastPos = null;
-                            if (lastSmokePos.size() > 5)
-                            {
-                                lastPos = lastSmokePos.get(0);
-                                lastSmokePos.remove(0);
-                            }
-                            ICBMClassic.proxy.spawnAirParticle(this.world, position, -this.motionX * 0.75, -this.motionY * 0.75, -this.motionZ * 0.75, 1, 0.75f, 0, 5, 10);
-                            if (ticksInAir > 5 && lastPos != null)
-                            {
-                                for (int i = 0; i < 10; i++)
-                                {
-                                    ICBMClassic.proxy.spawnAirParticle(this.world, lastPos, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 100);
-                                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Pos position = new Pos((IPos3D) this);
-                // The distance of the smoke relative
-                // to the missile.
-                double distance = -1.2f;
-                // The delta Y of the smoke.
-                double y = Math.sin(Math.toRadians(this.rotationPitch)) * distance;
-                // The horizontal distance of the
-                // smoke.
-                double dH = Math.cos(Math.toRadians(this.rotationPitch)) * distance;
-                // The delta X and Z.
-                double x = Math.sin(Math.toRadians(this.rotationYaw)) * dH;
-                double z = Math.cos(Math.toRadians(this.rotationYaw)) * dH;
-                position = position.add(x, y, z);
-
-                for (int i = 0; i < 10; i++)
-                {
-                    ICBMClassic.proxy.spawnAirParticle(this.world, position, -this.motionX * 0.5, -this.motionY * 0.5, -this.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + posY / 100))), 100);
-                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
-                }
-            }
-        }
+    public int getMaxPreLaunchSmokeTimer()
+    {
+        return maxPreLaunchSmokeTimer;
     }
 
     /**
