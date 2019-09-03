@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.screen;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
+import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.items.ItemLaserDetonator;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
@@ -59,6 +60,13 @@ public class BlockLaunchScreen extends BlockICBM
                 ItemStack stack = player.getHeldItem(hand);
                 if (stack.getItem() == Items.REDSTONE)
                 {
+                    if((screen._tier == EnumTier.ONE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER1)
+                            || (screen._tier == EnumTier.TWO && !ConfigLauncher.LAUNCHER_REDSTONE_TIER2)
+                            || (screen._tier == EnumTier.THREE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER3))
+                    {
+                        return false;
+                    }
+
                     if (!screen.launch()) //canLaunch is called in launch and launch returns false if cannot launch
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
@@ -112,10 +120,19 @@ public class BlockLaunchScreen extends BlockICBM
     {
         if(!world.isRemote)
         {
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity tileEntity = world.getTileEntity(pos);
 
-            if(te instanceof TileLauncherScreen && world.isBlockPowered(pos))
-                ((TileLauncherScreen)te).launch(); //canLaunch gets called by launch
+            if(tileEntity instanceof TileLauncherScreen && world.isBlockPowered(pos))
+            {
+                TileLauncherScreen screen = (TileLauncherScreen)tileEntity;
+                if((screen._tier == EnumTier.ONE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER1)
+                        || (screen._tier == EnumTier.TWO && !ConfigLauncher.LAUNCHER_REDSTONE_TIER2)
+                        || (screen._tier == EnumTier.THREE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER3))
+                {
+                    return;
+                }
+                screen.launch(); //canLaunch gets called by launch
+            }
         }
     }
 
