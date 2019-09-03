@@ -23,6 +23,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
@@ -36,6 +37,17 @@ import javax.annotation.Nullable;
  */
 public class BlockLaunchScreen extends BlockICBM
 {
+    //values by trial and error
+    private static final float px = 1.0F / 16.0F; //one pixel
+    private static final AxisAlignedBB ONE_TWO_NORTH = new AxisAlignedBB(3 * px,     0, 6 * px,     13 * px,     9.5F * px,  10.75F * px);
+    private static final AxisAlignedBB ONE_TWO_SOUTH = new AxisAlignedBB(13 * px,    0, 5.25F * px, 3 * px,      9.5F * px,  10 * px);
+    private static final AxisAlignedBB ONE_TWO_EAST  = new AxisAlignedBB(5.25F * px, 0, 13 * px,    10 * px,     9.5F * px,  3 * px);
+    private static final AxisAlignedBB ONE_TWO_WEST  = new AxisAlignedBB(6 * px,     0, 3 * px,     10.75F * px, 9.5F * px,  13 * px);
+    private static final AxisAlignedBB THREE_NORTH   = new AxisAlignedBB(3 * px,     0, 2 * px,     13 * px,     10.5F * px, 12 * px);
+    private static final AxisAlignedBB THREE_SOUTH   = new AxisAlignedBB(13 * px,    0, 14 * px,    3 * px,      10.5F * px, 4 * px);
+    private static final AxisAlignedBB THREE_EAST    = new AxisAlignedBB(14 * px,    0, 13 * px,    4 * px,      10.5F * px, 3 * px);
+    private static final AxisAlignedBB THREE_WEST    = new AxisAlignedBB(2 * px,     0, 3 * px,     12 * px,     10.5F * px, 13 * px);
+
     public BlockLaunchScreen()
     {
         super("launcherscreen");
@@ -45,6 +57,42 @@ public class BlockLaunchScreen extends BlockICBM
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
         return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
+    {
+        if(state.getBlock() instanceof BlockLaunchScreen) //sometimes things happen that make this necessary
+        {
+            switch(state.getValue(TIER_PROP))
+            {
+                case ONE: case TWO:
+                {
+                    switch(state.getValue(ROTATION_PROP))
+                    {
+                        case NORTH: return ONE_TWO_NORTH;
+                        case SOUTH: return ONE_TWO_SOUTH;
+                        case EAST: return ONE_TWO_EAST;
+                        case WEST: return ONE_TWO_WEST;
+                        default: return super.getBoundingBox(state, source, pos);
+                    }
+                }
+                case THREE:
+                {
+                    switch(state.getValue(ROTATION_PROP))
+                    {
+                        case NORTH: return THREE_NORTH;
+                        case SOUTH: return THREE_SOUTH;
+                        case EAST: return THREE_EAST;
+                        case WEST: return THREE_WEST;
+                        default: return super.getBoundingBox(state, source, pos);
+                    }
+                }
+                default: return super.getBoundingBox(state, source, pos);
+            }
+        }
+
+        return super.getBoundingBox(state, source, pos);
     }
 
     @Override
