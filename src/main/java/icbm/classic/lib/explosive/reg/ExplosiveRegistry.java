@@ -2,18 +2,27 @@ package icbm.classic.lib.explosive.reg;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
-import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.IExplosiveRegistry;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
-import java.io.*;
-import java.util.*;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
@@ -39,6 +48,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     private File saveFile;
 
     private boolean locked = false;
+    private boolean lockForce = false;
     private boolean allExplosivesLocked = false;
     private boolean lockNewContentTypes = false;
 
@@ -52,7 +62,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
             throw new RuntimeException("ExplosiveRegistry: new explosives can not be registered after registry phase");
         }
 
-        if(name.toString().contains("_"))
+        if (name.toString().contains("_"))
         {
             throw new IllegalArgumentException("ExplosiveRegistry: '" + name + "' can not contain underscores");
         }
@@ -85,34 +95,40 @@ public class ExplosiveRegistry implements IExplosiveRegistry
 
     public void lockNewExplosives()
     {
-        if(!allExplosivesLocked)
+        if (!allExplosivesLocked)
         {
             allExplosivesLocked = true;
             allExplosives = explosiveData.values().stream().filter(e -> e != null).collect(ImmutableSet.toImmutableSet());
         }
         else
+        {
             throw new RuntimeException(this + ": New explosives were locked twice!");
+        }
     }
 
     public void completeLock()
     {
-        if(!locked)
+        if (!locked)
         {
             locked = true;
             getContentRegistries().forEach(reg -> reg.lockRegistry());
         }
         else
+        {
             throw new RuntimeException(this + ": Registries were locked twice!");
+        }
     }
 
     public void lockNewContentTypes()
     {
-        if(!lockNewContentTypes)
+        if (!lockNewContentTypes)
         {
             lockNewContentTypes = true;
         }
         else
+        {
             throw new RuntimeException(this + ": New content types were locked twice!");
+        }
     }
 
     @Override
@@ -125,7 +141,8 @@ public class ExplosiveRegistry implements IExplosiveRegistry
     public IExplosiveData getExplosiveData(int id)
     {
         final ResourceLocation name = id_to_name.get(id);
-        if (name != null) {
+        if (name != null)
+        {
             return explosiveData.get(name);
         }
         return null;
@@ -185,6 +202,19 @@ public class ExplosiveRegistry implements IExplosiveRegistry
         name_to_id.put(name, id);
     }
 
+    public void forceID(ResourceLocation name, int id)
+    {
+        if (!lockForce)
+        {
+            setReg(name, id);
+        }
+    }
+
+    public void lockForce()
+    {
+        lockForce = true;
+    }
+
     public void loadReg(final File file)
     {
         saveFile = file;
@@ -205,7 +235,8 @@ public class ExplosiveRegistry implements IExplosiveRegistry
                 {
                     throw new RuntimeException("ExplosiveRegistry: Failed to load registry save file as JSON object, File: " + file);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new RuntimeException("ExplosiveRegistry: Unexpected error reading explosive registry save, File: " + file, e);
             }
@@ -270,7 +301,8 @@ public class ExplosiveRegistry implements IExplosiveRegistry
         try (FileWriter fileWriter = new FileWriter(saveFile))
         {
             fileWriter.write(json);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             ICBMClassic.logger().error("ExplosiveRegistry: Failed to save registry to file, File: " + saveFile);
             e.printStackTrace();
