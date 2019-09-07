@@ -1,13 +1,12 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.NBTConstants;
+import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.explosive.ExplosiveHandler;
-import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.prefab.tile.BlockICBM;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -28,15 +27,15 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
-    public int explosive = -1;
-    public NBTTagCompound data;
+    public int explosive = -1; //TODO move to capability
+    public NBTTagCompound data; //TODO move to capability
 
     public EntityBombCart(World par1World)
     {
         super(par1World);
     }
 
-    public EntityBombCart(World par1World, double x, double y, double z, int explosive)
+    public EntityBombCart(World par1World, double x, double y, double z, int explosive) //TODO change to pass in itemstack for capability
     {
         super(par1World, x, y, z);
         this.explosive = explosive;
@@ -66,7 +65,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public void killMinecart(DamageSource par1DamageSource)
     {
-        if(!world.isRemote)
+        if (!world.isRemote)
         {
             this.setDead();
             double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
@@ -84,17 +83,27 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     }
 
     @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+        if (isIgnited())
+        {
+            ICBMClassicAPI.EX_MINECART_REGISTRY.tickFuse(this, explosive, minecartTNTFuse);
+        }
+    }
+
+    @Override
     public void ignite()
     {
-        this.minecartTNTFuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world,posX, posY, posZ, explosive);
+        this.minecartTNTFuse = ICBMClassicAPI.EX_MINECART_REGISTRY.getFuseTime(this, explosive);
 
         if (!this.world.isRemote)
         {
-            this.world.setEntityState(this, (byte)10);
+            this.world.setEntityState(this, (byte) 10);
 
             if (!this.isSilent())
             {
-                this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }
     }
@@ -102,7 +111,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public EntityItem entityDropItem(ItemStack stack, float offsetY)
     {
-        if(stack.getItem() == Item.getItemFromBlock(Blocks.TNT))
+        if (stack.getItem() == Item.getItemFromBlock(Blocks.TNT))
         {
             return super.entityDropItem(getCartItem(), offsetY);
         }

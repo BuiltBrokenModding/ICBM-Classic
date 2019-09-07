@@ -39,9 +39,9 @@ public interface IExFuseEntityRegistry
      *
      * @param entity       - entity that is the explosive
      * @param explosiveID  - explosive id
-     * @param ticksExisted - ticks existed
+     * @param fuseTimeLeft - ticks existed
      */
-    void tickFuse(Entity entity, int explosiveID, int ticksExisted);
+    void tickFuse(Entity entity, int explosiveID, int fuseTimeLeft);
 
     /**
      * Gets the starting fuse time

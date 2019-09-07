@@ -1,6 +1,5 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
@@ -22,8 +21,8 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Is the entity that throws this 'thing' (snowball, ender pearl, eye of ender or potion) */
     protected EntityLivingBase thrower;
 
-    public int explosiveID;
-    public NBTTagCompound blastData = new NBTTagCompound();
+    public int explosiveID; //TODO move to capability
+    public NBTTagCompound blastData = new NBTTagCompound(); //TODO move to capability
 
     public EntityGrenade(World par1World)
     {
@@ -198,7 +197,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
-        if (this.ticksExisted > ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, explosiveID))
+        if (this.ticksExisted > ICBMClassicAPI.EX_GRENADE_REGISTRY.getFuseTime(this, explosiveID))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
             ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY + 0.3f, this.posZ, explosiveID, 1, blastData);
@@ -206,7 +205,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         }
         else
         {
-            ICBMClassicAPI.EX_BLOCK_REGISTRY.tickFuse(world, posX, posY, posZ, ticksExisted, explosiveID);
+            ICBMClassicAPI.EX_GRENADE_REGISTRY.tickFuse(this, explosiveID, ticksExisted);
         }
     }
 
