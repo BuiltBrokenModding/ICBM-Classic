@@ -58,9 +58,9 @@ public class ExplosiveInit
     {
         //=================== Tier 1
         ExplosiveRefs.CONDENSED = newEx(0,"condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONDENSED : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONDENSED : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.CONVENTIONAL : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONDENSED);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.CONVENTIONAL);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONDENSED);
 
         ExplosiveRefs.SHRAPNEL = newEx(1,"shrapnel", EnumTier.ONE, () -> new BlastShrapnel().setFlaming().setBlastSize(30));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.SHRAPNEL.getRegistryName(),
