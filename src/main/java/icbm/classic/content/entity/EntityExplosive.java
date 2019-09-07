@@ -87,7 +87,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
         //Init fuse
         if (fuse == -1)
         {
-            this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, EnumExplosiveType.BLOCK, posX, posY, posZ, getExplosiveData().getRegistryID());
+            this.fuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, posX, posY, posZ, getExplosiveData().getRegistryID());
         }
 
         //Tick fuse to render effects

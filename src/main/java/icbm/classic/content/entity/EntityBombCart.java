@@ -86,7 +86,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public void ignite()
     {
-        this.minecartTNTFuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world, EnumExplosiveType.BOMB_CART, posX, posY, posZ, explosive);
+        this.minecartTNTFuse = ICBMClassicAPI.EX_BLOCK_REGISTRY.getFuseTime(world,posX, posY, posZ, explosive);
 
         if (!this.world.isRemote)
         {

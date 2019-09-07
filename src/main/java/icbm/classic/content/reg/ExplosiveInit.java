@@ -57,148 +57,158 @@ public class ExplosiveInit
     public static void init()
     {
         //=================== Tier 1
-        ExplosiveRefs.CONDENSED = newEx(0,"condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6));
+        ExplosiveRefs.CONDENSED = newEx(0, "condensed", EnumTier.ONE, () -> new BlastTNT().setBlastSize(6));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONDENSED);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.CONVENTIONAL);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.CONDENSED.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONDENSED);
 
-        ExplosiveRefs.SHRAPNEL = newEx(1,"shrapnel", EnumTier.ONE, () -> new BlastShrapnel().setFlaming().setBlastSize(30));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.SHRAPNEL.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.SHRAPNEL : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.SHRAPNEL : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.SHRAPNEL : 100
-                );
 
-        ExplosiveRefs.INCENDIARY = newEx(2,"incendiary", EnumTier.ONE, () -> new BlastFire().setBlastSize(14));
+        ExplosiveRefs.SHRAPNEL = newEx(1, "shrapnel", EnumTier.ONE, () -> new BlastShrapnel().setFlaming().setBlastSize(30));
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.SHRAPNEL.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.SHRAPNEL);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.SHRAPNEL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.SHRAPNEL);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.SHRAPNEL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.SHRAPNEL);
+
+
+        ExplosiveRefs.INCENDIARY = newEx(2, "incendiary", EnumTier.ONE, () -> new BlastFire().setBlastSize(14));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ExplosiveRefs.INCENDIARY.getRegistryName(),
                 (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
-                );
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.INCENDIARY : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.INCENDIARY : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.INCENDIARY : 100
-                );
+        );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.INCENDIARY);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.INCENDIARY);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.INCENDIARY);
 
-        ExplosiveRefs.DEBILITATION = newEx(3,"debilitation", EnumTier.ONE,
+
+        ExplosiveRefs.DEBILITATION = newEx(3, "debilitation", EnumTier.ONE,
                 () -> new BlastGasBase(20 * 30, false)
-                .setConfuse().setBlastSize(20));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.DEBILITATION.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.DEBILITATION : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.DEBILITATION : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.DEBILITATION : 100
-                );
+                        .setConfuse().setBlastSize(20));
 
-        ExplosiveRefs.CHEMICAL = newEx(4,"chemical", EnumTier.ONE,
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.DEBILITATION.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.DEBILITATION);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.DEBILITATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.DEBILITATION);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.DEBILITATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.DEBILITATION);
+
+
+        ExplosiveRefs.CHEMICAL = newEx(4, "chemical", EnumTier.ONE,
                 () -> new BlastGasBase(20 * 30, false)
-                .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CHEMICAL.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.CHEMICAL : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.CHEMICAL : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.CHEMICAL : 100
-                );
+                        .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
 
-        ExplosiveRefs.ANVIL = newEx(5,"anvil", EnumTier.ONE,
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CHEMICAL.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CHEMICAL);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.CHEMICAL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.CHEMICAL);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.CHEMICAL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.CHEMICAL);
+
+
+        ExplosiveRefs.ANVIL = newEx(5, "anvil", EnumTier.ONE,
                 () -> new BlastShrapnel().setAnvil().setBlastSize(25));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANVIL.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.ANVIL : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANVIL : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.ANVIL : 100
-                );
 
-        ExplosiveRefs.REPULSIVE = newEx(6,"repulsive", EnumTier.ONE,
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANVIL.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ANVIL);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.ANVIL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.ANVIL);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.ANVIL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANVIL);
+
+
+        ExplosiveRefs.REPULSIVE = newEx(6, "repulsive", EnumTier.ONE,
                 () -> new BlastTNT().setDestroyItems().setPushType(PushType.REPEL).setBlastSize(2));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REPULSIVE.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.REPULSIVE : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.REPULSIVE : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.REPULSIVE : 100
-                );
 
-        ExplosiveRefs.ATTRACTIVE = newEx(7,"attractive", EnumTier.ONE,
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REPULSIVE.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REPULSIVE);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.REPULSIVE.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.REPULSIVE);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.REPULSIVE.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REPULSIVE);
+
+
+        ExplosiveRefs.ATTRACTIVE = newEx(7, "attractive", EnumTier.ONE,
                 () -> new BlastTNT().setDestroyItems().setPushType(PushType.ATTRACT).setBlastSize(2));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ATTRACTIVE.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.ATTRACTIVE : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.ATTRACTIVE : type == GRENADE ? ConfigBlast.FUSE_TIMES.GRENADES.ATTRACTIVE : 100
-                );
+
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ATTRACTIVE.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ATTRACTIVE);
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.ATTRACTIVE.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.ATTRACTIVE);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.ATTRACTIVE.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ATTRACTIVE);
+
 
         //=================== Tier 2
-        ExplosiveRefs.FRAGMENTATION = newEx(8,"fragmentation", EnumTier.TWO,
+        ExplosiveRefs.FRAGMENTATION = newEx(8, "fragmentation", EnumTier.TWO,
                 () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.FRAGMENTATION.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.FRAGMENTATION : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.FRAGMENTATION : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.FRAGMENTATION.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.FRAGMENTATION);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.FRAGMENTATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.FRAGMENTATION);
 
-        ExplosiveRefs.CONTAGIOUS = newEx(9,"contagious", EnumTier.TWO,
+
+        ExplosiveRefs.CONTAGIOUS = newEx(9, "contagious", EnumTier.TWO,
                 () -> new BlastGasBase(20 * 30, false)
-                .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONTAGIOUS.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONTAGIOUS : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONTAGIOUS : 100
-                );
+                        .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONTAGIOUS.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONTAGIOUS);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.CONTAGIOUS.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONTAGIOUS);
 
-        ExplosiveRefs.SONIC = newEx(10,"sonic", EnumTier.TWO,
+
+        ExplosiveRefs.SONIC = newEx(10, "sonic", EnumTier.TWO,
                 () -> new BlastSonic().setBlastSize(15));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.SONIC.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.SONIC : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.SONIC : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.SONIC.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.SONIC);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.SONIC.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.SONIC);
 
-        ExplosiveRefs.BREACHING = newEx(11,"breaching", EnumTier.TWO,
+
+        ExplosiveRefs.BREACHING = newEx(11, "breaching", EnumTier.TWO,
                 () -> new BlastBreach(7).setBlastSize(2.5));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.BREACHING : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.BREACHING : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.BREACHING);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.BREACHING.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.BREACHING);
+
 
         //12 -> Regen
 
-        ExplosiveRefs.THERMOBARIC = newEx(13,"thermobaric", EnumTier.TWO,
+        ExplosiveRefs.THERMOBARIC = newEx(13, "thermobaric", EnumTier.TWO,
                 () -> new BlastNuclear().setEnergy(45).setBlastSize(30));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.THERMOBARIC.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.THERMOBARIC : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.THERMOBARIC : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.THERMOBARIC.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.THERMOBARIC);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.THERMOBARIC.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.THERMOBARIC);
 
         //14 -> S-Mine
 
         //=================== Tier 3
-        ExplosiveRefs.NUCLEAR = newEx(15,"nuclear", EnumTier.THREE,
+        ExplosiveRefs.NUCLEAR = newEx(15, "nuclear", EnumTier.THREE,
                 () -> new BlastNuclear().setNuclear().setEnergy(80).setBlastSize(50));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.NUCLEAR.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.NUCLEAR : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.NUCLEAR : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.NUCLEAR.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.NUCLEAR);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.NUCLEAR.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.NUCLEAR);
 
-        ExplosiveRefs.EMP = newEx(16,"emp", EnumTier.THREE,
+
+        ExplosiveRefs.EMP = newEx(16, "emp", EnumTier.THREE,
                 () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.EMP.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.EMP : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.EMP : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.EMP.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.EMP);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.EMP.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.EMP);
 
-        ExplosiveRefs.EXOTHERMIC = newEx(17,"exothermic", EnumTier.THREE, () -> new BlastExothermic().setBlastSize(30));
+
+        ExplosiveRefs.EXOTHERMIC = newEx(17, "exothermic", EnumTier.THREE, () -> new BlastExothermic().setBlastSize(30));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ExplosiveRefs.EXOTHERMIC.getRegistryName(),
-                (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
-                );
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.EXOTHERMIC.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.EXOTHERMIC : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.EXOTHERMIC : 100
-                );
+                (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D));
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.EXOTHERMIC.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.EXOTHERMIC);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.EXOTHERMIC.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.EXOTHERMIC);
 
-        ExplosiveRefs.ENDOTHERMIC = newEx(18,"endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(30));
+
+        ExplosiveRefs.ENDOTHERMIC = newEx(18, "endothermic", EnumTier.THREE, () -> new BlastEndothermic().setBlastSize(30));
         //TODO add ice fuse animation
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ENDOTHERMIC.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDOTHERMIC : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.ENDOTHERMIC : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ENDOTHERMIC.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDOTHERMIC);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.ENDOTHERMIC.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ENDOTHERMIC);
 
-        ExplosiveRefs.ANTI_GRAVITATIONAL = newEx(19,"antigravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTI_GRAVITATIONAL.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.ANTI_GRAVITATIONAL : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANTI_GRAVITATIONAL : 100
-                );
 
-        ExplosiveRefs.ENDER = newEx(20,"ender", EnumTier.THREE, () -> new BlastEnderman().setBlastSize(30));
+        ExplosiveRefs.ANTI_GRAVITATIONAL = newEx(19, "antigravitational", EnumTier.THREE, () -> new BlastAntiGravitational().setBlastSize(30));
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTI_GRAVITATIONAL.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ANTI_GRAVITATIONAL);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTI_GRAVITATIONAL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANTI_GRAVITATIONAL);
+
+
+        ExplosiveRefs.ENDER = newEx(20, "ender", EnumTier.THREE, () -> new BlastEnderman().setBlastSize(30));
         ICBMClassicAPI.EX_MISSILE_REGISTRY.setInteractionListener(ExplosiveRefs.ENDER.getRegistryName(), ExplosiveInit::enderMissileCoordSet);
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setActivationListener(ExplosiveRefs.ENDER.getRegistryName(), ExplosiveInit::enderBlockCoordSet);
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ENDER.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDER : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.ENDER : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ENDER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDER);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.ENDER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ENDER);
 
-        ExplosiveRefs.HYPERSONIC = newEx(21,"hypersonic", EnumTier.THREE, () -> new BlastSonic().setShockWave().setBlastSize(20)); //TODO find Missile model
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.HYPERSONIC.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.HYPERSONIC : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.HYPERSONIC : 100
-                );
+
+        ExplosiveRefs.HYPERSONIC = newEx(21, "hypersonic", EnumTier.THREE, () -> new BlastSonic().setShockWave().setBlastSize(20)); //TODO find Missile model
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.HYPERSONIC.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.HYPERSONIC);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.HYPERSONIC.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.HYPERSONIC);
 
         //=================== Tier 4
-        ExplosiveRefs.ANTIMATTER = newEx(22,"antimatter", EnumTier.FOUR,
+        ExplosiveRefs.ANTIMATTER = newEx(22, "antimatter", EnumTier.FOUR,
                 () -> new BlastAntimatter().setBlastSize(ConfigBlast.ANTIMATTER_SIZE));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTIMATTER.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.ANTIMATTER : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANTIMATTER : 100
-                );
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTIMATTER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ANTIMATTER);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.ANTIMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANTIMATTER);
+
         //TODO add config (disable by default) for alarm audio
 
-        ExplosiveRefs.REDMATTER = newEx(23,"redMatter", EnumTier.FOUR, () -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS));
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(),
-                (world, type, x, y, z) -> type == BLOCK ? ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER : type == BOMB_CART ? ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER : 100
-                );
+        ExplosiveRefs.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatter().setBlastSize(BlastRedmatter.NORMAL_RADIUS));
+        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER);
+        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
+
 
         ((ExplosiveRegistry) ICBMClassicAPI.EX_BLOCK_REGISTRY).lockForce();
 
@@ -212,7 +222,7 @@ public class ExplosiveInit
 
     private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)
     {
-        if(id != -1)
+        if (id != -1)
         {
             //Setup old IDs so saves work
             ((ExplosiveRegistry) ICBMClassicAPI.EX_BLOCK_REGISTRY).forceID(new ResourceLocation(ICBMClassic.DOMAIN, name), id);
@@ -265,7 +275,7 @@ public class ExplosiveInit
                 if (tileEntity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing))
                 {
                     IExplosive explosive = tileEntity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing);
-                    if( explosive != null)
+                    if (explosive != null)
                     {
                         NBTTagCompound tag = new NBTTagCompound();
                         ((Location) link).writeIntNBT(tag);
