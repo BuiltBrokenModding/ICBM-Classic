@@ -210,7 +210,7 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 
 
-        ((ExplosiveRegistry) ICBMClassicAPI.EX_BLOCK_REGISTRY).lockForce();
+        ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
 
         //=================== Missiles
         ///* 24 */MISSILE(new MissileModule());
@@ -225,7 +225,7 @@ public class ExplosiveInit
         if (id != -1)
         {
             //Setup old IDs so saves work
-            ((ExplosiveRegistry) ICBMClassicAPI.EX_BLOCK_REGISTRY).forceID(new ResourceLocation(ICBMClassic.DOMAIN, name), id);
+            ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).forceID(new ResourceLocation(ICBMClassic.DOMAIN, name), id);
         }
         return ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(new ResourceLocation(ICBMClassic.DOMAIN, name), tier, factory);
     }
