@@ -4,7 +4,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
-import icbm.classic.api.reg.events.ExplosiveRegistryInitEvent;
+import icbm.classic.api.reg.events.ExplosiveContentRegistryEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.CommandICBM;
 import icbm.classic.config.ConfigItems;
@@ -229,7 +229,7 @@ public final class ICBMClassic
         explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_MINECART_REGISTRY);
 
         //Fire registry events for content types
-        MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryInitEvent(explosiveRegistry));
+        MinecraftForge.EVENT_BUS.post(new ExplosiveContentRegistryEvent(explosiveRegistry));
 
         //Lock content types, done to prevent errors with adding content
         explosiveRegistry.lockNewContentTypes();
