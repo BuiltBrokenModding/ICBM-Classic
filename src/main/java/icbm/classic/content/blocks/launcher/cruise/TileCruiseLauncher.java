@@ -5,22 +5,23 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.prefab.tile.IGuiTile;
-import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.lib.LanguageUtility;
+import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.inventory.ExternalInventory;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.items.ItemMissile;
-import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
+import icbm.classic.prefab.inventory.IInventoryProvider;
+import icbm.classic.prefab.tile.IGuiTile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -30,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
@@ -143,25 +145,38 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
         //this.discharge(this.containingItems[1]); TODO
 
+        //Update current aim
+        currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
+
+        //Check redstone
+        if (isServer())
+        {
+            if (this.ticks % 40 == 0 && this.world.getRedstonePowerFromNeighbors(getPos()) > 0)
+            {
+                this.launch();
+            }
+        }
+    }
+
+    @Override
+    public void setTarget(Pos target)
+    {
+        super.setTarget(target);
+        updateAimAngle();
+    }
+
+    protected void updateAimAngle()
+    {
         if (getTarget() != null && !getTarget().isZero())
         {
             Pos aimPoint = getTarget();
             Pos center = new Pos((IPos3D) this).add(0.5);
-            if (ICBMClassic.runningAsDev)
-            {
-                //Engine.packetHandler.sendToAllAround(new PacketSpawnParticleStream(world.provider.getDimension(), center, aimPoint), this);
-            }
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
-
-            currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
-
-            if (isServer())
-            {
-                if (this.ticks % 40 == 0 && this.world.getRedstonePowerFromNeighbors(getPos()) > 0)
-                {
-                    this.launch();
-                }
-            }
+            aim.setYaw(EulerAngle.clampPos360(aim.yaw()));
+        }
+        else
+        {
+            aim.set(0, 0, 0);
         }
     }
 
@@ -324,8 +339,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         return true;
     }
+
     /**
      * Launches the missile
+     *
      * @return true if launched, false if not
      */
     //@Override

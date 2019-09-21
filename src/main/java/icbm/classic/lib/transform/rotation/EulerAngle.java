@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.network.IByteBufReader;
 import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
-
 import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
@@ -14,8 +13,8 @@ import net.minecraft.util.EnumFacing;
 /**
  * This object is not immutable like other vector objects. It is designed to take the player of storing 3 separate variables for rotation. Thus it will
  * also be setup to allow adjustments to rotation.
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 3/8/2016.
  * <p>
  * Original version by Calclavia
@@ -595,92 +594,89 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
     }
 
     /**
-     * Called to move towards the new yaw, uses lerp function to
-     * ensure animation stays consistent
+     * Called to move towards the new yaw with limited movement
      *
-     * @param desiredYaw - desired position
-     * @param speed      - how fast to move, mainly a limit
+     * @param current  - current angle
+     * @param target   - angle to move towards
+     * @param movement - amount to move
+     *                 if delta is less the movement it will snap
+     *                 if zero or less it will return current
      * @return this
      */
-    public EulerAngle moveYaw(double desiredYaw, double speed, double deltaTime)
+    public static double moveToAngle(double current, double target, double movement)
     {
-        double delta = Math.abs(desiredYaw - yaw);
-        if (delta < speed || speed < 0)
+        if (movement <= 0)
         {
-            yaw = desiredYaw;
-            return this;
+            return current;
         }
-        double d = Math.abs(desiredYaw - (yaw + speed));
-        double d2 = Math.abs(desiredYaw - (yaw - speed));
+        final double currentAngle = ((current % 360) + 360) % 360;
+        final double targetAngle = ((target % 360) + 360) % 360;
 
-        if (d < d2)
+        //Ensures we go to exact angle if under rotation speed
+        double diff = Math.abs(targetAngle - currentAngle);
+        if (diff < movement)
         {
-            this.yaw = lerp(yaw, yaw + speed, deltaTime);
+            return targetAngle;
+        }
+
+        if (diff < 180)
+        {
+            if (currentAngle < targetAngle)
+            {
+                return currentAngle + movement;
+            }
+            else
+            {
+                return currentAngle - movement;
+            }
+        }
+        else if (currentAngle < targetAngle)
+        {
+            return currentAngle - movement;
         }
         else
         {
-            this.yaw = lerp(yaw, yaw - speed, deltaTime);
+            return currentAngle + movement;
         }
+    }
+
+
+    /**
+     * Called to move towards the new yaw at a fixed speed over time
+     *
+     * @param targetYaw - desired position
+     * @param speed     - how fast to move, mainly a limit
+     * @return this
+     */
+    public EulerAngle moveYaw(double targetYaw, double speed, double deltaTime)
+    {
+        setYaw(moveToAngle(yaw, targetYaw, speed * deltaTime));
         return this;
     }
 
     /**
-     * Called to move towards the new pitch, uses lerp function to
-     * ensure animation stays consistent
+     * Called to move towards the new pitch at a fixed speed over time
      *
-     * @param desiredPitch - desired position
-     * @param speed        - how fast to move, mainly a limit
+     * @param targetPitch - desired position
+     * @param speed     - how fast to move, mainly a limit
      * @return this
      */
-    public EulerAngle movePitch(double desiredPitch, double speed, double deltaTime)
+    public EulerAngle movePitch(double targetPitch, double speed, double deltaTime)
     {
-        double delta = Math.abs(desiredPitch - pitch);
-        if (delta < speed || speed < 0)
-        {
-            pitch = desiredPitch;
-            return this;
-        }
-        double d = Math.abs(desiredPitch - (pitch + speed));
-        double d2 = Math.abs(desiredPitch - (pitch - speed));
-
-        if (d < d2)
-        {
-            this.pitch = lerp(pitch, pitch + speed, deltaTime);
-        }
-        else
-        {
-            this.pitch = lerp(pitch, pitch - speed, deltaTime);
-        }
+        setPitch(moveToAngle(pitch, targetPitch, speed * deltaTime));
         return this;
     }
 
     /**
-     * Called to move towards the new roll, uses lerp function to
-     * ensure animation stays consistent
+     * Called to move towards the new roll at a fixed speed over time
      *
-     * @param desiredRoll - desired position
-     * @param speed       - how fast to move, mainly a limit
+     * @param targetRoll - desired position
+     * @param speed     - how fast to move, mainly a limit
      * @return this
      */
-    public EulerAngle moveRoll(double desiredRoll, double speed, double deltaTime)
+    public EulerAngle moveRoll(double targetRoll, double speed, double deltaTime)
     {
-        double delta = Math.abs(desiredRoll - roll);
-        if (delta < speed || speed < 0)
-        {
-            roll = desiredRoll;
-            return this;
-        }
-        double d = Math.abs(desiredRoll - (roll + speed));
-        double d2 = Math.abs(desiredRoll - (roll - speed));
-
-        if (d < d2)
-        {
-            this.roll = lerp(roll, roll + speed, deltaTime);
-        }
-        else
-        {
-            this.roll = lerp(roll, roll - speed, deltaTime);
-        }
+        setRoll(moveToAngle(roll, targetRoll, speed * deltaTime));
         return this;
     }
 
@@ -697,6 +693,20 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
             result += 360;
         }
         while (result > max)
+        {
+            result -= 360;
+        }
+        return result;
+    }
+
+    public static double clampPos360(double value)
+    {
+        double result = value % 360;
+        while (result < 0)
+        {
+            result += 360;
+        }
+        while (result > 360)
         {
             result -= 360;
         }
