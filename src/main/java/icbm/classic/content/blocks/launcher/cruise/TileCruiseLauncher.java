@@ -283,6 +283,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         super.readFromNBT(nbt);
         getInventory().load(nbt.getCompoundTag(NBTConstants.INVENTORY));
         currentAim.readFromNBT(nbt.getCompoundTag(NBTConstants.CURRENT_AIM));
+        initFromLoad();
     }
 
     /**
