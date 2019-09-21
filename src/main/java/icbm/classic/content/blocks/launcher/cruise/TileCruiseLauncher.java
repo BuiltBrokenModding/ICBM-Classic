@@ -28,11 +28,15 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
@@ -239,7 +243,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         super.writeDescPacket(buf);
         buf.writeBoolean(getInventory().getStackInSlot(0) != null);
-        if (getInventory().getStackInSlot(0) != null)
+        if (getInventory().getStackInSlot(0) != null) //TODO see if Null check is needed
         {
             ByteBufUtils.writeItemStack(buf, getInventory().getStackInSlot(0));
         }
@@ -290,6 +294,21 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         nbt.setTag(NBTConstants.INVENTORY, getInventory().save(new NBTTagCompound()));
         nbt.setTag(NBTConstants.CURRENT_AIM, currentAim.writeNBT(new NBTTagCompound()));
         return super.writeToNBT(nbt);
+    }
+
+    protected void initFromLoad()
+    {
+        cachedMissileStack = inventory.getStackInSlot(0);
+        updateAimAngle();
+        currentAim.set(aim);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
+    {
+        super.onDataPacket(net, pkt);
+        initFromLoad();
     }
 
     //@Override
