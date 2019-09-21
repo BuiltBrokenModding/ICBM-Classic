@@ -32,10 +32,24 @@ public class RenderLightBeam extends Render<EntityLightBeam>
 
         int height = 255 - (int) beamEntity.posY;
 
+        final float beamGrowthRate = beamEntity.beamGrowthRate * partialTicks;
+        if (beamEntity.clientBeamProgress < beamEntity.getBeamProgress())
+        {
+            beamEntity.clientBeamProgress = Math.min(beamEntity.getBeamProgress(), beamEntity.clientBeamProgress + beamGrowthRate);
+        }
+        //Decrease size slowly
+        else if (beamEntity.clientBeamProgress > beamEntity.getBeamProgress())
+        {
+            beamEntity.clientBeamProgress = Math.max(beamEntity.getBeamProgress(), beamEntity.clientBeamProgress - beamGrowthRate);
+        }
+
+        float beamRadius = Math.max(0, beamEntity.clientBeamProgress * beamEntity.beamSize);
+        float beamGlowRadius = Math.max(0, beamEntity.clientBeamProgress * beamEntity.beamGlowSize);
+
         renderBeamSegment(x, y - 5, z, partialTicks, 1, beamEntity.ticksExisted, //TODO instead of -5 raytrace to ground
                 height,
-                beamEntity.red,  beamEntity.green,  beamEntity.blue,
-                0.5D, 1D);
+                beamEntity.red, beamEntity.green, beamEntity.blue,
+                beamRadius, beamGlowRadius);
 
         GlStateManager.enableFog();
     }
@@ -60,7 +74,7 @@ public class RenderLightBeam extends Render<EntityLightBeam>
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
         double time = totalWorldTime + partialTicks;
-        double uv_animation = MathHelper.frac(time * 0.2D - (double)MathHelper.floor(time * 0.1D));
+        double uv_animation = MathHelper.frac(time * 0.2D - (double) MathHelper.floor(time * 0.1D));
 
         double nw_corner_x = 0.5D - beamRadius;
         double nw_corner_z = 0.5D - beamRadius;

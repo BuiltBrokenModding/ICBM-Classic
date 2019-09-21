@@ -36,7 +36,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     private boolean hasStartedFirstThread = false;
     private boolean hasCompletedFirstThread = false;
 
-    private boolean hasGeneratedFlyingBLocks = false;
+    private boolean hasGeneratedFlyingBlocks = false;
 
     private boolean hasStartedSecondThread = false;
     private boolean hasCompetedSecondThread = false;
@@ -66,7 +66,12 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             this.world().createExplosion(this.exploder, location.x(), location.y(), location.z(), 4F, true);
 
             //Create beam
-            this.lightBeam = new EntityLightBeam(this.world(), location, this.red, this.green, this.blue);
+            this.lightBeam = new EntityLightBeam(this.world())
+                    .setPosition(location)
+                    .setColor(this.red, this.green, this.blue);
+            this.lightBeam.beamSize = 1;
+            this.lightBeam.beamGlowSize = 2;
+            this.lightBeam.setTargetBeamProgress(0.1f);
             this.world().spawnEntity(this.lightBeam);
         }
 
@@ -74,6 +79,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         if (!hasStartedFirstThread)
         {
             hasStartedFirstThread = true;
+            this.lightBeam.setTargetBeamProgress(0.2f);
             WorkerThreadManager.INSTANCE.addWork(getFirstThread());
         }
 
@@ -81,9 +87,10 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         if (hasCompletedFirstThread && !hasStartedSecondThread)
         {
             //Spawn flying blocks
-            if (!hasGeneratedFlyingBLocks)
+            if (!hasGeneratedFlyingBlocks)
             {
-                hasGeneratedFlyingBLocks = true;
+                hasGeneratedFlyingBlocks = true;
+                this.lightBeam.setTargetBeamProgress(0.5f);
 
                 //Edit blocks and queue spawning
                 for (BlockPos blockPos : blocksToRemove)
@@ -95,7 +102,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
                     {
                         //Create an spawn
                         final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
-                        entity.gravity = -entity.gravity;
+                        entity.gravity = -0.01f;
                         if (world.spawnEntity(entity))
                         {
                             flyingBlocks.add(entity);
@@ -109,6 +116,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             //Delay second thread start
             if (secondThreadTimer-- <= 0)
             {
+                this.lightBeam.setTargetBeamProgress(0.8f);
                 hasStartedSecondThread = true;
                 WorkerThreadManager.INSTANCE.addWork(getSecondThread());
             }
@@ -116,10 +124,11 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
         if (hasCompetedSecondThread)
         {
+            this.lightBeam.setTargetBeamProgress(1f);
             if (!hasEnabledGravityForFlyingBlocks)
             {
                 hasEnabledGravityForFlyingBlocks = true;
-                flyingBlocks.forEach(entity -> entity.gravity = Math.abs(entity.gravity));
+                flyingBlocks.forEach(entity -> entity.gravity = 0.5f);
             }
 
             if (!hasPlacedBlocks)
@@ -136,9 +145,8 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     {
         return new ThreadWorkBlast((steps, edits) -> collectFlyingBlocks(edits), edits ->
         {
-
             blocksToRemove.addAll(edits);
-            hasGeneratedFlyingBLocks = false;
+            hasGeneratedFlyingBlocks = false;
             hasCompletedFirstThread = true;
         });
     }
@@ -201,8 +209,8 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
         if (this.lightBeam != null)
         {
-            this.lightBeam.setDead();
-            this.lightBeam = null;
+            this.lightBeam.startDeathCycle();
+            this.lightBeam.setTargetBeamProgress(0f);
         }
     }
 }
