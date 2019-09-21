@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,7 +32,7 @@ public class RenderLightBeam extends Render<EntityLightBeam>
 
         int height = 255 - (int) beamEntity.posY;
 
-        renderBeamSegment(x, y - 5, z, partialTicks, 1, 0, //TODO instead of -5 raytrace to ground
+        renderBeamSegment(x, y - 5, z, partialTicks, 1, beamEntity.ticksExisted, //TODO instead of -5 raytrace to ground
                 height,
                 beamEntity.red,  beamEntity.green,  beamEntity.blue,
                 0.5D, 1D);
@@ -58,6 +59,9 @@ public class RenderLightBeam extends Render<EntityLightBeam>
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
+        double time = totalWorldTime + partialTicks;
+        double uv_animation = MathHelper.frac(time * 0.2D - (double)MathHelper.floor(time * 0.1D));
+
         double nw_corner_x = 0.5D - beamRadius;
         double nw_corner_z = 0.5D - beamRadius;
         double ne_corner_x = 0.5D + beamRadius;
@@ -66,9 +70,8 @@ public class RenderLightBeam extends Render<EntityLightBeam>
         double sw_corner_z = 0.5D + beamRadius;
         double se_corner_x = 0.5D + beamRadius;
         double se_corner_z = 0.5D + beamRadius;
-        double uv_bottom = -1.0D;
+        double uv_bottom = -1.0D + uv_animation;
         double uv_top = (double) height * textureScale + uv_bottom;
-        //(double) height * textureScale + d13;
 
         renderBeamTube(x, y, z, height, color_red, color_green, color_blue, tessellator, bufferbuilder, nw_corner_x, nw_corner_z, ne_corner_x, ne_corner_z, sw_corner_x, sw_corner_z, se_corner_x, se_corner_z, uv_bottom, uv_top);
 
