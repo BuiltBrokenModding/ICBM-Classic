@@ -33,7 +33,7 @@ public class RenderLightBeam extends Render<EntityLightBeam>
 
         renderBeamSegment(x, y - 5, z, partialTicks, 1, 0, //TODO instead of -5 raytrace to ground
                 height,
-                1, 0, 0,
+                beamEntity.red,  beamEntity.green,  beamEntity.blue,
                 0.5D, 1D);
 
         GlStateManager.enableFog();
