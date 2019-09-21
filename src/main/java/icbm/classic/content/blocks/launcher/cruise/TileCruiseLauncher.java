@@ -359,6 +359,32 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
+    public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data) //TODO pack as message object
+    {
+        //Floor frequency as we do not care about sub ranges
+        int frequency = (int) Math.floor(hz);
+        if (isServer() && frequency == this.getFrequency())
+        {
+            //Laser detonator signal
+            if (messageHeader.equals("activateLauncherWithTarget")) //TODO cache headers somewhere like API references
+            {
+                final Pos pos = (Pos) data[0];
+                if (!isTooClose(pos))
+                {
+                    setTarget(pos);
+                    ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Aiming missile at " + pos));
+                }
+            }
+            //Remote detonator signal
+            else if (messageHeader.equals("activateLauncher"))
+            {
+                ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
+                launch();
+            }
+        }
+    }
+
+    @Override
     public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
     {
         if (slot == 0)

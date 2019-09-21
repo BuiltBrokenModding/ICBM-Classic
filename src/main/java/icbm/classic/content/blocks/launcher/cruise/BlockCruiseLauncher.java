@@ -2,6 +2,8 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
+import icbm.classic.content.items.ItemLaserDetonator;
+import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
@@ -90,6 +92,16 @@ public class BlockCruiseLauncher extends BlockICBM
                         translation = translation.replace("%s", launcher.getStatus());
                         player.sendMessage(new TextComponentString(translation));
                     }
+                }
+                else if (stack.getItem() instanceof ItemRemoteDetonator)
+                {
+                    ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, launcher.getFrequency());
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.getFrequency())));
+                }
+                else if (stack.getItem() instanceof ItemLaserDetonator)
+                {
+                    ((ItemLaserDetonator) stack.getItem()).setBroadCastHz(stack, launcher.getFrequency());
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.getFrequency())));
                 }
                 else if (stack.getItem() instanceof IWorldPosItem)
                 {
