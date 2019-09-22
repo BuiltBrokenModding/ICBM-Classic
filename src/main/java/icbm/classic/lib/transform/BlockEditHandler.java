@@ -7,7 +7,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.apache.logging.log4j.Level;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import java.util.Queue;
 import java.util.function.Consumer;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 10/8/2018.
  */
 @Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
@@ -24,7 +22,7 @@ public class BlockEditHandler
 {
     public static final HashMap<Integer, Queue<EditQueue>> worldToRemoveQueue = new HashMap<>();
     public static float maxTickTimePercentage = 0.7f; // fraction of ticktime we are allowed to use.
-                                                      // (0.5 = 50% means that up to 50% of the 50ms that a tick may take, will be used at most)
+    // (0.5 = 50% means that up to 50% of the 50ms that a tick may take, will be used at most)
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event)
@@ -79,23 +77,30 @@ public class BlockEditHandler
 
     public static void queue(World world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock)
     {
+        queue(world, edits, onEditBlock, null);
+    }
+
+    public static void queue(World world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock, Runnable onCompleteCallback)
+    {
         final int dim = world.provider.getDimension();
         if (!worldToRemoveQueue.containsKey(dim))
         {
             worldToRemoveQueue.put(dim, new LinkedList<>());
         }
-        worldToRemoveQueue.get(dim).add(new EditQueue(edits, onEditBlock));
+        worldToRemoveQueue.get(dim).add(new EditQueue(edits, onEditBlock, onCompleteCallback));
     }
 
     public static class EditQueue
     {
         final Queue<BlockPos> queue = new LinkedList<>();
         final Consumer<BlockPos> onEditBlock;
+        final Runnable onCompleteCallback;
 
-        public EditQueue(Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock)
+        public EditQueue(Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock, Runnable onCompleteCallback)
         {
             queue.addAll(edits);
             this.onEditBlock = onEditBlock;
+            this.onCompleteCallback = onCompleteCallback;
         }
 
         void doWork(int limit)
@@ -105,6 +110,11 @@ public class BlockEditHandler
             {
                 onEditBlock.accept(queue.poll());
                 editsCount++;
+            }
+
+            if (queue.isEmpty() && onCompleteCallback != null)
+            {
+                onCompleteCallback.run();
             }
         }
     }
