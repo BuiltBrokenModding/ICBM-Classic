@@ -60,29 +60,14 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        try
-        {
-            NBTTagCompound nbt = new NBTTagCompound();
-            this.writeEntityToNBT(nbt);
-            ByteBufUtils.writeTag(data, nbt);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        ByteBufUtils.writeUTF8String(data, blast.getExplosiveData().getRegistryName().toString());
+        data.writeDouble(blastYOffset);
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        try
-        {
-            this.readEntityFromNBT(ByteBufUtils.readTag(data));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        constructBlast(ByteBufUtils.readUTF8String(data), data.readDouble());
     }
 
     @Override
@@ -186,29 +171,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
                 }
                 else if (blastSave.hasKey(NBTConstants.EX_ID))
                 {
-                    ResourceLocation id = new ResourceLocation(blastSave.getString(NBTConstants.EX_ID));
-                    IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id);
-                    if (data != null)
-                    {
-                        final IBlastFactory factory = data.getBlastFactory(); //TODO convert load code to blast creation helper
-                        if (factory != null)
-                        {
-                            blast = factory.createNewBlast();
-                            ((IBlastInit) blast).setBlastWorld(world);
-                            ((IBlastInit) blast).setBlastPosition(posX, posY + blastYOffset, posZ);
-                            ((IBlastInit) blast).setEntityController(this);
-                            ((IBlastInit) blast).setExplosiveData(data);
-                            ((IBlastInit) blast).buildBlast();
-                        }
-                        else
-                        {
-                            ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
-                        }
-                    }
-                    else
-                    {
-                        ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
-                    }
+                    constructBlast(blastSave.getString(NBTConstants.EX_ID), blastYOffset);
                 }
                 else
                 {
@@ -265,6 +228,36 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             }
             this.setPosition(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
             blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
+        }
+    }
+
+    /**
+     * Constructs a blast based on the parameters and sets the blast field to that value
+     */
+    private void constructBlast(String exId, double yOffset)
+    {
+        ResourceLocation id = new ResourceLocation(exId);
+        IExplosiveData exData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id);
+        if (exData != null)
+        {
+            final IBlastFactory factory = exData.getBlastFactory(); //TODO convert load code to blast creation helper
+            if (factory != null)
+            {
+                blast = factory.createNewBlast();
+                ((IBlastInit) blast).setBlastWorld(world);
+                ((IBlastInit) blast).setBlastPosition(posX, posY + yOffset, posZ);
+                ((IBlastInit) blast).setEntityController(this);
+                ((IBlastInit) blast).setExplosiveData(exData);
+                ((IBlastInit) blast).buildBlast();
+            }
+            else
+            {
+                ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
+            }
+        }
+        else
+        {
+            ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
         }
     }
 }
