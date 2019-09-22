@@ -1,21 +1,15 @@
 package icbm.classic.content.blast.threaded;
 
-import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.transform.BlockEditHandler;
 import icbm.classic.lib.transform.PosDistanceSorter;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.WorldServer;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -43,43 +37,56 @@ public abstract class BlastThreaded extends Blast
      */
     public abstract boolean doRun(int loops, Consumer<BlockPos> edits);
 
+    /**
+     * Builds a sorter to sort all of the blocks post thread run
+     *
+     * @return
+     */
+    protected Comparator<BlockPos> buildSorter()
+    {
+        return new PosDistanceSorter(location, false);
+    }
 
+    protected void onPostThreadJoinWorld()
+    {
+        doExplode(-1);
+        onBlastCompleted();
+    }
+
+    /**
+     * Called when the thread completes, is still inside of the thread when called.
+     *
+     * @param edits
+     */
     protected void onWorkerThreadComplete(List<BlockPos> edits)
     {
         if (world instanceof WorldServer)
         {
-            edits.sort(new PosDistanceSorter(location, false));
+            //Sort distance
+            edits.sort(buildSorter());
 
+            //Schedule edits to run in the world
             ((WorldServer) world).addScheduledTask(() -> {
-                doExplode(-1); //TODO why do we call doExplode instead of like post thread run
-                List<BlockPos> queuedForLater = new ArrayList<>();
-                BlockEditHandler.queue(world, edits, blockPos ->
-                {
-                    Block b = world.getBlockState(blockPos).getBlock();
-                    if (ConfigBlast.BLAST_DO_BLOCKUPDATES  && b == Blocks.WATER || b == Blocks.FLOWING_WATER)
-                    {
-                        queuedForLater.add(blockPos);
-                    }
-                    destroyBlock(blockPos);
-                });
 
-                if (!queuedForLater.isEmpty()) {
-                    List<BlockPos> dummy = new ArrayList<>(); // TODO clean up this dummy crap, by adding a callback ot the blockedithandler
-                    dummy.add(new BlockPos(0, 0, 0));
-                    BlockEditHandler.queue(world, dummy, blockPos -> {
-                        Comparator<BlockPos> compareByY = Comparator.comparingInt(Vec3i::getY);
-                        queuedForLater.sort(compareByY);
-                        queuedForLater.sort(Collections.reverseOrder());
-                        BlockEditHandler.queue(world, queuedForLater, (blockPos1 ->
-                        {
-                            world.setBlockState(blockPos1, Blocks.AIR.getDefaultState(), 3);
-                        }
-                        ));
-                    });
+                if (skipQueue())
+                {
+                    edits.forEach(blockPos -> destroyBlock(blockPos));
                 }
-                onBlastCompleted();
+                else
+                {
+                    //Queue edits
+                    BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
+                }
+
+                //Notify blast we have entered world again
+                onPostThreadJoinWorld();
             });
         }
+    }
+
+    protected boolean skipQueue()
+    {
+        return false;
     }
 
     @Override
