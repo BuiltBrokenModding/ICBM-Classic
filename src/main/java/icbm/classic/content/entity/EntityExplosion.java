@@ -197,6 +197,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
                             ((IBlastInit) blast).setBlastWorld(world);
                             ((IBlastInit) blast).setBlastPosition(posX, posY + blastYOffset, posZ);
                             ((IBlastInit) blast).setEntityController(this);
+                            ((IBlastInit) blast).setExplosiveData(data);
                             ((IBlastInit) blast).buildBlast();
                         }
                         else
