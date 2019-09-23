@@ -14,6 +14,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Added: Configuration options to set the amount of time bomb carts, explosives, and grenades should take to explode after being ignited (seperate config options per bomb cart/explosive/grenade type)
 
  * Changed: Explosion resistance of concrete blocks (reinforced concrete is now more resistant than vanilla obsidian)
+ * Changed: Anti-Gravitational blast no longer affects creative players
 
  * Fixed: Gui background and tooltips not being drawn
  * Fixed: Several minor things in English and German localization
@@ -28,7 +29,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Fixed: Launcher control panels facing away from the player when placing them down
  * Fixed: Configuration option to disallow antimatter blast from destroying unbreakable blocks not working
  * Fixed: Explosives sliding around after being ignited
- * Fixed: Missile module not ignoring "Flint and Steel" damage value
+ * Fixed: Anti-Gravitational blast picking up liquids, causing lag, as well as fire and more
 
  * Improved: Item tooltips
  * Improved: Performance at several parts of the mod

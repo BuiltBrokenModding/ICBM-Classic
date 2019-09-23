@@ -6,10 +6,12 @@ import icbm.classic.content.blast.thread.ThreadSmallExplosion;
 import icbm.classic.content.blast.threaded.BlastThreaded;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.lib.transform.PosDistanceSorter;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +78,9 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                         for (BlockPos targetPosition : results)
                         {
                             final IBlockState blockState = world.getBlockState(targetPosition);
-                            if (!blockState.getBlock().isAir(blockState, world, targetPosition))
+                            if (!blockState.getBlock().isAir(blockState, world, targetPosition) //don't pick up air
+                                    && !blockState.getBlock().isReplaceable(world, targetPosition) //don't pick up replacable blocks like fire, grass, or snow (this does not include crops)
+                                    && !(blockState.getBlock() instanceof IFluidBlock) && !(blockState.getBlock() instanceof BlockLiquid)) //don't pick up liquids
                             {
                                 float hardness = blockState.getBlockHardness(world, targetPosition);
                                 if (hardness >= 0 && hardness < 1000)
@@ -112,10 +116,10 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                 else
                 {
                     String msg = String.format("BlastAntiGravitational#doPostExplode() -> Failed to run due to null thread" +
-                                    "\nWorld = %s " +
-                                    "\nThread = %s" +
-                                    "\nSize = %s" +
-                                    "\nPos = ",
+                            "\nWorld = %s " +
+                            "\nThread = %s" +
+                            "\nSize = %s" +
+                            "\nPos = ",
                             world, thread, size, location);
                     ICBMClassic.logger().error(msg);
                 }
@@ -123,10 +127,10 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
             catch (Exception e)
             {
                 String msg = String.format("BlastAntiGravitational#doPostExplode() ->  Unexpected error while running post detonation code " +
-                                "\nWorld = %s " +
-                                "\nThread = %s" +
-                                "\nSize = %s" +
-                                "\nPos = ",
+                        "\nWorld = %s " +
+                        "\nThread = %s" +
+                        "\nSize = %s" +
+                        "\nPos = ",
                         world, thread, size, location);
                 ICBMClassic.logger().error(msg, e);
             }
