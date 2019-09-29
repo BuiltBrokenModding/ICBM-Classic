@@ -24,22 +24,10 @@ public class BlastAntimatter extends BlastThreaded
 {
     private final IBlockState replaceState = Blocks.AIR.getDefaultState();
 
-    private boolean antimatterDoBlockUpdates = false;
-    private static final int antimatterWaterCleanupRange = 5; // antimatter water cleanup antimatterWaterCleanupRange
-    private boolean makeHoles = false;
-
-    public BlastAntimatter()
-    {
-    }
-
-    /**
-     * Called before an explosion happens
-     */
     @Override
     public void setupBlast()
     {
         super.setupBlast();
-        antimatterDoBlockUpdates = ConfigBlast.BLAST_DO_BLOCKUPDATES;
         ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
@@ -52,7 +40,7 @@ public class BlastAntimatter extends BlastThreaded
         {
             if (blockState.getBlockHardness(world, blockPos) >= 0 || ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS)
             {
-                world.setBlockState(blockPos, replaceState, antimatterDoBlockUpdates ? 3 : 2);
+                world.setBlockState(blockPos, replaceState, ConfigBlast.BLAST_DO_BLOCKUPDATES ? 3 : 2);
             }
         }
     }
@@ -87,7 +75,7 @@ public class BlastAntimatter extends BlastThreaded
             ((WorldServer) world).addScheduledTask(() -> {
 
                 //Remove any blocks that could cause issues when queued
-                removeFirst.forEach(blockPos -> world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2));
+                removeFirst.forEach(blockPos -> world.setBlockState(blockPos, replaceState, 2));
 
                 //Queue edits, even the ones from the previous
                 BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
@@ -114,8 +102,6 @@ public class BlastAntimatter extends BlastThreaded
         if(delta < featherEdge)
         {
             final double p2 = 1 - (delta / (double)featherEdge);
-
-            System.out.println(featherEdge + " " + delta + " " + p2);
             return world().rand.nextFloat() < p2;
         }
         return true;
