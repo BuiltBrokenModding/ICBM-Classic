@@ -43,6 +43,9 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +56,7 @@ import java.util.stream.Collectors;
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
 @Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@SideOnly(Side.CLIENT)
 public class ClientReg
 {
     private final static Map<IExplosiveData, ModelResourceLocation> grenadeModelMap = new HashMap();
