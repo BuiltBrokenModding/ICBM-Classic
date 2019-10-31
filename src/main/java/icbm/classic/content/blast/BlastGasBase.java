@@ -172,11 +172,11 @@ public class BlastGasBase extends Blast implements IBlastTickable
             if (this.mutateEntities)
             {
                 new BlastMutation()
-                        .setBlastWorld(world())
-                        .setBlastSource(this.exploder)
-                        .setBlastPosition(location.x(), location.y(), location.z())
-                        .setBlastSize(getBlastRadius())
-                        .buildBlast().runBlast(); //TODO trigger from explosive handler
+                .setBlastWorld(world())
+                .setBlastSource(this.exploder)
+                .setBlastPosition(location.x(), location.y(), location.z())
+                .setBlastSize(getBlastRadius())
+                .buildBlast().runBlast(); //TODO trigger from explosive handler
             }
 
             //End explosion when we hit life timer
@@ -214,7 +214,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
             }
 
             //Check that the entity is in range
-            return affectedBlocks.contains(checkPos.setPos(entity));
+            return affectedBlocks.contains(checkPos.setPos(entity.posX, entity.posY, entity.posZ));
         }
         return false;
     }
@@ -252,9 +252,9 @@ public class BlastGasBase extends Blast implements IBlastTickable
         if (edgeBlocks.isEmpty())
         {
             affectedBlocks
-                    .stream()
-                    .filter((pos) -> Math.random() > 0.5)
-                    .forEach(pos -> edgeBlocks.add(pos));
+            .stream()
+            .filter((pos) -> Math.random() > 0.5)
+            .forEach(pos -> edgeBlocks.add(pos));
         }
 
         //Track blocks we pathed but didn't need
