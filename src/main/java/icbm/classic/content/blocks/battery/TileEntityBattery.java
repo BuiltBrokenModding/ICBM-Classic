@@ -86,7 +86,7 @@ public class TileEntityBattery extends TileMachine implements IInventoryProvider
         {
             return (T) getEnergyStorage();
         }
-        return getCapability(capability, facing);
+        return super.getCapability(capability, facing);
     }
 
     @Override
