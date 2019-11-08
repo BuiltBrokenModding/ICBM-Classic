@@ -51,6 +51,10 @@ public class ThreadSmallExplosion extends ThreadExplosion
                         for (float var21 = 0.3F; power > 0.0F; power -= var21 * 0.75F)
                         {
                             BlockPos targetPosition = new BlockPos(var15, var17, var19);
+
+                            if(!position.world().isBlockLoaded(targetPosition))
+                                continue;
+
                             IBlockState state = this.position.world().getBlockState(targetPosition);
                             Block block = state.getBlock();
 
