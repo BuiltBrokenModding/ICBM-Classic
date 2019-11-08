@@ -37,6 +37,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -296,7 +297,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     missile.capabilityMissile.launch(target.x(), target.y(), target.z(), lockHeight);
 
                     //Spawn entity
-                    getWorld().spawnEntity(missile);
+                    ((WorldServer)getWorld()).addScheduledTask(() -> getWorld().spawnEntity(missile));
 
                     //Grab rider
                     if (seat != null && seat.getRidingEntity() != null) //TODO add hook to disable riding some missiles
