@@ -68,21 +68,28 @@ public class ItemBlockExplosive extends ItemBlockAbstract
                 {
                     case 0:
                         list.add("Place me, you know you want to :)");
+                        //$FALL-THROUGH$
                     case 1:
                         list.add("Mine with me, lets get some minerals!!");
+                        //$FALL-THROUGH$
                     case 2:
                         list.add("Can you hear the noises in the dark?");
+                        //$FALL-THROUGH$
                     case 3:
                         list.add("One does not simply use");
                         list.add("redmatter to cancel redmatter");
+                        //$FALL-THROUGH$
                     case 4:
                         list.add("Nice base you have");
                         list.add("be a shame if something");
                         list.add("would happen to it");
+                        //$FALL-THROUGH$
                     case 5:
                         list.add("Don't worry i've changed");
+                        //$FALL-THROUGH$
                     case 6:
                         list.add("Lets eat a world together");
+                        //$FALL-THROUGH$
                     case 7:
                         list.add("I'm back for you");
                 }

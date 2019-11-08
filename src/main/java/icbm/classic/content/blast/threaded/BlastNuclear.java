@@ -14,7 +14,6 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import static java.lang.Math.cos;

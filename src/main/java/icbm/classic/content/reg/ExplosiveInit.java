@@ -40,10 +40,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-import static icbm.classic.api.EnumExplosiveType.BLOCK;
-import static icbm.classic.api.EnumExplosiveType.BOMB_CART;
-import static icbm.classic.api.EnumExplosiveType.GRENADE;
-
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
@@ -72,7 +68,7 @@ public class ExplosiveInit
         ExplosiveRefs.INCENDIARY = newEx(2, "incendiary", EnumTier.ONE, () -> new BlastFire().setBlastSize(14));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ExplosiveRefs.INCENDIARY.getRegistryName(),
                 (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
-        );
+                );
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.INCENDIARY);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.INCENDIARY);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.INCENDIARY.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.INCENDIARY);
@@ -80,7 +76,7 @@ public class ExplosiveInit
 
         ExplosiveRefs.DEBILITATION = newEx(3, "debilitation", EnumTier.ONE,
                 () -> new BlastGasBase(20 * 30, false)
-                        .setConfuse().setBlastSize(20));
+                .setConfuse().setBlastSize(20));
 
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.DEBILITATION.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.DEBILITATION);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.DEBILITATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.DEBILITATION);
@@ -89,7 +85,7 @@ public class ExplosiveInit
 
         ExplosiveRefs.CHEMICAL = newEx(4, "chemical", EnumTier.ONE,
                 () -> new BlastGasBase(20 * 30, false)
-                        .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
+                .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
 
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CHEMICAL.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CHEMICAL);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ExplosiveRefs.CHEMICAL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.CHEMICAL);
@@ -129,7 +125,7 @@ public class ExplosiveInit
 
         ExplosiveRefs.CONTAGIOUS = newEx(9, "contagious", EnumTier.TWO,
                 () -> new BlastGasBase(20 * 30, false)
-                        .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
+                .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.CONTAGIOUS.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONTAGIOUS);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.CONTAGIOUS.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONTAGIOUS);
 

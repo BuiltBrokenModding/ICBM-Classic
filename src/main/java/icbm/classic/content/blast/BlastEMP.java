@@ -25,7 +25,6 @@ public class BlastEMP extends Blast
 {
     private boolean effectEntities = false;
     private boolean effectBlocks = false;
-    private float power = 1f;
 
     public BlastEMP setEffectBlocks()
     {

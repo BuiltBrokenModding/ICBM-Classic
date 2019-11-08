@@ -27,6 +27,7 @@ import net.minecraft.util.text.TextComponentString;
  *
  * @author Calclavia
  */
+@SuppressWarnings("incomplete-switch")
 public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDReceiver, IInventoryProvider<ExternalInventory>
 {
     // The missile launcher base in which this

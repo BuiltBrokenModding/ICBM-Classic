@@ -1,13 +1,10 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityBat;
-
 /**
  *
  * Created by Dark(DarkGuardsman, Robert) on 10/2/2017.
  */
+//unused at the moment
 public class BlastNightmare extends Blast
 {
     @Override
@@ -15,7 +12,7 @@ public class BlastNightmare extends Blast
     {
         if(!world().isRemote)
         {
-            final Pos center = new Pos(this);
+            //final Pos center = new Pos(this);
             final int size = (int) this.size;
 
             //TODO cache delays created by this blast to allow for /lag command to clear
@@ -24,7 +21,7 @@ public class BlastNightmare extends Blast
             final int batCount = (size / 10) + world().rand.nextInt(size / 10);
             for (int i = 0; i < batCount; i++)
             {
-                EntityBat bat = new EntityBat(world());
+                //EntityBat bat = new EntityBat(world());
                 //DelayedActionHandler.add(new DelayedSpawn(oldWorld(), center, bat, 10, (i + oldWorld().rand.nextInt(size)) * 20));
             }
 
@@ -34,7 +31,7 @@ public class BlastNightmare extends Blast
             {
                 //TODO distribute using missile miss spread code
                 //TODO materialize zombies as ghosts so they can walk through walls in order to find an air pocket to spawn
-                EntityZombie zombie = new EntityZombie(world());
+                //EntityZombie zombie = new EntityZombie(world());
                 //DelayedActionHandler.add(new DelayedSpawn(oldWorld(), center, zombie, 10, (i + oldWorld().rand.nextInt(size * 2)) * 20));
             }
 

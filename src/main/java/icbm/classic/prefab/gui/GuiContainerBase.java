@@ -14,7 +14,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,14 +116,6 @@ public class GuiContainerBase extends GuiContainer
     {
         Keyboard.enableRepeatEvents(false);
         super.onGuiClosed();
-    }
-
-    @Override
-    public void handleMouseInput() throws IOException
-    {
-        int i = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int j = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-        super.handleMouseInput();
     }
 
     @Override

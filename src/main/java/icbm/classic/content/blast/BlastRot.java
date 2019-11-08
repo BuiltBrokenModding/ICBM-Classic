@@ -2,8 +2,6 @@ package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastTickable;
-import icbm.classic.config.ConfigDebug;
-import icbm.classic.content.blast.thread.ThreadLargeExplosion;
 import icbm.classic.content.blast.threaded.BlastThreaded;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,8 +10,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -27,7 +23,7 @@ public class BlastRot extends BlastThreaded implements IBlastTickable
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
         BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->
-                edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z)));
+        edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z)));
         //TODO implement pathfinder so virus doesn't go through unbreakable air-tight walls
         return false;
     }

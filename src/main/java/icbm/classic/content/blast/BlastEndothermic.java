@@ -3,6 +3,7 @@ package icbm.classic.content.blast;
 import icbm.classic.config.ConfigBlast;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -62,7 +63,7 @@ public class BlastEndothermic extends BlastBeam
                 }
                 else if (blockState.getBlock() == Blocks.FLOWING_LAVA)
                 {
-                    int level = Math.min(8, Math.max(1, blockState.getValue(Blocks.FLOWING_LAVA.LEVEL) / 2));
+                    int level = Math.min(8, Math.max(1, blockState.getValue(BlockLiquid.LEVEL) / 2));
                     world.setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState()
                             .withProperty(BlockSnow.LAYERS, level), 3);
                 }

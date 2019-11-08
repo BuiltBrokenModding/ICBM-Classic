@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ItemTracker extends ItemICBMElectrical
 {
-    private static final long ENERGY_PER_TICK = 1;
+    //private static final long ENERGY_PER_TICK = 1;
 
     public ItemTracker()
     {

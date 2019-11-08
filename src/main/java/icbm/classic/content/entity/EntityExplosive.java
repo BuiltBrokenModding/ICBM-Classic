@@ -1,6 +1,5 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.EnumExplosiveType;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
