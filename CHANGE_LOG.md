@@ -47,6 +47,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Removed: Cluster Missile
  * Removed: Nuclear Cluster Missile
  * Removed: Rejuvenation Explosives and Missile
+ * Removed: Battery Box
 
 ### Development Changes
  * Added: Several events (BlastCancelEvent, ExplosiveDefuseEvent, LaserRemoteTriggerEvent, LauncherSetTargetEvent, MissileChunkEvent, MissileRideEvent, RadarGunTraceEvent, RemoteTriggerEvent)

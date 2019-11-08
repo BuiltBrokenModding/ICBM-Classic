@@ -93,7 +93,6 @@ public class ItemReg
         event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchSupport));
         event.getRegistry().register(new ItemBlockRotatedMultiTile(BlockReg.blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
         event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchScreen));
-        event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockBattery));
         event.getRegistry().register(new ItemBlock(BlockReg.blockCruiseLauncher).setRegistryName(BlockReg.blockCruiseLauncher.getRegistryName()));
 
         //Crafting resources

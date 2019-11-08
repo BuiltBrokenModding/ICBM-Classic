@@ -94,9 +94,6 @@ public class ClientReg
         newBlockModel(BlockReg.blockConcrete, 1, "inventory", "_compact");
         newBlockModel(BlockReg.blockConcrete, 2, "inventory", "_reinforced");
 
-        //Battery
-        newBlockModel(BlockReg.blockBattery, 0, "inventory", "");
-
         newBlockModel(BlockReg.blockCruiseLauncher, 0, "inventory", "");
 
         //Explosives
@@ -108,7 +105,6 @@ public class ClientReg
         //Machines
         newBlockModel(BlockReg.blockEmpTower, 0, "inventory", "");
         newBlockModel(BlockReg.blockRadarStation, 0, "inventory", "");
-        newBlockModel(BlockReg.blockBattery, 0, "inventory", "");
 
         registerLauncherPart(BlockReg.blockLaunchBase);
         registerLauncherPart(BlockReg.blockLaunchSupport);

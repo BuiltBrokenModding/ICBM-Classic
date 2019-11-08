@@ -2,8 +2,6 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.blocks.*;
-import icbm.classic.content.blocks.battery.BlockBattery;
-import icbm.classic.content.blocks.battery.TileEntityBattery;
 import icbm.classic.content.blocks.emptower.BlockEmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
@@ -60,8 +58,6 @@ public class BlockReg
     @ObjectHolder(ICBMClassic.PREFIX + "cruiseLauncher")
     public static Block blockCruiseLauncher;
     public static Block blockMissileCoordinator; //TODO re-implement
-    @ObjectHolder(ICBMClassic.PREFIX + "batterybox")
-    public static Block blockBattery;
     @ObjectHolder(ICBMClassic.PREFIX + "multiblock")
     public static Block multiBlock;
 
@@ -82,7 +78,6 @@ public class BlockReg
         event.getRegistry().register(new BlockLauncherBase());
         event.getRegistry().register(new BlockLaunchScreen());
         event.getRegistry().register(new BlockMultiblock());
-        event.getRegistry().register(new BlockBattery());
 
         event.getRegistry().register(new BlockCruiseLauncher());
 
@@ -98,7 +93,6 @@ public class BlockReg
         GameRegistry.registerTileEntity(TileLauncherBase.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherbase"));
         GameRegistry.registerTileEntity(TileLauncherScreen.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherscreen"));
         GameRegistry.registerTileEntity(TileMulti.class, new ResourceLocation(ICBMClassic.DOMAIN, "multiblock"));
-        GameRegistry.registerTileEntity(TileEntityBattery.class, new ResourceLocation(ICBMClassic.DOMAIN, "batterybox"));
         GameRegistry.registerTileEntity(TileCruiseLauncher.class, new ResourceLocation(ICBMClassic.DOMAIN, "cruiseLauncher"));
     }
 }
