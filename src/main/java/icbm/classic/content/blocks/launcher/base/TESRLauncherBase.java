@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import org.lwjgl.opengl.GL11;
 
 /**
  *
@@ -57,7 +56,7 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
             modelBase1.render(0.0625F);
             modelRail1.render(0.0625F);
-            GL11.glRotatef(180F, 0F, 180F, 1.0F);
+            GlStateManager.rotate(180F, 0F, 180F, 1.0F);
             modelRail1.render(0.0625F);
         }
         else if (launcher.getTier() == EnumTier.THREE)
@@ -65,7 +64,7 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
             modelBase2.render(0.0625F);
             modelRail2.render(0.0625F);
-            GL11.glRotatef(180F, 0F, 180F, 1.0F);
+            GlStateManager.rotate(180F, 0F, 180F, 1.0F);
             modelRail2.render(0.0625F);
         }
         GlStateManager.popMatrix();

@@ -16,8 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
-
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)
@@ -33,9 +31,9 @@ public class RenderExBlock extends Render<EntityExplosive>
     {
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         renderBlock(entity, x, y, z, entityYaw, partialTicks);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     public void renderBlock(EntityExplosive entity, double x, double y, double z, float entityYaw, float partialTicks)

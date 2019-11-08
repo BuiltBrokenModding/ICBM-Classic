@@ -9,14 +9,12 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -158,8 +156,8 @@ public class GuiContainerBase extends GuiContainer
         renderHoveredToolTip(p_73863_1_, p_73863_2_);
         if (fields != null && fields.size() > 0)
         {
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_BLEND);
+            GlStateManager.disableLighting();
+            GlStateManager.disableBlend();
             for (GuiTextField field : fields)
             {
                 field.drawTextBox();
@@ -211,7 +209,7 @@ public class GuiContainerBase extends GuiContainer
         this.containerHeight = (this.height - this.ySize) / 2;
 
         this.mc.renderEngine.bindTexture(this.baseTexture);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         this.drawTexturedModalRect(this.containerWidth, this.containerHeight, 0, 0, this.xSize, this.ySize);
     }
@@ -237,7 +235,7 @@ public class GuiContainerBase extends GuiContainer
     protected void drawSlot(int x, int y, float r, float g, float b)
     {
         this.mc.renderEngine.bindTexture(GUI_COMPONENTS);
-        GL11.glColor4f(r, g, b, 1.0F);
+        GlStateManager.color(r, g, b, 1.0F);
 
         this.drawTexturedModalRect(this.containerWidth + x, this.containerHeight + y, 0, 0, 18, 18);
     }
@@ -310,11 +308,11 @@ public class GuiContainerBase extends GuiContainer
     {
         if (color == null)
         {
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         }
         else
         {
-            GL11.glColor3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
+            GlStateManager.color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
         }
     }
 
@@ -325,8 +323,8 @@ public class GuiContainerBase extends GuiContainer
         {
             if (toolTips != null)
             {
-                GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                GlStateManager.disableRescaleNormal();
+                GlStateManager.disableDepth();
 
                 int var5 = 0;
                 int var6;
@@ -381,8 +379,8 @@ public class GuiContainerBase extends GuiContainer
 
                 this.zLevel = 0;
 
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                GlStateManager.enableDepth();
+                GlStateManager.enableRescaleNormal();
             }
         }
     }

@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 /**
  *
@@ -30,7 +29,7 @@ public class TESRRadarStation extends TileEntitySpecialRenderer<TileRadarStation
 
         //Fix techne translation and rotation
         GlStateManager.translate(x + 0.5F, y + 1.5F, z + 0.5F);
-        GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(180F, 0.0F, 0.0F, 1.0F);
 
         //Assign texture
         if (te.hasPower())

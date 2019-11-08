@@ -9,12 +9,11 @@ import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
 import java.io.IOException;
 
 public class GuiRadarStation extends GuiContainerBase
@@ -189,7 +188,7 @@ public class GuiRadarStation extends GuiContainerBase
         drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
 
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         this.containerPosX = (this.width - this.xSize) / 2;
         this.containerPosY = (this.height - this.ySize) / 2;

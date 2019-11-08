@@ -7,11 +7,10 @@ import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import org.lwjgl.opengl.GL11;
-
 import java.io.IOException;
 
 public class GuiEMPTower extends GuiContainerBase
@@ -149,7 +148,7 @@ public class GuiEMPTower extends GuiContainerBase
         //Draw background
         drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         containerWidth = (this.width - this.xSize) / 2;
         containerHeight = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(containerWidth, containerHeight, 0, 0, this.xSize, this.ySize);

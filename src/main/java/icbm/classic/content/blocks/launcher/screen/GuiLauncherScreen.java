@@ -7,12 +7,12 @@ import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
@@ -218,7 +218,7 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         containerWidth = (this.width - this.xSize) / 2;
         containerHeight = (this.height - this.ySize) / 2;

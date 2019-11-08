@@ -4,12 +4,12 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.client.models.ModuleCruiseLauncherBottom;
 import icbm.classic.client.models.ModelCruiseLauncherTop;
 import icbm.classic.client.render.entity.RenderMissile;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 /**
  *
@@ -29,26 +29,26 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
         float yaw = (float) launcher.currentAim.yaw();
         float pitch = (float) launcher.currentAim.pitch();
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
 
-        GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(180F, 0.0F, 0.0F, 1.0F);
         MODEL0.render(0.0625F);
 
-        GL11.glRotatef(-yaw, 0F, 1F, 0F); //TODO add lerp function to smooth rotation when FPS spikes
-        GL11.glRotatef(-pitch, 1F, 0F, 0F);
+        GlStateManager.rotate(-yaw, 0F, 1F, 0F); //TODO add lerp function to smooth rotation when FPS spikes
+        GlStateManager.rotate(-pitch, 1F, 0F, 0F);
         MODEL1.render(0.0625F);
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
         if (!launcher.cachedMissileStack.isEmpty())
         {
-            GL11.glPushMatrix();
-            GL11.glTranslatef((float) x + 0.5F, (float) y + 1, (float) z + 0.5f);
-            GL11.glRotatef(yaw, 0F, 1F, 0F);
-            GL11.glRotatef(pitch - 90, 1F, 0F, 0F);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate((float) x + 0.5F, (float) y + 1, (float) z + 0.5f);
+            GlStateManager.rotate(yaw, 0F, 1F, 0F);
+            GlStateManager.rotate(pitch - 90, 1F, 0F, 0F);
 
             try
             {
@@ -58,7 +58,7 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
             {
                 e1.printStackTrace();
             }
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
     }
 }
