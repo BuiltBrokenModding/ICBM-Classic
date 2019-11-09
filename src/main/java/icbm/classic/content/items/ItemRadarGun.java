@@ -154,11 +154,8 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
                     }
                 }
             }
-            else // otherwise, save the currently clicked block as a location
-            {
-                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(pos));
+            else if(trace(pos, player)) // otherwise, save the currently clicked block as a location if the trace event has not been canceled
                 return EnumActionResult.SUCCESS;
-            }
         }
         return EnumActionResult.PASS;
     }
@@ -166,19 +163,26 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
     @Override
     public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
+        return trace(buf.readInt(), buf.readInt(), buf.readInt(), player);
+    }
+
+    public boolean trace(int x, int y, int z, EntityPlayer player)
+    {
+        return trace(new BlockPos(x, y, z), player);
+    }
+
+    public boolean trace(BlockPos pos, EntityPlayer player)
+    {
         ItemStack stack = player.inventory.getCurrentItem();
         if (stack != null && stack.getItem() == this)
         {
-            int x = buf.readInt();
-            int y = buf.readInt();
-            int z = buf.readInt();
-            RadarGunTraceEvent event = new RadarGunTraceEvent(player.world, new BlockPos(x, y, z), player);
+            RadarGunTraceEvent event = new RadarGunTraceEvent(player.world, pos, player);
 
             if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
                 return false;
 
             if(event.pos == null) //someone set the pos in the event to null, use original data
-                setLocation(stack, new Location(player.world, x, y, z));
+                setLocation(stack, new Location(player.world, pos.getX(), pos.getY(), pos.getZ()));
             else
                 setLocation(stack, new Location(player.world, event.pos.getX(), event.pos.getY(), event.pos.getZ()));
 
