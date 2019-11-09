@@ -21,7 +21,7 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
 {
     private final HashMap<ResourceLocation, WorldPosIntSupplier> fuseSetSupplierMap = new HashMap();
     private final HashMap<ResourceLocation, WorldTickFunction> fuseTickCallbackMap = new HashMap();
-    private final HashMap<ResourceLocation, BlockActivateFunction> blockActiviationCallbackMap = new HashMap();
+    private final HashMap<ResourceLocation, BlockActivateFunction> blockActivationCallbackMap = new HashMap();
 
     private final IntHashMap<WorldPosIntSupplier> fuseSetSupplier = new IntHashMap();
     private final IntHashMap<WorldTickFunction> fuseTickCallback = new IntHashMap();
@@ -63,7 +63,7 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
                     fuseTickCallback.addKey(data.getRegistryID(), func);
                 }
             });
-            blockActiviationCallbackMap.forEach((regName, func) -> {
+            blockActivationCallbackMap.forEach((regName, func) -> {
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
@@ -90,7 +90,7 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     @Override
     public void setActivationListener(ResourceLocation exName, BlockActivateFunction function)
     {
-        blockActiviationCallbackMap.put(exName, function);
+        blockActivationCallbackMap.put(exName, function);
     }
 
     @Override
