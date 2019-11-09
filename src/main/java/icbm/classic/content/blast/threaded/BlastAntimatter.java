@@ -67,6 +67,9 @@ public class BlastAntimatter extends BlastThreaded
 
             //Pull out fluids and falling blocks to prevent lag issues
             List<BlockPos> removeFirst = edits.stream().filter(blockPos -> {
+                if(!world.isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
+                    return false;
+
                 IBlockState state = world.getBlockState(blockPos);
                 return state.getMaterial() == Material.WATER || state.getBlock() instanceof BlockFalling;
             }).collect(Collectors.toList());

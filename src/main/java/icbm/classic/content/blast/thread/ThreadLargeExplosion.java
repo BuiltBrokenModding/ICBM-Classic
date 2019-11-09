@@ -91,7 +91,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
                     //Only do action one time per block (not a perfect solution, but solves double hit on the same block in the same line)
                     if (prevPos != blockPos)
                     {
-                        if(!position.world().isBlockLoaded(blockPos))
+                        if(!position.world().isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
                             continue;
 
                         //Get block state and block from position

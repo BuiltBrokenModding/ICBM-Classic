@@ -103,6 +103,9 @@ public class BlastNuclear extends BlastThreaded
                     //Only do action one time per block (not a perfect solution, but solves double hit on the same block in the same line)
                     if (prevPos != blockPos)
                     {
+                        if(!world.isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
+                            continue;
+
                         //Get block state and block from position
                         final IBlockState state = world.getBlockState(blockPos);
                         final Block block = state.getBlock();

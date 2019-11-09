@@ -52,7 +52,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
                         {
                             BlockPos targetPosition = new BlockPos(var15, var17, var19);
 
-                            if(!position.world().isBlockLoaded(targetPosition))
+                            if(!position.world().isBlockLoaded(targetPosition)) //TODO: find better fix for non main thread loading
                                 continue;
 
                             IBlockState state = this.position.world().getBlockState(targetPosition);
