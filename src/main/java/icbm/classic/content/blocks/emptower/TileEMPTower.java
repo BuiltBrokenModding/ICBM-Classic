@@ -248,7 +248,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     //=========================================
 
     @Override
-    @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
         if (tileMulti instanceof TileEntity)
@@ -265,7 +264,8 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         if (!_destroyingStructure && tileMulti instanceof TileEntity)
         {
-            if (getLayoutOfMultiBlock().contains(((TileEntity) tileMulti).getPos().subtract(getPos()))) {
+            if (getLayoutOfMultiBlock().contains(((TileEntity) tileMulti).getPos().subtract(getPos())))
+            {
                 MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
                 return true;
             }
