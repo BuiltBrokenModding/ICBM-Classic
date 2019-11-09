@@ -249,15 +249,10 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
                 ((IBlastInit) blast).setEntityController(this);
                 ((IBlastInit) blast).setExplosiveData(exData);
                 ((IBlastInit) blast).buildBlast();
-            }
-            else
-            {
-                ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
+                return;
             }
         }
-        else
-        {
-            ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
-        }
+
+        ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
     }
 }

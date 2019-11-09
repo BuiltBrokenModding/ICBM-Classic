@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.tile.multiblock.IMultiTile;
@@ -183,6 +184,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                 BlastEMP emp = (BlastEMP) new BlastEMP()
                         .setBlastWorld(world)
                         .setPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
+                        .setExplosiveData(ExplosiveRefs.EMP)
                         .setBlastSize(empRadius);
 
                 //Apply settings

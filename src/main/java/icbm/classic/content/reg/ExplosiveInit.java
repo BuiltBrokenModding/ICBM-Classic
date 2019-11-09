@@ -18,7 +18,9 @@ import icbm.classic.content.blast.BlastEndothermic;
 import icbm.classic.content.blast.BlastExothermic;
 import icbm.classic.content.blast.BlastFire;
 import icbm.classic.content.blast.BlastGasBase;
+import icbm.classic.content.blast.BlastMutation;
 import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.BlastRot;
 import icbm.classic.content.blast.BlastShrapnel;
 import icbm.classic.content.blast.BlastSonic;
 import icbm.classic.content.blast.BlastTNT;
@@ -205,6 +207,9 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 
+        //=================== No content, only blast
+        ExplosiveRefs.MUTATION = newEx(24, "mutation", EnumTier.NONE, () -> new BlastMutation());
+        ExplosiveRefs.ROT = newEx(25, "rot", EnumTier.NONE, () -> new BlastRot());
 
         ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
 

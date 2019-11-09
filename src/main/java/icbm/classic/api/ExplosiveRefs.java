@@ -37,4 +37,8 @@ public final class ExplosiveRefs
     //=================== Tier 4
     public static IExplosiveData ANTIMATTER;
     public static IExplosiveData REDMATTER;
+
+    //=================== No content, only blast
+    public static IExplosiveData MUTATION;
+    public static IExplosiveData ROT;
 }

@@ -29,7 +29,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Fixed: Launcher control panels facing away from the player when placing them down
  * Fixed: Configuration option to disallow antimatter blast from destroying unbreakable blocks not working
  * Fixed: Explosives sliding around after being ignited
- * Fixed: Anti-Gravitational blast picking up liquids, causing lag, as well as fire and more
+ * Fixed: Anti-Gravitational blast picking up liquids as well as fire and more, causing lag
 
  * Improved: Item tooltips
  * Improved: Performance at several parts of the mod
@@ -58,6 +58,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
  * Added: Additional smoke variant that doesn't move upwards after time
  * Added: Fallback for loading a world with an explosive that no longer exists. (Otherwise the game would crash)
  * Added: Code that verifies that we are not using the same NBT save string twice for two different things
+ * Added: Tier "NONE" which used for blasts that do not have an explosive/missile/bomb cart/grenade
 
  * Fixed: LanguageUtility#splitByLine not splitting correctly
 
@@ -72,7 +73,7 @@ If this is a problem, use exact build numbers to track changes. As each build lo
 
 ## 3.3.1
 ### Runtime Changes
-* Added: Support for Atomic science uranium in nuke recipe
+* Added: Support for Atomic Science uranium in nuke recipe
 
 ## 3.3.0
 ### Runtime Changes

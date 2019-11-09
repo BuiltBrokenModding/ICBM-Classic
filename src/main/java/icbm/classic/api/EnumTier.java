@@ -13,7 +13,8 @@ public enum EnumTier implements IStringSerializable
     ONE(TextFormatting.GREEN),
     TWO(TextFormatting.YELLOW),
     THREE(TextFormatting.GOLD),
-    FOUR(TextFormatting.RED);
+    FOUR(TextFormatting.RED),
+    NONE(TextFormatting.WHITE);
 
     private TextFormatting tooltipColor;
 

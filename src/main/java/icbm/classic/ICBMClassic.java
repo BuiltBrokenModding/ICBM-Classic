@@ -242,9 +242,9 @@ public final class ICBMClassic
         explosiveRegistry.lockNewExplosives();
 
         //Do default content types per explosive
-        explosiveRegistry.getExplosives().forEach(ex -> ICBMClassicAPI.EX_BLOCK_REGISTRY.enableContent(ex.getRegistryName()));
-        explosiveRegistry.getExplosives().forEach(ex -> ICBMClassicAPI.EX_MISSILE_REGISTRY.enableContent(ex.getRegistryName()));
-        explosiveRegistry.getExplosives().forEach(ex -> ICBMClassicAPI.EX_MINECART_REGISTRY.enableContent(ex.getRegistryName()));
+        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() != EnumTier.NONE).forEach(ex -> ICBMClassicAPI.EX_BLOCK_REGISTRY.enableContent(ex.getRegistryName()));
+        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() != EnumTier.NONE).forEach(ex -> ICBMClassicAPI.EX_MISSILE_REGISTRY.enableContent(ex.getRegistryName()));
+        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() != EnumTier.NONE).forEach(ex -> ICBMClassicAPI.EX_MINECART_REGISTRY.enableContent(ex.getRegistryName()));
         explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() == EnumTier.ONE).forEach(ex -> ICBMClassicAPI.EX_GRENADE_REGISTRY.enableContent(ex.getRegistryName()));
         //TODO configs to disable types per explosive
         //TODO mesh mapper to match model to state
