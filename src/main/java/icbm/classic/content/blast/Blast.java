@@ -9,8 +9,10 @@ import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastRestore;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.config.ConfigBlast;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadExplosion;
+import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Location;
@@ -113,7 +115,8 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 else
                 {
                     //Do setup tasks
-                    this.doFirstSetup();
+                    if(!this.doFirstSetup())
+                        return BlastState.FORGE_EVENT_CANCEL;
 
                     //Call explosive, only complete if true
                     if (this.doExplode(-1))
@@ -152,7 +155,8 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         if(!world.isRemote)
         {
             //Do setup work
-            doFirstSetup();
+            if(!doFirstSetup())
+                return false;
 
             //Do ticks
             if (isAlive)
@@ -169,19 +173,26 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
 
     /**
      * Called to start the blast and run setup code
+     * @return true if the blast should continue to run, false otherwhise
      */
-    public final void doFirstSetup()
+    public final boolean doFirstSetup()
     {
         if (isAlive && !hasSetupBlast)
         {
             hasSetupBlast = true;
             ExplosiveHandler.add(this);
-            this.setupBlast();
+            return this.setupBlast();
         }
+
+        return true;
     }
 
-    protected void setupBlast()
+    /**
+     * @return true if the blast should continue to run, false otherwhise
+     */
+    protected boolean setupBlast()
     {
+        return true;
     }
 
     /**
@@ -295,12 +306,15 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         return Math.max(3, this.size);
     }
 
-    protected void doDamageEntities(float radius, float power)
+    protected boolean doDamageEntities(float radius, float power)
     {
-        this.doDamageEntities(radius, power, true);
+        return this.doDamageEntities(radius, power, true);
     }
 
-    protected void doDamageEntities(float radius, float power, boolean destroyItem)
+    /**
+     * @return true if the method ran successfully, false if it was interrupted
+     */
+    protected boolean doDamageEntities(float radius, float power, boolean destroyItem)
     {
         // Step 2: Damage all entities
         radius *= 2.0F;
@@ -308,6 +322,18 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         Location maxCoord = location.add(radius + 1);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
         Vec3d var31 = new Vec3d(location.x(), location.y(), location.z());
+
+        if(!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter)
+        {
+            allEntities.sort((e1, e2) -> {
+                if(e2 instanceof EntityExplosion && ((EntityExplosion)e2).getBlast() instanceof BlastRedmatter)
+                    return 1; //put red matter at the front
+                else return -1;
+            });
+
+            if(onDamageEntity(allEntities.get(0))) //remove red matter blast and stop doing anything else
+                return false;
+        }
 
         for (int i = 0; i < allEntities.size(); ++i)
         {
@@ -353,6 +379,8 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 entity.motionZ += zDifference * var36;
             }
         }
+
+        return true;
     }
 
     /**

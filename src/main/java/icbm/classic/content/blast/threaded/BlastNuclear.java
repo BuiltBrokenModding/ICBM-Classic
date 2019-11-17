@@ -153,7 +153,7 @@ public class BlastNuclear extends BlastThreaded
 
 
     @Override
-    public void setupBlast()
+    public boolean setupBlast()
     {
         super.setupBlast();
         if (this.world() != null)
@@ -197,6 +197,8 @@ public class BlastNuclear extends BlastThreaded
 
             ICBMSounds.EXPLOSION.play(world, this.location.x(), this.location.y(), this.location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
+
+        return true;
     }
 
     @Override

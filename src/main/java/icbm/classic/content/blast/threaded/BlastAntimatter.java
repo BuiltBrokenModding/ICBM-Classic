@@ -25,11 +25,11 @@ public class BlastAntimatter extends BlastThreaded
     private final IBlockState replaceState = Blocks.AIR.getDefaultState();
 
     @Override
-    public void setupBlast()
+    public boolean setupBlast()
     {
         super.setupBlast();
         ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
-        this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
+        return this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
     @Override
@@ -127,11 +127,11 @@ public class BlastAntimatter extends BlastThreaded
                 if (!MinecraftForge.EVENT_BUS.post(new BlastCancelEvent(this, ((EntityExplosion) entity).getBlast())))
                 {
                     entity.setDead();
+                    return true;
                 }
-                return true;
             }
         }
 
-        return !ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER; //if entity damage is enabled, return false so the entity damage logic can continue and vice versa
+        return false;
     }
 }

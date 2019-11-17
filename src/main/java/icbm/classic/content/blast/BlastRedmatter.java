@@ -63,14 +63,16 @@ public class BlastRedmatter extends Blast implements IBlastTickable
         return blocksEditsPerTick;
     }
 
-    @Override
-    public void setupBlast()
-    {
-        if (!this.world().isRemote)
-        {
-            //this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), Math.max(2, 15.0F * getScaleFactor()), true);
-        }
-    }
+    //    @Override
+    //    public boolean setupBlast()
+    //    {
+    //        if (!this.world().isRemote)
+    //        {
+    //            //this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), Math.max(2, 15.0F * getScaleFactor()), true);
+    //        }
+    //
+    //        return true;
+    //    }
 
     @Override
     protected void onBlastCompleted()

@@ -26,7 +26,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
     protected Set<EntityFlyingBlock> flyingBlocks = new HashSet<EntityFlyingBlock>();
 
     @Override
-    public void setupBlast()
+    public boolean setupBlast()
     {
         if (!this.world().isRemote)
         {
@@ -35,6 +35,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
         }
 
         //this.oldWorld().playSoundEffect(position.x(), position.y(), position.z(), References.PREFIX + "antigravity", 6.0F, (1.0F + (oldWorld().rand.nextFloat() - oldWorld().rand.nextFloat()) * 0.2F) * 0.7F);
+        return true;
     }
 
     @Override
