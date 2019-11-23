@@ -8,6 +8,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.mapper.BlockModelMapperExplosive;
 import icbm.classic.client.mapper.ItemModelMapperExplosive;
 import icbm.classic.client.render.entity.*;
+import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.emptower.TESREMPTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
@@ -127,11 +128,23 @@ public class ClientReg
         newItemModel(ItemReg.itemBattery, 0, "inventory", "");
 
         //crafting parts
-        registerCraftingRender(ItemReg.itemIngot);
-        registerCraftingRender(ItemReg.itemIngotClump);
-        registerCraftingRender(ItemReg.itemPlate);
-        registerCraftingRender(ItemReg.itemCircuit);
-        registerCraftingRender(ItemReg.itemWire);
+        if(ConfigItems.ENABLE_CRAFTING_ITEMS)
+        {
+            if(ConfigItems.ENABLE_INGOTS_ITEMS)
+            {
+                registerCraftingRender(ItemReg.itemIngot);
+                registerCraftingRender(ItemReg.itemIngotClump);
+            }
+
+            if(ConfigItems.ENABLE_PLATES_ITEMS)
+                registerCraftingRender(ItemReg.itemPlate);
+
+            if(ConfigItems.ENABLE_CIRCUIT_ITEMS)
+                registerCraftingRender(ItemReg.itemCircuit);
+
+            if(ConfigItems.ENABLE_WIRES_ITEMS)
+                registerCraftingRender(ItemReg.itemWire);
+        }
 
         //---------------------------------------
         //Entity renders

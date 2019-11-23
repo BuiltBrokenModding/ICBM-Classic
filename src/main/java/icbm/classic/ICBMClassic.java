@@ -118,16 +118,19 @@ public final class ICBMClassic
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
     {
-        if (ConfigItems.ENABLE_INGOTS_ITEMS)
+        if(ConfigItems.ENABLE_CRAFTING_ITEMS)
         {
-            //Steel clump -> Steel ingot
-            GameRegistry.addSmelting(new ItemStack(ItemReg.itemIngotClump, 1, 0), new ItemStack(ItemReg.itemIngot, 1, 0), 0.1f);
-        }
+            if (ConfigItems.ENABLE_INGOTS_ITEMS)
+            {
+                //Steel clump -> Steel ingot
+                GameRegistry.addSmelting(new ItemStack(ItemReg.itemIngotClump, 1, 0), new ItemStack(ItemReg.itemIngot, 1, 0), 0.1f);
+            }
 
-        if (ConfigItems.ENABLE_PLATES_ITEMS)
-        {
-            //Fix for removing recipe of plate
-            GameRegistry.addSmelting(ItemReg.itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
+            if (ConfigItems.ENABLE_PLATES_ITEMS)
+            {
+                //Fix for removing recipe of plate
+                GameRegistry.addSmelting(ItemReg.itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
+            }
         }
     }
 
@@ -141,7 +144,7 @@ public final class ICBMClassic
             if (ConfigItems.ENABLE_LOOT_DROPS)
             {
                 LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-                if (lootPool != null)
+                if (lootPool != null && ConfigItems.ENABLE_CRAFTING_ITEMS)
                 {
                     if (ConfigItems.ENABLE_INGOTS_ITEMS)
                     {
@@ -265,10 +268,21 @@ public final class ICBMClassic
 
         setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
 
-        ItemReg.itemIngot.registerOreNames();
-        ItemReg.itemPlate.registerOreNames("iron");
-        ItemReg.itemCircuit.registerOreNames();
-        ItemReg.itemWire.registerOreNames();
+        if(ConfigItems.ENABLE_CRAFTING_ITEMS)
+        {
+            if(ConfigItems.ENABLE_INGOTS_ITEMS)
+                ItemReg.itemIngot.registerOreNames();
+
+            if(ConfigItems.ENABLE_PLATES_ITEMS)
+                ItemReg.itemPlate.registerOreNames("iron");
+
+            if(ConfigItems.ENABLE_CIRCUIT_ITEMS)
+                ItemReg.itemCircuit.registerOreNames();
+
+            if(ConfigItems.ENABLE_WIRES_ITEMS)
+                ItemReg.itemWire.registerOreNames();
+        }
+
         OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
         OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
 
