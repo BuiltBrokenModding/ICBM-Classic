@@ -194,7 +194,7 @@ public class MultiBlockHelper
      */
     public static void destroyMultiBlockStructure(IMultiTileHost host, boolean doDrops, boolean offset, boolean killHost)
     {
-        if (host != null)
+        if (host != null && host.world() != null)
         {
             //Get tile map
             final Collection<BlockPos> map = host.getLayoutOfMultiBlock();

@@ -36,12 +36,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
 @Optional.InterfaceList({
-    @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
-    @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
+        @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
+        @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
 })
 public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile, IEnergySink
 {
@@ -315,6 +314,18 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
     public double y()
     {
         return getPos().getY();
+    }
+
+
+    /**
+     * Gets the position of the other tile entity relative to this tile entity
+     *
+     * @param other - tile entity
+     * @return position
+     */
+    protected final BlockPos getRelativePosition(TileEntity other)
+    {
+        return other.getPos().subtract(this.getPos());
     }
 
     @Override

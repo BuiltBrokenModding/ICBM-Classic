@@ -77,7 +77,7 @@ public class BlastAntimatter extends BlastThreaded
             ((WorldServer) world).addScheduledTask(() -> scheduledTask(removeFirst, edits));
         }
     }
-    
+
     private void scheduledTask(List<BlockPos> removeFirst, List<BlockPos> edits) {
 
         //Remove any blocks that could cause issues when queued

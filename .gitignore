@@ -24,3 +24,5 @@ changelog.html
 .DS_Store
 
 raw_audio/
+
+logs/

@@ -9,12 +9,12 @@ import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
-import icbm.classic.prefab.tile.IGuiTile;
-import icbm.classic.prefab.tile.TilePoweredMachine;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
+import icbm.classic.prefab.tile.IGuiTile;
+import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -134,7 +134,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     {
         super.writeDescPacket(buf);
         buf.writeInt(empRadius);
-        buf.writeByte((byte)empMode.ordinal());
+        buf.writeByte((byte) empMode.ordinal());
     }
 
     @Override
@@ -170,7 +170,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
     {
         par1NBTTagCompound.setInteger(NBTConstants.EMP_RADIUS, this.empRadius);
-        par1NBTTagCompound.setByte(NBTConstants.EMP_MODE, (byte)this.empMode.ordinal());
+        par1NBTTagCompound.setByte(NBTConstants.EMP_MODE, (byte) this.empMode.ordinal());
         return super.writeToNBT(par1NBTTagCompound);
     }
 
@@ -252,27 +252,27 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
     {
-        if (tileMulti instanceof TileEntity)
+        if (multiBlockContains(tileMulti))
         {
-            if (getLayoutOfMultiBlock().contains(((TileEntity) tileMulti).getPos().subtract(getPos())))
-            {
-                tileMulti.setHost(this);
-            }
+            tileMulti.setHost(this);
         }
     }
 
     @Override
     public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
     {
-        if (!_destroyingStructure && tileMulti instanceof TileEntity)
+        if (!_destroyingStructure && multiBlockContains(tileMulti))
         {
-            if (getLayoutOfMultiBlock().contains(((TileEntity) tileMulti).getPos().subtract(getPos())))
-            {
-                MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
-                return true;
-            }
+            MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
+            return true;
         }
         return false;
+    }
+
+    public boolean multiBlockContains(IMultiTile tile)
+    {
+        return tile instanceof TileEntity
+                && getLayoutOfMultiBlock().contains(getRelativePosition((TileEntity) tile));
     }
 
     @Override
