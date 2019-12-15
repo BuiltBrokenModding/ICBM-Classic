@@ -60,19 +60,18 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     protected void onWorkerThreadComplete(List<BlockPos> edits)
     {
+        //TODO have threads take a copy of chunks for use before running
+        //      OR replace thread system with an entity that ticks over time to collect data
         if (world instanceof WorldServer)
         {
             //Sort distance
             edits.sort(buildSorter());
 
             //Pull out fluids and falling blocks to prevent lag issues
-            List<BlockPos> removeFirst = edits.stream().filter(blockPos -> {
-                if(!world.isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
-                    return false;
-
-                IBlockState state = world.getBlockState(blockPos);
-                return state.getMaterial() == Material.WATER || state.getBlock() instanceof BlockFalling;
-            }).collect(Collectors.toList());
+            List<BlockPos> removeFirst = edits.stream()
+                    .filter(blockPos -> world.isBlockLoaded(blockPos))
+                    .filter(this::isFluid)
+                    .collect(Collectors.toList());
 
             //Schedule edits to run in the world
             ((WorldServer) world).addScheduledTask(() -> {
@@ -89,6 +88,12 @@ public class BlastAntimatter extends BlastThreaded
         }
     }
 
+    protected boolean isFluid(BlockPos blockPos)
+    {
+        IBlockState state = world.getBlockState(blockPos);
+        return state.getMaterial() == Material.WATER || state.getBlock() instanceof BlockFalling;
+    }
+
     protected boolean isInsideMap(int y)
     {
         return y >= 0 && y < 256;
@@ -99,12 +104,12 @@ public class BlastAntimatter extends BlastThreaded
         final double distSQ = x * x + y * y + z * z;
         final double blastSQ = this.getBlastRadius() * this.getBlastRadius();
 
-        final int featherEdge = (int)Math.floor(blastSQ * 0.05f);
-        final int delta = (int)Math.floor(blastSQ - distSQ);
+        final int featherEdge = (int) Math.floor(blastSQ * 0.05f);
+        final int delta = (int) Math.floor(blastSQ - distSQ);
 
-        if(delta < featherEdge)
+        if (delta < featherEdge)
         {
-            final double p2 = 1 - (delta / (double)featherEdge);
+            final double p2 = 1 - (delta / (double) featherEdge);
             return world().rand.nextFloat() < p2;
         }
         return true;
