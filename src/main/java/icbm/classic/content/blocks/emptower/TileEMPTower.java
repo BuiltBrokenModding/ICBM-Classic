@@ -7,6 +7,7 @@ import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.blast.Blast;
 import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.lib.network.IPacket;
@@ -29,7 +30,6 @@ import java.util.List;
 
 public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
-
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150;
 
@@ -48,9 +48,10 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
 
     public EMPMode empMode = EMPMode.ALL;
 
-    private int cooldownTicks = 0;
+    /** Delay before EMP can be fired again */
+    protected int firingCoolDown = 0;
 
-    // The EMP explosion radius
+    /** Radius of the EMP tower */
     public int empRadius = 60;
 
     private boolean _destroyingStructure = false;
@@ -75,7 +76,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             if (!isReady())
             {
-                cooldownTicks--;
+                firingCoolDown--;
             }
             else
             {
@@ -148,7 +149,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public int getEnergyBufferSize()
     {
-        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000);
+        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000); //TODO add configs
     }
 
     /**
@@ -174,48 +175,41 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return super.writeToNBT(par1NBTTagCompound);
     }
 
+    protected Blast buildBlast()
+    {
+        final BlastEMP emp = (BlastEMP) new BlastEMP()
+                .setBlastWorld(world)
+                .setPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
+                .setExplosiveData(ExplosiveRefs.EMP)
+                .setBlastSize(empRadius);
+
+        //Apply mode settings
+        this.empMode.applySettings.accept(emp);
+
+        //Build blast
+        return emp.buildBlast();
+    }
+
     //@Callback(limit = 1)
     public boolean fire()
     {
-        if (this.checkExtract())
+        if (this.checkExtract() && this.isReady())
         {
-            if (isReady())
+            //Finish and trigger
+            if (buildBlast().runBlast() == BlastState.TRIGGERED)
             {
-                BlastEMP emp = (BlastEMP) new BlastEMP()
-                        .setBlastWorld(world)
-                        .setPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
-                        .setExplosiveData(ExplosiveRefs.EMP)
-                        .setBlastSize(empRadius);
+                //Consume energy
+                this.extractEnergy();
 
-                //Apply settings
-                switch (this.empMode)
-                {
-                    default:
-                        emp.setEffectBlocks().setEffectEntities();
-                        break;
-                    case MISSILES_ONLY:
-                        emp.setEffectEntities();
-                        break;
-                    case ELECTRICITY_ONLY:
-                        emp.setEffectBlocks();
-                        break;
-                }
+                //Reset timer
+                this.firingCoolDown = getMaxCooldown();
 
-                //Finish and trigger
-                if (emp.buildBlast().runBlast() == BlastState.TRIGGERED)
-                {
-                    //Consume energy
-                    this.extractEnergy();
-
-                    //Reset timer
-                    this.cooldownTicks = getMaxCooldown();
-                    return true;
-                }
-                else
-                {
-                    ICBMClassic.logger().warn("TileEmpTower( DIM: " + world.provider.getDimension() + ", " + getPos() + ") EMP did not trigger, likely was blocked.");
-                    //TODO display some info to player to explain why blast failed and more detailed debug
-                }
+                return true;
+            }
+            else
+            {
+                ICBMClassic.logger().warn("TileEmpTower( DIM: " + world.provider.getDimension() + ", " + getPos() + ") EMP did not trigger, likely was blocked.");
+                //TODO display some info to player to explain why blast failed and more detailed debug
             }
         }
         return false;
@@ -236,7 +230,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     //@Callback
     public int getCooldown()
     {
-        return cooldownTicks;
+        return firingCoolDown;
     }
 
     //@Callback
@@ -315,8 +309,4 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return new GuiEMPTower(player, this);
     }
 
-    public static enum EMPMode
-    {
-        ALL, MISSILES_ONLY, ELECTRICITY_ONLY;
-    }
 }

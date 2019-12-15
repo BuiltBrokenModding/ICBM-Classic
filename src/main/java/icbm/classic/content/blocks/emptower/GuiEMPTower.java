@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.blocks.emptower.TileEMPTower.EMPMode;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.prefab.gui.GuiContainerBase;

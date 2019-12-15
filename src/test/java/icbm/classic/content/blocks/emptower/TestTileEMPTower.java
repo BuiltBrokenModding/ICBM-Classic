@@ -1,25 +1,40 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.DummyMultiTile;
+import icbm.classic.api.explosion.BlastState;
+import icbm.classic.content.blast.Blast;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.stream.Stream;
+
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 12/15/2019.
  */
 public class TestTileEMPTower
 {
+    final World world = Mockito.mock(World.class);
+
+    TileEMPTower create() {
+        TileEMPTower tileEntity = new TileEMPTower();
+        tileEntity.setWorld(world);
+        return tileEntity;
+    }
+
     @Test
     void testGetLayoutOfMultiBlock_containsLayout()
     {
-        final TileEMPTower tileEMPTower = new TileEMPTower();
+        final TileEMPTower tileEMPTower = create();
         final List<BlockPos> list = tileEMPTower.getLayoutOfMultiBlock();
 
         //Should only provide 1 block
@@ -49,7 +64,7 @@ public class TestTileEMPTower
     {
         final BlockPos center = new BlockPos(20, 30, 40);
         //Create tower
-        final TileEMPTower tileEMPTower = new TileEMPTower();
+        final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(center);
 
         //Create mutli-block
@@ -64,7 +79,7 @@ public class TestTileEMPTower
     void testMultiTileAdded_addsBlock()
     {
         //Create tower
-        final TileEMPTower tileEMPTower = new TileEMPTower();
+        final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
 
         //Create mutli-block 1 above
@@ -82,7 +97,7 @@ public class TestTileEMPTower
     void testMultiTileAdded_ignoresBlock()
     {
         //Create tower
-        final TileEMPTower tileEMPTower = new TileEMPTower();
+        final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
 
         //Create mutli-block 1 below
@@ -100,7 +115,7 @@ public class TestTileEMPTower
     void testMultiTileBroken_containsBlock()
     {
         //Create tower
-        final TileEMPTower tileEMPTower = new TileEMPTower();
+        final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
 
         //Create mutli-block 1 above
@@ -115,7 +130,7 @@ public class TestTileEMPTower
     void testMultiTileBroken_ignoresBlock()
     {
         //Create tower
-        final TileEMPTower tileEMPTower = new TileEMPTower();
+        final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
 
         //Create mutli-block 1 above
@@ -124,5 +139,87 @@ public class TestTileEMPTower
 
         //Invoke method
         Assertions.assertFalse(tileEMPTower.onMultiTileBroken(tileMulti, null, true));
+    }
+
+    @Test
+    void testGenerateEmp_all()
+    {
+        //Create tower
+        final TileEMPTower tileEMPTower = create();
+        tileEMPTower.setPos(new BlockPos(20, 30, 40));
+
+        //Create EMP
+        final Blast emp = tileEMPTower.buildBlast();
+
+        //Validate position
+        Assertions.assertEquals(20.5, emp.x());
+        Assertions.assertEquals(31.2, emp.y());
+        Assertions.assertEquals(40.5, emp.z());
+
+        //Validate world
+        Assertions.assertEquals(world, emp.world());
+
+        //Validate size
+        Assertions.assertEquals(tileEMPTower.empRadius, emp.size);
+    }
+
+    @Test
+    void testFire_isReady_hasEnergy()
+    {
+        //Create tower, create mock around tile so we can fake some methods
+        final TileEMPTower tileEMPTower = spy(create());
+        tileEMPTower.setPos(new BlockPos(20, 30, 40));
+        tileEMPTower.setEnergy(Integer.MAX_VALUE);
+
+        //Mock blast so we don't invoke world calls
+        when(tileEMPTower.buildBlast()).thenReturn(new Blast()
+        {
+            @Override
+            public BlastState runBlast()
+            {
+                return BlastState.TRIGGERED;
+            }
+        });
+
+        //Should have fired
+        Assertions.assertTrue(tileEMPTower.fire());
+    }
+
+    @Test
+    void testFire_isReady_lacksEnergy()
+    {
+        //Create tower, create mock around tile so we can fake some methods
+        final TileEMPTower tileEMPTower = create();
+        tileEMPTower.setPos(new BlockPos(20, 30, 40));
+        tileEMPTower.setEnergy(0);
+
+        //Should have fired
+        Assertions.assertFalse(tileEMPTower.fire());
+    }
+
+    @Test
+    void testFire_notReady_lacksEnergy()
+    {
+        //Create tower, create mock around tile so we can fake some methods
+        final TileEMPTower tileEMPTower = create();
+        tileEMPTower.setPos(new BlockPos(20, 30, 40));
+        tileEMPTower.setEnergy(0);
+        tileEMPTower.firingCoolDown = 1;
+
+        //Should have fired
+        Assertions.assertFalse(tileEMPTower.fire());
+    }
+
+    @Test
+    void testFire_notReady_hasEnergy()
+    {
+        //Create tower, create mock around tile so we can fake some methods
+        final TileEMPTower tileEMPTower = create();
+        tileEMPTower.setPos(new BlockPos(20, 30, 40));
+        tileEMPTower.setEnergy(Integer.MAX_VALUE);
+        tileEMPTower.firingCoolDown = 1;
+
+        //Should have fired
+        Assertions.assertFalse(tileEMPTower.fire());
     }
 }
