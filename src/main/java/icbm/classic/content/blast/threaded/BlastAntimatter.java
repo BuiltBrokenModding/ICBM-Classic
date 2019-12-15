@@ -68,24 +68,26 @@ public class BlastAntimatter extends BlastThreaded
             edits.sort(buildSorter());
 
             //Pull out fluids and falling blocks to prevent lag issues
-            List<BlockPos> removeFirst = edits.stream()
+            final List<BlockPos> removeFirst = edits.stream()
                     .filter(blockPos -> world.isBlockLoaded(blockPos))
                     .filter(this::isFluid)
                     .collect(Collectors.toList());
 
             //Schedule edits to run in the world
-            ((WorldServer) world).addScheduledTask(() -> {
-
-                //Remove any blocks that could cause issues when queued
-                removeFirst.forEach(blockPos -> world.setBlockState(blockPos, replaceState, 2));
-
-                //Queue edits, even the ones from the previous
-                BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
-
-                //Notify blast we have entered world again
-                onPostThreadJoinWorld();
-            });
+            ((WorldServer) world).addScheduledTask(() -> scheduledTask(removeFirst, edits));
         }
+    }
+    
+    private void scheduledTask(List<BlockPos> removeFirst, List<BlockPos> edits) {
+
+        //Remove any blocks that could cause issues when queued
+        removeFirst.forEach(blockPos -> world.setBlockState(blockPos, replaceState, 2));
+
+        //Queue edits, even the ones from the previous
+        BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
+
+        //Notify blast we have entered world again
+        onPostThreadJoinWorld();
     }
 
     protected boolean isFluid(BlockPos blockPos)
