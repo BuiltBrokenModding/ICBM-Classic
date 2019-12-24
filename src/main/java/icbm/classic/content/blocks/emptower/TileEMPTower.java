@@ -4,11 +4,10 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.blast.Blast;
-import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -175,19 +174,12 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return super.writeToNBT(par1NBTTagCompound);
     }
 
-    protected Blast buildBlast()
+    protected IBlast buildBlast()
     {
-        final BlastEMP emp = (BlastEMP) new BlastEMP()
+        return ExplosiveRefs.EMP.create()
                 .setBlastWorld(world)
-                .setPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
-                .setExplosiveData(ExplosiveRefs.EMP)
-                .setBlastSize(empRadius);
-
-        //Apply mode settings
-        this.empMode.applySettings.accept(emp);
-
-        //Build blast
-        return emp.buildBlast();
+                .setBlastPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
+                .setBlastSize(empRadius).buildBlast();
     }
 
     //@Callback(limit = 1)

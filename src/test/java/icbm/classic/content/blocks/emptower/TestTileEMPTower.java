@@ -1,11 +1,20 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.DummyMultiTile;
+import icbm.classic.api.EnumTier;
+import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.content.blast.Blast;
+import icbm.classic.content.blast.BlastEMP;
+import icbm.classic.lib.explosive.reg.ExplosiveData;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,10 +34,23 @@ public class TestTileEMPTower
 {
     final World world = Mockito.mock(World.class);
 
-    TileEMPTower create() {
+    //Helper to create the tower tile
+    private TileEMPTower create() {
         TileEMPTower tileEntity = new TileEMPTower();
         tileEntity.setWorld(world);
         return tileEntity;
+    }
+
+    @BeforeAll
+    public static void setupForAllTests() {
+        final ResourceLocation name = new ResourceLocation("ICBM:EMP");
+        final IBlastFactory factory = () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50);
+        ExplosiveRefs.EMP = new ExplosiveData(name,16,EnumTier.THREE).blastFactory(factory);
+    }
+
+    @AfterAll
+    public static void tearDownForAllTests() {
+        ExplosiveRefs.EMP = null;
     }
 
     @Test
@@ -149,7 +171,7 @@ public class TestTileEMPTower
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
 
         //Create EMP
-        final Blast emp = tileEMPTower.buildBlast();
+        final IBlast emp = tileEMPTower.buildBlast();
 
         //Validate position
         Assertions.assertEquals(20.5, emp.x());
@@ -160,7 +182,7 @@ public class TestTileEMPTower
         Assertions.assertEquals(world, emp.world());
 
         //Validate size
-        Assertions.assertEquals(tileEMPTower.empRadius, emp.size);
+        Assertions.assertEquals(tileEMPTower.empRadius, emp.getBlastRadius());
     }
 
     @Test
