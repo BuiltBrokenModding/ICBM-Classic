@@ -27,38 +27,39 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Logic side of the EMP tower block */
 public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
     // The maximum possible radius for the EMP to strike
-    public static final int MAX_RADIUS = 150;
+    public static final int MAX_RADIUS = 150; //TODO move to config with a min & max
 
-    public static final int CHANGE_RADIUS_PACKET_ID = 1;
-    public static final int CHANGE_MODE_PACKET_ID = 2;
+    public static final int CHANGE_RADIUS_PACKET_ID = 1; //TODO migrate to its own handler
+    public static final int CHANGE_MODE_PACKET_ID = 2; //TODO migrate to its own handler
 
-    public static List<BlockPos> tileMapCache = new ArrayList();
+    public static List<BlockPos> tileMapCache = new ArrayList(); //TODO convert to something else
 
     static
     {
-        tileMapCache.add(new BlockPos(0, 1, 0));
+        tileMapCache.add(new BlockPos(0, 1, 0)); //TODO convert to multi-block handler
     }
 
     public float rotation = 0;
     private float rotationDelta;
 
-    public EMPMode empMode = EMPMode.ALL;
+    public EMPMode empMode = EMPMode.ALL; //TODO remove modes
 
     /** Delay before EMP can be fired again */
-    protected int firingCoolDown = 0;
+    protected int firingCoolDown = 0; //TODO convert into a timer object
 
     /** Radius of the EMP tower */
-    public int empRadius = 60;
+    public int empRadius = 60; //TODO convert into a min-max limiter object
 
-    private boolean _destroyingStructure = false;
+    private boolean _destroyingStructure = false; //TODO Convert into a state handler
 
     private ExternalInventory inventory;
 
     @Override
-    public ExternalInventory getInventory()
+    public ExternalInventory getInventory()  //TODO remove
     {
         if (inventory == null)
         {
@@ -73,18 +74,19 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         super.update();
         if (isServer())
         {
-            if (!isReady())
+            if (!isReady()) //TODO convert to timer object
             {
                 firingCoolDown--;
             }
             else
             {
-                if (ticks % 20 == 0 && getEnergy() > 0)
+                if (ticks % 20 == 0 && getEnergy() > 0) //TODO convert to a mix of a timer and/or event handler
                 {
                     ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getChargePercentage(), true);
                     sendDescPacket();
                 }
-                if (world.getRedstonePowerFromNeighbors(getPos()) > 0)
+
+                if (world.getRedstonePowerFromNeighbors(getPos()) > 0) //TODO convert to a state handler
                 {
                     fire();
                 }
@@ -92,7 +94,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         }
         else
         {
-            rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5);
+            rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5); //TODO convert to a animation object
             rotation += rotationDelta;
             if (rotation > 360)
             {
@@ -107,7 +109,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     }
 
     @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket type)
+    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket type) //TODO migrate to a packet handler
     {
         if (!super.read(data, id, player, type))
         {
@@ -148,30 +150,29 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     @Override
     public int getEnergyBufferSize()
     {
-        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000); //TODO add configs
+        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000); //TODO add configs for min-max energy state
     }
 
     /**
      * Reads a tile entity from NBT.
      */
     @Override
-    public void readFromNBT(NBTTagCompound par1NBTTagCompound)
+    public void readFromNBT(NBTTagCompound readFromNBT)
     {
-        super.readFromNBT(par1NBTTagCompound);
-
-        this.empRadius = par1NBTTagCompound.getInteger(NBTConstants.EMP_RADIUS);
-        this.empMode = EMPMode.values()[par1NBTTagCompound.getByte(NBTConstants.EMP_MODE)];
+        super.readFromNBT(readFromNBT);
+        this.empRadius = readFromNBT.getInteger(NBTConstants.EMP_RADIUS);
+        this.empMode = EMPMode.values()[readFromNBT.getByte(NBTConstants.EMP_MODE)];
     }
 
     /**
      * Writes a tile entity to NBT.
      */
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound saveToNBT)
     {
-        par1NBTTagCompound.setInteger(NBTConstants.EMP_RADIUS, this.empRadius);
-        par1NBTTagCompound.setByte(NBTConstants.EMP_MODE, (byte) this.empMode.ordinal());
-        return super.writeToNBT(par1NBTTagCompound);
+        saveToNBT.setInteger(NBTConstants.EMP_RADIUS, this.empRadius);
+        saveToNBT.setByte(NBTConstants.EMP_MODE, (byte) this.empMode.ordinal());
+        return super.writeToNBT(saveToNBT);
     }
 
     protected IBlast buildBlast()
@@ -182,7 +183,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                 .setBlastSize(empRadius).buildBlast();
     }
 
-    //@Callback(limit = 1)
+    //@Callback(limit = 1) TODO add CC support
     public boolean fire()
     {
         if (this.checkExtract() && this.isReady())
@@ -213,27 +214,29 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         return INFINITE_EXTENT_AABB;
     }
 
-    //@Callback
+    //@Callback TODO add CC support
     public boolean isReady()
     {
         return getCooldown() <= 0;
     }
 
-    //@Callback
+    //@Callback TODO add CC support
     public int getCooldown()
     {
         return firingCoolDown;
     }
 
-    //@Callback
+    //@Callback TODO add CC support
     public int getMaxCooldown()
     {
-        return 120;
+        return 120; //TODO add to config
     }
 
     //==========================================
     //==== Multi-Block code
     //=========================================
+
+    //TODO convert all multi-block code to a handler object that tracks the pattern and state of the structure to remove repetitive code
 
     @Override
     public void onMultiTileAdded(IMultiTile tileMulti)
