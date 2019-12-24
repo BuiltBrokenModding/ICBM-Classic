@@ -129,7 +129,7 @@ public class ExplosiveHandler
     {
         if (data != null && data.getBlastFactory() != null) //TODO add way to hook blast builder to add custom blasts
         {
-            IBlastInit blast = data.getBlastFactory().createNewBlast();
+            IBlastInit blast = data.getBlastFactory().create();
             blast.setBlastWorld(world);
             blast.setBlastPosition(x, y, z);
             blast.scaleBlast(scale);

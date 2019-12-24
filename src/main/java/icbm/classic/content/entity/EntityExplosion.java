@@ -243,7 +243,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             final IBlastFactory factory = exData.getBlastFactory(); //TODO convert load code to blast creation helper
             if (factory != null)
             {
-                blast = factory.createNewBlast();
+                blast = factory.create();
                 ((IBlastInit) blast).setBlastWorld(world);
                 ((IBlastInit) blast).setBlastPosition(posX, posY + yOffset, posZ);
                 ((IBlastInit) blast).setEntityController(this);

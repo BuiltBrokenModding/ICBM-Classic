@@ -41,7 +41,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public abstract class Blast extends Explosion implements IBlastInit, IBlastRestore
 {
-
     //Thread stuff
     private ThreadExplosion thread;
     private ConcurrentLinkedQueue<BlockPos> threadResults;

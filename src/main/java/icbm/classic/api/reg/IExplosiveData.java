@@ -2,19 +2,22 @@ package icbm.classic.api.reg;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
+import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Stores data about an explosive
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
 public interface IExplosiveData extends Comparable<IExplosiveData>
 {
+    static IBlastFactory EMPTY = () -> null;
 
     /**
      * Unique registry name of the explosive
@@ -41,6 +44,16 @@ public interface IExplosiveData extends Comparable<IExplosiveData>
     IBlastFactory getBlastFactory();
 
     /**
+     * Creates a new blast factory
+     *
+     * @return
+     */
+    default IBlastInit create()
+    {
+        return Optional.ofNullable(getBlastFactory()).orElseGet(() -> EMPTY).create();
+    }
+
+    /**
      * Tier of the explosive.
      *
      * @return
@@ -61,6 +74,7 @@ public interface IExplosiveData extends Comparable<IExplosiveData>
 
     /**
      * Sets the enable status of
+     *
      * @param b
      */
     void setEnabled(boolean b);

@@ -9,5 +9,9 @@ package icbm.classic.api.explosion;
 @FunctionalInterface
 public interface IBlastFactory
 {
-    IBlastInit createNewBlast();
+    /**
+     * Creates a new blast
+     * @return
+     */
+    IBlastInit create();
 }
