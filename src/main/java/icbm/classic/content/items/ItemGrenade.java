@@ -71,9 +71,11 @@ public class ItemGrenade extends ItemICBMBase
             final float throwEnergy = (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack);
 
             //Create generate entity
-            final EntityGrenade entityGrenade = new EntityGrenade(world, entityLiving, throwEnergy);
-            entityGrenade.setItemStack(itemStack);
-            world.spawnEntity(entityGrenade);
+            new EntityGrenade(world)
+                    .setItemStack(itemStack)
+                    .setThrower(entityLiving)
+                    .aimFromThrower()
+                    .setThrowMotion(throwEnergy).spawn();
 
             //Consume item
             if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)

@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
 {
-    /** Is the entity that throws this 'thing' (snowball, ender pearl, eye of ender or potion) */
+    /** Entity that created the grenade and set it into motion */
     protected EntityLivingBase thrower;
 
     @Deprecated
@@ -33,12 +33,20 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         //this.renderDistanceWeight = 8;
     }
 
-    public EntityGrenade(World world, EntityLivingBase thrower, float energy)
+    public EntityGrenade setItemStack(ItemStack stack)
     {
-        this(world);
-        this.thrower = thrower;
+        this.explosiveID = stack.getItemDamage();
+        return this;
+    }
 
-        //Set angles
+    public EntityGrenade setThrower(EntityLivingBase thrower)
+    {
+        this.thrower = thrower;
+        return this;
+    }
+
+    public EntityGrenade aimFromThrower()
+    {
         this.setLocationAndAngles(thrower.posX, thrower.posY + thrower.getEyeHeight(), thrower.posZ, thrower.rotationYaw, thrower.rotationPitch);
 
         //Set position
@@ -48,17 +56,24 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * horizontalOffset;
         this.setPosition(this.posX, this.posY, this.posZ);
 
+        return this;
+    }
+
+    public EntityGrenade spawn()
+    {
+        world.spawnEntity(this);
+        return this;
+    }
+
+    public EntityGrenade setThrowMotion(float energy)
+    {
         //Set velocity
         final float powerScale = 0.4F;
         this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * powerScale;
         this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * powerScale;
         this.motionY = -MathHelper.sin((this.rotationPitch) / 180.0F * (float) Math.PI) * powerScale;
         this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, 1.8f * energy, 1.0F);
-    }
-
-    public void setItemStack(ItemStack stack)
-    {
-        this.explosiveID = stack.getItemDamage();
+        return this;
     }
 
     @Override
@@ -156,10 +171,11 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         super.onUpdate();
 
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-        float var16 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+
+        final float horizontalMag = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
 
-        for (this.rotationPitch = (float) (Math.atan2(this.motionY, var16) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
+        for (this.rotationPitch = (float) (Math.atan2(this.motionY, horizontalMag) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
         {
             ;
         }
@@ -211,6 +227,11 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
             //this.pushOutOfBlocks(this.posX, (this.boundingBox.minY + this.boundingBox.maxY) / 2.0D, this.posZ);
         }
 
+        tickFuse();
+    }
+
+    protected void tickFuse()
+    {
         if (this.ticksExisted > ICBMClassicAPI.EX_GRENADE_REGISTRY.getFuseTime(this, explosiveID))
         {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
