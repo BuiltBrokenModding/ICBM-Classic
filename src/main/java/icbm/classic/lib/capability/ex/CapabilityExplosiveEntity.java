@@ -1,5 +1,6 @@
 package icbm.classic.lib.capability.ex;
 
+import com.sun.istack.internal.NotNull;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
@@ -71,7 +72,7 @@ public class CapabilityExplosiveEntity implements IExplosive
         return new NBTTagCompound();
     }
 
-    @Nullable
+    @NotNull
     @Override
     public ItemStack toStack()
     {

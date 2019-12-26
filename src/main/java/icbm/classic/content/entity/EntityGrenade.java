@@ -2,7 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
-import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
@@ -11,20 +11,24 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
 {
     /** Entity that created the grenade and set it into motion */
-    protected EntityLivingBase thrower;
+    private EntityLivingBase thrower;
 
-    @Deprecated
-    public int explosiveID; //TODO move to capability
-    @Deprecated
-    public NBTTagCompound blastData = new NBTTagCompound(); //TODO move to capability
+    /** Explosive capability */
+    public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
 
     public EntityGrenade(World par1World)
     {
@@ -33,18 +37,35 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         //this.renderDistanceWeight = 8;
     }
 
+    /**
+     * Sets the explosive stack
+     *
+     * @param stack - explosive stack
+     * @return this
+     */
     public EntityGrenade setItemStack(ItemStack stack)
     {
-        this.explosiveID = stack.getItemDamage();
+        explosive.setStack(stack.copy().splitStack(1));
         return this;
     }
 
+    /**
+     * Sets the throwing entity
+     *
+     * @param thrower - entity that threw the grenade
+     * @return this
+     */
     public EntityGrenade setThrower(EntityLivingBase thrower)
     {
         this.thrower = thrower;
         return this;
     }
 
+    /**
+     * Sets the aim and position based on the throwing entity
+     *
+     * @return this
+     */
     public EntityGrenade aimFromThrower()
     {
         this.setLocationAndAngles(thrower.posX, thrower.posY + thrower.getEyeHeight(), thrower.posZ, thrower.rotationYaw, thrower.rotationPitch);
@@ -59,12 +80,23 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         return this;
     }
 
+    /**
+     * Spawns the grenade into the game world
+     *
+     * @return this
+     */
     public EntityGrenade spawn()
     {
         world.spawnEntity(this);
         return this;
     }
 
+    /**
+     * Sets the motion of the grenade
+     *
+     * @param energy - energy to scale the motion
+     * @return this
+     */
     public EntityGrenade setThrowMotion(float energy)
     {
         //Set velocity
@@ -72,31 +104,26 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * powerScale;
         this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * powerScale;
         this.motionY = -MathHelper.sin((this.rotationPitch) / 180.0F * (float) Math.PI) * powerScale;
-        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, 1.8f * energy, 1.0F);
+        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, 1.8f * energy, 1.0F); //TODO see what this 1.8 is and change to be 1 * energy
         return this;
     }
 
     @Override
     public String getName()
     {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID);
-        if (data != null)
-        {
-            return "icbm.grenade." + data.getRegistryName();
-        }
-        return "icbm.grenade";
+        return "icbm.grenade." + explosive.getExplosiveData().getRegistryName();
     }
 
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.explosiveID);
+        ByteBufUtils.writeTag(data, explosive.serializeNBT());
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        this.explosiveID = data.readInt();
+        explosive.deserializeNBT(Optional.ofNullable(ByteBufUtils.readTag(data)).orElseGet(NBTTagCompound::new));
     }
 
     /**
@@ -230,35 +257,39 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         tickFuse();
     }
 
+    /** Ticks the fuse */
     protected void tickFuse()
     {
-        if (this.ticksExisted > ICBMClassicAPI.EX_GRENADE_REGISTRY.getFuseTime(this, explosiveID))
+        if (this.ticksExisted > ICBMClassicAPI.EX_GRENADE_REGISTRY.getFuseTime(this, explosive.getExplosiveData().getRegistryID()))
         {
-            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-            ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY + 0.3f, this.posZ, explosiveID, 1, blastData);
-            this.setDead();
+            triggerExplosion();
         }
         else
         {
-            ICBMClassicAPI.EX_GRENADE_REGISTRY.tickFuse(this, explosiveID, ticksExisted);
+            ICBMClassicAPI.EX_GRENADE_REGISTRY.tickFuse(this, explosive.getExplosiveData().getRegistryID(), ticksExisted);
         }
     }
 
-    /** Returns if this entity is in water and will end up adding the waters velocity to the entity */
+    /** Triggers the explosion of the grenade */
+    protected void triggerExplosion()
+    {
+        this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
+        ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY + 0.3f, this.posZ, explosive.getExplosiveData().getRegistryID(), 1, explosive.getCustomBlastData());
+        this.setDead();
+    }
+
     @Override
     public boolean handleWaterMovement()
     {
         return this.world.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.WATER, this);
     }
 
-    /** Returns true if other Entities should be prevented from moving through this Entity. */
     @Override
     public boolean canBeCollidedWith()
     {
         return true;
     }
 
-    /** Returns true if this entity should push and be pushed by other entities when colliding. */
     @Override
     public boolean canBePushed()
     {
@@ -268,14 +299,32 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
-        this.blastData = nbt.getCompoundTag(NBTConstants.DATA);
+        if (nbt.hasKey(NBTConstants.EXPLOSIVE))
+        {
+            explosive.deserializeNBT(nbt.getCompoundTag(NBTConstants.EXPLOSIVE));
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
-        nbt.setTag(NBTConstants.DATA, this.blastData);
+        nbt.setTag(NBTConstants.EXPLOSIVE, explosive.serializeNBT());
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY || hasCapability(capability, facing);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
+        {
+            return ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(explosive);
+        }
+        return super.getCapability(capability, facing);
     }
 }
