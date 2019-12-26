@@ -1,6 +1,6 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.entity.missile.EntityMissile;
 import net.minecraftforge.common.config.Config;
 
@@ -10,7 +10,7 @@ import net.minecraftforge.common.config.Config;
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/28/2018.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/missile")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/missile")
 @Config.LangKey("config.icbmclassic:missile.title")
 public class ConfigMissile
 {

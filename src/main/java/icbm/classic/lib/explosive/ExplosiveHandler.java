@@ -1,6 +1,7 @@
 package icbm.classic.lib.explosive;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.BlastState;
@@ -24,7 +25,7 @@ import java.util.Iterator;
  * <p>
  * Created by Dark(DarkGuardsman, Robert) on 4/9/2018.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class ExplosiveHandler
 {
 

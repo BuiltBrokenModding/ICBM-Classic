@@ -1,13 +1,13 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/22/2018.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/blast")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/blast")
 @Config.LangKey("config.icbmclassic:blast.title")
 public class ConfigBlast
 {

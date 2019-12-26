@@ -20,7 +20,6 @@ public class RenderGrenade extends Render<EntityGrenade>
     public RenderGrenade(RenderManager renderManagerIn)
     {
         super(renderManagerIn);
-        entityItem = new EntityItem(null);
         renderEntityItem = new RenderEntityItem(renderManagerIn, Minecraft.getMinecraft().getRenderItem());
         this.shadowSize = 0.15F;
         this.shadowOpaque = 0.75F;
@@ -29,13 +28,21 @@ public class RenderGrenade extends Render<EntityGrenade>
     @Override
     public void doRender(EntityGrenade entity, double x, double y, double z, float par8, float par9)
     {
-        //Set data
+        setupFakeItem(entity);
+        renderEntityItem.doRender(entityItem, x, y, z, par8, par9);
+    }
+
+    protected void setupFakeItem(EntityGrenade entity) {
+
+        //Create fake item if missing
+        if(entityItem == null) {
+            entityItem = new EntityItem(entity.world);
+        }
+
+        //Apply data from entity
         entityItem.setWorld(entity.world);
         entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
         entityItem.setItem(entity.explosive.toStack());
-
-        //render
-        renderEntityItem.doRender(entityItem, x, y, z, par8, par9);
     }
 
     @Override

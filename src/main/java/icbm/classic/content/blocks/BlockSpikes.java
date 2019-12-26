@@ -2,6 +2,7 @@ package icbm.classic.content.blocks;
 
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -29,8 +30,8 @@ public class BlockSpikes extends Block
     public BlockSpikes()
     {
         super(Material.IRON);
-        this.setRegistryName(ICBMClassic.PREFIX + "spikes");
-        this.setTranslationKey(ICBMClassic.PREFIX + "spikes");
+        this.setRegistryName(ICBMConstants.PREFIX + "spikes");
+        this.setTranslationKey(ICBMConstants.PREFIX + "spikes");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(1.0F);
     }

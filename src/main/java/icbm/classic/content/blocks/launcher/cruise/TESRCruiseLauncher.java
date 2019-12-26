@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.ModuleCruiseLauncherBottom;
 import icbm.classic.client.models.ModelCruiseLauncherTop;
 import icbm.classic.client.render.entity.RenderMissile;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLauncher>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "cruise_launcher.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "cruise_launcher.png");
 
     public static final ModuleCruiseLauncherBottom MODEL0 = new ModuleCruiseLauncherBottom();
     public static final ModelCruiseLauncherTop MODEL1 = new ModelCruiseLauncherTop();

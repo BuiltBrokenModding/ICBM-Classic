@@ -1,6 +1,6 @@
 package icbm.classic.content.reg;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.blocks.emptower.BlockEmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
@@ -29,36 +29,36 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class BlockReg
 {
-    @ObjectHolder(ICBMClassic.PREFIX + "glassPressurePlate")
+    @ObjectHolder(ICBMConstants.PREFIX + "glassPressurePlate")
     public static Block blockGlassPlate;
-    @ObjectHolder(ICBMClassic.PREFIX + "glassButton")
+    @ObjectHolder(ICBMConstants.PREFIX + "glassButton")
     public static Block blockGlassButton;
-    @ObjectHolder(ICBMClassic.PREFIX + "spikes")
+    @ObjectHolder(ICBMConstants.PREFIX + "spikes")
     public static Block blockSpikes;
     public static Block blockCamo; //TODO re-implement
-    @ObjectHolder(ICBMClassic.PREFIX + "concrete")
+    @ObjectHolder(ICBMConstants.PREFIX + "concrete")
     public static Block blockConcrete;
-    @ObjectHolder(ICBMClassic.PREFIX + "reinforcedGlass")
+    @ObjectHolder(ICBMConstants.PREFIX + "reinforcedGlass")
     public static Block blockReinforcedGlass;
-    @ObjectHolder(ICBMClassic.PREFIX + "explosives")
+    @ObjectHolder(ICBMConstants.PREFIX + "explosives")
     public static Block blockExplosive;
-    @ObjectHolder(ICBMClassic.PREFIX + "launcherbase")
+    @ObjectHolder(ICBMConstants.PREFIX + "launcherbase")
     public static Block blockLaunchBase;
-    @ObjectHolder(ICBMClassic.PREFIX + "launcherscreen")
+    @ObjectHolder(ICBMConstants.PREFIX + "launcherscreen")
     public static Block blockLaunchScreen;
-    @ObjectHolder(ICBMClassic.PREFIX + "launcherframe")
+    @ObjectHolder(ICBMConstants.PREFIX + "launcherframe")
     public static Block blockLaunchSupport;
-    @ObjectHolder(ICBMClassic.PREFIX + "radarStation")
+    @ObjectHolder(ICBMConstants.PREFIX + "radarStation")
     public static Block blockRadarStation;
-    @ObjectHolder(ICBMClassic.PREFIX + "emptower")
+    @ObjectHolder(ICBMConstants.PREFIX + "emptower")
     public static Block blockEmpTower;
-    @ObjectHolder(ICBMClassic.PREFIX + "cruiseLauncher")
+    @ObjectHolder(ICBMConstants.PREFIX + "cruiseLauncher")
     public static Block blockCruiseLauncher;
     public static Block blockMissileCoordinator; //TODO re-implement
-    @ObjectHolder(ICBMClassic.PREFIX + "multiblock")
+    @ObjectHolder(ICBMConstants.PREFIX + "multiblock")
     public static Block multiBlock;
 
     @SubscribeEvent
@@ -86,13 +86,13 @@ public class BlockReg
         ICBMClassic.blockMissileCoordinator = ICBMClassic.INSTANCE.getManager().newBlock("icbmCMissileCoordinator", new TileMissileCoordinator());
          */
 
-        GameRegistry.registerTileEntity(TileEntityExplosive.class, new ResourceLocation(ICBMClassic.DOMAIN, "explosive"));
-        GameRegistry.registerTileEntity(TileEMPTower.class, new ResourceLocation(ICBMClassic.DOMAIN, "emptower"));
-        GameRegistry.registerTileEntity(TileRadarStation.class, new ResourceLocation(ICBMClassic.DOMAIN, "radarstation"));
-        GameRegistry.registerTileEntity(TileLauncherFrame.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherframe"));
-        GameRegistry.registerTileEntity(TileLauncherBase.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherbase"));
-        GameRegistry.registerTileEntity(TileLauncherScreen.class, new ResourceLocation(ICBMClassic.DOMAIN, "launcherscreen"));
-        GameRegistry.registerTileEntity(TileMulti.class, new ResourceLocation(ICBMClassic.DOMAIN, "multiblock"));
-        GameRegistry.registerTileEntity(TileCruiseLauncher.class, new ResourceLocation(ICBMClassic.DOMAIN, "cruiseLauncher"));
+        GameRegistry.registerTileEntity(TileEntityExplosive.class, new ResourceLocation(ICBMConstants.DOMAIN, "explosive"));
+        GameRegistry.registerTileEntity(TileEMPTower.class, new ResourceLocation(ICBMConstants.DOMAIN, "emptower"));
+        GameRegistry.registerTileEntity(TileRadarStation.class, new ResourceLocation(ICBMConstants.DOMAIN, "radarstation"));
+        GameRegistry.registerTileEntity(TileLauncherFrame.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherframe"));
+        GameRegistry.registerTileEntity(TileLauncherBase.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherbase"));
+        GameRegistry.registerTileEntity(TileLauncherScreen.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherscreen"));
+        GameRegistry.registerTileEntity(TileMulti.class, new ResourceLocation(ICBMConstants.DOMAIN, "multiblock"));
+        GameRegistry.registerTileEntity(TileCruiseLauncher.class, new ResourceLocation(ICBMConstants.DOMAIN, "cruiseLauncher"));
     }
 }

@@ -1,6 +1,6 @@
 package icbm.classic.content.entity.missile;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 8/4/2019.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class MissileEventHandler
 {
     @SubscribeEvent

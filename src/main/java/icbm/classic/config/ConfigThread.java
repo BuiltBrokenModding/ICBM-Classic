@@ -1,12 +1,12 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 2/10/2019.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/thread")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/thread")
 @Config.LangKey("config.icbmclassic:thread.title")
 public class ConfigThread
 {

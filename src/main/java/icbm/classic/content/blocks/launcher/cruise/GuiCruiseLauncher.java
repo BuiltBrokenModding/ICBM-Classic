@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
@@ -17,7 +18,7 @@ import static java.lang.Integer.parseInt;
 
 public class GuiCruiseLauncher extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_cruise_launcher.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_cruise_launcher.png");
 
     private TileCruiseLauncher tileEntity;
     private GuiTextField textFieldX;

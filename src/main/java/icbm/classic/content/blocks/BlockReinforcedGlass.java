@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -16,8 +17,8 @@ public class BlockReinforcedGlass extends Block
     public BlockReinforcedGlass()
     {
         super(Material.GLASS);
-        this.setRegistryName(ICBMClassic.PREFIX + "reinforcedGlass");
-        this.setTranslationKey(ICBMClassic.PREFIX + "reinforcedGlass");
+        this.setRegistryName(ICBMConstants.PREFIX + "reinforcedGlass");
+        this.setTranslationKey(ICBMConstants.PREFIX + "reinforcedGlass");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(10);
         this.setResistance(48);

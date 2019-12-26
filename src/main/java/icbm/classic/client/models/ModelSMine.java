@@ -1,7 +1,7 @@
 package icbm.classic.client.models;
 
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.fml.relauncher.Side;import net.minecraftforge.fml.relauncher.SideOnly;
-import icbm.classic.ICBMClassic;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
 public class ModelSMine extends ModelICBM
 {
     public static final ModelSMine INSTANCE = new ModelSMine();
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "s-mine.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "s-mine.png");
 
     // fields
     ModelRenderer A;

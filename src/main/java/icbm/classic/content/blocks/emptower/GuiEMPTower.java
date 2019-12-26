@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.prefab.gui.GuiContainerBase;
@@ -14,7 +15,7 @@ import java.io.IOException;
 
 public class GuiEMPTower extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_empty.png");
 
     private TileEMPTower tileEntity;
     private GuiTextField textFieldBanJing;

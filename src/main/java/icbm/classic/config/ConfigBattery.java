@@ -1,13 +1,13 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/22/2018.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/battery")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/battery")
 @Config.LangKey("config.icbmclassic:battery.title")
 public class ConfigBattery
 {

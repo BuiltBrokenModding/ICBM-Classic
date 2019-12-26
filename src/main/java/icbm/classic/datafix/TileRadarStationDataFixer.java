@@ -1,6 +1,6 @@
 package icbm.classic.datafix;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.NBTConstants;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
@@ -10,7 +10,7 @@ public class TileRadarStationDataFixer implements IFixableData
     @Override
     public NBTTagCompound fixTagCompound(NBTTagCompound tag)
     {
-        if(tag.hasKey(NBTConstants.ID) && tag.getString(NBTConstants.ID).equalsIgnoreCase(ICBMClassic.PREFIX + "radarstation"))
+        if(tag.hasKey(NBTConstants.ID) && tag.getString(NBTConstants.ID).equalsIgnoreCase(ICBMConstants.PREFIX + "radarstation"))
         {
             String firstOldKey = "alarmBanJing";
             String secondOldKey = "safetyBanJing";

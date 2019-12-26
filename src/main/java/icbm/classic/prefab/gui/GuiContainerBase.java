@@ -1,6 +1,7 @@
 package icbm.classic.prefab.gui;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.lib.transform.vector.Point;
@@ -22,8 +23,8 @@ import java.util.Map.Entry;
 
 public class GuiContainerBase extends GuiContainer
 {
-    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "mc_base_empty.png");
-    public static final ResourceLocation GUI_COMPONENTS = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_components.png");
+    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "mc_base_empty.png");
+    public static final ResourceLocation GUI_COMPONENTS = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
 
     public ResourceLocation baseTexture;
 

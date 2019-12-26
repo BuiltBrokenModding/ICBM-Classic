@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.frame;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.ModelLauncerFrame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TESRLauncherFrame extends TileEntitySpecialRenderer<TileLauncherFrame>
 {
     public static final ModelLauncerFrame MODEL = new ModelLauncerFrame();
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_0.png");
 
     @Override
     @SideOnly(Side.CLIENT)

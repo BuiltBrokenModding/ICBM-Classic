@@ -1,13 +1,13 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/22/2018.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/mods/ic2")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/mods/ic2")
 @Config.LangKey("config.icbmclassic:ic2.title")
 public class ConfigIC2
 {

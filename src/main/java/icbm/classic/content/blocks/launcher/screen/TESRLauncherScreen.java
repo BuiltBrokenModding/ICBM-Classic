@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.ModelTier1LauncherScreen;
 import icbm.classic.client.models.ModelTier2LauncherScreen;
 import icbm.classic.client.models.ModelTier3LauncherScreen;
@@ -17,9 +17,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class TESRLauncherScreen extends TileEntitySpecialRenderer<TileLauncherScreen>
 {
-    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_0.png");
-    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_1.png");
-    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "launcher_2.png");
+    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_1.png");
+    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_2.png");
 
     public static final ModelTier1LauncherScreen model0 = new ModelTier1LauncherScreen();
     public static final ModelTier2LauncherScreen model1 = new ModelTier2LauncherScreen();

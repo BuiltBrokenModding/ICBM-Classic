@@ -1,13 +1,13 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robert) on 4/10/2018.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/debug")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/debug")
 @Config.LangKey("config.icbmclassic:debug.title")
 public class ConfigDebug
 {

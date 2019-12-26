@@ -1,6 +1,6 @@
 package icbm.classic.content.potion;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 
@@ -17,7 +17,7 @@ public abstract class CustomPotion extends Potion
     {
         super(isBadEffect, color);
         this.setPotionName("potion." + name);
-        REGISTRY.register(id, new ResourceLocation(ICBMClassic.PREFIX + name), this);
+        REGISTRY.register(id, new ResourceLocation(ICBMConstants.PREFIX + name), this);
     }
 
     @Override

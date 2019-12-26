@@ -1,6 +1,6 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
@@ -8,7 +8,7 @@ import net.minecraftforge.common.config.Config;
  *
  * @author Calclavia, DarkCow
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/launcher")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/launcher")
 @Config.LangKey("config.icbmclassic:launcher.title")
 public class ConfigLauncher
 {

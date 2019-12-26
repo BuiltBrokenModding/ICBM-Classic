@@ -1,5 +1,6 @@
 package icbm.classic.prefab.tile;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
@@ -29,8 +30,8 @@ public abstract class BlockICBM extends BlockContainer
         super(mat);
         blockHardness = 10f;
         blockResistance = 10f;
-        setRegistryName(ICBMClassic.DOMAIN, name.toLowerCase());
-        setTranslationKey(ICBMClassic.PREFIX + name.toLowerCase());
+        setRegistryName(ICBMConstants.DOMAIN, name.toLowerCase());
+        setTranslationKey(ICBMConstants.PREFIX + name.toLowerCase());
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 

@@ -1,6 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -25,8 +25,8 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RenderExplosion extends Render<EntityExplosion>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "blackhole.png");
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.TEXTURE_DIRECTORY + "grey.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "blackhole.png");
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "grey.png");
     public static List<Color> randomColorsForBeams = new ArrayList();
 
     public Color colorIn = new Color(16777215);

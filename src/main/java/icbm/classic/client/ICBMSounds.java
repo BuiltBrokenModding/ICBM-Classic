@@ -1,7 +1,7 @@
 package icbm.classic.client;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * <p>
  * Credit to https://github.com/kitsushadow for sharing info on how to do sounds in MC 1.12
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public enum ICBMSounds
 {
     ANTIMATTER("antimatter"),
@@ -46,7 +46,7 @@ public enum ICBMSounds
 
     ICBMSounds(String path)
     {
-        location = new ResourceLocation(ICBMClassic.DOMAIN, path);
+        location = new ResourceLocation(ICBMConstants.DOMAIN, path);
     }
 
     /**

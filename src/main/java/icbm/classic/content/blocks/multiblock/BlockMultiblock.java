@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.multiblock;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -30,8 +30,8 @@ public class BlockMultiblock extends BlockContainer
     public BlockMultiblock()
     {
         super(Material.ROCK);
-        this.setRegistryName(ICBMClassic.DOMAIN, "multiblock");
-        this.setTranslationKey(ICBMClassic.PREFIX + "multiblock");
+        this.setRegistryName(ICBMConstants.DOMAIN, "multiblock");
+        this.setTranslationKey(ICBMConstants.PREFIX + "multiblock");
         this.setHardness(2f);
         needsRandomTick = true;
     }

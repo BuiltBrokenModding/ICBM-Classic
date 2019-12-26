@@ -1,6 +1,6 @@
 package icbm.classic.content.entity.missile;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -15,11 +15,11 @@ import java.util.HashMap;
  *
  * Created by Dark(DarkGuardsman, Robert) on 8/4/2018.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class MissileTrackerHandler
 {
     /** World save data key */
-    private static final String DATA_SAVE_ID = ICBMClassic.DOMAIN + "MissileTracker";
+    private static final String DATA_SAVE_ID = ICBMConstants.DOMAIN + "MissileTracker";
 
     /** Map of handlers per dimension <DimensionID, Handler> */
     private static final HashMap<Integer, MissileTrackerWorld> dimToHandlerMap = new HashMap<>();

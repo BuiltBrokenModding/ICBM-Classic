@@ -1,6 +1,6 @@
 package icbm.classic.content.reg;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
@@ -226,9 +226,9 @@ public class ExplosiveInit
         if (id != -1)
         {
             //Setup old IDs so saves work
-            ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).forceID(new ResourceLocation(ICBMClassic.DOMAIN, name), id);
+            ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).forceID(new ResourceLocation(ICBMConstants.DOMAIN, name), id);
         }
-        return ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(new ResourceLocation(ICBMClassic.DOMAIN, name), tier, factory);
+        return ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(new ResourceLocation(ICBMConstants.DOMAIN, name), tier, factory);
     }
 
     private static boolean enderMissileCoordSet(Entity entity, EntityPlayer player, EnumHand hand)

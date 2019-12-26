@@ -4,7 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
-import icbm.classic.prefab.item.ItemICBMBase;
+import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,11 +22,10 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemGrenade extends ItemICBMBase
+public class ItemGrenade extends ItemBase
 {
     public ItemGrenade()
     {
-        super("grenade");
         this.setMaxStackSize(16);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);

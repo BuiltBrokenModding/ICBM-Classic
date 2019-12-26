@@ -1,6 +1,6 @@
 package icbm.classic.content.reg;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.EntityRefs;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.EntityMissile;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public final class EntityReg
 {
 

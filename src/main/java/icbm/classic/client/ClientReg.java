@@ -1,6 +1,6 @@
 package icbm.classic.client;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicAPI;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN, value=Side.CLIENT)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN, value=Side.CLIENT)
 public class ClientReg
 {
     private final static Map<IExplosiveData, ModelResourceLocation> grenadeModelMap = new HashMap();
@@ -75,7 +75,7 @@ public class ClientReg
     @SubscribeEvent
     public static void registerAllModels(ModelRegistryEvent event)
     {
-        OBJLoader.INSTANCE.addDomain(ICBMClassic.DOMAIN);
+        OBJLoader.INSTANCE.addDomain(ICBMConstants.DOMAIN);
 
         //reset
         clearModelCache();

@@ -1,6 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.mobs.ModelCreeperXmas;
 import icbm.classic.content.entity.mobs.EntityXmasCreeper;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderCreeperXmas extends RenderLiving<EntityXmasCreeper>
 {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/creeper/creeper.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/creeper/creeper.png");
 
     public RenderCreeperXmas(RenderManager renderManagerIn)
     {

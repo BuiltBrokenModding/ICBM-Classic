@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.radarstation;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.ModelRadarStation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -16,8 +16,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class TESRRadarStation extends TileEntitySpecialRenderer<TileRadarStation>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "radar.png");
-    public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "radar_off.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "radar.png");
+    public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "radar_off.png");
 
     public static final ModelRadarStation MODEL = new ModelRadarStation();
 

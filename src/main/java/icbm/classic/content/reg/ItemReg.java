@@ -1,13 +1,26 @@
 package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
-import icbm.classic.content.items.*;
+import icbm.classic.content.items.ItemAntidote;
+import icbm.classic.content.items.ItemBattery;
+import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.items.ItemCrafting;
+import icbm.classic.content.items.ItemDefuser;
+import icbm.classic.content.items.ItemGrenade;
+import icbm.classic.content.items.ItemLaserDetonator;
+import icbm.classic.content.items.ItemMissile;
+import icbm.classic.content.items.ItemRadarGun;
+import icbm.classic.content.items.ItemRemoteDetonator;
+import icbm.classic.content.items.ItemRocketLauncher;
+import icbm.classic.content.items.ItemSignalDisrupter;
+import icbm.classic.content.items.ItemTracker;
+import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
-import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
@@ -18,60 +31,60 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class ItemReg
 {
-    @ObjectHolder(ICBMClassic.PREFIX + "antidote")
+    @ObjectHolder(ICBMConstants.PREFIX + "antidote")
     public static Item itemAntidote;
-    @ObjectHolder(ICBMClassic.PREFIX + "signalDisrupter")
+    @ObjectHolder(ICBMConstants.PREFIX + "signalDisrupter")
     public static Item itemSignalDisrupter;
-    @ObjectHolder(ICBMClassic.PREFIX + "tracker")
+    @ObjectHolder(ICBMConstants.PREFIX + "tracker")
     public static Item itemTracker;
-    @ObjectHolder(ICBMClassic.PREFIX + "missile")
+    @ObjectHolder(ICBMConstants.PREFIX + "missile")
     public static Item itemMissile;
-    @ObjectHolder(ICBMClassic.PREFIX + "defuser")
+    @ObjectHolder(ICBMConstants.PREFIX + "defuser")
     public static Item itemDefuser;
-    @ObjectHolder(ICBMClassic.PREFIX + "radarGun")
+    @ObjectHolder(ICBMConstants.PREFIX + "radarGun")
     public static Item itemRadarGun;
-    @ObjectHolder(ICBMClassic.PREFIX + "remoteDetonator")
+    @ObjectHolder(ICBMConstants.PREFIX + "remoteDetonator")
     public static Item itemRemoteDetonator;
-    @ObjectHolder(ICBMClassic.PREFIX + "laserDetonator")
+    @ObjectHolder(ICBMConstants.PREFIX + "laserDetonator")
     public static Item itemLaserDetonator;
-    @ObjectHolder(ICBMClassic.PREFIX + "rocketLauncher")
+    @ObjectHolder(ICBMConstants.PREFIX + "rocketLauncher")
     public static Item itemRocketLauncher;
-    @ObjectHolder(ICBMClassic.PREFIX + "grenade")
+    @ObjectHolder(ICBMConstants.PREFIX + "grenade")
     public static Item itemGrenade;
-    @ObjectHolder(ICBMClassic.PREFIX + "bombcart")
+    @ObjectHolder(ICBMConstants.PREFIX + "bombcart")
     public static Item itemBombCart;
-    @ObjectHolder(ICBMClassic.PREFIX + "sulfurDust")
+    @ObjectHolder(ICBMConstants.PREFIX + "sulfurDust")
     public static Item itemSulfurDust;
-    @ObjectHolder(ICBMClassic.PREFIX + "saltpeter")
+    @ObjectHolder(ICBMConstants.PREFIX + "saltpeter")
     public static Item itemSaltpeterDust;
-    @ObjectHolder(ICBMClassic.PREFIX + "poisonPowder")
+    @ObjectHolder(ICBMConstants.PREFIX + "poisonPowder")
     public static Item itemPoisonPowder;
-    @ObjectHolder(ICBMClassic.PREFIX + "battery")
+    @ObjectHolder(ICBMConstants.PREFIX + "battery")
     public static Item itemBattery;
-    @ObjectHolder(ICBMClassic.PREFIX + "ingot")
+    @ObjectHolder(ICBMConstants.PREFIX + "ingot")
     public static ItemCrafting itemIngot;
-    @ObjectHolder(ICBMClassic.PREFIX + "clump")
+    @ObjectHolder(ICBMConstants.PREFIX + "clump")
     public static ItemCrafting itemIngotClump;
-    @ObjectHolder(ICBMClassic.PREFIX + "plate")
+    @ObjectHolder(ICBMConstants.PREFIX + "plate")
     public static ItemCrafting itemPlate;
-    @ObjectHolder(ICBMClassic.PREFIX + "circuit")
+    @ObjectHolder(ICBMConstants.PREFIX + "circuit")
     public static ItemCrafting itemCircuit;
-    @ObjectHolder(ICBMClassic.PREFIX + "wire")
+    @ObjectHolder(ICBMConstants.PREFIX + "wire")
     public static ItemCrafting itemWire;
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
         //Items
-        event.getRegistry().register(new ItemGrenade());
-        event.getRegistry().register(new ItemBombCart());
-        event.getRegistry().register(new ItemICBMBase("poisonPowder"));
-        event.getRegistry().register(new ItemICBMBase("sulfurDust"));
-        event.getRegistry().register(new ItemICBMBase("saltpeter"));
-        event.getRegistry().register(new ItemAntidote());
+        event.getRegistry().register(new ItemGrenade().setName("grenade"));
+        event.getRegistry().register(new ItemBombCart().setName("bombcart"));
+        event.getRegistry().register(new ItemBase().setName("poisonPowder").setCreativeTab(ICBMClassic.CREATIVE_TAB)); //TODO fix name _
+        event.getRegistry().register(new ItemBase().setName("sulfurDust").setCreativeTab(ICBMClassic.CREATIVE_TAB)); //TODO fix name _
+        event.getRegistry().register(new ItemBase().setName("saltpeter").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemAntidote().setName("antidote"));
         event.getRegistry().register(new ItemSignalDisrupter());
         event.getRegistry().register(new ItemTracker());
         event.getRegistry().register(new ItemDefuser());

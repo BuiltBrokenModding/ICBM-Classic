@@ -1,5 +1,6 @@
 package icbm.classic.prefab.item;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -15,12 +16,20 @@ import java.util.List;
 
 /**
  * Generic prefab to use in all items providing common implementation
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 12/20/2016.
  */
-public abstract class ItemAbstract extends Item
+public class ItemBase extends Item
 {
+
+    public ItemBase setName(String name)
+    {
+        this.setTranslationKey(ICBMConstants.PREFIX + name);
+        this.setRegistryName(ICBMConstants.PREFIX + name);
+        return this;
+    }
+
     //Make sure to mirror all changes to other abstract class
     @Override
     @SideOnly(Side.CLIENT)

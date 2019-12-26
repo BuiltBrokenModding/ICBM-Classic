@@ -68,24 +68,21 @@ import java.util.List;
  * <p>
  * Orginal author and creator of the mod: Calclavia
  */
-@Mod(modid = ICBMClassic.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
+@Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
 @Mod.EventBusSubscriber
 public final class ICBMClassic
 {
 
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
 
-    @Mod.Instance(ICBMClassic.DOMAIN)
+    @Mod.Instance(ICBMConstants.DOMAIN)
     public static ICBMClassic INSTANCE;
 
-    @Mod.Metadata(ICBMClassic.DOMAIN)
+    @Mod.Metadata(ICBMConstants.DOMAIN)
     public static ModMetadata metadata;
 
     @SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.CommonProxy")
     public static CommonProxy proxy;
-
-    public static final String DOMAIN = "icbmclassic";
-    public static final String PREFIX = DOMAIN + ":";
 
     public static final String MAJOR_VERSION = "@MAJOR@";
     public static final String MINOR_VERSION = "@MINOR@";
@@ -95,15 +92,12 @@ public final class ICBMClassic
     public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
     public static final String DEPENDENCIES = "";
 
-    public static final String TEXTURE_DIRECTORY = "textures/";
-    public static final String GUI_DIRECTORY = TEXTURE_DIRECTORY + "gui/";
-
     public static final int MAP_HEIGHT = 255;
 
-    protected static Logger logger = LogManager.getLogger(DOMAIN);
+    protected static Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
 
 
-    public static final PacketManager packetHandler = new PacketManager(DOMAIN);
+    public static final PacketManager packetHandler = new PacketManager(ICBMConstants.DOMAIN);
 
     //Mod support
     public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
@@ -111,7 +105,7 @@ public final class ICBMClassic
     public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
 
-    public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(DOMAIN);
+    public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(ICBMConstants.DOMAIN);
 
     public static ModFixs modFixs;
 
@@ -148,23 +142,23 @@ public final class ICBMClassic
                 {
                     if (ConfigItems.ENABLE_INGOTS_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.copper", ItemReg.itemIngot.getStack("copper", 10), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "ingot.steel", ItemReg.itemIngot.getStack("steel", 10), 20, 3));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "ingot.copper", ItemReg.itemIngot.getStack("copper", 10), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "ingot.steel", ItemReg.itemIngot.getStack("steel", 10), 20, 3));
                     }
                     if (ConfigItems.ENABLE_PLATES_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "plate.steel", ItemReg.itemPlate.getStack("steel", 5), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "plate.steel", ItemReg.itemPlate.getStack("steel", 5), 30, 3));
                     }
                     if (ConfigItems.ENABLE_WIRES_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.copper", ItemReg.itemWire.getStack("copper", 20), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "wire.gold", ItemReg.itemWire.getStack("gold", 15), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "wire.copper", ItemReg.itemWire.getStack("copper", 20), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "wire.gold", ItemReg.itemWire.getStack("gold", 15), 30, 3));
                     }
                     if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
                     {
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.basic", ItemReg.itemCircuit.getStack("basic", 15), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.advanced", ItemReg.itemCircuit.getStack("advanced", 11), 30, 3));
-                        lootPool.addEntry(new LootEntryItemStack(PREFIX + "circuit.elite", ItemReg.itemCircuit.getStack("elite", 8), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "circuit.basic", ItemReg.itemCircuit.getStack("basic", 15), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "circuit.advanced", ItemReg.itemCircuit.getStack("advanced", 11), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "circuit.elite", ItemReg.itemCircuit.getStack("elite", 8), 30, 3));
                     }
                 }
             }
@@ -176,7 +170,7 @@ public final class ICBMClassic
                 LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
                 if (lootPool != null)
                 {
-                    lootPool.addEntry(new LootEntryItemStack(PREFIX + "sulfur", new ItemStack(ItemReg.itemSulfurDust, 10, 0), 2, 0));
+                    lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "sulfur", new ItemStack(ItemReg.itemSulfurDust, 10, 0), 2, 0));
                 }
             }
         }
@@ -198,7 +192,7 @@ public final class ICBMClassic
         CapabilityExplosive.register();
 
         //Register data fixers
-        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMClassic.DOMAIN, 1);
+        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
@@ -266,7 +260,7 @@ public final class ICBMClassic
         packetHandler.init();
         CREATIVE_TAB.init();
 
-        setModMetadata(ICBMClassic.DOMAIN, "ICBM-Classic", metadata);
+        setModMetadata(ICBMConstants.DOMAIN, "ICBM-Classic", metadata);
 
         if(ConfigItems.ENABLE_CRAFTING_ITEMS)
         {

@@ -6,7 +6,7 @@ import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
-import icbm.classic.prefab.item.ItemICBMBase;
+import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -26,11 +26,10 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemBombCart extends ItemICBMBase
+public class ItemBombCart extends ItemBase
 {
     public ItemBombCart()
     {
-        super("bombcart");
         this.setMaxStackSize(3);
         this.setHasSubtypes(true);
     }

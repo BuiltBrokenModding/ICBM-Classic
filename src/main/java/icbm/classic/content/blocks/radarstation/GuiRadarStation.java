@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.radarstation;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
@@ -18,10 +19,10 @@ import java.io.IOException;
 
 public class GuiRadarStation extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_radar.png");
-    public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "reddot.png");
-    public static final ResourceLocation TEXTURE_YELLOW_DOT = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "yellowdot.png");
-    public static final ResourceLocation TEXTURE_WHITE_DOT = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "whitedot.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_radar.png");
+    public static final ResourceLocation TEXTURE_RED_DOT = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "reddot.png");
+    public static final ResourceLocation TEXTURE_YELLOW_DOT = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "yellowdot.png");
+    public static final ResourceLocation TEXTURE_WHITE_DOT = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "whitedot.png");
     private TileRadarStation tileEntity;
 
     private int containerPosX;

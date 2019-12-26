@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.emptower;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.ModelEmpTower;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class TESREMPTower extends TileEntitySpecialRenderer<TileEMPTower>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/" + "emp_tower.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "emp_tower.png");
     public static final ModelEmpTower MODEL = new ModelEmpTower();
 
     @Override

@@ -1,6 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.api.caps.IMissileLauncher;
@@ -13,7 +14,7 @@ import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.lib.transform.vector.Location;
-import icbm.classic.prefab.item.ItemAbstract;
+import icbm.classic.prefab.item.ItemBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +38,7 @@ import java.util.List;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 6/13/2016.
  */
-public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacketIDReceiver
+public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDReceiver
 {
     public static final String NBT_LINK_POS = "linkPos";
 
@@ -46,8 +47,8 @@ public class ItemRadarGun extends ItemAbstract implements IWorldPosItem, IPacket
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setTranslationKey(ICBMClassic.PREFIX + "radarGun");
-        this.setRegistryName(ICBMClassic.DOMAIN, "radarGun");
+        this.setTranslationKey(ICBMConstants.PREFIX + "radarGun");
+        this.setRegistryName(ICBMConstants.DOMAIN, "radarGun");
     }
 
     @SideOnly(Side.CLIENT)

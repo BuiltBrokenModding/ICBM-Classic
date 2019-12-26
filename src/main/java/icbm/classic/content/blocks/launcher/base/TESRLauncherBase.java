@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.base;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.*;
 import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.api.EnumTier;
@@ -16,9 +16,9 @@ import net.minecraftforge.fml.client.FMLClientHandler;
  */
 public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase>
 {
-    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/launcher_0.png");
-    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/launcher_1.png");
-    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMClassic.DOMAIN, "textures/models/launcher_2.png");
+    public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/launcher_0.png");
+    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/launcher_1.png");
+    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/launcher_2.png");
 
     public static final ModelTier1LauncherBottom modelBase0 = new ModelTier1LauncherBottom();
     public static final ModelTier1LauncherRail modelRail0 = new ModelTier1LauncherRail();

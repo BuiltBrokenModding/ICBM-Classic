@@ -1,6 +1,6 @@
 package icbm.classic.lib.capability.emp;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.caps.IEMPReceiver;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -15,14 +15,14 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class CapabilityEMP
 {
     @CapabilityInject(IEMPReceiver.class)
     public static Capability<IEMPReceiver> EMP = null;
 
-    public static final ResourceLocation ENTITY_ITEM_CAP = new ResourceLocation(ICBMClassic.DOMAIN, "emp.wrapper.entity.item");
-    public static final ResourceLocation CREEPER_CAP = new ResourceLocation(ICBMClassic.DOMAIN, "emp.wrapper.entity.creeper");
+    public static final ResourceLocation ENTITY_ITEM_CAP = new ResourceLocation(ICBMConstants.DOMAIN, "emp.wrapper.entity.item");
+    public static final ResourceLocation CREEPER_CAP = new ResourceLocation(ICBMConstants.DOMAIN, "emp.wrapper.entity.creeper");
 
     public static void register()
     {

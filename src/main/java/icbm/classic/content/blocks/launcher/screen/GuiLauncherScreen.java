@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
@@ -22,7 +23,7 @@ import static java.lang.Math.max;
 @SideOnly(Side.CLIENT)
 public class GuiLauncherScreen extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_empty.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_empty.png");
 
     private TileLauncherScreen tileEntity;
     private GuiTextField target_xCoord_field;
