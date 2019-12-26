@@ -12,7 +12,11 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -60,11 +64,18 @@ public class ItemGrenade extends ItemICBMBase
     {
         if (!world.isRemote)
         {
-            final int explosiveID = itemStack.getItemDamage(); //TODO validate
-
+            //Play throw sound
             world.playSound(null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-            world.spawnEntity(new EntityGrenade(world, entityLiving, explosiveID, (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack)));
 
+            //Calculate energy based on player hold time
+            final float throwEnergy = (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack);
+
+            //Create generate entity
+            final EntityGrenade entityGrenade = new EntityGrenade(world, entityLiving, throwEnergy);
+            entityGrenade.setItemStack(itemStack);
+            world.spawnEntity(entityGrenade);
+
+            //Consume item
             if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)
             {
                 itemStack.shrink(1);

@@ -1,10 +1,10 @@
 package icbm.classic.content.items.behavior;
 
 import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -14,18 +14,27 @@ public class GrenadeDispenseBehavior implements IBehaviorDispenseItem
     @Override
     public ItemStack dispense(IBlockSource blockSource, ItemStack itemStack)
     {
-        World world = blockSource.getWorld();
-
-        if (!world.isRemote)
+        if (itemStack.getCount() > 0)
         {
-            EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
+            final World world = blockSource.getWorld();
+            if (!world.isRemote)
+            {
+                world.spawnEntity(create(world, blockSource, itemStack));
+            }
 
-            EntityGrenade entity = new EntityGrenade(world, new Pos(blockSource.getBlockPos()), itemStack.getItemDamage());
-            entity.setThrowableHeading(enumFacing.getXOffset(), 0.10000000149011612D, enumFacing.getZOffset(), 0.5F, 1.0F);
-            world.spawnEntity(entity);
+            return itemStack.splitStack(itemStack.getCount() - 1);
         }
+        return ItemStack.EMPTY;
+    }
 
-        itemStack.shrink(1);
-        return itemStack;
+    private Entity create(World world, IBlockSource blockSource, ItemStack itemStack)
+    {
+        final EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
+
+        final EntityGrenade entity = new EntityGrenade(world);
+        entity.setPosition(blockSource.getX(), blockSource.getY(), blockSource.getZ());
+        entity.setItemStack(itemStack);
+        entity.setThrowableHeading(enumFacing.getXOffset(), 0.10000000149011612D, enumFacing.getZOffset(), 0.5F, 1.0F);
+        return entity;
     }
 }

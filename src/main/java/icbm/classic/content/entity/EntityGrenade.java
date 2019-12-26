@@ -4,12 +4,12 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.explosive.ExplosiveHandler;
-import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
@@ -21,40 +21,44 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Is the entity that throws this 'thing' (snowball, ender pearl, eye of ender or potion) */
     protected EntityLivingBase thrower;
 
+    @Deprecated
     public int explosiveID; //TODO move to capability
+    @Deprecated
     public NBTTagCompound blastData = new NBTTagCompound(); //TODO move to capability
 
     public EntityGrenade(World par1World)
     {
         super(par1World);
-        this.setSize(0.3F, 0.3F);
+        this.setSize(0.25F, 0.25F);
         //this.renderDistanceWeight = 8;
     }
 
-    public EntityGrenade(World par1World, Pos position, int explosiveID)
+    public EntityGrenade(World world, EntityLivingBase thrower, float energy)
     {
-        this(par1World);
-        this.setPosition(position.x(), position.y(), position.z());
-        this.explosiveID = explosiveID;
+        this(world);
+        this.thrower = thrower;
+
+        //Set angles
+        this.setLocationAndAngles(thrower.posX, thrower.posY + thrower.getEyeHeight(), thrower.posZ, thrower.rotationYaw, thrower.rotationPitch);
+
+        //Set position
+        final float horizontalOffset = 0.16F;
+        this.posX -= MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * horizontalOffset;
+        this.posY -= 0.10000000149011612D;
+        this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * horizontalOffset;
+        this.setPosition(this.posX, this.posY, this.posZ);
+
+        //Set velocity
+        final float powerScale = 0.4F;
+        this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * powerScale;
+        this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * powerScale;
+        this.motionY = -MathHelper.sin((this.rotationPitch) / 180.0F * (float) Math.PI) * powerScale;
+        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, 1.8f * energy, 1.0F);
     }
 
-    public EntityGrenade(World par1World, EntityLivingBase par2EntityLiving, int explosiveID, float nengLiang)
+    public void setItemStack(ItemStack stack)
     {
-        this(par1World);
-        this.thrower = par2EntityLiving;
-        this.setSize(0.25F, 0.25F);
-        this.setLocationAndAngles(par2EntityLiving.posX, par2EntityLiving.posY + par2EntityLiving.getEyeHeight(), par2EntityLiving.posZ, par2EntityLiving.rotationYaw, par2EntityLiving.rotationPitch);
-        this.posX -= MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F;
-        this.posY -= 0.10000000149011612D;
-        this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F;
-        this.setPosition(this.posX, this.posY, this.posZ);
-        //this.yOffset = 0.0F;
-        float var3 = 0.4F;
-        this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * var3;
-        this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI) * var3;
-        this.motionY = -MathHelper.sin((this.rotationPitch) / 180.0F * (float) Math.PI) * var3;
-        this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, 1.8f * nengLiang, 1.0F);
-        this.explosiveID = explosiveID;
+        this.explosiveID = stack.getItemDamage();
     }
 
     @Override
@@ -80,40 +84,50 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         this.explosiveID = data.readInt();
     }
 
-    /** Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction. */
-    public void setThrowableHeading(double par1, double par3, double par5, float par7, float par8)
+    /**
+     * Sets the velocity of the grenade
+     *
+     * @param vx     - x component velocity vector
+     * @param vy     - y component velocity vector
+     * @param vz     - z component velocity vector
+     * @param scale  - amount to scale the vector by
+     * @param random - amount to randomize the vector
+     */
+    public void setThrowableHeading(double vx, double vy, double vz, float scale, float random)
     {
-        float var9 = MathHelper.sqrt(par1 * par1 + par3 * par3 + par5 * par5);
-        par1 /= var9;
-        par3 /= var9;
-        par5 /= var9;
-        par1 += this.rand.nextGaussian() * 0.007499999832361937D * par8;
-        par3 += this.rand.nextGaussian() * 0.007499999832361937D * par8;
-        par5 += this.rand.nextGaussian() * 0.007499999832361937D * par8;
-        par1 *= par7;
-        par3 *= par7;
-        par5 *= par7;
-        this.motionX = par1;
-        this.motionY = par3;
-        this.motionZ = par5;
-        float var10 = MathHelper.sqrt(par1 * par1 + par5 * par5);
-        this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
-        this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var10) * 180.0D / Math.PI);
+        //normalize
+        float power = MathHelper.sqrt(vx * vx + vy * vy + vz * vz);
+        vx /= power;
+        vy /= power;
+        vz /= power;
+
+        //Randomize
+        vx += this.rand.nextGaussian() * 0.007499999832361937D * random;
+        vy += this.rand.nextGaussian() * 0.007499999832361937D * random;
+        vz += this.rand.nextGaussian() * 0.007499999832361937D * random;
+
+        //Scale
+        vx *= scale;
+        vy *= scale;
+        vz *= scale;
+
+        //Apply
+        setVelocity(vx, vy, vz);
     }
 
     /** Sets the velocity to the args. Args: x, y, z */
     @Override
-    public void setVelocity(double par1, double par3, double par5)
+    public void setVelocity(double vx, double vy, double vz)
     {
-        this.motionX = par1;
-        this.motionY = par3;
-        this.motionZ = par5;
+        this.motionX = vx;
+        this.motionY = vy;
+        this.motionZ = vz;
 
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
-            float var7 = MathHelper.sqrt(par1 * par1 + par5 * par5);
-            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(par1, par5) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(par3, var7) * 180.0D / Math.PI);
+            float var7 = MathHelper.sqrt(vx * vx + vz * vz);
+            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(vx, vz) * 180.0D / Math.PI);
+            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(vy, var7) * 180.0D / Math.PI);
         }
     }
 
