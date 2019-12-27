@@ -24,6 +24,8 @@ import java.util.List;
 
 public class ItemGrenade extends ItemBase
 {
+    public static final int MAX_USE_DURATION = 3 * 20; //TODO config
+
     public ItemGrenade()
     {
         this.setMaxStackSize(16);
@@ -47,7 +49,7 @@ public class ItemGrenade extends ItemBase
     @Override
     public int getMaxItemUseDuration(ItemStack par1ItemStack)
     {
-        return 3 * 20;
+        return MAX_USE_DURATION;
     }
 
     @Override
