@@ -36,9 +36,10 @@ apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScr
 dependencies
 {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
     testCompile 'org.junit.jupiter:junit-jupiter-params:5.4.2'
-    testCompile 'org.mockito:mockito-core:1.+'
+    testCompile 'org.mockito:mockito-core:3.+'
 }
 
 sourceCompatibility = 1.8
