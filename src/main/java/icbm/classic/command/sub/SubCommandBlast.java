@@ -9,17 +9,19 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+
+import java.util.stream.Collectors;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
  */
 public class SubCommandBlast extends SubCommand
 {
-
     @Override
     public String getName()
     {
@@ -32,28 +34,34 @@ public class SubCommandBlast extends SubCommand
         return "blast";
     }
 
+    protected void listBlasts(ICommandSender sender) {
+        //Convert list of explosives to string registry names
+        String names = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives().stream()
+                .map(IExplosiveData::getRegistryName)
+                .map(ResourceLocation::toString)
+                .collect(Collectors.joining(", "));
+
+        //Output message TODO translate if possible?
+        sender.sendMessage(new TextComponentString("Explosive Types: " + names ));
+    }
+
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length >= 1 && args[0].equalsIgnoreCase("list"))
         {
-            String names = "Explosive Types: ";
-            for (IExplosiveData data : ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives())
-            {
-                names += data.getRegistryName();
-                names += ", ";
-            }
-            sender.sendMessage(new TextComponentString(names.substring(names.length() - 2))); //-2 removes last ', ' ... because lazy
+            listBlasts(sender);
         }
         else if (args.length >= 1 && args[0].equalsIgnoreCase("spread"))
         {
-            int spread = parseInt(args[1]);
+           final int spread = parseInt(args[1]);
 
 
             for (int x = -spread; x <= spread; x++)
             {
                 for (int z = -spread; z <= spread; z++)
                 {
+                    //TODO split array rather than manually converting *facepalm*
                     String[] parms = new String[]{args[2], args[3], args[4] + x * 100, args[5], args[6] + x * 100, args[7]};
                     execute(server, sender, parms);
                 }
