@@ -45,7 +45,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
      */
     public EntityGrenade setItemStack(ItemStack stack)
     {
-        explosive.setStack(stack.copy().splitStack(1));
+        explosive.setStack(stack);
         return this;
     }
 

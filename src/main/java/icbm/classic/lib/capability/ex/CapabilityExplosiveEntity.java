@@ -94,6 +94,6 @@ public class CapabilityExplosiveEntity implements IExplosive
         {
             ICBMClassic.logger().error("CapabilityExplosive[" + entity + "] Was set with a stack that is not an explosive [" + stack + "]");
         }
-        this.stack = stack;
+        this.stack = stack.copy().splitStack(1);
     }
 }
