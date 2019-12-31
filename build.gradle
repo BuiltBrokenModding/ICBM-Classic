@@ -51,6 +51,8 @@ test {
 
     maxHeapSize = '1G'
     failFast = true
+    workingDir = './run_tests'
+    mkdir './run_tests'
 }
 
 jar {
