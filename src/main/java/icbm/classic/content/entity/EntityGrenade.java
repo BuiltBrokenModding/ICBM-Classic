@@ -61,6 +61,10 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         return this;
     }
 
+    public EntityLivingBase getThrower() {
+        return thrower;
+    }
+
     /**
      * Sets the aim and position based on the throwing entity
      *
