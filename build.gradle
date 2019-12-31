@@ -46,6 +46,13 @@ dependencies
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+test {
+    useJUnitPlatform()
+
+    maxHeapSize = '1G'
+    failFast = true
+}
+
 jar {
      manifest.mainAttributes(
             "Built-By": System.getProperty('user.name'),
