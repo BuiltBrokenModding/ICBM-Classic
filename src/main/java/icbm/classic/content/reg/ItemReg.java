@@ -79,8 +79,8 @@ public class ItemReg
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
         //Items
-        event.getRegistry().register(new ItemGrenade().setName("grenade"));
-        event.getRegistry().register(new ItemBombCart().setName("bombcart"));
+        event.getRegistry().register(new ItemGrenade().setName("grenade").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemBombCart().setName("bombcart").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemBase().setName("poisonPowder").setCreativeTab(ICBMClassic.CREATIVE_TAB)); //TODO fix name _
         event.getRegistry().register(new ItemBase().setName("sulfurDust").setCreativeTab(ICBMClassic.CREATIVE_TAB)); //TODO fix name _
         event.getRegistry().register(new ItemBase().setName("saltpeter").setCreativeTab(ICBMClassic.CREATIVE_TAB));
