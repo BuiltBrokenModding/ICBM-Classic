@@ -2,6 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
+import icbm.classic.api.explosion.IBlastMovable;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
@@ -19,16 +20,18 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.List;
 
-public class BlastRedmatter extends Blast implements IBlastTickable
+public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
 {
     //Constants, do not change as they modify render and effect scales
     public static final float NORMAL_RADIUS = 70;
@@ -197,6 +200,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable
         }
     }
 
+
     /**
      * Makes an entity get affected by Red Matter.
      *
@@ -250,7 +254,41 @@ public class BlastRedmatter extends Blast implements IBlastTickable
         {
             entity.velocityChanged = true;
         }
+        
+        if (entity instanceof EntityExplosion)
+        {
+            final IBlast blast = ((EntityExplosion) entity).getBlast();
+            if (blast instanceof  BlastRedmatter)
+            {
+                final BlastRedmatter rmBlast = (BlastRedmatter)blast;
 
+                final int otherSize = (int)Math.pow(this.getBlastRadius(),3);
+                final int thisSize = (int)Math.pow(blast.getBlastRadius(),3);
+                final double totalSize = otherSize + thisSize;
+
+                final double thisSizePct = thisSize / totalSize;
+
+                final Vec3d totalDelta = rmBlast.getPosition().subtract(this.getPosition());
+                final Vec3d thisDelta = totalDelta.scale(thisSizePct);
+                final Vec3d otherDelta = totalDelta.subtract(thisDelta);
+
+                final double otherPosX = rmBlast.getPos().getX() + Math.ceil(otherDelta.x);
+                final double otherPosY = rmBlast.getPos().getY() + Math.ceil(otherDelta.y);
+                final double otherPosZ = rmBlast.getPos().getZ() + Math.ceil(otherDelta.z);
+
+//                rmBlast.exploder.addVelocity(otherDelta.x,otherDelta.y,otherDelta.z);
+                //rmBlast.controller.move(MoverType.SELF, Math.ceil(otherDelta.x),Math.ceil(otherDelta.y),Math.ceil(otherDelta.z));
+
+                final double thisPosX = rmBlast.getPos().getX() + Math.ceil(thisDelta.x);
+                final double thisPosY = rmBlast.getPos().getY() + Math.ceil(thisDelta.y);
+                final double thisPosZ = rmBlast.getPos().getZ() + Math.ceil(thisDelta.z);
+
+
+                this.exploder.addVelocity(thisDelta.x,thisDelta.y,thisDelta.z);
+                //this.controller.move(MoverType.SELF, Math.ceil(thisDelta.x),Math.ceil(thisDelta.y),Math.ceil(thisDelta.z));
+            }
+        }
+        
         boolean explosionCreated = false;
 
         if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
@@ -284,15 +322,19 @@ public class BlastRedmatter extends Blast implements IBlastTickable
                     //Average out timer
                     this.callCount = (callCount + ((BlastRedmatter)blast).callCount) / 2;
 
+                    this.size = radiusNew;
+                    this.controller.setVelocity(0,0,0);
                     //Destroy current instance
-                    this.isAlive = false;
-                    this.controller.setDead();
+                    //this.isAlive = false;
+                    //this.controller.setDead();
 
                     //Create new to avoid doing packet syncing
-                    new BlastRedmatter().setBlastSize(radiusNew).runBlast();
+                    //new BlastRedmatter().setBlastSize(radiusNew).setBlastWorld(this.world).setBlastPosition(this.x,this.y,this.z).runBlast();
+
                 }
                 //Kill explosion entity
                 ((BlastRedmatter)blast).isAlive = false;
+                ((BlastRedmatter)blast).controller.setDead();
                 //Kill entity in the center of the ball
                 entity.setDead();
             }
