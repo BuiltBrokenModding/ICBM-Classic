@@ -270,22 +270,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
                 final Vec3d totalDelta = rmBlast.getPosition().subtract(this.getPosition());
                 final Vec3d thisDelta = totalDelta.scale(thisSizePct);
-                final Vec3d otherDelta = totalDelta.subtract(thisDelta);
-
-                final double otherPosX = rmBlast.getPos().getX() + Math.ceil(otherDelta.x);
-                final double otherPosY = rmBlast.getPos().getY() + Math.ceil(otherDelta.y);
-                final double otherPosZ = rmBlast.getPos().getZ() + Math.ceil(otherDelta.z);
-
-//                rmBlast.exploder.addVelocity(otherDelta.x,otherDelta.y,otherDelta.z);
-                //rmBlast.controller.move(MoverType.SELF, Math.ceil(otherDelta.x),Math.ceil(otherDelta.y),Math.ceil(otherDelta.z));
-
-                final double thisPosX = rmBlast.getPos().getX() + Math.ceil(thisDelta.x);
-                final double thisPosY = rmBlast.getPos().getY() + Math.ceil(thisDelta.y);
-                final double thisPosZ = rmBlast.getPos().getZ() + Math.ceil(thisDelta.z);
-
 
                 this.exploder.addVelocity(thisDelta.x,thisDelta.y,thisDelta.z);
-                //this.controller.move(MoverType.SELF, Math.ceil(thisDelta.x),Math.ceil(thisDelta.y),Math.ceil(thisDelta.z));
             }
         }
         
@@ -324,12 +310,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
                     this.size = radiusNew;
                     this.controller.setVelocity(0,0,0);
-                    //Destroy current instance
-                    //this.isAlive = false;
-                    //this.controller.setDead();
-
-                    //Create new to avoid doing packet syncing
-                    //new BlastRedmatter().setBlastSize(radiusNew).setBlastWorld(this.world).setBlastPosition(this.x,this.y,this.z).runBlast();
 
                 }
                 //Kill explosion entity
