@@ -1,6 +1,7 @@
 package icbm.classic.command;
 
 import com.builtbroken.mc.testing.junit.TestManager;
+import com.builtbroken.mc.testing.junit.world.FakeWorld;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFragments;
@@ -30,12 +31,6 @@ import java.util.stream.Stream;
  */
 public class CommandUtilsTest
 {
-    static TestManager testManager = new TestManager("CommandUtils");
-
-    @AfterEach
-    public void cleanupBetweenTests() {
-        testManager.cleanupBetweenTests();
-    }
 
     @Test
     void removeFront_zeroLength()
@@ -48,7 +43,7 @@ public class CommandUtilsTest
     @Test
     void removeFront_singleLength()
     {
-        final String[] input = new String[] {"tree"};
+        final String[] input = new String[]{"tree"};
         final String[] output = CommandUtils.removeFront(input);
         Assertions.assertArrayEquals(new String[0], output);
     }
@@ -56,54 +51,61 @@ public class CommandUtilsTest
     @Test
     void removeFront_normalArray()
     {
-        final String[] input = new String[] {"tree", "remove", "last"};
+        final String[] input = new String[]{"tree", "remove", "last"};
         final String[] output = CommandUtils.removeFront(input);
-        Assertions.assertArrayEquals(new String[] {"remove", "last"}, output);
+        Assertions.assertArrayEquals(new String[]{"remove", "last"}, output);
     }
 
-    private static Stream<Arguments> provideIsICBMEntityData() {
+    private static Stream<Arguments> provideIsICBMEntityData()
+    {
+        final FakeWorld world = FakeWorld.newWorld("isICBMEntity");
         return Stream.of(
-                Arguments.of(new EntityZombie(testManager.getWorld()), false),
-                Arguments.of(new EntityBat(testManager.getWorld()), false),
-                Arguments.of(new EntityEnderman(testManager.getWorld()), false),
-                Arguments.of(new EntitySheep(testManager.getWorld()), false),
-                Arguments.of(new EntityGrenade(testManager.getWorld()), true),
-                Arguments.of(new EntityMissile(testManager.getWorld()), true),
-                Arguments.of(new EntityExplosive(testManager.getWorld()), true),
-                Arguments.of(new EntityFragments(testManager.getWorld()), true),
-                Arguments.of(new EntityExplosion(testManager.getWorld()), true)
+                Arguments.of(new EntityZombie(world), false),
+                Arguments.of(new EntityBat(world), false),
+                Arguments.of(new EntityEnderman(world), false),
+                Arguments.of(new EntitySheep(world), false),
+                Arguments.of(new EntityGrenade(world), true),
+                Arguments.of(new EntityMissile(world), true),
+                Arguments.of(new EntityExplosive(world), true),
+                Arguments.of(new EntityFragments(world), true),
+                Arguments.of(new EntityExplosion(world), true)
         );
     }
 
 
     @ParameterizedTest
     @MethodSource("provideIsICBMEntityData")
-    void isICBMEntity_valid(Entity entity, boolean outcome) {
+    void isICBMEntity_valid(Entity entity, boolean outcome)
+    {
         Assertions.assertEquals(outcome, CommandUtils.isICBMEntity(entity));
     }
 
-    private static Stream<Arguments> provideIsMissileData() {
+    private static Stream<Arguments> provideIsMissileData()
+    {
+        final FakeWorld world = FakeWorld.newWorld("isMissile");
         return Stream.of(
-                Arguments.of(new EntityZombie(testManager.getWorld()), false),
-                Arguments.of(new EntityBat(testManager.getWorld()), false),
-                Arguments.of(new EntityEnderman(testManager.getWorld()), false),
-                Arguments.of(new EntitySheep(testManager.getWorld()), false),
-                Arguments.of(new EntityGrenade(testManager.getWorld()), false),
-                Arguments.of(new EntityMissile(testManager.getWorld()), true),
-                Arguments.of(new EntityExplosive(testManager.getWorld()), false),
-                Arguments.of(new EntityFragments(testManager.getWorld()), false),
-                Arguments.of(new EntityExplosion(testManager.getWorld()), false)
+                Arguments.of(new EntityZombie(world), false),
+                Arguments.of(new EntityBat(world), false),
+                Arguments.of(new EntityEnderman(world), false),
+                Arguments.of(new EntitySheep(world), false),
+                Arguments.of(new EntityGrenade(world), false),
+                Arguments.of(new EntityMissile(world), true),
+                Arguments.of(new EntityExplosive(world), false),
+                Arguments.of(new EntityFragments(world), false),
+                Arguments.of(new EntityExplosion(world), false)
         );
     }
 
 
     @ParameterizedTest
     @MethodSource("provideIsMissileData")
-    void isMissile_valid(Entity entity, boolean outcome) {
+    void isMissile_valid(Entity entity, boolean outcome)
+    {
         Assertions.assertEquals(outcome, CommandUtils.isMissile(entity));
     }
 
-    private static Stream<Arguments> provideParseRadiusGoodData() {
+    private static Stream<Arguments> provideParseRadiusGoodData()
+    {
         return Stream.of(
                 Arguments.of("1", 1),
                 Arguments.of("22", 22),
@@ -119,7 +121,8 @@ public class CommandUtilsTest
         Assertions.assertEquals(output, CommandUtils.parseRadius(input));
     }
 
-    private static Stream<Arguments> provideParseRadiusBadData() {
+    private static Stream<Arguments> provideParseRadiusBadData()
+    {
         return Stream.of(
                 Arguments.of("1.0"),
                 Arguments.of(".0"),
@@ -140,7 +143,9 @@ public class CommandUtilsTest
     }
 
     @Test
-    void getEntities_withRange_found() {
+    void getEntities_withRange_found()
+    {
+        final TestManager testManager = new TestManager("getEntities_withRange_found");
         final World world = testManager.getWorld();
 
         //Sheep in range
@@ -160,7 +165,6 @@ public class CommandUtilsTest
         world.spawnEntity(sheep);
 
         //Sheep not in range
-
         sheep = new EntitySheep(world);
         sheep.forceSpawn = true;
         sheep.setPosition(200, 12, 100);
@@ -179,10 +183,14 @@ public class CommandUtilsTest
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
         Assertions.assertEquals(3, list.size());
+
+        testManager.tearDownTest();
     }
 
     @Test
-    void getEntities_allEntities_found() {
+    void getEntities_allEntities_found()
+    {
+        final TestManager testManager = new TestManager("getEntities_allEntities_found");
         final World world = testManager.getWorld();
 
         //Sheep in range
@@ -221,23 +229,32 @@ public class CommandUtilsTest
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
         Assertions.assertEquals(6, list.size());
+
+        testManager.tearDownTest();
     }
 
     @Test
-    void getEntities_withRange_nothing() {
+    void getEntities_withRange_nothing()
+    {
+        final TestManager testManager = new TestManager("getEntities_withRange_nothing");
         final World world = testManager.getWorld();
 
-        //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
         Assertions.assertEquals(0, list.size());
+
+        testManager.tearDownTest();
     }
 
     @Test
-    void getEntities_allEntities_nothing() {
+    void getEntities_allEntities_nothing()
+    {
+        final TestManager testManager = new TestManager("getEntities_allEntities_nothing");
         final World world = testManager.getWorld();
 
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
         Assertions.assertEquals(0, list.size());
+
+        testManager.tearDownTest();
     }
 }
