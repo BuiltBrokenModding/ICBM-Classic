@@ -6,6 +6,8 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.entity.missile.EntityMissile;
+import lombok.SneakyThrows;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityZombie;
@@ -97,5 +99,41 @@ public class CommandUtilsTest
     @MethodSource("provideIsMissileData")
     void isMissile_valid(Entity entity, boolean outcome) {
         Assertions.assertEquals(outcome, CommandUtils.isMissile(entity));
+    }
+
+    private static Stream<Arguments> provideParseRadiusGoodData() {
+        return Stream.of(
+                Arguments.of("1", 1),
+                Arguments.of("22", 22),
+                Arguments.of("987", 987),
+                Arguments.of("1234567", 1234567)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideParseRadiusGoodData")
+    void parseRadius_goodInput(String input, int output) throws WrongUsageException
+    {
+        Assertions.assertEquals(output, CommandUtils.parseRadius(input));
+    }
+
+    private static Stream<Arguments> provideParseRadiusBadData() {
+        return Stream.of(
+                Arguments.of("1.0"),
+                Arguments.of(".0"),
+                Arguments.of("."),
+                Arguments.of(","),
+                Arguments.of("100,00"),
+                Arguments.of(",.00"),
+                Arguments.of("tree"),
+                Arguments.of("3,tre")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideParseRadiusBadData")
+    void parseRadius_badInput(String input)
+    {
+        Assertions.assertThrows(WrongUsageException.class, () -> CommandUtils.parseRadius(input));
     }
 }
