@@ -92,46 +92,4 @@ public class CommandICBM extends CommandBase
         return new ArrayList<>();
     }
 
-    public static boolean isICBMEntity(Entity entity)
-    {
-        return entity instanceof EntityFragments || entity instanceof EntityFlyingBlock || isMissile(entity) || entity instanceof EntityExplosive;
-    }
-
-    public static boolean isMissile(Entity entity)
-    {
-        return entity instanceof EntityMissile;
-    }
-
-    public static List<Entity> getEntities(World world, double x, double y, double z, double range)
-    {
-        if (range > 0)
-        {
-            AxisAlignedBB bb = new AxisAlignedBB(
-                    x - range, y - range, z - range,
-                    x + range, y + range, z + range);
-
-            return world.getEntitiesWithinAABB(Entity.class, bb);
-        }
-        else if (range == -1)
-        {
-            return world.loadedEntityList;
-        }
-        return new ArrayList();
-    }
-
-    public static int parseRadius(String input) throws WrongUsageException
-    {
-        try
-        {
-            int radius = Integer.parseInt(input);
-            if (radius <= 0)
-            {
-                throw new WrongUsageException("Radius must be greater than zero!");
-            }
-            return radius;
-        } catch (NumberFormatException e)
-        {
-            throw new WrongUsageException("Invalid radius!");
-        }
-    }
 }

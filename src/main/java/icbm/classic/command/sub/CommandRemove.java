@@ -1,6 +1,6 @@
 package icbm.classic.command.sub;
 
-import icbm.classic.command.CommandICBM;
+import icbm.classic.command.CommandUtils;
 import icbm.classic.command.imp.SubCommand;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.command.CommandBase;
@@ -66,8 +66,8 @@ public class CommandRemove extends SubCommand
             {
                 //Get range
                 boolean hasRange = args.length == 3 || args.length == 7;
-                int range = args.length == 3 ? CommandICBM.parseRadius(args[2])
-                        : args.length == 7 ? CommandICBM.parseRadius(args[6])
+                int range = args.length == 3 ? CommandUtils.parseRadius(args[2])
+                        : args.length == 7 ? CommandUtils.parseRadius(args[6])
                         : -1;
 
                 //Get position
@@ -96,7 +96,7 @@ public class CommandRemove extends SubCommand
                 if (world != null)
                 {
                     //Get entities
-                    List<Entity> entities = CommandICBM.getEntities(world, x, y, z, range);
+                    List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range);
 
                     int count = 0;
 
@@ -107,8 +107,8 @@ public class CommandRemove extends SubCommand
                         if (entity != null && !entity.isDead)
                         {
                             boolean isExplosive = entity instanceof EntityExplosive;
-                            boolean isMissile = CommandICBM.isMissile(entity);
-                            boolean isICBM = CommandICBM.isICBMEntity(entity);
+                            boolean isMissile = CommandUtils.isMissile(entity);
+                            boolean isICBM = CommandUtils.isICBMEntity(entity);
                             if (remove_explosives && isExplosive || remove_missiles && isMissile || remove_all && isICBM)
                             {
                                 entity.setDead();
