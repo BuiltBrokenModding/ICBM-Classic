@@ -9,7 +9,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +70,7 @@ public class CommandBlast extends SubCommand
                 for (int z = -spread; z <= spread; z++)
                 {
                     //TODO split array rather than manually converting *facepalm*
-                    String[] parms = new String[]{args[2], args[3], args[4] + x * 100, args[5], args[6] + x * 100, args[7]};
+                    String[] parms = new String[]{args[2], args[3], args[4] + x * 100, args[5], args[6] + z * 100, args[7]};
                     execute(server, sender, parms);
                 }
             }
