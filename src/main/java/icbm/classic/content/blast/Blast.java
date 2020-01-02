@@ -398,6 +398,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     {
         this.callCount = nbt.getInteger(NBTConstants.CALL_COUNT);
         this.size = nbt.getFloat(NBTConstants.EXPLOSION_SIZE);
+        this.exploder = this.world.getEntityByID(nbt.getInteger(NBTConstants.BLAST_EXPLODER_ENT_ID));
     }
 
     @Override
@@ -405,6 +406,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     {
         nbt.setInteger(NBTConstants.CALL_COUNT, this.callCount);
         nbt.setFloat(NBTConstants.EXPLOSION_SIZE, this.size);
+        nbt.setInteger(NBTConstants.BLAST_EXPLODER_ENT_ID, this.exploder.getEntityId());
     }
 
     public boolean isMovable()

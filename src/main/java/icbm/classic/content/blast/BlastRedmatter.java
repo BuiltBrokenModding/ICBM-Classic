@@ -294,7 +294,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                         return explosionCreated;
                     }
                 }
-                else if (blast instanceof BlastRedmatter)
+                else if (blast instanceof BlastRedmatter && ((BlastRedmatter) blast).isAlive && this.isAlive)
                 {
                     //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
 
@@ -311,10 +311,10 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                     this.size = radiusNew;
                     this.controller.setVelocity(0,0,0);
 
+                    //Kill explosion entity
+                    ((BlastRedmatter)blast).isAlive = false;
+                    ((BlastRedmatter)blast).controller.setDead();
                 }
-                //Kill explosion entity
-                ((BlastRedmatter)blast).isAlive = false;
-                ((BlastRedmatter)blast).controller.setDead();
                 //Kill entity in the center of the ball
                 entity.setDead();
             }
