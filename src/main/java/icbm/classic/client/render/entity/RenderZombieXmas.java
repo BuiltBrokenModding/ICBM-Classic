@@ -1,6 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.mobs.ModelZombieXmas;
 import icbm.classic.content.entity.mobs.EntityXmasZombie;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderZombieXmas extends RenderLiving<EntityXmasZombie>
 {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/zombie/zombie.hat.red.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/zombie/zombie.hat.red.png");
 
     public RenderZombieXmas(RenderManager renderManagerIn)
     {

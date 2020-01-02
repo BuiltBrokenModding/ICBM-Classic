@@ -1,6 +1,7 @@
 package icbm.classic.client;
 
-import icbm.classic.ICBMClassic;
+import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.ICBMConstants;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -14,12 +15,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 /**
  * Enum of sounds used by ICBM
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 1/6/2018.
  * <p>
  * Credit to https://github.com/kitsushadow for sharing info on how to do sounds in MC 1.12
  */
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public enum ICBMSounds
 {
     ANTIMATTER("antimatter"),
@@ -35,7 +36,9 @@ public enum ICBMSounds
     POWER_DOWN("powerdown"),
     TARGET_LOCKED("targetlocked"),
     REDMATTER("redmatter"),
-    SONICWAVE("sonicwave");
+    SONICWAVE("sonicwave"),
+    MISSILE_LAUNCH("missilelaunch"),
+    MISSILE_ENGINE("missileinair");
 
     private final ResourceLocation location;
     private SoundEvent sound;
@@ -43,7 +46,7 @@ public enum ICBMSounds
 
     ICBMSounds(String path)
     {
-        location = new ResourceLocation(ICBMClassic.DOMAIN, path);
+        location = new ResourceLocation(ICBMConstants.DOMAIN, path);
     }
 
     /**
@@ -84,6 +87,11 @@ public enum ICBMSounds
     public void play(World world, double x, double y, double z, float volume, float pitch, boolean distanceDelay)
     {
         world.playSound(null, x, y, z, getSound(), SoundCategory.BLOCKS, volume, pitch);
+    }
+
+    public void play(World world, IPos3D pos, float volume, float pitch, boolean distanceDelay)
+    {
+        world.playSound(null, pos.x(), pos.y(), pos.z(), getSound(), SoundCategory.BLOCKS, volume, pitch);
     }
 
     @SubscribeEvent

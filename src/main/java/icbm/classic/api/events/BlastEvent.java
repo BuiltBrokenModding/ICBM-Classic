@@ -6,10 +6,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 1/3/19.
  */
-public class BlastEvent<B extends IBlast> extends Event
+public abstract class BlastEvent<B extends IBlast> extends Event
 {
     /** Source of the event */
     public final IBlast blast;

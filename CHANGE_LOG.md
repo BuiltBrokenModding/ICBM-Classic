@@ -4,9 +4,76 @@ This log contains changes made to the project. Each entry contains changed made 
 If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
 
 # Versions
+# 4.0.0
+### Runtime Changes
+ * Added: Launch button to launcher control panels
+ * Added: Launch button to cruise launcher
+ * Added: Tooltip to rocket launcher to indicate that it can fire any missile when the player is in creative mode
+ * Added: Configuration option to dis-/allow antimatter blast destroying blocks (set to not destroy blocks by default)
+ * Added: Configuration option to dis-/allow antimatter blast killing entities (set to not kill entities by default)
+ * Added: Configuration options to set the amount of time bomb carts, explosives, and grenades should take to explode after being ignited (seperate config options per bomb cart/explosive/grenade type)
+
+ * Changed: Explosion resistance of concrete blocks (reinforced concrete is now more resistant than vanilla obsidian)
+ * Changed: Anti-Gravitational blast no longer affects creative players
+
+ * Fixed: Gui background and tooltips not being drawn
+ * Fixed: Several minor things in English and German localization
+ * Fixed: Orientation of placed down anvil explosive
+ * Fixed: Contagious explosive removing mobs instead of mutating them
+ * Fixed: Contagious explosive making too much sound
+ * Fixed: Russian, German and English language files
+ * Fixed: Radar station not properly getting removed from the world causing other blocks to behave unexpectedly
+ * Fixed: Disabling items in config causing a crash
+ * Fixed: Warning with EntityDataManager
+ * Fixed: Pick block for launcher base and launcher frame
+ * Fixed: Launcher control panels facing away from the player when placing them down
+ * Fixed: Configuration option to disallow antimatter blast from destroying unbreakable blocks not working
+ * Fixed: Explosives sliding around after being ignited
+ * Fixed: Anti-Gravitational blast picking up liquids as well as fire and more, causing lag
+
+ * Improved: Item tooltips
+ * Improved: Performance at several parts of the mod
+ * Improved: Creative tab sorting
+ * Improved: Render of explosives (now flash like vanilla TNT and expand shortly before exploding)
+ * Improved: Chemical explosives (now only damages in air-range, meaning it wont pass through walls anymore
+             Damage is only applied where particles are spawned. Damage has been tweaked and scales with the time you are
+             inside the area of effect. Added kill messages, etc.)
+ * Improved: Antimatter blast behaviour. This includes optimizations, including making it work better with water
+ 
+ * Removed: S-Mine
+ * Removed: Missile Module
+ * Removed; Homing Missile
+ * Removed: Anti-ballistic Missile
+ * Removed: Cluster Missile
+ * Removed: Nuclear Cluster Missile
+ * Removed: Rejuvenation Explosives and Missile
+ * Removed: Battery Box
+
+### Development Changes
+ * Added: Several events (BlastCancelEvent, ExplosiveDefuseEvent, LaserRemoteTriggerEvent, LauncherSetTargetEvent, MissileChunkEvent, MissileRideEvent, RadarGunTraceEvent, RemoteTriggerEvent)
+ * Added: Data fixers for explosives and more to be compatible with releases below this version
+ * Added: NBTConstants file for all nbt keys
+ * Added: Enums for TNT blast's push type and EMP tower's EMP mode
+ * Added: @ObjectHolder annotation for blocks and items
+ * Added: Additional smoke variant that doesn't move upwards after time
+ * Added: Fallback for loading a world with an explosive that no longer exists. (Otherwise the game would crash)
+ * Added: Code that verifies that we are not using the same NBT save string twice for two different things
+ * Added: Tier "NONE" which used for blasts that do not have an explosive/missile/bomb cart/grenade
+
+ * Fixed: LanguageUtility#splitByLine not splitting correctly
+
+ * Changed: Chinese class/method/field/variable names to be in English
+
+ * Improved: Code
+ * Improved: Language file handling
+ * Improved: Some class names
+ * Improved: Checks of equality with Blocks.AIR. They are now using Block#isAir for compatbility
+ 
+ * Removed: Unused model files
+
 ## 3.3.1
 ### Runtime Changes
-* Added: Support for Atomic science uranium in nuke recipe
+* Added: Support for Atomic Science uranium in nuke recipe
 
 ## 3.3.0
 ### Runtime Changes

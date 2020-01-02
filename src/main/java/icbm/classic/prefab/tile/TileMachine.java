@@ -4,9 +4,10 @@ import com.builtbroken.jlib.data.network.IByteBufWriter;
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.EnumTier;
 import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.config.ConfigIC2;
-import icbm.classic.lib.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
@@ -35,7 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
 @Optional.InterfaceList({
@@ -123,13 +123,13 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        _tier = EnumTier.get(compound.getInteger("tier"));
+        _tier = EnumTier.get(compound.getInteger(NBTConstants.TIER));
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("tier", _tier.ordinal());
+        compound.setInteger(NBTConstants.TIER, _tier.ordinal());
         return super.writeToNBT(compound);
     }
 
@@ -314,6 +314,18 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
     public double y()
     {
         return getPos().getY();
+    }
+
+
+    /**
+     * Gets the position of the other tile entity relative to this tile entity
+     *
+     * @param other - tile entity
+     * @return position
+     */
+    protected final BlockPos getRelativePosition(TileEntity other)
+    {
+        return other.getPos().subtract(this.getPos());
     }
 
     @Override

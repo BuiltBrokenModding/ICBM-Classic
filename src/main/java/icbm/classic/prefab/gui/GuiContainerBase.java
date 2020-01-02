@@ -1,6 +1,7 @@
 package icbm.classic.prefab.gui;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.lib.transform.vector.Point;
@@ -9,14 +10,11 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +23,8 @@ import java.util.Map.Entry;
 
 public class GuiContainerBase extends GuiContainer
 {
-    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "mc_base_empty.png");
-    public static final ResourceLocation GUI_COMPONENTS = new ResourceLocation(ICBMClassic.DOMAIN, ICBMClassic.GUI_DIRECTORY + "gui_components.png");
+    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "mc_base_empty.png");
+    public static final ResourceLocation GUI_COMPONENTS = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
 
     public ResourceLocation baseTexture;
 
@@ -122,16 +120,9 @@ public class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    public void handleMouseInput() throws IOException
-    {
-        int i = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int j = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-        super.handleMouseInput();
-    }
-
-    @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
         for (Entry<Rectangle, String> entry : this.tooltips.entrySet())
         {
             if (entry.getKey().isWithin(new Point(mouseX - this.guiLeft, mouseY - this.guiTop)))
@@ -143,7 +134,7 @@ public class GuiContainerBase extends GuiContainer
 
         if (this.tooltip != null && this.tooltip != "")
         {
-            java.util.List<String> lines = LanguageUtility.splitByLine(tooltip, LanguageUtility.toolTipLineLength);
+            java.util.List<String> lines = LanguageUtility.splitByLine(tooltip);
             this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines.toArray(new String[lines.size()])); //TODO find a way to not have to convert to array to improve render time
         }
 
@@ -154,10 +145,11 @@ public class GuiContainerBase extends GuiContainer
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
     {
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+        renderHoveredToolTip(p_73863_1_, p_73863_2_);
         if (fields != null && fields.size() > 0)
         {
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_BLEND);
+            GlStateManager.disableLighting();
+            GlStateManager.disableBlend();
             for (GuiTextField field : fields)
             {
                 field.drawTextBox();
@@ -204,11 +196,12 @@ public class GuiContainerBase extends GuiContainer
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
+        drawDefaultBackground();
         this.containerWidth = (this.width - this.xSize) / 2;
         this.containerHeight = (this.height - this.ySize) / 2;
 
         this.mc.renderEngine.bindTexture(this.baseTexture);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         this.drawTexturedModalRect(this.containerWidth, this.containerHeight, 0, 0, this.xSize, this.ySize);
     }
@@ -234,7 +227,7 @@ public class GuiContainerBase extends GuiContainer
     protected void drawSlot(int x, int y, float r, float g, float b)
     {
         this.mc.renderEngine.bindTexture(GUI_COMPONENTS);
-        GL11.glColor4f(r, g, b, 1.0F);
+        GlStateManager.color(r, g, b, 1.0F);
 
         this.drawTexturedModalRect(this.containerWidth + x, this.containerHeight + y, 0, 0, 18, 18);
     }
@@ -307,11 +300,11 @@ public class GuiContainerBase extends GuiContainer
     {
         if (color == null)
         {
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         }
         else
         {
-            GL11.glColor3f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
+            GlStateManager.color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
         }
     }
 
@@ -322,8 +315,8 @@ public class GuiContainerBase extends GuiContainer
         {
             if (toolTips != null)
             {
-                GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                GlStateManager.disableRescaleNormal();
+                GlStateManager.disableDepth();
 
                 int var5 = 0;
                 int var6;
@@ -378,8 +371,8 @@ public class GuiContainerBase extends GuiContainer
 
                 this.zLevel = 0;
 
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                GlStateManager.enableDepth();
+                GlStateManager.enableRescaleNormal();
             }
         }
     }

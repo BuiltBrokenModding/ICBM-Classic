@@ -6,17 +6,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
  * Base class for any event fired by the EMP system
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
 public abstract class EmpEvent extends BlastEvent
 {
-
     public EmpEvent(IBlast blast)
     {
         super(blast);

@@ -5,9 +5,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
-import scala.actors.threadpool.Arrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class LanguageUtility
 {
-    public static int toolTipLineLength = 120;
+    public static int toolTipLineLength = 30;
 
     /**
      * Grabs the localization for the string provided. Make sure the string
@@ -149,42 +149,48 @@ public class LanguageUtility
         }
     }
 
-    public static List<String> splitStringPerWord(String string) //TODO move to string utility in coding lib
+    public static List<String> splitStringPerWord(String string)
     {
         return Arrays.asList(toWordArray(string));
     }
 
-    public static String[] toWordArray(String string) //TODO move to string utility in coding lib
+    public static String[] toWordArray(String string)
     {
         return string.trim().split("\\W+");
     }
 
+    public static List<String> splitByLine(String string)
+    {
+        return splitByLine(string, toolTipLineLength);
+    }
+
     public static List<String> splitByLine(String string, int charsPerLine)
     {
-        String[] words = toWordArray(string);
+        String[] words = string.split(" ");
         List<String> lines = new ArrayList(); //TODO predict size for faster runtime
         String line = "";
         for (String word : words)
         {
             if (word.length() + line.length() <= charsPerLine)
             {
-                line += word;
+                line += word + " ";
             }
             else
             {
-                lines.add(line);
-                line = word;
+                lines.add(line.trim());
+                line = word + " ";
             }
         }
+        lines.add(line.trim());
         return lines;
     }
 
-    public static String capitalizeFirst(String str) //TODO move to string utility in coding lib
+    public static String capitalizeFirst(String str)
     {
         return str.substring(0, 1).toUpperCase() + str.substring(1, str.length());
     }
 
-    public static String decapitalizeFirst(String str) //TODO move to string utility in coding lib
+    public static String decapitalizeFirst(String str)
     {
         return str.substring(0, 1).toLowerCase() + str.substring(1, str.length());
     }

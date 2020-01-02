@@ -1,7 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
-    "data": 19,
+    "explosive": "icbmclassic:antigravitational",
     "count": 1
   },
   "pattern": [
@@ -9,11 +8,11 @@
     "ere",
     "eee"
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "icbmclassic:explosive",
   "key": {
     "r": {
-      "item": "icbmclassic:explosives",
-      "data": 6
+      "type" : "icbmclassic:explosive",
+      "explosive": "icbmclassic:shrapnel"
     },
     "e": {
       "item": "minecraft:ender_eye",

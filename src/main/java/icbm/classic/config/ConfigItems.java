@@ -1,13 +1,13 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/20/2018.
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/item")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/item")
 @Config.LangKey("config.icbmclassic:item.title")
 public class ConfigItems
 {

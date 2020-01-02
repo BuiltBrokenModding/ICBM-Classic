@@ -1,8 +1,7 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.missile.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
+import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,6 +28,7 @@ import javax.annotation.Nullable;
  * */
 public class RenderMissile extends Render<EntityMissile>
 {
+
     private EntityItem entityItem;
     private RenderEntityItem2 renderEntityItem;
 
@@ -69,7 +69,7 @@ public class RenderMissile extends Render<EntityMissile>
 
         super.doRender(entityMissile, x, y, z, entityYaw, partialTicks);
 
-        if(renderManager.isDebugBoundingBox()) //TODO fix so we can see motion vector
+        if (renderManager.isDebugBoundingBox()) //TODO fix so we can see motion vector
         {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -93,21 +93,31 @@ public class RenderMissile extends Render<EntityMissile>
         return null;
     }
 
-    public void renderMissile(Explosives ex, TileEntity tileEntity,
+    public void renderMissile(int explosiveID, World world, double wx, double wy, double wz,
                               double x, double y, double z, float entityYaw, float partialTicks)
     {
-        renderMissile(ex, tileEntity.getWorld(), tileEntity.getPos().getX() + 0.5, tileEntity.getPos().getY() + 0.5, tileEntity.getPos().getZ() + 0.5,
+        renderMissile(new ItemStack(ItemReg.itemMissile, 1, explosiveID),
+                world, wx, wy, wz,
                 x, y, z, entityYaw, partialTicks);
     }
 
-    public void renderMissile(Explosives ex, World world, double wx, double wy, double wz,
+    public void renderMissile(ItemStack missileStack, TileEntity tileEntity,
+                              double x, double y, double z, float entityYaw, float partialTicks)
+    {
+        renderMissile(missileStack,
+                tileEntity.getWorld(),
+                tileEntity.getPos().getX() + 0.5, tileEntity.getPos().getY() + 0.5, tileEntity.getPos().getZ() + 0.5,
+                x, y, z, entityYaw, partialTicks);
+    }
+
+    public void renderMissile(ItemStack missileStack, World world, double wx, double wy, double wz,
                               double x, double y, double z, float entityYaw, float partialTicks)
     {
         //Set data for fake entity
         entityItem.setWorld(world);
         entityItem.rotationYaw = 0;
         entityItem.setPosition(wx, wy, wz);
-        entityItem.setItem(new ItemStack(ICBMClassic.itemMissile, 1, ex.ordinal()));
+        entityItem.setItem(missileStack);
 
         //render entity item
         renderEntityItem.doRender(entityItem, x, y, z, entityYaw, partialTicks);

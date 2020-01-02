@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.Entity;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class ItemTracker extends ItemICBMElectrical
 {
-    private static final long ENERGY_PER_TICK = 1;
+    //private static final long ENERGY_PER_TICK = 1;
 
     public ItemTracker()
     {
@@ -49,7 +50,7 @@ public class ItemTracker extends ItemICBMElectrical
 
         if (entity != null)
         {
-            itemStack.getTagCompound().setInteger("trackingEntity", entity.getEntityId());
+            itemStack.getTagCompound().setInteger(NBTConstants.TRACKING_ENTITY, entity.getEntityId());
         }
     }
 
@@ -60,7 +61,7 @@ public class ItemTracker extends ItemICBMElectrical
         {
             if (itemStack.getTagCompound() != null)
             {
-                int trackingID = itemStack.getTagCompound().getInteger("trackingEntity");
+                int trackingID = itemStack.getTagCompound().getInteger(NBTConstants.TRACKING_ENTITY);
                 return worldObj.getEntityByID(trackingID);
             }
         }

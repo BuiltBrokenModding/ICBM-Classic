@@ -2,6 +2,7 @@ package icbm.classic.content.blocks;
 
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -28,8 +29,8 @@ public class BlockConcrete extends Block
     public BlockConcrete()
     {
         super(Material.ROCK);
-        this.setRegistryName(ICBMClassic.PREFIX + "concrete");
-        this.setTranslationKey(ICBMClassic.PREFIX + "concrete");
+        this.setRegistryName(ICBMConstants.PREFIX + "concrete");
+        this.setTranslationKey(ICBMConstants.PREFIX + "concrete");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(10);
     }
@@ -72,9 +73,9 @@ public class BlockConcrete extends Block
         switch (blockState.getValue(TYPE_PROP))
         {
             case COMPACT:
-                return 38;
+                return 280;
             case REINFORCED:
-                return 48;
+                return 2800; //obsidian is 2000
             default:
             case NORMAL:
                 return 28;

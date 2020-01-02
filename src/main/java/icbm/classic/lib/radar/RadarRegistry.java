@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Map based system for tracking objects using a radar devices. Only works server side to prevent unwanted data from stacking up.
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/5/2016.
  */
 public final class RadarRegistry
@@ -40,7 +40,7 @@ public final class RadarRegistry
         if (entity != null && !entity.isDead && entity.world != null && !entity.world.isRemote)
         {
             RadarMap map = getRadarMapForWorld(entity.world);
-            return map != null ? getRadarMapForWorld(entity.world).add(entity) : false;
+            return map != null && getRadarMapForWorld(entity.world).add(entity);
         }
         return false;
     }

@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -35,7 +34,7 @@ public class InventoryUtility
         {
             IBlockState state = world.getBlockState(pos);
 
-            if (state != null && state.getBlock() != Blocks.AIR)
+            if (state != null && !state.getBlock().isAir(state, world, pos))
             {
                 List<ItemStack> items = state.getBlock().getDrops(world, pos, state, 0);
 

@@ -1,6 +1,6 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 
 /**
@@ -8,7 +8,7 @@ import net.minecraftforge.common.config.Config;
  *
  * @author Calclavia, DarkCow
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/launcher")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/launcher")
 @Config.LangKey("config.icbmclassic:launcher.title")
 public class ConfigLauncher
 {
@@ -51,7 +51,6 @@ public class ConfigLauncher
     @Config.Comment("Energy consumed per launch for the tier 1 launcher")
     public static int LAUNCHER_POWER_USAGE_TIER1 = 4000;
 
-
     /** Energy usage for the launcher tier 3 */
     @Config.Name("tier_3_delay")
     @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 3 launcher")
@@ -64,4 +63,15 @@ public class ConfigLauncher
     @Config.Name("tier_1_delay")
     @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 1 launcher")
     public static int LAUNCHER_DELAY_TIER1 = 100;
+
+
+    @Config.Name("tier_3_redstone")
+    @Config.Comment("true if missiles can be launched with the tier 3 launcher using redstone, false to disable")
+    public static boolean LAUNCHER_REDSTONE_TIER3 = true;
+    @Config.Name("tier_2_redstone")
+    @Config.Comment("true if missiles can be launched with the tier 2 launcher using redstone, false to disable")
+    public static boolean LAUNCHER_REDSTONE_TIER2 = true;
+    @Config.Name("tier_1_redstone")
+    @Config.Comment("true if missiles can be launched with the tier 1 launcher using redstone, false to disable")
+    public static boolean LAUNCHER_REDSTONE_TIER1 = true;
 }

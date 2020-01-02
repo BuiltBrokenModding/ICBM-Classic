@@ -1,6 +1,9 @@
 package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+
+import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -10,11 +13,7 @@ import net.minecraft.util.math.BlockPos;
  */
 public abstract class Shape3D
 {
-    //TODO replace with rotation object
-    double yaw = 0;
-    double pitch = 0;
-    double roll = 0;
-
+    EulerAngle angle;
     Pos center;
 
     public Shape3D(Pos center)
@@ -24,10 +23,8 @@ public abstract class Shape3D
 
     public Shape3D(NBTTagCompound nbt)
     {
-        this(new Pos(nbt.getCompoundTag("center")));
-        yaw = nbt.getDouble("yaw");
-        pitch = nbt.getDouble("pitch");
-        roll = nbt.getDouble("roll");
+        this(new Pos(nbt.getCompoundTag(NBTConstants.CENTER)));
+        angle = new EulerAngle(nbt.getDouble(NBTConstants.YAW), nbt.getDouble(NBTConstants.PITCH), nbt.getDouble(NBTConstants.ROLL));
     }
 
     /**

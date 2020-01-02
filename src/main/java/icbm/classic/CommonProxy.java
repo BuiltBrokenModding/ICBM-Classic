@@ -1,6 +1,7 @@
 package icbm.classic;
 
-import icbm.classic.lib.IGuiTile;
+import icbm.classic.prefab.tile.IGuiTile;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -134,6 +135,16 @@ public class CommonProxy implements IGuiHandler
     }
 
     public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int age)
+    {
+
+    }
+
+    public void spawnAirParticle(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int age)
+    {
+
+    }
+
+    public void spawnMissileSmoke(EntityMissile missile)
     {
 
     }

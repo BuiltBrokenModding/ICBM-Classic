@@ -10,7 +10,7 @@ ICBM is a Minecraft Mod that introduces intercontinental ballistic missiles to M
 
 # Download 
 Maven: http://api.dmodoomsirius.me/
-Curse: https://minecraft.curseforge.com/projects/icbm-classic
+Curse: https://www.curseforge.com/minecraft/mc-mods/icbm-classic
 
 # Credits
 Credits are a work in progress and will need to be recreated
@@ -22,3 +22,6 @@ Credits are a work in progress and will need to be recreated
 * Graugger - assets
 * M1W3st - assets
 * Tgame14 - code
+
+## Freesound.org 
+* primeval_polypod      https://freesound.org/people/primeval_polypod/sounds/158894/

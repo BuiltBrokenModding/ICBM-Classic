@@ -1,12 +1,17 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
+import icbm.classic.api.explosion.*;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
-import icbm.classic.content.explosive.blast.Blast;
+import icbm.classic.content.blast.Blast;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -21,10 +26,8 @@ import java.lang.reflect.Constructor;
  */
 public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData
 {
-    private Blast blast;
+    private IBlast blast;
     private double blastYOffset = 0;
-
-    private boolean endExplosion = false;
 
     public EntityExplosion(World world)
     {
@@ -57,29 +60,14 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        try
-        {
-            NBTTagCompound nbt = new NBTTagCompound();
-            this.writeEntityToNBT(nbt);
-            ByteBufUtils.writeTag(data, nbt);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        ByteBufUtils.writeUTF8String(data, blast.getExplosiveData().getRegistryName().toString());
+        data.writeDouble(blastYOffset);
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        try
-        {
-            this.readEntityFromNBT(ByteBufUtils.readTag(data));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        constructBlast(ByteBufUtils.readUTF8String(data), data.readDouble());
     }
 
     @Override
@@ -108,13 +96,13 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void onUpdate()
     {
-        if (this.getBlast() == null || this.getBlast().controller != this || !this.getBlast().isAlive)
+        if (this.getBlast() == null || this.getBlast().getController() != this || this.getBlast().isCompleted())
         {
             this.setDead();
             return;
         }
 
-        if (this.getBlast().isMovable() && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
+        if (this.getBlast() instanceof IBlastMovable && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
         {
             //Slow entity down
             this.motionX *= .98;
@@ -142,23 +130,14 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
 
             //Update blast
-            getBlast().onPositionUpdate(posX, posY + blastYOffset, posZ);
+            ((IBlastMovable) getBlast()).onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
-        if (this.ticksExisted == 1)
+        if (blast instanceof IBlastTickable)
         {
-            this.getBlast().preExplode();
-        }
-        else if (this.ticksExisted % this.getBlast().proceduralInterval() == 0)
-        {
-            if (!this.endExplosion)
+            if (((IBlastTickable) blast).onBlastTick(ticksExisted))
             {
-                this.getBlast().onExplode();
-            }
-            else
-            {
-                this.setDead();
-                this.getBlast().postExplode();
+                setDead();
             }
         }
     }
@@ -169,34 +148,45 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         //Remove default movement
     }
 
-
-    public void endExplosion()
-    {
-        this.endExplosion = true;
-    }
-
     /** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         try
         {
-            NBTTagCompound blastSave = nbt.getCompoundTag("blast");
-            this.blastYOffset = nbt.getDouble("blastPosY");
-            if (this.getBlast() == null)
+            NBTTagCompound blastSave = nbt.getCompoundTag(NBTConstants.BLAST);
+            this.blastYOffset = nbt.getDouble(NBTConstants.BLAST_POS_Y);
+            if (getBlast() == null)
             {
-                Class clazz = Class.forName(blastSave.getString("class"));
-                Constructor constructor = clazz.getConstructor(World.class, Entity.class, double.class, double.class, double.class, float.class);
-                //TODO save person who triggered the explosion
-                this.setBlast((Blast) constructor.newInstance(this.world, null, posX, posY + blastYOffset, posZ, 0));
+                //Legacy code
+                if (blastSave.hasKey(NBTConstants.CLASS))
+                {
+                    Class clazz = Class.forName(blastSave.getString(NBTConstants.CLASS));
+                    Constructor constructor = clazz.getConstructor();
+                    Blast blast = (Blast) constructor.newInstance();
+                    blast.setBlastWorld(world);
+                    blast.setPosition(posX, posY + blastYOffset, posZ);
+                    blast.setEntityController(this);
+                    blast.buildBlast();
+                }
+                else if (blastSave.hasKey(NBTConstants.EX_ID))
+                {
+                    constructBlast(blastSave.getString(NBTConstants.EX_ID), blastYOffset);
+                }
+                else
+                {
+                    ICBMClassic.logger().error("EntityExplosion: Failed to read save state for explosion!");
+                }
             }
 
-            this.getBlast().readFromNBT(blastSave);
+            if (getBlast() instanceof IBlastRestore)
+            {
+                ((IBlastRestore) getBlast()).load(blastSave);
+            }
         }
         catch (Exception e)
         {
-            ICBMClassic.logger().error("ICBM error in loading an explosion!");
-            e.printStackTrace();
+            ICBMClassic.logger().error("EntityExplosion: Unexpected error restoring save state of explosion entity!", e);
         }
     }
 
@@ -204,15 +194,25 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setDouble("blastPosY", blastYOffset);
+        if (getBlast() != null && getBlast().getExplosiveData() != null) //TODO add save/load mechanic to bypass need for ex data
+        {
+            //Save position
+            nbt.setDouble(NBTConstants.BLAST_POS_Y, blastYOffset);
 
-        NBTTagCompound baoZhaNBT = new NBTTagCompound();
-        baoZhaNBT.setString("class", this.getBlast().getClass().getCanonicalName());
-        this.getBlast().writeToNBT(baoZhaNBT);
-        nbt.setTag("blast", baoZhaNBT);
+            //Save explosive data
+            NBTTagCompound blastSave = new NBTTagCompound();
+            if (getBlast() instanceof IBlastRestore)
+            {
+                ((IBlastRestore) getBlast()).save(blastSave);
+            }
+            blastSave.setString(NBTConstants.EX_ID, getBlast().getExplosiveData().getRegistryName().toString());
+
+            //Encode into NBT
+            nbt.setTag(NBTConstants.BLAST, blastSave);
+        }
     }
 
-    public Blast getBlast()
+    public IBlast getBlast()
     {
         return blast;
     }
@@ -222,9 +222,37 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         this.blast = blast;
         if (blast != null)
         {
-            this.blast.controller = this;
+            if (blast instanceof IBlastInit)
+            {
+                ((Blast) this.blast).setEntityController(this);
+            }
             this.setPosition(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
             blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
         }
+    }
+
+    /**
+     * Constructs a blast based on the parameters and sets the blast field to that value
+     */
+    private void constructBlast(String exId, double yOffset)
+    {
+        ResourceLocation id = new ResourceLocation(exId);
+        IExplosiveData exData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id);
+        if (exData != null)
+        {
+            final IBlastFactory factory = exData.getBlastFactory(); //TODO convert load code to blast creation helper
+            if (factory != null)
+            {
+                blast = factory.create();
+                ((IBlastInit) blast).setBlastWorld(world);
+                ((IBlastInit) blast).setBlastPosition(posX, posY + yOffset, posZ);
+                ((IBlastInit) blast).setEntityController(this);
+                ((IBlastInit) blast).setExplosiveData(exData);
+                ((IBlastInit) blast).buildBlast();
+                return;
+            }
+        }
+
+        ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '" + id + "'!");
     }
 }

@@ -22,3 +22,9 @@ output
 changelog.html
 .okhttpcache/
 .DS_Store
+
+raw_audio/
+
+logs/
+
+run_tests/

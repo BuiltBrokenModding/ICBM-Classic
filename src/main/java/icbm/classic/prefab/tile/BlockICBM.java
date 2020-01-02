@@ -1,8 +1,9 @@
 package icbm.classic.prefab.tile;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.prefab.inventory.IInventoryProvider;
-import icbm.classic.content.multiblock.MultiBlockHelper;
+import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -12,6 +13,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -28,8 +30,8 @@ public abstract class BlockICBM extends BlockContainer
         super(mat);
         blockHardness = 10f;
         blockResistance = 10f;
-        setRegistryName(ICBMClassic.DOMAIN, name.toLowerCase());
-        setTranslationKey(ICBMClassic.PREFIX + name.toLowerCase());
+        setRegistryName(ICBMConstants.DOMAIN, name.toLowerCase());
+        setTranslationKey(ICBMConstants.PREFIX + name.toLowerCase());
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 
@@ -60,6 +62,16 @@ public abstract class BlockICBM extends BlockContainer
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
         return getDefaultState().withProperty(ROTATION_PROP, placer.getHorizontalFacing());
+    }
+
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    {
+        if (te instanceof IMultiTileHost)
+        {
+            MultiBlockHelper.destroyMultiBlockStructure((IMultiTileHost) te, false, true, false);
+        }
+        super.harvestBlock(world, player, pos, state, te, stack);
     }
 
     @Override

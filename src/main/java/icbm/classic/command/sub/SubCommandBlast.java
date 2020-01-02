@@ -1,18 +1,23 @@
 package icbm.classic.command.sub;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.imp.SubCommand;
-import icbm.classic.content.explosive.Explosives;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
+import java.util.stream.Collectors;
+
 /**
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
  */
 public class SubCommandBlast extends SubCommand
@@ -29,31 +34,34 @@ public class SubCommandBlast extends SubCommand
         return "blast";
     }
 
+    protected void listBlasts(ICommandSender sender) {
+        //Convert list of explosives to string registry names
+        String names = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives().stream()
+                .map(IExplosiveData::getRegistryName)
+                .map(ResourceLocation::toString)
+                .collect(Collectors.joining(", "));
+
+        //Output message TODO translate if possible?
+        sender.sendMessage(new TextComponentString("Explosive Types: " + names ));
+    }
+
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length >= 1 && args[0].equalsIgnoreCase("list"))
         {
-            String names = "Explosive Types: ";
-            for (int i = 0; i <= 23; i++)
-            {
-                names += Explosives.get(i).name().toLowerCase();
-                if (i != 23)
-                {
-                    names += ", ";
-                }
-            }
-            sender.sendMessage(new TextComponentString(names));
+            listBlasts(sender);
         }
         else if (args.length >= 1 && args[0].equalsIgnoreCase("spread"))
         {
-            int spread = parseInt(args[1]);
+           final int spread = parseInt(args[1]);
 
 
             for (int x = -spread; x <= spread; x++)
             {
                 for (int z = -spread; z <= spread; z++)
                 {
+                    //TODO split array rather than manually converting *facepalm*
                     String[] parms = new String[]{args[2], args[3], args[4] + x * 100, args[5], args[6] + x * 100, args[7]};
                     execute(server, sender, parms);
                 }
@@ -68,18 +76,9 @@ public class SubCommandBlast extends SubCommand
                 throw new WrongUsageException("Scale must be greater than zero!");
             }
 
-            Explosives type = null;
-            for (int i = 0; i <= 23; i++)
-            {
-                Explosives ex = Explosives.get(i);
-                if (ex.getName().equalsIgnoreCase(explosive_id))
-                {
-                    type = ex;
-                    break;
-                }
-            }
+            final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
 
-            if (type == null)
+            if (explosiveData  == null)
             {
                 throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
             }
@@ -108,8 +107,8 @@ public class SubCommandBlast extends SubCommand
 
             if (world != null)
             {
-                type.handler.createExplosion(world, new BlockPos(x, y, z), sender.getCommandSenderEntity(), scale);
-                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + type.name().toLowerCase() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
+                ExplosiveHandler.createExplosion(null, world, x, y, z, explosiveData.getRegistryID(), scale, null);
+                sender.sendMessage(new TextComponentString("Generated blast with explosive [" + explosiveData.getRegistryName() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
             }
             else
             {

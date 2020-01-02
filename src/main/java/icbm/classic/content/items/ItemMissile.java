@@ -1,22 +1,26 @@
 package icbm.classic.content.items;
 
-import icbm.classic.lib.LanguageUtility;
-import icbm.classic.ICBMClassic;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.tile.BlockExplosive;
-import icbm.classic.content.explosive.tile.ItemBlockExplosive;
-import icbm.classic.prefab.tile.EnumTier;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.NBTConstants;
+import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
+import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemICBMBase;
+import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemMissile extends ItemICBMBase
 {
+
     public ItemMissile()
     {
         super("missile");
@@ -26,21 +30,36 @@ public class ItemMissile extends ItemICBMBase
     }
 
     @Override
+    @Nullable
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
+    {
+        ItemStackCapProvider provider = new ItemStackCapProvider(stack);
+        //provider.add("missile", ICBMClassicAPI.MISSILE_CAPABILITY, new CapabilityMissile()); //TODO create an itemstack version
+        provider.add(NBTConstants.EXPLOSIVE, ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
+        return provider;
+    }
+
+    @Override
     public int getMetadata(int damage)
     {
         return damage;
     }
 
     @Override
-    public String getTranslationKey(ItemStack itemStack)
+    public String getTranslationKey(ItemStack itemstack)
     {
-        return this.getTranslationKey() + "." + Explosives.get(itemStack.getItemDamage()).handler.getTranslationKey();
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
+        if (data != null)
+        {
+            return "missile." + data.getRegistryName();
+        }
+        return "missile";
     }
 
     @Override
     public String getTranslationKey()
     {
-        return "icbm.missile";
+        return "missile";
     }
 
     @Override
@@ -48,12 +67,9 @@ public class ItemMissile extends ItemICBMBase
     {
         if (tab == getCreativeTab())
         {
-            for (Explosives explosive : Explosives.values())
+            for (int id : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosivesIDs())
             {
-                if (explosive.handler.hasMissileForm())
-                {
-                    items.add(new ItemStack(this, 1, explosive.ordinal()));
-                }
+                items.add(new ItemStack(this, 1, id));
             }
         }
     }
@@ -67,11 +83,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        EnumTier tierdata = Explosives.get(stack.getItemDamage()).handler.getTier();
-        list.add(LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getName());
-        if (ICBMClassic.blockExplosive instanceof BlockExplosive)
-        {
-            ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
-        }
+        //TODO add hook
+        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 }

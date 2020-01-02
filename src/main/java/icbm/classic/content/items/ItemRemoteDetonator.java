@@ -1,5 +1,7 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.NBTConstants;
+import icbm.classic.api.events.RemoteTriggerEvent;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -11,6 +13,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -20,7 +23,7 @@ import java.util.List;
  * Remotely triggers missile launches on a set frequency, call back ID, and pass key. Will not funciton if any of those
  * data points is missing.
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
 public class ItemRemoteDetonator extends ItemICBMElectrical
@@ -41,7 +44,8 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote)
         {
-            RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncher");
+            if(!MinecraftForge.EVENT_BUS.post(new RemoteTriggerEvent(world, player, stack))) //event was not canceled
+                RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncher");
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
@@ -67,9 +71,9 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
      */
     public float getBroadCastHz(ItemStack stack)
     {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("hz"))
+        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBTConstants.HZ))
         {
-            return stack.getTagCompound().getFloat("hz");
+            return stack.getTagCompound().getFloat(NBTConstants.HZ);
         }
         return 0;
     }
@@ -86,6 +90,6 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         {
             stack.setTagCompound(new NBTTagCompound());
         }
-        stack.getTagCompound().setFloat("hz", hz);
+        stack.getTagCompound().setFloat(NBTConstants.HZ, hz);
     }
 }

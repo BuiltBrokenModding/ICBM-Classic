@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.NBTConstants;
 import icbm.classic.content.entity.mobs.EntityXmasMob;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -291,10 +292,11 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             //Handle water
             if (this.isInWater())
             {
+                float motionMultiplier = 0.25F;
+
                 for (int i = 0; i < 4; ++i)
                 {
-                    float f3 = 0.25F;
-                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
+                    this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * motionMultiplier, this.posY - this.motionY * motionMultiplier, this.posZ - this.motionZ * motionMultiplier, this.motionX, this.motionY, this.motionZ);
                 }
 
                 motionModifier = 0.6F;
@@ -506,16 +508,16 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
-        nbt.setByte("shake", (byte) this.arrowShake);
-        nbt.setBoolean("isExplosive", this.isExplosive);
+        nbt.setByte(NBTConstants.SHAKE, (byte) this.arrowShake);
+        nbt.setBoolean(NBTConstants.IS_EXPLOSIVE, this.isExplosive);
     }
 
     /** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
-        this.arrowShake = nbt.getByte("shake") & 255;
-        this.isExplosive = nbt.getBoolean("isExplosive");
+        this.arrowShake = nbt.getByte(NBTConstants.SHAKE) & 255;
+        this.isExplosive = nbt.getBoolean(NBTConstants.IS_EXPLOSIVE);
     }
 
     /** Called by a player entity when they collide with an entity */

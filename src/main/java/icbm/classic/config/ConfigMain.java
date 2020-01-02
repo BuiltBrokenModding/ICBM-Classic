@@ -1,6 +1,6 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -12,9 +12,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  *
  * @author Calclavia, DarkCow
  */
-@Config(modid = ICBMClassic.DOMAIN, name = "icbmclassic/main")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/main")
 @Config.LangKey("config.icbmclassic:main.title")
-@Mod.EventBusSubscriber(modid = ICBMClassic.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class ConfigMain
 {
     @Config.Name("use_energy")
@@ -29,9 +29,9 @@ public class ConfigMain
     @SubscribeEvent
     public static void onConfigChangedEvent(final ConfigChangedEvent.OnConfigChangedEvent event)
     {
-        if (event.getModID().equals(ICBMClassic.DOMAIN))
+        if (event.getModID().equals(ICBMConstants.DOMAIN))
         {
-            ConfigManager.sync(ICBMClassic.DOMAIN, Config.Type.INSTANCE);
+            ConfigManager.sync(ICBMConstants.DOMAIN, Config.Type.INSTANCE);
         }
     }
 }

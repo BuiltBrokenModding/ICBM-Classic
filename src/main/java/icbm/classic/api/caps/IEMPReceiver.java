@@ -8,7 +8,7 @@ import net.minecraft.world.World;
  * or registered to {@link icbm.classic.api.ICBMClassicAPI#registerBlockEmpHandler(net.minecraft.block.Block, IEMPReceiver)}
  * to receiver EMP effects from a EMP blast or similiar system.
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
 public interface IEMPReceiver

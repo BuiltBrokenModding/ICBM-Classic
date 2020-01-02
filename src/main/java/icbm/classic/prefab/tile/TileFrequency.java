@@ -1,6 +1,6 @@
 package icbm.classic.prefab.tile;
 
-import icbm.classic.prefab.item.TilePoweredMachine;
+import icbm.classic.api.NBTConstants;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -38,14 +38,14 @@ public abstract class TileFrequency extends TilePoweredMachine
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.frequency = nbt.getInteger("frequency");
+        this.frequency = nbt.getInteger(NBTConstants.FREQUENCY);
     }
 
     /** Writes a tile entity to NBT. */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger("frequency", this.frequency);
+        nbt.setInteger(NBTConstants.FREQUENCY, this.frequency);
         return super.writeToNBT(nbt);
     }
 }

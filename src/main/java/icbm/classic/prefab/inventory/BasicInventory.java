@@ -1,7 +1,7 @@
 package icbm.classic.prefab.inventory;
 
-import icbm.classic.api.ISave;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,7 @@ import java.util.*;
  * Simple inventory implementation
  * Created by robert on 5/1/2015.
  */
-public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Integer, ItemStack>>
+public class BasicInventory implements IInventory, Iterable<Map.Entry<Integer, ItemStack>>
 {
     /** Default slot max count */
     protected int slots;
@@ -229,18 +229,17 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
         return true;
     }
 
-    @Override
     public void load(NBTTagCompound nbt)
     {
         _loading = true;
         this.inventoryMap.clear();
 
-        NBTTagList nbtList = nbt.getTagList("Items", 10);
+        NBTTagList nbtList = nbt.getTagList(NBTConstants.ITEMS, 10);
 
         for (int i = 0; i < nbtList.tagCount(); ++i)
         {
             NBTTagCompound stackTag = nbtList.getCompoundTagAt(i);
-            byte id = stackTag.getByte("Slot");
+            byte id = stackTag.getByte(NBTConstants.SLOT);
 
             if (id >= 0 && id < this.getSizeInventory())
             {
@@ -248,11 +247,10 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
             }
         }
 
-        nbt.setTag("Items", nbtList);
+        nbt.setTag(NBTConstants.ITEMS, nbtList);
         _loading = false;
     }
 
-    @Override
     public NBTTagCompound save(NBTTagCompound nbt)
     {
         NBTTagList nbtList = new NBTTagList();
@@ -262,13 +260,13 @@ public class BasicInventory implements ISave, IInventory, Iterable<Map.Entry<Int
             if (!this.getStackInSlot(i + shiftSlotStart).isEmpty())
             {
                 NBTTagCompound var4 = new NBTTagCompound();
-                var4.setByte("Slot", (byte) i);
+                var4.setByte(NBTConstants.SLOT, (byte) i);
                 this.getStackInSlot(i + shiftSlotStart).writeToNBT(var4);
                 nbtList.appendTag(var4);
             }
         }
 
-        nbt.setTag("Items", nbtList);
+        nbt.setTag(NBTConstants.ITEMS, nbtList);
         return nbt;
     }
 

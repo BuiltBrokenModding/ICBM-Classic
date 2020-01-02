@@ -1,6 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.mobs.ModelSkeletonXmas;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderSkeletonXmas extends RenderLiving<EntityXmasSkeleton>
 {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/skeleton/skeleton.hat.green.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/skeleton/skeleton.hat.green.png");
 
     public RenderSkeletonXmas(RenderManager renderManagerIn)
     {

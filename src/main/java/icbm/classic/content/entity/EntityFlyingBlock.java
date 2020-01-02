@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -20,12 +21,14 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 /** @author Calclavia */
 public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnData
 {
+    public static final float GRAVITY_DEFAULT = 0.045f;
+
     private IBlockState _blockState;
 
     public float yawChange = 0;
     public float pitchChange = 0;
 
-    public float gravity = 0.045f;
+    public float gravity = GRAVITY_DEFAULT;
 
     public EntityFlyingBlock(World world)
     {
@@ -51,6 +54,11 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     {
         this(world, position, state);
         this.gravity = gravity;
+    }
+
+    public void restoreGravity()
+    {
+        gravity = GRAVITY_DEFAULT;
     }
 
     public IBlockState getBlockState()
@@ -94,28 +102,42 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     @Override
     public void onUpdate()
     {
-        if (_blockState == null)
+        //Death state handling
+        if (!world.isRemote)
         {
-            this.setDead();
-            return;
+            if (_blockState == null || ticksExisted > 20 * 60) //1 min despawn timer
+            {
+                this.setBlock();
+                return;
+            }
+
+            //TODO make a black list of blocks that shouldn't be a flying entity block
+            if (this.posY > 400 || this.posY < -40)
+            {
+                this.setDead();
+                return;
+            }
+
+            if ((this.onGround && this.ticksExisted > 20))
+            {
+                this.setBlock();
+                return;
+            }
         }
 
-        //TODO make a black list of blocks that shouldn't be a flying entity block
-        if (this.posY > 400 || this.posY < -40)
-        {
-            this.setDead();
-            return;
-        }
-
+        //Apply gravity acceleration
         this.motionY -= gravity;
 
+        //Do movement
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+
+        //Handle collisions
         if (this.collided)
         {
             this.setPosition(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
         }
 
-        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-
+        //Animation
         if (this.yawChange > 0)
         {
             this.rotationYaw += this.yawChange;
@@ -128,37 +150,27 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
             this.pitchChange -= 2;
         }
 
-        if ((this.onGround && this.ticksExisted > 40))
-        {
-            this.setBlock();
-            return;
-        }
-
+        //Tick update
         this.ticksExisted++;
-
-        /*
-        if(worldObj.isRemote && (motionX > 0.001 || motionZ > 0.001 || motionY > 0.001))
-        {
-            if (ICBMClassic.proxy.getParticleSetting() == 0)
-            {
-                if (worldObj.rand.nextInt(5) == 0)
-                {
-                    FMLClientHandler.instance().getClient().effectRenderer.addEffect(new EntityDiggingFX(worldObj, posX, posY, posZ, motionX, motionY, motionZ, block, 0, metadata));
-                }
-            }
-        }
-        */
     }
 
     public void setBlock()
     {
         if (!this.world.isRemote)
         {
-            int i = MathHelper.floor(posX);
-            int j = MathHelper.floor(posY);
-            int k = MathHelper.floor(posZ);
+            final int i = MathHelper.floor(posX);
+            final int j = MathHelper.floor(posY);
+            final int k = MathHelper.floor(posZ);
 
-            this.world.setBlockState(new BlockPos(i, j, k), getBlockState(), 2);
+            final BlockPos pos = new BlockPos(i, j, k);
+
+            final IBlockState currentState = world.getBlockState(pos);
+
+            if (currentState.getBlock().isReplaceable(this.world, pos))
+            {
+                this.world.setBlockState(pos, getBlockState(), 3);
+            }
+            //TODO find first block if not replaceable
         }
 
         this.setDead();
@@ -190,19 +202,19 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     {
         if (_blockState != null)
         {
-            nbttagcompound.setTag("blockState", NBTUtil.writeBlockState(new NBTTagCompound(), _blockState));
+            nbttagcompound.setTag(NBTConstants.BLOCK_STATE, NBTUtil.writeBlockState(new NBTTagCompound(), _blockState));
         }
-        nbttagcompound.setFloat("gravity", this.gravity);
+        nbttagcompound.setFloat(NBTConstants.GRAVITY, this.gravity);
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbttagcompound)
     {
-        if (nbttagcompound.hasKey("blockState"))
+        if (nbttagcompound.hasKey(NBTConstants.BLOCK_STATE))
         {
-           _blockState = NBTUtil.readBlockState(nbttagcompound.getCompoundTag("blockState"));
+            _blockState = NBTUtil.readBlockState(nbttagcompound.getCompoundTag(NBTConstants.BLOCK_STATE));
         }
-        this.gravity = nbttagcompound.getFloat("gravity");
+        this.gravity = nbttagcompound.getFloat(NBTConstants.GRAVITY);
     }
 
     @Override

@@ -21,7 +21,7 @@
     },
     "f": {
       "item": "minecraft:flint_and_steel",
-      "data": 0
+      "data": 32767
     }
   },
   "conditions": [

@@ -1,6 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.entity.EntityFragments;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.state.IBlockState;
@@ -25,9 +25,9 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class RenderFragments extends Render<EntityFragments>
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.png");
-    public static final ResourceLocation TEXTURE_XMAS_ICE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.xmas.ice.png");
-    public static final ResourceLocation TEXTURE_XMAS_FIRE = new ResourceLocation(ICBMClassic.DOMAIN, "textures/entity/fragments/fragment.xmas.fire.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.png");
+    public static final ResourceLocation TEXTURE_XMAS_ICE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.xmas.ice.png");
+    public static final ResourceLocation TEXTURE_XMAS_FIRE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.xmas.fire.png");
 
     public RenderFragments(RenderManager renderManager)
     {

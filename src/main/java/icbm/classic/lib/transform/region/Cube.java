@@ -3,6 +3,7 @@ package icbm.classic.lib.transform.region;
 import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.NBTConstants;
 import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
@@ -63,13 +64,13 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     public Cube(NBTTagCompound nbt)
     {
         super(nbt);
-        if (nbt.hasKey("pointOne"))
+        if (nbt.hasKey(NBTConstants.POINT_ONE))
         {
-            pointOne = new Pos(nbt.getCompoundTag("pointOne"));
+            pointOne = new Pos(nbt.getCompoundTag(NBTConstants.POINT_ONE));
         }
-        if (nbt.hasKey("pointTwo"))
+        if (nbt.hasKey(NBTConstants.POINT_TWO))
         {
-            pointTwo = new Pos(nbt.getCompoundTag("pointTwo"));
+            pointTwo = new Pos(nbt.getCompoundTag(NBTConstants.POINT_TWO));
         }
         recalc();
     }
@@ -132,11 +133,11 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     {
         if (pointOne != null)
         {
-            tag.setTag("pointOne", new Pos(pointOne).writeNBT(new NBTTagCompound()));
+            tag.setTag(NBTConstants.POINT_ONE, new Pos(pointOne).writeNBT(new NBTTagCompound()));
         }
         if (pointTwo != null)
         {
-            tag.setTag("pointTwo", new Pos(pointTwo).writeNBT(new NBTTagCompound()));
+            tag.setTag(NBTConstants.POINT_TWO, new Pos(pointTwo).writeNBT(new NBTTagCompound()));
         }
         return tag;
     }
@@ -316,6 +317,16 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     public boolean isWithin(double x, double y, double z)
     {
         return isWithinX(x) && isWithinY(y) && isWithinZ(z);
+    }
+
+    public boolean isWithin(IPos3D pos)
+    {
+        return isWithinX(pos.x()) && isWithinY(pos.y()) && isWithinZ(pos.z());
+    }
+
+    public boolean isWithinInt(IPos3D pos)
+    {
+        return isWithinX(pos.xi()) && isWithinY(pos.yi()) && isWithinZ(pos.zi());
     }
 
 

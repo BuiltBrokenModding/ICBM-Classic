@@ -1,13 +1,13 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigMain;
-import icbm.classic.content.missile.MissileFlightType;
+import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.content.missile.EntityMissile;
-import icbm.classic.content.explosive.Explosives;
-import icbm.classic.content.explosive.handlers.Explosion;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.prefab.item.ItemICBMElectrical;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,6 +19,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -85,23 +88,24 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
                     if (inventoryStack != null)
                     {
-                        if (inventoryStack.getItem() instanceof ItemMissile)
+                        if (inventoryStack.getItem() instanceof ItemMissile) //TODO add capability
                         {
-                            int meta = inventoryStack.getItemDamage();
-                            Explosives ex = Explosives.get(meta);
+                            final int explosiveID = inventoryStack.getItemDamage();
+                            final IExplosiveData exData = ICBMClassicHelpers.getExplosive(explosiveID, true);
 
-                            if (ex.handler != null)
+                            if (exData != null)
                             {
                                 // Limit the missile to tier two.
-                                if ((ex.handler.getTier().ordinal() + 1 <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode) && ((Explosion) ex.handler).isCruise() || ICBMClassic.runningAsDev)
+                                //TODO add hook to block firing some missiles from launcher
+                                if (exData.getTier().ordinal() + 1 <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode)
                                 {
                                     if(!world.isRemote)
                                     {
                                         EntityMissile entityMissile = new EntityMissile(player);
                                         entityMissile.missileType = MissileFlightType.HAND_LAUNCHER;
-                                        entityMissile.explosiveID = ex;
+                                        entityMissile.explosiveID = explosiveID;
                                         entityMissile.acceleration = 1;
-                                        entityMissile.launch(null);
+                                        entityMissile.capabilityMissile.launchNoTarget();
                                         world.spawnEntity(entityMissile);
 
                                         if (player.isSneaking())
@@ -161,5 +165,8 @@ public class ItemRocketLauncher extends ItemICBMElectrical
             String str = String.format(translation, String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
             splitAdd(str, list, false, false);
         }
+
+        if(Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isCreative())
+            list.add(new TextComponentTranslation("item.icbmclassic:rocketLauncher.info.creative").setStyle(new Style().setColor(TextFormatting.LIGHT_PURPLE)).getFormattedText());
     }
 }

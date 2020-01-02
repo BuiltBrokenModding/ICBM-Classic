@@ -55,7 +55,6 @@ icbm.explosive.fragmentation.name=Explosivo de Fragmentação
 icbm.explosive.contagious.name=Explosivo Infeccioso
 icbm.explosive.sonic.name=Explosivos Sônico
 icbm.explosive.breaching.name=Explosivos de Brecha
-icbm.explosive.rejuvenation.name=Explosivo de Rejuvenação
 icbm.explosive.thermobaric.name=Explosivo Termobárico
 
 icbm.explosive.nuclear.name=Explosivo Nuclear
@@ -85,7 +84,6 @@ icbm.missile.fragmentation.name=Missíl de Fragmentação
 icbm.missile.contagious.name=Missíl Infeccioso
 icbm.missile.sonic.name=Missíl Sônico
 icbm.missile.breaching.name=Missíl de Brecha
-icbm.missile.rejuvenation.name=Missíl de Rejuvenação
 icbm.missile.thermobaric.name=Missíl Termobárico
 
 icbm.missile.nuclear.name=Missil Nuclear
@@ -131,7 +129,6 @@ icbm.minecart.fragmentation.name=Carrinho de Fragmentação
 icbm.minecart.contagious.name=Carrinho Infeccioso
 icbm.minecart.sonic.name=Carrinho Sônico
 icbm.minecart.breaching.name=Carrinho de Brecha
-icbm.minecart.rejuvenation.name=Carrinho Rejuvenativo
 icbm.minecart.thermobaric.name=Carrinho Termobárico
 
 ## ICBM Misc Blocks

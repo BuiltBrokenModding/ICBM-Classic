@@ -1,10 +1,11 @@
 package icbm.classic.content.blocks;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.block.BlockPressurePlate;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,9 +19,9 @@ public class BlockGlassPressurePlate extends BlockPressurePlate
         this.setResistance(1F);
         this.setHardness(0.3F);
         this.setSoundType(SoundType.GLASS);
-        this.setRegistryName(ICBMClassic.PREFIX + "glassPressurePlate");
-        this.setTranslationKey(ICBMClassic.PREFIX + "glassPressurePlate");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
+        this.setRegistryName(ICBMConstants.PREFIX + "glassPressurePlate");
+        this.setTranslationKey(ICBMConstants.PREFIX + "glassPressurePlate");
+        this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(getDefaultState().withProperty(POWERED, false));
     }
 

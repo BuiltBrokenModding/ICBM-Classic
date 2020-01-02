@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.block.BlockButton;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -21,8 +21,8 @@ public class BlockGlassButton extends BlockButton
     {
         super(false);
         this.setTickRandomly(true);
-        this.setTranslationKey(ICBMClassic.PREFIX + "glassButton");
-        this.setRegistryName(ICBMClassic.PREFIX + "glassButton");
+        this.setTranslationKey(ICBMConstants.PREFIX + "glassButton");
+        this.setRegistryName(ICBMConstants.PREFIX + "glassButton");
         this.setSoundType(SoundType.GLASS);
         this.setHardness(0.5F);
     }

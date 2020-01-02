@@ -1,15 +1,14 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
-    "data": 3,
+    "explosive": "icbmclassic:debilitation",
     "count": 3
   },
-  "pattern": [
+    "pattern": [
     "sss",
     "wrw",
     "sss"
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "icbmclassic:explosive",
   "key": {
     "s": {
       "type": "forge:ore_dict",
@@ -20,8 +19,8 @@
       "data": 0
     },
     "r": {
-      "item": "icbmclassic:explosives",
-      "data": 1
+      "type" : "icbmclassic:explosive",
+      "explosive": "icbmclassic:shrapnel"
     }
   }
 }

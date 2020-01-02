@@ -5,11 +5,8 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.IWorldPosition;
 import icbm.classic.lib.network.IPacket;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -31,13 +28,6 @@ public class PacketManager
     {
         this.channel = channel;
     }
-
-    public SPacketUpdateTileEntity toMCPacket(IPacket packet)
-    {
-        Packet proxyPacket = channelEnumMap.get(FMLCommonHandler.instance().getEffectiveSide()).generatePacketFrom(packet);
-        return null;
-    }
-
 
     public void init()
     {

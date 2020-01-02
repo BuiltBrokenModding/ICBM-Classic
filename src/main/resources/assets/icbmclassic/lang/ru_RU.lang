@@ -116,12 +116,11 @@ icbm.explosive.anvil.name=Взрывчатка-"Наковальня"
 icbm.explosive.repulsive.name=Отталкивающая взрывчатка
 icbm.explosive.attractive.name=Притягивающая взрывчатка
 
-icbm.explosive.fragmentation.name=Осколочная взрывчатка
-icbm.explosive.contagious.name=Заражающая взрывчатка
-icbm.explosive.sonic.name=Звуковая взрывчатка
-icbm.explosive.breaching.name=Разрывная взрывчатка
-icbm.explosive.rejuvenation.name=Омолаживающая взрывчатка
-icbm.explosive.thermobaric.name=Термобарическая взрывчатка
+icbm.explosive.fragmentation.name=Осколочная бомба
+icbm.explosive.contagious.name=Заразная бомба
+icbm.explosive.sonic.name=Звуковая бомба
+icbm.explosive.breaching.name=Разрушительная бомба
+icbm.explosive.thermobaric.name=Термобарическая бомба
 
 icbm.explosive.nuclear.name=Ядерная бомба
 icbm.explosive.emp.name=ЕМП бомба
@@ -151,8 +150,7 @@ icbm.explosive.fragmentation.info=Разрушает пейзаж высокос
 icbm.explosive.contagious.info=Вы когда-нибудь слышали о чуме?
 icbm.explosive.sonic.info=Кто должен быть ниндзя, прокрасться после такого шума
 icbm.explosive.breaching.info=Когда вам нужна дверь
-icbm.explosive.rejuvenation.info=Вас не обвинят в использовании ракет, если воронок нет...
-icbm.explosive.thermobaric.info=Мини-ядерное оружие в банке
+icbm.explosive.thermobaric.info=Мини-ядерное оружие в банке или, по крайней мере, так близко, как Север может получить
 
 icbm.explosive.nuclear.info=Привет! Я ядерный.
 icbm.explosive.emp.info=Больше 9000? Уже нет
@@ -193,8 +191,7 @@ icbm.missile.attractive.name=Притягивающая ракета
 icbm.missile.fragmentation.name=Дробленная ракета
 icbm.missile.contagious.name=Заражающая ракета
 icbm.missile.sonic.name=Звуковая ракета
-icbm.missile.breaching.name=Разрывная ракета
-icbm.missile.rejuvenation.name=Восстанавливающая ракета
+icbm.missile.breaching.name=Разрушительная ракета
 icbm.missile.thermobaric.name=Термобарическая ракета
 
 icbm.missile.nuclear.name=Ядерная ракета
@@ -245,7 +242,6 @@ icbm.minecart.fragmentation.name=Фрагментирующая вагонетк
 icbm.minecart.contagious.name=Заражающая вагонетка
 icbm.minecart.sonic.name=Звуковая вагонетка
 icbm.minecart.breaching.name=Разрушительная вагонетка
-icbm.minecart.rejuvenation.name=Восстанавливающая вагонетка
 icbm.minecart.thermobaric.name=Термобарическая вагонетка
 
 icbm.minecart.nuclear.name=Ядерная вагонетка
@@ -370,13 +366,13 @@ gui.launcherCruise.targetToClose=Цель слишком далеко!
 gui.launcherCruise.noRoom=Недостаточно места!
 gui.launcherCruise.statusReady=Готовность!
 
-## Chat warning if user tries to fire by hand, %1 is status message from GUI
-chat.launcher.status=Состояние: %1
+## Chat warning if user tries to fire by hand, %s is status message from GUI
+chat.launcher.status=Статус: %s
 chat.launcher.failedToFire=Ошибка: не удалось выстрелить!
 chat.launcher.toolTargetSet=Данные о цели переданы.
 chat.launcher.toolWorldNotMatch=Цель находится в другом измерении!
 chat.launcher.noTargetInTool=Инструмент не содержит никаких данных о цели!
-chat.launcher.toolFrequencySet=Частота установлена на %1
+chat.launcher.toolFrequencySet=Частота установлена на %s
 
 gui.coordinator.name=Координатор ракет
 gui.coordinator.sim=Симуляция траектории

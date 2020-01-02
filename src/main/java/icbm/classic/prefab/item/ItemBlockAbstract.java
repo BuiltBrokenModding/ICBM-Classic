@@ -26,12 +26,12 @@ import java.util.List;
 /**
  * Generic prefab to use in all items providing common implementation
  *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ *
  * Created by Dark(DarkGuardsman, Robert) on 12/20/2016.
  */
 public class ItemBlockAbstract extends ItemBlock
 {
-    //Make sure to mirro all changes to other abstract class
+    //Make sure to mirror all changes to other abstract class
     public ItemBlockAbstract(Block p_i45328_1_)
     {
         super(p_i45328_1_);
@@ -146,18 +146,7 @@ public class ItemBlockAbstract extends ItemBlock
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
-            if (translation.contains(","))
-            {
-                String[] split = translation.split(",");
-                for (String s : split)
-                {
-                    list.add(s.trim());
-                }
-            }
-            else
-            {
-                list.add(translation);
-            }
+            list.addAll(LanguageUtility.splitByLine(translation));
         }
     }
 
@@ -178,18 +167,7 @@ public class ItemBlockAbstract extends ItemBlock
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
-            if (translation.contains(","))
-            {
-                String[] split = translation.split(",");
-                for (String s : split)
-                {
-                    list.add(s.trim());
-                }
-            }
-            else
-            {
-                list.add(translation);
-            }
+            list.addAll(LanguageUtility.splitByLine(translation));
         }
     }
 

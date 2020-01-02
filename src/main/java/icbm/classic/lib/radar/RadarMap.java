@@ -6,13 +6,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * System designed to track moving or stationary targets on a 2D map. Can be used to detect objects or visualize objects in an area. Mainly
  * used to track flying objects that are outside of the map bounds(Missile in ICBM).
- *
- * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 3/5/2016.
  */
 public class RadarMap
@@ -209,6 +214,27 @@ public class RadarMap
         return getRadarObjects(new Cube(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance).cropToWorld(), true);
     }
 
+    public List<RadarEntity> getEntitiesInChunk(int chunkX, int chunkZ)
+    {
+        ChunkPos p = new ChunkPos(chunkX, chunkZ);
+        return chunk_to_entities.get(p);
+    }
+
+    public void collectEntitiesInChunk(int chunkX, int chunkZ, Consumer<RadarEntity> collector)
+    {
+        final List<RadarEntity> objects = getEntitiesInChunk(chunkX, chunkZ);
+        if (objects != null)
+        {
+            for (RadarEntity entity : objects)
+            {
+                if (entity != null && entity.isValid())
+                {
+                    collector.accept(entity);
+                }
+            }
+        }
+    }
+
     /**
      * Finds all contacts within chunk distances
      *
@@ -218,36 +244,17 @@ public class RadarMap
      */
     public List<RadarEntity> getRadarObjects(Cube cube, boolean exact)
     {
-        List<RadarEntity> list = new ArrayList();
+        final List<RadarEntity> list = new ArrayList();
         for (int chunkX = (cube.min().xi() >> 4) - 1; chunkX <= (cube.max().xi() >> 4) + 1; chunkX++)
         {
             for (int chunkZ = (cube.min().zi() >> 4) - 1; chunkZ <= (cube.max().zi() >> 4) + 1; chunkZ++)
             {
-                ChunkPos p = new ChunkPos(chunkX, chunkZ);
-                if (chunk_to_entities.containsKey(p))
-                {
-                    List<RadarEntity> objects = chunk_to_entities.get(p);
-                    if (objects != null)
+                collectEntitiesInChunk(chunkX, chunkZ, (entity) -> {
+                    if (exact || exact && cube != null && cube.isWithin(entity))
                     {
-                        if (exact)
-                        {
-                            for (RadarEntity object : objects)
-                            {
-                                if (object.isValid())
-                                {
-                                    if (cube.isWithin(object.x(), object.y(), object.z()))
-                                    {
-                                        list.add(object);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            list.addAll(objects);
-                        }
+                        list.add(entity);
                     }
-                }
+                });
             }
         }
         return list;
