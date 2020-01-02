@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
  */
-public class SubCommandBlast extends SubCommand
+public class CommandBlast extends SubCommand
 {
-    public SubCommandBlast(CommandBase parent)
+    public CommandBlast(CommandBase parent)
     {
         super(parent, "blast");
     }
