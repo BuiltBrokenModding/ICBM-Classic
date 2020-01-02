@@ -1,13 +1,37 @@
 package icbm.classic.command;
 
+import com.builtbroken.mc.testing.junit.TestManager;
+import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityFragments;
+import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.missile.EntityMissile;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.passive.EntitySheep;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 /**
  * Created by Robert Seifert on 1/2/20.
  */
 public class CommandUtilsTest
 {
+    static TestManager testManager = new TestManager("CommandUtils");
+
+    @AfterEach
+    public void cleanupBetweenTests() {
+        testManager.cleanupBetweenTests();
+    }
 
     @Test
     void removeFront_zeroLength()
@@ -31,5 +55,26 @@ public class CommandUtilsTest
         final String[] input = new String[] {"tree", "remove", "last"};
         final String[] output = CommandUtils.removeFront(input);
         Assertions.assertArrayEquals(new String[] {"remove", "last"}, output);
+    }
+
+    private static Stream<Arguments> provideIsICBMEntityData() {
+        return Stream.of(
+                Arguments.of(new EntityZombie(testManager.getWorld()), false),
+                Arguments.of(new EntityBat(testManager.getWorld()), false),
+                Arguments.of(new EntityEnderman(testManager.getWorld()), false),
+                Arguments.of(new EntitySheep(testManager.getWorld()), false),
+                Arguments.of(new EntityGrenade(testManager.getWorld()), true),
+                Arguments.of(new EntityMissile(testManager.getWorld()), true),
+                Arguments.of(new EntityExplosive(testManager.getWorld()), true),
+                Arguments.of(new EntityFragments(testManager.getWorld()), true),
+                Arguments.of(new EntityExplosion(testManager.getWorld()), true)
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideIsICBMEntityData")
+    void isICBMEntity_valid(Entity entity, boolean outcome) {
+        Assertions.assertEquals(outcome, CommandUtils.isICBMEntity(entity));
     }
 }
