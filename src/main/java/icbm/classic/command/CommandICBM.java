@@ -46,7 +46,6 @@ public class CommandICBM extends CommandBase
             }
         };
         subCommandMap.put("help", helpCommand);
-        subCommandMap.put("?", helpCommand);
         subCommandMap.setDefaultValue(helpCommand);
     }
 

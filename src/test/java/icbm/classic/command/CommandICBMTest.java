@@ -26,6 +26,7 @@ public class CommandICBMTest
         //Run command
         commandICBM.execute(testManager.getServer(), dummyCommandSender, new String[0]);
 
+        Assertions.assertEquals(1, dummyCommandSender.messages.size());
         Assertions.assertEquals("/icbm help", dummyCommandSender.messages.poll().getUnformattedText());
     }
 }
