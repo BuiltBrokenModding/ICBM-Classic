@@ -45,10 +45,10 @@ public class CommandRemove extends SubCommand
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        if (args.length >= 2)
+        if (args.length >= 1)
         {
             //Get type
-            final String type_arg = args[1];
+            final String type_arg = args[0];
             boolean remove_all = type_arg.equalsIgnoreCase("all");
             boolean remove_missiles = remove_all
                     || type_arg.equalsIgnoreCase("missiles")
@@ -65,9 +65,9 @@ public class CommandRemove extends SubCommand
             if (typeString != null)
             {
                 //Get range
-                boolean hasRange = args.length == 3 || args.length == 7;
-                int range = args.length == 3 ? CommandUtils.parseRadius(args[2])
-                        : args.length == 7 ? CommandUtils.parseRadius(args[6])
+                boolean hasRange = args.length == 2 || args.length == 6;
+                int range = args.length == 2 ? CommandUtils.parseRadius(args[1])
+                        : args.length == 6 ? CommandUtils.parseRadius(args[5])
                         : -1;
 
                 //Get position
@@ -76,10 +76,13 @@ public class CommandRemove extends SubCommand
 
                 if (args.length == 6)
                 {
-                    world = DimensionManager.getWorld(Integer.getInteger(args[2]));
-                    x = Double.parseDouble(args[3]);
-                    y = Double.parseDouble(args[4]);
-                    z = Double.parseDouble(args[5]);
+                    String dim = args[1];
+                    int dimID = Integer.parseInt(dim);
+                    world = DimensionManager.getWorld(dimID);
+
+                    x = Double.parseDouble(args[2]);
+                    y = Double.parseDouble(args[3]);
+                    z = Double.parseDouble(args[4]);
                 }
                 else if (!(sender instanceof MinecraftServer))
                 {
@@ -97,6 +100,9 @@ public class CommandRemove extends SubCommand
                 {
                     //Get entities
                     List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range);
+
+                    //User feedback
+                    sender.sendMessage(new TextComponentString("Found " + entities.size() + " in target area, scanning for ICBM entities"));
 
                     int count = 0;
 
@@ -125,7 +131,6 @@ public class CommandRemove extends SubCommand
                     throw new WrongUsageException("Failed to get a world instance from arguments or sender.");
                 }
             }
-
         }
         throw new WrongUsageException("'/icbmc remove <all/missile/explosion> [radius]' or '/icbmc remove <all/missile/explosion> <x> <y> <z> <radius>'");
     }
