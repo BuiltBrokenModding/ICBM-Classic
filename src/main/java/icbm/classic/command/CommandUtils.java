@@ -83,11 +83,7 @@ public class CommandUtils
 
             return world.getEntitiesWithinAABB(Entity.class, bb);
         }
-        else if (range == -1)
-        {
-            return world.loadedEntityList;
-        }
-        return new ArrayList();
+        return world.loadedEntityList;
     }
 
     /**

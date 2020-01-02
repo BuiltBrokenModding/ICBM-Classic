@@ -4,6 +4,7 @@ import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.world.FakeWorld;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.entity.missile.EntityMissile;
@@ -68,7 +69,8 @@ public class CommandUtilsTest
                 Arguments.of(new EntityMissile(world), true),
                 Arguments.of(new EntityExplosive(world), true),
                 Arguments.of(new EntityFragments(world), true),
-                Arguments.of(new EntityExplosion(world), true)
+                Arguments.of(new EntityExplosion(world), true),
+                Arguments.of(new EntityFlyingBlock(world), true)
         );
     }
 
@@ -92,7 +94,8 @@ public class CommandUtilsTest
                 Arguments.of(new EntityMissile(world), true),
                 Arguments.of(new EntityExplosive(world), false),
                 Arguments.of(new EntityFragments(world), false),
-                Arguments.of(new EntityExplosion(world), false)
+                Arguments.of(new EntityExplosion(world), false),
+                Arguments.of(new EntityFlyingBlock(world), false)
         );
     }
 
@@ -131,7 +134,10 @@ public class CommandUtilsTest
                 Arguments.of("100,00"),
                 Arguments.of(",.00"),
                 Arguments.of("tree"),
-                Arguments.of("3,tre")
+                Arguments.of("3,tre"),
+                Arguments.of("-1"),
+                Arguments.of("-100"),
+                Arguments.of("-")
         );
     }
 
