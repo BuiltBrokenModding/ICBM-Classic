@@ -140,7 +140,7 @@ public class CommandUtilsTest
     }
 
     @Test
-    void getEntities_found() {
+    void getEntities_withRange_found() {
         final World world = testManager.getWorld();
 
         //Sheep in range
@@ -179,5 +179,65 @@ public class CommandUtilsTest
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
         Assertions.assertEquals(3, list.size());
+    }
+
+    @Test
+    void getEntities_allEntities_found() {
+        final World world = testManager.getWorld();
+
+        //Sheep in range
+        EntitySheep sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 10, 100);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 11, 100);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 12, 100);
+        world.spawnEntity(sheep);
+
+        //Sheep not in range
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(200, 12, 100);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 12, 300);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 12, 500);
+        world.spawnEntity(sheep);
+
+        //Should find 3 sheep
+        List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
+        Assertions.assertEquals(6, list.size());
+    }
+
+    @Test
+    void getEntities_withRange_nothing() {
+        final World world = testManager.getWorld();
+
+        //Should find 3 sheep
+        List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
+        Assertions.assertEquals(0, list.size());
+    }
+
+    @Test
+    void getEntities_allEntities_nothing() {
+        final World world = testManager.getWorld();
+
+        //Should find 3 sheep
+        List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
+        Assertions.assertEquals(0, list.size());
     }
 }
