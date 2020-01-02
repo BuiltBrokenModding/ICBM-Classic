@@ -68,16 +68,7 @@ public class CommandICBM extends CommandBase
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         final String subCommand = args.length == 0 ? "help" : args[0].toLowerCase();
-        subCommandMap.get(subCommand).execute(server, sender, removeFront(args));
-    }
-
-    protected String[] removeFront(String[] args)
-    {
-        if (args.length == 0 || args.length == 1)
-        {
-            return new String[0];
-        }
-        return Arrays.copyOfRange(args, 1, args.length);
+        subCommandMap.get(subCommand).execute(server, sender, CommandUtils.removeFront(args));
     }
 
     @Override
@@ -96,7 +87,7 @@ public class CommandICBM extends CommandBase
         else if (args.length == 2)
         {
             final String subCommand = args.length == 0 ? "help" : args[0].toLowerCase();
-            subCommandMap.get(subCommand).getTabCompletions(server, sender, removeFront(args), targetPos);
+            subCommandMap.get(subCommand).getTabCompletions(server, sender, CommandUtils.removeFront(args), targetPos);
         }
         return new ArrayList<>();
     }
