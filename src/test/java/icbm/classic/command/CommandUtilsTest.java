@@ -13,6 +13,7 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -135,5 +137,47 @@ public class CommandUtilsTest
     void parseRadius_badInput(String input)
     {
         Assertions.assertThrows(WrongUsageException.class, () -> CommandUtils.parseRadius(input));
+    }
+
+    @Test
+    void getEntities_found() {
+        final World world = testManager.getWorld();
+
+        //Sheep in range
+        EntitySheep sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 10, 100);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 11, 100);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 12, 100);
+        world.spawnEntity(sheep);
+
+        //Sheep not in range
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(200, 12, 100);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 12, 300);
+        world.spawnEntity(sheep);
+
+        sheep = new EntitySheep(world);
+        sheep.forceSpawn = true;
+        sheep.setPosition(100, 12, 500);
+        world.spawnEntity(sheep);
+
+        //Should find 3 sheep
+        List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
+        Assertions.assertEquals(3, list.size());
     }
 }
