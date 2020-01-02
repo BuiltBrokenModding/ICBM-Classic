@@ -77,4 +77,25 @@ public class CommandUtilsTest
     void isICBMEntity_valid(Entity entity, boolean outcome) {
         Assertions.assertEquals(outcome, CommandUtils.isICBMEntity(entity));
     }
+
+    private static Stream<Arguments> provideIsMissileData() {
+        return Stream.of(
+                Arguments.of(new EntityZombie(testManager.getWorld()), false),
+                Arguments.of(new EntityBat(testManager.getWorld()), false),
+                Arguments.of(new EntityEnderman(testManager.getWorld()), false),
+                Arguments.of(new EntitySheep(testManager.getWorld()), false),
+                Arguments.of(new EntityGrenade(testManager.getWorld()), false),
+                Arguments.of(new EntityMissile(testManager.getWorld()), true),
+                Arguments.of(new EntityExplosive(testManager.getWorld()), false),
+                Arguments.of(new EntityFragments(testManager.getWorld()), false),
+                Arguments.of(new EntityExplosion(testManager.getWorld()), false)
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideIsMissileData")
+    void isMissile_valid(Entity entity, boolean outcome) {
+        Assertions.assertEquals(outcome, CommandUtils.isMissile(entity));
+    }
 }
