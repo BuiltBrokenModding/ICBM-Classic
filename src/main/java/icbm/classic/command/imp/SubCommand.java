@@ -31,7 +31,7 @@ public abstract class SubCommand extends CommandBase
     @Override
     public String getUsage(ICommandSender sender)
     {
-        return parent.getUsage(sender) + " " + name;
+        return parent.getUsage(sender) + " " + getName();
     }
 
     /**
@@ -40,16 +40,16 @@ public abstract class SubCommand extends CommandBase
      */
     public void displayHelp(ICommandSender sender)
     {
-        collectHelpServer((string) -> sender.sendMessage(new TextComponentString(getUsage(sender) + " " + string)));
+        collectHelpServer((string) -> sender.sendMessage(new TextComponentString((getUsage(sender) + " " + string).trim())));
         if (sender instanceof EntityPlayer)
         {
-            collectHelpPlayer((string) -> sender.sendMessage(new TextComponentString(getUsage(sender) + " " + string)));
+            collectHelpPlayer((string) -> sender.sendMessage(new TextComponentString((getUsage(sender) + " " + string).trim())));
         }
     }
 
     protected void collectHelpServer(Consumer<String> consumer)
     {
-        consumer.accept(name);
+        consumer.accept("");
     }
 
     protected void collectHelpPlayer(Consumer<String> consumer)

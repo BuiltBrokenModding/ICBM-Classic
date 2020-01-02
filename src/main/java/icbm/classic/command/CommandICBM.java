@@ -23,6 +23,9 @@ import net.minecraftforge.common.DimensionManager;
 import javax.annotation.Nullable;
 import java.util.*;
 
+/**
+ * Core command for the ICBM mod
+ */
 public class CommandICBM extends CommandBase
 {
 
@@ -33,13 +36,8 @@ public class CommandICBM extends CommandBase
     {
         this.id = id;
 
-        //Sub commands
-        subCommandMap.put("blast", new CommandBlast(this));
-        subCommandMap.put("remove", new CommandRemove(this));
-        subCommandMap.put("lag", new CommandLag(this));
-
         //Help command
-        SubCommand helpCommand = new SubCommand(this, "help")
+        final SubCommand helpCommand = new SubCommand(this, "help")
         {
             @Override
             public void execute(MinecraftServer server, ICommandSender sender, String[] args)
@@ -50,6 +48,19 @@ public class CommandICBM extends CommandBase
         subCommandMap.put("help", helpCommand);
         subCommandMap.put("?", helpCommand);
         subCommandMap.setDefaultValue(helpCommand);
+    }
+
+    public CommandICBM init() {
+
+        //Clear previous
+        subCommandMap.clear();
+
+        //Sub commands
+        subCommandMap.put("blast", new CommandBlast(this));
+        subCommandMap.put("remove", new CommandRemove(this));
+        subCommandMap.put("lag", new CommandLag(this));
+
+        return this;
     }
 
     @Override

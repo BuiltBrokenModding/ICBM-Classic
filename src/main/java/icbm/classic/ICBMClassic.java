@@ -331,12 +331,12 @@ public final class ICBMClassic
         ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
 
         //Register main command
-        serverCommandManager.registerCommand(new CommandICBM("icbmc"));
+        serverCommandManager.registerCommand(new CommandICBM("icbmc").init());
 
         //Register secondary, to help with usability
         if (!Loader.isModLoaded("icbm"))
         {
-            serverCommandManager.registerCommand(new CommandICBM("icbm"));
+            serverCommandManager.registerCommand(new CommandICBM("icbm").init());
         }
 
         WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
