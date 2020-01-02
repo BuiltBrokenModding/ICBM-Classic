@@ -89,8 +89,16 @@ public class CommandICBM extends CommandBase
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, "remove", "emp")
-                : args.length == 2 && args[0].equalsIgnoreCase("remove") ? getListOfStringsMatchingLastWord(args, "all", "missile", "explosion") : new ArrayList<>();
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, subCommandMap.keySet());
+        }
+        else if (args.length == 2)
+        {
+            final String subCommand = args.length == 0 ? "help" : args[0].toLowerCase();
+            subCommandMap.get(subCommand).getTabCompletions(server, sender, removeFront(args), targetPos);
+        }
+        return new ArrayList<>();
     }
 
     public static boolean isICBMEntity(Entity entity)
