@@ -50,7 +50,7 @@ test {
     useJUnitPlatform()
 
     maxHeapSize = '1G'
-    failFast = true
+    failFast = false
     workingDir = './run_tests'
     mkdir './run_tests'
 }
