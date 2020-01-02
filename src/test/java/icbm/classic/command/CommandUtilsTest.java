@@ -15,6 +15,8 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.world.World;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,6 +31,17 @@ import java.util.stream.Stream;
  */
 public class CommandUtilsTest
 {
+    private static TestManager testManager = new TestManager("CommandUtils");
+
+    @AfterEach
+    public void cleanupBetweenTests() {
+        testManager.cleanupBetweenTests();
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        testManager.tearDownTest();
+    }
 
     @Test
     void removeFront_zeroLength()
@@ -148,7 +161,6 @@ public class CommandUtilsTest
     @Test
     void getEntities_withRange_found()
     {
-        final TestManager testManager = new TestManager("getEntities_withRange_found");
         final World world = testManager.getWorld();
 
         //Sheep in range
@@ -186,14 +198,11 @@ public class CommandUtilsTest
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
         Assertions.assertEquals(3, list.size());
-
-        testManager.tearDownTest();
     }
 
     @Test
     void getEntities_allEntities_found()
     {
-        final TestManager testManager = new TestManager("getEntities_allEntities_found");
         final World world = testManager.getWorld();
 
         //Sheep in range
@@ -232,32 +241,24 @@ public class CommandUtilsTest
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
         Assertions.assertEquals(6, list.size());
-
-        testManager.tearDownTest();
     }
 
     @Test
     void getEntities_withRange_nothing()
     {
-        final TestManager testManager = new TestManager("getEntities_withRange_nothing");
         final World world = testManager.getWorld();
 
         List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
         Assertions.assertEquals(0, list.size());
-
-        testManager.tearDownTest();
     }
 
     @Test
     void getEntities_allEntities_nothing()
     {
-        final TestManager testManager = new TestManager("getEntities_allEntities_nothing");
         final World world = testManager.getWorld();
 
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
         Assertions.assertEquals(0, list.size());
-
-        testManager.tearDownTest();
     }
 }

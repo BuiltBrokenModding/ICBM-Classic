@@ -2,6 +2,8 @@ package icbm.classic.command;
 
 import com.builtbroken.mc.testing.junit.TestManager;
 import net.minecraft.command.CommandException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,13 +12,22 @@ import org.junit.jupiter.api.Test;
  */
 public class CommandICBMTest
 {
+    private static TestManager testManager = new TestManager("CommandUtils");
+
+    @AfterEach
+    public void cleanupBetweenTests() {
+        testManager.cleanupBetweenTests();
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        testManager.tearDownTest();
+    }
+
     @Test
     void execute_nothing() throws CommandException
     {
         CommandICBM commandICBM = new CommandICBM("icbm");
-
-        //Build server
-        TestManager testManager = new TestManager("CommandICBM_nothing");
 
         //Build sender
         DummyCommandSender dummyCommandSender = new DummyCommandSender();
