@@ -6,6 +6,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.lib.MapWithDefault;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
@@ -22,13 +23,29 @@ import java.util.*;
 
 public class CommandICBM extends CommandBase
 {
-    private final Map<String, SubCommand> subCommandMap = new HashMap();
+
+    private final MapWithDefault<String, SubCommand> subCommandMap = new MapWithDefault();
     private final String id;
 
     public CommandICBM(String id)
     {
         this.id = id;
-        subCommandMap.put("blast", new SubCommandBlast());
+
+        //Sub commands
+        subCommandMap.put("blast", new SubCommandBlast(this));
+
+        //Help command
+        SubCommand helpCommand = new SubCommand(this, "help")
+        {
+            @Override
+            public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+            {
+                subCommandMap.values().forEach(command -> command.displayHelp(sender));
+            }
+        };
+        subCommandMap.put("help", helpCommand);
+        subCommandMap.put("?", helpCommand);
+        subCommandMap.setDefaultValue(helpCommand);
     }
 
     @Override
@@ -46,33 +63,26 @@ public class CommandICBM extends CommandBase
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        if (args.length == 0 || args[0].equalsIgnoreCase("help"))
+        final String subCommand = args.length == 0 ? "help" : args[0].toLowerCase();
+        if (subCommandMap.containsKey(subCommand))
         {
-            displayHelp(sender, false);
+            subCommandMap.get(subCommand).execute(server, sender, removeFront(args));
+        }
+        else if (args[0].equalsIgnoreCase("remove"))
+        {
+            commandRemove(server, sender, args);
+        }
+        else if (args[0].equalsIgnoreCase("lag"))
+        {
+            commandLag(server, sender, args);
+        }
+        else if (args[0].equalsIgnoreCase("debug"))
+        {
+            commandLag(server, sender, args);
         }
         else
         {
-            final String subCommand = args[0].toLowerCase();
-            if (subCommandMap.containsKey(subCommand))
-            {
-                subCommandMap.get(subCommand).execute(server, sender, removeFront(args));
-            }
-            else if (args[0].equalsIgnoreCase("remove"))
-            {
-                commandRemove(server, sender, args);
-            }
-            else if (args[0].equalsIgnoreCase("lag"))
-            {
-                commandLag(server, sender, args);
-            }
-            else if (args[0].equalsIgnoreCase("debug"))
-            {
-                commandLag(server, sender, args);
-            }
-            else
-            {
-                sender.sendMessage(new TextComponentString("\u00a7c" + "Unknown command! Use '" + getUsage(sender) + " help' for more a list of commands"));
-            }
+            sender.sendMessage(new TextComponentString("\u00a7c" + "Unknown command! Use '" + getUsage(sender) + " help' for more a list of commands"));
         }
     }
 
@@ -85,21 +95,16 @@ public class CommandICBM extends CommandBase
         return Arrays.copyOfRange(args, 1, args.length);
     }
 
-    protected void displayHelp(ICommandSender sender, boolean error)
+    protected void collectHelpServer(ICommandSender sender, boolean error)
     {
         if (sender instanceof EntityPlayer)
         {
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast list"));
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <scale>"));
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <x> <y> <z> <scale>"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> [radius]"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <dim> <x> <y> <z> <radius>"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc lag [radius]"));
         }
         else
         {
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast list"));
-            sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc blast <id> <dim> <x> <y> <z> <scale>"));
             sender.sendMessage(new TextComponentString((error ? "\u00a7c" : "") + "/icbmc remove <all/missiles/explosions> <dim> <x> <y> <z> <radius>"));
         }
     }
@@ -259,8 +264,7 @@ public class CommandICBM extends CommandBase
                 throw new WrongUsageException("Radius must be greater than zero!");
             }
             return radius;
-        }
-        catch (NumberFormatException e)
+        } catch (NumberFormatException e)
         {
             throw new WrongUsageException("Invalid radius!");
         }

@@ -5,9 +5,11 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.imp.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +17,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -22,16 +25,22 @@ import java.util.stream.Collectors;
  */
 public class SubCommandBlast extends SubCommand
 {
-    @Override
-    public String getName()
+    public SubCommandBlast(CommandBase parent)
     {
-        return "blast";
+        super(parent, "blast");
     }
 
     @Override
-    public String getUsage(ICommandSender sender)
+    protected void collectHelpServer(Consumer<String> consumer)
     {
-        return "blast";
+        consumer.accept("list");
+        consumer.accept("<id> <x> <y> <z> <scale>");
+    }
+
+    @Override
+    protected void collectHelpPlayer(Consumer<String> consumer)
+    {
+        consumer.accept("<id> <scale>");
     }
 
     protected void listBlasts(ICommandSender sender) {
