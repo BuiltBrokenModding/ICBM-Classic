@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class CommandICBMTest
 {
     //Entire class
-    private static TestManager testManager = new TestManager("CommandUtils");
+    private static TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
 
     //Per Test
     private final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);

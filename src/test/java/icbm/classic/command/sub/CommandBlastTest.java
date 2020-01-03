@@ -28,7 +28,7 @@ import java.util.Set;
 public class CommandBlastTest
 {
 
-    private static TestManager testManager = new TestManager("CommandUtils");
+    private static TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
     private CommandICBM commandICBM = new CommandICBM("icbm").init();
     private CommandBlast commandBlast = (CommandBlast) commandICBM.subCommandMap.get("blast");
 

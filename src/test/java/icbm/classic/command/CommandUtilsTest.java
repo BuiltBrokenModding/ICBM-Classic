@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class CommandUtilsTest
 {
 
-    private static TestManager testManager = new TestManager("CommandUtils");
+    private static TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
 
     @AfterEach
     public void cleanupBetweenTests()

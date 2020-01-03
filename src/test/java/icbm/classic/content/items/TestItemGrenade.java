@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 public class TestItemGrenade
 {
     final ItemGrenade itemGrenade = new ItemGrenade();
-    static TestManager testManager = new TestManager("itemGrenade");
+    static TestManager testManager = new TestManager("itemGrenade", Assertions::fail);
 
     @AfterAll
     public static void afterAllTests()
