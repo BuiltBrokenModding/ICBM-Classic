@@ -28,9 +28,8 @@ import java.util.*;
  */
 public class CommandICBM extends CommandBase
 {
-
-    private final MapWithDefault<String, SubCommand> subCommandMap = new MapWithDefault();
-    private final String id;
+    public final MapWithDefault<String, SubCommand> subCommandMap = new MapWithDefault();
+    public final String id;
 
     public CommandICBM(String id)
     {
@@ -94,12 +93,11 @@ public class CommandICBM extends CommandBase
         {
             return getListOfStringsMatchingLastWord(args, subCommandMap.keySet());
         }
-        else if (args.length == 2)
+        else if (args.length >= 2)
         {
-            final String subCommand = args.length == 0 ? "help" : args[0].toLowerCase();
-            subCommandMap.get(subCommand).getTabCompletions(server, sender, CommandUtils.removeFront(args), targetPos);
+            final String subCommand = args[0].toLowerCase();
+            return subCommandMap.get(subCommand).getTabCompletions(server, sender, CommandUtils.removeFront(args), targetPos);
         }
-        return new ArrayList<>();
+        return Collections.<String>emptyList();
     }
-
 }
