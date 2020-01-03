@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
  */
 public class CommandBlast extends SubCommand
 {
+
     public CommandBlast(CommandBase parent)
     {
         super(parent, "blast");
@@ -35,7 +36,7 @@ public class CommandBlast extends SubCommand
     {
         consumer.accept("list");
         consumer.accept("<id> <x> <y> <z> <scale>");
-        consumer.accept("spread <amount> <id> <x> <y> <z> <scale>");
+        consumer.accept("spread <count> <distance> <id> <x> <y> <z> <scale>");
     }
 
     @Override
@@ -44,7 +45,8 @@ public class CommandBlast extends SubCommand
         consumer.accept("<id> <scale>");
     }
 
-    protected void listBlasts(ICommandSender sender) {
+    protected void listBlasts(ICommandSender sender)
+    {
         //Convert list of explosives to string registry names
         String names = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives().stream()
                 .map(IExplosiveData::getRegistryName)
@@ -53,7 +55,7 @@ public class CommandBlast extends SubCommand
                 .collect(Collectors.joining(", "));
 
         //Output message TODO translate if possible?
-        sender.sendMessage(new TextComponentString("Explosive Types: " + names ));
+        sender.sendMessage(new TextComponentString("Explosive Types: " + names));
     }
 
     @Override
@@ -65,15 +67,28 @@ public class CommandBlast extends SubCommand
         }
         else if (args.length >= 1 && args[0].equalsIgnoreCase("spread"))
         {
-           final int spread = parseInt(args[1]);
+            final int count = parseInt(args[1]);
+            final int distance = parseInt(args[2]);
 
+            final String blastID = args[3];
+            final String dim = args[4];
+            final double xInput = CommandUtils.getNumber(sender, args[5], sender.getPosition().getX() + 0.5);
+            final double yInput = CommandUtils.getNumber(sender, args[6], sender.getPosition().getX() + 0.5);
+            final double zInput = CommandUtils.getNumber(sender, args[7], sender.getPosition().getX() + 0.5);
+            final String scale = args[8];
 
-            for (int x = -spread; x <= spread; x++)
+            for (int x = -count; x <= count; x++)
             {
-                for (int z = -spread; z <= spread; z++)
+                for (int z = -count; z <= count; z++)
                 {
                     //TODO split array rather than manually converting *facepalm*
-                    String[] parms = new String[]{args[2], args[3], args[4] + x * 100, args[5], args[6] + z * 100, args[7]};
+                    String[] parms = new String[]{
+                            blastID,
+                            dim,
+                            Double.toString(xInput + x * distance),
+                            Double.toString(yInput),
+                            Double.toString(zInput + z * distance),
+                            scale};
                     execute(server, sender, parms);
                 }
             }
@@ -89,7 +104,7 @@ public class CommandBlast extends SubCommand
 
             final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
 
-            if (explosiveData  == null)
+            if (explosiveData == null)
             {
                 throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
             }
