@@ -35,6 +35,7 @@ public class CommandBlast extends SubCommand
     {
         consumer.accept("list");
         consumer.accept("<id> <x> <y> <z> <scale>");
+        consumer.accept("spread <amount> <id> <x> <y> <z> <scale>");
     }
 
     @Override
@@ -48,6 +49,7 @@ public class CommandBlast extends SubCommand
         String names = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives().stream()
                 .map(IExplosiveData::getRegistryName)
                 .map(ResourceLocation::toString)
+                .sorted()
                 .collect(Collectors.joining(", "));
 
         //Output message TODO translate if possible?

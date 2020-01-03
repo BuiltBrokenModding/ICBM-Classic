@@ -1,7 +1,6 @@
 package icbm.classic.command;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import net.minecraft.client.renderer.Vector3d;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
