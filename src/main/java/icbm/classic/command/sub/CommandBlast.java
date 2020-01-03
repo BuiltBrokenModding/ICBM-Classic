@@ -3,6 +3,7 @@ package icbm.classic.command.sub;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.command.CommandUtils;
 import icbm.classic.command.imp.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandBase;
@@ -97,9 +98,9 @@ public class CommandBlast extends SubCommand
             if (args.length == 6)
             {
                 world = args[1].equals("~") && !(sender instanceof MinecraftServer) ? sender.getEntityWorld() : DimensionManager.getWorld(Integer.getInteger(args[1]));
-                x = getNumber(sender, args[2], sender.getPositionVector().x);
-                y = getNumber(sender, args[3], sender.getPositionVector().y);
-                z = getNumber(sender, args[4], sender.getPositionVector().z);
+                x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
+                y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
+                z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
             }
             else if (!(sender instanceof MinecraftServer))
             {
@@ -125,27 +126,4 @@ public class CommandBlast extends SubCommand
         }
     }
 
-    protected double getNumber(ICommandSender sender, String value, double alt) throws WrongUsageException
-    {
-        if (value.equals("~"))
-        {
-            if (!(sender instanceof MinecraftServer))
-            {
-                return alt;
-            }
-            throw new WrongUsageException("'~' can't be used from console");
-        }
-        else if (value.startsWith("~"))
-        {
-            if (!(sender instanceof MinecraftServer))
-            {
-                return alt + Double.parseDouble(value.substring(1, value.length()));
-            }
-            throw new WrongUsageException("'~' can't be used from console");
-        }
-        else
-        {
-            return Double.parseDouble(value);
-        }
-    }
 }

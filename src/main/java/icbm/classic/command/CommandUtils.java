@@ -6,8 +6,10 @@ import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.entity.missile.EntityMissile;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -106,6 +108,39 @@ public class CommandUtils
         } catch (NumberFormatException e)
         {
             throw new WrongUsageException("Invalid radius!");
+        }
+    }
+
+    /**
+     * Gets a numeric value from the user while allowing for tilde offsets
+     *
+     * @param sender - command sender
+     * @param value  - string input from user
+     * @param alt    - numeric offset, normally position of command sender
+     * @return numeric value
+     * @throws WrongUsageException - if ~ is used from the server console
+     */
+    public static double getNumber(ICommandSender sender, String value, double alt) throws WrongUsageException
+    {
+        if (value.equals("~"))
+        {
+            if (!(sender instanceof MinecraftServer))
+            {
+                return alt;
+            }
+            throw new WrongUsageException("'~' can't be used from console");
+        }
+        else if (value.startsWith("~"))
+        {
+            if (!(sender instanceof MinecraftServer))
+            {
+                return alt + Double.parseDouble(value.substring(1, value.length()));
+            }
+            throw new WrongUsageException("'~' can't be used from console");
+        }
+        else
+        {
+            return Double.parseDouble(value);
         }
     }
 }

@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
  */
 public class CommandICBMTest
 {
-
+    //Entire class
     private static TestManager testManager = new TestManager("CommandUtils");
 
-    private CommandICBM commandICBM = new CommandICBM("icbm");
+    //Per Test
+    private final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
+    private final CommandICBM commandICBM = new CommandICBM("icbm");
 
     @AfterEach
     public void cleanupBetweenTests()
@@ -62,7 +64,7 @@ public class CommandICBMTest
     @Test
     void getTabCompletions_help()
     {
-        final DummyCommandSender dummyCommandSender = createSender();
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
         List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"h"}, null);
         Assertions.assertEquals(1, output.size());
@@ -72,7 +74,7 @@ public class CommandICBMTest
     @Test
     void getTabCompletions_nothing()
     {
-        final DummyCommandSender dummyCommandSender = createSender();
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
         List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"a"}, null);
         Assertions.assertEquals(0, output.size());
@@ -81,7 +83,7 @@ public class CommandICBMTest
     @Test
     void getTabCompletions_zero()
     {
-        final DummyCommandSender dummyCommandSender = createSender();
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
         List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[0], null);
         Assertions.assertEquals(0, output.size());
@@ -90,8 +92,6 @@ public class CommandICBMTest
     @Test
     void getTabCompletions_something()
     {
-        final DummyCommandSender dummyCommandSender = createSender();
-
         commandICBM.subCommandMap.put("something", new CommandSomething(commandICBM));
 
         List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"something", "t"}, null);
@@ -102,7 +102,7 @@ public class CommandICBMTest
     @Test
     void execute_nothing() throws CommandException
     {
-        final DummyCommandSender dummyCommandSender = createSender();
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
         //Run command
         commandICBM.execute(testManager.getServer(), dummyCommandSender, new String[0]);
@@ -114,8 +114,6 @@ public class CommandICBMTest
     @Test
     void execute_something_noArgs() throws CommandException
     {
-        final DummyCommandSender dummyCommandSender = createSender();
-
         commandICBM.subCommandMap.put("something", new CommandSomething(commandICBM));
 
         //Run command
@@ -128,8 +126,6 @@ public class CommandICBMTest
     @Test
     void execute_something_args() throws CommandException
     {
-        final DummyCommandSender dummyCommandSender = createSender();
-
         commandICBM.subCommandMap.put("something", new CommandSomething(commandICBM));
 
         //Run command
@@ -137,14 +133,6 @@ public class CommandICBMTest
 
         Assertions.assertEquals(1, dummyCommandSender.messages.size());
         Assertions.assertEquals("something>tree,bat", dummyCommandSender.messages.poll().getUnformattedText());
-    }
-
-    private DummyCommandSender createSender()
-    {
-        DummyCommandSender dummyCommandSender = new DummyCommandSender();
-        dummyCommandSender.world = testManager.getWorld();
-        dummyCommandSender.server = testManager.getServer();
-        return dummyCommandSender;
     }
 
     private class CommandSomething extends SubCommand

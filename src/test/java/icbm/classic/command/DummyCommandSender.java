@@ -1,7 +1,11 @@
 package icbm.classic.command;
 
+import com.builtbroken.mc.testing.junit.TestManager;
+import net.minecraft.client.renderer.Vector3d;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -14,10 +18,23 @@ import java.util.Queue;
  */
 public class DummyCommandSender implements ICommandSender //TODO add to test framework
 {
+
     public World world;
     public MinecraftServer server;
+    public Vec3d position = Vec3d.ZERO;
 
     public final Queue<ITextComponent> messages = new LinkedList();
+
+    public DummyCommandSender()
+    {
+
+    }
+
+    public DummyCommandSender(TestManager testManager)
+    {
+        world = testManager.getWorld();
+        server = testManager.getServer();
+    }
 
     @Override
     public String getName()
@@ -48,5 +65,17 @@ public class DummyCommandSender implements ICommandSender //TODO add to test fra
     public void sendMessage(ITextComponent component)
     {
         messages.offer(component);
+    }
+
+    @Override
+    public BlockPos getPosition()
+    {
+        return new BlockPos(position);
+    }
+
+    @Override
+    public Vec3d getPositionVector()
+    {
+        return position;
     }
 }

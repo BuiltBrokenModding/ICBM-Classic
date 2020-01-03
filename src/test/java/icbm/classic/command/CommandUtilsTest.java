@@ -14,6 +14,7 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -31,15 +32,18 @@ import java.util.stream.Stream;
  */
 public class CommandUtilsTest
 {
+
     private static TestManager testManager = new TestManager("CommandUtils");
 
     @AfterEach
-    public void cleanupBetweenTests() {
+    public void cleanupBetweenTests()
+    {
         testManager.cleanupBetweenTests();
     }
 
     @AfterAll
-    public static void tearDown() {
+    public static void tearDown()
+    {
         testManager.tearDownTest();
     }
 
@@ -260,5 +264,41 @@ public class CommandUtilsTest
         //Should find 3 sheep
         List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
         Assertions.assertEquals(0, list.size());
+    }
+
+
+    @Test
+    void getNumber_playerTilde_zero() throws WrongUsageException
+    {
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
+        double result = CommandUtils.getNumber(dummyCommandSender, "~", 100);
+        Assertions.assertEquals(100.0, result);
+    }
+
+    @Test
+    void getNumber_playerTilde_offset() throws WrongUsageException
+    {
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
+        double result = CommandUtils.getNumber(dummyCommandSender, "~3", 100);
+        Assertions.assertEquals(103.0, result);
+    }
+
+    @Test
+    void getNumber_server() throws WrongUsageException
+    {
+        double result = CommandUtils.getNumber(testManager.getServer(), "3", 100);
+        Assertions.assertEquals(3.0, result);
+    }
+
+    @Test
+    void getNumber_serverTilde_zero()
+    {
+        Assertions.assertThrows(WrongUsageException.class, () -> CommandUtils.getNumber(testManager.getServer(), "~", 100));
+    }
+
+    @Test
+    void getNumber_serverTilde_offset()
+    {
+        Assertions.assertThrows(WrongUsageException.class, () -> CommandUtils.getNumber(testManager.getServer(), "~3", 100));
     }
 }
