@@ -44,50 +44,66 @@ public class CommandBlastTrigger extends SubCommand
     @Override
     public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
     {
+        //Get explosive from user
         final String explosive_id = args[0];
-        final float scale = Float.parseFloat(args.length == 2 ? args[1] : args[5]);
-        if (scale <= 0)
-        {
-            throw new WrongUsageException("Scale must be greater than zero!");
-        }
-
         final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
-
         if (explosiveData == null)
         {
             throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
         }
 
-        //Get position
-        World world;
-        double x, y, z;
         if (args.length == 6)
         {
-            world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
-            x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
-            y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
-            z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
+            longVersion(sender, explosiveData, args);
         }
-        else if (!(sender instanceof MinecraftServer))
+        else if (!(sender instanceof MinecraftServer) && args.length == 2)
         {
-            world = sender.getEntityWorld();
-            x = sender.getPositionVector().x;
-            y = sender.getPositionVector().y;
-            z = sender.getPositionVector().z;
+           shortVersion(sender, explosiveData, args);
         }
         else
         {
             throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
         }
+    }
 
-        if (world != null)
+    private void shortVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws WrongUsageException
+    {
+        final float scale = Float.parseFloat(args[1]);
+        if (scale <= 0)
         {
-            ExplosiveHandler.createExplosion(null, world, x, y, z, explosiveData.getRegistryID(), scale, null);
-            sender.sendMessage(new TextComponentString("Generated blast with explosive [" + explosiveData.getRegistryName() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
+            throw new WrongUsageException("Scale must be greater than zero!");
         }
-        else
+
+        //Get position data
+        final World world = sender.getEntityWorld();
+        final double x = sender.getPositionVector().x;
+        final double y = sender.getPositionVector().y;
+        final double z = sender.getPositionVector().z;
+
+        //Trigger blast
+        trigger(sender, world, x, y, z, explosiveData, scale);
+    }
+
+    private void longVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws WrongUsageException
+    {
+        final float scale = Float.parseFloat(args[1]);
+        if (scale <= 0)
         {
-            throw new WrongUsageException("Failed to get a world instance from arguments or sender.");
+            throw new WrongUsageException("Scale must be greater than zero!");
         }
+
+        //Get position data
+        final World world = CommandUtils.getWorld(sender, args[5], sender.getEntityWorld());
+        final double x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
+        final double y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
+        final double z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
+
+        //Trigger blast
+        trigger(sender, world, x, y, z, explosiveData, scale);
+    }
+
+    public static void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float scale) {
+        ExplosiveHandler.createExplosion(null, world, x, y, z, explosiveData.getRegistryID(), scale, null);
+        sender.sendMessage(new TextComponentString("Generated blast with explosive [" + explosiveData.getRegistryName() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
     }
 }

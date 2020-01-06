@@ -62,6 +62,6 @@ public class CommandBlastListTest
         Assertions.assertEquals("Explosive Types: bo:fat, tree:bat, tree:cat", dummyCommandSender.messages.poll().getUnformattedText());
 
         //Cleanup
-        ICBMClassicAPI.EMP_CAPABILITY = null;
+        ICBMClassicAPI.EXPLOSIVE_REGISTRY = null;
     }
 }
