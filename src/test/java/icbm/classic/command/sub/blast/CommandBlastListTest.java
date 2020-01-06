@@ -1,9 +1,9 @@
 package icbm.classic.command.sub.blast;
 
 import com.builtbroken.mc.testing.junit.TestManager;
+import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.command.DummyCommandSender;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
 import net.minecraft.util.ResourceLocation;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  */
 public class CommandBlastListTest
 {
-    private static TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
+    private static TestManager testManager = new TestManager("CommandBlastListTest", Assertions::fail);
     private final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
     private final CommandBlastList commandBlastList = new CommandBlastList();

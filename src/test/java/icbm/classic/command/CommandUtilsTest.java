@@ -1,6 +1,7 @@
 package icbm.classic.command;
 
 import com.builtbroken.mc.testing.junit.TestManager;
+import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import com.builtbroken.mc.testing.junit.world.FakeWorld;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;

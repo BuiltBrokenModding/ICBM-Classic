@@ -1,7 +1,7 @@
 package icbm.classic.command.system;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.command.DummyCommandSender;
+import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

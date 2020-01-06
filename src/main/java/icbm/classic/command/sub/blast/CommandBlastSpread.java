@@ -64,11 +64,10 @@ public class CommandBlastSpread extends SubCommand
             {
                 //calc position
                 final double x = xInput + xi * distance;
-                final double y = yInput;
                 final double z = zInput + zi * distance;
 
                 //Trigger blast
-                CommandBlastTrigger.trigger(sender, world, x, y, z, explosiveData, scale);
+                CommandBlastTrigger.trigger(sender, world, x, yInput, z, explosiveData, scale);
             }
         }
     }
