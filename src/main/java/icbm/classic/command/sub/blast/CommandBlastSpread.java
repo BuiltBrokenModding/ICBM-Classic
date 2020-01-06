@@ -25,7 +25,7 @@ public class CommandBlastSpread extends SubCommand
     }
 
     @Override
-    protected void collectHelpServer(Consumer<String> consumer)
+    protected void collectHelpForAll(Consumer<String> consumer)
     {
         consumer.accept("<count> <distance> <id> <x> <y> <z> <scale>");
     }

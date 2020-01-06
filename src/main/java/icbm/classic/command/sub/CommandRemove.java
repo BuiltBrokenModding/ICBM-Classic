@@ -33,13 +33,13 @@ public class CommandRemove extends SubCommand
     }
 
     @Override
-    protected void collectHelpServer(Consumer<String> consumer)
+    protected void collectHelpForAll(Consumer<String> consumer)
     {
         consumer.accept("<all/missiles/explosions> <dim> <x> <y> <z> <radius>");
     }
 
     @Override
-    protected void collectHelpPlayer(Consumer<String> consumer)
+    protected void collectHelpWorldOnly(Consumer<String> consumer)
     {
         consumer.accept("<all/missiles/explosions> [radius]");
     }

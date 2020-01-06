@@ -30,13 +30,13 @@ public class CommandBlastTrigger extends SubCommand
     }
 
     @Override
-    protected void collectHelpServer(Consumer<String> consumer)
+    protected void collectHelpForAll(Consumer<String> consumer)
     {
         consumer.accept("<id> <x> <y> <z> <scale>");
     }
 
     @Override
-    protected void collectHelpPlayer(Consumer<String> consumer)
+    protected void collectHelpWorldOnly(Consumer<String> consumer)
     {
         consumer.accept("<id> <scale>");
     }

@@ -1,9 +1,6 @@
 package icbm.classic.command.system;
 
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -37,7 +34,8 @@ public abstract class SubCommand implements ISubCommand
     @Override
     public String getUsage(ICommandSender sender)
     {
-        if(parent == null) {
+        if (parent == null)
+        {
             return "/" + getName();
         }
         return parent.getUsage(sender) + " " + getName();
@@ -46,19 +44,51 @@ public abstract class SubCommand implements ISubCommand
     @Override
     public void displayHelp(ICommandSender sender)
     {
-        collectHelpServer((string) -> sender.sendMessage(new TextComponentString((getUsage(sender) + " " + string).trim())));
-        if (sender instanceof EntityPlayer)
+        collectHelpForAll((string) -> sendHelpMessage(sender, string));
+
+        //If we have a command sender entity then we can run world based commands
+        if (sender.getCommandSenderEntity() != null)
         {
-            collectHelpPlayer((string) -> sender.sendMessage(new TextComponentString((getUsage(sender) + " " + string).trim())));
+            collectHelpWorldOnly((string) -> sendHelpMessage(sender, string));
+        }
+
+        if (sender instanceof MinecraftServer)
+        {
+            collectHelpServerOnly((string) -> sendHelpMessage(sender, string));
         }
     }
 
-    protected void collectHelpServer(Consumer<String> consumer)
+    private void sendHelpMessage(ICommandSender sender, String message)
+    {
+        sender.sendMessage(new TextComponentString((getUsage(sender) + " " + message).trim()));
+    }
+
+    /**
+     * Called to supply a list of commands that can be run by any sender type
+     *
+     * @param consumer - collector
+     */
+    protected void collectHelpForAll(Consumer<String> consumer)
     {
         consumer.accept("");
     }
 
-    protected void collectHelpPlayer(Consumer<String> consumer)
+    /**
+     * Collect commands that can only run in the world
+     *
+     * @param consumer - collector
+     */
+    protected void collectHelpWorldOnly(Consumer<String> consumer)
+    {
+
+    }
+
+    /**
+     * Collect commands that can only run in the several console
+     *
+     * @param consumer - collector
+     */
+    protected void collectHelpServerOnly(Consumer<String> consumer)
     {
 
     }

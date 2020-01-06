@@ -26,12 +26,12 @@ public class CommandLag extends SubCommand
     }
 
     @Override
-    protected void collectHelpServer(Consumer<String> consumer)
+    protected void collectHelpForAll(Consumer<String> consumer)
     {
     }
 
     @Override
-    protected void collectHelpPlayer(Consumer<String> consumer)
+    protected void collectHelpWorldOnly(Consumer<String> consumer)
     {
         consumer.accept("lag [radius]");
     }
