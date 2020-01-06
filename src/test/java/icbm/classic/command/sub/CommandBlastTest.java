@@ -61,7 +61,7 @@ public class CommandBlastTest
         Assertions.assertEquals(3, list.size());
         Assertions.assertEquals("list", list.get(0));
         Assertions.assertEquals("<id> <x> <y> <z> <scale>", list.get(1));
-        Assertions.assertEquals("spread <amount> <id> <x> <y> <z> <scale>", list.get(2));
+        Assertions.assertEquals("spread <count> <distance> <id> <x> <y> <z> <scale>", list.get(2));
     }
 
     @Test
