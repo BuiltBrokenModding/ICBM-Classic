@@ -1,7 +1,7 @@
-package icbm.classic.command;
+package icbm.classic.command.system;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.command.imp.SubCommand;
+import icbm.classic.command.DummyCommandSender;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -22,14 +22,15 @@ import java.util.stream.Collectors;
 /**
  * Created by Robert Seifert on 1/2/20.
  */
-public class CommandICBMTest
+public class CommandEntryPointTest
 {
     //Entire class
     private static TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
 
     //Per Test
     private final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
-    private final CommandICBM commandICBM = new CommandICBM("icbm");
+    private final CommandGroup commandGroup = new CommandGroup("icbm");
+    private final CommandEntryPoint commandHandler = new CommandEntryPoint("icbm", commandGroup);
 
     @AfterEach
     public void cleanupBetweenTests()
@@ -46,19 +47,19 @@ public class CommandICBMTest
     @Test
     void getName()
     {
-        Assertions.assertEquals("icbm", commandICBM.getName());
+        Assertions.assertEquals("icbm", commandHandler.getName());
     }
 
     @Test
     void getUsage()
     {
-        Assertions.assertEquals("/icbm", commandICBM.getUsage(null));
+        Assertions.assertEquals("/icbm", commandHandler.getUsage(null));
     }
 
     @Test
     void getRequiredPermissionLevel()
     {
-        Assertions.assertEquals(2, commandICBM.getRequiredPermissionLevel());
+        Assertions.assertEquals(2, commandHandler.getRequiredPermissionLevel());
     }
 
     @Test
@@ -66,7 +67,7 @@ public class CommandICBMTest
     {
         final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
-        List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"h"}, null);
+        List<String> output = commandHandler.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"h"}, null);
         Assertions.assertEquals(1, output.size());
         Assertions.assertEquals(output.get(0), "help");
     }
@@ -76,7 +77,7 @@ public class CommandICBMTest
     {
         final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
-        List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"a"}, null);
+        List<String> output = commandHandler.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"a"}, null);
         Assertions.assertEquals(0, output.size());
     }
 
@@ -85,16 +86,16 @@ public class CommandICBMTest
     {
         final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
-        List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[0], null);
+        List<String> output = commandHandler.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[0], null);
         Assertions.assertEquals(0, output.size());
     }
 
     @Test
     void getTabCompletions_something()
     {
-        commandICBM.subCommandMap.put("something", new CommandSomething(commandICBM));
+        commandGroup.registerCommand(new CommandSomething());
 
-        List<String> output = commandICBM.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"something", "t"}, null);
+        List<String> output = commandHandler.getTabCompletions(testManager.getServer(), dummyCommandSender, new String[]{"something", "t"}, null);
         Assertions.assertEquals(1, output.size());
         Assertions.assertEquals(output.get(0), "tree");
     }
@@ -105,7 +106,7 @@ public class CommandICBMTest
         final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
         //Run command
-        commandICBM.execute(testManager.getServer(), dummyCommandSender, new String[0]);
+        commandHandler.execute(testManager.getServer(), dummyCommandSender, new String[0]);
 
         Assertions.assertEquals(1, dummyCommandSender.messages.size());
         Assertions.assertEquals("/icbm help", dummyCommandSender.messages.poll().getUnformattedText());
@@ -114,10 +115,10 @@ public class CommandICBMTest
     @Test
     void execute_something_noArgs() throws CommandException
     {
-        commandICBM.subCommandMap.put("something", new CommandSomething(commandICBM));
+        commandGroup.registerCommand(new CommandSomething());
 
         //Run command
-        commandICBM.execute(testManager.getServer(), dummyCommandSender, new String[]{"something"});
+        commandHandler.execute(testManager.getServer(), dummyCommandSender, new String[]{"something"});
 
         Assertions.assertEquals(1, dummyCommandSender.messages.size());
         Assertions.assertEquals("something>", dummyCommandSender.messages.poll().getUnformattedText());
@@ -126,21 +127,20 @@ public class CommandICBMTest
     @Test
     void execute_something_args() throws CommandException
     {
-        commandICBM.subCommandMap.put("something", new CommandSomething(commandICBM));
+        commandGroup.registerCommand(new CommandSomething());
 
         //Run command
-        commandICBM.execute(testManager.getServer(), dummyCommandSender, new String[]{"something", "tree", "bat"});
+        commandHandler.execute(testManager.getServer(), dummyCommandSender, new String[]{"something", "tree", "bat"});
 
         Assertions.assertEquals(1, dummyCommandSender.messages.size());
         Assertions.assertEquals("something>tree,bat", dummyCommandSender.messages.poll().getUnformattedText());
     }
 
-    private class CommandSomething extends SubCommand
+    private static class CommandSomething extends SubCommand
     {
-
-        public CommandSomething(CommandBase parent)
+        public CommandSomething()
         {
-            super(parent, "something");
+            super("something");
         }
 
         @Override

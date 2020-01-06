@@ -1,6 +1,5 @@
-package icbm.classic.command.imp;
+package icbm.classic.command.system;
 
-import com.sun.istack.internal.NotNull;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -18,33 +17,33 @@ import java.util.function.Consumer;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
  */
-public abstract class SubCommand
+public abstract class SubCommand implements ISubCommand
 {
-    private final String name;
-    private CommandBase parent;
 
-    public SubCommand(CommandBase parent, String name)
+    private final String name;
+    protected ICommandGroup parent;
+
+    public SubCommand(String name)
     {
-        this.parent = parent;
         this.name = name;
     }
 
+    @Override
     public String getName()
     {
         return name;
     }
 
+    @Override
     public String getUsage(ICommandSender sender)
     {
+        if(parent == null) {
+            return "/" + getName();
+        }
         return parent.getUsage(sender) + " " + getName();
     }
 
-    public abstract void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException;
-
-    /**
-     * Sends all help text to the sender
-     * @param sender
-     */
+    @Override
     public void displayHelp(ICommandSender sender)
     {
         collectHelpServer((string) -> sender.sendMessage(new TextComponentString((getUsage(sender) + " " + string).trim())));
@@ -64,16 +63,14 @@ public abstract class SubCommand
 
     }
 
-    /**
-     * Gets a list of suggestions for completing the current command
-     * @param server - server running the command
-     * @param sender - user triggering the command
-     * @param args - arguments for the command
-     * @param targetPos - block position for the command
-     * @return empty list or list containing suggestions
-     */
+    @Override
     public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
     {
         return Collections.<String>emptyList();
+    }
+
+    public void setParent(ICommandGroup parent)
+    {
+        this.parent = parent;
     }
 }

@@ -4,7 +4,8 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.CommandUtils;
-import icbm.classic.command.imp.SubCommand;
+import icbm.classic.command.system.ICommandGroup;
+import icbm.classic.command.system.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -15,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 public class CommandBlast extends SubCommand
 {
 
-    public CommandBlast(CommandBase parent)
+    public CommandBlast()
     {
-        super(parent, "blast");
+        super( "blast");
     }
 
     @Override

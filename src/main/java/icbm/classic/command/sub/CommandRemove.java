@@ -1,7 +1,8 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.command.CommandUtils;
-import icbm.classic.command.imp.SubCommand;
+import icbm.classic.command.system.ICommandGroup;
+import icbm.classic.command.system.SubCommand;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -26,9 +27,9 @@ import java.util.function.Consumer;
 public class CommandRemove extends SubCommand
 {
 
-    public CommandRemove(CommandBase parent)
+    public CommandRemove()
     {
-        super(parent, "remove");
+        super("remove");
     }
 
     @Override

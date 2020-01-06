@@ -1,7 +1,8 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.command.CommandUtils;
-import icbm.classic.command.imp.SubCommand;
+import icbm.classic.command.system.ICommandGroup;
+import icbm.classic.command.system.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -19,9 +20,9 @@ import java.util.function.Consumer;
 public class CommandLag extends SubCommand
 {
 
-    public CommandLag(CommandBase parent)
+    public CommandLag()
     {
-        super(parent, "remove");
+        super("lag");
     }
 
     @Override
