@@ -1,8 +1,10 @@
 package icbm.classic.command;
 
-import icbm.classic.command.sub.CommandBlast;
 import icbm.classic.command.sub.CommandLag;
 import icbm.classic.command.sub.CommandRemove;
+import icbm.classic.command.sub.blast.CommandBlastList;
+import icbm.classic.command.sub.blast.CommandBlastSpread;
+import icbm.classic.command.sub.blast.CommandBlastTrigger;
 import icbm.classic.command.system.CommandGroup;
 
 /**
@@ -11,12 +13,20 @@ import icbm.classic.command.system.CommandGroup;
 public class ICBMCommands
 {
     public static final CommandGroup ICBM_COMMAND = new CommandGroup("icbm");
+    public static final CommandGroup BLAST_COMMAND = new CommandGroup("blast");
 
     public static void init()
     {
         //Sub commands
-        ICBMCommands.ICBM_COMMAND.registerCommand(new CommandBlast());
+        initBlastCommand();
         ICBMCommands.ICBM_COMMAND.registerCommand(new CommandRemove());
         ICBMCommands.ICBM_COMMAND.registerCommand(new CommandLag());
+    }
+
+    private static void initBlastCommand()
+    {
+        BLAST_COMMAND.registerCommand(new CommandBlastList());
+        BLAST_COMMAND.registerCommand(new CommandBlastTrigger());
+        BLAST_COMMAND.registerCommand(new CommandBlastSpread());
     }
 }

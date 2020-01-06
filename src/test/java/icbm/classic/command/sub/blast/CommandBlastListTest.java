@@ -1,9 +1,8 @@
-package icbm.classic.command.sub;
+package icbm.classic.command.sub.blast;
 
 import com.builtbroken.mc.testing.junit.TestManager;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.command.system.CommandEntryPoint;
 import icbm.classic.command.DummyCommandSender;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
@@ -13,17 +12,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Created by Robert Seifert on 1/3/20.
+ * Created by Robert Seifert on 1/6/20.
  */
-public class CommandBlastTest
+public class CommandBlastListTest
 {
-
     private static TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
-    private final CommandBlast commandBlast = new CommandBlast();
+    private final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
+
+    private final CommandBlastList commandBlastList = new CommandBlastList();
 
     @AfterEach
     public void cleanupBetweenTests()
@@ -38,23 +35,11 @@ public class CommandBlastTest
     }
 
     @Test
-    void help_player()
+    void help()
     {
-        final List<String> list = new ArrayList();
-        commandBlast.collectHelpPlayer((str) -> list.add(str));
-        Assertions.assertEquals(1, list.size());
-        Assertions.assertEquals("<id> <scale>", list.get(0));
-    }
-
-    @Test
-    void help_server()
-    {
-        final List<String> list = new ArrayList();
-        commandBlast.collectHelpServer((str) -> list.add(str));
-        Assertions.assertEquals(3, list.size());
-        Assertions.assertEquals("list", list.get(0));
-        Assertions.assertEquals("<id> <x> <y> <z> <scale>", list.get(1));
-        Assertions.assertEquals("spread <count> <distance> <id> <x> <y> <z> <scale>", list.get(2));
+       commandBlastList.displayHelp(dummyCommandSender);
+       Assertions.assertEquals(1, dummyCommandSender.messages.size());
+       Assertions.assertEquals("/list", dummyCommandSender.messages.poll().getUnformattedText());
     }
 
     @Test
@@ -70,7 +55,7 @@ public class CommandBlastTest
         final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
 
         //Trigger
-        commandBlast.handleCommand(testManager.getServer(), dummyCommandSender, new String[] {"list"});
+        commandBlastList.handleCommand(testManager.getServer(), dummyCommandSender, new String[0]);
 
         //Should only have 1 message to sender
         Assertions.assertEquals(1, dummyCommandSender.messages.size());
@@ -78,20 +63,5 @@ public class CommandBlastTest
 
         //Cleanup
         ICBMClassicAPI.EMP_CAPABILITY = null;
-    }
-
-    void spreadBlasts()
-    {
-
-    }
-
-    void blastPlayer()
-    {
-
-    }
-
-    void blastServer()
-    {
-
     }
 }

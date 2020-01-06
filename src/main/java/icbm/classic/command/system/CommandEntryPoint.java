@@ -1,9 +1,5 @@
 package icbm.classic.command.system;
 
-import icbm.classic.command.ICBMCommands;
-import icbm.classic.command.sub.CommandBlast;
-import icbm.classic.command.sub.CommandLag;
-import icbm.classic.command.sub.CommandRemove;
 import net.minecraft.command.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
