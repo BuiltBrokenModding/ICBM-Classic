@@ -14,6 +14,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class CommandRemove extends SubCommand
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+    public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length >= 1)
         {
@@ -136,8 +137,8 @@ public class CommandRemove extends SubCommand
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, "all", "missile", "explosion") : new ArrayList<>();
+        return args.length == 1 ? CommandBase.getListOfStringsMatchingLastWord(args, "all", "missile", "explosion") : new ArrayList<>();
     }
 }

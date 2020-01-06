@@ -144,18 +144,18 @@ public class CommandICBMTest
         }
 
         @Override
-        public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+        public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args)
         {
             String reply = "something>" + Arrays.stream(args).collect(Collectors.joining(","));
             sender.sendMessage(new TextComponentString(reply.trim()));
         }
 
         @Override
-        public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+        public List<String> getTabSuggestions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
         {
             if (args.length == 1)
             {
-                return getListOfStringsMatchingLastWord(args, "tree", "bat", "cat");
+                return CommandBase.getListOfStringsMatchingLastWord(args, "tree", "bat", "cat");
             }
             return Collections.<String>emptyList();
         }

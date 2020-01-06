@@ -39,7 +39,7 @@ public class CommandICBM extends CommandBase
         final SubCommand helpCommand = new SubCommand(this, "help")
         {
             @Override
-            public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+            public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args)
             {
                 subCommandMap.values().forEach(command -> command.displayHelp(sender));
             }
@@ -77,7 +77,7 @@ public class CommandICBM extends CommandBase
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         final String subCommand = args.length == 0 ? "help" : args[0].toLowerCase();
-        subCommandMap.get(subCommand).execute(server, sender, CommandUtils.removeFront(args));
+        subCommandMap.get(subCommand).handleCommand(server, sender, CommandUtils.removeFront(args));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class CommandICBM extends CommandBase
         else if (args.length >= 2)
         {
             final String subCommand = args[0].toLowerCase();
-            return subCommandMap.get(subCommand).getTabCompletions(server, sender, CommandUtils.removeFront(args), targetPos);
+            return subCommandMap.get(subCommand).getTabSuggestions(server, sender, CommandUtils.removeFront(args), targetPos);
         }
         return Collections.<String>emptyList();
     }

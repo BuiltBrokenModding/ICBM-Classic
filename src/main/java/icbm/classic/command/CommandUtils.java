@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -134,13 +135,50 @@ public class CommandUtils
         {
             if (!(sender instanceof MinecraftServer))
             {
-                return alt + Double.parseDouble(value.substring(1, value.length()));
+                return alt + Double.parseDouble(value.substring(1));
             }
             throw new WrongUsageException("'~' can't be used from console");
         }
         else
         {
             return Double.parseDouble(value);
+        }
+    }
+
+    /**
+     * Gets the world from user input
+     *
+     * @param sender - user running the command
+     * @param value  - user inputted dimension ID
+     * @param alt    - value to use for ~
+     * @return world if found
+     * @throws WrongUsageException - if input is invalid or world was not found
+     */
+    public static World getWorld(ICommandSender sender, String value, World alt) throws WrongUsageException
+    {
+        if (value.equals("~"))
+        {
+            if (!(sender instanceof MinecraftServer))
+            {
+                return alt;
+            }
+            throw new WrongUsageException("'~' can't be used from console");
+        }
+        try
+        {
+            //Parse dim ID from user input
+            final int dim = Integer.parseInt(value);
+
+            //Get world using ID
+            final World world = DimensionManager.getWorld(dim);
+            if (world == null)
+            {
+                throw new WrongUsageException("Dimension with ID[" + value + "] was not found!");
+            }
+            return world;
+        } catch (NumberFormatException e)
+        {
+            throw new WrongUsageException("Invalid dimension ID[" + value + "]!");
         }
     }
 }

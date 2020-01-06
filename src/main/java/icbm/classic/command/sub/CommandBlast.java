@@ -59,7 +59,7 @@ public class CommandBlast extends SubCommand
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+    public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length >= 1 && args[0].equalsIgnoreCase("list"))
         {
@@ -67,8 +67,8 @@ public class CommandBlast extends SubCommand
         }
         else if (args.length >= 1 && args[0].equalsIgnoreCase("spread"))
         {
-            final int count = parseInt(args[1]);
-            final int distance = parseInt(args[2]);
+            final int count = CommandBase.parseInt(args[1]);
+            final int distance = CommandBase.parseInt(args[2]);
 
             final String blastID = args[3];
             final String dim = args[4];
@@ -81,7 +81,6 @@ public class CommandBlast extends SubCommand
             {
                 for (int z = -count; z <= count; z++)
                 {
-                    //TODO split array rather than manually converting *facepalm*
                     String[] parms = new String[]{
                             blastID,
                             dim,
@@ -89,7 +88,7 @@ public class CommandBlast extends SubCommand
                             Double.toString(yInput),
                             Double.toString(zInput + z * distance),
                             scale};
-                    execute(server, sender, parms);
+                    handleCommand(server, sender, parms);
                 }
             }
         }
@@ -114,7 +113,7 @@ public class CommandBlast extends SubCommand
             double x, y, z;
             if (args.length == 6)
             {
-                world = args[1].equals("~") && !(sender instanceof MinecraftServer) ? sender.getEntityWorld() : DimensionManager.getWorld(Integer.getInteger(args[1]));
+                world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
                 x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
                 y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
                 z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);

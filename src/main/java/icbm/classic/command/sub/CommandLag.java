@@ -36,7 +36,7 @@ public class CommandLag extends SubCommand
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+    public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         //Parse range
         double range = args.length > 1 ? Double.parseDouble(args[1]) : 1000;
