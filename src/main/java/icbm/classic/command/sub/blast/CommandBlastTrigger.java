@@ -32,7 +32,7 @@ public class CommandBlastTrigger extends SubCommand
     @Override
     protected void collectHelpForAll(Consumer<String> consumer)
     {
-        consumer.accept("<id> <x> <y> <z> <scale>");
+        consumer.accept("<id> <dim> <x> <y> <z> <scale>");
     }
 
     @Override
