@@ -73,10 +73,10 @@ public class ItemGrenade extends ItemBase
 
             //Create generate entity
             new EntityGrenade(world)
-                    .setItemStack(itemStack)
-                    .setThrower(entityLiving)
-                    .aimFromThrower()
-                    .setThrowMotion(throwEnergy).spawn();
+            .setItemStack(itemStack)
+            .setThrower(entityLiving)
+            .aimFromThrower()
+            .setThrowMotion(throwEnergy).spawn();
 
             //Consume item
             if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)
@@ -124,7 +124,7 @@ public class ItemGrenade extends ItemBase
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
     {
-        if (tab == getCreativeTab())
+        if (tab == getCreativeTab() || tab == CreativeTabs.SEARCH)
         {
             for (int id : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosivesIDs())
             {
