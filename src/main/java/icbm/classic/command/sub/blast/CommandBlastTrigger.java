@@ -1,7 +1,8 @@
 package icbm.classic.command.sub.blast;
 
-import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.CommandUtils;
 import icbm.classic.command.system.SubCommand;
@@ -10,20 +11,30 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Created by Robert Seifert on 1/6/20.
  */
 public class CommandBlastTrigger extends SubCommand
 {
+
+    //Translations
+    public static final String TRANSLATION_KEY = "command.icbmclassic:icbm.blast";
+    public static final String TRANSLATION_TRIGGERED = TRANSLATION_KEY + ".triggered";
+    public static final String TRANSLATION_THREADING = TRANSLATION_KEY + ".threading";
+
+    //Translations: Errors
+    public static final String TRANSLATION_ERROR = TRANSLATION_KEY + ".error";
+    public static final String TRANSLATION_ERROR_BLOCKED = TRANSLATION_ERROR + ".blocked";
+    public static final String TRANSLATION_ERROR_NULL = TRANSLATION_ERROR + ".null";
+    public static final String TRANSLATION_ERROR_TRIGGERED = TRANSLATION_ERROR + ".triggered";
+    public static final String TRANSLATION_ERROR_UNKNOWN = TRANSLATION_ERROR + ".unknown";
+
     public CommandBlastTrigger()
     {
         super("trigger");
@@ -58,7 +69,7 @@ public class CommandBlastTrigger extends SubCommand
         }
         else if (!(sender instanceof MinecraftServer) && args.length == 2)
         {
-           shortVersion(sender, explosiveData, args);
+            shortVersion(sender, explosiveData, args);
         }
         else
         {
@@ -102,8 +113,51 @@ public class CommandBlastTrigger extends SubCommand
         trigger(sender, world, x, y, z, explosiveData, scale);
     }
 
-    public static void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float scale) {
-        ExplosiveHandler.createExplosion(null, world, x, y, z, explosiveData.getRegistryID(), scale, null);
-        sender.sendMessage(new TextComponentString("Generated blast with explosive [" + explosiveData.getRegistryName() + "] with scale " + scale + " at location " + new BlockPos(x, y, z)));
+    /**
+     * Triggers the explosive at the location
+     *
+     * @param sender        - user running the command
+     * @param world         - position data
+     * @param x             - position data
+     * @param y             - position data
+     * @param z             - position data
+     * @param explosiveData - explosive to run
+     * @param scale         - scale to apply, keep this small as its scale and not size (size defaults to 25 * scale of 2 = 50 size)
+     */
+    public static void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float scale)
+    {
+        final BlastState result = ExplosiveHandler.createExplosion(null,
+                world, x, y, z,
+                explosiveData.getRegistryID(), scale,
+                null);
+
+        //Send translated message to user
+        sender.sendMessage(new TextComponentTranslation(getTranslationKey(result),
+                explosiveData.getRegistryName(), scale,
+                world.provider.getDimension(), world.getWorldType().getName(),
+                x, y, z));
+    }
+
+    //Used to select translation for output message
+    private static String getTranslationKey(BlastState result)
+    {
+        switch (result)
+        {
+            case TRIGGERED:
+                return TRANSLATION_TRIGGERED;
+            case THREADING:
+                return TRANSLATION_THREADING;
+            case FORGE_EVENT_CANCEL:
+                return TRANSLATION_ERROR_BLOCKED;
+            case NULL:
+                return TRANSLATION_ERROR_NULL;
+            case ERROR:
+                return TRANSLATION_ERROR;
+            case ALREADY_TRIGGERED:
+                return TRANSLATION_ERROR_TRIGGERED;
+            default:
+                ICBMClassic.logger().error("CommandBlastTrigger: unknown blast status code " + result);
+                return TRANSLATION_ERROR_UNKNOWN;
+        }
     }
 }

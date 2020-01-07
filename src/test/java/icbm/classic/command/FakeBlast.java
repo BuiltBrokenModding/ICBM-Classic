@@ -1,6 +1,7 @@
 package icbm.classic.command;
 
 import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ public class FakeBlast implements IBlastInit
     public double x;
     public double y;
     public double z;
-    public double size;
+    public double size = 1;
 
     public NBTTagCompound customData;
 
@@ -28,11 +29,24 @@ public class FakeBlast implements IBlastInit
 
     public boolean triggered = false;
 
+    private final BlastState returnState;
+
+    public FakeBlast(BlastState returnState)
+    {
+        this.returnState = returnState;
+    }
+
     @Override
     public IBlastInit setBlastSize(double size)
     {
         this.size = size;
         return this;
+    }
+
+    @Override
+    public IBlast scaleBlast(double scale)
+    {
+        return setBlastSize(scale * getBlastRadius());
     }
 
     @Override
@@ -87,7 +101,7 @@ public class FakeBlast implements IBlastInit
     @Override
     public float getBlastRadius()
     {
-        return 0;
+        return (float) size;
     }
 
     @Override
@@ -100,7 +114,7 @@ public class FakeBlast implements IBlastInit
     public BlastState runBlast()
     {
         triggered = true;
-        return BlastState.TRIGGERED;
+        return returnState;
     }
 
     @Override

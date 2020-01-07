@@ -112,7 +112,7 @@ public class ExplosiveHandler
 
     public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, int blastID, float scale, NBTTagCompound customData)
     {
-        IBlast blast = createNew(cause, world, x, y, z, blastID, scale, customData);
+        final IBlast blast = createNew(cause, world, x, y, z, blastID, scale, customData);
         if (blast != null)
         {
             return blast.runBlast();
@@ -130,7 +130,7 @@ public class ExplosiveHandler
     {
         if (data != null && data.getBlastFactory() != null) //TODO add way to hook blast builder to add custom blasts
         {
-            IBlastInit blast = data.getBlastFactory().create();
+            final IBlastInit blast = data.getBlastFactory().create();
             blast.setBlastWorld(world);
             blast.setBlastPosition(x, y, z);
             blast.scaleBlast(scale);
