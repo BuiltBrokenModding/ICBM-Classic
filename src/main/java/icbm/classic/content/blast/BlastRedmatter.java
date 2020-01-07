@@ -289,7 +289,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable
                     this.controller.setDead();
 
                     //Create new to avoid doing packet syncing
-                    new BlastRedmatter().setBlastSize(radiusNew).runBlast();
+                    new BlastRedmatter().setBlastSize(radiusNew).setBlastWorld(world()).setBlastPosition(x, y, z).runBlast();
                 }
                 //Kill explosion entity
                 ((BlastRedmatter)blast).isAlive = false;
