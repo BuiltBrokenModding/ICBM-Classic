@@ -41,6 +41,7 @@ public class NBTConstants
     public static final String ALARM_RADIUS = "alarmRadius";
     public static final String BLAST = "blast";
     public static final String BLAST_DATA = "blastData";
+    public static final String BLAST_EXPLODER_ENT_ID = "blastExpEntId";
     public static final String BLAST_POS_Y = "blastPosY";
     public static final String BLOCK_STATE = "blockState";
     public static final String BLUE = "blue";

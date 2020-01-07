@@ -2,6 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
+import icbm.classic.api.explosion.IBlastMovable;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
@@ -24,11 +25,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.List;
 
-public class BlastRedmatter extends Blast implements IBlastTickable
+public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
 {
     //Constants, do not change as they modify render and effect scales
     public static final float NORMAL_RADIUS = 70;
@@ -251,6 +253,27 @@ public class BlastRedmatter extends Blast implements IBlastTickable
             entity.velocityChanged = true;
         }
 
+        if (entity instanceof EntityExplosion)
+        {
+            final IBlast blast = ((EntityExplosion) entity).getBlast();
+            if (blast instanceof  BlastRedmatter)
+            {
+                final BlastRedmatter rmBlast = (BlastRedmatter)blast;
+
+                final int otherSize = (int)Math.pow(this.getBlastRadius(),3);
+                final int thisSize = (int)Math.pow(blast.getBlastRadius(),3);
+                final double totalSize = otherSize + thisSize;
+
+                final double thisSizePct = thisSize / totalSize;
+
+                final Vec3d totalDelta = rmBlast.getPosition().subtract(this.getPosition());
+                final Vec3d thisDelta = totalDelta.scale(thisSizePct);
+
+                if(exploder != null)
+                    this.exploder.addVelocity(thisDelta.x,thisDelta.y,thisDelta.z);
+            }
+        }
+
         boolean explosionCreated = false;
 
         if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
@@ -270,7 +293,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable
                         return explosionCreated;
                     }
                 }
-                else if (blast instanceof BlastRedmatter)
+                else if (blast instanceof BlastRedmatter && ((BlastRedmatter) blast).isAlive && this.isAlive)
                 {
                     //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
 
@@ -284,15 +307,13 @@ public class BlastRedmatter extends Blast implements IBlastTickable
                     //Average out timer
                     this.callCount = (callCount + ((BlastRedmatter)blast).callCount) / 2;
 
-                    //Destroy current instance
-                    this.isAlive = false;
-                    this.controller.setDead();
+                    this.size = radiusNew;
+                    this.controller.setVelocity(0,0,0);
 
-                    //Create new to avoid doing packet syncing
-                    new BlastRedmatter().setBlastSize(radiusNew).setBlastWorld(world()).setBlastPosition(x, y, z).runBlast();
+                    //Kill explosion entity
+                    ((BlastRedmatter)blast).isAlive = false;
+                    ((BlastRedmatter)blast).controller.setDead();
                 }
-                //Kill explosion entity
-                ((BlastRedmatter)blast).isAlive = false;
                 //Kill entity in the center of the ball
                 entity.setDead();
             }
