@@ -84,6 +84,30 @@ public class CommandBlastTriggerTest
     }
 
     @Test
+    void command_badCommand_noArgs()
+    {
+        final String[] commandArgs = new String[0]; //Missing all
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+    }
+
+    @Test
+    void command_badCommand_tooShort()
+    {
+        final String[] commandArgs = new String[]{"tree:big"}; //Missing scale
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+    }
+
+    @Test
+    void command_badCommand_tooLong()
+    {
+        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0"}; //Missing scale
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+    }
+
+    @Test
     void command_long_badBlastID()
     {
         final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "1"};
@@ -92,9 +116,41 @@ public class CommandBlastTriggerTest
     }
 
     @Test
+    void command_long_zeroScale()
+    {
+        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "0"};
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+    }
+
+    @Test
+    void command_long_negScale()
+    {
+        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "-1"};
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+    }
+
+    @Test
     void command_short_badBlastID()
     {
         final String[] commandArgs = new String[]{"tree:big", "1"};
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
+    }
+
+    @Test
+    void command_short_zeroScale()
+    {
+        final String[] commandArgs = new String[]{"tree:small", "0"};
+        Assertions.assertThrows(WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
+    }
+
+    @Test
+    void command_short_negScale()
+    {
+        final String[] commandArgs = new String[]{"tree:small", "-1"};
         Assertions.assertThrows(WrongUsageException.class,
                 () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
     }

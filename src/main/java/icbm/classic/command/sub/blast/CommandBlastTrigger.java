@@ -55,6 +55,14 @@ public class CommandBlastTrigger extends SubCommand
     @Override
     public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
     {
+        if (args.length <= 0 || !doCommand(server, sender, args))
+        {
+            throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
+        }
+    }
+
+    private boolean doCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws WrongUsageException
+    {
         //Get explosive from user
         final String explosive_id = args[0];
         final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
@@ -66,15 +74,14 @@ public class CommandBlastTrigger extends SubCommand
         if (args.length == 6)
         {
             longVersion(sender, explosiveData, args);
+            return true;
         }
         else if (!(sender instanceof MinecraftServer) && args.length == 2)
         {
             shortVersion(sender, explosiveData, args);
+            return true;
         }
-        else
-        {
-            throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
-        }
+        return false;
     }
 
     private void shortVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws WrongUsageException
