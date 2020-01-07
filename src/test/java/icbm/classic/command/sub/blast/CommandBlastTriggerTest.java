@@ -12,6 +12,7 @@ import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -98,7 +99,7 @@ public class CommandBlastTriggerTest
                 () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
     }
 
-    private static Stream<Arguments> provideCommandShortData()
+    private static Stream<Arguments> provideBlastOutputTypes()
     {
         return Stream.of(
                 Arguments.of(BlastState.TRIGGERED, CommandBlastTrigger.TRANSLATION_TRIGGERED),
@@ -111,7 +112,7 @@ public class CommandBlastTriggerTest
     }
 
     @ParameterizedTest
-    @MethodSource("provideCommandShortData")
+    @MethodSource("provideBlastOutputTypes")
     void command_short(BlastState stateToTest, String outputExpected) throws CommandException
     {
         this.triggerState = stateToTest;
@@ -128,23 +129,45 @@ public class CommandBlastTriggerTest
         Assertions.assertEquals(1, player.messages.size(), "Should have only received 1 chat message");
         Assertions.assertEquals(outputExpected, player.pollLastMessage(), "Chat message should match translation");
 
+        validateBlastTrigger(player.world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), 2,1);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBlastOutputTypes")
+    void command_long(BlastState stateToTest, String outputExpected) throws CommandException
+    {
+        this.triggerState = stateToTest;
+
+        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
+
+        //Trigger command
+        final String[] commandArgs = new String[]{"tree:small", "0", "100", "10", "20", "2"};
+        command.handleCommand(testManager.getServer(), dummyCommandSender, commandArgs);
+
+        //Should get 1 message back from the command
+        Assertions.assertEquals(1, dummyCommandSender.messages.size(), "Should have only received 1 chat message");
+        Assertions.assertEquals(outputExpected, dummyCommandSender.pollLastMessage(), "Chat message should match translation");
+
+        validateBlastTrigger(testManager.getWorld(), 100, 10, 20, 2, 1);
+    }
+
+    private void validateBlastTrigger(World world, int x, int y, int z, int size, int count)
+    {
         //Should generate a single blast
-        Assertions.assertEquals(1, blastsCreated.size());
-
-
+        Assertions.assertEquals(count, blastsCreated.size(), "Expected the blast creation queue to contain " + count + " blast(s)");
         final FakeBlast blast = blastsCreated.poll();
 
         //Check position data
-        Assertions.assertEquals(100, blast.xi(), "X position of the blast is incorrect");
-        Assertions.assertEquals(35, blast.yi(), "Y position of the blast is incorrect");
-        Assertions.assertEquals(200, blast.zi(), "Z position of the blast is incorrect");
+        Assertions.assertEquals(x, blast.xi(), "X position of the blast is incorrect");
+        Assertions.assertEquals(y, blast.yi(), "Y position of the blast is incorrect");
+        Assertions.assertEquals(z, blast.zi(), "Z position of the blast is incorrect");
 
         //Check world data
-        Assertions.assertEquals(player.world, blast.world(), "World of the blast is incorrect");
+        Assertions.assertEquals(world, blast.world(), "World of the blast is incorrect");
 
         //Check explosive settings
         Assertions.assertEquals(fakeExData, blast.getExplosiveData(), "Explosive data does not match");
         Assertions.assertNull(blast.customData, "Explosive custom data should be empty");
-        Assertions.assertEquals(2, (int)Math.floor(blast.getBlastRadius()), "Explosive radius should be 2");
+        Assertions.assertEquals(size, (int) Math.floor(blast.getBlastRadius()), "Explosive radius should be 2");
     }
 }

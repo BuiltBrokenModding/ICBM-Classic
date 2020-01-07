@@ -97,14 +97,14 @@ public class CommandBlastTrigger extends SubCommand
 
     private void longVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws WrongUsageException
     {
-        final float scale = Float.parseFloat(args[1]);
+        final float scale = Float.parseFloat(args[5]);
         if (scale <= 0)
         {
             throw new WrongUsageException("Scale must be greater than zero!");
         }
 
         //Get position data
-        final World world = CommandUtils.getWorld(sender, args[5], sender.getEntityWorld());
+        final World world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
         final double x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
         final double y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
         final double z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
