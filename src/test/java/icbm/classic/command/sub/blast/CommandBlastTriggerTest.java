@@ -10,6 +10,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.FakeBlast;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -83,26 +84,42 @@ public class CommandBlastTriggerTest
         Assertions.assertEquals("/trigger <id> <scale>", testManager.getPlayer().pollLastMessage());
     }
 
-    @Test
-    void command_badCommand_noArgs()
+    private static Stream<Arguments> provideBadCommandInputs()
     {
-        final String[] commandArgs = new String[0]; //Missing all
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+        return Stream.of(
+                //No arguments
+                Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
+
+                //Not enough args: server or player
+                Arguments.of(new String[]{"tree:big"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
+                Arguments.of(new String[]{"tree:big"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+
+                //Not enough args: server
+                Arguments.of(new String[]{"tree:big", "0", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false)
+        );
     }
 
-    @Test
-    void command_badCommand_tooShort()
+    @ParameterizedTest
+    @MethodSource("provideBadCommandInputs")
+    void command_badInput(String[] commandArgs, String errorMessage, boolean player)
     {
-        final String[] commandArgs = new String[]{"tree:big"}; //Missing scale
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
+        final ICommandSender sender = player ? testManager.getPlayer() : testManager.getServer();
+
+        //Validate we throw the right error
+        final WrongUsageException exception = Assertions.assertThrows(
+                WrongUsageException.class,
+                () -> command.handleCommand(testManager.getServer(), sender, commandArgs)
+        );
+
+        //validate the error contains the right message
+        Assertions.assertEquals(errorMessage, exception.getMessage());
     }
 
     @Test
     void command_badCommand_tooLong()
     {
-        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0"}; //Missing scale
+        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "1", "s"}; //extra arg at the end
         Assertions.assertThrows(WrongUsageException.class,
                 () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
     }
@@ -185,7 +202,7 @@ public class CommandBlastTriggerTest
         Assertions.assertEquals(1, player.messages.size(), "Should have only received 1 chat message");
         Assertions.assertEquals(outputExpected, player.pollLastMessage(), "Chat message should match translation");
 
-        validateBlastTrigger(player.world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), 2,1);
+        validateBlastTrigger(player.world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), 2, 1);
     }
 
     @ParameterizedTest

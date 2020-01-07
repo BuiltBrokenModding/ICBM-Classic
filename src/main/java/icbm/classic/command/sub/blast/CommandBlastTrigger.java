@@ -35,6 +35,10 @@ public class CommandBlastTrigger extends SubCommand
     public static final String TRANSLATION_ERROR_TRIGGERED = TRANSLATION_ERROR + ".triggered";
     public static final String TRANSLATION_ERROR_UNKNOWN = TRANSLATION_ERROR + ".unknown";
 
+    public static final String TRANSLATION_ERROR_SCALE_ZERO = TRANSLATION_ERROR + ".scale.zero";
+    public static final String TRANSLATION_ERROR_EXPLOSIVE_ID = TRANSLATION_ERROR + ".explosive.id";
+    public static final String TRANSLATION_ERROR_UNKNOWN_COMMAND = TRANSLATION_ERROR + ".unknown.command";
+
     public CommandBlastTrigger()
     {
         super("trigger");
@@ -57,7 +61,7 @@ public class CommandBlastTrigger extends SubCommand
     {
         if (args.length <= 0 || !doCommand(server, sender, args))
         {
-            throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
+            throw new WrongUsageException(TRANSLATION_ERROR_UNKNOWN_COMMAND);
         }
     }
 
@@ -68,7 +72,7 @@ public class CommandBlastTrigger extends SubCommand
         final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
         if (explosiveData == null)
         {
-            throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
+            throw new WrongUsageException(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
         }
 
         if (args.length == 6)
@@ -89,7 +93,7 @@ public class CommandBlastTrigger extends SubCommand
         final float scale = Float.parseFloat(args[1]);
         if (scale <= 0)
         {
-            throw new WrongUsageException("Scale must be greater than zero!");
+            throw new WrongUsageException(TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         //Get position data
@@ -107,7 +111,7 @@ public class CommandBlastTrigger extends SubCommand
         final float scale = Float.parseFloat(args[5]);
         if (scale <= 0)
         {
-            throw new WrongUsageException("Scale must be greater than zero!");
+            throw new WrongUsageException(TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         //Get position data
