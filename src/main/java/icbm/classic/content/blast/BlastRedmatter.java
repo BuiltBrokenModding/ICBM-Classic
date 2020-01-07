@@ -20,7 +20,6 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
@@ -254,7 +253,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         {
             entity.velocityChanged = true;
         }
-        
+
         if (entity instanceof EntityExplosion)
         {
             final IBlast blast = ((EntityExplosion) entity).getBlast();
@@ -271,10 +270,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 final Vec3d totalDelta = rmBlast.getPosition().subtract(this.getPosition());
                 final Vec3d thisDelta = totalDelta.scale(thisSizePct);
 
-                this.exploder.addVelocity(thisDelta.x,thisDelta.y,thisDelta.z);
+                if(exploder != null)
+                    this.exploder.addVelocity(thisDelta.x,thisDelta.y,thisDelta.z);
             }
         }
-        
+
         boolean explosionCreated = false;
 
         if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
