@@ -27,6 +27,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
+import scala.Console;
 
 import java.util.List;
 
@@ -102,8 +103,16 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     {
         if (!this.world().isRemote)
         {
+            //Decrease mass
+            this.size--;
+
+            if (this.callCount % 10 == 0)
+            {
+                // TODO sync this.size to clients.
+            }
+
             //Limit life span of the blast
-            if (DO_DESPAWN && callCount >= lifeSpan)
+            if (DO_DESPAWN && callCount >= lifeSpan || this.size <= 1)
             {
                 this.completeBlast(); //kill explosion
             }
@@ -112,6 +121,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             doDestroyBlocks();
             doEntityMovement();
 
+            Console.println(this.size); // TODO remove
             //Play effects
             if (doAudio)
             {
@@ -308,6 +318,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                     this.callCount = (callCount + ((BlastRedmatter)blast).callCount) / 2;
 
                     this.size = radiusNew;
+
                     this.controller.setVelocity(0,0,0);
 
                     //Kill explosion entity
@@ -333,6 +344,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             {
                 //Kill entity in the center of the ball
                 entity.setDead();
+                if(entity instanceof EntityFlyingBlock)
+                {
+                    if(this.size<2500)
+                        this.size++;
+                }
             }
         }
 
