@@ -87,16 +87,30 @@ public class CommandBlastTriggerTest
     private static Stream<Arguments> provideBadCommandInputs()
     {
         return Stream.of(
-                //No arguments
-                Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                //Not enough args: player
+                Arguments.of(new String[]{"tree:small"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
                 Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
 
-                //Not enough args: server or player
-                Arguments.of(new String[]{"tree:big"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
-                Arguments.of(new String[]{"tree:big"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
-
                 //Not enough args: server
-                Arguments.of(new String[]{"tree:big", "0", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false)
+                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+
+                //Too many args
+                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0", "1", "s"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+
+                //Bad blast ID
+                Arguments.of(new String[]{"tree:big", "0", "0", "0", "0", "1"}, CommandBlastTrigger.TRANSLATION_ERROR_EXPLOSIVE_ID, false),
+                Arguments.of(new String[]{"tree:big", "1"}, CommandBlastTrigger.TRANSLATION_ERROR_EXPLOSIVE_ID, false),
+
+                //Bad scale
+                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO, false),
+                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0", "-1"}, CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO, false),
+                Arguments.of(new String[]{"tree:small", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO, true),
+                Arguments.of(new String[]{"tree:small", "-1"}, CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO, true)
         );
     }
 
@@ -114,62 +128,6 @@ public class CommandBlastTriggerTest
 
         //validate the error contains the right message
         Assertions.assertEquals(errorMessage, exception.getMessage());
-    }
-
-    @Test
-    void command_badCommand_tooLong()
-    {
-        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "1", "s"}; //extra arg at the end
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
-    }
-
-    @Test
-    void command_long_badBlastID()
-    {
-        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "1"};
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
-    }
-
-    @Test
-    void command_long_zeroScale()
-    {
-        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "0"};
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
-    }
-
-    @Test
-    void command_long_negScale()
-    {
-        final String[] commandArgs = new String[]{"tree:big", "0", "0", "0", "0", "-1"};
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs));
-    }
-
-    @Test
-    void command_short_badBlastID()
-    {
-        final String[] commandArgs = new String[]{"tree:big", "1"};
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
-    }
-
-    @Test
-    void command_short_zeroScale()
-    {
-        final String[] commandArgs = new String[]{"tree:small", "0"};
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
-    }
-
-    @Test
-    void command_short_negScale()
-    {
-        final String[] commandArgs = new String[]{"tree:small", "-1"};
-        Assertions.assertThrows(WrongUsageException.class,
-                () -> command.handleCommand(testManager.getServer(), testManager.getPlayer(), commandArgs));
     }
 
     private static Stream<Arguments> provideBlastOutputTypes()

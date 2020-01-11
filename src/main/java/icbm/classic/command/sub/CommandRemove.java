@@ -1,7 +1,6 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.command.CommandUtils;
-import icbm.classic.command.system.ICommandGroup;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.command.CommandBase;
@@ -26,7 +25,6 @@ import java.util.function.Consumer;
  */
 public class CommandRemove extends SubCommand
 {
-
     public CommandRemove()
     {
         super("remove");
@@ -45,7 +43,7 @@ public class CommandRemove extends SubCommand
     }
 
     @Override
-    public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
     {
         if (args.length >= 1)
         {
@@ -101,7 +99,7 @@ public class CommandRemove extends SubCommand
                 if (world != null)
                 {
                     //Get entities
-                    List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range);
+                    final List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range);
 
                     //User feedback
                     sender.sendMessage(new TextComponentString("Found " + entities.size() + " in target area, scanning for ICBM entities"));
@@ -111,7 +109,7 @@ public class CommandRemove extends SubCommand
                     //Loop with for-loop to prevent CME
                     for (int i = 0; i < entities.size(); i++)
                     {
-                        Entity entity = entities.get(i);
+                        final Entity entity = entities.get(i);
                         if (entity != null && !entity.isDead)
                         {
                             boolean isExplosive = entity instanceof EntityExplosive;
