@@ -195,9 +195,9 @@ public class RadioMap
         }
 
         //Receivers that have full map range, used for legacy systems mainly
-        for(IRadioWaveReceiver receiver : fullMapRangeReceives)
+        for(int i = fullMapRangeReceives.size() - 1; i >= 0; i--)
         {
-            receiver.receiveRadioWave(hz, sender, header, data);
+            fullMapRangeReceives.get(i).receiveRadioWave(hz, sender, header, data);
         }
 
         //Slow way to update receives with messages

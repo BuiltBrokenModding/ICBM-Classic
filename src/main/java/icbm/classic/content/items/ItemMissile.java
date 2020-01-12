@@ -65,7 +65,7 @@ public class ItemMissile extends ItemICBMBase
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (tab == getCreativeTab())
+        if (tab == getCreativeTab() || tab == CreativeTabs.SEARCH)
         {
             for (int id : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosivesIDs())
             {

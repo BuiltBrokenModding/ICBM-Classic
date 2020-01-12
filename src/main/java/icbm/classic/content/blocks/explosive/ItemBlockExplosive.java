@@ -9,9 +9,11 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBlockAbstract;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -156,6 +158,18 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     public int getMetadata(int damage)
     {
         return damage;
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        if (tab == getCreativeTab() || tab == CreativeTabs.SEARCH)
+        {
+            for (int id : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosivesIDs())
+            {
+                items.add(new ItemStack(this, 1, id));
+            }
+        }
     }
 
     @Override

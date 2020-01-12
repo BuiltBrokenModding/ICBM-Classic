@@ -29,6 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
@@ -398,6 +399,9 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     {
         this.callCount = nbt.getInteger(NBTConstants.CALL_COUNT);
         this.size = nbt.getFloat(NBTConstants.EXPLOSION_SIZE);
+
+        if(world instanceof WorldServer)
+            exploder = ((WorldServer)world).getEntityFromUuid(nbt.getUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID));
     }
 
     @Override
@@ -405,6 +409,9 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     {
         nbt.setInteger(NBTConstants.CALL_COUNT, this.callCount);
         nbt.setFloat(NBTConstants.EXPLOSION_SIZE, this.size);
+
+        if(world instanceof WorldServer)
+            nbt.setUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID, this.exploder.getUniqueID());
     }
 
     public boolean isMovable()
