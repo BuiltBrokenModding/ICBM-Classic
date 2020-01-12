@@ -60,8 +60,8 @@ public class CommandBlastSpread extends SubCommand
         //Get world position
         final World world = CommandUtils.getWorld(sender, args[3], sender.getEntityWorld());
         final double xInput = CommandUtils.getNumber(sender, args[4], sender.getPosition().getX() + 0.5);
-        final double yInput = CommandUtils.getNumber(sender, args[5], sender.getPosition().getX() + 0.5);
-        final double zInput = CommandUtils.getNumber(sender, args[6], sender.getPosition().getX() + 0.5);
+        final double yInput = CommandUtils.getNumber(sender, args[5], sender.getPosition().getY() + 0.5);
+        final double zInput = CommandUtils.getNumber(sender, args[6], sender.getPosition().getZ() + 0.5);
 
         //Get scale from user
         final float scale = Float.parseFloat(args[7]); //TODO turn into helper method

@@ -106,9 +106,9 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 {
                     if (!this.world().spawnEntity(new EntityExplosion(this)))
                     {
-                        ICBMClassic.logger().error(this + "Failed to spawn explosion entity to control blast.");
+                        ICBMClassic.logger().error(this + " Failed to spawn explosion entity to control blast.");
                         isAlive = false;
-                        return BlastState.ERROR;
+                        return BlastState.ERROR; //TODO be more specific about error
                     }
                     return BlastState.TRIGGERED;
                 }

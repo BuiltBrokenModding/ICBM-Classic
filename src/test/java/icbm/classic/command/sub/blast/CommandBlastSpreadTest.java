@@ -13,6 +13,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -133,10 +134,20 @@ public class CommandBlastSpreadTest
         Assertions.assertEquals(errorMessage, exception.getMessage());
     }
 
-    @Test
-    void command_goodInput() throws CommandException
+    private static Stream<Arguments> provideGoodCommandInputs()
     {
-        final String[] args = new String[]{"1", "10", "tree:small", "0", "123", "67", "345", "2"};
+        return Stream.of(
+                Arguments.of(new String[]{"1", "10", "tree:small", "0", "123", "67", "345", "2"}, 123, 67, 345, 10),
+                Arguments.of(new String[]{"1", "100", "tree:small", "0", "123", "67", "345", "2"}, 123, 67, 345, 100),
+                Arguments.of(new String[]{"1", "10", "tree:small", "~", "~", "~", "~", "2"}, 123, 67, 345, 10)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideGoodCommandInputs")
+    void checkCommand(String[] args, int x, int y, int z, int distance) throws CommandException
+    {
+        dummyCommandSender.position = new Vec3d(x, y, z);
         command.handleCommand(testManager.getServer(), dummyCommandSender, args);
 
         //Validate message
@@ -147,15 +158,15 @@ public class CommandBlastSpreadTest
         Assertions.assertEquals(9, blastsCreated.size());
 
         final Set<BlockPos> positions = new HashSet();
-        positions.add(new BlockPos(123, 67, 345));
-        positions.add(new BlockPos(123 + 10, 67, 345 + 10));
-        positions.add(new BlockPos(123 - 10, 67, 345 - 10));
-        positions.add(new BlockPos(123 - 10, 67, 345 + 10));
-        positions.add(new BlockPos(123 + 10, 67, 345 - 10));
-        positions.add(new BlockPos(123 + 10, 67, 345));
-        positions.add(new BlockPos(123 - 10, 67, 345));
-        positions.add(new BlockPos(123, 67, 345 + 10));
-        positions.add(new BlockPos(123, 67, 345 - 10));
+        positions.add(new BlockPos(x, y, z));
+        positions.add(new BlockPos(x + distance, y, z + distance));
+        positions.add(new BlockPos(x - distance, y, z - distance));
+        positions.add(new BlockPos(x - distance, y, z + distance));
+        positions.add(new BlockPos(x + distance, y, z - distance));
+        positions.add(new BlockPos(x + distance, y, z));
+        positions.add(new BlockPos(x - distance, y, z));
+        positions.add(new BlockPos(x, y, z + distance));
+        positions.add(new BlockPos(x, y, z - distance));
 
         //Validate blast contents
         do
