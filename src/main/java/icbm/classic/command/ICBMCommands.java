@@ -15,6 +15,8 @@ public class ICBMCommands
     public static final CommandGroup ICBM_COMMAND = new CommandGroup("icbm");
     public static final CommandGroup BLAST_COMMAND = new CommandGroup("blast");
 
+    public static final String TRANSLATION_UNKNOWN_COMMAND = "command.icbmclassic:icbm.error.unknown.command";
+
     public static void init()
     {
         //Sub commands
@@ -25,6 +27,7 @@ public class ICBMCommands
 
     private static void initBlastCommand()
     {
+        ICBMCommands.ICBM_COMMAND.registerCommand(BLAST_COMMAND);
         BLAST_COMMAND.registerCommand(new CommandBlastList());
         BLAST_COMMAND.registerCommand(new CommandBlastTrigger());
         BLAST_COMMAND.registerCommand(new CommandBlastSpread());

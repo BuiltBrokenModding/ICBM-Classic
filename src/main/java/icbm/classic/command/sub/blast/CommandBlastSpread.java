@@ -1,14 +1,17 @@
 package icbm.classic.command.sub.blast;
 
-import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.CommandUtils;
+import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.SubCommand;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -19,6 +22,9 @@ import java.util.function.Consumer;
  */
 public class CommandBlastSpread extends SubCommand
 {
+    private static final String TRANSLATION_KEY = "command.icbmclassic:icbm.spread";
+    public static final String TRANSLATION_SPREAD_START = TRANSLATION_KEY + ".started";
+
     public CommandBlastSpread()
     {
         super("spread");
@@ -27,35 +33,51 @@ public class CommandBlastSpread extends SubCommand
     @Override
     protected void collectHelpForAll(Consumer<String> consumer)
     {
-        consumer.accept("<count> <distance> <id> <x> <y> <z> <scale>");
+        consumer.accept("<count> <distance> <id> <dim> <x> <y> <z> <scale>");
     }
 
     @Override
     public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
     {
-        final int count = CommandBase.parseInt(args[1], 1);
-        final int distance = CommandBase.parseInt(args[2], 1);
+        if (args.length == 8)
+        {
+            doCommand(sender, args);
+        }
+        else
+        {
+            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND);
+        }
+    }
+
+    private void doCommand(@Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    {
+        final int count = CommandBase.parseInt(args[0], 1);
+        final int distance = CommandBase.parseInt(args[1], 1);
 
         //Get explosive data from user
-        final String explosive_id = args[3];
-        final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
-        if (explosiveData == null)
-        {
-            throw new WrongUsageException("Could not find explosive by ID [" + explosive_id + "]");
-        }
+        final IExplosiveData explosiveData = CommandBlastTrigger.getExplosive(args[2]);
 
         //Get world position
-        final World world = CommandUtils.getWorld(sender, args[4], sender.getEntityWorld());
-        final double xInput = CommandUtils.getNumber(sender, args[5], sender.getPosition().getX() + 0.5);
-        final double yInput = CommandUtils.getNumber(sender, args[6], sender.getPosition().getX() + 0.5);
-        final double zInput = CommandUtils.getNumber(sender, args[7], sender.getPosition().getX() + 0.5);
+        final World world = CommandUtils.getWorld(sender, args[3], sender.getEntityWorld());
+        final double xInput = CommandUtils.getNumber(sender, args[4], sender.getPosition().getX() + 0.5);
+        final double yInput = CommandUtils.getNumber(sender, args[5], sender.getPosition().getX() + 0.5);
+        final double zInput = CommandUtils.getNumber(sender, args[6], sender.getPosition().getX() + 0.5);
 
         //Get scale from user
-        final float scale = Float.parseFloat(args[8]);
+        final float scale = Float.parseFloat(args[7]); //TODO turn into helper method
         if (scale <= 0)
         {
-            throw new WrongUsageException("Scale must be greater than zero!");
+            throw new WrongUsageException(CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO);
         }
+
+        final int expectedSpawnCount = (int)Math.floor(Math.pow((count * 2) + 1, 2));
+
+        sender.sendMessage(new TextComponentTranslation(TRANSLATION_SPREAD_START,
+                explosiveData.getRegistryName(), scale,
+                world.provider.getDimension(), world.getWorldType().getName(),
+                xInput, yInput, zInput,
+                count, distance,
+                expectedSpawnCount));
 
         //Generate blasts in a grid
         for (int xi = -count; xi <= count; xi++)
@@ -67,7 +89,19 @@ public class CommandBlastSpread extends SubCommand
                 final double z = zInput + zi * distance;
 
                 //Trigger blast
-                CommandBlastTrigger.trigger(sender, world, x, yInput, z, explosiveData, scale);
+                final BlastState result = ExplosiveHandler.createExplosion(null,
+                        world, x, yInput, z,
+                        explosiveData.getRegistryID(), scale,
+                        null);
+
+                if(result != BlastState.TRIGGERED && result != BlastState.THREADING)
+                {
+                    //Send translated message to user
+                    sender.sendMessage(new TextComponentTranslation(CommandBlastTrigger.getTranslationKey(result),
+                            explosiveData.getRegistryName(), scale,
+                            world.provider.getDimension(), world.getWorldType().getName(),
+                            x, yInput, z));
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.FakeBlast;
+import icbm.classic.command.ICBMCommands;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -88,19 +89,19 @@ public class CommandBlastTriggerTest
     {
         return Stream.of(
                 //Not enough args: player
-                Arguments.of(new String[]{"tree:small"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
-                Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, true),
+                Arguments.of(new String[]{"tree:small"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, true),
+                Arguments.of(new String[0], ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, true),
 
                 //Not enough args: server
-                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
-                Arguments.of(new String[]{"tree:small", "0", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
-                Arguments.of(new String[]{"tree:small", "0", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
-                Arguments.of(new String[]{"tree:small", "0"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
-                Arguments.of(new String[]{"tree:small"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
-                Arguments.of(new String[0], CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0", "0", "0"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0", "0"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[0], ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
 
                 //Too many args
-                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0", "1", "s"}, CommandBlastTrigger.TRANSLATION_ERROR_UNKNOWN_COMMAND, false),
+                Arguments.of(new String[]{"tree:small", "0", "0", "0", "0", "1", "s"}, ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, false),
 
                 //Bad blast ID
                 Arguments.of(new String[]{"tree:big", "0", "0", "0", "0", "1"}, CommandBlastTrigger.TRANSLATION_ERROR_EXPLOSIVE_ID, false),

@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.CommandUtils;
+import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandException;
@@ -22,9 +23,8 @@ import java.util.function.Consumer;
  */
 public class CommandBlastTrigger extends SubCommand
 {
-
     //Translations
-    public static final String TRANSLATION_KEY = "command.icbmclassic:icbm.blast";
+    private static final String TRANSLATION_KEY = "command.icbmclassic:icbm.blast";
     public static final String TRANSLATION_TRIGGERED = TRANSLATION_KEY + ".triggered";
     public static final String TRANSLATION_THREADING = TRANSLATION_KEY + ".threading";
 
@@ -37,7 +37,6 @@ public class CommandBlastTrigger extends SubCommand
 
     public static final String TRANSLATION_ERROR_SCALE_ZERO = TRANSLATION_ERROR + ".scale.zero";
     public static final String TRANSLATION_ERROR_EXPLOSIVE_ID = TRANSLATION_ERROR + ".explosive.id";
-    public static final String TRANSLATION_ERROR_UNKNOWN_COMMAND = TRANSLATION_ERROR + ".unknown.command";
 
     public CommandBlastTrigger()
     {
@@ -61,19 +60,14 @@ public class CommandBlastTrigger extends SubCommand
     {
         if (args.length <= 0 || !doCommand(server, sender, args))
         {
-            throw new WrongUsageException(TRANSLATION_ERROR_UNKNOWN_COMMAND);
+            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND);
         }
     }
 
     private boolean doCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws WrongUsageException
     {
         //Get explosive from user
-        final String explosive_id = args[0];
-        final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
-        if (explosiveData == null)
-        {
-            throw new WrongUsageException(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
-        }
+        final IExplosiveData explosiveData = getExplosive(args[0]);
 
         if (args.length == 6)
         {
@@ -125,6 +119,23 @@ public class CommandBlastTrigger extends SubCommand
     }
 
     /**
+     * Gets the explosive data based on the string ID from the user
+     *
+     * @param explosive_id - ID from user
+     * @return explosive data
+     * @throws WrongUsageException - if ID is not found
+     */
+    public static IExplosiveData getExplosive(String explosive_id) throws WrongUsageException
+    {
+        final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
+        if (explosiveData == null)
+        {
+            throw new WrongUsageException(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
+        }
+        return explosiveData;
+    }
+
+    /**
      * Triggers the explosive at the location
      *
      * @param sender        - user running the command
@@ -135,7 +146,7 @@ public class CommandBlastTrigger extends SubCommand
      * @param explosiveData - explosive to run
      * @param scale         - scale to apply, keep this small as its scale and not size (size defaults to 25 * scale of 2 = 50 size)
      */
-    public static void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float scale)
+    private void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float scale)
     {
         final BlastState result = ExplosiveHandler.createExplosion(null,
                 world, x, y, z,
@@ -150,7 +161,7 @@ public class CommandBlastTrigger extends SubCommand
     }
 
     //Used to select translation for output message
-    private static String getTranslationKey(BlastState result)
+    public static String getTranslationKey(BlastState result)
     {
         switch (result)
         {
