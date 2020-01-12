@@ -170,8 +170,6 @@ public class CommandBlastTriggerTest
     {
         this.triggerState = stateToTest;
 
-        final DummyCommandSender dummyCommandSender = new DummyCommandSender(testManager);
-
         //Trigger command
         final String[] commandArgs = new String[]{"tree:small", "0", "100", "10", "20", "2"};
         command.handleCommand(testManager.getServer(), dummyCommandSender, commandArgs);
@@ -181,6 +179,24 @@ public class CommandBlastTriggerTest
         Assertions.assertEquals(outputExpected, dummyCommandSender.pollLastMessage(), "Chat message should match translation");
 
         validateBlastTrigger(testManager.getWorld(), 100, 10, 20, 2, 1);
+    }
+
+    @Test
+    void command_long_player() throws CommandException
+    {
+        //Setup player for test
+        final TestPlayer player = testManager.getPlayer();
+        player.setPosition(100, 35, 200);
+
+        //Trigger command
+        final String[] commandArgs = new String[]{"tree:small", "~", "~", "~", "~", "2"};
+        command.handleCommand(testManager.getServer(), player, commandArgs);
+
+        //Should get 1 message back from the command
+        Assertions.assertEquals(1, player.messages.size(), "Should have only received 1 chat message");
+        Assertions.assertEquals(CommandBlastTrigger.TRANSLATION_TRIGGERED, player.pollLastMessage(), "Chat message should match translation");
+
+        validateBlastTrigger(player.world, 100, 35, 200, 2, 1);
     }
 
     private void validateBlastTrigger(World world, int x, int y, int z, int size, int count)
