@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -28,16 +29,17 @@ public class CommandLag extends SubCommand
     @Override
     protected void collectHelpForAll(Consumer<String> consumer)
     {
+
     }
 
     @Override
     protected void collectHelpWorldOnly(Consumer<String> consumer)
     {
-        consumer.accept("lag [radius]");
+        consumer.accept("[radius]");
     }
 
     @Override
-    public void handleCommand(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
     {
         //Parse range
         double range = args.length > 1 ? Double.parseDouble(args[1]) : 1000;
