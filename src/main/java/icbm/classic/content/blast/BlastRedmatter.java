@@ -111,9 +111,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         {
             //reach the target size which is the size that was last sent from the server
             if(targetSize < size)
-                size -= Math.min(1,size-targetSize)/10f;
+                size -= (size-targetSize)/10f;
             else if(targetSize > size)
-                size += Math.min(1,targetSize-size)/10f;
+                size += (targetSize-size)/10f;
         }
 
         return super.onBlastTick(ticksExisted);
@@ -161,13 +161,24 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         return false;
     }
 
+    private int lastRadius = 1;
+    private int radiusSkipCount = 0;
     protected void doDestroyBlocks()
     {
         long time = System.currentTimeMillis();
         // Try to find and grab some blocks to orbit
         int blocksDestroyed = 0;
 
-        for (int currentRadius = 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
+        radiusSkipCount++;
+        boolean quickMath = true; // for most iterations do math quickly
+
+        if (radiusSkipCount > 20)
+        {
+            radiusSkipCount = 0;
+            quickMath = false;
+        }
+
+        for (int currentRadius = quickMath ? lastRadius : 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
         {
             for (int xr = -currentRadius; xr < currentRadius; xr++)
             {
@@ -213,14 +224,23 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                         }
 
                         //Exit conditions, make sure stays at bottom of loop
-                        if (blocksDestroyed > getBlocksPerTick() || !isAlive || System.currentTimeMillis() - time > 30) //30ms to prevent stall
+                        if (blocksDestroyed > getBlocksPerTick() || !isAlive)
                         {
+                            return;
+                        }
+                        else if(System.currentTimeMillis() - time > 30) //30ms to prevent stall
+                        {
+                            this.size-=1;
                             return;
                         }
                     }
                 }
             }
+
+            lastRadius = currentRadius;
         }
+
+        lastRadius = (int)getBlastRadius() - 1;
     }
 
     protected void doEntityMovement()
@@ -374,7 +394,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 if(entity instanceof EntityFlyingBlock)
                 {
                     if(this.size<120)
-                        this.size+=0.1;
+                        this.size+=0.05;
                 }
             }
         }
