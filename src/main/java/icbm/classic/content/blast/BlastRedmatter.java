@@ -111,9 +111,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         {
             //reach the target size which is the size that was last sent from the server
             if(targetSize < size)
-                size--;
+                size -= Math.min(1,size-targetSize)/10f;
             else if(targetSize > size)
-                size++;
+                size += Math.min(1,targetSize-size)/10f;
         }
 
         return super.onBlastTick(ticksExisted);
@@ -125,7 +125,13 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         if (!this.world().isRemote)
         {
             //Decrease mass
-            this.size--;
+            this.size-=0.1;
+
+            if (this.size < 50) // evaporation speedup for small black holes
+            {
+                this.size -= (50-this.size)/100;
+            }
+
 
             if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks
             {
@@ -133,7 +139,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             }
 
             //Limit life span of the blast
-            if (DO_DESPAWN && callCount >= lifeSpan || this.size <= 1)
+            if (DO_DESPAWN && callCount >= lifeSpan || this.size <= 0)
             {
                 this.completeBlast(); //kill explosion
             }
@@ -160,6 +166,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         long time = System.currentTimeMillis();
         // Try to find and grab some blocks to orbit
         int blocksDestroyed = 0;
+
         for (int currentRadius = 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
         {
             for (int xr = -currentRadius; xr < currentRadius; xr++)
@@ -181,7 +188,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                             {
                                 final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
                                 //Ignore air blocks and unbreakable blocks
-                                if (!block.isAir(blockState, world(), blockPos)&&(((isFluid && blockState.getValue(BlockLiquid.LEVEL) < 7  )||( !isFluid && blockState.getBlockHardness(world, blockPos) >= 0))))
+                                if (!block.isAir(blockState, world(), blockPos) && (((isFluid && blockState.getValue(BlockLiquid.LEVEL) < 7) || (!isFluid && blockState.getBlockHardness(world, blockPos) >= 0))))
                                 {
                                     //TODO handle multi-blocks
 
@@ -366,8 +373,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 entity.setDead();
                 if(entity instanceof EntityFlyingBlock)
                 {
-                    if(this.size<2500)
-                        this.size++;
+                    if(this.size<120)
+                        this.size+=0.1;
                 }
             }
         }
