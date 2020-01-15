@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.IBlastMovable;
@@ -11,6 +12,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.lib.network.packet.PacketRedmatterSizeSync;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Location;
@@ -27,7 +29,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
-import scala.Console;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import java.util.List;
 
@@ -51,6 +53,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     public int blocksEditsPerTick = -1;
 
     public boolean coloredBeams = true;
+
+    //client side value
+    public float targetSize = 0.0F;
 
     public float getScaleFactor()
     {
@@ -98,6 +103,22 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         }
     }
 
+
+    @Override
+    public boolean onBlastTick(int ticksExisted)
+    {
+        if(world().isRemote)
+        {
+            //reach the target size which is the size that was last sent from the server
+            if(targetSize < size)
+                size--;
+            else if(targetSize > size)
+                size++;
+        }
+
+        return super.onBlastTick(ticksExisted);
+    }
+
     @Override
     public boolean doExplode(int callCount)
     {
@@ -106,9 +127,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             //Decrease mass
             this.size--;
 
-            if (this.callCount % 10 == 0)
+            if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks
             {
-                // TODO sync this.size to clients.
+                ICBMClassic.packetHandler.sendToAllAround(new PacketRedmatterSizeSync(size, getPos()), new TargetPoint(world().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 256));
             }
 
             //Limit life span of the blast
@@ -121,7 +142,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             doDestroyBlocks();
             doEntityMovement();
 
-            Console.println(this.size); // TODO remove
             //Play effects
             if (doAudio)
             {
