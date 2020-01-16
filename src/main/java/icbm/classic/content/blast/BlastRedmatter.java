@@ -245,7 +245,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected void doEntityMovement()
     {
-        float entityRadius = this.getBlastRadius() * 2;
+        float entityRadius = this.getBlastRadius() * 1.5f;
         Cube cube = new Cube(location.add(0.5).sub(entityRadius), location.add(0.5).add(entityRadius));
         AxisAlignedBB bounds = cube.getAABB();
         List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
@@ -289,21 +289,12 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         double yDifference = entity.posY - location.yi() + 0.5;
         double zDifference = entity.posZ - location.zi() + 0.5;
 
-        /** The percentage of the closeness of the entity. */
-        double xPercentage = 1 - (xDifference / radius);
-        double yPercentage = 1 - (yDifference / radius);
-        double zPercentage = 1 - (zDifference / radius);
-        double distancePercentage = this.location.distance(entity) / radius;
+        double dst = this.location.distance(entity);
 
-        Pos entityPosition = new Pos(entity);
-        Pos centeredPosition = entityPosition.subtract(this.location);
-        centeredPosition = (Pos) centeredPosition.transform(new EulerAngle(1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random(), 1.5 * distancePercentage * Math.random()));
 
-        Location newPosition = this.location.add(centeredPosition);
-        // Orbit Velocity
-        entity.addVelocity(newPosition.x() - entityPosition.x(), 0, newPosition.z() - entityPosition.z());
-        // Gravity Velocity (0.015 is barely enough to overcome y gravity so do not lower)
-        entity.addVelocity(-xDifference * 0.02 * xPercentage, -yDifference * 0.02 * yPercentage, -zDifference * 0.02 * zPercentage);
+
+        // Gravity Velocity
+        entity.addVelocity(-xDifference/dst/dst * 5, -yDifference/dst/dst * 5, -zDifference/dst/dst * 5);
 
         if (entity instanceof EntityPlayer) // if player send packet because motion is handled client side
         {
