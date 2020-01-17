@@ -27,13 +27,6 @@ public class RenderEntityBlock extends Render<EntityFlyingBlock>
     {
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
-        GlStateManager.pushMatrix();
-        renderBlock(entity, x, y, z, entityYaw, partialTicks);
-        GlStateManager.popMatrix();
-    }
-
-    public void renderBlock(EntityFlyingBlock entity, double x, double y, double z, float entityYaw, float partialTicks)
-    {
         final IBlockState blockState = entity.getBlockState();
         final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
