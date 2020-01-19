@@ -15,7 +15,7 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -201,7 +201,7 @@ public class CommandUtilsTest
         world.spawnEntity(sheep);
 
         //Should find 3 sheep
-        List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
+        List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5, EntitySelectors.NOT_SPECTATING::test);
         Assertions.assertEquals(3, list.size());
     }
 
@@ -244,7 +244,7 @@ public class CommandUtilsTest
         world.spawnEntity(sheep);
 
         //Should find 3 sheep
-        List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
+        List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1, EntitySelectors.NOT_SPECTATING::test);
         Assertions.assertEquals(6, list.size());
     }
 
@@ -253,7 +253,7 @@ public class CommandUtilsTest
     {
         final World world = testManager.getWorld();
 
-        List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5);
+        List<Entity> list = CommandUtils.getEntities(world, 100, 11, 100, 5, EntitySelectors.NOT_SPECTATING::test);
         Assertions.assertEquals(0, list.size());
     }
 
@@ -263,7 +263,7 @@ public class CommandUtilsTest
         final World world = testManager.getWorld();
 
         //Should find 3 sheep
-        List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1);
+        List<Entity> list = CommandUtils.getEntities(world, 0, 0, 0, -1, EntitySelectors.NOT_SPECTATING::test);
         Assertions.assertEquals(0, list.size());
     }
 

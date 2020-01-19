@@ -12,13 +12,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
@@ -45,94 +45,90 @@ public class CommandRemove extends SubCommand
     @Override
     public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
     {
-        if (args.length >= 1)
+        if (args.length <= 0 || !doCommand(sender, args))
         {
-            //Get type
-            final String type_arg = args[0];
-            boolean remove_all = type_arg.equalsIgnoreCase("all");
-            boolean remove_missiles = remove_all
-                    || type_arg.equalsIgnoreCase("missiles")
-                    || type_arg.equalsIgnoreCase("missile");
-            boolean remove_explosives = remove_all
-                    || type_arg.equalsIgnoreCase("explosions")
-                    || type_arg.equalsIgnoreCase("explosion")
-                    || type_arg.equalsIgnoreCase("explosive")
-                    || type_arg.equalsIgnoreCase("explosives")
-                    || type_arg.equalsIgnoreCase("ex");
-
-            //Get output string
-            final String typeString = remove_all ? "entities" : remove_missiles ? "missiles" : remove_explosives ? "explosions" : null;
-            if (typeString != null)
-            {
-                //Get range
-                boolean hasRange = args.length == 2 || args.length == 6;
-                int range = args.length == 2 ? CommandUtils.parseRadius(args[1])
-                        : args.length == 6 ? CommandUtils.parseRadius(args[5])
-                        : -1;
-
-                //Get position
-                World world;
-                double x, y, z;
-
-                if (args.length == 6)
-                {
-                    String dim = args[1];
-                    int dimID = Integer.parseInt(dim);
-                    world = DimensionManager.getWorld(dimID);
-
-                    x = Double.parseDouble(args[2]);
-                    y = Double.parseDouble(args[3]);
-                    z = Double.parseDouble(args[4]);
-                }
-                else if (!(sender instanceof MinecraftServer))
-                {
-                    world = sender.getEntityWorld();
-                    x = sender.getPositionVector().x;
-                    y = sender.getPositionVector().y;
-                    z = sender.getPositionVector().z;
-                }
-                else
-                {
-                    throw new WrongUsageException("/icbmc remove <all/missile/explosion> dim_id x y z radius");
-                }
-
-                if (world != null)
-                {
-                    //Get entities
-                    final List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range);
-
-                    //User feedback
-                    sender.sendMessage(new TextComponentString("Found " + entities.size() + " in target area, scanning for ICBM entities"));
-
-                    int count = 0;
-
-                    //Loop with for-loop to prevent CME
-                    for (int i = 0; i < entities.size(); i++)
-                    {
-                        final Entity entity = entities.get(i);
-                        if (entity != null && !entity.isDead)
-                        {
-                            boolean isExplosive = entity instanceof EntityExplosive;
-                            boolean isMissile = CommandUtils.isMissile(entity);
-                            boolean isICBM = CommandUtils.isICBMEntity(entity);
-                            if (remove_explosives && isExplosive || remove_missiles && isMissile || remove_all && isICBM)
-                            {
-                                entity.setDead();
-                                count++;
-                            }
-                        }
-                    }
-
-                    sender.sendMessage(new TextComponentString("Removed '" + count + "' ICBM entities " + (hasRange ? "within " + range + "meters" : "from the world")));
-                    return; //Necessary return
-                }
-                else
-                {
-                    throw new WrongUsageException("Failed to get a world instance from arguments or sender.");
-                }
-            }
+            throw new WrongUsageException("'/icbmc remove <all/missile/explosion> [radius]' or '/icbmc remove <all/missile/explosion> <x> <y> <z> <radius>'");
         }
-        throw new WrongUsageException("'/icbmc remove <all/missile/explosion> [radius]' or '/icbmc remove <all/missile/explosion> <x> <y> <z> <radius>'");
+    }
+
+    private boolean doCommand(@Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    {
+        //Get type
+        final Predicate<Entity> entitySelector = buildSelector(args[0]);
+
+        //Get range
+        final int range = args.length == 2 ? CommandUtils.parseRadius(args[1])
+                : args.length == 6 ? CommandUtils.parseRadius(args[5])
+                : -1;
+
+        //Get position
+        World world;
+        double x, y, z;
+
+        if (args.length == 6)
+        {
+            world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
+            x = Double.parseDouble(args[2]);
+            y = Double.parseDouble(args[3]);
+            z = Double.parseDouble(args[4]);
+        }
+        else if (!(sender instanceof MinecraftServer))
+        {
+            world = sender.getEntityWorld();
+            x = sender.getPositionVector().x;
+            y = sender.getPositionVector().y;
+            z = sender.getPositionVector().z;
+        }
+        else
+        {
+            return false;
+        }
+
+        //Find and set entities dead
+        final List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range, entitySelector);
+        entities.forEach(Entity::setDead);
+
+        //User feedback
+        sender.sendMessage(new TextComponentString("Removed '" + entities.size() + "' ICBM entities " + (range > 0 ? "within " + range + "meters" : "from the world"))); //TODO translate
+
+        return true;
+    }
+
+    private boolean isRemoveMissile(String type)
+    {
+        return type.equalsIgnoreCase("missiles") || type.equalsIgnoreCase("missile");
+    }
+
+    private boolean isRemoveExplosion(String type)
+    {
+        return type.equalsIgnoreCase("explosions")
+                || type.equalsIgnoreCase("explosion")
+                || type.equalsIgnoreCase("explosive")
+                || type.equalsIgnoreCase("explosives")
+                || type.equalsIgnoreCase("ex");
+    }
+
+    private Predicate<Entity> buildSelector(String type)
+    {
+        final boolean remove_all = type.equalsIgnoreCase("all");
+        final boolean remove_missiles = isRemoveMissile(type);
+        final boolean remove_explosives = isRemoveExplosion(type);
+
+        return (entity) -> {
+            if(entity.isEntityAlive())
+            {
+                if (remove_all)
+                {
+                    return CommandUtils.isICBMEntity(entity);
+                }
+                else if (remove_explosives)
+                {
+                    return entity instanceof EntityExplosive;
+                }
+                return remove_missiles && CommandUtils.isMissile(entity);
+            }
+            return false;
+        };
     }
 
     @Override

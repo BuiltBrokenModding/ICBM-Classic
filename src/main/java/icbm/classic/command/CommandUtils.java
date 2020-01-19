@@ -14,9 +14,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Robert Seifert on 1/2/20.
@@ -76,7 +77,7 @@ public class CommandUtils
      * @param range - range to check, -1 will return all entities in the world
      * @return entities found
      */
-    public static List<Entity> getEntities(World world, double x, double y, double z, double range)
+    public static List<Entity> getEntities(World world, double x, double y, double z, double range, Predicate<Entity> filter)
     {
         if (range > 0)
         {
@@ -84,9 +85,10 @@ public class CommandUtils
                     x - range, y - range, z - range,
                     x + range, y + range, z + range);
 
-            return world.getEntitiesWithinAABB(Entity.class, bb);
+            return world.getEntitiesWithinAABB(Entity.class, bb, filter::test);
         }
-        return world.loadedEntityList;
+        //Copy list to avoid modification while we are using said list
+        return world.loadedEntityList.stream().filter(filter).collect(Collectors.toList());
     }
 
     /**
