@@ -1,6 +1,7 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.command.CommandUtils;
+import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.command.CommandBase;
@@ -47,7 +48,7 @@ public class CommandRemove extends SubCommand
     {
         if (args.length <= 0 || !doCommand(sender, args))
         {
-            throw new WrongUsageException("'/icbmc remove <all/missile/explosion> [radius]' or '/icbmc remove <all/missile/explosion> <x> <y> <z> <radius>'");
+            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND);
         }
     }
 

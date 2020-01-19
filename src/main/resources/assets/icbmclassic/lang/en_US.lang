@@ -38,6 +38,10 @@ command.icbmclassic:icbm.blast.error.scale.zero=Scale must be greater than zero!
 ### Blast Spread Command: Good outputs
 command.icbmclassic:icbm.spread.started=Triggering %10$d blasts with explosive %1$s and scale %2$f at [%3$s@%4$d, %5$d, %6$d, %7$d] with a spread of %8$d over a distance %9$d.
 
+### Lag Command
+command.icbmclassic:icbm.lag.removed=Removed %1$d blast and %2%d entities within %3$d meters
+
+
 ### Generic errors
 command.icbmclassic:icbm.error.unknown.command=Unknown command. See %s help for more info.
 

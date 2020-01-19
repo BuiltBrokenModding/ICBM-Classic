@@ -2,8 +2,12 @@ package icbm.classic.command.sub;
 
 import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
+import icbm.classic.command.FakeBlast;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.lib.explosive.ExplosiveHandler;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.util.math.Vec3d;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -46,14 +50,16 @@ public class CommandLagTest
         Assertions.assertEquals("/lag [radius]", testManager.getPlayer().messages.poll().getUnformattedText());
     }
 
-    private void sheep(int x, int y, int z) {
+    private void sheep(int x, int y, int z)
+    {
         final EntitySheep sheep = new EntitySheep(testManager.getWorld());
         sheep.forceSpawn = true;
         sheep.setPosition(x, y, z);
         testManager.getWorld().spawnEntity(sheep);
     }
 
-    private void missile(int x, int y, int z) {
+    private void missile(int x, int y, int z)
+    {
         final EntityMissile missile = new EntityMissile(testManager.getWorld());
         missile.forceSpawn = true;
         missile.setPosition(x, y, z);
@@ -61,34 +67,75 @@ public class CommandLagTest
     }
 
     @Test
-    void command_removeNothing() {
+    void command_removeNothing()
+    {
 
         //Spawn some sheep to act as decoys
         sheep(100, 20, 100);
         sheep(100, 30, 100);
         sheep(100, 40, 100);
-        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(),"Should start with 3 sheep");
+        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(), "Should start with 3 sheep");
 
         //Trigger command
         Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, new String[0]));
 
-        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(),"Should end with 3 sheep");
+        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(), "Should end with 3 sheep");
     }
 
     @Test
-    void command_removeSomething() {
+    void command_removeMissiles()
+    {
+        dummyCommandSender.position = new Vec3d(100, 20, 100);
 
         //Spawn some sheep to act as decoys
         sheep(100, 20, 100);
         sheep(100, 30, 100);
         sheep(100, 40, 100);
+
         missile(100, 10, 100);
         missile(-100, 10, -100);
-        Assertions.assertEquals(5, testManager.getWorld().loadedEntityList.size(),"Should start with 5 entities");
+
+        //Validate start condition
+        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should start with 3 sheep");
+        Assertions.assertEquals(2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityMissile).count(), "Should start with 2 missiles");
 
         //Trigger command
         Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, new String[0]));
 
-        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(),"Should end with 3 sheep");
+        //Validate output
+        Assertions.assertEquals(1, dummyCommandSender.messages.size(), "Should have 1 chat message");
+        Assertions.assertEquals(CommandLag.TRANSLATION_LAG_REMOVE, dummyCommandSender.pollLastMessage(), "Should get translation");
+
+        //Should still have 3 sheep
+        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should end with 3 sheep");
+        Assertions.assertEquals(0, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityMissile).filter(Entity::isEntityAlive).count(), "Should end with 0 missiles");
+    }
+
+    @Test
+    void command_removeBlasts()
+    {
+        dummyCommandSender.position = new Vec3d(100, 20, 100);
+
+        //Spawn some sheep to act as decoys
+        sheep(100, 20, 100);
+        sheep(100, 30, 100);
+        sheep(100, 40, 100);
+
+        ExplosiveHandler.activeBlasts.add(new FakeBlast(null).setBlastPosition(100, 20, 100).setBlastWorld(testManager.getWorld()));
+        ExplosiveHandler.activeBlasts.add(new FakeBlast(null).setBlastPosition(100, 20, 100).setBlastWorld(testManager.getWorld()));
+
+        //Validate start condition
+        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(), "Should start with 3 entities");
+
+        //Trigger command
+        Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, new String[0]));
+
+        //Validate output
+        Assertions.assertEquals(1, dummyCommandSender.messages.size(), "Should have 1 chat message");
+        Assertions.assertEquals(CommandLag.TRANSLATION_LAG_REMOVE, dummyCommandSender.pollLastMessage(), "Should get translation");
+
+        //Should still have 3 sheep
+        Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(), "Should end with 3 entities");
+        Assertions.assertEquals(0, ExplosiveHandler.activeBlasts.size(), "Should end with 0 blasts");
     }
 }
