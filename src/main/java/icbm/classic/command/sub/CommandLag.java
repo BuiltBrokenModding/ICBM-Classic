@@ -1,10 +1,8 @@
 package icbm.classic.command.sub;
 
 import icbm.classic.command.CommandUtils;
-import icbm.classic.command.system.ICommandGroup;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -14,12 +12,14 @@ import net.minecraft.util.text.TextComponentString;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 4/13/2018.
  */
 public class CommandLag extends SubCommand
 {
+    private final Predicate<Entity> icbmEntitySelector = (entity) -> entity.isEntityAlive() && CommandUtils.isICBMEntity(entity);
 
     public CommandLag()
     {
@@ -44,30 +44,18 @@ public class CommandLag extends SubCommand
         //Parse range
         double range = args.length > 1 ? Double.parseDouble(args[1]) : 1000;
 
-        //Get entities
-        List<Entity> entities = CommandUtils.getEntities(sender.getEntityWorld(), sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z, range);
+        //Remove ICBM entities
+        final List<Entity> entities = CommandUtils.getEntities(sender.getEntityWorld(),
+                sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z,
+                range,
+                icbmEntitySelector);
+        entities.forEach(Entity::setDead);
 
-        int count = 0;
-        //Loop with for-loop to prevent CME
-        for (int i = 0; i < entities.size(); i++)
-        {
-            Entity entity = entities.get(i);
-            if (entity != null && !entity.isDead)
-            {
-                if (CommandUtils.isICBMEntity(entity))
-                {
-                    entity.setDead();
-                    count++;
-                }
-            }
-        }
-
-        //Clear blasts
+        //Remove blasts queue to run or currently running
         int blasts = ExplosiveHandler.removeNear(sender.getEntityWorld(), sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z, range);
 
         //Update user with data
-        sender.sendMessage(new TextComponentString("Removed '" + count + "' ICBM entities within " + range + " meters"));
+        sender.sendMessage(new TextComponentString("Removed '" + entities.size() + "' ICBM entities within " + range + " meters"));
         sender.sendMessage(new TextComponentString("Removed '" + blasts + "' blast controllers within " + range + " meters"));
-
     }
 }
