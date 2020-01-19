@@ -28,6 +28,7 @@ public class FakeBlast implements IBlastInit
     public IExplosiveData data;
 
     public boolean triggered = false;
+    public boolean isAlive = true;
 
     private final BlastState returnState;
 
@@ -135,6 +136,12 @@ public class FakeBlast implements IBlastInit
     public Entity getController()
     {
         return null;
+    }
+
+    @Override
+    public void clearBlast()
+    {
+        isAlive = false;
     }
 
     @Override
