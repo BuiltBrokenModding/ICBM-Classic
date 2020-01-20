@@ -41,6 +41,8 @@ command.icbmclassic:icbm.spread.started=Triggering %10$d blasts with explosive %
 ### Lag Command
 command.icbmclassic:icbm.lag.removed=Removed %1$d blast and %2%d entities within %3$d meters
 
+### Remove Command
+command.icbmclassic:icbm.remove=Removed %1%d entities within %2$d meters
 
 ### Generic errors
 command.icbmclassic:icbm.error.unknown.command=Unknown command. See %s help for more info.

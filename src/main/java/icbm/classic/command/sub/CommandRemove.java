@@ -7,11 +7,12 @@ import icbm.classic.content.entity.EntityExplosive;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.NumberInvalidException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -26,6 +27,8 @@ import java.util.function.Predicate;
  */
 public class CommandRemove extends SubCommand
 {
+    public static final String TRANSLATION_REMOVE = "command.icbmclassic:icbm.remove";
+
     public CommandRemove()
     {
         super("remove");
@@ -58,22 +61,22 @@ public class CommandRemove extends SubCommand
         final Predicate<Entity> entitySelector = buildSelector(args[0]);
 
         //Get range
-        final int range = args.length == 2 ? CommandUtils.parseRadius(args[1])
-                : args.length == 6 ? CommandUtils.parseRadius(args[5])
-                : -1;
+        final int range = getRange(args);
 
         //Get position
         World world;
         double x, y, z;
 
-        if (args.length == 6)
+        //Long version, 5 args or 6 if range is applied
+        if (args.length >= 5)
         {
             world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
-            x = Double.parseDouble(args[2]);
-            y = Double.parseDouble(args[3]);
-            z = Double.parseDouble(args[4]);
+            x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
+            y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
+            z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
         }
-        else if (!(sender instanceof MinecraftServer))
+        //Short version, 1 arg or 2 if range is applied
+        else if (!(sender instanceof MinecraftServer) && args.length <= 2)
         {
             world = sender.getEntityWorld();
             x = sender.getPositionVector().x;
@@ -90,9 +93,19 @@ public class CommandRemove extends SubCommand
         entities.forEach(Entity::setDead);
 
         //User feedback
-        sender.sendMessage(new TextComponentString("Removed '" + entities.size() + "' ICBM entities " + (range > 0 ? "within " + range + "meters" : "from the world"))); //TODO translate
+        sender.sendMessage(new TextComponentTranslation(TRANSLATION_REMOVE, entities.size(), range));
 
         return true;
+    }
+
+    private int getRange(String[] args) throws NumberInvalidException
+    {
+        if(args.length == 2) {
+            return CommandBase.parseInt(args[1]);
+        } else  if(args.length == 6) {
+            return CommandBase.parseInt(args[5]);
+        }
+        return -1;
     }
 
     private boolean isRemoveMissile(String type)
