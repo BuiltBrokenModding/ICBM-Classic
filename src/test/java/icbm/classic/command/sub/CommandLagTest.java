@@ -2,6 +2,7 @@ package icbm.classic.command.sub;
 
 import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
+import icbm.classic.TestUtils;
 import icbm.classic.command.FakeBlast;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.explosive.ExplosiveHandler;
@@ -50,35 +51,22 @@ public class CommandLagTest
         Assertions.assertEquals("/lag [radius]", testManager.getPlayer().messages.poll().getUnformattedText());
     }
 
-    private void sheep(int x, int y, int z)
-    {
-        final EntitySheep sheep = new EntitySheep(testManager.getWorld());
-        sheep.forceSpawn = true;
-        sheep.setPosition(x, y, z);
-        testManager.getWorld().spawnEntity(sheep);
-    }
-
-    private void missile(int x, int y, int z)
-    {
-        final EntityMissile missile = new EntityMissile(testManager.getWorld());
-        missile.forceSpawn = true;
-        missile.setPosition(x, y, z);
-        testManager.getWorld().spawnEntity(missile);
-    }
-
     @Test
     void command_removeNothing()
     {
+        dummyCommandSender.position = new Vec3d(100, 200, 100);
 
         //Spawn some sheep to act as decoys
-        sheep(100, 20, 100);
-        sheep(100, 30, 100);
-        sheep(100, 40, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 20, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 30, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 40, 100);
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(), "Should start with 3 sheep");
 
         //Trigger command
-        Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, new String[0]));
+        final String[] args = new String[]{"all"};
+        Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, args));
 
+        //Should still have 3 sheep
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.size(), "Should end with 3 sheep");
     }
 
@@ -88,12 +76,12 @@ public class CommandLagTest
         dummyCommandSender.position = new Vec3d(100, 20, 100);
 
         //Spawn some sheep to act as decoys
-        sheep(100, 20, 100);
-        sheep(100, 30, 100);
-        sheep(100, 40, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 20, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 30, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 40, 100);
 
-        missile(100, 10, 100);
-        missile(-100, 10, -100);
+        TestUtils.missile(testManager.getWorld(), 100, 10, 100);
+        TestUtils.missile(testManager.getWorld(), -100, 10, -100);
 
         //Validate start condition
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should start with 3 sheep");
@@ -117,9 +105,9 @@ public class CommandLagTest
         dummyCommandSender.position = new Vec3d(100, 20, 100);
 
         //Spawn some sheep to act as decoys
-        sheep(100, 20, 100);
-        sheep(100, 30, 100);
-        sheep(100, 40, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 20, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 30, 100);
+        TestUtils.sheep(testManager.getWorld(), 100, 40, 100);
 
         ExplosiveHandler.activeBlasts.add(new FakeBlast(null).setBlastPosition(100, 20, 100).setBlastWorld(testManager.getWorld()));
         ExplosiveHandler.activeBlasts.add(new FakeBlast(null).setBlastPosition(100, 20, 100).setBlastWorld(testManager.getWorld()));
