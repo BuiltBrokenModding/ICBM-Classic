@@ -9,6 +9,7 @@ import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -45,7 +46,7 @@ public class CommandBlastSpread extends SubCommand
         }
         else
         {
-            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND);
+            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
         }
     }
 
@@ -67,7 +68,7 @@ public class CommandBlastSpread extends SubCommand
         final float scale = Float.parseFloat(args[7]); //TODO turn into helper method
         if (scale <= 0)
         {
-            throw new WrongUsageException(CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO);
+            throw new SyntaxErrorException(CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         final int expectedSpawnCount = (int)Math.floor(Math.pow((count * 2) + 1, 2));

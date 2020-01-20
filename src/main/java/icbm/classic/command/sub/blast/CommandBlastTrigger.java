@@ -10,6 +10,7 @@ import icbm.classic.command.system.SubCommand;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -60,11 +61,11 @@ public class CommandBlastTrigger extends SubCommand
     {
         if (args.length <= 0 || !doCommand(server, sender, args))
         {
-            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND);
+            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
         }
     }
 
-    private boolean doCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws WrongUsageException
+    private boolean doCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws SyntaxErrorException
     {
         //Get explosive from user
         final IExplosiveData explosiveData = getExplosive(args[0]);
@@ -82,12 +83,12 @@ public class CommandBlastTrigger extends SubCommand
         return false;
     }
 
-    private void shortVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws WrongUsageException
+    private void shortVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws SyntaxErrorException
     {
         final float scale = Float.parseFloat(args[1]);
         if (scale <= 0)
         {
-            throw new WrongUsageException(TRANSLATION_ERROR_SCALE_ZERO);
+            throw new SyntaxErrorException(TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         //Get position data
@@ -100,12 +101,12 @@ public class CommandBlastTrigger extends SubCommand
         trigger(sender, world, x, y, z, explosiveData, scale);
     }
 
-    private void longVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws WrongUsageException
+    private void longVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws SyntaxErrorException
     {
         final float scale = Float.parseFloat(args[5]);
         if (scale <= 0)
         {
-            throw new WrongUsageException(TRANSLATION_ERROR_SCALE_ZERO);
+            throw new SyntaxErrorException(TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         //Get position data
@@ -125,12 +126,12 @@ public class CommandBlastTrigger extends SubCommand
      * @return explosive data
      * @throws WrongUsageException - if ID is not found
      */
-    public static IExplosiveData getExplosive(String explosive_id) throws WrongUsageException
+    public static IExplosiveData getExplosive(String explosive_id) throws SyntaxErrorException
     {
         final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
         if (explosiveData == null)
         {
-            throw new WrongUsageException(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
+            throw new SyntaxErrorException(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
         }
         return explosiveData;
     }

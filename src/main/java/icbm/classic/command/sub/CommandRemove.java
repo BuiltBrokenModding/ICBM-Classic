@@ -51,7 +51,7 @@ public class CommandRemove extends SubCommand
     {
         if (args.length <= 0 || !doCommand(sender, args))
         {
-            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND);
+            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
         }
     }
 

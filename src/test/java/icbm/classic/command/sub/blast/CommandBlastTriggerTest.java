@@ -12,7 +12,6 @@ import icbm.classic.command.ICBMCommands;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterAll;
@@ -122,8 +121,8 @@ public class CommandBlastTriggerTest
         final ICommandSender sender = player ? testManager.getPlayer() : testManager.getServer();
 
         //Validate we throw the right error
-        final WrongUsageException exception = Assertions.assertThrows(
-                WrongUsageException.class,
+        final CommandException exception = Assertions.assertThrows(
+                CommandException.class,
                 () -> command.handleCommand(testManager.getServer(), sender, commandArgs)
         );
 

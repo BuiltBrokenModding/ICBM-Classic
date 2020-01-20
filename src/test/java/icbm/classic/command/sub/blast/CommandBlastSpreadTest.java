@@ -10,7 +10,6 @@ import icbm.classic.command.FakeBlast;
 import icbm.classic.command.ICBMCommands;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.WrongUsageException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -125,8 +124,8 @@ public class CommandBlastSpreadTest
     void command_badInput(String[] commandArgs, String errorMessage)
     {
         //Validate we throw the right error
-        final WrongUsageException exception = Assertions.assertThrows(
-                WrongUsageException.class,
+        final CommandException exception = Assertions.assertThrows(
+                CommandException.class,
                 () -> command.handleCommand(testManager.getServer(), testManager.getServer(), commandArgs)
         );
 
