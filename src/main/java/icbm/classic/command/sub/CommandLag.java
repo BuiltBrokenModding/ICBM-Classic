@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  */
 public class CommandLag extends SubCommand
 {
-    public static final String TRANSLATION_LAG_REMOVE = "command.icbmclassic:icbm.lag.removed";
+    public static final String TRANSLATION_LAG_REMOVE = "command.icbmclassic:icbm.lag.remove";
     private final Predicate<Entity> icbmEntitySelector = (entity) -> entity.isEntityAlive() && CommandUtils.isICBMEntity(entity);
 
     public CommandLag()
@@ -52,11 +52,11 @@ public class CommandLag extends SubCommand
         entities.forEach(Entity::setDead);
 
         //Remove blasts queue to run or currently running
-        final int blasts = ExplosiveHandler.removeNear(sender.getEntityWorld(),
+        final int blastRemoveCount = ExplosiveHandler.removeNear(sender.getEntityWorld(),
                 sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z,
                 range);
 
         //Update user with data
-        sender.sendMessage(new TextComponentTranslation(TRANSLATION_LAG_REMOVE, blasts, entities.size(), range));
+        sender.sendMessage(new TextComponentTranslation(TRANSLATION_LAG_REMOVE, blastRemoveCount, entities.size(), range));
     }
 }

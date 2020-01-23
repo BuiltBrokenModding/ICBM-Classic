@@ -39,7 +39,7 @@ command.icbmclassic:icbm.blast.error.scale.zero=Scale must be greater than zero!
 command.icbmclassic:icbm.spread.started=Triggering %10$d blasts with explosive %1$s and scale %2$f at [%3$s@%4$d, %5$d, %6$d, %7$d] with a spread of %8$d over a distance %9$d.
 
 ### Lag Command
-command.icbmclassic:icbm.lag.removed=Removed %1$d blast and %2%d entities within %3$d meters
+command.icbmclassic:icbm.lag.remove=Removed %1$d blast and %2$d entities within %3$d meters
 
 ### Remove Command
 command.icbmclassic:icbm.remove=Removed %1%d entities within %2$d meters
