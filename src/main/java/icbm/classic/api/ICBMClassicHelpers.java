@@ -58,7 +58,7 @@ public final class ICBMClassicHelpers
      */
     public static IExplosiveData getExplosive(ResourceLocation name, boolean returnNull)
     {
-        IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(name);
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(name);
         if (data != null)
         {
             return data;

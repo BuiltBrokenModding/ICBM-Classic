@@ -17,6 +17,36 @@ config.icbmclassic:item.title=Item
 config.icbmclassic:ic2.title=Industrial Craft 2
 config.icbmclassic:debug.title=Debug
 
+## Chat commands
+
+
+### Blast Trigger Command: Good outputs - shared by blast spread command
+command.icbmclassic:icbm.blast.triggered=Blast triggered with explosive %1$s and scale %2$f at [%3$s@%4$d, %5$d, %6$d, %7$d].
+command.icbmclassic:icbm.blast.threaded=Blast sent queue with explosive %1$s and scale %2$f. When done processing it will trigger at [%3$s@%4$d, %5$d, %6$d, %7$d].
+
+### Blast Trigger Command: Errors Blast Triggering - shared by blast spread command
+command.icbmclassic:icbm.blast.error=Unexpect error creating blast, see console for details.
+command.icbmclassic:icbm.blast.error.blocked=Blast was blocked by a forge event, see console for details.
+command.icbmclassic:icbm.blast.error.null=BlastFactory did not generate a blast, see console for details.
+command.icbmclassic:icbm.blast.error.triggered=Blast was already triggered, this should never happen and is a bug.
+command.icbmclassic:icbm.blast.error.unknown=Command received an unknown blast status code, see console for details.
+
+### Blast Trigger Command: Errors Input data - shared by blast spread command
+command.icbmclassic:icbm.blast.error.explosive.id=Explosive with ID '%1$s' could not be found
+command.icbmclassic:icbm.blast.error.scale.zero=Scale must be greater than zero!
+
+### Blast Spread Command: Good outputs
+command.icbmclassic:icbm.spread.started=Triggering %10$d blasts with explosive %1$s and scale %2$f at [%3$s@%4$d, %5$d, %6$d, %7$d] with a spread of %8$d over a distance %9$d.
+
+### Lag Command
+command.icbmclassic:icbm.lag.remove=Removed %1$d blast and %2$d entities within %3$d meters
+
+### Remove Command
+command.icbmclassic:icbm.remove=Removed %1%d entities within %2$d meters
+
+### Generic errors
+command.icbmclassic:icbm.error.unknown.command=Unknown command. See %s help for more info.
+
 ## Potions
 potion.toxin=Toxin
 potion.virus=Virus

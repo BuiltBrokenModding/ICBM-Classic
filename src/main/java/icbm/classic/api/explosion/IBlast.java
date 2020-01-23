@@ -80,6 +80,12 @@ public interface IBlast extends IWorldPosition
     @Nullable
     Entity getController();
 
+    /**
+     * Called to clear the blast from the world. This
+     * should only be used by server utilities and commands.
+     */
+    void clearBlast();
+
     //TODO expose blast properties
     //TODO expose blast state (init, blocks, entity, done)
     //TODO expose threaded state if used

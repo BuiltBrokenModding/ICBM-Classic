@@ -9,6 +9,7 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.Blast;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -17,7 +18,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Simple handler to track blasts in order to disable or remove
@@ -28,8 +30,7 @@ import java.util.Iterator;
 @Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class ExplosiveHandler
 {
-
-    public static final ArrayList<Blast> activeBlasts = new ArrayList();
+    public static final ArrayList<IBlast> activeBlasts = new ArrayList();
 
     public static void add(Blast blast)
     {
@@ -46,31 +47,11 @@ public class ExplosiveHandler
     {
         if (!event.getWorld().isRemote)
         {
-            Iterator<Blast> it = activeBlasts.iterator();
-            while (it.hasNext())
-            {
-                Blast next = it.next();
-                if (next.world == null || next.world.provider.getDimension() == event.getWorld().provider.getDimension())
-                {
-                    onKill(next);
-                    it.remove();
-                }
-            }
+            final int dim = event.getWorld().provider.getDimension();
+            activeBlasts.stream()
+                    .filter(blast -> !blast.hasWorld() || blast.world().provider.getDimension() == dim)
+                    .forEach(IBlast::clearBlast);
         }
-    }
-
-    /**
-     * Runs kill logic on the blast, does not remove the blast
-     *
-     * @param blast
-     */
-    public static void onKill(Blast blast)
-    {
-        if (blast.getThread() != null)
-        {
-            blast.getThread().kill();
-        }
-        blast.isAlive = false; //TODO replace with method to allow blast to cleanup
     }
 
     /**
@@ -85,19 +66,19 @@ public class ExplosiveHandler
      */
     public static int removeNear(World world, double x, double y, double z, double range)
     {
-        int removeCount = 0;
-        Iterator<Blast> it = ExplosiveHandler.activeBlasts.iterator();
-        while (it.hasNext())
-        {
-            Blast blast = it.next();
-            if (blast.world == world && (range < 0 || range > 0 && range > blast.location.distance(x, y, z)))
-            {
-                ExplosiveHandler.onKill(blast);
-                it.remove();
-                removeCount++;
-            }
-        }
-        return removeCount;
+        final Pos pos = new Pos(x, y, z);
+
+        //Collect blasts marked for removal
+        final List<IBlast> toRemove = ExplosiveHandler.activeBlasts.stream()
+                .filter(blast -> blast.world() == world)
+                .filter(blast -> range < 0 || range > 0 && range > pos.distance(blast))
+                .collect(Collectors.toList());
+
+        //Do removals
+        activeBlasts.removeAll(toRemove);
+        toRemove.forEach(IBlast::clearBlast);
+
+        return toRemove.size();
     }
 
     public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, IExplosive capabilityExplosive)
@@ -112,7 +93,7 @@ public class ExplosiveHandler
 
     public static BlastState createExplosion(Entity cause, World world, double x, double y, double z, int blastID, float scale, NBTTagCompound customData)
     {
-        IBlast blast = createNew(cause, world, x, y, z, blastID, scale, customData);
+        final IBlast blast = createNew(cause, world, x, y, z, blastID, scale, customData);
         if (blast != null)
         {
             return blast.runBlast();
@@ -130,7 +111,7 @@ public class ExplosiveHandler
     {
         if (data != null && data.getBlastFactory() != null) //TODO add way to hook blast builder to add custom blasts
         {
-            IBlastInit blast = data.getBlastFactory().create();
+            final IBlastInit blast = data.getBlastFactory().create();
             blast.setBlastWorld(world);
             blast.setBlastPosition(x, y, z);
             blast.scaleBlast(scale);

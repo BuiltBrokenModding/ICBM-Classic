@@ -28,3 +28,13 @@ raw_audio/
 logs/
 
 run_tests/
+
+banned-ips.json
+
+banned-players.json
+
+ops.json
+
+whitelist.json
+
+output_tests/

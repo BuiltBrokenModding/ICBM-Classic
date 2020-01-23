@@ -106,17 +106,19 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 {
                     if (!this.world().spawnEntity(new EntityExplosion(this)))
                     {
-                        ICBMClassic.logger().error(this + "Failed to spawn explosion entity to control blast.");
+                        ICBMClassic.logger().error(this + " Failed to spawn explosion entity to control blast.");
                         isAlive = false;
-                        return BlastState.ERROR;
+                        return BlastState.ERROR; //TODO be more specific about error
                     }
                     return BlastState.TRIGGERED;
                 }
                 else
                 {
                     //Do setup tasks
-                    if(!this.doFirstSetup())
+                    if (!this.doFirstSetup())
+                    {
                         return BlastState.FORGE_EVENT_CANCEL;
+                    }
 
                     //Call explosive, only complete if true
                     if (this.doExplode(-1))
@@ -152,11 +154,13 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
      */
     public boolean onBlastTick(int ticksExisted)
     {
-        if(!world.isRemote)
+        if (!world.isRemote)
         {
             //Do setup work
-            if(!doFirstSetup())
+            if (!doFirstSetup())
+            {
                 return false;
+            }
 
             //Do ticks
             if (isAlive)
@@ -173,6 +177,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
 
     /**
      * Called to start the blast and run setup code
+     *
      * @return true if the blast should continue to run, false otherwhise
      */
     public final boolean doFirstSetup()
@@ -323,16 +328,23 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
         Vec3d var31 = new Vec3d(location.x(), location.y(), location.z());
 
-        if(!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter)
+        if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter)
         {
             allEntities.sort((e1, e2) -> {
-                if(e2 instanceof EntityExplosion && ((EntityExplosion)e2).getBlast() instanceof BlastRedmatter)
+                if (e2 instanceof EntityExplosion && ((EntityExplosion) e2).getBlast() instanceof BlastRedmatter)
+                {
                     return 1; //put red matter at the front
-                else return -1;
+                }
+                else
+                {
+                    return -1;
+                }
             });
 
-            if(onDamageEntity(allEntities.get(0))) //remove red matter blast and stop doing anything else
+            if (onDamageEntity(allEntities.get(0))) //remove red matter blast and stop doing anything else
+            {
                 return false;
+            }
         }
 
         for (int i = 0; i < allEntities.size(); ++i)
@@ -400,8 +412,10 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         this.callCount = nbt.getInteger(NBTConstants.CALL_COUNT);
         this.size = nbt.getFloat(NBTConstants.EXPLOSION_SIZE);
 
-        if(world instanceof WorldServer)
-            exploder = ((WorldServer)world).getEntityFromUuid(nbt.getUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID));
+        if (world instanceof WorldServer)
+        {
+            exploder = ((WorldServer) world).getEntityFromUuid(nbt.getUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID));
+        }
     }
 
     @Override
@@ -410,8 +424,10 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         nbt.setInteger(NBTConstants.CALL_COUNT, this.callCount);
         nbt.setFloat(NBTConstants.EXPLOSION_SIZE, this.size);
 
-        if(world instanceof WorldServer)
+        if (world instanceof WorldServer)
+        {
             nbt.setUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID, this.exploder.getUniqueID());
+        }
     }
 
     public boolean isMovable()
@@ -620,5 +636,15 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         MinecraftForge.EVENT_BUS.post(new BlastBuildEvent(this));
         hasBuilt = true;
         return this;
+    }
+
+    @Override
+    public void clearBlast()
+    {
+        if (getThread() != null)
+        {
+            getThread().kill();
+        }
+        isAlive = false;
     }
 }
