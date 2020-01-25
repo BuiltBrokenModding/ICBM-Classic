@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**

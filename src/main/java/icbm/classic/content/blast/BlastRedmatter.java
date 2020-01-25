@@ -14,8 +14,6 @@ import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.network.packet.PacketRedmatterSizeSync;
 import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;

@@ -1,8 +1,6 @@
 package icbm.classic.command.sub;
 
-import icbm.classic.command.system.ICommandGroup;
 import icbm.classic.command.system.SubCommand;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
