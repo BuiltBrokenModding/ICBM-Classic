@@ -133,7 +133,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
             if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks
             {
-                ICBMClassic.packetHandler.sendToAllAround(new PacketRedmatterSizeSync(size, getPos()), new TargetPoint(world().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 256));
+                ICBMClassic.packetHandler.sendToAllAround(new PacketRedmatterSizeSync(size, getController().getEntityId()), new TargetPoint(world().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 256));
             }
 
             //Limit life span of the blast

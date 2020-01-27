@@ -1,21 +1,20 @@
 package icbm.classic.lib.network.packet;
 
-import java.util.List;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketRedmatterSizeSync extends PacketBase<PacketRedmatterSizeSync>
 {
     public float size;
-    public BlockPos pos;
+    public int id;
 
     public PacketRedmatterSizeSync()
     {
@@ -24,19 +23,19 @@ public class PacketRedmatterSizeSync extends PacketBase<PacketRedmatterSizeSync>
 
     /**
      * @param size Redmatter size
-     * @param pos The redmatter's position
+     * @param id The redmatter entity's id
      */
-    public PacketRedmatterSizeSync(float size, BlockPos pos)
+    public PacketRedmatterSizeSync(float size, int id)
     {
         this.size = size;
-        this.pos = pos;
+        this.id = id;
     }
 
     @Override
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         buffer.writeFloat(size);
-        buffer.writeLong(pos.toLong());
+        ByteBufUtils.writeVarInt(buffer, id, 5);
         super.encodeInto(ctx, buffer);
     }
 
@@ -44,7 +43,7 @@ public class PacketRedmatterSizeSync extends PacketBase<PacketRedmatterSizeSync>
     public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         size = buffer.readFloat();
-        pos = BlockPos.fromLong(buffer.readLong());
+        id = ByteBufUtils.readVarInt(buffer, 5);
         super.decodeInto(ctx, buffer);
     }
 
@@ -54,10 +53,10 @@ public class PacketRedmatterSizeSync extends PacketBase<PacketRedmatterSizeSync>
     {
         if (player != null)
         {
-            List<EntityExplosion> entityList = Minecraft.getMinecraft().world.getEntitiesWithinAABB(EntityExplosion.class, new AxisAlignedBB(pos));
+            Entity entity = Minecraft.getMinecraft().world.getEntityByID(id);
 
-            if(entityList.size() > 0 && entityList.get(0).getBlast() instanceof BlastRedmatter)
-                ((BlastRedmatter)entityList.get(0).getBlast()).targetSize = size;
+            if(entity instanceof EntityExplosion && ((EntityExplosion)entity).getBlast() instanceof BlastRedmatter)
+                ((BlastRedmatter)((EntityExplosion)entity).getBlast()).targetSize = size;
         }
     }
 }
