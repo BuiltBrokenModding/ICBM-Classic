@@ -1,63 +1,70 @@
 package icbm.classic.lib.network.packet;
 
-import java.util.List;
+import icbm.classic.ICBMClassic;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.lib.network.IPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PacketRedmatterSizeSync extends PacketBase<PacketRedmatterSizeSync>
+public class PacketRedmatterSizeSync implements IPacket<PacketRedmatterSizeSync> //TODO replace with entity data manager
 {
+    /** Size of the blast */
     public float size;
-    public BlockPos pos;
+    /** ID of the entity controller of the blast */
+    public int entityID;
 
     public PacketRedmatterSizeSync()
     {
         //Needed for forge to construct the packet
     }
 
-    /**
-     * @param size Redmatter size
-     * @param pos The redmatter's position
-     */
-    public PacketRedmatterSizeSync(float size, BlockPos pos)
+    public PacketRedmatterSizeSync(float size, int entityID)
     {
         this.size = size;
-        this.pos = pos;
+        this.entityID = entityID;
     }
 
     @Override
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         buffer.writeFloat(size);
-        buffer.writeLong(pos.toLong());
-        super.encodeInto(ctx, buffer);
+        buffer.writeInt(entityID);
     }
 
     @Override
     public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         size = buffer.readFloat();
-        pos = BlockPos.fromLong(buffer.readLong());
-        super.decodeInto(ctx, buffer);
+        entityID = buffer.readInt();
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void handleClientSide(EntityPlayer player)
     {
-        if (player != null)
+        if (Minecraft.getMinecraft().world != null)
         {
-            List<EntityExplosion> entityList = Minecraft.getMinecraft().world.getEntitiesWithinAABB(EntityExplosion.class, new AxisAlignedBB(pos));
-
-            if(entityList.size() > 0 && entityList.get(0).getBlast() instanceof BlastRedmatter)
-                ((BlastRedmatter)entityList.get(0).getBlast()).targetSize = size;
+            final Entity entity = Minecraft.getMinecraft().world.getEntityByID(entityID);
+            if (entity instanceof EntityExplosion && ((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
+            {
+                ((BlastRedmatter) ((EntityExplosion) entity).getBlast()).size = size;
+            }
         }
+    }
+
+    public static void sync(BlastRedmatter redmatter)
+    {
+        final PacketRedmatterSizeSync packet = new PacketRedmatterSizeSync(redmatter.size, redmatter.controller.getEntityId());
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(redmatter.world.provider.getDimension(),
+                redmatter.x, redmatter.y, redmatter.z,
+                256);
+        ICBMClassic.packetHandler.sendToAllAround(packet, point);
     }
 }

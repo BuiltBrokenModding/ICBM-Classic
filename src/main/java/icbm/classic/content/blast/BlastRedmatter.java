@@ -1,6 +1,5 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.IBlastMovable;
@@ -26,7 +25,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import java.util.List;
 
@@ -138,9 +136,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             }
 
 
-            if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks
+            if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks TODO this needs to sync more often or we will see rendering issues
             {
-                ICBMClassic.packetHandler.sendToAllAround(new PacketRedmatterSizeSync(size, getPos()), new TargetPoint(world().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 256));
+                PacketRedmatterSizeSync.sync(this); //TODO handle this in the controller, blasts shouldn't network sync
             }
 
             //Limit life span of the blast
