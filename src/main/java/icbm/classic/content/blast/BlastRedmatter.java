@@ -7,14 +7,13 @@ import icbm.classic.api.explosion.IBlastMovable;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigBlast;
+import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.network.packet.PacketRedmatterSizeSync;
 import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -54,6 +53,10 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     //client side value
     public float targetSize = 0.0F;
+
+
+    private int lastRadius = 1; //TODO doc
+    private int radiusSkipCount = 0; //TODO doc
 
     public float getScaleFactor()
     {
@@ -105,13 +108,17 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     @Override
     public boolean onBlastTick(int ticksExisted)
     {
-        if(world().isRemote)
+        if (world().isRemote)
         {
             //reach the target size which is the size that was last sent from the server
-            if(targetSize < size)
-                size -= (size-targetSize)/10f;
-            else if(targetSize > size)
-                size += (targetSize-size)/10f;
+            if (targetSize < size)
+            {
+                size -= (size - targetSize) / 10f;
+            }
+            else if (targetSize > size)
+            {
+                size += (targetSize - size) / 10f;
+            }
         }
 
         return super.onBlastTick(ticksExisted);
@@ -123,11 +130,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         if (!this.world().isRemote)
         {
             //Decrease mass
-            this.size-=0.1;
+            this.size -= 0.1;
 
             if (this.size < 50) // evaporation speedup for small black holes
             {
-                this.size -= (50-this.size)/100;
+                this.size -= (50 - this.size) / 100;
             }
 
 
@@ -144,7 +151,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
             //Do actions
             doDestroyBlocks();
-            doEntityMovement();
+            doEntityEffects();
 
             //Play effects
             if (doAudio)
@@ -159,8 +166,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         return false;
     }
 
-    private int lastRadius = 1;
-    private int radiusSkipCount = 0;
     protected void doDestroyBlocks()
     {
         long time = System.currentTimeMillis();
@@ -170,7 +175,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         radiusSkipCount++;
         boolean quickMath = true; // for most iterations do math quickly
 
-        if (radiusSkipCount > 20)
+        if (radiusSkipCount > 20) //TODO what is this?
         {
             radiusSkipCount = 0;
             quickMath = false;
@@ -193,7 +198,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                             final IBlockState blockState = world.getBlockState(blockPos);
                             final Block block = blockState.getBlock();
                             //Null if call was made on an unloaded chunk
-                            if (block != null)
+                            if (block != Blocks.AIR)
                             {
                                 final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
                                 //Ignore air blocks and unbreakable blocks
@@ -208,11 +213,12 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                                         //Convert a random amount of destroyed blocks into flying blocks for visuals
                                         if (this.world().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
                                         {
-                                            EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, blockState);
+                                            final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, blockState);
                                             entity.yawChange = 50 * this.world().rand.nextFloat();
                                             entity.pitchChange = 50 * this.world().rand.nextFloat();
                                             this.world().spawnEntity(entity);
-                                            this.affectEntity(this.getBlastRadius() * 2, entity, false);
+
+                                            this.handleEntities(entity); //TODO why? this should just be an apply velocity call
                                         }
                                     }
                                     //Keep track of blocks removed to keep from lagging the game
@@ -226,9 +232,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                         {
                             return;
                         }
-                        else if(System.currentTimeMillis() - time > 30) //30ms to prevent stall
+                        else if (System.currentTimeMillis() - time > 30) //30ms to prevent stall
                         {
-                            this.size-=1;
+                            this.size -= 1;
                             return;
                         }
                     }
@@ -238,76 +244,87 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             lastRadius = currentRadius;
         }
 
-        lastRadius = (int)getBlastRadius() - 1;
+        lastRadius = (int) getBlastRadius() - 1;
     }
 
-    protected void doEntityMovement()
+    protected void doEntityEffects()
     {
-        float entityRadius = this.getBlastRadius() * 1.5f;
-        Cube cube = new Cube(location.add(0.5).sub(entityRadius), location.add(0.5).add(entityRadius));
-        AxisAlignedBB bounds = cube.getAABB();
-        List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
-        boolean doExplosion = true;
-        for (Entity entity : allEntities)
-        {
-            doExplosion = !this.affectEntity(entityRadius, entity, doExplosion);
-        }
+        final float entityRadius = this.getBlastRadius() * 1.5f;
+
+        final Cube cube = new Cube(location.add(0.5).sub(entityRadius), location.add(0.5).add(entityRadius)); //TODO Cache, recalc on movement only
+        final AxisAlignedBB bounds = cube.getAABB();
+
+        //Get all entities in the cube area
+        this.world().getEntitiesWithinAABB(Entity.class, bounds)
+                //Filter down
+                .stream().filter(this::shouldHandleEntity)
+                //Apply to each
+                .forEach(this::handleEntities);
     }
 
-    /**
-     * Makes an entity get affected by Red Matter.
-     *
-     * @Return True if explosion happened
-     */
-    public boolean affectEntity(float radius, Entity entity, boolean doExplosion)
+    private boolean shouldHandleEntity(Entity entity)
     {
-        //Ignore players that are in creative mode or can't be harmed
-        if (entity instanceof EntityPlayer && (((EntityPlayer) entity).capabilities.isCreativeMode || ((EntityPlayer) entity).capabilities.disableDamage))
-        {
-            return false;
-        }
-
         //Ignore self
         if (entity == this.controller)
         {
             return false;
         }
 
-        //Ignore entities that mark themselves are ignorable
-        if (entity instanceof IBlastIgnore)
+        //Ignore players that are in creative mode or can't be harmed TODO may need to check for spectator?
+        if (entity instanceof EntityPlayer && (((EntityPlayer) entity).capabilities.isCreativeMode || ((EntityPlayer) entity).capabilities.disableDamage))
         {
-            if (((IBlastIgnore) entity).canIgnore(this)) //TODO pass in distance and deltas
-            {
-                return false;
-            }
+            return false;
         }
 
+        //Ignore entities that mark themselves are ignorable
+        if (entity instanceof IBlastIgnore && ((IBlastIgnore) entity).canIgnore(this)) //TODO remove
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Makes an entity get affected by Red Matter.
+     */
+    protected void handleEntities(Entity entity) //TODO why is radius and doExplosion not used
+    {
         //Calculate different from center
-        double xDifference = entity.posX - location.xi() + 0.5;
-        double yDifference = entity.posY - location.yi() + 0.5;
-        double zDifference = entity.posZ - location.zi() + 0.5;
+        final double xDifference = entity.posX - location.xi() + 0.5; //TODO why 0.5? blast might actually have decimal position
+        final double yDifference = entity.posY - location.yi() + 0.5;
+        final double zDifference = entity.posZ - location.zi() + 0.5;
 
-        double dst = this.location.distance(entity);
+        final double distance = this.location.distance(entity); //TODO switch to Sq version for performance
 
+        moveEntity(entity, xDifference, yDifference, zDifference, distance);
+        attackEntity(entity, distance);
+    }
 
+    private void moveEntity(Entity entity, double xDifference, double yDifference, double zDifference, double distance)
+    {
+        //Calculate velocity
+        final double velX = -xDifference / distance / distance * 5;
+        final double velY = -yDifference / distance / distance * 5;
+        final double velZ = -zDifference / distance / distance * 5;
 
         // Gravity Velocity
-        entity.addVelocity(-xDifference/dst/dst * 5, -yDifference/dst/dst * 5, -zDifference/dst/dst * 5);
+        entity.addVelocity(velX, velY, velZ); //TODO add API to allow modifying this value
 
-        if (entity instanceof EntityPlayer) // if player send packet because motion is handled client side
+        // if player send packet because motion is handled client side
+        if (entity instanceof EntityPlayer)
         {
             entity.velocityChanged = true;
         }
-
-        if (entity instanceof EntityExplosion)
+        else if (entity instanceof EntityExplosion)
         {
             final IBlast blast = ((EntityExplosion) entity).getBlast();
-            if (blast instanceof  BlastRedmatter)
+            if (blast instanceof BlastRedmatter) //TODO move to capability logic
             {
-                final BlastRedmatter rmBlast = (BlastRedmatter)blast;
+                final BlastRedmatter rmBlast = (BlastRedmatter) blast;
 
-                final int otherSize = (int)Math.pow(this.getBlastRadius(),3);
-                final int thisSize = (int)Math.pow(blast.getBlastRadius(),3);
+                final int otherSize = (int) Math.pow(this.getBlastRadius(), 3);
+                final int thisSize = (int) Math.pow(blast.getBlastRadius(), 3);
                 final double totalSize = otherSize + thisSize;
 
                 final double thisSizePct = thisSize / totalSize;
@@ -315,19 +332,23 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 final Vec3d totalDelta = rmBlast.getPosition().subtract(this.getPosition());
                 final Vec3d thisDelta = totalDelta.scale(thisSizePct);
 
-                if(exploder != null)
-                    this.exploder.addVelocity(thisDelta.x,thisDelta.y,thisDelta.z);
+                if (exploder != null)
+                {
+                    this.exploder.addVelocity(thisDelta.x, thisDelta.y, thisDelta.z); //TODO we are adding velocity twice
+                }
             }
         }
+    }
 
-        boolean explosionCreated = false;
-
-        if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < (ENTITY_DESTROY_RADIUS * getScaleFactor()))
+    private void attackEntity(Entity entity, double distance)
+    {
+        //Handle eating logic
+        if (distance < (ENTITY_DESTROY_RADIUS * getScaleFactor())) //TODO make config driven, break section out into its own method
         {
             if (entity instanceof EntityExplosion)
             {
                 final IBlast blast = ((EntityExplosion) entity).getBlast();
-                if (blast instanceof BlastAntimatter)
+                if (blast instanceof BlastAntimatter) //TODO move to capability
                 {
                     if (doAudio)
                     {
@@ -335,40 +356,38 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                     }
                     if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
                     {
-                        entity.setDead();
-                        return explosionCreated;
+                        //Destroy self
+                        clearBlast();
                     }
                 }
-                else if (blast instanceof BlastRedmatter && ((BlastRedmatter) blast).isAlive && this.isAlive)
+                else if (blast instanceof BlastRedmatter && ((BlastRedmatter) blast).isAlive && this.isAlive) //TODO move to capability, also why isAlive checks?
                 {
                     //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
 
                     //We are going to merge both blasts together
-                    double sizeA = this.getBlastRadius();
-                    sizeA = sizeA * sizeA * sizeA;
-                    double sizeB = ((EntityExplosion) entity).getBlast().getBlastRadius();
-                    sizeB = sizeB * sizeB * sizeB;
-                    float radiusNew = (float) Math.cbrt(sizeA + sizeB);
+                    final double selfRad = Math.pow(this.getBlastRadius(), 3);
+                    final double targetRad = Math.pow(((EntityExplosion) entity).getBlast().getBlastRadius(), 3);
+
+                    final float newRad = (float) Math.cbrt(selfRad + targetRad); //TODO why cube?
 
                     //Average out timer
-                    this.callCount = (callCount + ((BlastRedmatter)blast).callCount) / 2;
+                    this.callCount = (callCount + ((BlastRedmatter) blast).callCount) / 2;
 
-                    this.size = radiusNew;
+                    this.size = newRad;
 
-                    this.controller.setVelocity(0,0,0);
+                    this.controller.setVelocity(0, 0, 0); //TODO combine the vectors
 
-                    //Kill explosion entity
-                    ((BlastRedmatter)blast).isAlive = false;
-                    ((BlastRedmatter)blast).controller.setDead();
+                    //TODO fire an event when combined (non-cancelable to allow acting on combined result)
                 }
-                //Kill entity in the center of the ball
-                entity.setDead();
+
+                //Kill the blast
+                blast.clearBlast();
             }
-            else if (entity instanceof EntityMissile)
+            else if (entity instanceof EntityMissile) //TODO move to capability
             {
                 ((EntityMissile) entity).doExplosion();
             }
-            else if (entity instanceof EntityExplosive)
+            else if (entity instanceof EntityExplosive) //TODO move to capability
             {
                 ((EntityExplosive) entity).explode();
             }
@@ -380,18 +399,18 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             {
                 //Kill entity in the center of the ball
                 entity.setDead();
-                if(entity instanceof EntityFlyingBlock)
+                if (entity instanceof EntityFlyingBlock)
                 {
-                    if(this.size<120)
-                        this.size+=0.05;
+                    if (this.size < 120)
+                    {
+                        this.size += 0.05;
+                    }
                 }
             }
         }
-
-        return explosionCreated;
     }
 
-    public static class DamageSourceRedmatter extends DamageSource
+    public static class DamageSourceRedmatter extends DamageSource //TODO move to its own class with proper handling
     {
         public final BlastRedmatter blastRedmatter;
 
@@ -407,5 +426,4 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     {
         return ConfigBlast.REDMATTER_MOVEMENT;
     }
-
 }

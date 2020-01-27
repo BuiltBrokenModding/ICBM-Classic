@@ -645,6 +645,10 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         {
             getThread().kill();
         }
+        if (controller != null)
+        {
+            controller.setDead();
+        }
         isAlive = false;
     }
 }
