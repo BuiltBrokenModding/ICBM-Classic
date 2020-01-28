@@ -9,6 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,14 +36,14 @@ public class PacketRedmatterSizeSync implements IPacket<PacketRedmatterSizeSync>
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         buffer.writeFloat(size);
-        buffer.writeInt(entityID);
+        ByteBufUtils.writeVarInt(buffer, entityID, 5);
     }
 
     @Override
     public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
         size = buffer.readFloat();
-        entityID = buffer.readInt();
+        entityID = ByteBufUtils.readVarInt(buffer, 5);
     }
 
     @Override
