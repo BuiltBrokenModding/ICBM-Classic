@@ -26,8 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
 
-import java.util.List;
-
 public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
 {
     //Constants, do not change as they modify render and effect scales
@@ -41,8 +39,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     public static int MAX_LIFESPAN = 36000; // 30 minutes
     public static float CHANCE_FOR_FLYING_BLOCK = 0.8f;
     public static boolean DO_DESPAWN = true;
-    public static boolean doAudio = true;
-    public static boolean doFlyingBlocks = true;
+    public static boolean ENABLE_AUDIO = true;
+    public static boolean SPAWN_FLYING_BLOCKS = true;
 
     //Blast Settings
     public int lifeSpan = MAX_LIFESPAN;
@@ -51,7 +49,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     //client side value
     public float targetSize = 0.0F;
-
 
     private int lastRadius = 1; //TODO doc
     private int radiusSkipCount = 0; //TODO doc
@@ -73,22 +70,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     @Override
     protected void onBlastCompleted()
     {
-        //Kill host TODO see if this is really needed
-        AxisAlignedBB bounds = new AxisAlignedBB(this.x - this.size, this.y - this.size, this.z - this.size, this.x + this.size, this.y + this.size, this.z + this.size);
-        List<?> list = this.world().getEntitiesWithinAABB(EntityExplosion.class, bounds);
-
-        for (Object obj : list)
-        {
-            if (obj instanceof EntityExplosion)
-            {
-                EntityExplosion explosion = (EntityExplosion) obj;
-
-                if (explosion.getBlast() == this)
-                {
-                    explosion.setDead();
-                }
-            }
-        }
+        clearBlast();
     }
 
 
@@ -141,7 +123,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             doEntityEffects();
 
             //Play effects
-            if (doAudio)
+            if (ENABLE_AUDIO)
             {
                 if (this.world().rand.nextInt(8) == 0)
                 {
@@ -255,7 +237,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected boolean canTurnIntoFlyingBlock(IBlockState blockState)
     {
-        return doFlyingBlocks && !isFluid(blockState);
+        return SPAWN_FLYING_BLOCKS && !isFluid(blockState);
     }
 
     protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
@@ -371,7 +353,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 final IBlast blast = ((EntityExplosion) entity).getBlast();
                 if (blast instanceof BlastAntimatter) //TODO move to capability
                 {
-                    if (doAudio)
+                    if (ENABLE_AUDIO)
                     {
                         ICBMSounds.EXPLOSION.play(world, location.x(), location.y(), location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
                     }
