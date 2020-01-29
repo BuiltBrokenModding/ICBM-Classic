@@ -33,6 +33,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     //Constants, do not change as they modify render and effect scales
     public static final float NORMAL_RADIUS = 70;
     public static final float ENTITY_DESTROY_RADIUS = 6;
+    public static final int MAX_RUNTIME_MS = 5; //TODO config
 
     //Config settings
     public static int MAX_BLOCKS_EDITS_PER_TICK = 100;
@@ -45,7 +46,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     //Blast Settings
     public int lifeSpan = MAX_LIFESPAN;
-    public int blocksEditsPerTick = -1;
 
     public boolean coloredBeams = true;
 
@@ -56,6 +56,10 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     private int lastRadius = 1; //TODO doc
     private int radiusSkipCount = 0; //TODO doc
 
+    //Lag tracking
+    private int blocksDestroyed = 0;
+    private long tickStart;
+
     public float getScaleFactor()
     {
         return size / NORMAL_RADIUS;
@@ -63,23 +67,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     public int getBlocksPerTick()
     {
-        if (blocksEditsPerTick == -1)
-        {
-            blocksEditsPerTick = (int) Math.min(MAX_BLOCKS_EDITS_PER_TICK, DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
-        }
-        return blocksEditsPerTick;
+        return (int) Math.min(MAX_BLOCKS_EDITS_PER_TICK, DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
     }
-
-    //    @Override
-    //    public boolean setupBlast()
-    //    {
-    //        if (!this.world().isRemote)
-    //        {
-    //            //this.oldWorld().createExplosion(this.exploder, position.x(), position.y(), position.z(), Math.max(2, 15.0F * getScaleFactor()), true);
-    //        }
-    //
-    //        return true;
-    //    }
 
     @Override
     protected void onBlastCompleted()
@@ -166,14 +155,12 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected void doDestroyBlocks()
     {
-        long time = System.currentTimeMillis();
-        // Try to find and grab some blocks to orbit
-        int blocksDestroyed = 0;
+        //Reset tracking
+        tickStart = System.currentTimeMillis();
+        blocksDestroyed = 0;
 
-        radiusSkipCount++;
         boolean quickMath = true; // for most iterations do math quickly
-
-        if (radiusSkipCount > 20) //TODO what is this?
+        if (radiusSkipCount++ > 20) //TODO what is this?
         {
             radiusSkipCount = 0;
             quickMath = false;
@@ -181,68 +168,104 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
         for (int currentRadius = quickMath ? lastRadius : 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
         {
-            for (int xr = -currentRadius; xr < currentRadius; xr++)
-            {
-                for (int yr = -currentRadius; yr < currentRadius; yr++)
-                {
-                    for (int zr = -currentRadius; zr < currentRadius; zr++)
-                    {
-                        final BlockPos blockPos = new BlockPos(location.xi() + xr, location.yi() + yr, location.zi() + zr);
-                        final double dist = location.distance(blockPos);
-
-                        //We are looping in a shell orbit around the center
-                        if (dist < currentRadius && dist > currentRadius - 2)
-                        {
-                            final IBlockState blockState = world.getBlockState(blockPos);
-                            final Block block = blockState.getBlock();
-                            //Null if call was made on an unloaded chunk
-                            if (block != Blocks.AIR)
-                            {
-                                final boolean isFluid = block instanceof BlockLiquid || block instanceof IFluidBlock;
-                                //Ignore air blocks and unbreakable blocks
-                                if (!block.isAir(blockState, world(), blockPos) && (((isFluid && blockState.getValue(BlockLiquid.LEVEL) < 7) || (!isFluid && blockState.getBlockHardness(world, blockPos) >= 0))))
-                                {
-                                    //TODO handle multi-blocks
-
-                                    world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), isFluid ? 2 : 3);
-                                    //TODO: render fluid streams moving into hole
-                                    if (!isFluid && doFlyingBlocks)
-                                    {
-                                        //Convert a random amount of destroyed blocks into flying blocks for visuals
-                                        if (this.world().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
-                                        {
-                                            final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, blockState);
-                                            entity.yawChange = 50 * this.world().rand.nextFloat();
-                                            entity.pitchChange = 50 * this.world().rand.nextFloat();
-                                            this.world().spawnEntity(entity);
-
-                                            this.handleEntities(entity); //TODO why? this should just be an apply velocity call
-                                        }
-                                    }
-                                    //Keep track of blocks removed to keep from lagging the game
-                                    blocksDestroyed++;
-                                }
-                            }
-                        }
-
-                        //Exit conditions, make sure stays at bottom of loop
-                        if (blocksDestroyed > getBlocksPerTick() || !isAlive)
-                        {
-                            return;
-                        }
-                        else if (System.currentTimeMillis() - time > 30) //30ms to prevent stall
-                        {
-                            this.size -= 1;
-                            return;
-                        }
-                    }
-                }
-            }
-
+            handleRadius(currentRadius);
             lastRadius = currentRadius;
         }
 
         lastRadius = (int) getBlastRadius() - 1;
+    }
+
+    protected boolean handleRadius(final int radius)
+    {
+        for (int xr = -radius; xr < radius; xr++)
+        {
+            for (int yr = -radius; yr < radius; yr++)
+            {
+                for (int zr = -radius; zr < radius; zr++)
+                {
+                    if (handleBlock(location.xi() + xr, location.yi() + yr, location.zi() + zr, radius))
+                    {
+                        blocksDestroyed++;
+                    }
+
+                    //Exit conditions, make sure stays at bottom of loop
+                    if (shouldStopBreakingBlocks())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean shouldStopBreakingBlocks()
+    {
+        return blocksDestroyed > getBlocksPerTick()
+                || !isAlive
+                || (System.currentTimeMillis() - tickStart) >= MAX_RUNTIME_MS;
+    }
+
+    protected boolean handleBlock(int x, int y, int z, int radius)
+    {
+        final BlockPos blockPos = new BlockPos(x, y, z); //TODO use mutable pos for performance
+        final double dist = location.distance(blockPos);
+
+        //We are looping in a shell orbit around the center
+        if (dist < radius && dist > radius - 2)
+        {
+            final IBlockState blockState = world.getBlockState(blockPos);
+            if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks
+            {
+                //TODO handle multi-blocks
+
+                world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), isFluid(blockState) ? 2 : 3);
+                //TODO: render fluid streams moving into hole
+
+                //Convert a random amount of destroyed blocks into flying blocks for visuals
+                if (canTurnIntoFlyingBlock(blockState) && this.world().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
+                {
+                    spawnFlyingBlock(blockPos, blockState);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean shouldRemoveBlock(BlockPos blockPos, IBlockState blockState)
+    {
+        final Block block = blockState.getBlock();
+        final boolean isFluid = isFluid(blockState);
+        //Ignore air blocks and unbreakable blocks
+        return !block.isAir(blockState, world(), blockPos)
+                && (isFlowingWater(blockState) || !isFluid && blockState.getBlockHardness(world, blockPos) >= 0);
+
+    }
+
+    protected boolean isFluid(IBlockState blockState)
+    {
+        return blockState.getBlock() instanceof BlockLiquid || blockState.getBlock() instanceof IFluidBlock;
+    }
+
+    protected boolean isFlowingWater(IBlockState blockState)
+    {
+        return blockState.getBlock() instanceof BlockLiquid && blockState.getValue(BlockLiquid.LEVEL) < 7;
+    }
+
+    protected boolean canTurnIntoFlyingBlock(IBlockState blockState)
+    {
+        return doFlyingBlocks && !isFluid(blockState);
+    }
+
+    protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
+    {
+        final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, blockState);
+        entity.yawChange = 50 * this.world().rand.nextFloat();
+        entity.pitchChange = 50 * this.world().rand.nextFloat();
+        this.world().spawnEntity(entity);
+
+        this.handleEntities(entity); //TODO why? this should just be an apply velocity call
     }
 
     protected void doEntityEffects()
