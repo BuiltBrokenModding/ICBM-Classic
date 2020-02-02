@@ -48,40 +48,41 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     public boolean coloredBeams = true;
 
     //client side value
-    public float targetSize = 0.0F;
-
-    private int lastRadius = 1; //TODO doc
-    private int radiusSkipCount = 0; //TODO doc
+    public float renderSize = 0.0F;
 
     //Lag tracking
     private int blocksDestroyed = 0;
     private long tickStart;
     private int currentRadius = 1;
 
-    public float getScaleFactor()
+    public float getScaleFactor() //TODO move to field and calculate only when size changes
     {
         return size / NORMAL_RADIUS;
     }
 
-    public int getBlocksPerTick()
+    public float getScaleFactorClient() //TODO move to field and calculate only when size changes
+    {
+        return renderSize / NORMAL_RADIUS;
+    }
+
+    /**
+     * Check how many blocks can be edited per tick
+     *
+     * @return blocks that can be removed each tick
+     */
+    public int getBlocksPerTick() //TODO move to field and calculate only when size changes
     {
         return (int) Math.min(MAX_BLOCKS_EDITS_PER_TICK, DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
     }
 
-    private void lerpSize()
+    /**
+     * Triggered from the render to smoothly change size with each frame update
+     *
+     * @param deltaTick percentage of time passed (0.0 - 1.0f)
+     */
+    public void lerpSize(float deltaTick)
     {
-        if (world().isRemote)
-        {
-            //reach the target size which is the size that was last sent from the server
-            if (targetSize < size) //TODO move to render logic so we can frame rate smooth
-            {
-                size -= (size - targetSize) / 10f;
-            }
-            else if (targetSize > size)
-            {
-                size += (targetSize - size) / 10f;
-            }
-        }
+        renderSize = renderSize + deltaTick * (size - renderSize);
     }
 
     @Override
@@ -375,11 +376,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             }
             else if (entity instanceof EntityMissile) //TODO move to capability
             {
-                ((EntityMissile) entity).doExplosion();
+                ((EntityMissile) entity).doExplosion(); //TODO should trigger the explosive capability
             }
             else if (entity instanceof EntityExplosive) //TODO move to capability
             {
-                ((EntityExplosive) entity).explode();
+                ((EntityExplosive) entity).explode(); //TODO should trigger the explosive capability
             }
             else if (entity instanceof EntityLiving || entity instanceof EntityPlayer)
             {
