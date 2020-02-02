@@ -56,6 +56,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     //Lag tracking
     private int blocksDestroyed = 0;
     private long tickStart;
+    private int currentRadius = 1;
 
     public float getScaleFactor()
     {
@@ -67,20 +68,12 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         return (int) Math.min(MAX_BLOCKS_EDITS_PER_TICK, DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
     }
 
-    @Override
-    protected void onBlastCompleted()
-    {
-        clearBlast();
-    }
-
-
-    @Override
-    public boolean onBlastTick(int ticksExisted)
+    private void lerpSize()
     {
         if (world().isRemote)
         {
             //reach the target size which is the size that was last sent from the server
-            if (targetSize < size)
+            if (targetSize < size) //TODO move to render logic so we can frame rate smooth
             {
                 size -= (size - targetSize) / 10f;
             }
@@ -89,72 +82,66 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 size += (targetSize - size) / 10f;
             }
         }
-
-        return super.onBlastTick(ticksExisted);
     }
 
     @Override
     public boolean doExplode(int callCount)
     {
-        if (!this.world().isRemote)
+        preTick();
+        doTick();
+        postTick();
+        return DO_DESPAWN && callCount >= lifeSpan || this.size <= 0;
+    }
+
+    protected void preTick()
+    {
+        tickStart = System.currentTimeMillis();
+        blocksDestroyed = 0;
+    }
+
+    protected void doTick()
+    {
+        //Do actions
+        doDestroyBlocks();
+        doEntityEffects();
+
+        //Play effects
+        if (ENABLE_AUDIO)
         {
-            //Decrease mass
-            this.size -= 0.1;
-
-            if (this.size < 50) // evaporation speedup for small black holes
+            if (this.world().rand.nextInt(8) == 0)
             {
-                this.size -= (50 - this.size) / 100;
+                ICBMSounds.COLLAPSE.play(world, location.x() + (Math.random() - 0.5) * getBlastRadius(), location.y() + (Math.random() - 0.5) * getBlastRadius(), location.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
             }
-
-
-            if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks TODO this needs to sync more often or we will see rendering issues
-            {
-                PacketRedmatterSizeSync.sync(this); //TODO handle this in the controller, blasts shouldn't network sync
-            }
-
-            //Limit life span of the blast
-            if (DO_DESPAWN && callCount >= lifeSpan || this.size <= 0)
-            {
-                this.completeBlast(); //kill explosion
-            }
-
-            //Do actions
-            doDestroyBlocks();
-            doEntityEffects();
-
-            //Play effects
-            if (ENABLE_AUDIO)
-            {
-                if (this.world().rand.nextInt(8) == 0)
-                {
-                    ICBMSounds.COLLAPSE.play(world, location.x() + (Math.random() - 0.5) * getBlastRadius(), location.y() + (Math.random() - 0.5) * getBlastRadius(), location.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
-                }
-                ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
-            }
+            ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
         }
-        return false;
+    }
+
+    protected void postTick()
+    {
+        if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks TODO this needs to sync more often or we will see rendering issues
+        {
+            PacketRedmatterSizeSync.sync(this); //TODO handle this in the controller, blasts shouldn't network sync
+        }
+    }
+
+    protected void decreaseScale()
+    {
+        //Decrease mass
+        this.size -= 0.1; //TODO magic numbers & config
+
+        if (this.size < 50) // evaporation speedup for small black holes
+        {
+            this.size -= (50 - this.size) / 100; //TODO magic numbers & config
+        }
     }
 
     protected void doDestroyBlocks()
     {
-        //Reset tracking
-        tickStart = System.currentTimeMillis();
-        blocksDestroyed = 0;
-
-        boolean quickMath = true; // for most iterations do math quickly
-        if (radiusSkipCount++ > 20) //TODO what is this?
+        //If we run out of blocks to remove at this layer expand
+        if (!handleRadius(currentRadius) && currentRadius < getBlastRadius())
         {
-            radiusSkipCount = 0;
-            quickMath = false;
+            currentRadius += 1;
         }
-
-        for (int currentRadius = quickMath ? lastRadius : 1; currentRadius < getBlastRadius(); currentRadius++) //TODO recode as it can stall the main thread
-        {
-            handleRadius(currentRadius);
-            lastRadius = currentRadius;
-        }
-
-        lastRadius = (int) getBlastRadius() - 1;
     }
 
     protected boolean handleRadius(final int radius)

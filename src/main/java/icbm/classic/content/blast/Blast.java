@@ -236,6 +236,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
      */
     protected void onBlastCompleted()
     {
+        clearBlast();
     }
 
     /**
