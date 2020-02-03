@@ -239,7 +239,7 @@ public class RenderExplosion extends Render<EntityExplosion>
             //Get color based on state
             Color colorOut = this.colorOut;
             Color colorIn = this.colorIn;
-            if (redmatter.coloredBeams)
+            if (redmatter.renderWithColorBeams)
             {
                 if (beamIndex < randomColorsForBeams.size())
                 {

@@ -42,18 +42,14 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     public static boolean ENABLE_AUDIO = true;
     public static boolean SPAWN_FLYING_BLOCKS = true;
 
-    //Blast Settings
-    public int lifeSpan = MAX_LIFESPAN;
-
-    public boolean coloredBeams = true;
-
     //client side value
-    public float renderSize = 0.0F;
+    public float clientSize = 0.0F;
+    public boolean renderWithColorBeams = true;
 
     //Lag tracking
-    private int blocksDestroyed = 0;
-    private long tickStart;
-    private int currentRadius = 1;
+    private int blocksDestroyedThisTick = 0;
+    private long tickStartTimeMs;
+    private int currentBlockDestroyRadius = 1;
 
     public float getScaleFactor() //TODO move to field and calculate only when size changes
     {
@@ -62,7 +58,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     public float getScaleFactorClient() //TODO move to field and calculate only when size changes
     {
-        return renderSize / NORMAL_RADIUS;
+        return clientSize / NORMAL_RADIUS;
     }
 
     /**
@@ -82,7 +78,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
      */
     public void lerpSize(float deltaTick)
     {
-        renderSize = renderSize + deltaTick * (size - renderSize);
+        clientSize = clientSize + deltaTick * (size - clientSize);
     }
 
     @Override
@@ -91,13 +87,13 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         preTick();
         doTick();
         postTick();
-        return DO_DESPAWN && callCount >= lifeSpan || this.size <= 0;
+        return DO_DESPAWN && callCount >= MAX_LIFESPAN || this.size <= 0;
     }
 
     protected void preTick()
     {
-        tickStart = System.currentTimeMillis();
-        blocksDestroyed = 0;
+        tickStartTimeMs = System.currentTimeMillis();
+        blocksDestroyedThisTick = 0;
     }
 
     protected void doTick()
@@ -109,7 +105,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         //Play effects
         if (ENABLE_AUDIO)
         {
-            if (this.world().rand.nextInt(8) == 0)
+            if (this.world().rand.nextInt(8) == 0) //TODO this should play near blocks destroyed
             {
                 ICBMSounds.COLLAPSE.play(world, location.x() + (Math.random() - 0.5) * getBlastRadius(), location.y() + (Math.random() - 0.5) * getBlastRadius(), location.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
             }
@@ -119,6 +115,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected void postTick()
     {
+        decreaseScale();
         if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks TODO this needs to sync more often or we will see rendering issues
         {
             PacketRedmatterSizeSync.sync(this); //TODO handle this in the controller, blasts shouldn't network sync
@@ -139,9 +136,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     protected void doDestroyBlocks()
     {
         //If we run out of blocks to remove at this layer expand
-        if (!handleRadius(currentRadius) && currentRadius < getBlastRadius())
+        if (!handleRadius(currentBlockDestroyRadius) && currentBlockDestroyRadius < getBlastRadius())
         {
-            currentRadius += 1;
+            currentBlockDestroyRadius += 1;
         }
     }
 
@@ -155,7 +152,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 {
                     if (handleBlock(location.xi() + xr, location.yi() + yr, location.zi() + zr, radius))
                     {
-                        blocksDestroyed++;
+                        blocksDestroyedThisTick++;
                     }
 
                     //Exit conditions, make sure stays at bottom of loop
@@ -171,9 +168,9 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected boolean shouldStopBreakingBlocks()
     {
-        return blocksDestroyed > getBlocksPerTick()
+        return blocksDestroyedThisTick > getBlocksPerTick()
                 || !isAlive
-                || (System.currentTimeMillis() - tickStart) >= MAX_RUNTIME_MS;
+                || (System.currentTimeMillis() - tickStartTimeMs) >= MAX_RUNTIME_MS;
     }
 
     protected boolean handleBlock(int x, int y, int z, int radius)
