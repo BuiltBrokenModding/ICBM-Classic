@@ -5,7 +5,8 @@ import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.IBlastMovable;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.config.blast.ConfigRedmatter;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
@@ -28,23 +29,8 @@ import net.minecraftforge.fluids.IFluidBlock;
 
 public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
 {
-    //Constants, do not change as they modify render and effect scales
-    public static final float NORMAL_RADIUS = 70;
-    public static final float ENTITY_DESTROY_RADIUS = 6;
-    public static final int MAX_RUNTIME_MS = 5; //TODO config
-
-    //Config settings
-    public static int MAX_BLOCKS_EDITS_PER_TICK = 100;
-    public static int DEFAULT_BLOCK_EDITS_PER_TICK = 20;
-    public static int MAX_LIFESPAN = 36000; // 30 minutes
-    public static float CHANCE_FOR_FLYING_BLOCK = 0.8f;
-    public static boolean DO_DESPAWN = true;
-    public static boolean ENABLE_AUDIO = true;
-    public static boolean SPAWN_FLYING_BLOCKS = true;
-
     //client side value
     public float clientSize = 0.0F;
-    public boolean renderWithColorBeams = true;
 
     //Lag tracking
     private int blocksDestroyedThisTick = 0;
@@ -53,12 +39,12 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     public float getScaleFactor() //TODO move to field and calculate only when size changes
     {
-        return size / NORMAL_RADIUS;
+        return size / ConfigBlast.REDMATTER.NORMAL_RADIUS;
     }
 
     public float getScaleFactorClient() //TODO move to field and calculate only when size changes
     {
-        return clientSize / NORMAL_RADIUS;
+        return clientSize / ConfigBlast.REDMATTER.NORMAL_RADIUS;
     }
 
     /**
@@ -68,7 +54,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
      */
     public int getBlocksPerTick() //TODO move to field and calculate only when size changes
     {
-        return (int) Math.min(MAX_BLOCKS_EDITS_PER_TICK, DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
+        return (int) Math.min(ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK, ConfigBlast.REDMATTER.DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
     }
 
     /**
@@ -87,7 +73,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         preTick();
         doTick();
         postTick();
-        return DO_DESPAWN && callCount >= MAX_LIFESPAN || this.size <= 0;
+        return ConfigBlast.REDMATTER.DO_DESPAWN && callCount >= ConfigBlast.REDMATTER.MAX_LIFESPAN || this.size <= 0;
     }
 
     protected void preTick()
@@ -103,7 +89,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         doEntityEffects();
 
         //Play effects
-        if (ENABLE_AUDIO)
+        if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
         {
             if (this.world().rand.nextInt(8) == 0) //TODO this should play near blocks destroyed
             {
@@ -170,7 +156,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     {
         return blocksDestroyedThisTick > getBlocksPerTick()
                 || !isAlive
-                || (System.currentTimeMillis() - tickStartTimeMs) >= MAX_RUNTIME_MS;
+                || (System.currentTimeMillis() - tickStartTimeMs) >= ConfigBlast.REDMATTER.MAX_RUNTIME_MS;
     }
 
     protected boolean handleBlock(int x, int y, int z, int radius)
@@ -190,7 +176,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 //TODO: render fluid streams moving into hole
 
                 //Convert a random amount of destroyed blocks into flying blocks for visuals
-                if (canTurnIntoFlyingBlock(blockState) && this.world().rand.nextFloat() > CHANCE_FOR_FLYING_BLOCK)
+                if (canTurnIntoFlyingBlock(blockState) && this.world().rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
                 {
                     spawnFlyingBlock(blockPos, blockState);
                 }
@@ -222,7 +208,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected boolean canTurnIntoFlyingBlock(IBlockState blockState)
     {
-        return SPAWN_FLYING_BLOCKS && !isFluid(blockState);
+        return ConfigBlast.REDMATTER.SPAWN_FLYING_BLOCKS && !isFluid(blockState);
     }
 
     protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
@@ -331,14 +317,14 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     private void attackEntity(Entity entity, double distance)
     {
         //Handle eating logic
-        if (distance < (ENTITY_DESTROY_RADIUS * getScaleFactor())) //TODO make config driven, break section out into its own method
+        if (distance < (ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * getScaleFactor())) //TODO make config driven, break section out into its own method
         {
             if (entity instanceof EntityExplosion)
             {
                 final IBlast blast = ((EntityExplosion) entity).getBlast();
                 if (blast instanceof BlastAntimatter) //TODO move to capability
                 {
-                    if (ENABLE_AUDIO)
+                    if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
                     {
                         ICBMSounds.EXPLOSION.play(world, location.x(), location.y(), location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
                     }
@@ -412,6 +398,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     @Override
     public boolean isMovable()
     {
-        return ConfigBlast.REDMATTER_MOVEMENT;
+        return ConfigBlast.REDMATTER.REDMATTER_MOVEMENT;
     }
 }

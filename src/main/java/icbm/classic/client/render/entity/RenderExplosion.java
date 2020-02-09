@@ -1,6 +1,8 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.config.blast.ConfigRedmatter;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -62,7 +64,7 @@ public class RenderExplosion extends Render<EntityExplosion>
 
     public void renderSphere(EntityExplosion entityExplosion, BlastRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
     {
-        final float radius = Math.max(BlastRedmatter.ENTITY_DESTROY_RADIUS * scale, 0.1f);
+        final float radius = Math.max(ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * scale, 0.1f);
 
         //--------------------------------------------------
         //Inside sphere
@@ -133,7 +135,7 @@ public class RenderExplosion extends Render<EntityExplosion>
     public void renderDisk(EntityExplosion entityExplosion, BlastRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
     {
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        float size = BlastRedmatter.ENTITY_DESTROY_RADIUS * scale * 3;
+        float size = ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * scale * 3;
 
         //Setup
         GlStateManager.pushMatrix();
@@ -239,7 +241,7 @@ public class RenderExplosion extends Render<EntityExplosion>
             //Get color based on state
             Color colorOut = this.colorOut;
             Color colorIn = this.colorIn;
-            if (redmatter.renderWithColorBeams)
+            if (ConfigBlast.REDMATTER.RENDER_COLORED_BEAMS)
             {
                 if (beamIndex < randomColorsForBeams.size())
                 {
