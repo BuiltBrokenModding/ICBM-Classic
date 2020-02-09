@@ -2,7 +2,7 @@ package icbm.classic.content.blast.threaded;
 
 import icbm.classic.api.events.BlastCancelEvent;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;

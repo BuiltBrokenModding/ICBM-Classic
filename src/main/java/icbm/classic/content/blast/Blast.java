@@ -9,7 +9,7 @@ import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastRestore;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadExplosion;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
