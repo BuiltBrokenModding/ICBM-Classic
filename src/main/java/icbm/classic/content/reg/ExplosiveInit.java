@@ -208,8 +208,8 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 
         //=================== No content, only blast
-        ExplosiveRefs.MUTATION = newEx(24, "mutation", EnumTier.NONE, () -> new BlastMutation());
-        ExplosiveRefs.ROT = newEx(25, "rot", EnumTier.NONE, () -> new BlastRot());
+        ExplosiveRefs.MUTATION = newEx(24, "mutation", EnumTier.NONE, BlastMutation::new);
+        ExplosiveRefs.ROT = newEx(25, "rot", EnumTier.NONE, BlastRot::new);
 
         ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
 
