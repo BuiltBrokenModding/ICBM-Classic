@@ -10,7 +10,6 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.config.blast.ConfigRedmatter;
 import icbm.classic.content.blast.BlastAntiGravitational;
 import icbm.classic.content.blast.BlastBreach;
 import icbm.classic.content.blast.BlastEMP;
@@ -204,7 +203,7 @@ public class ExplosiveInit
 
         //TODO add config (disable by default) for alarm audio
 
-        ExplosiveRefs.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatter().setBlastSize(ConfigRedmatter.NORMAL_RADIUS));
+        ExplosiveRefs.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatter().setBlastSize(ConfigBlast.REDMATTER.NORMAL_RADIUS));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 
