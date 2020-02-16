@@ -6,7 +6,6 @@ import icbm.classic.api.explosion.IBlastMovable;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.config.blast.ConfigRedmatter;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
@@ -121,37 +120,32 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected void doDestroyBlocks()
     {
-        //If we run out of blocks to remove at this layer expand
-        if (!handleRadius(currentBlockDestroyRadius) && currentBlockDestroyRadius < getBlastRadius())
+        //Destroy blocks in radius
+        BlastHelpers.loopInRadiusUntil(currentBlockDestroyRadius,
+                (x, y, z) -> {
+                    processNextBlock(x, y, z);
+                    return true;
+                },
+                this::shouldStopBreakingBlocks);
+
+        //If we didn't destroy anything at this layer expand
+        if (blocksDestroyedThisTick <= 0)
         {
             currentBlockDestroyRadius += 1;
-        }
-    }
 
-    protected boolean handleRadius(final int radius)
-    {
-        for (int xr = -radius; xr < radius; xr++)
-        {
-            for (int yr = -radius; yr < radius; yr++)
+            //Reset if we reach radius
+            if (currentBlockDestroyRadius >= getBlastRadius())
             {
-                for (int zr = -radius; zr < radius; zr++)
-                {
-                    if (handleBlock(location.xi() + xr, location.yi() + yr, location.zi() + zr, radius))
-                    {
-                        blocksDestroyedThisTick++;
-                    }
-
-                    //Exit conditions, make sure stays at bottom of loop
-                    if (shouldStopBreakingBlocks())
-                    {
-                        return true;
-                    }
-                }
+                currentBlockDestroyRadius = 1;
             }
         }
-        return false;
     }
 
+    /**
+     * Checks to see if we should stop looping while breaking blocks
+     *
+     * @return true to stop
+     */
     protected boolean shouldStopBreakingBlocks()
     {
         return blocksDestroyedThisTick > getBlocksPerTick()
@@ -159,13 +153,20 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 || (System.currentTimeMillis() - tickStartTimeMs) >= ConfigBlast.REDMATTER.MAX_RUNTIME_MS;
     }
 
-    protected boolean handleBlock(int x, int y, int z, int radius)
+    /**
+     * Process the next block from looping
+     *
+     * @param rx - relative from center
+     * @param ry - relative from center
+     * @param rz - relative from center
+     */
+    protected void processNextBlock(int rx, int ry, int rz)
     {
-        final BlockPos blockPos = new BlockPos(x, y, z); //TODO use mutable pos for performance
+        final BlockPos blockPos = new BlockPos(rx + xi(), ry + yi(), rz + zi()); //TODO use mutable pos for performance
         final double dist = location.distance(blockPos);
 
         //We are looping in a shell orbit around the center
-        if (dist < radius && dist > radius - 2)
+        if (dist < this.currentBlockDestroyRadius && dist > this.currentBlockDestroyRadius - 2)
         {
             final IBlockState blockState = world.getBlockState(blockPos);
             if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks
@@ -180,12 +181,18 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 {
                     spawnFlyingBlock(blockPos, blockState);
                 }
-                return true;
+                blocksDestroyedThisTick++;
             }
         }
-        return false;
     }
 
+    /**
+     * Checks to see if we should remove the block
+     *
+     * @param blockPos   - position of the block in the world
+     * @param blockState - state of the block
+     * @return true to remove
+     */
     protected boolean shouldRemoveBlock(BlockPos blockPos, IBlockState blockState)
     {
         final Block block = blockState.getBlock();
