@@ -14,11 +14,11 @@ public enum EnumTier implements IStringSerializable
     TWO(TextFormatting.YELLOW),
     THREE(TextFormatting.GOLD),
     FOUR(TextFormatting.RED),
-    NONE(TextFormatting.WHITE);
+    NONE(TextFormatting.WHITE); //TODO we should move the colors to the translations directly
 
     private TextFormatting tooltipColor;
 
-    private EnumTier(TextFormatting tooltipColor)
+    EnumTier(TextFormatting tooltipColor)
     {
         this.tooltipColor = tooltipColor;
     }
@@ -39,6 +39,7 @@ public enum EnumTier implements IStringSerializable
         return LanguageUtility.getLocal("tier.icbmclassic." + getName());
     }
 
+    @Override
     public String getName()
     {
         return name().toLowerCase();

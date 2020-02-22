@@ -1,7 +1,7 @@
 package icbm.classic.content.blocks.radarstation;
 
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.entity.missile.EntityMissile;

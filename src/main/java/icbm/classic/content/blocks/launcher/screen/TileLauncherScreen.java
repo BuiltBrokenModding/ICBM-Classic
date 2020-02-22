@@ -14,7 +14,7 @@ import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

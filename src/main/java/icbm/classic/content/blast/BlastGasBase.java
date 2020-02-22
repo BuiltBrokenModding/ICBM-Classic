@@ -1,8 +1,8 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.ExplosiveRefs;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.api.refs.ICBMExplosives;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
@@ -177,7 +177,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
                 .setBlastSource(this.exploder)
                 .setBlastPosition(location.x(), location.y(), location.z())
                 .setBlastSize(getBlastRadius())
-                .setExplosiveData(ExplosiveRefs.MUTATION)
+                .setExplosiveData(ICBMExplosives.MUTATION)
                 .buildBlast().runBlast(); //TODO trigger from explosive handler
             }
 

@@ -1,7 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;

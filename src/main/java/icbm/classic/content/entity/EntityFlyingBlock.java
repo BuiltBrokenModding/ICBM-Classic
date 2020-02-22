@@ -1,6 +1,6 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

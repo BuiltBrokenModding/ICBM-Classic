@@ -2,7 +2,7 @@ package icbm.classic;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveContentRegistryEvent;
 import icbm.classic.client.ICBMCreativeTab;

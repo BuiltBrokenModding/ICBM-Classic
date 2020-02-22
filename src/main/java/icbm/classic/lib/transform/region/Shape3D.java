@@ -2,7 +2,7 @@ package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,7 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;

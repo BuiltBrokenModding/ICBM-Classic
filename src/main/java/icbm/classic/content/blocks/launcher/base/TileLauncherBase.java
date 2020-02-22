@@ -1,7 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.events.LauncherEvent;

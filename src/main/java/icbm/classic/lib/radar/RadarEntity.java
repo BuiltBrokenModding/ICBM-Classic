@@ -1,6 +1,6 @@
 package icbm.classic.lib.radar;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;

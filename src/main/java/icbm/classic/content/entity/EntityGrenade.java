@@ -1,7 +1,7 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import io.netty.buffer.ByteBuf;

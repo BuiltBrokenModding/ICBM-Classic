@@ -2,7 +2,7 @@ package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;

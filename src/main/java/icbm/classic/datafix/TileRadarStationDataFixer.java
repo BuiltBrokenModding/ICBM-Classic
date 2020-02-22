@@ -1,7 +1,7 @@
 package icbm.classic.datafix;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 

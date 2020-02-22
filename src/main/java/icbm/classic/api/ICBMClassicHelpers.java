@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -36,7 +37,7 @@ public final class ICBMClassicHelpers
             ICBMClassic.logger().error("ICBMClassicAPI: Error - Failed to locate explosive for " +
                     "ID[" + explosive + "] this may cause unexpected logic", new RuntimeException());
         }
-        return returnNull ? null : ExplosiveRefs.CONDENSED;
+        return returnNull ? null : ICBMExplosives.CONDENSED;
     }
 
     /**
@@ -64,7 +65,7 @@ public final class ICBMClassicHelpers
             return data;
         }
         System.out.println("ICBMClassicAPI: Error - Failed to locate explosive for Name[" + name + "] this may cause unexpected logic");
-        return returnNull ? null : ExplosiveRefs.CONDENSED;
+        return returnNull ? null : ICBMExplosives.CONDENSED;
     }
 
     /**

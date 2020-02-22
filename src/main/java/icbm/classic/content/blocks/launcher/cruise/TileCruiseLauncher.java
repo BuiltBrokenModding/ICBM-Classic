@@ -3,7 +3,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;

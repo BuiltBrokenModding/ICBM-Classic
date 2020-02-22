@@ -1,4 +1,4 @@
-package icbm.classic.api;
+package icbm.classic.lib;
 
 import icbm.classic.ICBMClassic;
 import org.apache.logging.log4j.Level;

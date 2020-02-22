@@ -1,7 +1,7 @@
 package icbm.classic.prefab.inventory;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

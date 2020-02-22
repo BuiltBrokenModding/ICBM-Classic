@@ -1,8 +1,8 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.ExplosiveRefs;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
@@ -199,7 +199,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
                 return data;
             }
         }
-        return ExplosiveRefs.CONDENSED;
+        return ICBMExplosives.CONDENSED;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package icbm.classic.lib.capability.ex;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.ExplosiveRefs;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
@@ -49,7 +49,7 @@ public class CapabilityExplosiveEntity implements IExplosive
                 return explosive.getExplosiveData();
             }
         }
-        return ExplosiveRefs.CONDENSED;
+        return ICBMExplosives.CONDENSED;
     }
 
     @Override

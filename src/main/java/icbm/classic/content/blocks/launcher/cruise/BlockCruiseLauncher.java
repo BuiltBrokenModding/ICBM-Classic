@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.content.items.ItemLaserDetonator;
 import icbm.classic.content.items.ItemRemoteDetonator;

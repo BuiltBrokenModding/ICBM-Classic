@@ -1,4 +1,4 @@
-package icbm.classic.api;
+package icbm.classic.api.tile;
 
 
 import net.minecraft.util.EnumFacing;
