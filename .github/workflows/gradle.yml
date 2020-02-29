@@ -1,12 +1,11 @@
-name: Java CI
+name: Main Workflow
 
 on: [push]
-
+  
 jobs:
   build:
-
+    name: Gradle Build
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: Set up JDK 1.8
@@ -16,4 +15,14 @@ jobs:
     - name: Chmod gradlew
       run: chmod a+x ./gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build      
+  sonarCloudTrigger:
+    name: SonarCloud Trigger
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
