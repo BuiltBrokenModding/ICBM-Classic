@@ -100,7 +100,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected void postTick()
     {
-        decreaseScale();
+        //Decrease block if we don't destroy anything
+        if (blocksDestroyedThisTick <= 0)
+        {
+            decreaseScale();
+        }
         if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks TODO this needs to sync more often or we will see rendering issues
         {
             PacketRedmatterSizeSync.sync(this); //TODO handle this in the controller, blasts shouldn't network sync
