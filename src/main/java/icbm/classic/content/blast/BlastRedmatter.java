@@ -11,6 +11,7 @@ import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.network.packet.PacketRedmatterSizeSync;
 import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.block.Block;
@@ -337,7 +338,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 {
                     if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
                     {
-                        ICBMSounds.EXPLOSION.play(world, location.x(), location.y(), location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+                        ICBMSounds.EXPLOSION.play(world, location.x(), location.y(), location.z(), 7.0F, CalculationHelpers.randFloatRange(world().rand, -0.6F, 0.9F), true);
                     }
                     if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
                     {
