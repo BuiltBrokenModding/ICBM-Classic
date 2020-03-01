@@ -4,7 +4,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.NBTConstants;
-import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
 import icbm.classic.content.entity.missile.EntityMissile;
@@ -45,30 +45,24 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public static final int SET_TARGET_PACKET_ID = 2;
     public static final int LAUNCH_PACKET_ID = 3;
 
-    /**
-     * Desired aim angle, updated every tick if target != null
-     */
+    private static final int REDSTONE_CHECK_RATE = 40;
+    private static final double ROTATION_SPEED = 10.0;
+
+    /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0);
-    /**
-     * Current aim angle, updated each tick
-     */
+
+    /** Current aim angle, updated each tick */
     protected final EulerAngle currentAim = new EulerAngle(0, 0, 0);
 
-    protected static double ROTATION_SPEED = 10.0;
-
-    /**
-     * Last time rotation was updated, used in {@link EulerAngle#lerp(EulerAngle, double)} function for smooth rotation
-     */
+    /** Last time rotation was updated, used in {@link EulerAngle#lerp(EulerAngle, double)} function for smooth rotation */
     protected long lastRotationUpdate = System.nanoTime();
-    /**
-     * Percent of time that passed since last tick, should be 1.0 on a stable server
-     */
+
+    /** Percent of time that passed since last tick, should be 1.0 on a stable server */
     protected double deltaTime;
 
-    ExternalInventory inventory;
-
-
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
+
+    private ExternalInventory inventory;
 
     @Override
     public ExternalInventory getInventory()
@@ -91,7 +85,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         String color = "\u00a74";
         String status;
 
-        if (!this.checkExtract())
+        if (!hasChargeToFire())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusNoPower");
         }
@@ -105,20 +99,16 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
         else
         {
-            final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0).getItemDamage(), true);
-            if (explosiveData == null)
+            final IExplosive explosive = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0));
+            if (explosive == null)
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
             }
-            else if (!ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(explosiveData)) //TODO add check to disable some types
+            else if (!hasMissile())
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
             }
-            else if (explosiveData.getTier() == null) //TODO see if we really care
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissileTier");
-            }
-            else if (this.getTarget() == null || getTarget().isZero())
+            else if (!hasTarget())
             {
                 status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
             }
@@ -153,12 +143,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
 
         //Check redstone
-        if (isServer())
+        if (isServer() && this.ticks % REDSTONE_CHECK_RATE == 0 && this.world.getRedstonePowerFromNeighbors(getPos()) > 0)
         {
-            if (this.ticks % 40 == 0 && this.world.getRedstonePowerFromNeighbors(getPos()) > 0)
-            {
-                this.launch();
-            }
+            this.launch();
         }
     }
 
@@ -195,45 +182,39 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         if (!super.read(data, id, player, type))
         {
-            if (isServer())
+            switch (id)
             {
-                switch (id)
+                //set frequency packet from GUI
+                case SET_FREQUENCY_PACKET_ID:
                 {
-                    //set frequency packet from GUI
-                    case SET_FREQUENCY_PACKET_ID:
-                    {
-                        this.setFrequency(data.readInt());
-                        return true;
-                    }
-                    //Set target packet from GUI
-                    case SET_TARGET_PACKET_ID:
-                    {
-                        this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
-                        return true;
-                    }
-                    //launch missile
-                    case LAUNCH_PACKET_ID:
-                    {
-                        launch();
-                        return true;
-                    }
+                    this.setFrequency(data.readInt());
+                    return true;
                 }
-            }
-            else
-            {
-                switch (id)
+                //Set target packet from GUI
+                case SET_TARGET_PACKET_ID:
                 {
-                    //GUI description packet
-                    case DESCRIPTION_PACKET_ID:
+                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                    return true;
+                }
+                //launch missile
+                case LAUNCH_PACKET_ID:
+                {
+                    launch();
+                    return true;
+                }
+                case DESCRIPTION_PACKET_ID:
+                {
+                    if (isClient())
                     {
                         setEnergy(data.readInt());
                         this.setFrequency(data.readInt());
                         this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
-                        return true;
                     }
+                    return true;
                 }
+                default:
+                    return false;
             }
-            return false;
         }
         return true;
     }
@@ -242,8 +223,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeBoolean(getInventory().getStackInSlot(0) != null);
-        if (getInventory().getStackInSlot(0) != null) //TODO see if Null check is needed
+        buf.writeBoolean(!getInventory().getStackInSlot(0).isEmpty());
+        if (getInventory().getStackInSlot(0).isEmpty())
         {
             ByteBufUtils.writeItemStack(buf, getInventory().getStackInSlot(0));
         }
@@ -315,30 +296,27 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     //@Override
     public boolean canLaunch()
     {
-        if (getTarget() != null && !getTarget().isZero())
-        {
-            //Validate if we have an item and a target
-            if (this.getInventory().getStackInSlot(0).getItem() == ItemReg.itemMissile) //TODO use capability
-            {
-                //Validate that the item in the slot is a missile we can fire
-                if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(this.getInventory().getStackInSlot(0).getItemDamage()))
-                {
-                    //TODO add can support hook (check for cruise missile)
-                    //Make sure we have enough energy
-                    if (this.checkExtract())
-                    {
-                        //Make sure we are not going to blow ourselves up
-                        //TODO check range by missile type
-                        if (!this.isTooClose(this.getTarget()))
-                        {
-                            //Make sure we can safely spawn the missile
-                            return canSpawnMissileWithNoCollision();
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return hasTarget()
+                && hasMissile()
+                && hasChargeToFire()
+                && !this.isTooClose(this.getTarget())
+                && canSpawnMissileWithNoCollision();
+    }
+
+    protected boolean hasMissile()
+    {
+        final ItemStack stackInSlot = this.getInventory().getStackInSlot(0);
+        return stackInSlot.getItem() == ItemReg.itemMissile && ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(stackInSlot.getItemDamage());
+    }
+
+    protected boolean hasTarget()
+    {
+        return getTarget() != null && !getTarget().isZero();
+    }
+
+    protected boolean hasChargeToFire()
+    {
+        return this.checkExtract();
     }
 
     protected boolean canSpawnMissileWithNoCollision()
@@ -399,7 +377,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data) //TODO pack as message object
     {
         //Floor frequency as we do not care about sub ranges
-        int frequency = (int) Math.floor(hz);
+        final int frequency = (int) Math.floor(hz);
         if (isServer() && frequency == this.getFrequency())
         {
             //Laser detonator signal
@@ -441,11 +419,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         if (itemStack != null && itemStack.getItem() instanceof ItemMissile && this.getInventory().getStackInSlot(0) == null)
         {
-            if (ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(itemStack.getItemDamage()))
-            {
-                //TODO f (missile.isCruise() && missile.getTier().ordinal() <= EnumTier.THREE.ordinal())
-                return true;
-            }
+            return ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(itemStack.getItemDamage());
         }
         return false;
     }
@@ -457,13 +431,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player)
+    public Object getServerGuiElement(int id, EntityPlayer player)
     {
         return new ContainerCruiseLauncher(player, this);
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player)
+    public Object getClientGuiElement(int id, EntityPlayer player)
     {
         return new GuiCruiseLauncher(player, this);
     }
