@@ -95,7 +95,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             {
                 ICBMSounds.COLLAPSE.play(world, location.x() + (Math.random() - 0.5) * getBlastRadius(), location.y() + (Math.random() - 0.5) * getBlastRadius(), location.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
             }
-            ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 1F, true);
+            ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, CalculationHelpers.randFloatRange(world().rand, -0.8f, 1.2f), true);
         }
     }
 
