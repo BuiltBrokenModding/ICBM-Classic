@@ -31,10 +31,13 @@ plugins {
     id "org.ajoberstar.grgit" version "2.1.0"
     //Scanning code for issues https://sonarcloud.io
     id "org.sonarqube" version "2.8"
+    //Code coverage
+    id 'jacoco'
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'jacoco'
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
 
 dependencies {
@@ -64,6 +67,8 @@ test {
     failFast = false
     workingDir = './run_tests'
     mkdir './run_tests'
+
+    finalizedBy jacocoTestReport
 }
 
 jar {
@@ -102,5 +107,12 @@ sonarqube {
         property "sonar.organization", "builtbrokenmodding"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.login", System.getenv('SONAR_TOKEN')
+        property "sonar.java.source", "1.8"
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
     }
 }
