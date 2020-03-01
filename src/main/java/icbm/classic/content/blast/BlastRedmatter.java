@@ -91,10 +91,17 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         //Play effects
         if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
         {
-            if (this.world().rand.nextInt(8) == 0) //TODO this should play near blocks destroyed
+            //TODO collapse audio should play near blocks destroyed for better effect
+            if (this.world().rand.nextInt(8) == 0)
             {
-                ICBMSounds.COLLAPSE.play(world, location.x() + (Math.random() - 0.5) * getBlastRadius(), location.y() + (Math.random() - 0.5) * getBlastRadius(), location.z() + (Math.random() - 0.5) * getBlastRadius(), 6.0F - this.world().rand.nextFloat(), 1.0F - this.world().rand.nextFloat() * 0.4F, true);
+                final double playX = location.x() + CalculationHelpers.randFloatRange(world().rand, getBlastRadius());
+                final double playY = location.y() + CalculationHelpers.randFloatRange(world().rand, getBlastRadius());
+                final double playZ = location.z() + CalculationHelpers.randFloatRange(world().rand, getBlastRadius());
+                final float volume = CalculationHelpers.randFloatRange(world().rand, 5, 6);
+                final float pitch = CalculationHelpers.randFloatRange(world().rand, 0.6f, 1);
+                ICBMSounds.COLLAPSE.play(world, playX, playY, playZ, volume, pitch, true);
             }
+            //TODO check if this should play every tick
             ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, CalculationHelpers.randFloatRange(world().rand, -0.8f, 1.2f), true);
         }
     }
