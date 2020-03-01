@@ -107,13 +107,12 @@ sonarqube {
         property "sonar.organization", "builtbrokenmodding"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.login", System.getenv('SONAR_TOKEN')
+        property "sonar.java.source", "1.8"
     }
 }
 
 jacocoTestReport {
     reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination file("${buildDir}/jacocoHtml")
+        xml.enabled true
     }
 }
