@@ -6,6 +6,7 @@ import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -56,9 +57,9 @@ public interface IExplosiveData extends Comparable<IExplosiveData>
     /**
      * Tier of the explosive.
      *
-     * @return
+     * @return tier of the explosive
      */
-    @Nullable
+    @Nonnull
     EnumTier getTier();
 
     /**
