@@ -3,8 +3,8 @@ package icbm.classic.content.items;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.events.ExplosiveDefuseEvent;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.entity.EntityBombCart;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -15,8 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.util.Random;
 
 //Explosive Defuser
 public class ItemDefuser extends ItemICBMElectrical
@@ -46,11 +44,13 @@ public class ItemDefuser extends ItemICBMElectrical
             {
                 if (!entity.world.isRemote)
                 {
-                    IExplosive explosive = ICBMClassicHelpers.getExplosive(entity);
-                    if(explosive != null)
+                    final IExplosive explosive = ICBMClassicHelpers.getExplosive(entity);
+                    if (explosive != null)
                     {
-                        if(MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive))) //event was canceled
+                        if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive)))
+                        {
                             return false;
+                        }
 
                         explosive.onDefuse();
                     }
@@ -59,25 +59,23 @@ public class ItemDefuser extends ItemICBMElectrical
             }
             else if (entity instanceof EntityTNTPrimed)
             {
-                if(MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity))) //event was canceled
+                if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity)))
+                {
                     return false;
+                }
 
                 if (!entity.world.isRemote)
                 {
-                    EntityItem entityItem = new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT));
-                    float var13 = 0.05F;
-                    Random random = new Random();
-                    entityItem.motionX = ((float) random.nextGaussian() * var13);
-                    entityItem.motionY = ((float) random.nextGaussian() * var13 + 0.2F);
-                    entityItem.motionZ = ((float) random.nextGaussian() * var13);
-                    entity.world.spawnEntity(entityItem);
+                    entity.world.spawnEntity(new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT)));
                 }
                 entity.setDead();
             }
             else if (entity instanceof EntityBombCart)
             {
-                if(MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMBombCart(player, entity))) //event was canceled
+                if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMBombCart(player, entity)))
+                {
                     return false;
+                }
 
                 ((EntityBombCart) entity).killMinecart(DamageSource.GENERIC);
             }
