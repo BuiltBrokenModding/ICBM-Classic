@@ -98,7 +98,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
             rotation += rotationDelta;
             if (rotation > 360)
             {
-                rotation = 0;
+                rotation -= 360;
             }
         }
     }
