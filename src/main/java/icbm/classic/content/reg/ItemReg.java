@@ -27,6 +27,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
@@ -82,8 +83,15 @@ public class ItemReg
         event.getRegistry().register(new ItemGrenade().setName("grenade").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemBombCart().setName("bombcart").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemBase().setName("poisonPowder").setCreativeTab(ICBMClassic.CREATIVE_TAB)); //TODO fix name _
-        event.getRegistry().register(new ItemBase().setName("sulfurDust").setCreativeTab(ICBMClassic.CREATIVE_TAB)); //TODO fix name _
-        event.getRegistry().register(new ItemBase().setName("saltpeter").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        Item sulfurItem = new ItemBase().setName("sulfurDust").setCreativeTab(ICBMClassic.CREATIVE_TAB);
+        event.getRegistry().register(sulfurItem); //TODO fix name _
+        OreDictionary.registerOre("dustSulfur", sulfurItem);
+
+        Item saltpeterItem = new ItemBase().setName("saltpeter").setCreativeTab(ICBMClassic.CREATIVE_TAB);
+        event.getRegistry().register(saltpeterItem);
+        OreDictionary.registerOre("dustSaltpeter", saltpeterItem);
+
+
         event.getRegistry().register(new ItemAntidote().setName("antidote"));
         event.getRegistry().register(new ItemSignalDisrupter());
         event.getRegistry().register(new ItemTracker());
