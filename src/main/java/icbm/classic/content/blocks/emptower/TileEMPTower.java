@@ -123,7 +123,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                 }
                 case CHANGE_MODE_PACKET_ID:
                 {
-                    empMode = EMPMode.values()[data.readInt()];
+                    empMode = EMPMode.values()[data.readByte()];
                     return true;
                 }
             }

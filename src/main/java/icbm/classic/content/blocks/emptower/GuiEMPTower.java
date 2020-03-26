@@ -65,7 +65,7 @@ public class GuiEMPTower extends GuiContainerBase
                 break;
         }
 
-        ICBMClassic.packetHandler.sendToServer(new PacketTile("mode_C>S", TileEMPTower.CHANGE_MODE_PACKET_ID, this.tileEntity).addData(this.tileEntity.empMode));
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("mode_C>S", TileEMPTower.CHANGE_MODE_PACKET_ID, this.tileEntity).addData((byte)this.tileEntity.empMode.ordinal()));
     }
 
     /** Call this method from you GuiScreen to process the keys into textbox. */
