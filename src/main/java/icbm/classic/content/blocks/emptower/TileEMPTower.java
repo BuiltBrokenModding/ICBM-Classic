@@ -96,10 +96,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5); //TODO convert to a animation object
             rotation += rotationDelta;
-            if (rotation > 360)
-            {
-                rotation = 0;
-            }
+            while (rotation > 360) rotation -= 360;
         }
     }
 
