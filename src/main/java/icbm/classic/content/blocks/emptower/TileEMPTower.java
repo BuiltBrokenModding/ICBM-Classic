@@ -178,10 +178,11 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
 
     protected IBlast buildBlast()
     {
-        BlastEMP blast = (BlastEMP)ExplosiveRefs.EMP.create()
+        BlastEMP blast = ((BlastEMP)ExplosiveRefs.EMP.create()
                 .setBlastWorld(world)
                 .setBlastPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
-                .setBlastSize(empRadius);
+                .setBlastSize(empRadius))
+                .clearSetEffectBlocksAndEntities();
 
         BlastEMP blastWithMode = null;
 

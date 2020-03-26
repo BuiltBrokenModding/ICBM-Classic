@@ -161,7 +161,7 @@ public class ExplosiveInit
 
 
         ExplosiveRefs.EMP = newEx(16, "emp", EnumTier.THREE,
-                () -> new BlastEMP().setBlastSize(50));
+                () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ExplosiveRefs.EMP.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.EMP);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ExplosiveRefs.EMP.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.EMP);
 
