@@ -38,6 +38,13 @@ public class BlastEMP extends Blast
         return this;
     }
 
+    public BlastEMP clearSetEffectBlocksAndEntities()
+    {
+        this.effectBlocks = false;
+        this.effectEntities = false;
+        return this;
+    }
+
     @Override
     public boolean doExplode(int callCount)
     {
