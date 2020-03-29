@@ -70,7 +70,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
      *
      * @return this
      */
-    public EntityGrenade aimFromThrower()
+    public EntityGrenade aimFromThrower() //TODO figure out which hand threw the grenade so we can spawn over shoulder
     {
         this.setLocationAndAngles(thrower.posX, thrower.posY + thrower.getEyeHeight(), thrower.posZ, thrower.rotationYaw, thrower.rotationPitch);
 
