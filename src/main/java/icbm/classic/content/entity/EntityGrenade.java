@@ -318,7 +318,7 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY || hasCapability(capability, facing);
+        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @Override
