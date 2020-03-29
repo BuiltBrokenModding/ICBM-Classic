@@ -161,8 +161,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     protected boolean shouldStopBreakingBlocks()
     {
         return blocksDestroyedThisTick > getBlocksPerTick()
-                || !isAlive
-                || (System.currentTimeMillis() - tickStartTimeMs) >= ConfigBlast.REDMATTER.MAX_RUNTIME_MS;
+                || !isAlive;
+                //|| (System.currentTimeMillis() - tickStartTimeMs) >= ConfigBlast.REDMATTER.MAX_RUNTIME_MS;
     }
 
     /**

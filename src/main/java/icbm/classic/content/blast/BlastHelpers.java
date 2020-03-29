@@ -77,7 +77,7 @@ public class BlastHelpers
             {
                 for (int z = -zSize; z < zSize; z++)
                 {
-                    if (consumer.apply(x, y, z))
+                    if (!consumer.apply(x, y, z))
                     {
                         return;
                     }
