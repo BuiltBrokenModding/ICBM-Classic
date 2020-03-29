@@ -1,11 +1,36 @@
 # INFO
 This log contains changes made to the project. Each entry contains changed made after the last version but before the number was changed. Any changes made after a number change are considered part of the next release. This is regardless if versions are still being released with that version number attached. 
 
-If this is a problem, use exact build numbers to track changes. As each build logs the git-hash it was created from to better understand changes made.
-
 # Versions
-# 4.0.0
+
+## 4.0.2
+
 ### Runtime Changes
+
+### Developer Changes
+
+## 4.0.1
+
+### Runtime Changes
+* Added: dustSulfur to ore dictionary
+* Added: dustSaltpeter to ore dictionary
+* Fixed: Grenade infinite looping when accessing capability
+* Fixed: redmatter size packet not using entity id
+* Improved: EMP tower rotation
+* Removed: random drop spread from tnt defuse
+
+### Developer Changes
+* Added: sonar code scanning
+* Added: JaCoCo code coverage reporting
+* Added: github action pipeline
+* Changed: IExplosiveData#getTier() to be non-null
+
+## 4.0.0
+
+This is not a complete list as we got lazy tracking things in the change log. Cutting this version after commit 9f4470b63e5d535a74e72b5a5b39c3fa988c3988
+
+### Runtime Changes
+ * Added: lang support to most chat commands
  * Added: Launch button to launcher control panels
  * Added: Launch button to cruise launcher
  * Added: Tooltip to rocket launcher to indicate that it can fire any missile when the player is in creative mode

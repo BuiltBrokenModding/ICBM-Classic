@@ -8,6 +8,7 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -96,10 +97,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         {
             rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5); //TODO convert to a animation object
             rotation += rotationDelta;
-            if (rotation > 360)
-            {
-                rotation = 0;
-            }
+            while (rotation > 360) rotation -= 360;
         }
     }
 
@@ -177,10 +175,28 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
 
     protected IBlast buildBlast()
     {
-        return ICBMExplosives.EMP.create()
+        BlastEMP blast = ((BlastEMP)ICBMExplosives.EMP.create()
                 .setBlastWorld(world)
                 .setBlastPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
-                .setBlastSize(empRadius).buildBlast();
+                .setBlastSize(empRadius))
+                .clearSetEffectBlocksAndEntities();
+
+        BlastEMP blastWithMode = null;
+
+        switch (this.empMode)
+        {
+            case ALL:
+                blastWithMode = blast.setEffectBlocks().setEffectEntities();
+                break;
+            case MISSILES_ONLY:
+                blastWithMode = blast.setEffectEntities();
+                break;
+            case ELECTRICITY_ONLY:
+                blastWithMode = blast.setEffectBlocks();
+                break;
+        }
+
+        return blastWithMode.buildBlast();
     }
 
     //@Callback(limit = 1) TODO add CC support
