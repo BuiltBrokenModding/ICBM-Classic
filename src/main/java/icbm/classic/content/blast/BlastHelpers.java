@@ -3,13 +3,18 @@ package icbm.classic.content.blast;
 import icbm.classic.api.data.Int3Consumer;
 import icbm.classic.api.data.Int3Looper;
 
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 2019-08-27.
  */
-public class BlastHelpers
+public final class BlastHelpers
 {
+    private BlastHelpers()
+    {
+        //Empty as this is a helper class only
+    }
 
     /**
      * Loops a cube with the size given then only returns the values inside the radius
@@ -17,9 +22,9 @@ public class BlastHelpers
      * @param radius   - xyz size, will ceil then ignore outside
      * @param consumer - callback for the xyz
      */
-    public static void loopInRadius(double radius, Int3Consumer consumer)
+    public static void forEachPosInRadius(double radius, Int3Consumer consumer)
     {
-        loopInRadiusUntil(radius, (x, y, z) -> {
+        forEachPosInRadius(radius, (x, y, z) -> {
             consumer.apply(x, y, z);
             return true;
         }, () -> false);
@@ -31,7 +36,7 @@ public class BlastHelpers
      * @param radius   - xyz size, will ceil then ignore outside
      * @param consumer - callback for the xyz
      */
-    public static void loopInRadiusUntil(double radius, Int3Looper consumer, BooleanSupplier stopper)
+    public static void forEachPosInRadius(double radius, Int3Looper consumer, BooleanSupplier stopper)
     {
         final int size = (int) Math.ceil(radius);
         forEachPosInCube(size, size, size, (x, y, z) ->
@@ -63,7 +68,7 @@ public class BlastHelpers
      * @param zSize    - size to loop in the z
      * @param consumer - callback for the xyz, returning false in the callback will cancel the loop
      */
-    public static void forEachPosInCube(int xSize, int ySize, int zSize, Int3Looper consumer)
+    public static void forEachPosInCube(int xSize, int ySize, int zSize, @Nonnull Int3Looper consumer)
     {
         for (int x = -xSize; x <= xSize; x++)
         {

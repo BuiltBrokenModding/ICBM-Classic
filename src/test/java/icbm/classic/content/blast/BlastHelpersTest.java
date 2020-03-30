@@ -19,12 +19,27 @@ public class BlastHelpersTest
     class ForEachPosInCubeTestGroup
     {
         @Test
-        @DisplayName("3 size cube")
-        void simpleLoop_3x3()
+        @DisplayName("stop after first")
+        void stopAfterFirst()
         {
-            final List<Vec3i> positions = new ArrayList<Vec3i>(27);
+            final List<Vec3i> positions = new ArrayList<>();
+            BlastHelpers.forEachPosInCube(1, 1, 1, (x, y, z) -> {
+                positions.add(new Vec3i(x, y, z));
+                return false; //stop loop
+            });
 
-            //1 will result is -1 to 1 or a size of 3
+            //Should have a single position
+            Assertions.assertEquals(1, positions.size());
+            Assertions.assertEquals(new Vec3i(-1, -1, -1), positions.get(0));
+        }
+
+        @Test
+        @DisplayName("3x3x3 cube")
+        void loop3x3()
+        {
+            final List<Vec3i> positions = new ArrayList<>(27);
+
+            //1 will result in -1 to 1 or a size of 3
             BlastHelpers.forEachPosInCube(1, 1, 1, (x, y, z) -> {
                 positions.add(new Vec3i(x, y, z));
                 return true;

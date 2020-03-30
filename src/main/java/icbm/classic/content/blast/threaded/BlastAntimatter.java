@@ -48,7 +48,7 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
-        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) -> {
+        BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
             if (isInsideMap(y + yi()) && shouldEditPos(x, y, z))
             {
                 edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));

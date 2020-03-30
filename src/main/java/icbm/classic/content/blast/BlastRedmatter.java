@@ -133,7 +133,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     protected void doDestroyBlocks()
     {
         //Destroy blocks in radius
-        BlastHelpers.loopInRadiusUntil(currentBlockDestroyRadius,
+        BlastHelpers.forEachPosInRadius(currentBlockDestroyRadius,
                 (x, y, z) -> {
                     processNextBlock(x, y, z);
                     return true;
