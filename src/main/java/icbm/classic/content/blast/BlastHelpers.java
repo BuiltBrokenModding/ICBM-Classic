@@ -33,7 +33,8 @@ public class BlastHelpers
      */
     public static void loopInRadiusUntil(double radius, Int3Looper consumer, BooleanSupplier stopper)
     {
-        loopCubeNP((int) Math.ceil(radius), (x, y, z) ->
+        final int size = (int) Math.ceil(radius);
+        forEachPosInCube(size, size, size, (x, y, z) ->
         {
             //Check if we should stop
             if (stopper.getAsBoolean())
@@ -53,29 +54,22 @@ public class BlastHelpers
 
     /**
      * loops a cube from -size to size
-     *
-     * @param size - size to loop in the xyz
-     */
-    public static void loopCubeNP(int size, Int3Looper consumer)
-    {
-        loopCubeNP(size, size, size, consumer);
-    }
-
-    /**
-     * loops a cube from -size to size
+     * <p>
+     * If a value of (1x, 1y, 1z) is provided the output cube will be 3x3x3. As
+     * it will go from -1 to 1 in each axis.
      *
      * @param xSize    - size to loop in the x
      * @param ySize    - size to loop in the y
      * @param zSize    - size to loop in the z
-     * @param consumer - callback for the xyz
+     * @param consumer - callback for the xyz, returning false in the callback will cancel the loop
      */
-    public static void loopCubeNP(int xSize, int ySize, int zSize, Int3Looper consumer)
+    public static void forEachPosInCube(int xSize, int ySize, int zSize, Int3Looper consumer)
     {
-        for (int x = -xSize; x < ySize; x++)
+        for (int x = -xSize; x <= xSize; x++)
         {
-            for (int y = -ySize; y < ySize; y++)
+            for (int y = -ySize; y <= ySize; y++)
             {
-                for (int z = -zSize; z < zSize; z++)
+                for (int z = -zSize; z <= zSize; z++)
                 {
                     if (!consumer.apply(x, y, z))
                     {
