@@ -15,11 +15,73 @@ import java.util.List;
 public class BlastHelpersTest
 {
     @Nested
+    @DisplayName("forEachPosInRadius")
+    class ForEachPosInRadiusGroup
+    {
+        @Test
+        @DisplayName("3 radius")
+        void loop3x3()
+        {
+            final List<Vec3i> positions = new ArrayList<>(27);
+
+            //1 will result in -1 to 1 or a size of 3
+            BlastHelpers.forEachPosInRadius(1, (x, y, z) -> {
+                positions.add(new Vec3i(x, y, z));
+            });
+
+            //Should have 27 points
+            Assertions.assertEquals(7, positions.size());
+
+            //Check that each position is valid based on a simple loop
+            //  Not the most idea way to validate this but it works
+            Assertions.assertEquals(new Vec3i(-1, 0, 0), positions.get(0));
+            Assertions.assertEquals(new Vec3i(0, -1, 0), positions.get(1));
+            Assertions.assertEquals(new Vec3i(0, 0, -1), positions.get(2));
+            Assertions.assertEquals(new Vec3i(0, 0, 0), positions.get(3));
+            Assertions.assertEquals(new Vec3i(0, 0, 1), positions.get(4));
+            Assertions.assertEquals(new Vec3i(0, 1, 0), positions.get(5));
+            Assertions.assertEquals(new Vec3i(1, 0, 0), positions.get(6));
+        }
+    }
+
+    @Nested
+    @DisplayName("forEachPosInRadiusUntil")
+    class ForEachPosInRadiusUntilGroup
+    {
+
+        @Test
+        @DisplayName("3 radius")
+        void loop3x3()
+        {
+            final List<Vec3i> positions = new ArrayList<>(27);
+
+            //1 will result in -1 to 1 or a size of 3
+            BlastHelpers.forEachPosInRadiusUntil(1, (x, y, z) -> {
+                positions.add(new Vec3i(x, y, z));
+                return true;
+            }, () -> false);
+
+            //Should have 27 points
+            Assertions.assertEquals(7, positions.size());
+
+            //Check that each position is valid based on a simple loop
+            //  Not the most idea way to validate this but it works
+            Assertions.assertEquals(new Vec3i(-1, 0, 0), positions.get(0));
+            Assertions.assertEquals(new Vec3i(0, -1, 0), positions.get(1));
+            Assertions.assertEquals(new Vec3i(0, 0, -1), positions.get(2));
+            Assertions.assertEquals(new Vec3i(0, 0, 0), positions.get(3));
+            Assertions.assertEquals(new Vec3i(0, 0, 1), positions.get(4));
+            Assertions.assertEquals(new Vec3i(0, 1, 0), positions.get(5));
+            Assertions.assertEquals(new Vec3i(1, 0, 0), positions.get(6));
+        }
+    }
+
+    @Nested
     @DisplayName("forEachPosInCube")
     class ForEachPosInCubeTestGroup
     {
         @Test
-        @DisplayName("stop after first")
+        @DisplayName("stop after first iteration")
         void stopAfterFirst()
         {
             final List<Vec3i> positions = new ArrayList<>();
@@ -34,7 +96,7 @@ public class BlastHelpersTest
         }
 
         @Test
-        @DisplayName("3x3x3 cube")
+        @DisplayName("3x3x3 cube - should map all 27 positions in order")
         void loop3x3()
         {
             final List<Vec3i> positions = new ArrayList<>(27);
