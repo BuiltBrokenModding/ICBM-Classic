@@ -22,7 +22,7 @@ public class BlastHelpersTest
         @DisplayName("3 radius")
         void loop3x3()
         {
-            final List<Vec3i> positions = new ArrayList<>(27);
+            final List<Vec3i> positions = new ArrayList<>(7);
 
             //1 will result in -1 to 1 or a size of 3
             BlastHelpers.forEachPosInRadius(1, (x, y, z) -> {
@@ -48,12 +48,25 @@ public class BlastHelpersTest
     @DisplayName("forEachPosInRadiusUntil")
     class ForEachPosInRadiusUntilGroup
     {
+        @Test
+        @DisplayName("stop before first iteration")
+        void stopOnFirst()
+        {
+            final List<Vec3i> positions = new ArrayList<>();
+            BlastHelpers.forEachPosInRadiusUntil(1, (x, y, z) -> {
+                positions.add(new Vec3i(x, y, z));
+                return false; //stop loop
+            }, () -> true);
+
+            //Should have a single position
+            Assertions.assertEquals(0, positions.size());
+        }
 
         @Test
         @DisplayName("3 radius")
         void loop3x3()
         {
-            final List<Vec3i> positions = new ArrayList<>(27);
+            final List<Vec3i> positions = new ArrayList<>(7);
 
             //1 will result in -1 to 1 or a size of 3
             BlastHelpers.forEachPosInRadiusUntil(1, (x, y, z) -> {
