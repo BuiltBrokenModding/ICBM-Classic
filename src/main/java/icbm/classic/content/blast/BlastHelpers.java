@@ -24,7 +24,7 @@ public final class BlastHelpers
      */
     public static void forEachPosInRadius(double radius, Int3Consumer consumer)
     {
-        forEachPosInRadius(radius, (x, y, z) -> {
+        forEachPosInRadiusUntil(radius, (x, y, z) -> {
             consumer.apply(x, y, z);
             return true;
         }, () -> false);
@@ -34,9 +34,10 @@ public final class BlastHelpers
      * Loops a cube with the size given then only returns the values inside the radius
      *
      * @param radius   - xyz size, will ceil then ignore outside
-     * @param consumer - callback for the xyz
+     * @param consumer - callback for the xyz, return false to stop looping
+     * @param stopper - callback to check if we should stop early (true to stop)
      */
-    public static void forEachPosInRadius(double radius, Int3Looper consumer, BooleanSupplier stopper)
+    public static void forEachPosInRadiusUntil(double radius, Int3Looper consumer, BooleanSupplier stopper)
     {
         final int size = (int) Math.ceil(radius);
         forEachPosInCube(size, size, size, (x, y, z) ->
