@@ -181,22 +181,19 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                 .setBlastSize(empRadius))
                 .clearSetEffectBlocksAndEntities();
 
-        BlastEMP blastWithMode = null;
-
         switch (this.empMode)
         {
             case ALL:
-                blastWithMode = blast.setEffectBlocks().setEffectEntities();
-                break;
+                return blast.setEffectBlocks().setEffectEntities().buildBlast();
             case MISSILES_ONLY:
-                blastWithMode = blast.setEffectEntities();
-                break;
+                return blast.setEffectEntities().buildBlast();
             case ELECTRICITY_ONLY:
-                blastWithMode = blast.setEffectBlocks();
-                break;
-        }
+                return blast.setEffectBlocks().buildBlast();
 
-        return blastWithMode.buildBlast();
+            default:
+                ICBMClassic.logger().error("Unknown empMode passed in TileEMPTower! Returning default blast.");
+                return blast.buildBlast();
+        }
     }
 
     //@Callback(limit = 1) TODO add CC support
