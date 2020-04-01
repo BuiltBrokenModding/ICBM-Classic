@@ -5,7 +5,6 @@ import com.builtbroken.jlib.data.vector.ITransform;
 import icbm.classic.lib.transform.vector.Pos;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
