@@ -29,10 +29,6 @@ public abstract class Pos3D<R extends Pos3D> extends Pos2D<R>
         return newPos(i + x(), j + y(), k + z());
     }
 
-    private double random(Random rand, double r) {
-        return rand.nextDouble() * r;
-    }
-
     public R add(double x, double y, double z)
     {
         return newPos(x + x(), y + y(), z + z());
