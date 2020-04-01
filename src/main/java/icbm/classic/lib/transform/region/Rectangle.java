@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.vector.IPos2D;
 import icbm.classic.lib.transform.vector.Point;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
