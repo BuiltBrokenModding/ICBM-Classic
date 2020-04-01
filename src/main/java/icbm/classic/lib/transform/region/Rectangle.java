@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.vector.IPos2D;
 import icbm.classic.lib.transform.vector.Point;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
@@ -124,8 +123,8 @@ public class Rectangle extends Shape2D
     @Override
     public String toString()
     {
-        MathContext cont = new MathContext(4, RoundingMode.HALF_UP);
-        return "Rectangle[" + new BigDecimal(min.x(), cont) + ", " + new BigDecimal(min.y(), cont) + "] -> [" + new BigDecimal(max.x(), cont) + ", " + new BigDecimal(max.y(), cont) + "]";
+        final int precision = 4;
+        return "Rectangle[" + BigDecimal.valueOf(min.x()).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(min.y()).setScale(precision, RoundingMode.HALF_UP) + "] -> [" + BigDecimal.valueOf(max.x()).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(max.y()).setScale(precision, RoundingMode.HALF_UP) + "]";
     }
 
     @Override
