@@ -3,6 +3,7 @@ package icbm.classic.content.entity.missile;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IMissile;
@@ -262,7 +263,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         this.updateMotion();
 
         //Play audio
-        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ, 1F, (1.0F + (this.world.rand.nextFloat() * 2F - 1F) * 0.2F) * 0.7F, true);
+        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ, 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
 
         //Trigger events
         // TODO add an event system here
@@ -429,7 +430,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
         //Handle effects
         ICBMClassic.proxy.spawnMissileSmoke(this);
-        ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, (float)Math.min(1, ticksInAir / 40F) * 1F, (1.0F + (this.world.rand.nextFloat() * 2F - 1F) * 0.2F) * 0.7F, true);
+        ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, (float)Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
 
 
         //Trigger events
