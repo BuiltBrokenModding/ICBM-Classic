@@ -1,8 +1,8 @@
 package icbm.classic.datafix;
 
-import icbm.classic.api.EntityRefs;
+import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
@@ -16,7 +16,7 @@ public class EntityExplosiveDataFixer implements IFixableData
     public NBTTagCompound fixTagCompound(NBTTagCompound compound)
     {
         //Match to entity, we get all entity tags as input
-        if (compound.hasKey(NBTConstants.ID) && compound.getString(NBTConstants.ID).equalsIgnoreCase(EntityRefs.BLOCK_EXPLOSIVE.toString()))
+        if (compound.hasKey(NBTConstants.ID) && compound.getString(NBTConstants.ID).equalsIgnoreCase(ICBMEntities.BLOCK_EXPLOSIVE.toString()))
         {
             //Fix explosive ID save
             if (compound.hasKey(NBTConstants.EXPLOSIVE_ID))

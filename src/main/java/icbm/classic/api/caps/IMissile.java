@@ -1,7 +1,7 @@
 package icbm.classic.api.caps;
 
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.explosion.BlastState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;

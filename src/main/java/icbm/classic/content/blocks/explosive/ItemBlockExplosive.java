@@ -1,7 +1,7 @@
 package icbm.classic.content.blocks.explosive;
 
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.ExplosiveRefs;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
@@ -60,7 +60,7 @@ public class ItemBlockExplosive extends ItemBlockAbstract
             list.add(TextFormatting.DARK_RED + LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getTooltipColor() + tierdata.getLocalizedName());
         }
 
-        if (stack.getItemDamage() == ExplosiveRefs.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
+        if (stack.getItemDamage() == ICBMExplosives.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
         {
             ///Shhh!!! tell no one this exists, tis a surprise
             boolean taunt = shouldTauntPlayer(player);

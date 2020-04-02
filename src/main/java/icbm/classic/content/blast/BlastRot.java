@@ -22,7 +22,7 @@ public class BlastRot extends BlastThreaded implements IBlastTickable
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
-        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->
+        BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) ->
         edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z)));
         //TODO implement pathfinder so virus doesn't go through unbreakable air-tight walls
         return false;

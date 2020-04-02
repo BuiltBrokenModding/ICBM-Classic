@@ -2,7 +2,7 @@ package icbm.classic.client;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.ExplosiveRefs;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.mapper.BlockModelMapperExplosive;
@@ -202,9 +202,9 @@ public class ClientReg
             itemBlockModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         //Block state mapper
-        ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new BlockModelMapperExplosive(blockModelMap, blockModelMap.get(ExplosiveRefs.CONDENSED).get(EnumFacing.UP)));
+        ModelLoader.setCustomStateMapper(BlockReg.blockExplosive, new BlockModelMapperExplosive(blockModelMap, blockModelMap.get(ICBMExplosives.CONDENSED).get(EnumFacing.UP)));
         //Item state mapper
-        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockExplosive), new ItemModelMapperExplosive(itemBlockModelMap, itemBlockModelMap.get(ExplosiveRefs.CONDENSED)));
+        ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockExplosive), new ItemModelMapperExplosive(itemBlockModelMap, itemBlockModelMap.get(ICBMExplosives.CONDENSED)));
         ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockExplosive), itemBlockModelMap.values()
                 .stream()
                 .map(mrl -> new ResourceLocation(mrl.getNamespace(), mrl.getPath()))
@@ -242,7 +242,7 @@ public class ClientReg
 
         ModelLoader.registerItemVariants(ItemReg.itemGrenade, grenadeModelMap.values()
                 .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
-        ModelLoader.setCustomMeshDefinition(ItemReg.itemGrenade, new ItemModelMapperExplosive(grenadeModelMap, grenadeModelMap.get(ExplosiveRefs.CONDENSED)));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemGrenade, new ItemModelMapperExplosive(grenadeModelMap, grenadeModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
     protected static void registerCartRenders()
@@ -254,7 +254,7 @@ public class ClientReg
         }
         ModelLoader.registerItemVariants(ItemReg.itemBombCart, cartModelMap.values()
                 .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
-        ModelLoader.setCustomMeshDefinition(ItemReg.itemBombCart, new ItemModelMapperExplosive(cartModelMap, cartModelMap.get(ExplosiveRefs.CONDENSED)));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemBombCart, new ItemModelMapperExplosive(cartModelMap, cartModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
     protected static void registerMissileRenders()
@@ -266,7 +266,7 @@ public class ClientReg
         }
         ModelLoader.registerItemVariants(ItemReg.itemMissile, missileModelMap.values()
                 .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
-        ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ExplosiveRefs.CONDENSED)));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
     protected static void registerCraftingRender(ItemCrafting itemCrafting)

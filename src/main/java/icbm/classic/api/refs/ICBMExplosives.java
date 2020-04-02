@@ -1,4 +1,4 @@
-package icbm.classic.api;
+package icbm.classic.api.refs;
 
 import icbm.classic.api.reg.IExplosiveData;
 
@@ -6,7 +6,7 @@ import icbm.classic.api.reg.IExplosiveData;
  *
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-public final class ExplosiveRefs
+public final class ICBMExplosives
 {
     //=================== Tier 1
     public static IExplosiveData CONDENSED;

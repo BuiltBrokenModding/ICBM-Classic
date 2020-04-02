@@ -1,4 +1,4 @@
-package icbm.classic.api;
+package icbm.classic.api.data;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import net.minecraft.util.math.BlockPos;

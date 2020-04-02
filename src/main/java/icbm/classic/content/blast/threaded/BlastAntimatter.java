@@ -2,7 +2,7 @@ package icbm.classic.content.blast.threaded;
 
 import icbm.classic.api.events.BlastCancelEvent;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
@@ -48,7 +48,7 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
-        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) -> {
+        BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
             if (isInsideMap(y + yi()) && shouldEditPos(x, y, z))
             {
                 edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));

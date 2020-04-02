@@ -1,7 +1,7 @@
 package icbm.classic.prefab.entity;
 
-import icbm.classic.api.IWorldPosition;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.api.data.IWorldPosition;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

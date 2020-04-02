@@ -1,6 +1,6 @@
 package icbm.classic.api.explosion;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 

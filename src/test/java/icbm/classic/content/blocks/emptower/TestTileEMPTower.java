@@ -2,7 +2,7 @@ package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.DummyMultiTile;
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.ExplosiveRefs;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastFactory;
@@ -45,12 +45,12 @@ public class TestTileEMPTower
     public static void setupForAllTests() {
         final ResourceLocation name = new ResourceLocation("ICBM:EMP");
         final IBlastFactory factory = () -> new BlastEMP().setEffectBlocks().setEffectEntities().setBlastSize(50);
-        ExplosiveRefs.EMP = new ExplosiveData(name,16,EnumTier.THREE).blastFactory(factory);
+        ICBMExplosives.EMP = new ExplosiveData(name,16,EnumTier.THREE).blastFactory(factory);
     }
 
     @AfterAll
     public static void tearDownForAllTests() {
-        ExplosiveRefs.EMP = null;
+        ICBMExplosives.EMP = null;
     }
 
     @Test

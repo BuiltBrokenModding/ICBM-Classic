@@ -1,7 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;
@@ -9,7 +9,7 @@ import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastRestore;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadExplosion;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
@@ -236,6 +236,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
      */
     protected void onBlastCompleted()
     {
+        clearBlast();
     }
 
     /**
@@ -644,6 +645,10 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         if (getThread() != null)
         {
             getThread().kill();
+        }
+        if (controller != null)
+        {
+            controller.setDead();
         }
         isAlive = false;
     }

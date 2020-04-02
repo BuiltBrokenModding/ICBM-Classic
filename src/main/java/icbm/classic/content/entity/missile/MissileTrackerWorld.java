@@ -1,7 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
 import net.minecraft.nbt.NBTTagCompound;

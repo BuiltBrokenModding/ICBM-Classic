@@ -1,6 +1,6 @@
 package icbm.classic.api.items;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.item.ItemStack;
 

@@ -179,7 +179,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         final int radiusSQ = r * r;
         final BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
 
-        BlastHelpers.loopInRadius(r, (x, y, z) ->
+        BlastHelpers.forEachPosInRadius(r, (x, y, z) ->
         {
             final double distanceSQ = (x * x + y * y + z * z);
             if (distanceSQ <= radiusSQ)
