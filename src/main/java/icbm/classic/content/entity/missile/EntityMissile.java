@@ -430,7 +430,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
 
         //Handle effects
         ICBMClassic.proxy.spawnMissileSmoke(this);
-        ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, (float)Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
+        ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
 
 
         //Trigger events
