@@ -1,6 +1,8 @@
 package com.builtbroken.jlib.data.vector;
 
 
+import icbm.classic.lib.CalculationHelpers;
+
 import java.util.Random;
 
 /**
@@ -23,9 +25,9 @@ public abstract class Pos3D<R extends Pos3D> extends Pos2D<R>
 
     public R addRandom(Random rand, double r)
     {
-        double i = (rand.nextDouble() * 2 - 1) * r;
-        double j = (rand.nextDouble() * 2 - 1) * r;
-        double k = (rand.nextDouble() * 2 - 1) * r;
+        double i = CalculationHelpers.randDoubleRange(rand, r);
+        double j = CalculationHelpers.randDoubleRange(rand, r);
+        double k = CalculationHelpers.randDoubleRange(rand, r);
         return newPos(i + x(), j + y(), k + z());
     }
 
