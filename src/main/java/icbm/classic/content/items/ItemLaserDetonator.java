@@ -1,7 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;

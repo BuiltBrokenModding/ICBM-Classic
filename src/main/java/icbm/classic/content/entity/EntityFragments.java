@@ -1,6 +1,6 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.content.entity.mobs.EntityXmasMob;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;

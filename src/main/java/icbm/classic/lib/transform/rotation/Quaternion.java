@@ -5,7 +5,6 @@ import com.builtbroken.jlib.data.vector.ITransform;
 import icbm.classic.lib.transform.vector.Pos;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
@@ -145,7 +144,7 @@ public class Quaternion implements ITransform
     @Override
     public String toString()
     {
-        MathContext cont = new MathContext(4, RoundingMode.HALF_UP); //TODO see if this is honestly needed
-        return "Quaternion[" + new BigDecimal(w, cont) + ", " + new BigDecimal(x, cont) + ", " + new BigDecimal(y, cont) + ", " + new BigDecimal(z, cont) + "]";
+        int precision = 4; // TODO see if this level of precision is required
+        return "Quaternion[" + BigDecimal.valueOf(w).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(x).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(y).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(z).setScale(precision, RoundingMode.HALF_UP) + "]";
     }
 }

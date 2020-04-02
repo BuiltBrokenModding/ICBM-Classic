@@ -1,6 +1,6 @@
 package icbm.classic.content.items;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.RemoteTriggerEvent;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;

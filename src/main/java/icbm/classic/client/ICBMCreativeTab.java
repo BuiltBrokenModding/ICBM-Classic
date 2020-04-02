@@ -1,8 +1,8 @@
 package icbm.classic.client;
 
-import icbm.classic.api.ExplosiveRefs;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
@@ -121,8 +121,8 @@ public class ICBMCreativeTab extends CreativeTabs
 
     private int compareExplosives(IExplosive explosiveA, IExplosive explosiveB)
     {
-        final IExplosiveData dataA = Optional.ofNullable(explosiveA.getExplosiveData()).orElse(ExplosiveRefs.CONDENSED);
-        final IExplosiveData dataB = Optional.ofNullable(explosiveB.getExplosiveData()).orElse(ExplosiveRefs.CONDENSED);
+        final IExplosiveData dataA = Optional.ofNullable(explosiveA.getExplosiveData()).orElse(ICBMExplosives.CONDENSED);
+        final IExplosiveData dataB = Optional.ofNullable(explosiveB.getExplosiveData()).orElse(ICBMExplosives.CONDENSED);
         final int tierA = dataA.getTier().ordinal();
         final int tierB = dataB.getTier().ordinal();
 

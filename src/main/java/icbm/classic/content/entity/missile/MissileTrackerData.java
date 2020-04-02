@@ -1,6 +1,6 @@
 package icbm.classic.content.entity.missile;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 

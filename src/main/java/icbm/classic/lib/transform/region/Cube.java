@@ -3,7 +3,7 @@ package icbm.classic.lib.transform.region;
 import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;

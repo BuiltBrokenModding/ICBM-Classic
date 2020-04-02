@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;

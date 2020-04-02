@@ -1,7 +1,7 @@
 package icbm.classic.prefab.tile;
 
 import icbm.classic.config.ConfigMain;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.lib.energy.storage.EnergyBuffer;

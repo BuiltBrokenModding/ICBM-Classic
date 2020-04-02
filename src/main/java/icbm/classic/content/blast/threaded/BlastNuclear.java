@@ -1,8 +1,8 @@
 package icbm.classic.content.blast.threaded;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.ExplosiveRefs;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.api.refs.ICBMExplosives;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastMutation;
 import icbm.classic.content.blast.BlastRot;
@@ -250,7 +250,7 @@ public class BlastNuclear extends BlastThreaded
                     .setBlastSource(this.exploder)
                     .setBlastPosition(location.x(), location.y(), location.z())
                     .setBlastSize(this.getBlastRadius())
-                    .setExplosiveData(ExplosiveRefs.ROT)
+                    .setExplosiveData(ICBMExplosives.ROT)
                     .buildBlast().runBlast();  //TODO trigger from explosive handler
 
                     new BlastMutation()
@@ -258,7 +258,7 @@ public class BlastNuclear extends BlastThreaded
                     .setBlastSource(this.exploder)
                     .setBlastPosition(location.x(), location.y(), location.z())
                     .setBlastSize(this.getBlastRadius())
-                    .setExplosiveData(ExplosiveRefs.MUTATION)
+                    .setExplosiveData(ICBMExplosives.MUTATION)
                     .buildBlast().runBlast();  //TODO trigger from explosive handler
 
                     if (this.world().rand.nextInt(3) == 0)

@@ -1,7 +1,7 @@
 package icbm.classic.datafix;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

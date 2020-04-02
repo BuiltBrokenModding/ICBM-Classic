@@ -1,6 +1,6 @@
 package icbm.classic.api.caps;
 
-import icbm.classic.api.data.LaunchStatus;
+import icbm.classic.api.missiles.LaunchStatus;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 

@@ -1,8 +1,8 @@
 package icbm.classic.lib.transform.vector;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.api.IWorldPosition;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.api.data.IWorldPosition;
+import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

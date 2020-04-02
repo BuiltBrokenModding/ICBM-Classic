@@ -53,7 +53,7 @@ public class FakeBlast implements IBlastInit
     @Override
     public IBlastInit setBlastSource(Entity entity)
     {
-        this.source = source;
+        this.source = entity;
         return this;
     }
 

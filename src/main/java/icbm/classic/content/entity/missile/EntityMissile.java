@@ -3,7 +3,7 @@ package icbm.classic.content.entity.missile;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.MissileEvent;

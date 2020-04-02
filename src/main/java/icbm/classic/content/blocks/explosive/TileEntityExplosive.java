@@ -2,7 +2,7 @@ package icbm.classic.content.blocks.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;

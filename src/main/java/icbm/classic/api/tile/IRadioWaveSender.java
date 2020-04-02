@@ -1,6 +1,6 @@
 package icbm.classic.api.tile;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.transform.region.Cube;
 
 /**

@@ -1,6 +1,6 @@
 package icbm.classic.lib.network;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 

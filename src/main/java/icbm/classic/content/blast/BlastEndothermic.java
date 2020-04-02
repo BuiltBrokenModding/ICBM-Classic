@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;
 import net.minecraft.block.BlockLiquid;

@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher;
 
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.tile.IRadioWaveReceiver;
 import icbm.classic.api.tile.IRadioWaveSender;

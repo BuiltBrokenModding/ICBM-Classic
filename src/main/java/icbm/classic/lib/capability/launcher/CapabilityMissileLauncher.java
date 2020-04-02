@@ -1,10 +1,10 @@
 package icbm.classic.lib.capability.launcher;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.NBTConstants;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
-import icbm.classic.api.data.LaunchStatus;
+import icbm.classic.api.missiles.LaunchStatus;
 import icbm.classic.lib.CapabilityPrefab;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;

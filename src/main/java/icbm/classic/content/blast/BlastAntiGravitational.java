@@ -43,7 +43,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
     {
         int ymin = -this.getPos().getY();
         int ymax = 255 -this.getPos().getY();
-        BlastHelpers.loopInRadius(this.getBlastRadius(), (x, y, z) ->{
+        BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) ->{
 
             if (y >= ymin && y < ymax)
             {

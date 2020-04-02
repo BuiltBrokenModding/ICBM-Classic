@@ -5,6 +5,7 @@ package icbm.classic.api.explosion;
  *
  * @author Calclavia
  */
+@Deprecated //TODO replace with events or more specialized logic
 public interface IBlastIgnore
 {
     /**

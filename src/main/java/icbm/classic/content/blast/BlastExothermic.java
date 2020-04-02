@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.config.ConfigBlast;
+import icbm.classic.config.blast.ConfigBlast;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

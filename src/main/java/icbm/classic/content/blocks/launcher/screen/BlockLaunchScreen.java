@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
-import icbm.classic.api.IWorldPosition;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.items.ItemLaserDetonator;
