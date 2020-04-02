@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnData
 {
     //Render color
@@ -48,7 +50,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
     @Override
     protected void entityInit()
     {
-        this.getDataManager().register(BEAM_PROGRESS, Float.valueOf(-1));
+        this.getDataManager().register(BEAM_PROGRESS, -1f);
     }
 
     public EntityLightBeam setPosition(IPos3D position)
@@ -77,7 +79,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
 
     public void setActualBeamProgress(float value)
     {
-        this.getDataManager().set(BEAM_PROGRESS, Math.min(1, Math.max(0, Float.valueOf(value))));
+        this.getDataManager().set(BEAM_PROGRESS, Math.min(1, Math.max(0, value)));
     }
 
     public float getBeamProgress()
@@ -87,6 +89,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
 
     @Override
     @SideOnly(Side.CLIENT)
+    @Nonnull
     public AxisAlignedBB getRenderBoundingBox()
     {
         return new AxisAlignedBB(posX - 5, -10, posZ - 5, posX + 5, Double.POSITIVE_INFINITY, posZ + 5);
