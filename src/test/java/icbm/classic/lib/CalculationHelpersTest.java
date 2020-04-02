@@ -57,4 +57,46 @@ public class CalculationHelpersTest
             Assertions.assertTrue(result >= -3.3f, result + " is not great than or equal to -3.3f");
         }
     }
+
+    @Test
+    void randDoubleRange_max()
+    {
+        //Force to max
+        when(random.nextDouble()).thenReturn(1d);
+
+        //Run calc
+        final double result = CalculationHelpers.randDoubleRange(random, -10, 10);
+
+        //output should be 10
+        Assertions.assertEquals(10d, result);
+    }
+
+    @Test
+    void randDoubleRange_min()
+    {
+        //Force to max
+        when(random.nextDouble()).thenReturn(0d);
+
+        //Run calc
+        final double result = CalculationHelpers.randDoubleRange(random, -10, 10);
+
+        //output should be -10
+        Assertions.assertEquals(-10d, result);
+    }
+
+    @Test
+    void randDoubleRange_staysInRange()
+    {
+        final Random normalRandom = new Random();
+
+        for(int i = 0; i < 100; i++)
+        {
+            //Run calc
+            final double result = CalculationHelpers.randDoubleRange(normalRandom, 3.3d);
+
+            //output should be in range
+            Assertions.assertTrue(result <= 3.3d, result + " is not less than or equal to 3.3d");
+            Assertions.assertTrue(result >= -3.3d, result + " is not great than or equal to -3.3d");
+        }
+    }
 }

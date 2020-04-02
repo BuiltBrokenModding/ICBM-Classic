@@ -38,4 +38,29 @@ public final class CalculationHelpers
     {
         return (rand.nextFloat() * (max - min)) + min;
     }
+
+    /**
+     * Generates a random double inside the range defined by -scale to +scale
+     *
+     * @param rand  random supplied
+     * @param scale plus minus scale to use for the range
+     * @return random double
+     */
+    public static double randDoubleRange(Random rand, double scale)
+    {
+        return randDoubleRange(rand, -scale, scale);
+    }
+
+    /**
+     * Generates a random double inside the range
+     *
+     * @param rand random supplied
+     * @param min  lower bound
+     * @param max  upper bound
+     * @return random double
+     */
+    public static double randDoubleRange(Random rand, double min, double max)
+    {
+        return (rand.nextDouble() * (max - min)) + min;
+    }
 }
