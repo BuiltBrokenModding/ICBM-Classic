@@ -51,7 +51,7 @@ dependencies {
 idea {
     module {
         testOutputDir = file('output_tests')
-        inheritOutputDirs = false
+        inheritOutputDirs = true
         downloadJavadoc = true
         downloadSources = true
     }
