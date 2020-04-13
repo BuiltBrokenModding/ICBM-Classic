@@ -98,7 +98,13 @@ public abstract class Pos2D<R extends Pos2D> extends Pos2DBean
         return Math.sqrt(magnitudeSquared());
     }
 
-    public R normalize() { return this.divide(magnitude()); }
+    public R normalize()
+    {
+        if(x() == 0 && y() == 0)
+            return newPos(0,0);
+
+        return this.divide(magnitude());
+    }
 
     public double distance(IPos2D other)
     {
