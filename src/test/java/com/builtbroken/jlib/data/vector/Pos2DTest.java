@@ -2,6 +2,13 @@ package com.builtbroken.jlib.data.vector;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 class TestPos extends Pos2D<TestPos> implements IPos2D
 {
@@ -32,7 +39,7 @@ class Pos2DTest
 
     TestPos getNewPos2D(double x, double y)
     {
-        return new TestPos(x ,y);
+        return new TestPos(x, y);
     }
 
     @Test
@@ -43,417 +50,351 @@ class Pos2DTest
         Assertions.assertEquals(0d, instance.y());
     }
 
-    @Test
-    void createNewInstance1()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void createNewInstance1(int signa, int signb)
     {
-        for (int sign = -1; sign <= 1; sign++)
-        {
-            double posX = 15.54d * sign;
-            double posY = 123.14d * sign;
+        double posX = 15.54d * signa;
+        double posY = 123.14d * signb;
 
-            Pos2D instance = getNewPos2D(posX, posY);
+        Pos2D instance = getNewPos2D(posX, posY);
 
-            Assertions.assertEquals(posX, instance.x());
-            Assertions.assertEquals((float) posX, instance.xf());
-            Assertions.assertEquals((int) Math.floor(posX), instance.xi());
+        Assertions.assertEquals(posX, instance.x());
+        Assertions.assertEquals((float) posX, instance.xf());
+        Assertions.assertEquals((int) Math.floor(posX), instance.xi());
 
-            Assertions.assertEquals(posY, instance.y());
-            Assertions.assertEquals((float) posY, instance.yf());
-            Assertions.assertEquals((int) Math.floor(posY), instance.yi());
-        }
+        Assertions.assertEquals(posY, instance.y());
+        Assertions.assertEquals((float) posY, instance.yf());
+        Assertions.assertEquals((int) Math.floor(posY), instance.yi());
     }
 
-    @Test
-    void addPos()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class) // okay so here is how the tests are designed
+    void addPos(int signa, int signb) // signa and signb are either -1, 0 or 1
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa; // these signs are multiplied with a random double value to make sure bad logic fails
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                IPos2D instance2 = getNewPos2D(posXb, posYb);
+        IPos2D instance2 = getNewPos2D(posXb, posYb);
 
-                Pos2D instance3 = instance.add(instance2);
+        Pos2D instance3 = instance.add(instance2);
 
-                Assertions.assertEquals(posXa + posXb, instance3.x());
-                Assertions.assertEquals(posYa + posYb, instance3.y());
-            }
-        }
+        Assertions.assertEquals(posXa + posXb, instance3.x());
+        Assertions.assertEquals(posYa + posYb, instance3.y());
+
     }
 
-    @Test
-    void addDoubleDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void addDoubleDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                Pos2D instance2 = instance.add(posXb, posYb);
+        Pos2D instance2 = instance.add(posXb, posYb);
 
-                Assertions.assertEquals(posXa + posXb, instance2.x());
-                Assertions.assertEquals(posYa + posYb, instance2.y());
-            }
-        }
+        Assertions.assertEquals(posXa + posXb, instance2.x());
+        Assertions.assertEquals(posYa + posYb, instance2.y());
     }
 
-    @Test
-    void addDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void addDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
 
-                Pos2D instance2x = instance.add(posXb);
-                Pos2D instance2y = instance.add(posYb);
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                Assertions.assertEquals(posXa + posXb, instance2x.x());
-                Assertions.assertEquals(posYa + posXb, instance2x.y());
+        Pos2D instance2x = instance.add(posXb);
+        Pos2D instance2y = instance.add(posYb);
 
-                Assertions.assertEquals(posXa + posYb, instance2y.x());
-                Assertions.assertEquals(posYa + posYb, instance2y.y());
-            }
-        }
+        Assertions.assertEquals(posXa + posXb, instance2x.x());
+        Assertions.assertEquals(posYa + posXb, instance2x.y());
+
+        Assertions.assertEquals(posXa + posYb, instance2y.x());
+        Assertions.assertEquals(posYa + posYb, instance2y.y());
     }
 
-    @Test
-    void subPos()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void subPos(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                IPos2D instance2 = getNewPos2D(posXb, posYb);
+        IPos2D instance2 = getNewPos2D(posXb, posYb);
 
-                Pos2D instance3 = instance.sub(instance2);
+        Pos2D instance3 = instance.sub(instance2);
 
-                Assertions.assertEquals(posXa - posXb, instance3.x());
-                Assertions.assertEquals(posYa - posYb, instance3.y());
-            }
-        }
+        Assertions.assertEquals(posXa - posXb, instance3.x());
+        Assertions.assertEquals(posYa - posYb, instance3.y());
     }
 
-    @Test
-    void subDoubleDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void subDoubleDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                Pos2D instance2 = instance.sub(posXb, posYb);
+        Pos2D instance2 = instance.sub(posXb, posYb);
 
-                Assertions.assertEquals(posXa - posXb, instance2.x());
-                Assertions.assertEquals(posYa - posYb, instance2.y());
-            }
-        }
+        Assertions.assertEquals(posXa - posXb, instance2.x());
+        Assertions.assertEquals(posYa - posYb, instance2.y());
     }
 
-    @Test
-    void subDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void subDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
 
-                Pos2D instance2x = instance.sub(posXb);
-                Pos2D instance2y = instance.sub(posYb);
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                Assertions.assertEquals(posXa - posXb, instance2x.x());
-                Assertions.assertEquals(posYa - posXb, instance2x.y());
+        Pos2D instance2x = instance.sub(posXb);
+        Pos2D instance2y = instance.sub(posYb);
 
-                Assertions.assertEquals(posXa - posYb, instance2y.x());
-                Assertions.assertEquals(posYa - posYb, instance2y.y());
-            }
-        }
+        Assertions.assertEquals(posXa - posXb, instance2x.x());
+        Assertions.assertEquals(posYa - posXb, instance2x.y());
+
+        Assertions.assertEquals(posXa - posYb, instance2y.x());
+        Assertions.assertEquals(posYa - posYb, instance2y.y());
     }
 
-    @Test
-    void multiplyPos()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void multiplyPos(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                IPos2D instance2a = getNewPos2D(posXb, posYb);
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        IPos2D instance2a = getNewPos2D(posXb, posYb);
 
-                Pos2D instance2b = instance.multiply(instance2a);
+        Pos2D instance2b = instance.multiply(instance2a);
 
-                Assertions.assertEquals(posXa * posXb, instance2b.x());
-                Assertions.assertEquals(posYa * posYb, instance2b.y());
-            }
-        }
+        Assertions.assertEquals(posXa * posXb, instance2b.x());
+        Assertions.assertEquals(posYa * posYb, instance2b.y());
     }
 
-    @Test
-    void multiplyDoubleDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void multiplyDoubleDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
 
-                Pos2D instance2a = instance.multiply(posXb, posYb);
+        Pos2D instance2a = instance.multiply(posXb, posYb);
 
 
-                Assertions.assertEquals(posXa * posXb, instance2a.x());
-                Assertions.assertEquals(posYa * posYb, instance2a.y());
-            }
-        }
+        Assertions.assertEquals(posXa * posXb, instance2a.x());
+        Assertions.assertEquals(posYa * posYb, instance2a.y());
     }
 
-    @Test
-    void multiplyDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void multiplyDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2a = instance.multiply(posXb);
-                Pos2D instance2b = instance.multiply(posYb);
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2a = instance.multiply(posXb);
+        Pos2D instance2b = instance.multiply(posYb);
 
 
-                Assertions.assertEquals(posXa * posXb, instance2a.x());
-                Assertions.assertEquals(posYa * posXb, instance2a.y());
-                Assertions.assertEquals(posXa * posYb, instance2b.x());
-                Assertions.assertEquals(posYa * posYb, instance2b.y());
-            }
-        }
+        Assertions.assertEquals(posXa * posXb, instance2a.x());
+        Assertions.assertEquals(posYa * posXb, instance2a.y());
+        Assertions.assertEquals(posXa * posYb, instance2b.x());
+        Assertions.assertEquals(posYa * posYb, instance2b.y());
     }
 
 
-    @Test
-    void dividePos()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void dividePos(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                IPos2D instance2a = getNewPos2D(posXb, posYb);
 
-                Pos2D instance2b = instance.divide(instance2a);
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        IPos2D instance2a = getNewPos2D(posXb, posYb);
 
-                Assertions.assertEquals(posXa / posXb, instance2b.x());
-                Assertions.assertEquals(posYa / posYb, instance2b.y());
-            }
-        }
+        Pos2D instance2b = instance.divide(instance2a);
+
+        Assertions.assertEquals(posXa / posXb, instance2b.x());
+        Assertions.assertEquals(posYa / posYb, instance2b.y());
     }
 
-    @Test
-    void divideDoubleDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void divideDoubleDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-
-                Pos2D instance2a = instance.divide(posXb, posYb);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
 
-                Assertions.assertEquals(posXa / posXb, instance2a.x());
-                Assertions.assertEquals(posYa / posYb, instance2a.y());
-            }
-        }
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+
+        Pos2D instance2a = instance.divide(posXb, posYb);
+
+
+        Assertions.assertEquals(posXa / posXb, instance2a.x());
+        Assertions.assertEquals(posYa / posYb, instance2a.y());
     }
 
-    @Test
-    void divideDouble()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void divideDouble(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2a = instance.divide(posXb);
-                Pos2D instance2b = instance.divide(posYb);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
 
-                Assertions.assertEquals(posXa / posXb, instance2a.x());
-                Assertions.assertEquals(posYa / posXb, instance2a.y());
-                Assertions.assertEquals(posXa / posYb, instance2b.x());
-                Assertions.assertEquals(posYa / posYb, instance2b.y());
-            }
-        }
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2a = instance.divide(posXb);
+        Pos2D instance2b = instance.divide(posYb);
+
+
+        Assertions.assertEquals(posXa / posXb, instance2a.x());
+        Assertions.assertEquals(posYa / posXb, instance2a.y());
+        Assertions.assertEquals(posXa / posYb, instance2b.x());
+        Assertions.assertEquals(posYa / posYb, instance2b.y());
     }
 
-    @Test
-    void rotate()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void rotate(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (double angle = -0.234; angle < 10; angle+=0.134132423d)
-            {
-                Pos2D res = instance.rotate(angle);
+        double angle = signb * 10.39735d;
 
-                double resX = instance.x() * Math.cos(angle) - instance.y() * Math.sin(angle);
-                double resY = instance.x() * Math.sin(angle) + instance.y() * Math.cos(angle);
+        Pos2D res = instance.rotate(angle);
 
-                Assertions.assertEquals(resX, res.x());
-                Assertions.assertEquals(resY, res.y());
-            }
-        }
+        double resX = instance.x() * Math.cos(angle) - instance.y() * Math.sin(angle);
+        double resY = instance.x() * Math.sin(angle) + instance.y() * Math.cos(angle);
+
+        Assertions.assertEquals(resX, res.x());
+        Assertions.assertEquals(resY, res.y());
     }
 
-    @Test
-    void dotProduct()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void dotProduct(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D instance = getNewPos2D(posXa, posYa);
 
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2 = getNewPos2D(posXb, posYb);
-                double res = instance2.dotProduct((IPos2D)instance);
-                double res2 = instance.dotProduct((IPos2D)instance2);
 
-                Assertions.assertEquals(posXa * posXb + posYa * posYb, res);
-                Assertions.assertEquals(posXa * posXb + posYa * posYb, res2);
-            }
-        }
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2 = getNewPos2D(posXb, posYb);
+        double res = instance2.dotProduct((IPos2D) instance);
+        double res2 = instance.dotProduct((IPos2D) instance2);
+
+        Assertions.assertEquals(posXa * posXb + posYa * posYb, res);
+        Assertions.assertEquals(posXa * posXb + posYa * posYb, res2);
     }
 
-    @Test
-    void magnitudeSquared()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void magnitudeSquared(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            double m = instance.magnitudeSquared();
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        double m = instance.magnitudeSquared();
 
-            Assertions.assertEquals(posYa*posYa + posXa*posXa, m);
-        }
+        Assertions.assertEquals(posYa * posYa + posXa * posXa, m);
     }
 
-    @Test
-    void magnitude()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void magnitude(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
 
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            double m = instance.magnitude();
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        double m = instance.magnitude();
 
-            Assertions.assertEquals(Math.sqrt(posYa*posYa + posXa*posXa), m);
-        }
+        Assertions.assertEquals(Math.sqrt(posYa * posYa + posXa * posXa), m);
     }
 
-    @Test
-    void normalize()
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void normalize(int signa, int signb)
     {
-        for (int signa = -1; signa <= 1; signa+=2)
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D normal = instance.normalize();
+
+        Assertions.assertTrue(normal.x() <= 1d && normal.x() >= -1d);
+        Assertions.assertTrue(normal.y() <= 1d && normal.y() >= -1d);
+
+        if (signa != 0 || signb != 0) // skip checks for when its a zero vector
         {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            Pos2D normal = instance.normalize();
-
-            Assertions.assertTrue(normal.x() <= 1d && normal.x() >= -1d);
-            Assertions.assertTrue(normal.y() <= 1d && normal.y() >= -1d);
-
-            double len = Math.sqrt(posXa*posXa + posYa*posYa);
+            double len = Math.sqrt(posXa * posXa + posYa * posYa);
 
             Assertions.assertEquals(posXa / len, normal.x());
             Assertions.assertEquals(posYa / len, normal.y());
@@ -461,236 +402,230 @@ class Pos2DTest
     }
 
     @Test
-    void distance()
+    void normalizeZeroTest()
     {
-        for (int signa = -1; signa <= 1; signa++)
+        Pos2D instance = getNewPos2D(0, 0);
+        Pos2D normal = instance.normalize();
+
+        Assertions.assertEquals(0, normal.x());
+        Assertions.assertEquals(0, normal.y());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void distance(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2 = getNewPos2D(posXb, posYb);
+        Pos2D delta = instance.sub((IPos2D) instance2);
+
+        double dist = instance.distance((IPos2D) instance2);
+        double dist2 = instance2.distance((IPos2D) instance);
+
+        Assertions.assertEquals(dist, dist2);
+
+        Assertions.assertEquals((posXb - posXa) * (posXb - posXa), delta.x() * delta.x());
+        Assertions.assertEquals((posYb - posYa) * (posYb - posYa), delta.y() * delta.y());
+
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void midpoint(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2 = getNewPos2D(posXb, posYb);
+        Pos2D res = instance.midpoint((IPos2D) instance2);
+        Pos2D res2 = instance2.midpoint((IPos2D) instance);
+
+        Assertions.assertEquals((posXa + posXb) / 2, res.x());
+        Assertions.assertEquals((posYa + posYb) / 2, res.y());
+
+        Assertions.assertEquals((posXa + posXb) / 2, res2.x());
+        Assertions.assertEquals((posYa + posYb) / 2, res2.y());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void isZero(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        boolean zero = instance.isZero();
+        Assertions.assertEquals(posXa == 0 && posYa == 0, zero);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void slope(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+
+
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2 = getNewPos2D(posXb, posYb);
+        double res = instance2.slope((IPos2D) instance);
+        double res2 = instance.slope((IPos2D) instance2);
+
+        Assertions.assertEquals((posYa - posYb) / (posXa - posXb), res);
+        Assertions.assertEquals((posYa - posYb) / (posXa - posXb), res2);
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void round(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D res = instance.round();
+
+        Assertions.assertEquals(Math.round(posXa), res.x());
+        Assertions.assertEquals(Math.round(posYa), res.y());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void ceil(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D res = instance.ceil();
+
+        Assertions.assertEquals(Math.ceil(posXa), res.x());
+        Assertions.assertEquals(Math.ceil(posYa), res.y());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void floor(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D res = instance.floor();
+
+        Assertions.assertEquals(Math.floor(posXa), res.x());
+        Assertions.assertEquals(Math.floor(posYa), res.y());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void max(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2 = getNewPos2D(posXb, posYb);
+
+        Pos2D res = instance.max((IPos2D) instance2);
+        Pos2D res2 = instance2.max((IPos2D) instance);
+
+
+        Assertions.assertEquals(Math.max(posXa, posXb), res.x());
+        Assertions.assertEquals(Math.max(posYa, posYb), res.y());
+        Assertions.assertEquals(Math.max(posXa, posXb), res2.x());
+        Assertions.assertEquals(Math.max(posYa, posYb), res2.y());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void min(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signa;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+
+        double posXb = 1095.156744d * signb;
+        double posYb = -23.157456d * signb;
+        Pos2D instance2 = getNewPos2D(posXb, posYb);
+
+        Pos2D res = instance.min((IPos2D) instance2);
+        Pos2D res2 = instance2.min((IPos2D) instance);
+
+
+        Assertions.assertEquals(Math.min(posXa, posXb), res.x());
+        Assertions.assertEquals(Math.min(posYa, posYb), res.y());
+        Assertions.assertEquals(Math.min(posXa, posXb), res2.x());
+        Assertions.assertEquals(Math.min(posYa, posYb), res2.y());
+    }
+
+    @ParameterizedTest()
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void reciprocal(int signa, int signb)
+    {
+        double posXa = 15.54d * signa;
+        double posYa = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posXa, posYa);
+        Pos2D reciprocal = instance.reciprocal();
+
+        Assertions.assertEquals(1d / posXa, reciprocal.x());
+        Assertions.assertEquals(1d / posYa, reciprocal.y());
+    }
+
+    @ParameterizedTest()
+    @ArgumentsSource(Pos2DTestArgProvider2Signs.class)
+    void duplicateVector(int signa, int signb)
+    {
+        double posX = 15.54d * signa;
+        double posY = 123.14d * signb;
+
+        Pos2D instance = getNewPos2D(posX, posY);
+        Pos2D instanceb = instance.clone();
+
+        Assertions.assertEquals(posX, instanceb.x());
+        Assertions.assertEquals((float) posX, instanceb.xf());
+        Assertions.assertEquals((int) Math.floor(posX), instanceb.xi());
+
+        Assertions.assertEquals(posY, instanceb.y());
+        Assertions.assertEquals((float) posY, instanceb.yf());
+        Assertions.assertEquals((int) Math.floor(posY), instanceb.yi());
+    }
+
+    public static class Pos2DTestArgProvider2Signs implements ArgumentsProvider
+    {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext)
         {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
+            final List<Arguments> list = new ArrayList<>();
+            for (int signa : new int[]{-1,0,1})
             {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2 = getNewPos2D(posXb, posYb);
-                Pos2D delta = instance.sub((IPos2D)instance2);
-
-                double dist = instance.distance((IPos2D)instance2);
-                double dist2 = instance2.distance((IPos2D)instance);
-
-                Assertions.assertEquals(dist, dist2);
-
-                Assertions.assertEquals((posXb-posXa)*(posXb-posXa), delta.x()*delta.x());
-                Assertions.assertEquals((posYb-posYa)*(posYb-posYa), delta.y()*delta.y());
+                for (int signb : new int[]{-1,0,1})
+                {
+                    //Arguments: sign1, sign2
+                    list.add(Arguments.of(signa, signb));
+                }
             }
-        }
-    }
 
-    @Test
-    void midpoint()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2 = getNewPos2D(posXb, posYb);
-                Pos2D res = instance.midpoint((IPos2D)instance2);
-                Pos2D res2 = instance2.midpoint((IPos2D)instance);
-
-                Assertions.assertEquals((posXa+posXb)/2, res.x());
-                Assertions.assertEquals((posYa+posYb)/2, res.y());
-
-                Assertions.assertEquals((posXa+posXb)/2, res2.x());
-                Assertions.assertEquals((posYa+posYb)/2, res2.y());
-            }
-        }
-    }
-
-    @Test
-    void isZero()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            boolean zero = instance.isZero();
-            Assertions.assertEquals(posXa == 0 && posYa == 0, zero);
-        }
-    }
-
-    @Test
-    void slope()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2 = getNewPos2D(posXb, posYb);
-                double res = instance2.slope((IPos2D)instance);
-                double res2 = instance.slope((IPos2D)instance2);
-
-                Assertions.assertEquals((posYa-posYb)/(posXa-posXb), res);
-                Assertions.assertEquals((posYa-posYb)/(posXa-posXb), res2);
-            }
-        }
-    }
-
-    @Test
-    void round()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            Pos2D res = instance.round();
-
-            Assertions.assertEquals(Math.round(posXa), res.x());
-            Assertions.assertEquals(Math.round(posYa), res.y());
-        }
-    }
-
-    @Test
-    void ceil()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            Pos2D res = instance.ceil();
-
-            Assertions.assertEquals(Math.ceil(posXa), res.x());
-            Assertions.assertEquals(Math.ceil(posYa), res.y());
-        }
-    }
-
-    @Test
-    void floor()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            Pos2D res = instance.floor();
-
-            Assertions.assertEquals(Math.floor(posXa), res.x());
-            Assertions.assertEquals(Math.floor(posYa), res.y());
-        }
-    }
-
-    @Test
-    void max()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2 = getNewPos2D(posXb, posYb);
-
-                Pos2D res = instance.max((IPos2D) instance2);
-                Pos2D res2 = instance2.max((IPos2D) instance);
-
-
-                Assertions.assertEquals(Math.max(posXa, posXb), res.x());
-                Assertions.assertEquals(Math.max(posYa, posYb), res.y());
-                Assertions.assertEquals(Math.max(posXa, posXb), res2.x());
-                Assertions.assertEquals(Math.max(posYa, posYb), res2.y());
-            }
-        }
-    }
-
-    @Test
-    void min()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-
-            for (int signb = -1; signb <= 1; signb++)
-            {
-                double posXb = 1095.156744d * signb;
-                double posYb = -23.157456d * signb;
-                Pos2D instance2 = getNewPos2D(posXb, posYb);
-
-                Pos2D res = instance.min((IPos2D) instance2);
-                Pos2D res2 = instance2.min((IPos2D) instance);
-
-
-                Assertions.assertEquals(Math.min(posXa, posXb), res.x());
-                Assertions.assertEquals(Math.min(posYa, posYb), res.y());
-                Assertions.assertEquals(Math.min(posXa, posXb), res2.x());
-                Assertions.assertEquals(Math.min(posYa, posYb), res2.y());
-            }
-        }
-    }
-
-    @Test
-    void reciprocal()
-    {
-        for (int signa = -1; signa <= 1; signa++)
-        {
-            double posXa = 15.54d * signa;
-            double posYa = 123.14d * signa;
-
-            Pos2D instance = getNewPos2D(posXa, posYa);
-            Pos2D reciprocal = instance.reciprocal();
-
-            Assertions.assertEquals(1d/posXa, reciprocal.x());
-            Assertions.assertEquals(1d/posYa, reciprocal.y());
-        }
-    }
-
-    @Test
-    void duplicateVector()
-    {
-        for (int sign = -1; sign <= 1; sign++)
-        {
-            double posX = 15.54d * sign;
-            double posY = 123.14d * sign;
-
-            Pos2D instance = getNewPos2D(posX, posY);
-            Pos2D instanceb = instance.clone();
-
-            Assertions.assertEquals(posX, instanceb.x());
-            Assertions.assertEquals((float) posX, instanceb.xf());
-            Assertions.assertEquals((int) Math.floor(posX), instanceb.xi());
-
-            Assertions.assertEquals(posY, instanceb.y());
-            Assertions.assertEquals((float) posY, instanceb.yf());
-            Assertions.assertEquals((int) Math.floor(posY), instanceb.yi());
+            return list.stream();
         }
     }
 }
