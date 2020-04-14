@@ -1,47 +1,26 @@
 package icbm.classic.config;
 
-import com.ibm.icu.impl.Assert;
 import net.minecraftforge.common.config.Config;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.*;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ConfigFieldTests
 {
-    public static final Class[] classes = new Class[]
+    private static final Class[] classes = new Class[]
             {
                     ConfigBattery.class, ConfigDebug.class, ConfigEMP.class, ConfigIC2.class,
                     ConfigItems.class, ConfigLauncher.class, ConfigMain.class, ConfigMissile.class,
                     ConfigThread.class
             };
-
-
-    ArrayList<Field> getFieldsThatLackAnnotation(Class<? extends Annotation> annotationType, Class<?> classContainingField)
-    {
-        Field[] fields = annotationType.getDeclaredFields();
-        ArrayList<Field> nonAnnotatedFields = new ArrayList<>();
-
-        for (Field field: fields)
-        {
-            if (!field.isAnnotationPresent(annotationType))
-            {
-                nonAnnotatedFields.add(field);
-            }
-        }
-
-        return nonAnnotatedFields;
-    }
 
     @ParameterizedTest
     @ArgumentsSource(ConfigClassesArgProvider.class)
