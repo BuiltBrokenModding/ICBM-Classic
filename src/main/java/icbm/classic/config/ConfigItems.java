@@ -17,22 +17,27 @@ public class ConfigItems
     public static boolean ENABLE_CRAFTING_ITEMS = true;
 
     @Config.Name("enable_circuits")
+    @Config.Comment("Whether or not to enable the mod's circuit items which are a crafting material. Only disable if you have a replacement or custom recipes.")
     @Config.RequiresMcRestart
     public static boolean ENABLE_CIRCUIT_ITEMS = true;
 
     @Config.Name("enable_ingots")
+    @Config.Comment("Whether or not to enable the mod's ingot items which are a crafting material. Only disable if you have a replacement or custom recipes.")
     @Config.RequiresMcRestart
     public static boolean ENABLE_INGOTS_ITEMS = true;
 
     @Config.Name("enable_plates")
+    @Config.Comment("Whether or not to enable the mod's plate items which are a crafting material. Only disable if you have a replacement or custom recipes.")
     @Config.RequiresMcRestart
     public static boolean ENABLE_PLATES_ITEMS = true;
 
     @Config.Name("enable_wires")
+    @Config.Comment("Whether or not to enable the mod's wires items which are a crafting material. Only disable if you have a replacement or custom recipes.")
     @Config.RequiresMcRestart
     public static boolean ENABLE_WIRES_ITEMS = true;
 
     @Config.Name("enable_battery")
+    @Config.Comment("Whether or not to enable the mod's battery item which is a crafting material. Only disable if you have a replacement or custom recipes.")
     @Config.RequiresMcRestart
     public static boolean ENABLE_BATTERY = true;
 
