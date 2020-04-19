@@ -134,8 +134,10 @@ public class EntityRedmatter extends Entity
         if (capability == ICBMClassicAPI.BLAST_CAPABILITY)
         {
             return ICBMClassicAPI.BLAST_CAPABILITY.cast(blastData);
-        } else if(capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY) {
-            return ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY.cast()
+        }
+        else if (capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY)
+        {
+            return ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY.cast(capRedmatterPull);
         }
         return super.getCapability(capability, facing);
     }
