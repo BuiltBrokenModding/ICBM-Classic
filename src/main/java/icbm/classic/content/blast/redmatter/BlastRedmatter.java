@@ -297,7 +297,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     private boolean moveEntity(Entity entity, double xDifference, double yDifference, double zDifference, double distance)
     {
         //Allow overriding default pull logic
-        final IBlastVelocity cap = entity.getCapability(ICBMClassicAPI.REDMATTER_PULL_CAPABILITY, null);
+        final IBlastVelocity cap = entity.getCapability(ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY, null);
         if(cap != null && cap.onBlastApplyMotion(getBlastSource(), this, xDifference, yDifference, zDifference, distance)) {
             return true;
         }

@@ -1,7 +1,6 @@
 package icbm.classic.command;
 
 import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
@@ -45,7 +44,7 @@ public class FakeBlast implements IBlastInit
     }
 
     @Override
-    public IBlast scaleBlast(double scale)
+    public IBlastInit scaleBlast(double scale)
     {
         return setBlastSize(scale * getBlastRadius());
     }
@@ -133,7 +132,7 @@ public class FakeBlast implements IBlastInit
 
     @Nullable
     @Override
-    public Entity getController()
+    public Entity getEntity()
     {
         return null;
     }

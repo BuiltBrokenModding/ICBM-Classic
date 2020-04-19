@@ -615,7 +615,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
 
     @Nullable
     @Override
-    public Entity getController()
+    public Entity getEntity()
     {
         return controller;
     }
