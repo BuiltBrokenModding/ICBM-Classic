@@ -4,7 +4,7 @@ import icbm.classic.api.events.BlastCancelEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
-import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.redmatter.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.lib.transform.BlockEditHandler;
 import net.minecraft.block.BlockFalling;

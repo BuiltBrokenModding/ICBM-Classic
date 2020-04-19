@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.blast.redmatter.BlastRedmatter;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;

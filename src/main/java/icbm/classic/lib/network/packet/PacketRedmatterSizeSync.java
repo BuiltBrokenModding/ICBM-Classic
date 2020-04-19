@@ -1,7 +1,7 @@
 package icbm.classic.lib.network.packet;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.redmatter.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.lib.network.IPacket;
 import io.netty.buffer.ByteBuf;

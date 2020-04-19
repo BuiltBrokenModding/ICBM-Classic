@@ -2,8 +2,7 @@ package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.config.blast.ConfigRedmatter;
-import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.redmatter.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

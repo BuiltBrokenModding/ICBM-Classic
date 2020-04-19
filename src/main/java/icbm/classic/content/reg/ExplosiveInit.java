@@ -19,7 +19,7 @@ import icbm.classic.content.blast.BlastExothermic;
 import icbm.classic.content.blast.BlastFire;
 import icbm.classic.content.blast.BlastGasBase;
 import icbm.classic.content.blast.BlastMutation;
-import icbm.classic.content.blast.BlastRedmatter;
+import icbm.classic.content.blast.redmatter.BlastRedmatter;
 import icbm.classic.content.blast.BlastRot;
 import icbm.classic.content.blast.BlastShrapnel;
 import icbm.classic.content.blast.BlastSonic;

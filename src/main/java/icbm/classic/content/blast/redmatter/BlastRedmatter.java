@@ -1,11 +1,15 @@
-package icbm.classic.content.blast;
+package icbm.classic.content.blast.redmatter;
 
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.IBlastMovable;
 import icbm.classic.api.explosion.IBlastTickable;
+import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.content.blast.Blast;
+import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
@@ -24,7 +28,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.IFluidBlock;
 
 public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
@@ -34,7 +37,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     //Lag tracking
     private int blocksDestroyedThisTick = 0;
-    private long tickStartTimeMs;
     private int currentBlockDestroyRadius = 1;
 
     public float getScaleFactor() //TODO move to field and calculate only when size changes
@@ -78,7 +80,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     protected void preTick()
     {
-        tickStartTimeMs = System.currentTimeMillis();
         blocksDestroyedThisTick = 0;
     }
 
@@ -162,7 +163,6 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     {
         return blocksDestroyedThisTick > getBlocksPerTick()
                 || !isAlive;
-                //|| (System.currentTimeMillis() - tickStartTimeMs) >= ConfigBlast.REDMATTER.MAX_RUNTIME_MS;
     }
 
     /**
@@ -294,43 +294,29 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         attackEntity(entity, distance);
     }
 
-    private void moveEntity(Entity entity, double xDifference, double yDifference, double zDifference, double distance)
+    private boolean moveEntity(Entity entity, double xDifference, double yDifference, double zDifference, double distance)
     {
+        //Allow overriding default pull logic
+        final IBlastVelocity cap = entity.getCapability(ICBMClassicAPI.REDMATTER_PULL_CAPABILITY, null);
+        if(cap != null && cap.onBlastApplyMotion(getBlastSource(), this, xDifference, yDifference, zDifference, distance)) {
+            return true;
+        }
+
         //Calculate velocity
-        final double velX = -xDifference / distance / distance * 5;
+        final double velX = -xDifference / distance / distance * 5; //TODO what is 5?
         final double velY = -yDifference / distance / distance * 5;
         final double velZ = -zDifference / distance / distance * 5;
 
         // Gravity Velocity
-        entity.addVelocity(velX, velY, velZ); //TODO add API to allow modifying this value
+        entity.addVelocity(velX, velY, velZ);
 
         // if player send packet because motion is handled client side
         if (entity instanceof EntityPlayer)
         {
             entity.velocityChanged = true;
         }
-        else if (entity instanceof EntityExplosion)
-        {
-            final IBlast blast = ((EntityExplosion) entity).getBlast();
-            if (blast instanceof BlastRedmatter) //TODO move to capability logic
-            {
-                final BlastRedmatter rmBlast = (BlastRedmatter) blast;
 
-                final int otherSize = (int) Math.pow(this.getBlastRadius(), 3);
-                final int thisSize = (int) Math.pow(blast.getBlastRadius(), 3);
-                final double totalSize = otherSize + thisSize;
-
-                final double thisSizePct = thisSize / totalSize;
-
-                final Vec3d totalDelta = rmBlast.getPosition().subtract(this.getPosition());
-                final Vec3d thisDelta = totalDelta.scale(thisSizePct);
-
-                if (exploder != null)
-                {
-                    this.exploder.addVelocity(thisDelta.x, thisDelta.y, thisDelta.z); //TODO we are adding velocity twice
-                }
-            }
-        }
+        return true;
     }
 
     private void attackEntity(Entity entity, double distance)
