@@ -7,7 +7,13 @@ import net.minecraft.entity.Entity;
 import javax.annotation.Nullable;
 
 /**
- * Created by Dark(DarkGuardsman, Robert) on 4/19/2020.
+ * Handles redmatter reaction to force being applied to it from other blasts.
+ * <p>
+ * By default this handles redmatters pulling each other. The logic calculates
+ * the pull towards another redmatter. The idea is to simulate gravity attraction
+ * between two objects. As well to introduce the merge mechanic of redmatters.
+ * <p>
+ * Created by Dark(DarkGuardsman, Robert) on 4/19/2020. Original logic by GHXX
  */
 public class CapRedmatterPull implements IBlastVelocity
 {
