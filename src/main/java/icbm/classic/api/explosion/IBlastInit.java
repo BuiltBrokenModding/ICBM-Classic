@@ -24,6 +24,12 @@ public interface IBlastInit extends IBlast
      */
     IBlastInit setBlastSize(double size);
 
+    /**
+     * Scales the size of the blast
+     * @param scale - multiplier to apply
+     * @return this
+     */
+    IBlastInit scaleBlast(double scale);
 
     /**
      * Called to set the source of the blast. Only
