@@ -18,6 +18,9 @@ public class EntityRedmatter extends Entity
 {
     //Acts as an API wrapper for the entity
     private final BlastRedmatterWrapper blastData = new BlastRedmatterWrapper(this);
+    private final CapRedmatterPull capRedmatterPull = new CapRedmatterPull(this);
+
+    public double blastScale = 0;
 
     public EntityRedmatter(World world)
     {
@@ -131,6 +134,8 @@ public class EntityRedmatter extends Entity
         if (capability == ICBMClassicAPI.BLAST_CAPABILITY)
         {
             return ICBMClassicAPI.BLAST_CAPABILITY.cast(blastData);
+        } else if(capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY) {
+            return ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY.cast()
         }
         return super.getCapability(capability, facing);
     }

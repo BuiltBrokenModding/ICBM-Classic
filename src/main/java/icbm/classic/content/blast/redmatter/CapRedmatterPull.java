@@ -3,7 +3,6 @@ package icbm.classic.content.blast.redmatter;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
@@ -12,34 +11,50 @@ import javax.annotation.Nullable;
  */
 public class CapRedmatterPull implements IBlastVelocity
 {
-    private final BlastRedmatter redmatter;
+    private final EntityRedmatter redmatter;
 
-    public CapRedmatterPull(BlastRedmatter redmatter) {
+    public CapRedmatterPull(EntityRedmatter redmatter)
+    {
         this.redmatter = redmatter;
     }
 
     @Override
     public boolean onBlastApplyMotion(@Nullable Entity source, IBlast blast, double xDifference, double yDifference, double zDifference, double distance)
     {
-        if (blast instanceof BlastRedmatter)
+        if (source instanceof EntityRedmatter)
         {
-            final BlastRedmatter rmBlast = (BlastRedmatter) blast;
-
-            final int otherSize = (int) Math.pow(redmatter.getBlastRadius(), 3); //TODO this might be reversed
-            final int thisSize = (int) Math.pow(blast.getBlastRadius(), 3);
-            final double totalSize = otherSize + thisSize;
-
-            final double thisSizePct = thisSize / totalSize;
-
-            final Vec3d totalDelta = rmBlast.getPosition().subtract(redmatter.getPosition());
-            final Vec3d thisDelta = totalDelta.scale(thisSizePct);
-
-            if (redmatter.exploder != null)
-            {
-                redmatter.exploder.addVelocity(thisDelta.x, thisDelta.y, thisDelta.z);
-                return true;
-            }
+            handlePull((EntityRedmatter) source, xDifference, yDifference, zDifference, distance);
+            return true;
         }
         return false;
+    }
+
+    private void handlePull(EntityRedmatter otherRedmatter, double xDifference, double yDifference, double zDifference, double distance)
+    {
+        final double sizeScale = calculatePullPower(otherRedmatter);
+
+        //Normalize vector (creates direction of pull)
+        final double vectorX = xDifference / distance;
+        final double vectorY = yDifference / distance;
+        final double vectorZ = zDifference / distance;
+
+        //Calculate a pull force towards the other redmatter
+        final double motionX = vectorX * sizeScale;
+        final double motionY = vectorY * sizeScale;
+        final double motionZ = vectorZ * sizeScale;
+
+        //Apply the pull towards the other redmatter
+        redmatter.addVelocity(motionX, motionY, motionZ);
+    }
+
+    private double calculatePullPower(EntityRedmatter otherRedmatter)
+    {
+        //Get the cubic size of each redmatter
+        final int otherSize = (int) Math.pow(otherRedmatter.blastScale, 3);
+        final int thisSize = (int) Math.pow(redmatter.blastScale, 3);
+
+        //Figure out the power difference between the two
+        final double combinedSize = otherSize + thisSize;
+        return thisSize / combinedSize;
     }
 }
