@@ -5,6 +5,7 @@ import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.content.IExBlockRegistry;
@@ -75,7 +76,10 @@ public final class ICBMClassicAPI
     public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
 
     @CapabilityInject(IBlastVelocity.class)
-    public static Capability<IBlastVelocity> REDMATTER_PULL_CAPABILITY = null;
+    public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;
+
+    @CapabilityInject(IBlast.class)
+    public static Capability<IBlast> BLAST_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}
