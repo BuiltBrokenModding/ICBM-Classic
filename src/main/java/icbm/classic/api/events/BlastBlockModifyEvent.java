@@ -5,7 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
-public class BlastBreakEvent extends Event
+public class BlastBlockModifyEvent extends Event
 {
     private World world = null;
     private BlockPos position = null;
@@ -19,54 +19,54 @@ public class BlastBreakEvent extends Event
         SET_TO_AIR, SET_STATE, SET_STATE_WITH_FLAGS, USE_CALLBACK
     }
 
-    private BlockBreakType breakageType;
+    private BlockBreakType modificationType;
 
-    public BlastBreakEvent(World _world, BlockPos _position)
+    public BlastBlockModifyEvent(World _world, BlockPos _position)
     {
         world = _world;
         position = _position;
         newState = null;
         flags = 0;
-        breakageType = BlockBreakType.SET_TO_AIR;
+        modificationType = BlockBreakType.SET_TO_AIR;
     }
 
-    public BlastBreakEvent(World _world, BlockPos _position, IBlockState _newState)
+    public BlastBlockModifyEvent(World _world, BlockPos _position, IBlockState _newState)
     {
         world = _world;
         position = _position;
         newState = _newState;
-        breakageType = BlockBreakType.SET_STATE;
+        modificationType = BlockBreakType.SET_STATE;
     }
 
-    public BlastBreakEvent(World _world, BlockPos _position, IBlockState _newState, int _flags)
-    {
-        world = _world;
-        position = _position;
-        newState = _newState;
-        flags = _flags;
-        breakageType = BlockBreakType.SET_STATE_WITH_FLAGS;
-    }
-
-    public BlastBreakEvent(World _world, BlockPos _position, IBlockState _newState, int _flags, boolean _placedBackDown)
+    public BlastBlockModifyEvent(World _world, BlockPos _position, IBlockState _newState, int _flags)
     {
         world = _world;
         position = _position;
         newState = _newState;
         flags = _flags;
-        breakageType = BlockBreakType.SET_STATE_WITH_FLAGS;
+        modificationType = BlockBreakType.SET_STATE_WITH_FLAGS;
+    }
+
+    public BlastBlockModifyEvent(World _world, BlockPos _position, IBlockState _newState, int _flags, boolean _placedBackDown)
+    {
+        world = _world;
+        position = _position;
+        newState = _newState;
+        flags = _flags;
+        modificationType = BlockBreakType.SET_STATE_WITH_FLAGS;
         placedBackDown = _placedBackDown; // We are being placed back down if this constructor is called
     }
 
-    public BlastBreakEvent(World _world, BlockPos _position, Runnable _callback)
+    public BlastBlockModifyEvent(World _world, BlockPos _position, Runnable _callback)
     {
-        breakageType = BlockBreakType.USE_CALLBACK;
+        modificationType = BlockBreakType.USE_CALLBACK;
         callback = _callback;
         world = _world;
         position = _position;
     }
 
-    public BlockBreakType getBreakageType() {
-        return breakageType;
+    public BlockBreakType getModificationType() {
+        return modificationType;
     }
 
     public BlockPos getPosition() {

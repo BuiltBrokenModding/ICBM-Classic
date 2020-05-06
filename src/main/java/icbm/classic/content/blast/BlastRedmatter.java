@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.events.BlastBreakEvent;
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.IBlastMovable;
@@ -187,7 +187,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             {
                 //TODO handle multi-blocks
 
-                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos, () -> {
+                MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, blockPos, () -> {
                     world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), isFluid(blockState) ? 2 : 3);
                     //TODO: render fluid streams moving into hole
 

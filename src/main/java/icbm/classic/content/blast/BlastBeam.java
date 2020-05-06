@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.events.BlastBreakEvent;
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -100,7 +100,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
                     final IBlockState state = world.getBlockState(blockPos); //TODO filter what can turn into a flying block
 
                     //Remove block
-                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos, () -> {
+                    MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, blockPos, () -> {
                         if (world.setBlockToAir(blockPos))
                         {
                             //Create an spawn

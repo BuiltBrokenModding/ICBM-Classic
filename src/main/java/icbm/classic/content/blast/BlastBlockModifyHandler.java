@@ -1,13 +1,13 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.events.BlastBreakEvent;
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber
-public class BlastBreakEventHandler {
+public class BlastBlockModifyHandler {
     // This predicate is used to determine if a block breakage should continue
     private static Predicate<Object> callback = null;
 
@@ -15,7 +15,7 @@ public class BlastBreakEventHandler {
     public static void setCallback(Predicate<Object> _callback) { callback = _callback; }
 
     @SubscribeEvent
-    public static void onBlastBreak(BlastBreakEvent event) {
+    public static void onBlastBlockModify(BlastBlockModifyEvent event) {
         // If we have a callback, and that callback says not to continue, then don't bother doing anything
         if(callback != null) {
             if(!callback.test(event)) {
@@ -23,7 +23,7 @@ public class BlastBreakEventHandler {
             }
         }
 
-        switch(event.getBreakageType()) {
+        switch(event.getModificationType()) {
             case SET_TO_AIR:
                 // System.out.println("Set To Air");
                 event.getWorld().setBlockToAir(event.getPosition());

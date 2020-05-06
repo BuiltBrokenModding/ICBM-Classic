@@ -1,7 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.events.BlastBreakEvent;
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.blast.thread.ThreadSmallExplosion;
 import icbm.classic.content.blast.threaded.BlastThreaded;
@@ -90,7 +90,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                 {
                                     if (world().rand.nextInt(3) > 0)
                                     {
-                                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, () -> {
+                                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition, () -> {
                                             //Remove block
                                             world.setBlockToAir(targetPosition);
 

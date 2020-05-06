@@ -1,6 +1,6 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.events.BlastBreakEvent;
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.config.blast.ConfigBlast;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -42,7 +42,7 @@ public class BlastExothermic extends BlastBeam
             //Turn fluids and liquid like blocks to air
             if (blockState.getMaterial() == Material.WATER || block == Blocks.ICE)
             {
-                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition));
+                MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world(), targetPosition));
             }
 
             //Closer to center the better the chance of spawning blocks
@@ -55,11 +55,11 @@ public class BlastExothermic extends BlastBeam
                 {
                     if (!block.isReplaceable(world(), targetPosition) || Blocks.FIRE.canPlaceBlockAt(world(), targetPosition))
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition));
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world(), targetPosition));
                     }
                     else
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition, Blocks.FIRE.getDefaultState()));
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world(), targetPosition, Blocks.FIRE.getDefaultState()));
                     }
                 }
 
@@ -69,17 +69,17 @@ public class BlastExothermic extends BlastBeam
                     //Small chance to turn to lava
                     if (this.world().rand.nextFloat() > 0.9) //TODO add config
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition, Blocks.FLOWING_LAVA.getDefaultState(), 3));
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world(), targetPosition, Blocks.FLOWING_LAVA.getDefaultState(), 3));
                     }
                     //Coin flip to turn to magma
                     else if (this.world().rand.nextBoolean()) //TODO add config
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition, Blocks.MAGMA.getDefaultState(), 3));
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world(), targetPosition, Blocks.MAGMA.getDefaultState(), 3));
                     }
                     //Coin flip to turn to netherrack
                     else if (this.world().rand.nextBoolean() || distance <= radiusEnsured) //TODO add config
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition,
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition,
                                 () -> placeNetherrack(world, targetPosition)
                         ));
                     }
@@ -90,11 +90,11 @@ public class BlastExothermic extends BlastBeam
                 {
                     if (this.world().rand.nextBoolean()) //TODO add config
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition.down(), Blocks.SOUL_SAND.getDefaultState(), 3));
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world(), targetPosition.down(), Blocks.SOUL_SAND.getDefaultState(), 3));
                     }
                     else
                     {
-                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition,
+                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition,
                                 () -> placeNetherrack(world, targetPosition)
                         ));
                     }
@@ -103,7 +103,7 @@ public class BlastExothermic extends BlastBeam
                 //Ground replacement
                 else if (blockState.getMaterial() == Material.GROUND || blockState.getMaterial() == Material.GRASS)
                 {
-                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition,
+                    MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition,
                             () -> placeNetherrack(world, targetPosition)
                     ));
                 }
@@ -136,7 +136,7 @@ public class BlastExothermic extends BlastBeam
             final IBlockState blockState = world.getBlockState(pos);
             if (blockState.getBlock().isReplaceable(world, pos) && Blocks.FIRE.canPlaceBlockAt(world, pos))
             {
-                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, pos, Blocks.FIRE.getDefaultState(), 3));
+                MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, pos, Blocks.FIRE.getDefaultState(), 3));
             }
         }
     }

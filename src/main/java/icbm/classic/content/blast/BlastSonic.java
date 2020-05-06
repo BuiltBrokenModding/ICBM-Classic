@@ -2,7 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IMissile;
-import icbm.classic.api.events.BlastBreakEvent;
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
@@ -123,7 +123,7 @@ public class BlastSonic extends Blast implements IBlastTickable
                                 }
 
                                 // Note that we still want to trigger the explosives as above no matter what
-                                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition,
+                                MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition,
                                     () -> {
                                         //Destroy block
                                         this.world().setBlockToAir(targetPosition);

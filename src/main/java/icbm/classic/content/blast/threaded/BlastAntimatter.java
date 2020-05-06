@@ -1,7 +1,7 @@
 package icbm.classic.content.blast.threaded;
 
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.api.events.BlastCancelEvent;
-import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
@@ -41,7 +41,7 @@ public class BlastAntimatter extends BlastThreaded
         {
             if (blockState.getBlockHardness(world, blockPos) >= 0 || ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS)
             {
-                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos, replaceState,
+                MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, blockPos, replaceState,
                         ConfigBlast.BLAST_DO_BLOCKUPDATES ? 3 : 2
                 ));
             }
