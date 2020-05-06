@@ -2,6 +2,7 @@ package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
@@ -16,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.IFluidBlock;
 
@@ -120,15 +122,20 @@ public class BlastSonic extends Blast implements IBlastTickable
                                     ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).trigger(false);
                                 }
 
-                                //Destroy block
-                                this.world().setBlockToAir(targetPosition);
+                                // Note that we still want to trigger the explosives as above no matter what
+                                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition,
+                                    () -> {
+                                        //Destroy block
+                                        this.world().setBlockToAir(targetPosition);
 
-                                //Create floating block
-                                if (!(block instanceof BlockFluidBase || block instanceof IFluidBlock)
-                                        && this.world().rand.nextFloat() < 0.1)
-                                {
-                                    this.world().spawnEntity(new EntityFlyingBlock(this.world(), targetPosition, blockState));
-                                }
+                                        //Create floating block
+                                        if (!(block instanceof BlockFluidBase || block instanceof IFluidBlock)
+                                                && this.world().rand.nextFloat() < 0.1)
+                                        {
+                                            this.world().spawnEntity(new EntityFlyingBlock(this.world(), targetPosition, blockState));
+                                        }
+                                    }
+                                ));
                             }
                         }
                     }

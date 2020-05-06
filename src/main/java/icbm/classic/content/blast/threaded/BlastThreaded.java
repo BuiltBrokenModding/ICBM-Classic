@@ -1,5 +1,6 @@
 package icbm.classic.content.blast.threaded;
 
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
@@ -9,6 +10,7 @@ import icbm.classic.lib.transform.PosDistanceSorter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Comparator;
 import java.util.List;
@@ -111,7 +113,9 @@ public abstract class BlastThreaded extends Blast
         IBlockState state = this.world().getBlockState(pos);
         if (!state.getBlock().isAir(state, world(), pos))
         {
-            state.getBlock().onBlockExploded(this.world(), pos, this);
+            MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world, pos,
+                    () -> state.getBlock().onBlockExploded(this.world(), pos, this)
+            ));
         }
     }
 

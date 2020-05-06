@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.IBlastMovable;
@@ -25,6 +26,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.IFluidBlock;
 
 public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
@@ -185,14 +187,16 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             {
                 //TODO handle multi-blocks
 
-                world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), isFluid(blockState) ? 2 : 3);
-                //TODO: render fluid streams moving into hole
+                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos, () -> {
+                    world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), isFluid(blockState) ? 2 : 3);
+                    //TODO: render fluid streams moving into hole
 
-                //Convert a random amount of destroyed blocks into flying blocks for visuals
-                if (canTurnIntoFlyingBlock(blockState) && this.world().rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
-                {
-                    spawnFlyingBlock(blockPos, blockState);
-                }
+                    //Convert a random amount of destroyed blocks into flying blocks for visuals
+                    if (canTurnIntoFlyingBlock(blockState) && this.world().rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
+                    {
+                        spawnFlyingBlock(blockPos, blockState);
+                    }
+                }));
                 blocksDestroyedThisTick++;
             }
         }

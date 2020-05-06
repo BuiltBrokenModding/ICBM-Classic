@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.blast.thread.ThreadSmallExplosion;
 import icbm.classic.content.blast.threaded.BlastThreaded;
@@ -11,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.IFluidBlock;
 
 import java.util.ArrayList;
@@ -88,8 +90,23 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                 {
                                     if (world().rand.nextInt(3) > 0)
                                     {
-                                        //Remove block
-                                        world.setBlockToAir(targetPosition);
+                                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, () -> {
+                                            //Remove block
+                                            world.setBlockToAir(targetPosition);
+
+                                            //Create flying block
+                                            EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
+                                            entity.yawChange = 50 * world().rand.nextFloat();
+                                            entity.pitchChange = 100 * world().rand.nextFloat();
+                                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
+                                            entity.noClip = true;
+                                            world().spawnEntity(entity);
+
+                                            //Track flying block
+                                            flyingBlocks.add(entity);
+                                        }));
+
+                                        // TODO: Is it alright for this to come _after_ all of the entity stuff??
 
                                         //Mark blocks taken
                                         blocksToTake--;
@@ -97,17 +114,6 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                         {
                                             break;
                                         }
-
-                                        //Create flying block
-                                        EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
-                                        entity.yawChange = 50 * world().rand.nextFloat();
-                                        entity.pitchChange = 100 * world().rand.nextFloat();
-                                        entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
-                                        entity.noClip = true;
-                                        world().spawnEntity(entity);
-
-                                        //Track flying block
-                                        flyingBlocks.add(entity);
                                     }
                                 }
                             }

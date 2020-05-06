@@ -1,10 +1,12 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.client.ICBMSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 
 public class BlastFire extends Blast
 {
@@ -62,11 +64,11 @@ public class BlastFire extends Blast
 
                                         if (canReplace && Blocks.FIRE.canPlaceBlockAt(world(), targetPosition))
                                         {
-                                            world.setBlockState(targetPosition, Blocks.FIRE.getDefaultState(), 3);
+                                            MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.FIRE.getDefaultState(), 3));
                                         }
                                         else if (block == Blocks.ICE)
                                         {
-                                            world.setBlockToAir(targetPosition);
+                                            MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition));
                                         }
                                     }
                                 }

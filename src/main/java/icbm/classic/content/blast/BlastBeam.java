@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -10,6 +11,7 @@ import icbm.classic.lib.thread.WorkerThreadManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -98,16 +100,18 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
                     final IBlockState state = world.getBlockState(blockPos); //TODO filter what can turn into a flying block
 
                     //Remove block
-                    if (world.setBlockToAir(blockPos))
-                    {
-                        //Create an spawn
-                        final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
-                        entity.gravity = -0.01f;
-                        if (world.spawnEntity(entity))
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos, () -> {
+                        if (world.setBlockToAir(blockPos))
                         {
-                            flyingBlocks.add(entity);
+                            //Create an spawn
+                            final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
+                            entity.gravity = -0.01f;
+                            if (world.spawnEntity(entity))
+                            {
+                                flyingBlocks.add(entity);
+                            }
                         }
-                    }
+                    }));
                 }
 
                 blocksToRemove.clear();

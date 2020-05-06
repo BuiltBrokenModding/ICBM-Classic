@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.potion.CustomPotionEffect;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -15,6 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Iterator;
 import java.util.List;
@@ -50,40 +52,42 @@ public class BlastEndothermic extends BlastBeam
                 //Turn fluids and liquid like blocks to air
                 if (blockState.getMaterial() == Material.WATER)
                 {
-                    this.world().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(this.world(), targetPosition, Blocks.ICE.getDefaultState(), 3));
                 }
 
                 else if (blockState.getBlock() == Blocks.FIRE)
                 {
-                    world.setBlockToAir(targetPosition);
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition));
                 }
                 else if (blockState.getBlock() == Blocks.LAVA)
                 {
-                    world.setBlockState(targetPosition, Blocks.OBSIDIAN.getDefaultState());
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.OBSIDIAN.getDefaultState()));
                 }
                 else if (blockState.getBlock() == Blocks.FLOWING_LAVA)
                 {
                     int level = Math.min(8, Math.max(1, blockState.getValue(BlockLiquid.LEVEL) / 2));
-                    world.setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState()
-                            .withProperty(BlockSnow.LAYERS, level), 3);
+
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition,
+                            Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, level), 3
+                    ));
                 }
                 else if (blockState.getBlock() == Blocks.MAGMA)
                 {
-                    world.setBlockState(targetPosition, Blocks.STONE.getDefaultState(), 3);
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.STONE.getDefaultState(), 3));
                 }
                 else if (blockState.getBlock() == Blocks.NETHERRACK)
                 {
-                    world.setBlockState(targetPosition, Blocks.DIRT.getDefaultState(), 3);
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.DIRT.getDefaultState(), 3));
                 }
                 else if (blockState.getBlock() == Blocks.SOUL_SAND)
                 {
                     if (world.rand.nextBoolean())
                     {
-                        world.setBlockState(targetPosition, Blocks.SAND.getDefaultState(), 3);
+                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.SAND.getDefaultState(), 3));
                     }
                     else
                     {
-                        world.setBlockState(targetPosition, Blocks.GRAVEL.getDefaultState(), 3);
+                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.GRAVEL.getDefaultState(), 3));
                     }
                 }
 
@@ -92,11 +96,11 @@ public class BlastEndothermic extends BlastBeam
                 {
                     if (world.rand.nextBoolean())
                     {
-                        this.world().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
+                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.ICE.getDefaultState(), 3));
                     }
                     else
                     {
-                        this.world().setBlockState(targetPosition, Blocks.SNOW.getDefaultState(), 3);
+                        MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, Blocks.SNOW.getDefaultState(), 3));
                     }
                 }
 
@@ -120,9 +124,10 @@ public class BlastEndothermic extends BlastBeam
                     && Blocks.SNOW_LAYER.canPlaceBlockAt(world, pos)
                     && blockStateUnder.isSideSolid(world, pos.down(), EnumFacing.UP))
             {
-                world.setBlockState(pos, Blocks.SNOW_LAYER.getDefaultState()
-                        .withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
 
+                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, pos,
+                        Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3
+                ));
             }
         }
     }

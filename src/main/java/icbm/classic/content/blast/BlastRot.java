@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.events.BlastBreakEvent;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.blast.threaded.BlastThreaded;
 import net.minecraft.block.Block;
@@ -8,6 +9,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import java.util.function.Consumer;
@@ -39,7 +41,7 @@ public class BlastRot extends BlastThreaded implements IBlastTickable
         {
             if (this.world().rand.nextFloat() > 0.96)
             {
-                world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
+                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3));
             }
         }
 
@@ -47,17 +49,17 @@ public class BlastRot extends BlastThreaded implements IBlastTickable
         {
             if (this.world().rand.nextFloat() > 0.99)
             {
-                world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
+                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3));
             }
         }
 
         else if (blockState.getMaterial() == Material.LEAVES || blockState.getMaterial() == Material.PLANTS)
         {
-            world.setBlockToAir(targetPosition);
+            MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition));
         }
         else if (block == Blocks.FARMLAND)
         {
-            world.setBlockState(targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3);
+            MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, ICBMClassic.blockRadioactive.getDefaultState(), 3));
         }
         else if (blockState.getMaterial() == Material.WATER)
         {
@@ -66,7 +68,7 @@ public class BlastRot extends BlastThreaded implements IBlastTickable
                 Block blockToxic = FluidRegistry.getFluid("toxicwaste").getBlock();
                 if (blockToxic != null)
                 {
-                    world.setBlockState(targetPosition, blockToxic.getDefaultState(), 3);
+                    MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, targetPosition, blockToxic.getDefaultState(), 3));
                 }
             }
         }
