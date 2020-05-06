@@ -41,8 +41,8 @@ public class BlastAntimatter extends BlastThreaded
         {
             if (blockState.getBlockHardness(world, blockPos) >= 0 || ConfigBlast.ANTIMATTER_DESTROY_UNBREAKABLE_BLOCKS)
             {
-                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos,
-                        () -> world.setBlockState(blockPos, replaceState, ConfigBlast.BLAST_DO_BLOCKUPDATES ? 3 : 2)
+                MinecraftForge.EVENT_BUS.post(new BlastBreakEvent(world, blockPos, replaceState,
+                        ConfigBlast.BLAST_DO_BLOCKUPDATES ? 3 : 2
                 ));
             }
         }
