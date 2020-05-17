@@ -11,6 +11,7 @@ import icbm.classic.lib.thread.WorkerThreadManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
@@ -51,6 +52,20 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
     public BlastBeam()
     {
+    }
+
+    protected static EntityFlyingBlock destroyBlock(World world, BlockPos blockPos, IBlockState state) {
+        if (world.setBlockToAir(blockPos))
+        {
+            //Create an spawn
+            final EntityFlyingBlock entity = new EntityFlyingBlock(world, blockPos, state);
+            entity.gravity = -0.01f;
+            if (world.spawnEntity(entity))
+            {
+                return entity;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -101,15 +116,9 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
                     //Remove block
                     MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, blockPos, () -> {
-                        if (world.setBlockToAir(blockPos))
-                        {
-                            //Create an spawn
-                            final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
-                            entity.gravity = -0.01f;
-                            if (world.spawnEntity(entity))
-                            {
-                                flyingBlocks.add(entity);
-                            }
+                        EntityFlyingBlock entity = destroyBlock(world, blockPos, state);
+                        if(entity != null) {
+                            flyingBlocks.add(entity);
                         }
                     }));
                 }

@@ -12,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.IFluidBlock;
 
@@ -55,6 +56,21 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
         return false;
     }
 
+    protected static EntityFlyingBlock sendBlockFlying(World world, BlockPos targetPosition, IBlockState blockState) {
+        //Remove block
+        world.setBlockToAir(targetPosition);
+
+        //Create flying block
+        EntityFlyingBlock entity = new EntityFlyingBlock(world, targetPosition, blockState, 0);
+        entity.yawChange = 50 * world.rand.nextFloat();
+        entity.pitchChange = 100 * world.rand.nextFloat();
+        entity.motionY += Math.max(0.15 * world.rand.nextFloat(), 0.1);
+        entity.noClip = true;
+        world.spawnEntity(entity);
+
+        return entity;
+    }
+
     @Override
     public boolean doExplode(int callCount) //TODO rewrite entire method
     {
@@ -90,21 +106,10 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                 {
                                     if (world().rand.nextInt(3) > 0)
                                     {
-                                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition, () -> {
-                                            //Remove block
-                                            world.setBlockToAir(targetPosition);
-
-                                            //Create flying block
-                                            EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
-                                            entity.yawChange = 50 * world().rand.nextFloat();
-                                            entity.pitchChange = 100 * world().rand.nextFloat();
-                                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
-                                            entity.noClip = true;
-                                            world().spawnEntity(entity);
-
-                                            //Track flying block
-                                            flyingBlocks.add(entity);
-                                        }));
+                                        //Send the block flying and track flying block
+                                        MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(world, targetPosition,
+                                                () -> flyingBlocks.add(sendBlockFlying(world, targetPosition, blockState))
+                                        ));
 
                                         // TODO: Is it alright for this to come _after_ all of the entity stuff??
 

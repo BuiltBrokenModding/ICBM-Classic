@@ -5,6 +5,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
+import javax.annotation.Nullable;
+
+/**
+ * Fired when a Blast tries to modify a block in the world to allow interrupting block destruction or modification before it can occur.
+ *
+ * Created by AFlyingCar on 5/5/20
+ */
 public class BlastBlockModifyEvent extends Event
 {
     private World world = null;
@@ -12,82 +19,123 @@ public class BlastBlockModifyEvent extends Event
     private IBlockState newState = null;
     private int flags = 0;
     private Runnable callback = null;
-    private boolean placedBackDown = false;
 
-    public enum BlockBreakType
+    private BlastBlockModifyEventType modificationType;
+
+    /**
+     * Creates a BlastBlockModifyEvent that will set a block to air.
+     *
+     * @param world The world the modification takes place in.
+     * @param position The position of the block to modify.
+     */
+    public BlastBlockModifyEvent(World world, BlockPos position)
     {
-        SET_TO_AIR, SET_STATE, SET_STATE_WITH_FLAGS, USE_CALLBACK
+        this.world = world;
+        this.position = position;
+        this.newState = null;
+        this.flags = 0;
+        this.modificationType = BlastBlockModifyEventType.SET_TO_AIR;
     }
 
-    private BlockBreakType modificationType;
-
-    public BlastBlockModifyEvent(World _world, BlockPos _position)
+    /**
+     * Creates a BlastBlockModifyEvent that will set a new block state.
+     *
+     * @param world The world the modification takes place in.
+     * @param position The position of the block to modify.
+     * @param newState The new state of the modified block.
+     */
+    public BlastBlockModifyEvent(World world, BlockPos position, IBlockState newState)
     {
-        world = _world;
-        position = _position;
-        newState = null;
-        flags = 0;
-        modificationType = BlockBreakType.SET_TO_AIR;
+        this.world = world;
+        this.position = position;
+        this.newState = newState;
+        this.modificationType = BlastBlockModifyEventType.SET_STATE;
     }
 
-    public BlastBlockModifyEvent(World _world, BlockPos _position, IBlockState _newState)
+    /**
+     * Creates a BlastBlockModifyEvent that will set a new block state with flags.
+     *
+     * @param world The world the modification takes place in.
+     * @param position The position of the block to modify.
+     * @param newState The new state of the modified block.
+     * @param flags The flags to pass to setBlockState().
+     */
+    public BlastBlockModifyEvent(World world, BlockPos position, IBlockState newState, int flags)
     {
-        world = _world;
-        position = _position;
-        newState = _newState;
-        modificationType = BlockBreakType.SET_STATE;
+        this.world = world;
+        this.position = position;
+        this.newState = newState;
+        this.flags = flags;
+        this.modificationType = BlastBlockModifyEventType.SET_STATE_WITH_FLAGS;
     }
 
-    public BlastBlockModifyEvent(World _world, BlockPos _position, IBlockState _newState, int _flags)
+    /**
+     * Creates a BlastBlockModifyEvent that will use a callback for modifying the world.
+     *
+     * @param world The world the modification takes place in.
+     * @param position The position of the block to modify.
+     * @param callback The callback to run on modification.
+     */
+    public BlastBlockModifyEvent(World world, BlockPos position, Runnable callback)
     {
-        world = _world;
-        position = _position;
-        newState = _newState;
-        flags = _flags;
-        modificationType = BlockBreakType.SET_STATE_WITH_FLAGS;
+        this.modificationType = BlastBlockModifyEventType.USE_CALLBACK;
+        this.callback = callback;
+        this.world = world;
+        this.position = position;
     }
 
-    public BlastBlockModifyEvent(World _world, BlockPos _position, IBlockState _newState, int _flags, boolean _placedBackDown)
-    {
-        world = _world;
-        position = _position;
-        newState = _newState;
-        flags = _flags;
-        modificationType = BlockBreakType.SET_STATE_WITH_FLAGS;
-        placedBackDown = _placedBackDown; // We are being placed back down if this constructor is called
-    }
-
-    public BlastBlockModifyEvent(World _world, BlockPos _position, Runnable _callback)
-    {
-        modificationType = BlockBreakType.USE_CALLBACK;
-        callback = _callback;
-        world = _world;
-        position = _position;
-    }
-
-    public BlockBreakType getModificationType() {
+    /**
+     * Gets the type of modification that is to occur.
+     * @return The modification type.
+     */
+    public BlastBlockModifyEventType getModificationType() {
         return modificationType;
     }
 
+    /**
+     * Gets the position of the block to be modified.
+     *
+     * @return The position of the block to modify.
+     */
     public BlockPos getPosition() {
         return position;
     }
 
+    /**
+     * Gets the new IBlockState that will be used to modify the block. If no block state was given, then this may be null.
+     *
+     * @return The new IBlockState if one exists, or null.
+     */
+    @Nullable
     public IBlockState getNewState() {
         return newState;
     }
 
+    /**
+     * Gets the flags to pass to setBlockState(). If no flags exist, then this will return 0.
+     *
+     * @return The flags to pass to setBlockState() or 0
+     */
     public int getFlags() {
         return flags;
     }
 
+    /**
+     * Gets the world this event applies to.
+     *
+     * @return The world.
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Gets the callback of this event. If no callback was given, this may be null.
+     *
+     * @return The callback if one exists, or null.
+     */
+    @Nullable
     public Runnable getCallback() {
         return callback;
     }
-
-    public boolean getPlacedBackDown() { return placedBackDown; }
 }
