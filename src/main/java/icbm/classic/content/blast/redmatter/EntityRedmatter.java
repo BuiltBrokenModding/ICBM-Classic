@@ -1,9 +1,13 @@
 package icbm.classic.content.blast.redmatter;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.config.blast.ConfigBlast;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -16,11 +20,18 @@ import javax.annotation.Nullable;
  */
 public class EntityRedmatter extends Entity
 {
-    //Acts as an API wrapper for the entity
-    private final BlastRedmatterWrapper blastData = new BlastRedmatterWrapper(this);
-    private final CapRedmatterPull capRedmatterPull = new CapRedmatterPull(this);
+    public static final float MAX_SPEED = 0.5f;
+    public static final float SPEED_REDUCTION = 0.98f;
 
-    public double blastScale = 0;
+    //Acts as an API wrapper for the entity
+    protected final BlastRedmatterWrapper blastData = new BlastRedmatterWrapper(this);
+    protected final CapRedmatterPull capRedmatterPull = new CapRedmatterPull(this);
+
+    //Handlers
+    protected final RedmatterClientLogic clientLogic = new RedmatterClientLogic(this);
+    protected final RedmatterLogic redmatterLogic = new RedmatterLogic(this);
+
+    private static final DataParameter<Float> SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
 
     public EntityRedmatter(World world)
     {
@@ -35,13 +46,13 @@ public class EntityRedmatter extends Entity
     @Override
     protected void entityInit()
     {
-
+        this.dataManager.register(SIZE_DATA, ConfigBlast.REDMATTER.NORMAL_RADIUS);
     }
 
     @Override
     public void onUpdate()
     {
-        if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0)
+        if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) //TODO replace zero with range check to prevent rounding issues
         {
             reduceMotion();
             correctMotion();
@@ -52,25 +63,26 @@ public class EntityRedmatter extends Entity
     //<editor-fold desc="motion">
     private void reduceMotion()
     {
-        //Slow entity down
-        this.motionX *= .98;
-        this.motionY *= .98;
-        this.motionZ *= .98;
+        this.motionX *= SPEED_REDUCTION;
+        this.motionY *= SPEED_REDUCTION;
+        this.motionZ *= SPEED_REDUCTION;
     }
 
     private void correctMotion()
     {
-        //Normalize
-        float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
-        this.motionX /= (double) speed;
-        this.motionY /= (double) speed;
-        this.motionZ /= (double) speed;
+        //TODO see if we can remove the sqrt and if the limit should be in an if-statement
 
-        //Apply Speed
-        speed = Math.min(speed, 0.5f);
-        this.motionX *= (double) speed;
-        this.motionY *= (double) speed;
-        this.motionZ *= (double) speed;
+        //Normalize motion as a speed value
+        final float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+        this.motionX /= speed;
+        this.motionY /= speed;
+        this.motionZ /= speed;
+
+        //Limit our velocity vector by the updated speed
+        final float limitedSpeed = Math.min(speed, MAX_SPEED);
+        this.motionX *= limitedSpeed;
+        this.motionY *= limitedSpeed;
+        this.motionZ *= limitedSpeed;
     }
 
     private void updateBoundsForMotion()
@@ -142,4 +154,14 @@ public class EntityRedmatter extends Entity
         return super.getCapability(capability, facing);
     }
     //</editor-fold>
+
+    public float getBlastSize()
+    {
+        return this.dataManager.get(SIZE_DATA);
+    }
+
+    public void setBlastSize(float size)
+    {
+        this.dataManager.set(SIZE_DATA, Math.max(1, size));
+    }
 }

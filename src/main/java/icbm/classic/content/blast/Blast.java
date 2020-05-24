@@ -1,7 +1,7 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.blast.redmatter.BlastRedmatter;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
@@ -330,10 +330,10 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
         Vec3d var31 = new Vec3d(location.x(), location.y(), location.z());
 
-        if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter)
+        if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter) //TODO why is this in here and not the antimatter ;(
         {
-            allEntities.sort((e1, e2) -> {
-                if (e2 instanceof EntityExplosion && ((EntityExplosion) e2).getBlast() instanceof BlastRedmatter)
+            allEntities.sort((e1, e2) -> { //TODO why are we sorting
+                if (e2 instanceof EntityRedmatter)
                 {
                     return 1; //put red matter at the front
                 }
@@ -343,6 +343,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 }
             });
 
+            //TODO why are we getting first?
             if (onDamageEntity(allEntities.get(0))) //remove red matter blast and stop doing anything else
             {
                 return false;

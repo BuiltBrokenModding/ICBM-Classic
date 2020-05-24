@@ -1,11 +1,9 @@
 package icbm.classic.content.blast.threaded;
 
-import icbm.classic.api.events.BlastCancelEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
-import icbm.classic.content.blast.redmatter.BlastRedmatter;
-import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.transform.BlockEditHandler;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
@@ -14,7 +12,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -127,16 +124,11 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     protected boolean onDamageEntity(Entity entity)
     {
-        if (entity instanceof EntityExplosion)
+        if (entity instanceof EntityRedmatter)
         {
-            if (((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
-            {
-                if (!MinecraftForge.EVENT_BUS.post(new BlastCancelEvent(this, ((EntityExplosion) entity).getBlast())))
-                {
-                    entity.setDead();
-                    return true;
-                }
-            }
+            //TODO implement a proper event instead of BlastCancel
+            entity.setDead();
+            return true;
         }
 
         return false;

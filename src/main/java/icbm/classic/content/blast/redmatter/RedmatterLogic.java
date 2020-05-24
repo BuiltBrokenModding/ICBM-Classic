@@ -3,50 +3,46 @@ package icbm.classic.content.blast.redmatter;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
-import icbm.classic.api.explosion.IBlastMovable;
-import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.content.blast.Blast;
 import icbm.classic.content.blast.BlastHelpers;
+import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.CalculationHelpers;
-import icbm.classic.lib.network.packet.PacketRedmatterSizeSync;
-import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.IFluidBlock;
 
-public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovable
+/**
+ * Handles logic of the redmatter tick
+ */
+public class RedmatterLogic
 {
-    //client side value
-    public float clientSize = 0.0F;
-
     //Lag tracking
     private int blocksDestroyedThisTick = 0;
     private int currentBlockDestroyRadius = 1;
 
-    public float getScaleFactor() //TODO move to field and calculate only when size changes
+    //Host of the logic
+    private final EntityRedmatter host;
+
+    public RedmatterLogic(EntityRedmatter host)
     {
-        return size / ConfigBlast.REDMATTER.NORMAL_RADIUS;
+        this.host = host;
     }
 
-    public float getScaleFactorClient() //TODO move to field and calculate only when size changes
+    public float getScaleFactor() //TODO move to field and calculate only when size changes
     {
-        return clientSize / ConfigBlast.REDMATTER.NORMAL_RADIUS;
+        return host.getBlastSize() / ConfigBlast.REDMATTER.NORMAL_RADIUS;
     }
 
     /**
@@ -59,23 +55,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         return (int) Math.min(ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK, ConfigBlast.REDMATTER.DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
     }
 
-    /**
-     * Triggered from the render to smoothly change size with each frame update
-     *
-     * @param deltaTick percentage of time passed (0.0 - 1.0f)
-     */
-    public void lerpSize(float deltaTick)
-    {
-        clientSize = clientSize + deltaTick * (size - clientSize);
-    }
-
-    @Override
-    public boolean doExplode(int callCount)
+    public void tick()
     {
         preTick();
         doTick();
         postTick();
-        return ConfigBlast.REDMATTER.DO_DESPAWN && callCount >= ConfigBlast.REDMATTER.MAX_LIFESPAN || this.size <= 0;
     }
 
     protected void preTick()
@@ -93,17 +77,17 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
         {
             //TODO collapse audio should play near blocks destroyed for better effect
-            if (this.world().rand.nextInt(8) == 0)
+            if (host.world.rand.nextInt(8) == 0)
             {
-                final double playX = location.x() + CalculationHelpers.randFloatRange(world().rand, getBlastRadius());
-                final double playY = location.y() + CalculationHelpers.randFloatRange(world().rand, getBlastRadius());
-                final double playZ = location.z() + CalculationHelpers.randFloatRange(world().rand, getBlastRadius());
-                final float volume = CalculationHelpers.randFloatRange(world().rand, 5, 6);
-                final float pitch = CalculationHelpers.randFloatRange(world().rand, 0.6f, 1);
-                ICBMSounds.COLLAPSE.play(world, playX, playY, playZ, volume, pitch, true);
+                final double playX = host.posX + CalculationHelpers.randFloatRange(host.world.rand, host.getBlastSize());
+                final double playY = host.posY + CalculationHelpers.randFloatRange(host.world.rand, host.getBlastSize());
+                final double playZ = host.posZ + CalculationHelpers.randFloatRange(host.world.rand, host.getBlastSize());
+                final float volume = CalculationHelpers.randFloatRange(host.world.rand, 5, 6);
+                final float pitch = CalculationHelpers.randFloatRange(host.world.rand, 0.6f, 1);
+                ICBMSounds.COLLAPSE.play(host.world, playX, playY, playZ, volume, pitch, true);
             }
             //TODO check if this should play every tick
-            ICBMSounds.REDMATTER.play(world, location.x(), location.y(), location.z(), 3.0F, CalculationHelpers.randFloatRange(world().rand, -0.8f, 1.2f), true);
+            ICBMSounds.REDMATTER.play(host.world, host.posX, host.posY, host.posZ, 3.0F, CalculationHelpers.randFloatRange(host.world.rand, -0.8f, 1.2f), true);
         }
     }
 
@@ -114,20 +98,16 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         {
             decreaseScale();
         }
-        if (this.callCount % 10 == 0) //sync server size to clients every 10 ticks TODO this needs to sync more often or we will see rendering issues
-        {
-            PacketRedmatterSizeSync.sync(this); //TODO handle this in the controller, blasts shouldn't network sync
-        }
     }
 
     protected void decreaseScale()
     {
         //Decrease mass
-        this.size -= 0.1; //TODO magic numbers & config
+        host.setBlastSize(host.getBlastSize() - 0.1f); //TODO magic numbers & config
 
-        if (this.size < 50) // evaporation speedup for small black holes
+        if (host.getBlastSize() < 50) // evaporation speedup for small black holes
         {
-            this.size -= (50 - this.size) / 100; //TODO magic numbers & config
+            host.setBlastSize((50 - host.getBlastSize()) / 100);//TODO magic numbers & config
         }
     }
 
@@ -147,7 +127,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
             currentBlockDestroyRadius += 1;
 
             //Reset if we reach radius
-            if (currentBlockDestroyRadius >= getBlastRadius())
+            if (currentBlockDestroyRadius >= host.getBlastSize())
             {
                 currentBlockDestroyRadius = 1;
             }
@@ -162,7 +142,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     protected boolean shouldStopBreakingBlocks()
     {
         return blocksDestroyedThisTick > getBlocksPerTick()
-                || !isAlive;
+                || host.isDead;
     }
 
     /**
@@ -174,22 +154,26 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
      */
     protected void processNextBlock(int rx, int ry, int rz)
     {
-        final BlockPos blockPos = new BlockPos(rx + xi(), ry + yi(), rz + zi()); //TODO use mutable pos for performance
-        final double dist = location.distance(blockPos);
+        final BlockPos blockPos = new BlockPos(
+                rx + Math.floor(host.posX),
+                ry + Math.floor(host.posY),
+                rz + Math.floor(host.posZ)
+        ); //TODO use mutable pos for performance
+        final double dist = host.getDistanceSq(blockPos);
 
         //We are looping in a shell orbit around the center
         if (dist < this.currentBlockDestroyRadius && dist > this.currentBlockDestroyRadius - 2)
         {
-            final IBlockState blockState = world.getBlockState(blockPos);
+            final IBlockState blockState = host.world.getBlockState(blockPos);
             if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks
             {
                 //TODO handle multi-blocks
 
-                world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), isFluid(blockState) ? 2 : 3);
+                host.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), BlastBlockHelpers.isFluid(blockState) ? 2 : 3);
                 //TODO: render fluid streams moving into hole
 
                 //Convert a random amount of destroyed blocks into flying blocks for visuals
-                if (canTurnIntoFlyingBlock(blockState) && this.world().rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
+                if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
                 {
                     spawnFlyingBlock(blockPos, blockState);
                 }
@@ -208,47 +192,36 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     protected boolean shouldRemoveBlock(BlockPos blockPos, IBlockState blockState)
     {
         final Block block = blockState.getBlock();
-        final boolean isFluid = isFluid(blockState);
+        final boolean isFluid = BlastBlockHelpers.isFluid(blockState);
         //Ignore air blocks and unbreakable blocks
-        return !block.isAir(blockState, world(), blockPos)
-                && (isFlowingWater(blockState) || !isFluid && blockState.getBlockHardness(world, blockPos) >= 0);
+        return !block.isAir(blockState, host.world, blockPos)
+                && (BlastBlockHelpers.isFlowingWater(blockState) || !isFluid && blockState.getBlockHardness(host.world, blockPos) >= 0);
 
-    }
-
-    protected boolean isFluid(IBlockState blockState)
-    {
-        return blockState.getBlock() instanceof BlockLiquid || blockState.getBlock() instanceof IFluidBlock;
-    }
-
-    protected boolean isFlowingWater(IBlockState blockState)
-    {
-        return blockState.getBlock() instanceof BlockLiquid && blockState.getValue(BlockLiquid.LEVEL) < 7;
     }
 
     protected boolean canTurnIntoFlyingBlock(IBlockState blockState)
     {
-        return ConfigBlast.REDMATTER.SPAWN_FLYING_BLOCKS && !isFluid(blockState);
+        return ConfigBlast.REDMATTER.SPAWN_FLYING_BLOCKS && !BlastBlockHelpers.isFluid(blockState);
     }
 
     protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
     {
-        final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, blockState);
-        entity.yawChange = 50 * this.world().rand.nextFloat();
-        entity.pitchChange = 50 * this.world().rand.nextFloat();
-        this.world().spawnEntity(entity);
+        final EntityFlyingBlock entity = new EntityFlyingBlock(host.world, blockPos, blockState);
+        entity.yawChange = 50 * host.world.rand.nextFloat();
+        entity.pitchChange = 50 * host.world.rand.nextFloat();
+        host.world.spawnEntity(entity);
 
         this.handleEntities(entity); //TODO why? this should just be an apply velocity call
     }
 
     protected void doEntityEffects()
     {
-        final float entityRadius = this.getBlastRadius() * 1.5f;
+        final float entityRadius = host.getBlastSize() * 1.5f; //TODO why 1.5?
 
-        final Cube cube = new Cube(location.add(0.5).sub(entityRadius), location.add(0.5).add(entityRadius)); //TODO Cache, recalc on movement only
-        final AxisAlignedBB bounds = cube.getAABB();
+        final AxisAlignedBB bounds = host.getEntityBoundingBox().expand(entityRadius, entityRadius, entityRadius);
 
         //Get all entities in the cube area
-        this.world().getEntitiesWithinAABB(Entity.class, bounds)
+        host.world.getEntitiesWithinAABB(Entity.class, bounds)
                 //Filter down
                 .stream().filter(this::shouldHandleEntity)
                 //Apply to each
@@ -258,7 +231,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     private boolean shouldHandleEntity(Entity entity)
     {
         //Ignore self
-        if (entity == this.controller)
+        if (entity == host)
         {
             return false;
         }
@@ -270,7 +243,7 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
         }
 
         //Ignore entities that mark themselves are ignorable
-        if (entity instanceof IBlastIgnore && ((IBlastIgnore) entity).canIgnore(this)) //TODO remove
+        if (entity instanceof IBlastIgnore && ((IBlastIgnore) entity).canIgnore(host.blastData)) //TODO remove
         {
             return false;
         }
@@ -284,11 +257,11 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     protected void handleEntities(Entity entity) //TODO why is radius and doExplosion not used
     {
         //Calculate different from center
-        final double xDifference = entity.posX - location.xi() + 0.5; //TODO why 0.5? blast might actually have decimal position
-        final double yDifference = entity.posY - location.yi() + 0.5;
-        final double zDifference = entity.posZ - location.zi() + 0.5;
+        final double xDifference = entity.posX - host.posX;
+        final double yDifference = entity.posY - host.posY;
+        final double zDifference = entity.posZ - host.posZ;
 
-        final double distance = this.location.distance(entity); //TODO switch to Sq version for performance
+        final double distance = host.getDistanceSq(entity); //TODO switch to Sq version for performance
 
         moveEntity(entity, xDifference, yDifference, zDifference, distance);
         attackEntity(entity, distance);
@@ -298,7 +271,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
     {
         //Allow overriding default pull logic
         final IBlastVelocity cap = entity.getCapability(ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY, null);
-        if(cap != null && cap.onBlastApplyMotion(getBlastSource(), this, xDifference, yDifference, zDifference, distance)) {
+        if (cap != null && cap.onBlastApplyMotion(host, host.blastData, xDifference, yDifference, zDifference, distance))
+        {
             return true;
         }
 
@@ -321,42 +295,45 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
     private void attackEntity(Entity entity, double distance)
     {
+        //TODO move each section to capability or reg system
+        //TODO make config driven, break section out into its own method
+
         //Handle eating logic
-        if (distance < (ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * getScaleFactor())) //TODO make config driven, break section out into its own method
+        if (distance < (ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * getScaleFactor()))
         {
-            if (entity instanceof EntityExplosion)
+            if (entity instanceof EntityRedmatter && !entity.isDead)
+            {
+                //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
+
+                //We are going to merge both blasts together
+                final double selfRad = Math.pow(host.getBlastSize(), 3);
+                final double targetRad = Math.pow(((EntityExplosion) entity).getBlast().getBlastRadius(), 3);
+
+                final float newRad = (float) Math.cbrt(selfRad + targetRad); //TODO why cube?
+
+                host.setBlastSize(newRad);
+
+                //TODO combine the vectors instead of turning into zero
+                host.motionX = 0;
+                host.motionY = 0;
+                host.motionZ = 0;
+
+                //TODO fire an event when combined (non-cancelable to allow acting on combined result)
+            }
+            else if (entity instanceof EntityExplosion)
             {
                 final IBlast blast = ((EntityExplosion) entity).getBlast();
-                if (blast instanceof BlastAntimatter) //TODO move to capability
+                if (blast instanceof BlastAntimatter) //TODO move to capability... also check if this is even valid
                 {
                     if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
                     {
-                        ICBMSounds.EXPLOSION.play(world, location.x(), location.y(), location.z(), 7.0F, CalculationHelpers.randFloatRange(world().rand, -0.6F, 0.9F), true);
+                        ICBMSounds.EXPLOSION.play(host.world, host.posX, host.posY, host.posZ, 7.0F, CalculationHelpers.randFloatRange(host.world.rand, -0.6F, 0.9F), true);
                     }
-                    if (this.world().rand.nextFloat() > 0.85 && !this.world().isRemote)
+                    if (host.world.rand.nextFloat() > 0.85 && !host.world.isRemote) //TODO config for this float... why a chance?
                     {
                         //Destroy self
-                        clearBlast();
+                        host.setDead();
                     }
-                }
-                else if (blast instanceof BlastRedmatter && ((BlastRedmatter) blast).isAlive && this.isAlive) //TODO move to capability, also why isAlive checks?
-                {
-                    //https://www.wolframalpha.com/input/?i=(4%2F3)pi+*+r%5E3+%3D+(4%2F3)pi+*+a%5E3+%2B+(4%2F3)pi+*+b%5E3
-
-                    //We are going to merge both blasts together
-                    final double selfRad = Math.pow(this.getBlastRadius(), 3);
-                    final double targetRad = Math.pow(((EntityExplosion) entity).getBlast().getBlastRadius(), 3);
-
-                    final float newRad = (float) Math.cbrt(selfRad + targetRad); //TODO why cube?
-
-                    //Average out timer
-                    this.callCount = (callCount + ((BlastRedmatter) blast).callCount) / 2;
-
-                    this.size = newRad;
-
-                    this.controller.setVelocity(0, 0, 0); //TODO combine the vectors
-
-                    //TODO fire an event when combined (non-cancelable to allow acting on combined result)
                 }
 
                 //Kill the blast
@@ -380,29 +357,12 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
                 entity.setDead();
                 if (entity instanceof EntityFlyingBlock)
                 {
-                    if (this.size < 120)
+                    if (host.getBlastSize() < 120)
                     {
-                        this.size += 0.05;
+                        host.setBlastSize(host.getBlastSize() + 0.05f); //TODO magic number and config
                     }
                 }
             }
         }
-    }
-
-    public static class DamageSourceRedmatter extends DamageSource //TODO move to its own class with proper handling
-    {
-        public final BlastRedmatter blastRedmatter;
-
-        public DamageSourceRedmatter(BlastRedmatter blastRedmatter)
-        {
-            super("icbm.redmatter");
-            this.blastRedmatter = blastRedmatter;
-        }
-    }
-
-    @Override
-    public boolean isMovable()
-    {
-        return ConfigBlast.REDMATTER.REDMATTER_MOVEMENT;
     }
 }
