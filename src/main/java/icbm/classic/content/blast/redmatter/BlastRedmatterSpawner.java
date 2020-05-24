@@ -1,84 +1,35 @@
 package icbm.classic.content.blast.redmatter;
 
 import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.IBlast;
-import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
+import icbm.classic.content.blast.imp.BlastBase;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
+ * Blast that exists purely to spawn the redmatter entity into the world
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 4/19/2020.
  */
-public class BlastRedmatterSpawner implements IBlast
+public class BlastRedmatterSpawner extends BlastBase
 {
-    @Override
-    public float getBlastRadius()
-    {
-        return 0;
-    }
-
-    @Override
-    public Entity getBlastSource()
-    {
-        return null;
-    }
-
+    @Nonnull
     @Override
     public BlastState runBlast()
     {
-        return null;
+        final World world = world();
+        if (world != null)
+        {
+            final EntityRedmatter entityRedmatter = new EntityRedmatter(world);
+            entityRedmatter.posX = x();
+            entityRedmatter.posY = y();
+            entityRedmatter.posZ = z();
+            if (world.spawnEntity(entityRedmatter))
+            {
+                return BlastState.TRIGGERED;
+            }
+            return BlastState.FORGE_EVENT_CANCEL;
+        }
+        return BlastState.ERROR;
     }
-
-    @Override
-    public boolean isCompleted()
-    {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public IExplosiveData getExplosiveData()
-    {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Entity getEntity()
-    {
-        return null;
-    }
-
-    @Override
-    public void clearBlast()
-    {
-
-    }
-
-    @Override
-    public World world()
-    {
-        return null;
-    }
-
-    @Override
-    public double z()
-    {
-        return 0;
-    }
-
-    @Override
-    public double x()
-    {
-        return 0;
-    }
-
-    @Override
-    public double y()
-    {
-        return 0;
-    }
-    //TODO create a blast that spawns the redmatter
 }

@@ -9,6 +9,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * Wrapper for exposing the {@link EntityRedmatter} as a Blast
+ *
  * Created by Dark(DarkGuardsman, Robert) on 4/19/2020.
  */
 public class BlastRedmatterWrapper implements IBlast
