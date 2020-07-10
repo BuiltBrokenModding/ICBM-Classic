@@ -1,19 +1,18 @@
 package icbm.classic.content.items;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
-import icbm.classic.ICBMClassic;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
