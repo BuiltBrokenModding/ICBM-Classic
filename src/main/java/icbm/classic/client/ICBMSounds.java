@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public enum ICBMSounds
 {
+    AIRSTRIKE("airstrike"),
     ANTIMATTER("antimatter"),
     BEAM_CHARGING("beamcharging"),
     COLLAPSE("collapse"),

@@ -1,6 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
@@ -12,6 +13,7 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
@@ -30,6 +33,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Extended version of {@link ItemRemoteDetonator} that can target blocks in a line of sight.
@@ -50,6 +54,8 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     private final int maxCooldownTicks = 20;
     private int cooldownRemaining = 0;
 
+    private static Random rand = new Random();
+
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
@@ -60,10 +66,12 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
             if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) // ignore failed raytraces
             {
-                TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
+                BlockPos mouseOverBlockPos = objectMouseOver.getBlockPos();
+                TileEntity tileEntity = world.getTileEntity(mouseOverBlockPos);
                 if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
                 {
-                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+                    world.playSound(player,player.posX,player.posY,player.posZ, ICBMSounds.AIRSTRIKE.getSound(), SoundCategory.BLOCKS, 7, rand.nextFloat() * 0.1f + 0.9f);
+                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(mouseOverBlockPos));
                 }
             }// TODO else: add message stating that the raytrace failed
         }
@@ -97,6 +105,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
                 int x = buf.readInt();
                 int y = buf.readInt();
                 int z = buf.readInt();
+
                 LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, new BlockPos(x, y, z), player);
 
                 if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled

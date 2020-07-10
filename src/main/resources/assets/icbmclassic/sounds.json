@@ -162,7 +162,7 @@
     "subtitle": "subtitle.icbmclassic:laser",
     "sounds": [
       {
-        "name": "icbmclassic:laser1",
+        "name": "icbmclassic:laser",
         "sream": false
       }
     ]
