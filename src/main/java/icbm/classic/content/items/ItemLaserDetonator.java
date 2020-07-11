@@ -94,16 +94,16 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         if (!world.isRemote)
         {
             ArrayList<EntityLightBeam> toRemove = new ArrayList<>();
-            for (EntityLightBeam beamEntity : ticksRemainingPerLightbeam.keySet())
+            for (Map.Entry<EntityLightBeam, Integer> entry : ticksRemainingPerLightbeam.entrySet())
             {
-                int ticksRemaining = ticksRemainingPerLightbeam.get(beamEntity);
+                Integer ticksRemaining = entry.getValue();
                 if (ticksRemaining > 0)
                 {
-                    ticksRemainingPerLightbeam.put(beamEntity, ticksRemaining-1);
+                    entry.setValue(ticksRemaining-1);
                 }
                 else
                 {
-                    toRemove.add(beamEntity);
+                    toRemove.add(entry.getKey());
                 }
             }
 
@@ -135,7 +135,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
                 // TODO make the beam only visible to the client that spawned it
                 // TODO fix: when a beam is visible and alive and you save and reload the map, it turns red and does not despawn quickly anymore.
                 EntityLightBeam beam = new EntityLightBeam(player.world)
-                        .setPosition(new Pos(x, y+3, z))
+                        .setPosition(new Pos(x, y+3d, z))
                         .setColor(0f, 1f, 0f);
 
                 beam.beamSize = 1;
