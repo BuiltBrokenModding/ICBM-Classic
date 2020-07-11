@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -31,8 +32,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Extended version of {@link ItemRemoteDetonator} that can target blocks in a line of sight.
@@ -52,6 +52,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
 
     private final int maxCooldownTicks = 20;
     private int cooldownRemaining = 0;
+    private Map<EntityLightBeam, Integer> ticksRemainingPerLightbeam = new HashMap<>();
 
     private static Random rand = new Random();
 
@@ -90,6 +91,29 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         if (world.isRemote && cooldownRemaining > 0) // when holding the right mouse button, trigger item use every second
             cooldownRemaining--;
 
+        if (!world.isRemote)
+        {
+            ArrayList<EntityLightBeam> toRemove = new ArrayList<>();
+            for (EntityLightBeam beamEntity : ticksRemainingPerLightbeam.keySet())
+            {
+                int ticksRemaining = ticksRemainingPerLightbeam.get(beamEntity);
+                if (ticksRemaining > 0)
+                {
+                    ticksRemainingPerLightbeam.put(beamEntity, ticksRemaining-1);
+                }
+                else
+                {
+                    toRemove.add(beamEntity);
+                }
+            }
+
+            for (EntityLightBeam beamEntity : toRemove)
+            {
+                ticksRemainingPerLightbeam.remove(beamEntity);
+                beamEntity.startDeathCycle();
+            }
+        }
+
         super.onUpdate(stack, world, entity, itemSlot, isSelected);
     }
 
@@ -106,6 +130,20 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
                 int z = buf.readInt();
 
                 LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, new BlockPos(x, y, z), player);
+
+
+                // TODO make the beam only visible to the client that spawned it
+                // TODO fix: when a beam is visible and alive and you save and reload the map, it turns red and does not despawn quickly anymore.
+                EntityLightBeam beam = new EntityLightBeam(player.world)
+                        .setPosition(new Pos(x, y+3, z))
+                        .setColor(0f, 1f, 0f);
+
+                beam.beamSize = 1;
+                beam.beamGlowSize = 2;
+                beam.setTargetBeamProgress(0.1f);
+                ticksRemainingPerLightbeam.put(beam, 10 * 20);
+
+                player.world.spawnEntity(beam);
 
                 if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
                     return false;
