@@ -1,5 +1,6 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.api.events.BlastBlockModifyEvent;
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -168,7 +170,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 
             if (currentState.getBlock().isReplaceable(this.world, pos))
             {
-                this.world.setBlockState(pos, getBlockState(), 3);
+                MinecraftForge.EVENT_BUS.post(new BlastBlockModifyEvent(this.world, pos, getBlockState(), 3));
             }
             //TODO find first block if not replaceable
         }
