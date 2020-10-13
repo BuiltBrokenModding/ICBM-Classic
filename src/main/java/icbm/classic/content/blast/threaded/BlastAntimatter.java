@@ -98,7 +98,14 @@ public class BlastAntimatter extends BlastThreaded
 
     protected boolean isInsideMap(int y)
     {
-        return y >= 0 && y < 256;
+        if (Loader.isModInstalled("CubicChunks")
+        {
+            return true;
+        }
+        else
+        {
+            return y >= 0 && y < 256;
+        }
     }
 
     protected boolean shouldEditPos(int x, int y, int z)
