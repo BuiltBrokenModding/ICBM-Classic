@@ -7,6 +7,7 @@ import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.lib.transform.BlockEditHandler;
+import icbm.classic.mods.cubicchunks.CubicChunks;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -24,11 +25,24 @@ public class BlastAntimatter extends BlastThreaded
 {
     private final IBlockState replaceState = Blocks.AIR.getDefaultState();
 
+    // CubicChunks support
+    int minWorldHeight;
+    int maxWorldHeight;
+
     @Override
     public boolean setupBlast()
     {
         super.setupBlast();
         ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
+
+        if (CubicChunks.INSTANCE.isPresent()) {
+            this.minWorldHeight = CubicChunks.INSTANCE.getMinHeight(world);
+            this.maxWorldHeight = CubicChunks.INSTANCE.getMaxHeight(world);
+        } else {
+            minWorldHeight = 0;
+            maxWorldHeight = 256;
+        }
+
         return this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
     }
 
@@ -98,7 +112,7 @@ public class BlastAntimatter extends BlastThreaded
 
     protected boolean isInsideMap(int y)
     {
-        return y >= 0 && y < 256;
+        return y >= minWorldHeight && y < maxWorldHeight;
     }
 
     protected boolean shouldEditPos(int x, int y, int z)
