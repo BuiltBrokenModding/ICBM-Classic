@@ -368,7 +368,8 @@ public class BlastRedmatter extends Blast implements IBlastTickable, IBlastMovab
 
                     this.size = newRad;
 
-                    this.controller.setVelocity(0, 0, 0); //TODO combine the vectors
+                    // why did i even put this here? Its clientside only! and apparently causes a crash on a proper client+server env?
+                    //this.controller.setVelocity(0, 0, 0); //TODO combine the vectors
 
                     //TODO fire an event when combined (non-cancelable to allow acting on combined result)
                 }
