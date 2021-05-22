@@ -2,13 +2,26 @@ package icbm.classic.client;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.mapper.BlockModelMapperExplosive;
 import icbm.classic.client.mapper.ItemModelMapperExplosive;
-import icbm.classic.client.render.entity.*;
+import icbm.classic.client.render.entity.RenderCreeperXmas;
+import icbm.classic.client.render.entity.RenderEntityBlock;
+import icbm.classic.client.render.entity.RenderExBlock;
+import icbm.classic.client.render.entity.RenderExplosion;
+import icbm.classic.client.render.entity.RenderFragments;
+import icbm.classic.client.render.entity.RenderGrenade;
+import icbm.classic.client.render.entity.RenderLightBeam;
+import icbm.classic.client.render.entity.RenderMissile;
+import icbm.classic.client.render.entity.RenderSeat;
+import icbm.classic.client.render.entity.RenderSkeletonXmas;
+import icbm.classic.client.render.entity.RenderSnowmanXmas;
+import icbm.classic.client.render.entity.RenderZombieXmas;
 import icbm.classic.config.ConfigItems;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.content.blast.redmatter.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREMPTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
@@ -21,9 +34,20 @@ import icbm.classic.content.blocks.launcher.screen.TESRLauncherScreen;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
-import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.EntityFragments;
+import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.EntityLightBeam;
+import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.mobs.*;
+import icbm.classic.content.entity.mobs.EntityXmasCreeper;
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSnowman;
+import icbm.classic.content.entity.mobs.EntityXmasZombie;
+import icbm.classic.content.entity.mobs.EntityXmasZombieBoss;
 import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
@@ -149,22 +173,23 @@ public class ClientReg
         //---------------------------------------
         //Entity renders
         //---------------------------------------
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderExBlock(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, manager -> new RenderEntityBlock(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, manager -> new RenderExplosion(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, manager -> new RenderGrenade(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, manager -> new RenderLightBeam(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, manager -> new RenderFragments(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, manager -> new RenderSeat(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, RenderExBlock::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRedmatter.class, RenderRedmatter::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, RenderEntityBlock::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, RenderExplosion::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, RenderGrenade::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, RenderLightBeam::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, RenderFragments::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, RenderSeat::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, manager -> new RenderSkeletonXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, manager -> new RenderSkeletonXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, manager -> new RenderSnowmanXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, RenderSkeletonXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, RenderSnowmanXmas::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, manager -> new RenderZombieXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, manager -> new RenderZombieXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, manager -> new RenderCreeperXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, RenderZombieXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, RenderZombieXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, RenderCreeperXmas::new);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
