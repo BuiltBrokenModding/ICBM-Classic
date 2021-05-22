@@ -1,5 +1,6 @@
 package icbm.classic.content.blast.redmatter;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
@@ -21,6 +22,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Handles logic of the redmatter tick
@@ -32,6 +35,7 @@ public class RedmatterLogic
 
     //Lag tracking
     private int blocksDestroyedThisTick = 0;
+    private int ticksSinceLastBlockRemoved = 0;
     private int currentBlockDestroyRadius = 1;
 
     //Host of the logic
@@ -105,28 +109,55 @@ public class RedmatterLogic
     protected void decreaseScale()
     {
         final float size = host.getBlastSize();
-        //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
-        //TODO if we leave small redmatters allow players to remove them and/or capture in jars
-        if (size <= MINIMAL_SIZE)
-        {
-            host.setBlastSize(0);
-            host.setDead();
-        }
-        else
-        //Decrease mass
-        {
-            final float newSize = size < 1 ? size * 0.9f : size * MASS_REDUCTION_SCALE;
-            host.setBlastSize(newSize);
-        }
 
+        //We are not removing blocks so the redmatter is starving (has no blocks to remove), decrease size
+        if (size <= ticksSinceLastBlockRemoved)
+        {
+            //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
+            //TODO if we leave small redmatters allow players to remove them and/or capture in jars
+            if (size <= MINIMAL_SIZE)
+            {
+                host.setBlastSize(0);
+                host.setDead();
+                ICBMClassic.logger().info("Redmatter[{}] has starved to death at {} {} {} {}",
+                        host.getEntityId(),
+                        host.posX,
+                        host.posY,
+                        host.posZ,
+                        host.world.provider.getDimension());
+            }
+            else
+            //Decrease mass
+            {
+                final float newSize = size < 1 ? size * 0.9f : size * MASS_REDUCTION_SCALE;
+                host.setBlastSize(newSize);
+            }
+
+        }
     }
 
     protected void doDestroyBlocks()
     {
-        //Destroy blocks in radius
+        //Match blast size it if changes
+        if (currentBlockDestroyRadius > host.getBlastSize())
+        {
+            currentBlockDestroyRadius = (int) Math.floor(host.getBlastSize());
+        }
+
+        final Vec3d center = host.getPositionVector();
+
+        //Destroy blocks in radius TODO find a way to loop only edges
         BlastHelpers.forEachPosInRadiusUntil(currentBlockDestroyRadius,
-                (x, y, z) -> {
-                    processNextBlock(x, y, z);
+                (rx, ry, rz) -> {
+                    //TODO scale to radius to avoid tracing outside limits
+                    final Vec3d pos = new Vec3d(rx + 0.5 + host.posX, ry + 0.5 + host.posY, rz + 0.5 + host.posZ);
+                    final RayTraceResult rayTrace = host.world.rayTraceBlocks(center, pos, true, false, false);
+
+                    if(rayTrace != null && rayTrace.typeOfHit == RayTraceResult.Type.BLOCK)
+                    {
+                        //TODO if block is at edge apply chance to ignore - adds feathering
+                        processNextBlock(rayTrace.getBlockPos());
+                    }
                     return true;
                 },
                 this::shouldStopBreakingBlocks);
@@ -135,12 +166,7 @@ public class RedmatterLogic
         if (blocksDestroyedThisTick <= 0)
         {
             currentBlockDestroyRadius += 1;
-
-            //Reset if we reach radius
-            if (currentBlockDestroyRadius >= host.getBlastSize())
-            {
-                currentBlockDestroyRadius = 1;
-            }
+            ticksSinceLastBlockRemoved += 1;
         }
     }
 
@@ -158,17 +184,10 @@ public class RedmatterLogic
     /**
      * Process the next block from looping
      *
-     * @param rx - relative from center
-     * @param ry - relative from center
-     * @param rz - relative from center
+     * @param blockPos - blockToEdit
      */
-    protected void processNextBlock(int rx, int ry, int rz)
+    protected void processNextBlock(BlockPos blockPos)
     {
-        final BlockPos blockPos = new BlockPos(
-                rx + Math.floor(host.posX),
-                ry + Math.floor(host.posY),
-                rz + Math.floor(host.posZ)
-        ); //TODO use mutable pos for performance
         final double dist = host.getDistanceSq(blockPos);
 
         //We are looping in a shell orbit around the center
@@ -188,6 +207,7 @@ public class RedmatterLogic
                     spawnFlyingBlock(blockPos, blockState);
                 }
                 blocksDestroyedThisTick++;
+                ticksSinceLastBlockRemoved = 0;
             }
         }
     }
@@ -219,16 +239,27 @@ public class RedmatterLogic
         final EntityFlyingBlock entity = new EntityFlyingBlock(host.world, blockPos, blockState);
         entity.yawChange = 50 * host.world.rand.nextFloat();
         entity.pitchChange = 50 * host.world.rand.nextFloat();
+        entity.noClip = true;
         host.world.spawnEntity(entity);
 
         this.handleEntities(entity); //TODO why? this should just be an apply velocity call
     }
 
+    private float getEntityImpactRange() {
+        return host.getBlastSize() * 1.5f; //TODO why 1.5?;
+    }
+
     protected void doEntityEffects()
     {
-        final float entityRadius = host.getBlastSize() * 1.5f; //TODO why 1.5?
+        final float entityRadius = getEntityImpactRange();
 
-        final AxisAlignedBB bounds = host.getEntityBoundingBox().expand(entityRadius, entityRadius, entityRadius);
+        final AxisAlignedBB bounds = new AxisAlignedBB(
+                host.posX - entityRadius,
+                host.posY - entityRadius,
+                host.posZ - entityRadius,
+                host.posX + entityRadius,
+                host.posY + entityRadius,
+                host.posZ + entityRadius);
 
         //Get all entities in the cube area
         host.world.getEntitiesWithinAABB(Entity.class, bounds)
@@ -264,14 +295,14 @@ public class RedmatterLogic
     /**
      * Makes an entity get affected by Red Matter.
      */
-    protected void handleEntities(Entity entity) //TODO why is radius and doExplosion not used
+    protected void handleEntities(Entity entity)
     {
         //Calculate different from center
         final double xDifference = entity.posX - host.posX;
         final double yDifference = entity.posY - host.posY;
         final double zDifference = entity.posZ - host.posZ;
 
-        final double distance = host.getDistanceSq(entity); //TODO switch to Sq version for performance
+        final double distance = host.getDistance(entity);
 
         moveEntity(entity, xDifference, yDifference, zDifference, distance);
         attackEntity(entity, distance);
@@ -286,19 +317,17 @@ public class RedmatterLogic
             return true;
         }
 
-        //Calculate velocity
-        final double velX = -xDifference / distance / distance * 5; //TODO what is 5?
-        final double velY = -yDifference / distance / distance * 5;
-        final double velZ = -zDifference / distance / distance * 5;
+        final double distanceScale = Math.max(0, 1 - (distance / getEntityImpactRange())); //0.0 to 1.0
+        final double pullPower = Math.min(1, distanceScale * host.getBlastSize() * 0.01);
+
+        //Calculate velocity (delta / mag) * power
+        final double velX = (xDifference / distance) * pullPower;
+        final double velY = (yDifference / distance) * pullPower;
+        final double velZ = (zDifference / distance)  * pullPower;
 
         // Gravity Velocity
-        entity.addVelocity(velX, velY, velZ);
-
-        // if player send packet because motion is handled client side
-        if (entity instanceof EntityPlayer)
-        {
-            entity.velocityChanged = true;
-        }
+        entity.addVelocity(-velX, -velY, -velZ); //Negative pulls it towards the redmatter
+        entity.velocityChanged = true;
 
         return true;
     }
