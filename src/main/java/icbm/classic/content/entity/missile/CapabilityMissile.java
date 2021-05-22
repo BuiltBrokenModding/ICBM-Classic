@@ -1,7 +1,7 @@
 package icbm.classic.content.entity.missile;
 
 import icbm.classic.api.caps.IMissile;
-import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
@@ -40,7 +40,7 @@ public class CapabilityMissile implements IMissile
     }
 
     @Override
-    public BlastState doExplosion()
+    public BlastResponse doExplosion()
     {
         return missile.doExplosion();
     }

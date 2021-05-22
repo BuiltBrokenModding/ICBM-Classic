@@ -1,6 +1,7 @@
 package icbm.classic.api.explosion;
 
 import icbm.classic.api.data.IWorldPosition;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 
@@ -33,7 +34,7 @@ public interface IBlast extends IWorldPosition
      * @return this
      */
     @Nonnull
-    BlastState runBlast();
+    BlastResponse runBlast();
 
     /**
      * Is the blast completed and

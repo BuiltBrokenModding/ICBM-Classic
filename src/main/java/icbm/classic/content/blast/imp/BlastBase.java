@@ -1,7 +1,8 @@
 package icbm.classic.content.blast.imp;
 
-import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
+import icbm.classic.api.explosion.responses.BlastNullResponses;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import net.minecraft.world.World;
 
@@ -18,7 +19,7 @@ public abstract class BlastBase implements IBlastInit
 
     @Nonnull
     @Override
-    public BlastState runBlast()
+    public BlastResponse runBlast()
     {
         if(world != null) {
             final EntityRedmatter entityRedmatter = new EntityRedmatter(world);
@@ -27,7 +28,7 @@ public abstract class BlastBase implements IBlastInit
             entityRedmatter.posZ = z();
             world.spawnEntity(entityRedmatter);
         }
-        return BlastState.ERROR;
+        return BlastNullResponses.WORLD.get();
     }
 
     @Override

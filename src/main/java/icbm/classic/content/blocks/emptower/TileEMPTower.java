@@ -202,7 +202,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         if (this.checkExtract() && this.isReady())
         {
             //Finish and trigger
-            if (buildBlast().runBlast() == BlastState.TRIGGERED)
+            if (buildBlast().runBlast().state == BlastState.TRIGGERED)
             {
                 //Consume energy
                 this.extractEnergy();

@@ -2,6 +2,7 @@ package icbm.classic.content.blast.redmatter;
 
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
@@ -24,9 +25,9 @@ public class BlastRedmatterWrapper implements IBlast
 
     @Nonnull
     @Override
-    public BlastState runBlast()
+    public BlastResponse runBlast()
     {
-        return BlastState.ALREADY_TRIGGERED;
+        return BlastState.ALREADY_TRIGGERED.genericResponse;
     }
 
     @Override
@@ -44,16 +45,16 @@ public class BlastRedmatterWrapper implements IBlast
 
     @Override
     @Nullable
-    public  Entity getEntity()
+    public Entity getEntity()
     {
         return host;
     }
 
     @Override
     @Nullable
-    public  Entity getBlastSource()
+    public Entity getBlastSource()
     {
-        return getEntity();
+        return host;
     }
     //</editor-fold>
 

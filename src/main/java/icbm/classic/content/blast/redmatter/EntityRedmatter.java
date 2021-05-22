@@ -52,15 +52,22 @@ public class EntityRedmatter extends Entity
     @Override
     public void onUpdate()
     {
+        //Update motion until we hit zero
         if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) //TODO replace zero with range check to prevent rounding issues
         {
             reduceMotion();
             correctMotion();
             updateBoundsForMotion();
         }
+
+        //Run only if server
+        if(!world.isRemote)
+        {
+            redmatterLogic.tick();
+        }
     }
 
-    //<editor-fold desc="motion">
+    //<editor-fold desc="motion handling">
     private void reduceMotion()
     {
         this.motionX *= SPEED_REDUCTION;

@@ -56,8 +56,8 @@ public class CapRedmatterPull implements IBlastVelocity
     private double calculatePullPower(EntityRedmatter otherRedmatter)
     {
         //Get the cubic size of each redmatter
-        final double otherSize = Math.max(1, Math.pow(otherRedmatter.blastScale, 3));
-        final double thisSize = Math.max(1, Math.pow(redmatter.blastScale, 3));
+        final double otherSize = Math.max(1, Math.pow(otherRedmatter.getBlastSize(), 3));
+        final double thisSize = Math.max(1, Math.pow(redmatter.getBlastSize(), 3));
 
         //Figure out the power difference between the two
         final double combinedSize = otherSize + thisSize;

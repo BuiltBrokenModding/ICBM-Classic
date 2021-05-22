@@ -28,6 +28,9 @@ import net.minecraft.util.math.BlockPos;
  */
 public class RedmatterLogic
 {
+    public static float MASS_REDUCTION_SCALE = 0.98f; //TODO config
+    public static float MINIMAL_SIZE = 0.25f; //TODO config
+
     //Lag tracking
     private int blocksDestroyedThisTick = 0;
     private int currentBlockDestroyRadius = 1;
@@ -102,13 +105,22 @@ public class RedmatterLogic
 
     protected void decreaseScale()
     {
-        //Decrease mass
-        host.setBlastSize(host.getBlastSize() - 0.1f); //TODO magic numbers & config
-
-        if (host.getBlastSize() < 50) // evaporation speedup for small black holes
+        if (host.getBlastSize() <= MINIMAL_SIZE)
         {
-            host.setBlastSize((50 - host.getBlastSize()) / 100);//TODO magic numbers & config
+            host.setBlastSize(0);
+            host.setDead();
         }
+        else
+        {
+            //Decrease mass
+            host.setBlastSize(host.getBlastSize() * MASS_REDUCTION_SCALE);
+
+            if (host.getBlastSize() < 50) // evaporation speedup for small black holes
+            {
+                host.setBlastSize((50 - host.getBlastSize()) / 100);//TODO magic numbers & config
+            }
+        }
+
     }
 
     protected void doDestroyBlocks()

@@ -3,6 +3,7 @@ package icbm.classic.command.sub.blast;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.CommandUtils;
 import icbm.classic.command.ICBMCommands;
@@ -149,13 +150,13 @@ public class CommandBlastTrigger extends SubCommand
      */
     private void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float scale)
     {
-        final BlastState result = ExplosiveHandler.createExplosion(null,
+        final BlastResponse result = ExplosiveHandler.createExplosion(null,
                 world, x, y, z,
                 explosiveData.getRegistryID(), scale,
                 null);
 
         //Send translated message to user
-        sender.sendMessage(new TextComponentTranslation(getTranslationKey(result),
+        sender.sendMessage(new TextComponentTranslation(getTranslationKey(result.state), //TODO update to include sub-errors
                 explosiveData.getRegistryName(), scale,
                 world.provider.getDimension(), world.getWorldType().getName(),
                 x, y, z));
@@ -170,10 +171,8 @@ public class CommandBlastTrigger extends SubCommand
                 return TRANSLATION_TRIGGERED;
             case THREADING:
                 return TRANSLATION_THREADING;
-            case FORGE_EVENT_CANCEL:
+            case CANCLED:
                 return TRANSLATION_ERROR_BLOCKED;
-            case NULL:
-                return TRANSLATION_ERROR_NULL;
             case ERROR:
                 return TRANSLATION_ERROR;
             case ALREADY_TRIGGERED:

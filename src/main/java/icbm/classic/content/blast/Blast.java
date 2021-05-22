@@ -1,6 +1,8 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.explosion.responses.BlastForgeResponses;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
@@ -87,7 +89,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     }
 
     @Override
-    public BlastState runBlast()
+    public BlastResponse runBlast()
     {
         try
         {
@@ -96,7 +98,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 //Forge event, allows for interaction and canceling the explosion
                 if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this))
                 {
-                    return BlastState.FORGE_EVENT_CANCEL;
+                    return BlastForgeResponses.EXPLOSION_EVENT.get();
                 }
 
                 //Play audio to confirm explosion triggered
@@ -109,16 +111,16 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                     {
                         ICBMClassic.logger().error(this + " Failed to spawn explosion entity to control blast.");
                         isAlive = false;
-                        return BlastState.ERROR; //TODO be more specific about error
+                        return BlastForgeResponses.ENTITY_SPAWNING.get();
                     }
-                    return BlastState.TRIGGERED;
+                    return BlastState.TRIGGERED.genericResponse;
                 }
                 else
                 {
                     //Do setup tasks
                     if (!this.doFirstSetup())
                     {
-                        return BlastState.FORGE_EVENT_CANCEL;
+                        return BlastState.CANCLED.genericResponse; //TODO specify why
                     }
 
                     //Call explosive, only complete if true
@@ -132,12 +134,12 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
             {
                 clientRunBlast();
             }
-            return BlastState.TRIGGERED;
+            return BlastState.TRIGGERED.genericResponse;
         }
         catch (Exception e)
         {
             ICBMClassic.logger().error(this + ": Unexpected error running blast", e);
-            return BlastState.ERROR;
+            return new BlastResponse(BlastState.ERROR, e.getMessage(), e);
         }
     }
 
