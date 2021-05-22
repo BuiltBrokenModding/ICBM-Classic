@@ -169,6 +169,6 @@ public class EntityRedmatter extends Entity
 
     public void setBlastSize(float size)
     {
-        this.dataManager.set(SIZE_DATA, Math.max(1, size));
+        this.dataManager.set(SIZE_DATA, Math.max(RedmatterLogic.MINIMAL_SIZE * 0.99f, size));
     }
 }

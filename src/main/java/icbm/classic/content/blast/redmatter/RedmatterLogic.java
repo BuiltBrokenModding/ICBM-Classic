@@ -8,7 +8,6 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.helpers.BlastBlockHelpers;
-import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -105,20 +104,19 @@ public class RedmatterLogic
 
     protected void decreaseScale()
     {
-        if (host.getBlastSize() <= MINIMAL_SIZE)
+        final float size = host.getBlastSize();
+        //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
+        //TODO if we leave small redmatters allow players to remove them and/or capture in jars
+        if (size <= MINIMAL_SIZE)
         {
             host.setBlastSize(0);
             host.setDead();
         }
         else
+        //Decrease mass
         {
-            //Decrease mass
-            host.setBlastSize(host.getBlastSize() * MASS_REDUCTION_SCALE);
-
-            if (host.getBlastSize() < 50) // evaporation speedup for small black holes
-            {
-                host.setBlastSize((50 - host.getBlastSize()) / 100);//TODO magic numbers & config
-            }
+            final float newSize = size < 1 ? size * 0.9f : size * MASS_REDUCTION_SCALE;
+            host.setBlastSize(newSize);
         }
 
     }
@@ -319,7 +317,7 @@ public class RedmatterLogic
 
                 //We are going to merge both blasts together
                 final double selfRad = Math.pow(host.getBlastSize(), 3);
-                final double targetRad = Math.pow(((EntityExplosion) entity).getBlast().getBlastRadius(), 3);
+                final double targetRad = Math.pow(((EntityRedmatter) entity).getBlastSize(), 3);
 
                 final float newRad = (float) Math.cbrt(selfRad + targetRad); //TODO why cube?
 
@@ -335,18 +333,6 @@ public class RedmatterLogic
             else if (entity instanceof EntityExplosion)
             {
                 final IBlast blast = ((EntityExplosion) entity).getBlast();
-                if (blast instanceof BlastAntimatter) //TODO move to capability... also check if this is even valid
-                {
-                    if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
-                    {
-                        ICBMSounds.EXPLOSION.play(host.world, host.posX, host.posY, host.posZ, 7.0F, CalculationHelpers.randFloatRange(host.world.rand, -0.6F, 0.9F), true);
-                    }
-                    if (host.world.rand.nextFloat() > 0.85 && !host.world.isRemote) //TODO config for this float... why a chance?
-                    {
-                        //Destroy self
-                        host.setDead();
-                    }
-                }
 
                 //Kill the blast
                 blast.clearBlast();
