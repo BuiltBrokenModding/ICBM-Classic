@@ -41,7 +41,7 @@ public abstract class BlastBase implements IBlastInit
     @Override
     public World world()
     {
-        return null;
+        return world;
     }
 
     @Override
