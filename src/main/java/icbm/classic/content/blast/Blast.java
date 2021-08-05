@@ -416,7 +416,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         this.callCount = nbt.getInteger(NBTConstants.CALL_COUNT);
         this.size = nbt.getFloat(NBTConstants.EXPLOSION_SIZE);
 
-        if (world instanceof WorldServer)
+        if (world instanceof WorldServer && nbt.hasUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID)) //don't load the exploder if it hasn't been saved
         {
             exploder = ((WorldServer) world).getEntityFromUuid(nbt.getUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID));
         }
@@ -428,7 +428,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         nbt.setInteger(NBTConstants.CALL_COUNT, this.callCount);
         nbt.setFloat(NBTConstants.EXPLOSION_SIZE, this.size);
 
-        if (world instanceof WorldServer)
+        if (world instanceof WorldServer && exploder != null) //don't save the exploder if there is none to save. TODO: do we even need to save it at all?
         {
             nbt.setUniqueId(NBTConstants.BLAST_EXPLODER_ENT_ID, this.exploder.getUniqueID());
         }
