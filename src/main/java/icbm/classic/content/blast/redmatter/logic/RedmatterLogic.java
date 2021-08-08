@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
@@ -141,7 +142,6 @@ public class RedmatterLogic
                 final float newSize = size < 1 ? size * 0.9f : size * MASS_REDUCTION_SCALE;
                 host.setBlastSize(newSize);
             }
-
         }
     }
 
@@ -155,7 +155,7 @@ public class RedmatterLogic
 
         //Debug
         final long startTime = System.nanoTime();
-        ICBMClassic.logger().info("Starting redmatter block break loop");
+        //ICBMClassic.logger().info("Starting redmatter block break loop");
 
         //Init stage
         if (rayTraceTargets.isEmpty())
@@ -166,7 +166,7 @@ public class RedmatterLogic
         //Destroy blocks until we are told to stop
         cycleDestroyBlocks();
 
-        //Debug
+        /*//Debug
         final long runtime = System.nanoTime() - startTime;
         final long microSeconds = runtime / 1000;
         final long milliSeconds = microSeconds / 1000;
@@ -181,10 +181,11 @@ public class RedmatterLogic
                 timeMessage,
                 currentBlockDestroyRadius
         );
-        ICBMClassic.logger().info(message);
+        ICBMClassic.logger().info(message);*/
     }
 
-    protected void cycleDestroyBlocks() {
+    protected void cycleDestroyBlocks()
+    {
         //Loop targets and trace limit per tick
         final Vec3d center = host.getPositionVector();
         while (!shouldStopBreakingBlocks() && !rayTraceTargets.isEmpty())
@@ -194,12 +195,15 @@ public class RedmatterLogic
         }
     }
 
-    protected void startNextBlockDestroyCycle() {
+    protected void startNextBlockDestroyCycle()
+    {
 
         //Increase size
         if (cyclesSinceLastBlockRemoved > 0)
         {
+            cyclesSinceLastBlockRemoved = 0;
             currentBlockDestroyRadius += 1; //TODO change scale to number of blocks eaten
+            ICBMClassic.logger().info("Expanding redmatter to size " + currentBlockDestroyRadius);
         }
 
         //Ensure we are empty to avoid memory overflow or duplicate data
@@ -246,7 +250,8 @@ public class RedmatterLogic
      */
     protected boolean shouldStopBreakingBlocks()
     {
-        return raytracesThisTick > 1000
+        return raytracesThisTick > 1000 //TODO add config
+                || blockDestroyedThisCycle > getBlocksPerTick()
                 || host.isDead;
     }
 
@@ -257,7 +262,7 @@ public class RedmatterLogic
      */
     protected void processNextBlock(BlockPos blockPos)
     {
-        final double dist = host.getDistanceSq(blockPos);
+        final double dist = MathHelper.sqrt(host.getDistanceSqToCenter(blockPos));
 
         //We are looping in a shell orbit around the center
         if (dist < (this.currentBlockDestroyRadius + 1))
@@ -265,20 +270,26 @@ public class RedmatterLogic
             final IBlockState blockState = host.world.getBlockState(blockPos);
             if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks
             {
-                //TODO handle multi-blocks
-
-                host.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), BlastBlockHelpers.isFluid(blockState) ? 2 : 3);
+                //TODO handle multi-
                 //TODO: render fluid streams moving into hole
 
-                //Convert a random amount of destroyed blocks into flying blocks for visuals
-                if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
+                if (host.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), BlastBlockHelpers.isFluid(blockState) ? 2 : 3))
                 {
-                    //spawnFlyingBlock(blockPos, blockState);
+                    //Convert a random amount of destroyed blocks into flying blocks for visuals
+                    if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
+                    {
+                        spawnFlyingBlock(blockPos, blockState);
+                    }
+                    markBlockRemoved();
                 }
-                blockDestroyedThisCycle++;
-                cyclesSinceLastBlockRemoved = 0;
             }
         }
+    }
+
+    private void markBlockRemoved()
+    {
+        blockDestroyedThisCycle++;
+        cyclesSinceLastBlockRemoved = 0;
     }
 
     /**
