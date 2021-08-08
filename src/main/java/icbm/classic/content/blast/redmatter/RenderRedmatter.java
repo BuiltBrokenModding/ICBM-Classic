@@ -41,13 +41,13 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     {
         final float scale = redmatter.clientLogic.getScaleFactorClient();
 
-        renderDisk(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        //renderDisk(redmatter, x, y, z, scale, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
-        renderSphere(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        //renderSphere(redmatter, x, y, z, scale, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
-        renderBeams(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        //renderBeams(redmatter, x, y, z, scale, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
         //Update size with a smooth transition

@@ -7,7 +7,6 @@ import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
@@ -25,6 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 /**
  * Handles logic of the redmatter tick
  */
@@ -34,12 +38,15 @@ public class RedmatterLogic
     public static float MINIMAL_SIZE = 0.25f; //TODO config
 
     //Lag tracking
-    private int blocksDestroyedThisTick = 0;
-    private int ticksSinceLastBlockRemoved = 0;
+    private int blockDestroyedThisCycle = 0;
+    private int raytracesThisTick = 0;
+    private int cyclesSinceLastBlockRemoved = 0;
     private int currentBlockDestroyRadius = 1;
 
     //Host of the logic
     private final EntityRedmatter host;
+
+    private final Queue<BlockPos> rayTraceTargets = new LinkedList();
 
     public RedmatterLogic(EntityRedmatter host)
     {
@@ -70,7 +77,7 @@ public class RedmatterLogic
 
     protected void preTick()
     {
-        blocksDestroyedThisTick = 0;
+        raytracesThisTick = 0;
     }
 
     protected void doTick()
@@ -100,7 +107,7 @@ public class RedmatterLogic
     protected void postTick()
     {
         //Decrease block if we don't destroy anything
-        if (blocksDestroyedThisTick <= 0)
+        if (blockDestroyedThisCycle <= 0)
         {
             decreaseScale();
         }
@@ -111,7 +118,7 @@ public class RedmatterLogic
         final float size = host.getBlastSize();
 
         //We are not removing blocks so the redmatter is starving (has no blocks to remove), decrease size
-        if (size <= ticksSinceLastBlockRemoved)
+        if (size <= cyclesSinceLastBlockRemoved)
         {
             //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
             //TODO if we leave small redmatters allow players to remove them and/or capture in jars
@@ -144,29 +151,82 @@ public class RedmatterLogic
             currentBlockDestroyRadius = (int) Math.floor(host.getBlastSize());
         }
 
+        //Debug
+        final long startTime = System.nanoTime();
+        ICBMClassic.logger().info("Starting redmatter block break loop");
+
+        //Loop targets and trace limit per tick
         final Vec3d center = host.getPositionVector();
-
-        //Destroy blocks in radius TODO find a way to loop only edges
-        BlastHelpers.forEachPosInRadiusUntil(currentBlockDestroyRadius,
-                (rx, ry, rz) -> {
-                    //TODO scale to radius to avoid tracing outside limits
-                    final Vec3d pos = new Vec3d(rx + 0.5 + host.posX, ry + 0.5 + host.posY, rz + 0.5 + host.posZ);
-                    final RayTraceResult rayTrace = host.world.rayTraceBlocks(center, pos, true, false, false);
-
-                    if(rayTrace != null && rayTrace.typeOfHit == RayTraceResult.Type.BLOCK)
-                    {
-                        //TODO if block is at edge apply chance to ignore - adds feathering
-                        processNextBlock(rayTrace.getBlockPos());
-                    }
-                    return true;
-                },
-                this::shouldStopBreakingBlocks);
-
-        //If we didn't destroy anything at this layer expand
-        if (blocksDestroyedThisTick <= 0)
+        while (!shouldStopBreakingBlocks())
         {
-            currentBlockDestroyRadius += 1;
-            ticksSinceLastBlockRemoved += 1;
+            if (rayTraceTargets.peek() != null)
+            {
+                raytracesThisTick++;
+
+                final BlockPos targetPos = rayTraceTargets.poll();
+                rayTraceTowardsBlock(center, targetPos);
+            }
+            else
+            {
+                //Increase size
+                if(cyclesSinceLastBlockRemoved > 0) {
+                    currentBlockDestroyRadius += 1; //TODO change scale to number of blocks eaten
+                }
+
+                //Ensure we are empty to avoid memory overflow or duplicate data
+                rayTraceTargets.clear();
+
+                //Collect positions
+                RedmatterBlockCollector.collectBlocksOnWallEdges(currentBlockDestroyRadius, (rx, ry, rz) -> {
+                    //TODO implement flywheel pattern
+                    rayTraceTargets.offer(new BlockPos(rx, ry, rz));
+                });
+
+                //Randomize ray order
+                Collections.shuffle((List<?>) rayTraceTargets);
+
+                //If we didn't destroy anything at this layer expand
+                if (blockDestroyedThisCycle <= 0)
+                {
+                    cyclesSinceLastBlockRemoved += 1;
+                }
+                blockDestroyedThisCycle = 0;
+            }
+        }
+
+        //Debug
+        final long runtime = System.nanoTime() - startTime;
+        final long microSeconds = runtime / 1000;
+        final long milliSeconds = microSeconds / 1000;
+        final String timeMessage = String.format(
+                "%sms %sus, %sns",
+                milliSeconds,
+                microSeconds - (milliSeconds * 1000),
+                runtime - (microSeconds * 1000)
+        );
+        final String message = String.format(
+                "End redmatter block break loop with runtime of %s and size of %s",
+                timeMessage,
+                currentBlockDestroyRadius
+        );
+        ICBMClassic.logger().info(message);
+    }
+
+
+
+    private void rayTraceTowardsBlock(final Vec3d center, final BlockPos target)
+    {
+        final double targetX = target.getX() + center.x;
+        final double targetY = target.getY() + center.y;
+        final double targetZ = target.getZ() + center.z;
+
+        //Raytrace towards block
+        final Vec3d pos = new Vec3d(targetX, targetY, targetZ);
+        final RayTraceResult rayTrace = host.world.rayTraceBlocks(center, pos, true, false, false);
+
+        if (rayTrace != null && rayTrace.typeOfHit == RayTraceResult.Type.BLOCK)
+        {
+            processNextBlock(rayTrace.getBlockPos());
         }
     }
 
@@ -177,7 +237,7 @@ public class RedmatterLogic
      */
     protected boolean shouldStopBreakingBlocks()
     {
-        return blocksDestroyedThisTick > getBlocksPerTick()
+        return raytracesThisTick > 1000
                 || host.isDead;
     }
 
@@ -191,7 +251,7 @@ public class RedmatterLogic
         final double dist = host.getDistanceSq(blockPos);
 
         //We are looping in a shell orbit around the center
-        if (dist < this.currentBlockDestroyRadius && dist > this.currentBlockDestroyRadius - 2)
+            if (dist < this.currentBlockDestroyRadius)
         {
             final IBlockState blockState = host.world.getBlockState(blockPos);
             if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks
@@ -204,10 +264,10 @@ public class RedmatterLogic
                 //Convert a random amount of destroyed blocks into flying blocks for visuals
                 if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
                 {
-                    spawnFlyingBlock(blockPos, blockState);
+                    //spawnFlyingBlock(blockPos, blockState);
                 }
-                blocksDestroyedThisTick++;
-                ticksSinceLastBlockRemoved = 0;
+                blockDestroyedThisCycle++;
+                cyclesSinceLastBlockRemoved = 0;
             }
         }
     }
@@ -245,7 +305,8 @@ public class RedmatterLogic
         this.handleEntities(entity); //TODO why? this should just be an apply velocity call
     }
 
-    private float getEntityImpactRange() {
+    private float getEntityImpactRange()
+    {
         return host.getBlastSize() * 1.5f; //TODO why 1.5?;
     }
 
@@ -323,7 +384,7 @@ public class RedmatterLogic
         //Calculate velocity (delta / mag) * power
         final double velX = (xDifference / distance) * pullPower;
         final double velY = (yDifference / distance) * pullPower;
-        final double velZ = (zDifference / distance)  * pullPower;
+        final double velZ = (zDifference / distance) * pullPower;
 
         // Gravity Velocity
         entity.addVelocity(-velX, -velY, -velZ); //Negative pulls it towards the redmatter
