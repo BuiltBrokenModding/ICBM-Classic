@@ -1,4 +1,4 @@
-package icbm.classic.content.blast.redmatter;
+package icbm.classic.content.blast.redmatter.logic;
 
 import icbm.classic.api.data.Int3Consumer;
 import net.minecraft.util.EnumFacing;

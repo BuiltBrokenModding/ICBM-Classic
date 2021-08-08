@@ -1,5 +1,6 @@
 package icbm.classic.content.blast.redmatter;
 
+import icbm.classic.content.blast.redmatter.logic.RedmatterLogic;
 import net.minecraft.util.DamageSource;
 
 /**

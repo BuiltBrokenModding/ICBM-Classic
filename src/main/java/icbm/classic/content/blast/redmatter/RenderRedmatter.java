@@ -44,7 +44,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         //renderDisk(redmatter, x, y, z, scale, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
-        //renderSphere(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        renderSphere(redmatter, x, y, z, 0.1f, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
         //renderBeams(redmatter, x, y, z, scale, entityYaw, partialTicks);

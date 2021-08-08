@@ -1,4 +1,4 @@
-package icbm.classic.content.blast.redmatter;
+package icbm.classic.content.blast.redmatter.logic;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
@@ -8,6 +8,8 @@ import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.helpers.BlastBlockHelpers;
+import icbm.classic.content.blast.redmatter.DamageSourceRedmatter;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -38,15 +40,15 @@ public class RedmatterLogic
     public static float MINIMAL_SIZE = 0.25f; //TODO config
 
     //Lag tracking
-    private int blockDestroyedThisCycle = 0;
-    private int raytracesThisTick = 0;
-    private int cyclesSinceLastBlockRemoved = 0;
-    private int currentBlockDestroyRadius = 1;
+    protected int blockDestroyedThisCycle = 0;
+    protected int raytracesThisTick = 0;
+    protected int cyclesSinceLastBlockRemoved = -1;
+    protected int currentBlockDestroyRadius = 1;
 
     //Host of the logic
     private final EntityRedmatter host;
 
-    private final Queue<BlockPos> rayTraceTargets = new LinkedList();
+    protected final Queue<BlockPos> rayTraceTargets = new LinkedList();
 
     public RedmatterLogic(EntityRedmatter host)
     {
@@ -83,7 +85,7 @@ public class RedmatterLogic
     protected void doTick()
     {
         //Do actions
-        doDestroyBlocks();
+        detectAndDestroyBlocks();
         doEntityEffects();
 
         //Play effects
@@ -143,7 +145,7 @@ public class RedmatterLogic
         }
     }
 
-    protected void doDestroyBlocks()
+    protected void detectAndDestroyBlocks()
     {
         //Match blast size it if changes
         if (currentBlockDestroyRadius > host.getBlastSize())
@@ -155,44 +157,14 @@ public class RedmatterLogic
         final long startTime = System.nanoTime();
         ICBMClassic.logger().info("Starting redmatter block break loop");
 
-        //Loop targets and trace limit per tick
-        final Vec3d center = host.getPositionVector();
-        while (!shouldStopBreakingBlocks())
+        //Init stage
+        if (rayTraceTargets.isEmpty())
         {
-            if (rayTraceTargets.peek() != null)
-            {
-                raytracesThisTick++;
-
-                final BlockPos targetPos = rayTraceTargets.poll();
-                rayTraceTowardsBlock(center, targetPos);
-            }
-            else
-            {
-                //Increase size
-                if(cyclesSinceLastBlockRemoved > 0) {
-                    currentBlockDestroyRadius += 1; //TODO change scale to number of blocks eaten
-                }
-
-                //Ensure we are empty to avoid memory overflow or duplicate data
-                rayTraceTargets.clear();
-
-                //Collect positions
-                RedmatterBlockCollector.collectBlocksOnWallEdges(currentBlockDestroyRadius, (rx, ry, rz) -> {
-                    //TODO implement flywheel pattern
-                    rayTraceTargets.offer(new BlockPos(rx, ry, rz));
-                });
-
-                //Randomize ray order
-                Collections.shuffle((List<?>) rayTraceTargets);
-
-                //If we didn't destroy anything at this layer expand
-                if (blockDestroyedThisCycle <= 0)
-                {
-                    cyclesSinceLastBlockRemoved += 1;
-                }
-                blockDestroyedThisCycle = 0;
-            }
+            startNextBlockDestroyCycle();
         }
+
+        //Destroy blocks until we are told to stop
+        cycleDestroyBlocks();
 
         //Debug
         final long runtime = System.nanoTime() - startTime;
@@ -212,16 +184,53 @@ public class RedmatterLogic
         ICBMClassic.logger().info(message);
     }
 
+    protected void cycleDestroyBlocks() {
+        //Loop targets and trace limit per tick
+        final Vec3d center = host.getPositionVector();
+        while (!shouldStopBreakingBlocks() && !rayTraceTargets.isEmpty())
+        {
+            raytracesThisTick++;
+            rayTraceTowardsBlock(center, rayTraceTargets.poll());
+        }
+    }
 
+    protected void startNextBlockDestroyCycle() {
 
-    private void rayTraceTowardsBlock(final Vec3d center, final BlockPos target)
+        //Increase size
+        if (cyclesSinceLastBlockRemoved > 0)
+        {
+            currentBlockDestroyRadius += 1; //TODO change scale to number of blocks eaten
+        }
+
+        //Ensure we are empty to avoid memory overflow or duplicate data
+        rayTraceTargets.clear();
+
+        //Collect positions
+        RedmatterBlockCollector.collectBlocksOnWallEdges(currentBlockDestroyRadius, (rx, ry, rz) -> {
+            //TODO implement flywheel pattern
+            rayTraceTargets.offer(new BlockPos(rx, ry, rz));
+        });
+
+        //Randomize ray order
+        Collections.shuffle((List<?>) rayTraceTargets);
+
+        //If we didn't destroy anything at this layer expand
+        if (blockDestroyedThisCycle <= 0)
+        {
+            cyclesSinceLastBlockRemoved += 1;
+        }
+        blockDestroyedThisCycle = 0;
+    }
+
+    protected void rayTraceTowardsBlock(final Vec3d center, final BlockPos target)
     {
+        //Build target position
         final double targetX = target.getX() + center.x;
         final double targetY = target.getY() + center.y;
         final double targetZ = target.getZ() + center.z;
+        final Vec3d pos = new Vec3d(targetX, targetY, targetZ);
 
         //Raytrace towards block
-        final Vec3d pos = new Vec3d(targetX, targetY, targetZ);
         final RayTraceResult rayTrace = host.world.rayTraceBlocks(center, pos, true, false, false);
 
         if (rayTrace != null && rayTrace.typeOfHit == RayTraceResult.Type.BLOCK)
@@ -251,7 +260,7 @@ public class RedmatterLogic
         final double dist = host.getDistanceSq(blockPos);
 
         //We are looping in a shell orbit around the center
-            if (dist < this.currentBlockDestroyRadius)
+        if (dist < (this.currentBlockDestroyRadius + 1))
         {
             final IBlockState blockState = host.world.getBlockState(blockPos);
             if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks

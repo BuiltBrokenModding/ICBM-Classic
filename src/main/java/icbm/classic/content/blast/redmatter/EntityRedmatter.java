@@ -2,6 +2,7 @@ package icbm.classic.content.blast.redmatter;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.content.blast.redmatter.logic.RedmatterLogic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,12 +25,12 @@ public class EntityRedmatter extends Entity
     public static final float SPEED_REDUCTION = 0.98f;
 
     //Acts as an API wrapper for the entity
-    protected final BlastRedmatterWrapper blastData = new BlastRedmatterWrapper(this);
-    protected final CapRedmatterPull capRedmatterPull = new CapRedmatterPull(this);
+    public final BlastRedmatterWrapper blastData = new BlastRedmatterWrapper(this);
+    public final CapRedmatterPull capRedmatterPull = new CapRedmatterPull(this);
 
     //Handlers
-    protected final RedmatterClientLogic clientLogic = new RedmatterClientLogic(this);
-    protected final RedmatterLogic redmatterLogic = new RedmatterLogic(this);
+    public final RedmatterClientLogic clientLogic = new RedmatterClientLogic(this);
+    public final RedmatterLogic redmatterLogic = new RedmatterLogic(this);
 
     private static final DataParameter<Float> SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
 
