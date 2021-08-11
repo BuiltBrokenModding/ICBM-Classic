@@ -7,9 +7,9 @@ import net.minecraftforge.common.config.Config;
  */
 public class ConfigRedmatter
 {
-    @Config.Name("redmatter_default_radius")
+    @Config.Name("redmatter_MAX_radius")
     @Config.Comment("Radius of the redmatter to destroy blocks. This scales with redmatter size as it consumes blocks or fails to consume blocks it will change size.")
-    public float NORMAL_RADIUS = 70;
+    public float MAX_RADIUS = 70;
 
     @Config.Name("redmatter_entity_destroy_radius")
     @Config.Comment("Radius to kill entities, this also controls render size of the ball in the center. Needs to be smaller than the full radius.")
@@ -30,6 +30,10 @@ public class ConfigRedmatter
     @Config.Name("redmatter_edits_per_tick")
     @Config.Comment("Number of edits per tick for the redmatter at it's default size")
     public int DEFAULT_BLOCK_EDITS_PER_TICK = 20;
+
+    @Config.Name("redmatter_raytrace_per_tick")
+    @Config.Comment("Number of raytraces per tick for the redmatter at it's default size")
+    public int DEFAULT_BLOCK_RAYTRACE_PER_TICK = 500;
 
     @Config.Name("redmatter_life_span_ticks")
     @Config.Comment("Number of ticks for the redmatter to exist before despawning")

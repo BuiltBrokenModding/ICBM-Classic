@@ -1,6 +1,7 @@
-package icbm.classic.content.blast.redmatter;
+package icbm.classic.content.blast.redmatter.render;
 
 import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 
 /**
  * Handles client size logic for the redmatter
@@ -18,7 +19,7 @@ public class RedmatterClientLogic
 
     public float getScaleFactorClient()
     {
-        return visualSize / ConfigBlast.REDMATTER.NORMAL_RADIUS;
+        return visualSize / 10;
     }
 
     /**

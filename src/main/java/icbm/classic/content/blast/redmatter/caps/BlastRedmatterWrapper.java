@@ -1,8 +1,9 @@
-package icbm.classic.content.blast.redmatter;
+package icbm.classic.content.blast.redmatter.caps;
 
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 

@@ -1,7 +1,8 @@
-package icbm.classic.content.blast.redmatter;
+package icbm.classic.content.blast.redmatter.caps;
 
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import net.minecraft.entity.Entity;
 
 import javax.annotation.Nullable;

@@ -56,9 +56,9 @@ public class RedmatterLogic
         this.host = host;
     }
 
-    public float getScaleFactor() //TODO move to field and calculate only when size changes
+    public float getScaleFactor()
     {
-        return host.getBlastSize() / ConfigBlast.REDMATTER.NORMAL_RADIUS;
+        return host.getBlastSize() / 10; //Visually we should be 10% our range
     }
 
     /**
@@ -66,9 +66,9 @@ public class RedmatterLogic
      *
      * @return blocks that can be removed each tick
      */
-    public int getBlocksPerTick() //TODO move to field and calculate only when size changes
+    public int getBlocksPerTick()
     {
-        return (int) Math.min(ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK, ConfigBlast.REDMATTER.DEFAULT_BLOCK_EDITS_PER_TICK * getScaleFactor());
+        return ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK;
     }
 
     public void tick()
@@ -153,10 +153,6 @@ public class RedmatterLogic
             currentBlockDestroyRadius = (int) Math.floor(host.getBlastSize());
         }
 
-        //Debug
-        final long startTime = System.nanoTime();
-        //ICBMClassic.logger().info("Starting redmatter block break loop");
-
         //Init stage
         if (rayTraceTargets.isEmpty())
         {
@@ -165,23 +161,6 @@ public class RedmatterLogic
 
         //Destroy blocks until we are told to stop
         cycleDestroyBlocks();
-
-        /*//Debug
-        final long runtime = System.nanoTime() - startTime;
-        final long microSeconds = runtime / 1000;
-        final long milliSeconds = microSeconds / 1000;
-        final String timeMessage = String.format(
-                "%sms %sus, %sns",
-                milliSeconds,
-                microSeconds - (milliSeconds * 1000),
-                runtime - (microSeconds * 1000)
-        );
-        final String message = String.format(
-                "End redmatter block break loop with runtime of %s and size of %s",
-                timeMessage,
-                currentBlockDestroyRadius
-        );
-        ICBMClassic.logger().info(message);*/
     }
 
     protected void cycleDestroyBlocks()
@@ -203,7 +182,6 @@ public class RedmatterLogic
         {
             cyclesSinceLastBlockRemoved = 0;
             currentBlockDestroyRadius += 1; //TODO change scale to number of blocks eaten
-            ICBMClassic.logger().info("Expanding redmatter to size " + currentBlockDestroyRadius);
         }
 
         //Ensure we are empty to avoid memory overflow or duplicate data
@@ -250,7 +228,7 @@ public class RedmatterLogic
      */
     protected boolean shouldStopBreakingBlocks()
     {
-        return raytracesThisTick > 1000 //TODO add config
+        return raytracesThisTick > ConfigBlast.REDMATTER.DEFAULT_BLOCK_RAYTRACE_PER_TICK
                 || blockDestroyedThisCycle > getBlocksPerTick()
                 || host.isDead;
     }

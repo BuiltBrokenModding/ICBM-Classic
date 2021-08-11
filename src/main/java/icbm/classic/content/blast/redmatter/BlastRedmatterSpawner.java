@@ -1,10 +1,9 @@
 package icbm.classic.content.blast.redmatter;
 
+import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.responses.BlastForgeResponses;
 import icbm.classic.api.explosion.responses.BlastNullResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
-import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.imp.BlastBase;
 import net.minecraft.world.World;
@@ -18,7 +17,8 @@ import javax.annotation.Nonnull;
  */
 public class BlastRedmatterSpawner extends BlastBase
 {
-    private double size = ConfigBlast.REDMATTER.NORMAL_RADIUS;
+    private float startingSize = 1f;
+    private float maxSize = ConfigBlast.REDMATTER.MAX_RADIUS;
 
     @Nonnull
     @Override
@@ -32,7 +32,8 @@ public class BlastRedmatterSpawner extends BlastBase
             entityRedmatter.posX = x();
             entityRedmatter.posY = y();
             entityRedmatter.posZ = z();
-            entityRedmatter.setBlastSize((float) size);
+            entityRedmatter.setBlastSize(startingSize);
+            entityRedmatter.setBlastMaxSize(maxSize);
 
             //Attempt to spawn
             if (world.spawnEntity(entityRedmatter))
@@ -42,11 +43,5 @@ public class BlastRedmatterSpawner extends BlastBase
             return BlastForgeResponses.ENTITY_SPAWNING.get();
         }
         return BlastNullResponses.WORLD.get();
-    }
-
-    public IBlastInit setBlastSize(double size)
-    {
-        this.size = size;
-        return this;
     }
 }

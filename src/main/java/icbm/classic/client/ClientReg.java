@@ -21,7 +21,7 @@ import icbm.classic.client.render.entity.RenderSnowmanXmas;
 import icbm.classic.client.render.entity.RenderZombieXmas;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
-import icbm.classic.content.blast.redmatter.RenderRedmatter;
+import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREMPTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;

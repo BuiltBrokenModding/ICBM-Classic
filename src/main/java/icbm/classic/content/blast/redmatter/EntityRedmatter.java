@@ -2,7 +2,10 @@ package icbm.classic.content.blast.redmatter;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.content.blast.redmatter.caps.BlastRedmatterWrapper;
+import icbm.classic.content.blast.redmatter.caps.CapRedmatterPull;
 import icbm.classic.content.blast.redmatter.logic.RedmatterLogic;
+import icbm.classic.content.blast.redmatter.render.RedmatterClientLogic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,7 +35,10 @@ public class EntityRedmatter extends Entity
     public final RedmatterClientLogic clientLogic = new RedmatterClientLogic(this);
     public final RedmatterLogic redmatterLogic = new RedmatterLogic(this);
 
+    /** Actual size of the redmatter */
     private static final DataParameter<Float> SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
+    /** Largest possible size of the redmatter */
+    private static final DataParameter<Float> MAX_SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
 
     public EntityRedmatter(World world)
     {
@@ -47,7 +53,8 @@ public class EntityRedmatter extends Entity
     @Override
     protected void entityInit()
     {
-        this.dataManager.register(SIZE_DATA, ConfigBlast.REDMATTER.NORMAL_RADIUS);
+        this.dataManager.register(SIZE_DATA, 1f);
+        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.REDMATTER.MAX_RADIUS);
     }
 
     @Override
@@ -108,6 +115,7 @@ public class EntityRedmatter extends Entity
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
+        //TODO implement save/load logic
     }
 
     @Override
@@ -168,8 +176,19 @@ public class EntityRedmatter extends Entity
         return this.dataManager.get(SIZE_DATA);
     }
 
+    public float getBlastMaxSize()
+    {
+        return this.dataManager.get(MAX_SIZE_DATA);
+    }
+
     public void setBlastSize(float size)
     {
+        //0.99 is to prevent redmatter from going under 1 visually but allowed to drop under 1 logically
         this.dataManager.set(SIZE_DATA, Math.max(RedmatterLogic.MINIMAL_SIZE * 0.99f, size));
+    }
+
+    public void setBlastMaxSize(float size)
+    {
+        this.dataManager.set(MAX_SIZE_DATA, size);
     }
 }
