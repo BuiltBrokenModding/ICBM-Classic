@@ -1,6 +1,7 @@
 !*.*
 /bin
 /run
+/run_server
 /out
 
 *.classpath
@@ -38,9 +39,3 @@ ops.json
 whitelist.json
 
 output_tests/
-world/
-server.properties
-config/
-eula.txt
-usercache.json
-usernamecache.json
