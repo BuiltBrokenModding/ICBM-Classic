@@ -39,6 +39,7 @@ public final class ICBMExplosives
     public static IExplosiveData REDMATTER;
 
     //=================== No content, only blast
+    public static IExplosiveData MISSILEMODULE;
     public static IExplosiveData MUTATION;
     public static IExplosiveData ROT;
 }
