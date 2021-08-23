@@ -23,21 +23,30 @@ import java.util.List;
 
 public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
 {
-    /** Size of the blast */
-    public float size;
-    /** ID of the entity controller of the blast */
-    public int entityID;
+    /*
+    Id of the dimension that this particle should be placed in.
+     */
     private int dimId;
+
+    // x y and z positions
     private double posX;
     private double posY;
     private double posZ;
+
+    // x y and z velocities
     private double v;
     private double v1;
     private double v2;
+
+    // red green and blue color values
     private float red;
     private float green;
     private float blue;
+
+    // size scale
     private float scale;
+
+    // how long this particle will live for
     private int ticksToLive;
 
     public PacketSpawnAirParticle()
@@ -48,7 +57,6 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     public PacketSpawnAirParticle(int dimId, double posX, double posY, double posZ, double v, double v1, double v2,
                                   float red, float green, float blue, float scale, int ticksToLive)
     {
-
         this.dimId = dimId;
         this.posX = posX;
         this.posY = posY;
@@ -66,8 +74,6 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     @Override
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
-        /*buffer.writeFloat(size);
-        ByteBufUtils.writeVarInt(buffer, entityID, 5);*/
         buffer.writeInt(dimId);
         buffer.writeDouble(posX);
         buffer.writeDouble(posY);
@@ -85,20 +91,18 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     @Override
     public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
-       /* size = buffer.readFloat();
-        entityID = ByteBufUtils.readVarInt(buffer, 5);*/
-        dimId=buffer.readInt();
-        posX=buffer.readDouble();
-        posY=buffer.readDouble();
-        posZ=buffer.readDouble();
-        v=buffer.readDouble();
-        v1=buffer.readDouble();
-        v2=buffer.readDouble();
-        red=buffer.readFloat();
-        green=buffer.readFloat();
-        blue=buffer.readFloat();
-        scale=buffer.readFloat();
-        ticksToLive=buffer.readInt();
+        dimId = buffer.readInt();
+        posX = buffer.readDouble();
+        posY = buffer.readDouble();
+        posZ = buffer.readDouble();
+        v = buffer.readDouble();
+        v1 = buffer.readDouble();
+        v2 = buffer.readDouble();
+        red = buffer.readFloat();
+        green = buffer.readFloat();
+        blue = buffer.readFloat();
+        scale = buffer.readFloat();
+        ticksToLive = buffer.readInt();
     }
 
     @Override
@@ -107,21 +111,15 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     {
         if (Minecraft.getMinecraft().world != null && player.world.provider.getDimension() == dimId)
         {
-            /*final Entity entity = Minecraft.getMinecraft().world.getEntityByID(entityID);
-            if (entity instanceof EntityExplosion && ((EntityExplosion) entity).getBlast() instanceof BlastRedmatter)
-            {
-                ((BlastRedmatter) ((EntityExplosion) entity).getBlast()).size = size;
-            }*/
-
-            ICBMClassic.proxy.spawnAirParticle(player.world, new Pos(posX,posY,posZ), v, v1, v2, red, green ,blue, scale, ticksToLive );
+            ICBMClassic.proxy.spawnAirParticle(player.world, new Pos(posX, posY, posZ), v, v1, v2, red, green, blue, scale, ticksToLive);
         }
     }
 
     public static void sendToAllClients(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         final int dimid = world.provider.getDimension();
-        final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, position.x(), position.y(), position.z(), v, v1, v2, red, green ,blue, scale, ticksToLive);
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, position.x(), position.y(), position.z(),256);
+        final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, position.x(), position.y(), position.z(), v, v1, v2, red, green, blue, scale, ticksToLive);
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, position.x(), position.y(), position.z(), 256);
         ICBMClassic.packetHandler.sendToAllAround(packet, point);
     }
 }
