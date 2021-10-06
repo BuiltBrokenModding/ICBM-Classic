@@ -57,7 +57,8 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         if (data != null)
         {
             final EnumTier tierdata = data.getTier();
-            list.add(TextFormatting.DARK_RED + LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getTooltipColor() + tierdata.getLocalizedName());
+            if(tierdata != EnumTier.NONE) // only show the tier if its not NONE. Tier NONE is currently only assinged to the Missile Module
+                list.add(TextFormatting.DARK_RED + LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getTooltipColor() + tierdata.getLocalizedName());
         }
 
         if (stack.getItemDamage() == ICBMExplosives.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
