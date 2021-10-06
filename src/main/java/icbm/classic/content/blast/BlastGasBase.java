@@ -285,7 +285,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
                     if (isInRange(checkPos, currentDistanceSQ))
                     {
                         //Validate
-                        if (isValidPath(checkPos))
+                        if (isValidPath(checkPos, facing))
                         {
                             final BlockPos pos = checkPos.toImmutable();
                             affectedBlocks.add(pos);
@@ -307,10 +307,27 @@ public class BlastGasBase extends Blast implements IBlastTickable
         edgeBlocks.addAll(nextSet);
     }
 
-    private boolean isValidPath(BlockPos pos)
+    private boolean isValidPath(BlockPos pos, EnumFacing direction)
     {
         IBlockState blockState = world.getBlockState(pos);
-        return !blockState.isFullBlock();
+        final AxisAlignedBB aabb = blockState.getCollisionBoundingBox(world, pos);
+        if (aabb == null) // if there is no bounding box, its pass through, so its a valid path
+            return true;
+
+        // whether or not the respective axes are completely stretched (they span form one side of the block to another)
+        boolean xFull = aabb.minX==0 && aabb.maxX == 1;
+        boolean yFull = aabb.minY==0 && aabb.maxY == 1;
+        boolean zFull = aabb.minZ==0 && aabb.maxZ == 1;
+
+        boolean isImpassable = false;
+        if (direction == EnumFacing.UP || direction == EnumFacing.DOWN)
+            isImpassable = xFull && zFull;
+        else if (direction == EnumFacing.NORTH || direction == EnumFacing.SOUTH)
+            isImpassable = xFull && yFull;
+        else if (direction == EnumFacing.WEST || direction == EnumFacing.EAST)
+            isImpassable = zFull && yFull;
+
+        return !isImpassable;
     }
 
     private boolean isInRange(BlockPos pos, int radiusSq)

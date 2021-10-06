@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
@@ -139,9 +140,9 @@ public class CommonProxy implements IGuiHandler
 
     }
 
-    public void spawnAirParticle(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int age)
+    public void spawnAirParticle(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
-
+        PacketSpawnAirParticle.sendToAllClients(world, position, v, v1, v2, red, green, blue, scale, ticksToLive);
     }
 
     public void spawnMissileSmoke(EntityMissile missile)
