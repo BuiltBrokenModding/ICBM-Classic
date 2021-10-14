@@ -54,7 +54,7 @@ public class EntityRedmatter extends Entity
     protected void entityInit()
     {
         this.dataManager.register(SIZE_DATA, 1f);
-        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.REDMATTER.MAX_RADIUS);
+        this.dataManager.register(MAX_SIZE_DATA, (float)ConfigBlast.REDMATTER.MAX_RADIUS);
     }
 
     @Override

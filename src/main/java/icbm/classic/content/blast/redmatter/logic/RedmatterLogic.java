@@ -42,6 +42,7 @@ public class RedmatterLogic
 
     //Lag tracking
     protected int blockDestroyedThisCycle = 0;
+    protected int blockDestroyedThisTick = 0;
     protected int raytracesThisTick = 0;
     protected int cyclesSinceLastBlockRemoved = -1;
     protected int currentBlockDestroyRadius = 1;
@@ -81,6 +82,7 @@ public class RedmatterLogic
     protected void preTick()
     {
         raytracesThisTick = 0;
+        blockDestroyedThisTick = 0;
     }
 
     protected void doTick()
@@ -148,9 +150,9 @@ public class RedmatterLogic
     protected void detectAndDestroyBlocks()
     {
         //Match blast size it if changes
-        if (currentBlockDestroyRadius > host.getBlastSize())
+        if (currentBlockDestroyRadius > host.getBlastMaxSize())
         {
-            currentBlockDestroyRadius = (int) Math.floor(host.getBlastSize());
+            setCurrentBlockDestroyRadius((int) Math.floor(host.getBlastSize()));
         }
 
         //Init stage
@@ -176,12 +178,11 @@ public class RedmatterLogic
 
     protected void startNextBlockDestroyCycle()
     {
-
         //Increase size
         if (cyclesSinceLastBlockRemoved > 0)
         {
             cyclesSinceLastBlockRemoved = 0;
-            currentBlockDestroyRadius += 1; //TODO change scale to number of blocks eaten
+            setCurrentBlockDestroyRadius(currentBlockDestroyRadius + 1);  //TODO change scale to number of blocks eaten
         }
 
         //Ensure we are empty to avoid memory overflow or duplicate data
@@ -229,7 +230,7 @@ public class RedmatterLogic
     protected boolean shouldStopBreakingBlocks()
     {
         return raytracesThisTick > ConfigBlast.REDMATTER.DEFAULT_BLOCK_RAYTRACE_PER_TICK
-                || blockDestroyedThisCycle > getBlocksPerTick()
+                || blockDestroyedThisTick > getBlocksPerTick()
                 || host.isDead;
     }
 
@@ -266,7 +267,8 @@ public class RedmatterLogic
 
     private void markBlockRemoved()
     {
-        blockDestroyedThisCycle++;
+        blockDestroyedThisCycle++; //Tracks blocks removed over several ticks
+        blockDestroyedThisTick++; //Tracks blocks removed in a single tick
         cyclesSinceLastBlockRemoved = 0;
     }
 
@@ -305,7 +307,7 @@ public class RedmatterLogic
 
     private float getEntityImpactRange()
     {
-        return host.getBlastSize() * 1.5f; //TODO why 1.5?;
+        return host.getBlastSize() * ConfigBlast.REDMATTER.GRAVITY_SCALE;
     }
 
     protected void doEntityEffects()
@@ -357,9 +359,9 @@ public class RedmatterLogic
     protected void handleEntities(Entity entity)
     {
         //Calculate different from center
-        final double xDifference = entity.posX - host.posX;
-        final double yDifference = entity.posY - host.posY;
-        final double zDifference = entity.posZ - host.posZ;
+        final double xDifference = host.posX - entity.posX;
+        final double yDifference = host.posY - entity.posY;
+        final double zDifference = host.posZ - entity.posZ;
 
         final double distance = host.getDistance(entity);
 
@@ -385,7 +387,7 @@ public class RedmatterLogic
         final double velZ = (zDifference / distance) * pullPower;
 
         // Gravity Velocity
-        entity.addVelocity(-velX, -velY, -velZ); //Negative pulls it towards the redmatter
+        entity.addVelocity(velX, velY, velZ); //Negative pulls it towards the redmatter
         entity.velocityChanged = true;
 
         return true;
@@ -397,7 +399,8 @@ public class RedmatterLogic
         //TODO make config driven, break section out into its own method
 
         //Handle eating logic
-        if (distance < (ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * getScaleFactor()))
+        final double attackRange = Math.max(1, ConfigBlast.REDMATTER.KILL_SCALE * host.getBlastSize());
+        if (distance < attackRange)
         {
             if (entity instanceof EntityRedmatter && !entity.isDead)
             {
@@ -450,5 +453,10 @@ public class RedmatterLogic
                 }
             }
         }
+    }
+
+    public void setCurrentBlockDestroyRadius(int size) {
+        this.currentBlockDestroyRadius = (int) Math.max(1, Math.min(size, host.getBlastMaxSize()));
+        this.host.setBlastSize(size);
     }
 }

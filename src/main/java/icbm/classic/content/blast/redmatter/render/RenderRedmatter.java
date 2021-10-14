@@ -48,7 +48,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         renderSphere(redmatter, x, y, z, scale, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
-        renderBeams(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        //renderBeams(redmatter, x, y, z, scale, entityYaw, partialTicks);
         GlStateManager.color(1, 1, 1, 1);
 
         //Update size with a smooth transition
@@ -57,7 +57,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
 
     public void renderSphere(EntityRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
     {
-        final float radius = Math.max(ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * scale, 0.1f);
+        final float radius = Math.max(ConfigBlast.REDMATTER.RENDER_SCALE * scale, 0.1f);
 
         //--------------------------------------------------
         //Inside sphere
@@ -128,7 +128,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     public void renderDisk(EntityRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
     {
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        float size = ConfigBlast.REDMATTER.ENTITY_DESTROY_RADIUS * scale * 3;
+        float size = (float)Math.max(0.2, ConfigBlast.REDMATTER.RENDER_SCALE * scale * 3);
 
         //Setup
         GlStateManager.pushMatrix();

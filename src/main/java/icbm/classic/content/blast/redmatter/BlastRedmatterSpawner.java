@@ -27,20 +27,24 @@ public class BlastRedmatterSpawner extends BlastBase
         final World world = world();
         if (world != null)
         {
-            //Build entity
-            final EntityRedmatter entityRedmatter = new EntityRedmatter(world);
-            entityRedmatter.posX = x();
-            entityRedmatter.posY = y();
-            entityRedmatter.posZ = z();
-            entityRedmatter.setBlastSize(startingSize);
-            entityRedmatter.setBlastMaxSize(maxSize);
-
-            //Attempt to spawn
-            if (world.spawnEntity(entityRedmatter))
+            if(!world.isRemote)
             {
-                return BlastState.TRIGGERED.genericResponse;
+                //Build entity
+                final EntityRedmatter entityRedmatter = new EntityRedmatter(world);
+                entityRedmatter.posX = x();
+                entityRedmatter.posY = y();
+                entityRedmatter.posZ = z();
+                entityRedmatter.setBlastSize(startingSize);
+                entityRedmatter.setBlastMaxSize(maxSize);
+
+                //Attempt to spawn
+                if (world.spawnEntity(entityRedmatter))
+                {
+                    return BlastState.TRIGGERED.genericResponse;
+                }
+                return BlastForgeResponses.ENTITY_SPAWNING.get();
             }
-            return BlastForgeResponses.ENTITY_SPAWNING.get();
+            return BlastState.TRIGGERED.genericResponse;
         }
         return BlastNullResponses.WORLD.get();
     }

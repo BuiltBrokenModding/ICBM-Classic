@@ -203,7 +203,7 @@ public class ExplosiveInit
 
         //TODO add config (disable by default) for alarm audio
 
-        ICBMExplosives.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatterSpawner().setBlastSize(ConfigBlast.REDMATTER.NORMAL_RADIUS));
+        ICBMExplosives.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatterSpawner());
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.REDMATTER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 

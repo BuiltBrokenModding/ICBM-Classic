@@ -9,15 +9,20 @@ public class ConfigRedmatter
 {
     @Config.Name("redmatter_MAX_radius")
     @Config.Comment("Radius of the redmatter to destroy blocks. This scales with redmatter size as it consumes blocks or fails to consume blocks it will change size.")
-    public float MAX_RADIUS = 70;
+    public int MAX_RADIUS = 70;
 
-    @Config.Name("redmatter_entity_destroy_radius")
-    @Config.Comment("Radius to kill entities, this also controls render size of the ball in the center. Needs to be smaller than the full radius.")
-    public float ENTITY_DESTROY_RADIUS = 6;
+    @Config.Name("redmatter_scale_rendering")
+    @Config.Comment("Multiplier of size to modify the render size")
+    public float RENDER_SCALE = 0.1f;
 
-    @Config.Name("redmatter_runtime_limit_milliseconds")
-    @Config.Comment("Max time to allow redmatter to break blocks before stopping. This helps prevent the redmatter from stalling out the runtime of the game.")
-    public int MAX_RUNTIME_MS = 5;
+    @Config.Name("redmatter_scale_kill_radius")
+    @Config.Comment("Multiplier of size to create an instant kill center")
+    public float KILL_SCALE = 0.08f;
+
+    @Config.Name("redmatter_scale_gravity")
+    @Config.Comment("Multiplier of size to generate a pull towards the center")
+    public float GRAVITY_SCALE = 2f;
+
 
     @Config.Name("redmatter_movement")
     @Config.Comment("Allows red matter explosions to be moved")
@@ -27,25 +32,13 @@ public class ConfigRedmatter
     @Config.Comment("Max number of edits per tick for the redmatter")
     public int MAX_BLOCKS_EDITS_PER_TICK = 100;
 
-    @Config.Name("redmatter_edits_per_tick")
-    @Config.Comment("Number of edits per tick for the redmatter at it's default size")
-    public int DEFAULT_BLOCK_EDITS_PER_TICK = 20;
-
     @Config.Name("redmatter_raytrace_per_tick")
     @Config.Comment("Number of raytraces per tick for the redmatter at it's default size")
     public int DEFAULT_BLOCK_RAYTRACE_PER_TICK = 500;
 
-    @Config.Name("redmatter_life_span_ticks")
-    @Config.Comment("Number of ticks for the redmatter to exist before despawning")
-    public int MAX_LIFESPAN = 36000; // 30 minutes
-
     @Config.Name("redmatter_flying_block_spawn_chance")
     @Config.Comment("Chance for a flying block to spawn when destroying blocks")
     public float CHANCE_FOR_FLYING_BLOCK = 0.8f;
-
-    @Config.Name("redmatter_can_despawn")
-    @Config.Comment("Set to true to allow the redmatter to dispawn")
-    public boolean DO_DESPAWN = true;
 
     @Config.Name("redmatter_audio_enabled")
     @Config.Comment("Set to true to enable audio for the redmatter")
