@@ -7,9 +7,17 @@ import net.minecraftforge.common.config.Config;
  */
 public class ConfigRedmatter
 {
-    @Config.Name("redmatter_MAX_radius")
-    @Config.Comment("Radius of the redmatter to destroy blocks. This scales with redmatter size as it consumes blocks or fails to consume blocks it will change size.")
-    public int MAX_RADIUS = 70;
+    @Config.Name("redmatter_max_size")
+    @Config.Comment("Largest size the redmatter can grow into before stopping.")
+    public float MAX_SIZE = 70;
+
+    @Config.Name("redmatter_default_size")
+    @Config.Comment("Default spawning size for blocks/missiles/carts/etc")
+    public float DEFAULT_SIZE = 2f;
+
+    @Config.Name("redmatter_min_size")
+    @Config.Comment("Smallest size of the redmatter before it dies")
+    public float MIN_SIZE = 0.25f;
 
     @Config.Name("redmatter_scale_rendering")
     @Config.Comment("Multiplier of size to modify the render size")
@@ -23,10 +31,15 @@ public class ConfigRedmatter
     @Config.Comment("Multiplier of size to generate a pull towards the center")
     public float GRAVITY_SCALE = 2f;
 
+    @Config.Name("redmatter_starve_multiplier")
+    @Config.Comment("Multiplier on how much mass is kept after each starve tick. 1.0 equals no starving and 0.0 means instant death of the redmatter.")
+    @Config.RangeDouble(min = 0.0, max = 1.0)
+    public float STARVE_SCALE = 0.99f;
 
-    @Config.Name("redmatter_movement")
-    @Config.Comment("Allows red matter explosions to be moved")
-    public boolean REDMATTER_MOVEMENT = true;
+
+    //@Config.Name("redmatter_movement")
+    //@Config.Comment("Allows red matter explosions to be moved")
+    public boolean REDMATTER_MOVEMENT = true; //TODO enable
 
     @Config.Name("redmatter_max_edits_per_tick")
     @Config.Comment("Max number of edits per tick for the redmatter")

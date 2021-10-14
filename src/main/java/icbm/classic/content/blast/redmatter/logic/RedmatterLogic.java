@@ -37,29 +37,29 @@ import java.util.Queue;
  */
 public class RedmatterLogic
 {
-    public static float MASS_REDUCTION_SCALE = 0.98f; //TODO config
-    public static float MINIMAL_SIZE = 0.25f; //TODO config
-
-    //Lag tracking
+    /** Blocks destroyed in the current size cycle... cycle can last few ticks to several minutes */
     protected int blockDestroyedThisCycle = 0;
+    /** Blocks destroyed this tick, used to limit max world edits */
     protected int blockDestroyedThisTick = 0;
+    /** Raytrace lines run to detect blocks this tick, used to limit CPU usage */
     protected int raytracesThisTick = 0;
+    /** Cycles run since we removed blocks, used to track starve rate */
     protected int cyclesSinceLastBlockRemoved = -1;
+    /** Current scan radius for blocks */
     protected int currentBlockDestroyRadius = 1;
 
     //Host of the logic
     private final EntityRedmatter host;
 
+    /** Queue of raytraces to run for searching blocks, this defaults to edge blocks only */
     protected final Queue<BlockPos> rayTraceTargets = new LinkedList();
 
+    /**
+     * @param host - redmatter entity running this logic
+     */
     public RedmatterLogic(EntityRedmatter host)
     {
         this.host = host;
-    }
-
-    public float getScaleFactor()
-    {
-        return host.getBlastSize() / 10; //Visually we should be 10% our range
     }
 
     /**
@@ -72,6 +72,7 @@ public class RedmatterLogic
         return ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK;
     }
 
+    /** Invoked each tick by the controlling entity */
     public void tick()
     {
         preTick();
@@ -79,12 +80,14 @@ public class RedmatterLogic
         postTick();
     }
 
+    /** Prep cycle to cleanup from last tick */
     protected void preTick()
     {
         raytracesThisTick = 0;
         blockDestroyedThisTick = 0;
     }
 
+    /** Actual work cycle */
     protected void doTick()
     {
         //Do actions
@@ -109,6 +112,7 @@ public class RedmatterLogic
         }
     }
 
+    /** Post work cycle */
     protected void postTick()
     {
         //Decrease block if we don't destroy anything
@@ -118,6 +122,7 @@ public class RedmatterLogic
         }
     }
 
+    /** Handles decreasing the size of the redmatter */
     protected void decreaseScale()
     {
         final float size = host.getBlastSize();
@@ -127,7 +132,7 @@ public class RedmatterLogic
         {
             //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
             //TODO if we leave small redmatters allow players to remove them and/or capture in jars
-            if (size <= MINIMAL_SIZE)
+            if (size <= ConfigBlast.REDMATTER.MIN_SIZE)
             {
                 host.setBlastSize(0);
                 host.setDead();
@@ -141,12 +146,13 @@ public class RedmatterLogic
             else
             //Decrease mass
             {
-                final float newSize = size < 1 ? size * 0.9f : size * MASS_REDUCTION_SCALE;
+                final float newSize = size < 1 ? size * 0.9f : size * ConfigBlast.REDMATTER.STARVE_SCALE;
                 host.setBlastSize(newSize);
             }
         }
     }
 
+    /** Handles looking for blocks and starting the destroy process */
     protected void detectAndDestroyBlocks()
     {
         //Match blast size it if changes
@@ -165,6 +171,7 @@ public class RedmatterLogic
         cycleDestroyBlocks();
     }
 
+    /** Detects blocks and removes them */
     protected void cycleDestroyBlocks()
     {
         //Loop targets and trace limit per tick
@@ -176,6 +183,7 @@ public class RedmatterLogic
         }
     }
 
+    /** Triggers the next block cycle finding all raytrace paths */
     protected void startNextBlockDestroyCycle()
     {
         //Increase size
@@ -205,6 +213,16 @@ public class RedmatterLogic
         blockDestroyedThisCycle = 0;
     }
 
+    /**
+     * Raytraces towards a target position looking for blocks
+     *
+     * This will not remove all blocks in the path. Instead it kills the first
+     * block it finds allowing for a repeat cycle of block removal in the path
+     * over several ticks.
+     *
+     * @param center - redmatter center, passed in to avoid recreating
+     * @param target - block target to trace towards
+     */
     protected void rayTraceTowardsBlock(final Vec3d center, final BlockPos target)
     {
         //Build target position

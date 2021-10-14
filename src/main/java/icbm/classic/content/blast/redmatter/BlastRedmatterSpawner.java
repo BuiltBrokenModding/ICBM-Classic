@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
 public class BlastRedmatterSpawner extends BlastBase
 {
     private float startingSize = 1f;
-    private float maxSize = ConfigBlast.REDMATTER.MAX_RADIUS;
+    private float maxSize = ConfigBlast.REDMATTER.MAX_SIZE;
 
     @Nonnull
     @Override
