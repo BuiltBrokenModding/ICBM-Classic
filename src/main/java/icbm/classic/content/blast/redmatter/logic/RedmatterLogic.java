@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -37,6 +38,9 @@ import java.util.Queue;
  */
 public class RedmatterLogic
 {
+    //Host of the logic
+    public final EntityRedmatter host;
+
     /** Blocks destroyed in the current size cycle... cycle can last few ticks to several minutes */
     protected int blockDestroyedThisCycle = 0;
     /** Blocks destroyed this tick, used to limit max world edits */
@@ -47,9 +51,6 @@ public class RedmatterLogic
     protected int cyclesSinceLastBlockRemoved = -1;
     /** Current scan radius for blocks */
     protected int currentBlockDestroyRadius = 1;
-
-    //Host of the logic
-    private final EntityRedmatter host;
 
     /** Queue of raytraces to run for searching blocks, this defaults to edge blocks only */
     protected final Queue<BlockPos> rayTraceTargets = new LinkedList();
@@ -215,7 +216,7 @@ public class RedmatterLogic
 
     /**
      * Raytraces towards a target position looking for blocks
-     *
+     * <p>
      * This will not remove all blocks in the path. Instead it kills the first
      * block it finds allowing for a repeat cycle of block removal in the path
      * over several ticks.
@@ -270,8 +271,14 @@ public class RedmatterLogic
                 //TODO handle multi-
                 //TODO: render fluid streams moving into hole
 
-                if (host.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), BlastBlockHelpers.isFluid(blockState) ? 2 : 3))
+                if (host.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3))
                 {
+                    //Freeze fluid blocks to improve pull rate
+                    if (blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.FLOWING_WATER)
+                    {
+                        freezeWaterAround(blockPos);
+                    }
+
                     //Convert a random amount of destroyed blocks into flying blocks for visuals
                     if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
                     {
@@ -279,6 +286,18 @@ public class RedmatterLogic
                     }
                     markBlockRemoved();
                 }
+            }
+        }
+    }
+
+    private void freezeWaterAround(BlockPos pos) //TODO convert to map<Block, Action> to allow introducing more effects
+    {
+        for (EnumFacing side : EnumFacing.values())
+        {
+            final BlockPos blockPos = pos.add(side.getDirectionVec());
+            final IBlockState blockState = host.world.getBlockState(blockPos);
+            if(blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.FLOWING_WATER) {
+                host.world.setBlockState(blockPos, Blocks.ICE.getDefaultState()); //TODO turn into fake ice that melts randomly
             }
         }
     }
@@ -464,7 +483,7 @@ public class RedmatterLogic
                 entity.setDead();
                 if (entity instanceof EntityFlyingBlock)
                 {
-                    if (host.getBlastSize() < 120)
+                    if (host.getBlastSize() < host.getBlastMaxSize())
                     {
                         host.setBlastSize(host.getBlastSize() + 0.05f); //TODO magic number and config
                     }
@@ -473,7 +492,8 @@ public class RedmatterLogic
         }
     }
 
-    public void setCurrentBlockDestroyRadius(int size) {
+    public void setCurrentBlockDestroyRadius(int size)
+    {
         this.currentBlockDestroyRadius = (int) Math.max(1, Math.min(size, host.getBlastMaxSize()));
         this.host.setBlastSize(size);
     }
