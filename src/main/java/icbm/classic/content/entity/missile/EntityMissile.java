@@ -158,7 +158,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityEMP.EMP || super.hasCapability(capability, facing);
+        return capability == CapabilityEMP.EMP || capability == ICBMClassicAPI.MISSILE_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @SideOnly(Side.CLIENT)
