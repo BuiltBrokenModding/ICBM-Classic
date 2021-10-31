@@ -59,16 +59,19 @@ public class RadarMap
             List<RadarEntity> addList = new ArrayList();
             for (Map.Entry<ChunkPos, List<RadarEntity>> entry : chunk_to_entities.entrySet())
             {
-                if (entry.getValue() != null)
-                {
-                    for (RadarEntity object : entry.getValue())
+                List<RadarEntity> list = entry.getValue();
+                synchronized(list) {
+                    if (list != null)
                     {
-                        if (entry.getKey() != object.getChunkPos())
+                        for (RadarEntity object : list)
                         {
-                            removeList.put(object, entry.getKey());
-                            if (object.isValid())
+                            if (entry.getKey() != object.getChunkPos())
                             {
-                                addList.add(object);
+                                removeList.put(object, entry.getKey());
+                                if (object.isValid())
+                                {
+                                    addList.add(object);
+                                }
                             }
                         }
                     }
@@ -81,7 +84,9 @@ public class RadarMap
                 List<RadarEntity> list = chunk_to_entities.get(entry.getValue());
                 if (list != null)
                 {
-                    list.remove(entry.getKey());
+                    synchronized(list) {
+                        list.remove(entry.getKey());
+                    }
                     if (list.size() > 0)
                     {
                         chunk_to_entities.put(entry.getValue(), list);
@@ -135,14 +140,16 @@ public class RadarMap
             }
 
             //Check if object is not already added
-            if (!list.contains(object))
-            {
-                list.add(object);
-                //TODO fire map update event
-                //TODO fire map add event
-                //Update map
-                chunk_to_entities.put(pair, list);
-                return true;
+            synchronized(list) {
+                if (!list.contains(object))
+                {
+                    list.add(object);
+                    //TODO fire map update event
+                    //TODO fire map add event
+                    //Update map
+                    chunk_to_entities.put(pair, list);
+                    return true;
+                }
             }
         }
         return false;
@@ -160,7 +167,10 @@ public class RadarMap
         if (chunk_to_entities.containsKey(pair))
         {
             List<RadarEntity> list = chunk_to_entities.get(pair);
-            boolean b = list.remove(object);
+            boolean b;
+            synchronized(list) {
+                b = list.remove(object);
+            }
             //TODO fire radar remove event
             //TODO fire map update event
             if (list.isEmpty())
@@ -182,10 +192,13 @@ public class RadarMap
         ChunkPos pair = chunk.getPos();
         if (chunk_to_entities.containsKey(pair))
         {
-            for (RadarEntity object : chunk_to_entities.get(pair))
-            {
-                //TODO fire remove event
-                allEntities.remove(object);
+            List<RadarEntity> list = chunk_to_entities.get(pair);
+            synchronized(list) {
+                for (RadarEntity object : list)
+                {
+                    //TODO fire remove event
+                    allEntities.remove(object);
+                }
             }
             chunk_to_entities.remove(pair);
         }
@@ -217,7 +230,15 @@ public class RadarMap
     public List<RadarEntity> getEntitiesInChunk(int chunkX, int chunkZ)
     {
         ChunkPos p = new ChunkPos(chunkX, chunkZ);
-        return chunk_to_entities.get(p);
+        List<RadarEntity> list = chunk_to_entities.get(p);
+        List<RadarEntity> ret = null;
+
+        if(list == null) { return list; }
+
+        synchronized(list) {
+            ret = new ArrayList<RadarEntity>(list);
+        }
+        return ret;
     }
 
     public void collectEntitiesInChunk(int chunkX, int chunkZ, Consumer<RadarEntity> collector)
