@@ -3,13 +3,40 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
-## 4.0.2
+## 4.1.0 - November 3rd, 2021
+
+Redmatter was completely overhauled to switch from a blast process to an entity process. This means the redmatter is no longer wired directly to the blast system. Along with this change the redmatter's logic was completely reworked to use a new raytrace system. This solves some performance issues and improves collecting blocks in a radius.
+
+New ray traces system works by tracing towards the edge of the collection bound. This bound will scale up from the smallest size to largest over time. Once it hits the largest size it will not grow until the redmatter grows.
 
 ### Runtime Changes
 
+* Rebuilt: redmatter to work as an entity with completely new logic
+* Added: configuration options for redmatter scale visuals
+* Added: configuration options for redmatter scale effects
+* Added: configuration options for redmatter decay
+* Changed: redmatter to use a edge boarder raytracer
+* Changed: redmatter render scale
+* Changed: redmatter beam color randomizer to be more consistent
+* Changed: redmatter beam render width and length to improve visuals
+* Changed: redmatter to turn water to ice when collecting to avoid reflows
+* Fixed: duplicate raytraces for nuclear blast
+* Fixed: fake blast not tracking correct entity source
+* Fixed: gas particle client sync issues
+* Fixed: issues with gas pathfinder
+* Fixed: localization issues
+* Removed: redmatter movement... will be restored later (aka broken)
+
 ### Developer Changes
 
-## 4.0.1
+* Added: IBlast capability
+* Added: IBlastMovable capability
+* Added: automated testing for basic blast logic
+* Added: automated testing for math helpers
+* Renamed: several methods
+* Cleanedup: imports and minor code issues spotted by sonar
+
+## 4.0.1 - March 28th, 2020
 
 ### Runtime Changes
 * Added: dustSulfur to ore dictionary
