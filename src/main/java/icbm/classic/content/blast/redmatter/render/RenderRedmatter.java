@@ -14,10 +14,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.glu.Sphere;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,8 +29,8 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "grey.png");
     public static List<Color> randomColorsForBeams = new ArrayList();
 
-    public Color colorIn = new Color(16777215);
-    public Color colorOut = new Color(0);
+    public Color colorIn = new Color(255, 255, 255); //TODO figure out how this works
+    public Color colorOut = new Color(0, 0, 0);
 
     public RenderRedmatter(RenderManager renderManager)
     {
@@ -213,15 +213,15 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         Random redmatterBeamRandom = new Random(432L);
 
         //0 - 61 for scale of 1
-        final int beamCount = (int) ((timeScale + timeScale * timeScale) / 2.0F * 60.0F);
+        final int beamCount = (int) ((timeScale + timeScale * timeScale) / 2.0F * 30.0F);
         for (int beamIndex = 0; beamIndex < beamCount; ++beamIndex)
         {
             //Start
             GlStateManager.pushMatrix();
 
             //Calculate size
-            float beamLength = (redmatterBeamRandom.nextFloat() * 20.0F + 5.0F) * visualSize;
-            float beamWidth = (redmatterBeamRandom.nextFloat() * 2.0F + 1.0F) * visualSize;
+            float beamLength = (redmatterBeamRandom.nextFloat() + 1F) * visualSize;
+            float beamWidth = (float)Math.max(0.1, redmatterBeamRandom.nextFloat()) * visualSize / 10;
 
             //Random rotations TODO see if we need to rotate so much
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
@@ -242,7 +242,12 @@ public class RenderRedmatter extends Render<EntityRedmatter>
                 }
                 else
                 {
-                    colorOut = new Color(redmatterBeamRandom.nextFloat(), redmatterBeamRandom.nextFloat(), redmatterBeamRandom.nextFloat());
+                    //to get rainbow, pastel colors https://stackoverflow.com/questions/4246351/creating-random-colour-in-java
+                    final float hue = redmatterBeamRandom.nextFloat();
+                    final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
+                    final float luminance = 0.5f; //1.0 for brighter, 0.0 for black
+                    colorOut = HSBtoRGB(hue, saturation, luminance);
+
                     randomColorsForBeams.add(colorOut);
                 }
             }
@@ -294,5 +299,54 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     protected ResourceLocation getEntityTexture(EntityRedmatter entity)
     {
         return GREY_TEXTURE;
+    }
+
+    /**
+     * From java.awt.Color... copied and modified to avoid loading awt module
+     */
+    public static Color HSBtoRGB(float hue, float saturation, float brightness) {
+        int r = 0, g = 0, b = 0;
+        if (saturation == 0) {
+            r = g = b = (int) (brightness * 255.0f + 0.5f);
+        } else {
+            float h = (hue - (float)Math.floor(hue)) * 6.0f;
+            float f = h - (float)java.lang.Math.floor(h);
+            float p = brightness * (1.0f - saturation);
+            float q = brightness * (1.0f - saturation * f);
+            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            switch ((int) h) {
+                case 0:
+                    r = (int) (brightness * 255.0f + 0.5f);
+                    g = (int) (t * 255.0f + 0.5f);
+                    b = (int) (p * 255.0f + 0.5f);
+                    break;
+                case 1:
+                    r = (int) (q * 255.0f + 0.5f);
+                    g = (int) (brightness * 255.0f + 0.5f);
+                    b = (int) (p * 255.0f + 0.5f);
+                    break;
+                case 2:
+                    r = (int) (p * 255.0f + 0.5f);
+                    g = (int) (brightness * 255.0f + 0.5f);
+                    b = (int) (t * 255.0f + 0.5f);
+                    break;
+                case 3:
+                    r = (int) (p * 255.0f + 0.5f);
+                    g = (int) (q * 255.0f + 0.5f);
+                    b = (int) (brightness * 255.0f + 0.5f);
+                    break;
+                case 4:
+                    r = (int) (t * 255.0f + 0.5f);
+                    g = (int) (p * 255.0f + 0.5f);
+                    b = (int) (brightness * 255.0f + 0.5f);
+                    break;
+                case 5:
+                    r = (int) (brightness * 255.0f + 0.5f);
+                    g = (int) (p * 255.0f + 0.5f);
+                    b = (int) (q * 255.0f + 0.5f);
+                    break;
+            }
+        }
+        return new Color(r, g, b);
     }
 }
