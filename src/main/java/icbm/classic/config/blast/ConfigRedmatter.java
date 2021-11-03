@@ -21,7 +21,7 @@ public class ConfigRedmatter
 
     @Config.Name("redmatter_scale_rendering")
     @Config.Comment("Multiplier of size to modify the render size")
-    public float RENDER_SCALE = 0.2f;
+    public float RENDER_SCALE = 0.05f;
 
     @Config.Name("redmatter_scale_kill_radius")
     @Config.Comment("Multiplier of size to create an instant kill center")
