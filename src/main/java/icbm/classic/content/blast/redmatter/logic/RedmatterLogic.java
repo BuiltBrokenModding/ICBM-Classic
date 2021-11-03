@@ -50,7 +50,7 @@ public class RedmatterLogic
     /** Cycles run since we removed blocks, used to track starve rate */
     protected int cyclesSinceLastBlockRemoved = -1;
     /** Current scan radius for blocks */
-    protected int currentBlockDestroyRadius = 1;
+    protected int currentBlockDestroyRadius = -1;
 
     /** Queue of raytraces to run for searching blocks, this defaults to edge blocks only */
     protected final Queue<BlockPos> rayTraceTargets = new LinkedList();
@@ -86,6 +86,12 @@ public class RedmatterLogic
     {
         raytracesThisTick = 0;
         blockDestroyedThisTick = 0;
+
+        //Init destroy radius based on host's saved value
+        if (currentBlockDestroyRadius < 0)
+        {
+            currentBlockDestroyRadius = (int) Math.floor(host.getBlastSize());
+        }
     }
 
     /** Actual work cycle */
@@ -296,7 +302,8 @@ public class RedmatterLogic
         {
             final BlockPos blockPos = pos.add(side.getDirectionVec());
             final IBlockState blockState = host.world.getBlockState(blockPos);
-            if(blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.FLOWING_WATER) {
+            if (blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.FLOWING_WATER)
+            {
                 host.world.setBlockState(blockPos, Blocks.ICE.getDefaultState(), 3); //TODO turn into fake ice that melts randomly
             }
         }
