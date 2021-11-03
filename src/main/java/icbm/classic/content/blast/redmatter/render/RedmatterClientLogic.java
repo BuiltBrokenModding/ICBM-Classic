@@ -1,6 +1,5 @@
 package icbm.classic.content.blast.redmatter.render;
 
-import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 
 /**
@@ -10,16 +9,12 @@ import icbm.classic.content.blast.redmatter.EntityRedmatter;
  */
 public class RedmatterClientLogic
 {
+    private final EntityRedmatter host;
+
     private float visualSize = 0.0F;
-    private EntityRedmatter host;
 
     public RedmatterClientLogic(EntityRedmatter host) {
         this.host = host;
-    }
-
-    public float getScaleFactorClient()
-    {
-        return visualSize / 10;
     }
 
     /**
@@ -30,5 +25,10 @@ public class RedmatterClientLogic
     public void lerpSize(float deltaTick)
     {
         visualSize = visualSize + deltaTick * (host.getBlastSize() - visualSize);
+    }
+
+    public float getVisualSize()
+    {
+        return visualSize;
     }
 }

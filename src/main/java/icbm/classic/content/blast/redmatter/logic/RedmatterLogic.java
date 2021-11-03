@@ -268,7 +268,7 @@ public class RedmatterLogic
             final IBlockState blockState = host.world.getBlockState(blockPos);
             if (shouldRemoveBlock(blockPos, blockState)) //TODO calculate a pressure or pull force to destroy weaker blocks before stronger blocks
             {
-                //TODO handle multi-
+                //TODO handle multi-blocks
                 //TODO: render fluid streams moving into hole
 
                 if (host.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3))
@@ -297,7 +297,7 @@ public class RedmatterLogic
             final BlockPos blockPos = pos.add(side.getDirectionVec());
             final IBlockState blockState = host.world.getBlockState(blockPos);
             if(blockState.getBlock() == Blocks.WATER || blockState.getBlock() == Blocks.FLOWING_WATER) {
-                host.world.setBlockState(blockPos, Blocks.ICE.getDefaultState()); //TODO turn into fake ice that melts randomly
+                host.world.setBlockState(blockPos, Blocks.ICE.getDefaultState(), 3); //TODO turn into fake ice that melts randomly
             }
         }
     }

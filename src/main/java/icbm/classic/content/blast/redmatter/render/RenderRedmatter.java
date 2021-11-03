@@ -40,24 +40,24 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     @Override
     public void doRender(EntityRedmatter redmatter, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        final float scale = redmatter.clientLogic.getScaleFactorClient();
+        final float visualSize = redmatter.clientLogic.getVisualSize();
 
-        renderDisk(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        renderDisk(redmatter, x, y, z, visualSize);
         GlStateManager.color(1, 1, 1, 1);
 
-        renderSphere(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        renderSphere(redmatter, x, y, z, visualSize);
         GlStateManager.color(1, 1, 1, 1);
 
-        //renderBeams(redmatter, x, y, z, scale, entityYaw, partialTicks);
+        renderBeams(redmatter, x, y, z, visualSize);
         GlStateManager.color(1, 1, 1, 1);
 
         //Update size with a smooth transition
         redmatter.clientLogic.lerpSize(partialTicks);
     }
 
-    public void renderSphere(EntityRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
+    public void renderSphere(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
-        final float radius = Math.max(ConfigBlast.REDMATTER.RENDER_SCALE * scale, 0.1f);
+        final float radius = Math.max(ConfigBlast.REDMATTER.RENDER_SCALE * visualSize, 0.1f);
 
         //--------------------------------------------------
         //Inside sphere
@@ -125,10 +125,10 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         RenderHelper.enableStandardItemLighting();
     }
 
-    public void renderDisk(EntityRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
+    public void renderDisk(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        float size = (float)Math.max(0.2, ConfigBlast.REDMATTER.RENDER_SCALE * scale * 3);
+        float size = (float)Math.max(0.2, ConfigBlast.REDMATTER.RENDER_SCALE * visualSize * 3);
 
         //Setup
         GlStateManager.pushMatrix();
@@ -167,7 +167,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         RenderHelper.enableStandardItemLighting();
     }
 
-    public void renderBeams(EntityRedmatter redmatter, double x, double y, double z, float scale, float par8, float par9)
+    public void renderBeams(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
         //This is basically a copy of the ender dragon Lighting effect with modifications to fit
         //Animation has been changed to remove size scale and have a ramp up then down time.
@@ -220,8 +220,8 @@ public class RenderRedmatter extends Render<EntityRedmatter>
             GlStateManager.pushMatrix();
 
             //Calculate size
-            float beamLength = (redmatterBeamRandom.nextFloat() * 20.0F + 5.0F) * scale;
-            float beamWidth = (redmatterBeamRandom.nextFloat() * 2.0F + 1.0F) * scale;
+            float beamLength = (redmatterBeamRandom.nextFloat() * 20.0F + 5.0F) * visualSize;
+            float beamWidth = (redmatterBeamRandom.nextFloat() * 2.0F + 1.0F) * visualSize;
 
             //Random rotations TODO see if we need to rotate so much
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
