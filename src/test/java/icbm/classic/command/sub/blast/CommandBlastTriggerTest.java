@@ -6,6 +6,7 @@ import com.builtbroken.mc.testing.junit.testers.TestPlayer;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.FakeBlast;
 import icbm.classic.command.ICBMCommands;
@@ -38,7 +39,7 @@ public class CommandBlastTriggerTest
 
     private final CommandBlastTrigger command = new CommandBlastTrigger();
     private IExplosiveData fakeExData;
-    private BlastState triggerState = BlastState.TRIGGERED;
+    private BlastResponse triggerState = BlastState.TRIGGERED.genericResponse;
 
     private final Queue<FakeBlast> blastsCreated = new LinkedList();
 
@@ -133,18 +134,17 @@ public class CommandBlastTriggerTest
     private static Stream<Arguments> provideBlastOutputTypes()
     {
         return Stream.of(
-                Arguments.of(BlastState.TRIGGERED, CommandBlastTrigger.TRANSLATION_TRIGGERED),
-                Arguments.of(BlastState.THREADING, CommandBlastTrigger.TRANSLATION_THREADING),
-                Arguments.of(BlastState.FORGE_EVENT_CANCEL, CommandBlastTrigger.TRANSLATION_ERROR_BLOCKED),
-                Arguments.of(BlastState.NULL, CommandBlastTrigger.TRANSLATION_ERROR_NULL),
-                Arguments.of(BlastState.ERROR, CommandBlastTrigger.TRANSLATION_ERROR),
-                Arguments.of(BlastState.ALREADY_TRIGGERED, CommandBlastTrigger.TRANSLATION_ERROR_TRIGGERED)
+                Arguments.of(BlastState.TRIGGERED.genericResponse, CommandBlastTrigger.TRANSLATION_TRIGGERED),
+                Arguments.of(BlastState.THREADING.genericResponse, CommandBlastTrigger.TRANSLATION_THREADING),
+                Arguments.of(BlastState.CANCLED.genericResponse, CommandBlastTrigger.TRANSLATION_ERROR_BLOCKED),
+                Arguments.of(BlastState.ERROR.genericResponse, CommandBlastTrigger.TRANSLATION_ERROR),
+                Arguments.of(BlastState.ALREADY_TRIGGERED.genericResponse, CommandBlastTrigger.TRANSLATION_ERROR_TRIGGERED)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideBlastOutputTypes")
-    void command_short(BlastState stateToTest, String outputExpected) throws CommandException
+    void command_short(BlastResponse stateToTest, String outputExpected) throws CommandException
     {
         this.triggerState = stateToTest;
 
@@ -165,7 +165,7 @@ public class CommandBlastTriggerTest
 
     @ParameterizedTest
     @MethodSource("provideBlastOutputTypes")
-    void command_long(BlastState stateToTest, String outputExpected) throws CommandException
+    void command_long(BlastResponse stateToTest, String outputExpected) throws CommandException
     {
         this.triggerState = stateToTest;
 

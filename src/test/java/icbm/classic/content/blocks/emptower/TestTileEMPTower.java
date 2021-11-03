@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.DummyMultiTile;
 import icbm.classic.api.EnumTier;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
@@ -197,9 +198,9 @@ public class TestTileEMPTower
         when(tileEMPTower.buildBlast()).thenReturn(new Blast()
         {
             @Override
-            public BlastState runBlast()
+            public BlastResponse runBlast()
             {
-                return BlastState.TRIGGERED;
+                return BlastState.TRIGGERED.genericResponse;
             }
         });
 

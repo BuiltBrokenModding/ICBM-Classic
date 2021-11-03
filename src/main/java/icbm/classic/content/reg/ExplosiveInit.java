@@ -2,12 +2,12 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.items.IWorldPosItem;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastAntiGravitational;
@@ -19,12 +19,12 @@ import icbm.classic.content.blast.BlastExothermic;
 import icbm.classic.content.blast.BlastFire;
 import icbm.classic.content.blast.BlastGasBase;
 import icbm.classic.content.blast.BlastMutation;
-import icbm.classic.content.blast.BlastRedmatter;
 import icbm.classic.content.blast.BlastRot;
 import icbm.classic.content.blast.BlastShrapnel;
 import icbm.classic.content.blast.BlastSonic;
 import icbm.classic.content.blast.BlastTNT;
 import icbm.classic.content.blast.BlastTNT.PushType;
+import icbm.classic.content.blast.redmatter.BlastRedmatterSpawner;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
@@ -203,7 +203,7 @@ public class ExplosiveInit
 
         //TODO add config (disable by default) for alarm audio
 
-        ICBMExplosives.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatter().setBlastSize(ConfigBlast.REDMATTER.NORMAL_RADIUS));
+        ICBMExplosives.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, () -> new BlastRedmatterSpawner());
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.REDMATTER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.REDMATTER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 

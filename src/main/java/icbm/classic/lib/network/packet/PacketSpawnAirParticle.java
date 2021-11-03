@@ -1,25 +1,16 @@
 package icbm.classic.lib.network.packet;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.blast.BlastRedmatter;
-import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
 {

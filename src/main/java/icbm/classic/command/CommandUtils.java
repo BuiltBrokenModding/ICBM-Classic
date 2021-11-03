@@ -1,5 +1,6 @@
 package icbm.classic.command;
 
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
@@ -53,7 +54,8 @@ public class CommandUtils
                 || isMissile(entity)
                 || entity instanceof EntityExplosive
                 || entity instanceof EntityExplosion
-                || entity instanceof EntityGrenade;
+                || entity instanceof EntityGrenade
+                || entity instanceof EntityRedmatter; //TODO just check for ICBM namespace
     }
 
     /**

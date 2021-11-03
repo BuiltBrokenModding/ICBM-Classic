@@ -1,9 +1,11 @@
 package icbm.classic.api.explosion;
 
 import icbm.classic.api.data.IWorldPosition;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -13,34 +15,17 @@ import javax.annotation.Nullable;
  */
 public interface IBlast extends IWorldPosition
 {
-
     /**
-     * Gets the radius size of the effect of the blast.
+     * Gets the radius/size of the effect of the blast.
+     *
      * This not always the full effect range of the blast.
      * Rather is used more as a scale factor
      *
      * @return size in blocks (meters)
      */
-    float getBlastRadius(); //TODO update or add more methods to get true size
-
-    /**
-     * Gets the entity that the blast originated from during detonation.
-     *
-     * @return entity, can be null
-     */
-    Entity getBlastSource();
-
-    /**
-     * Called to scale the blast by the given amount.
-     * <p>
-     * Not all blasts can be scaled
-     *
-     * @param scale
-     * @return this
-     */
-    default IBlast scaleBlast(double scale)
+    default float getBlastRadius() //TODO update or add more methods to get true size
     {
-        return this;
+        return -1; //TODO move to sub-interface (IScalableBlast) as not all blasts have a radius
     }
 
     /**
@@ -48,7 +33,8 @@ public interface IBlast extends IWorldPosition
      *
      * @return this
      */
-    BlastState runBlast();
+    @Nonnull
+    BlastResponse runBlast();
 
     /**
      * Is the blast completed and
@@ -56,7 +42,11 @@ public interface IBlast extends IWorldPosition
      *
      * @return true for completed
      */
-    boolean isCompleted();
+    @Deprecated
+    default boolean isCompleted() //TODO merge into BlastState
+    {
+        return true;
+    }
 
     /**
      * Data used to create the blast. Used
@@ -65,29 +55,45 @@ public interface IBlast extends IWorldPosition
      * @return
      */
     @Nullable
-    IExplosiveData getExplosiveData();
+    @Deprecated
+    default IExplosiveData getExplosiveData() //TODO move to save handler, this shouldn't be exposed
+    {
+        return null;
+    }
 
     /**
-     * Entity controlling the blast.
+     * Entity that represents the blast
      * <p>
-     * Not all blasts have an entity that
-     * handles updates. Some are controlled
-     * by the thread system and others are
-     * fired as simple TNT like explosives
+     * Not all blasts have an entity in the world. Some
+     * exist as threaded runners and others as world events.
+     * <p>
+     * Blasts with entities should be viewed as entities first
+     * and blasts second. With the blast existing as an API
+     * drive way to provide information and events to interact
+     * with the entity's actions.
      *
      * @return controller
      */
     @Nullable
-    Entity getController();
+    default Entity getEntity()
+    {
+        return null;
+    }
+
+    /**
+     * Gets the entity that the blast originated from during detonation.
+     *
+     * @return entity, can be null
+     */
+    @Nullable
+    default Entity getBlastSource()
+    {
+        return getEntity();
+    }
 
     /**
      * Called to clear the blast from the world. This
      * should only be used by server utilities and commands.
      */
     void clearBlast();
-
-    //TODO expose blast properties
-    //TODO expose blast state (init, blocks, entity, done)
-    //TODO expose threaded state if used
-    //TODO expose tick settings and tick progress
 }

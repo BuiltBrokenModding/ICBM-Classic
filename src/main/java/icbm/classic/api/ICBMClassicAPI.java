@@ -1,8 +1,17 @@
 package icbm.classic.api;
 
-import icbm.classic.api.caps.*;
-import icbm.classic.api.reg.content.*;
+import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.caps.IMissileHolder;
+import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.api.reg.IExplosiveRegistry;
+import icbm.classic.api.reg.content.IExBlockRegistry;
+import icbm.classic.api.reg.content.IExGrenadeRegistry;
+import icbm.classic.api.reg.content.IExMinecartRegistry;
+import icbm.classic.api.reg.content.IExMissileRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -65,6 +74,12 @@ public final class ICBMClassicAPI
 
     @CapabilityInject(IMissileLauncher.class)
     public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
+
+    @CapabilityInject(IBlastVelocity.class)
+    public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;
+
+    @CapabilityInject(IBlast.class)
+    public static Capability<IBlast> BLAST_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}

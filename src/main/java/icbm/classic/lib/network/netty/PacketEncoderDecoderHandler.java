@@ -1,11 +1,9 @@
 package icbm.classic.lib.network.netty;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
-import icbm.classic.lib.network.packet.PacketRedmatterSizeSync;
-import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.lib.network.packet.PacketTile;
-import icbm.classic.ICBMClassic;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
@@ -24,8 +22,6 @@ public class PacketEncoderDecoderHandler extends FMLIndexedMessageToMessageCodec
     {
         addPacket(PacketTile.class);
         addPacket(PacketPlayerItem.class);
-        addPacket(PacketRedmatterSizeSync.class);
-        addPacket(PacketSpawnAirParticle.class);
     }
 
     public void addPacket(Class<? extends IPacket> clazz)

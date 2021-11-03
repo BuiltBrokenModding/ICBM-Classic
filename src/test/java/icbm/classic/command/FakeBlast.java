@@ -1,8 +1,7 @@
 package icbm.classic.command;
 
-import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,11 +29,11 @@ public class FakeBlast implements IBlastInit
     public boolean triggered = false;
     public boolean isAlive = true;
 
-    private final BlastState returnState;
+    private final BlastResponse blastResponse;
 
-    public FakeBlast(BlastState returnState)
+    public FakeBlast(BlastResponse blastResponse)
     {
-        this.returnState = returnState;
+        this.blastResponse = blastResponse;
     }
 
     @Override
@@ -45,7 +44,7 @@ public class FakeBlast implements IBlastInit
     }
 
     @Override
-    public IBlast scaleBlast(double scale)
+    public IBlastInit scaleBlast(double scale)
     {
         return setBlastSize(scale * getBlastRadius());
     }
@@ -112,10 +111,10 @@ public class FakeBlast implements IBlastInit
     }
 
     @Override
-    public BlastState runBlast()
+    public BlastResponse runBlast()
     {
         triggered = true;
-        return returnState;
+        return blastResponse;
     }
 
     @Override
@@ -133,7 +132,7 @@ public class FakeBlast implements IBlastInit
 
     @Nullable
     @Override
-    public Entity getController()
+    public Entity getEntity()
     {
         return null;
     }
