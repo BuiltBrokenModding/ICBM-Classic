@@ -24,6 +24,10 @@ import javax.annotation.Nullable;
  */
 public class EntityRedmatter extends Entity
 {
+    public static final String NBT_BLAST_SIZE = "blast_size";
+    public static final String NBT_BLAST_SIZE_MAX = "blast_size_max";
+
+
     public static final float MAX_SPEED = 0.5f;
     public static final float SPEED_REDUCTION = 0.98f;
 
@@ -115,13 +119,21 @@ public class EntityRedmatter extends Entity
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
-        //TODO implement save/load logic
+        if(nbt.hasKey(NBT_BLAST_SIZE))
+        {
+            setBlastSize(nbt.getFloat(NBT_BLAST_SIZE));
+        }
+        if(nbt.hasKey(NBT_BLAST_SIZE_MAX))
+        {
+            setBlastSize(nbt.getFloat(NBT_BLAST_SIZE_MAX));
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
-
+        nbt.setFloat(NBT_BLAST_SIZE, getBlastSize());
+        nbt.setFloat(NBT_BLAST_SIZE_MAX, getBlastMaxSize());
     }
     //</editor-fold>
 
