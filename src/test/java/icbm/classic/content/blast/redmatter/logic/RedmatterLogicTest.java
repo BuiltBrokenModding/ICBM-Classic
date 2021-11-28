@@ -35,14 +35,39 @@ public class RedmatterLogicTest
     }
 
     @Test
-    @DisplayName("Init: Validate starting radius of 1")
-    void testInit_ShouldStartWithRadiusOfOne()
+    @DisplayName("Init: Validate logic class inits with -1")
+    void testInit_ShouldStartWithRadius()
     {
         //Create redmatter
         final EntityRedmatter redmatter = new EntityRedmatter(testManager.getWorld());
-
         final RedmatterLogic logic = redmatter.redmatterLogic;
-        Assertions.assertEquals(1, logic.currentBlockDestroyRadius, "Starting size should be 1");
+
+        Assertions.assertEquals(-1, logic.currentBlockDestroyRadius, "Starting size should be 1");
+    }
+
+    @Nested
+    @DisplayName("preTick")
+    class PreTick
+    {
+        @Test
+        void raytraceTarget_verifyMath()
+        {
+            final World world = Mockito.spy(testManager.getWorld());
+            final EntityRedmatter redmatter = new EntityRedmatter(world);
+            final RedmatterLogic logic = redmatter.redmatterLogic;
+
+            //Invoke method
+            logic.rayTraceTowardsBlock(new Vec3d(0.5, 0.5, 0.5), new BlockPos(3, 1, 2));
+
+            //Validate we called ray trace with the correct position data
+            Mockito.verify(world).rayTraceBlocks(
+                    Mockito.argThat(arg -> arg.x - 0.5 <= 0.0000 && arg.y - 0.5 <= 0.0000 && arg.z - 0.5 <= 0.0000),
+                    Mockito.argThat(arg -> arg.x - 3.5 <= 0.0000 && arg.y - 1.5 <= 0.0000 && arg.z - 2.5 <= 0.0000),
+                    Mockito.booleanThat((d) -> d),
+                    Mockito.booleanThat((d) -> !d),
+                    Mockito.booleanThat((d) -> !d)
+            );
+        }
     }
 
     @Nested
@@ -69,6 +94,7 @@ public class RedmatterLogicTest
 
             //Validate starting conditions
             final RedmatterLogic logic = redmatter.redmatterLogic;
+            redmatter.redmatterLogic.currentBlockDestroyRadius = 1;
 
             //Invoke cycle start directly bypassing tick() logic
             logic.startNextBlockDestroyCycle();

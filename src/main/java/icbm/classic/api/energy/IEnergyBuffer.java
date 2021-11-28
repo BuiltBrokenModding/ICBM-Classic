@@ -5,7 +5,8 @@ package icbm.classic.api.energy;
  * If you are storing in another type then convert before returning.
  * Created by Dark on 8/15/2015.
  */
-public interface IEnergyBuffer //TODO see if we should keep this or go full ForgeEnergy
+@Deprecated
+public interface IEnergyBuffer
 {
     /**
      * Added energy to the buffer
