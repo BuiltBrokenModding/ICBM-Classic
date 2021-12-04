@@ -54,7 +54,7 @@ public class BlastNuclear extends BlastThreaded
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
         //How many steps to go per rotation
-        final int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.getBlastRadius()));
+        final int steps = (int) Math.ceil(Math.PI * this.getBlastRadius());
 
         double x;
         double y;
