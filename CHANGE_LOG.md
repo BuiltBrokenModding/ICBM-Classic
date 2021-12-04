@@ -3,11 +3,21 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## Next release
+
+### Runtime Changes
+
+* Changed: nuke and large blast step calculation to remove atan - small performance improvement
+
+### Dev Changes
+
+* Depricated: IEnergyBuffer
+
 ## 4.1.0 - November 3rd, 2021
 
 Redmatter was completely overhauled to switch from a blast process to an entity process. This means the redmatter is no longer wired directly to the blast system. Along with this change the redmatter's logic was completely reworked to use a new raytrace system. This solves some performance issues and improves collecting blocks in a radius.
 
-New ray traces system works by tracing towards the edge of the collection bound. This bound will scale up from the smallest size to largest over time. Once it hits the largest size it will not grow until the redmatter grows.
+New ray traces system works by tracing towards the edge of the collection bound. This bound will scale up from the smallest size to largest over time. Once it hits the largest size it will not increase until the redmatter grows in size.
 
 ### Runtime Changes
 
