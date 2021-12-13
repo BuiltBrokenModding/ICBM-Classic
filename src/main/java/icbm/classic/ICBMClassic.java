@@ -11,7 +11,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
-import icbm.classic.content.entity.missile.CapabilityMissile;
+import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
 import icbm.classic.content.potion.ContagiousPoison;

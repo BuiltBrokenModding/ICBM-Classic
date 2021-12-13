@@ -41,7 +41,7 @@ import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.mobs.EntityXmasCreeper;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
@@ -181,7 +181,7 @@ public class ClientReg
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, RenderLightBeam::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, RenderFragments::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, RenderSeat::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosiveMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, RenderSkeletonXmas::new);

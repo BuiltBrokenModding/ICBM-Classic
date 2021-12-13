@@ -10,7 +10,7 @@ import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
@@ -286,7 +286,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
 
                 if (isServer())
                 {
-                    EntityMissile missile = new EntityMissile(getWorld()); //TODO generate entity from item using handler
+                    EntityExplosiveMissile missile = new EntityExplosiveMissile(getWorld()); //TODO generate entity from item using handler
 
                     //Set data
                     missile.explosiveID = explosiveData.getRegistryID();

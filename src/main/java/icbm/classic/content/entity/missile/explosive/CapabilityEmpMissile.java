@@ -1,4 +1,4 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.entity.missile.explosive;
 
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
@@ -8,9 +8,9 @@ import icbm.classic.config.ConfigEMP;
  *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public class CapabilityEmpMissile extends CapabilityEmpKill<EntityMissile>
+public class CapabilityEmpMissile extends CapabilityEmpKill<EntityExplosiveMissile>
 {
-    public CapabilityEmpMissile(EntityMissile entity)
+    public CapabilityEmpMissile(EntityExplosiveMissile entity)
     {
         super(entity);
     }

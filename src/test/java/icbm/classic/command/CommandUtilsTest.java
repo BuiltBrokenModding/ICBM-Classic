@@ -8,7 +8,7 @@ import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -81,7 +81,7 @@ public class CommandUtilsTest
                 Arguments.of(new EntityEnderman(world), false),
                 Arguments.of(new EntitySheep(world), false),
                 Arguments.of(new EntityGrenade(world), true),
-                Arguments.of(new EntityMissile(world), true),
+                Arguments.of(new EntityExplosiveMissile(world), true),
                 Arguments.of(new EntityExplosive(world), true),
                 Arguments.of(new EntityFragments(world), true),
                 Arguments.of(new EntityExplosion(world), true),
@@ -106,7 +106,7 @@ public class CommandUtilsTest
                 Arguments.of(new EntityEnderman(world), false),
                 Arguments.of(new EntitySheep(world), false),
                 Arguments.of(new EntityGrenade(world), false),
-                Arguments.of(new EntityMissile(world), true),
+                Arguments.of(new EntityExplosiveMissile(world), true),
                 Arguments.of(new EntityExplosive(world), false),
                 Arguments.of(new EntityFragments(world), false),
                 Arguments.of(new EntityExplosion(world), false),

@@ -5,7 +5,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -101,7 +101,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                 {
                                     if(!world.isRemote)
                                     {
-                                        EntityMissile entityMissile = new EntityMissile(player);
+                                        EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(player.world).init(player, EntityExplosiveMissile.MISSILE_SPEED, 1);
                                         entityMissile.missileType = MissileFlightType.HAND_LAUNCHER;
                                         entityMissile.explosiveID = explosiveID;
                                         entityMissile.acceleration = 1;

@@ -5,7 +5,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.CommonProxy;
 import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleSmokeICBM;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void spawnMissileSmoke(EntityMissile missile)
+    public void spawnMissileSmoke(EntityExplosiveMissile missile)
     {
         if (missile.world.isRemote)
         {

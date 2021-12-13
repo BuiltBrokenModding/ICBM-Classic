@@ -1,6 +1,8 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.entity.missile.tracker;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
@@ -54,7 +56,7 @@ public class MissileTrackerWorld extends WorldSavedData
      * Called to simulate the missile
      * @param missile
      */
-    void simulateMissile(EntityMissile missile)
+    void simulateMissile(EntityExplosiveMissile missile)
     {
         if(ConfigDebug.DEBUG_MISSILE_TRACKER)
             ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
@@ -195,8 +197,7 @@ public class MissileTrackerWorld extends WorldSavedData
     private void Launch(final World world, MissileTrackerData mtd)
     {
         //Create entity
-
-        EntityMissile missile = new EntityMissile(world);
+        EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
 
         //Set data
         missile.readEntityFromNBT(mtd.missileData);

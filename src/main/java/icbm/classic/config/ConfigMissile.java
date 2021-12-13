@@ -1,11 +1,11 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import net.minecraftforge.common.config.Config;
 
 /**
- * Configs for {@link EntityMissile}
+ * Configs for {@link EntityExplosiveMissile}
  *
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/28/2018.

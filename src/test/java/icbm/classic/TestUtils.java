@@ -1,6 +1,6 @@
 package icbm.classic;
 
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.world.World;
 
@@ -18,9 +18,9 @@ public class TestUtils
         return sheep;
     }
 
-    public static EntityMissile missile(World world, int x, int y, int z)
+    public static EntityExplosiveMissile missile(World world, int x, int y, int z)
     {
-        final EntityMissile missile = new EntityMissile(world);
+        final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
         missile.forceSpawn = true;
         missile.setPosition(x, y, z);
         world.spawnEntity(missile);

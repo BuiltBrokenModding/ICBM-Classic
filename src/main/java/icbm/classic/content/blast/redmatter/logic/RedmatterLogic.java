@@ -13,7 +13,7 @@ import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.CalculationHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -472,9 +472,9 @@ public class RedmatterLogic
                 //Kill the blast
                 blast.clearBlast();
             }
-            else if (entity instanceof EntityMissile) //TODO move to capability
+            else if (entity instanceof EntityExplosiveMissile) //TODO move to capability
             {
-                ((EntityMissile) entity).doExplosion(); //TODO should trigger the explosive capability
+                ((EntityExplosiveMissile) entity).doExplosion(); //TODO should trigger the explosive capability
             }
             else if (entity instanceof EntityExplosive) //TODO move to capability
             {

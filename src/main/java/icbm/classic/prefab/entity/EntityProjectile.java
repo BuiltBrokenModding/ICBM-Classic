@@ -12,7 +12,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -25,7 +29,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public abstract class EntityProjectile extends EntityICBM implements IProjectile
+public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile
 {
     /**
      * The entity who shot this projectile and can be used for damage calculations
@@ -70,16 +74,8 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         this.setSize(0.5F, 0.5F);
     }
 
-    public EntityProjectile(World world, double x, double y, double z)
+    public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random)
     {
-        super(world);
-        this.setPosition(x, y, z);
-        this.sourceOfProjectile = new Pos(x, y, z);
-    }
-
-    public EntityProjectile(World world, EntityLivingBase shooter, EntityLivingBase target, float p_i1755_4_, float p_i1755_5_)
-    {
-        this(world);
         this.shootingEntity = shooter;
         this.sourceOfProjectile = new Pos(shooter);
 
@@ -97,43 +93,37 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
             double d5 = d2 / d3;
             this.setLocationAndAngles(shooter.posX + d4, this.posY, shooter.posZ + d5, f2, f3);
             float f4 = (float) d3 * 0.2F;
-            this.shoot(d0, d1 + (double) f4, d2, p_i1755_4_, p_i1755_5_);
+            this.shoot(d0, d1 + (double) f4, d2, multiplier, random);
         }
+        return (E)this;
     }
 
-    public EntityProjectile(World world, EntityLivingBase shooter, float f)
+    public E init(EntityLivingBase shooter, float multiplier, float distanceScale)
     {
-        this(world, shooter, f, 1);
+        return init(shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ, shooter.rotationYaw, shooter.rotationPitch, multiplier, distanceScale);
     }
 
-    public EntityProjectile(World world, EntityLivingBase shooter, float f, float distanceScale)
+    public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale)
     {
-        this(world, shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ, shooter.rotationYaw, shooter.rotationPitch, f, distanceScale);
-    }
-
-    public EntityProjectile(World world, double x, double y, double z, float yaw, float pitch, float speedScale, float distanceScale)
-    {
-        super(world);
         //this.renderDistanceWeight = 10.0D;
         this.sourceOfProjectile = new Pos(x, y, z);
 
         this.setSize(0.5F, 0.5F);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
+
+        //TODO figure out why we are updating position by rotation after spawning
         this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
         this.posY -= 0.10000000149011612D;
         this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
         this.setPosition(this.posX, this.posY, this.posZ);
         //this.yOffset = 0.0F;
+
         this.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * (float) Math.PI));
-        this.shoot(this.motionX, this.motionY, this.motionZ, speedScale, 1.0F);
-    }
+        this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 1.0F);
 
-    @Override
-    protected void entityInit()
-    {
-        super.entityInit();
+        return (E)this;
     }
 
     @Override
@@ -267,7 +257,9 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         return false;
     }
 
-    protected void postImpact(RayTraceResult hit) {}
+    protected void postImpact(RayTraceResult hit)
+    {
+    }
 
     /**
      * Called to see if collision checks should be ignored on the

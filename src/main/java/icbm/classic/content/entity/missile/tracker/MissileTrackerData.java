@@ -1,5 +1,6 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.entity.missile.tracker;
 
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +21,7 @@ public class MissileTrackerData
     public NBTTagCompound missileData;  //Additional missile data
 
     //Constructors
-    public MissileTrackerData(EntityMissile missile)
+    public MissileTrackerData(EntityExplosiveMissile missile)
     {
         targetPos = missile.targetPos;
         missileData = missile.writeToNBT(new NBTTagCompound());

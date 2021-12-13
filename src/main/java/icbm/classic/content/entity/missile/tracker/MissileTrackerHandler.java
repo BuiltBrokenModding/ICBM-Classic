@@ -1,6 +1,7 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.entity.missile.tracker;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -32,7 +33,7 @@ public class MissileTrackerHandler
      *
      * @param missile - entity to simulate
      */
-    public static void simulateMissile(EntityMissile missile)
+    public static void simulateMissile(EntityExplosiveMissile missile)
     {
         getOrCreateHandler(missile.world, true).simulateMissile(missile);
     }

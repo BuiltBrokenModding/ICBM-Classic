@@ -2,6 +2,8 @@ package icbm.classic.content.entity.missile;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.events.MissileRideEvent;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.entity.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,10 +25,10 @@ public class MissileEventHandler
     public static void onEntityMount(EntityMountEvent event)
     {
         if (event.isDismounting()
-                && event.getEntityBeingMounted() instanceof EntityMissile
+                && event.getEntityBeingMounted() instanceof EntityExplosiveMissile
                 && event.getEntityMounting() instanceof EntityPlayer)
         {
-            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityMissile) event.getEntityBeingMounted(), (EntityPlayer) event.getEntityMounting())));
+            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityExplosiveMissile) event.getEntityBeingMounted(), (EntityPlayer) event.getEntityMounting())));
         }
     }
 
@@ -41,12 +43,12 @@ public class MissileEventHandler
             if (map != null)
             {
                 map.collectEntitiesInChunk(chunk.x, chunk.z, (radarEntity -> {
-                    if (radarEntity.entity instanceof EntityMissile)
+                    if (radarEntity.entity instanceof EntityExplosiveMissile)
                     {
-                        final EntityMissile missile = (EntityMissile) radarEntity.entity;
+                        final EntityExplosiveMissile missile = (EntityExplosiveMissile) radarEntity.entity;
                         if(!missile.wasSimulated && missile.missileType == MissileFlightType.PAD_LAUNCHER)
                         {
-                            MissileTrackerHandler.simulateMissile((EntityMissile) radarEntity.entity);
+                            MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) radarEntity.entity);
                         }
                     }
                 }));

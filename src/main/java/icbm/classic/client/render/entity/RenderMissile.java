@@ -1,6 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  *
  * @author Calclavia, DarkCow
  * */
-public class RenderMissile extends Render<EntityMissile>
+public class RenderMissile extends Render<EntityExplosiveMissile>
 {
 
     private EntityItem entityItem;
@@ -42,7 +42,7 @@ public class RenderMissile extends Render<EntityMissile>
     }
 
     @Override
-    public void doRender(EntityMissile entityMissile, double x, double y, double z, float entityYaw, float partialTicks)
+    public void doRender(EntityExplosiveMissile entityMissile, double x, double y, double z, float entityYaw, float partialTicks)
     {
         //Setup
         GlStateManager.pushMatrix();
@@ -88,7 +88,7 @@ public class RenderMissile extends Render<EntityMissile>
 
     @Nullable
     @Override
-    protected ResourceLocation getEntityTexture(EntityMissile entity)
+    protected ResourceLocation getEntityTexture(EntityExplosiveMissile entity)
     {
         return null;
     }

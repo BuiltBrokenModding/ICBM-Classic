@@ -5,7 +5,7 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.network.IPacket;
@@ -184,7 +184,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                         this.detectedEntities.add(entity);
                     }
 
-                    if (this.isMissileGoingToHit((EntityMissile) entity))
+                    if (this.isMissileGoingToHit((EntityExplosiveMissile) entity))
                     {
                         if (this.incomingMissiles.size() > 0)
                         {
@@ -223,7 +223,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
      * @param missile - missile being checked
      * @return true if it will
      */
-    public boolean isMissileGoingToHit(EntityMissile missile)
+    public boolean isMissileGoingToHit(EntityExplosiveMissile missile)
     {
         if (missile == null)
         {
@@ -264,9 +264,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                     packet.write(entity.getEntityId());
 
                     int type = RadarObjectType.OTHER.ordinal();
-                    if (entity instanceof EntityMissile)
+                    if (entity instanceof EntityExplosiveMissile)
                     {
-                        type = isMissileGoingToHit((EntityMissile) entity) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
+                        type = isMissileGoingToHit((EntityExplosiveMissile) entity) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
                     }
                     packet.write(type);
                 }

@@ -4,7 +4,7 @@ import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import icbm.classic.TestUtils;
 import icbm.classic.command.FakeBlast;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntitySheep;
@@ -85,7 +85,7 @@ public class CommandLagTest
 
         //Validate start condition
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should start with 3 sheep");
-        Assertions.assertEquals(2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityMissile).count(), "Should start with 2 missiles");
+        Assertions.assertEquals(2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityExplosiveMissile).count(), "Should start with 2 missiles");
 
         //Trigger command
         Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, new String[0]));
@@ -96,7 +96,7 @@ public class CommandLagTest
 
         //Should still have 3 sheep
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should end with 3 sheep");
-        Assertions.assertEquals(0, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityMissile).filter(Entity::isEntityAlive).count(), "Should end with 0 missiles");
+        Assertions.assertEquals(0, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityExplosiveMissile).filter(Entity::isEntityAlive).count(), "Should end with 0 missiles");
     }
 
     @Test

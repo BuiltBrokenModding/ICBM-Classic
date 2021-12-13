@@ -1,4 +1,4 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.entity.missile.tracker;
 
 import net.minecraft.util.math.ChunkPos;
 

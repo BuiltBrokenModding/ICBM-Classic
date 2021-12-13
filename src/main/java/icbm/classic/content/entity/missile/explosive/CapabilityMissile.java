@@ -1,4 +1,4 @@
-package icbm.classic.content.entity.missile;
+package icbm.classic.content.entity.missile.explosive;
 
 import icbm.classic.api.caps.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
@@ -21,9 +21,9 @@ import javax.annotation.Nullable;
 public class CapabilityMissile implements IMissile
 {
 
-    public final EntityMissile missile;
+    public final EntityExplosiveMissile missile;
 
-    public CapabilityMissile(EntityMissile missile)
+    public CapabilityMissile(EntityExplosiveMissile missile)
     {
         this.missile = missile;
     }

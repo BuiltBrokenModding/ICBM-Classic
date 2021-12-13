@@ -4,6 +4,7 @@ package icbm.classic.content.entity.missile;
  *
  * Created by Dark(DarkGuardsman, Robert) on 3/14/2018.
  */
+@Deprecated
 public enum MissileFlightType
 {
     /** Missile fired from a tile launcher, missile will ark up then back down */
