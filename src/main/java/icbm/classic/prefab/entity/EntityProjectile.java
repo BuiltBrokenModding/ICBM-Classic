@@ -74,26 +74,37 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.setSize(0.5F, 0.5F);
     }
 
+    /**
+     * Initialized the projectile to spawn from the shooter and aim at the target
+     *
+     * @param shooter - spawn point, used for aiming and position offsets
+     * @param target - aim target
+     * @param multiplier - power multiplier, mostly changes speed
+     * @param random - random multiplier
+     * @return this
+     */
     public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random)
     {
         this.shootingEntity = shooter;
         this.sourceOfProjectile = new Pos(shooter);
 
         this.posY = shooter.posY + (double) shooter.getEyeHeight() - 0.10000000149011612D;
-        double d0 = target.posX - shooter.posX;
-        double d1 = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - this.posY;
-        double d2 = target.posZ - shooter.posZ;
-        double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        double deltaX = target.posX - shooter.posX;
+        double deltaY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - this.posY; //TODO why div3
+        double deltaZ = target.posZ - shooter.posZ;
+        double deltaMag = MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ);
 
-        if (d3 >= 1.0E-7D)
+        if (deltaMag >= 1.0E-7D) //TODO why the small num? rounding likely but maybe a better solution
         {
-            float f2 = (float) (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0F;
-            float f3 = (float) (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
-            double d4 = d0 / d3;
-            double d5 = d2 / d3;
-            this.setLocationAndAngles(shooter.posX + d4, this.posY, shooter.posZ + d5, f2, f3);
-            float f4 = (float) d3 * 0.2F;
-            this.shoot(d0, d1 + (double) f4, d2, multiplier, random);
+            float yaw = (float) (Math.atan2(deltaZ, deltaX) * 180.0D / Math.PI) - 90.0F;
+            float pitch = (float) (-(Math.atan2(deltaY, deltaMag) * 180.0D / Math.PI));
+
+            double subX = deltaX / deltaMag;
+            double subZ = deltaZ / deltaMag;
+            float subY = (float) deltaMag * 0.2F; //TODO why the 0.2F
+
+            this.setLocationAndAngles(shooter.posX + subX, this.posY, shooter.posZ + subZ, yaw, pitch);
+            this.shoot(deltaX, deltaY + (double) subY, deltaZ, multiplier, random);
         }
         return (E)this;
     }

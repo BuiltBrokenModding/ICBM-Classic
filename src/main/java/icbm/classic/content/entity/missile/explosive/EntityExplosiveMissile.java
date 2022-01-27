@@ -536,7 +536,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         return getEntityBoundingBox();
     }
 
-    public Pos getPredictedPosition(int t)
+    public Pos getPredictedPosition(int t) //TODO rewrite, no reason this should loop and it fails to account for curve path
     {
         Pos position = new Pos((IPos3D) this);
         double tempMotionY = this.motionY;
