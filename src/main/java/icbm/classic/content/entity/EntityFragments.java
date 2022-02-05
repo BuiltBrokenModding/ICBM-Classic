@@ -426,7 +426,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
             if (this.inTile.getMaterial() != Material.AIR)
             {
-                this.inTile.getBlock().onEntityCollision(this.world, inTilePosition, this.inTile, this);
+                this.inTile.getBlock().onEntityCollidedWithBlock(this.world, inTilePosition, this.inTile, this);
             }
         }
     }

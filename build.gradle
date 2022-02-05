@@ -60,6 +60,8 @@ idea {
 minecraft {
     mappings channel: 'snapshot', version: '20171003-1.12'
 
+    accessTransformer = file('src/main/resources/META-INF/ICBMClassic_at.cfg')
+
     runs {
         client {
             workingDirectory project.file('run')

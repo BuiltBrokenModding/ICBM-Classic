@@ -21,9 +21,9 @@ public class BombCartDispenseBehavior extends BehaviorDefaultDispenseItem
     {
         EnumFacing enumfacing = source.getBlockState().getValue(BlockDispenser.FACING);
         World world = source.getWorld();
-        double x = source.getX() + (double) enumfacing.getXOffset() * 1.125D;
-        double y = Math.floor(source.getY()) + (double) enumfacing.getYOffset();
-        double z = source.getZ() + (double) enumfacing.getZOffset() * 1.125D;
+        double x = source.getX() + (double) enumfacing.getFrontOffsetX() * 1.125D;
+        double y = Math.floor(source.getY()) + (double) enumfacing.getFrontOffsetY();
+        double z = source.getZ() + (double) enumfacing.getFrontOffsetZ() * 1.125D;
         BlockPos blockpos = source.getBlockPos().offset(enumfacing);
         IBlockState iblockstate = world.getBlockState(blockpos);
         BlockRailBase.EnumRailDirection rail =

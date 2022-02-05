@@ -79,7 +79,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public AbstractPos(EnumFacing dir)
     {
-        this(dir.getXOffset(), dir.getYOffset(), dir.getZOffset());
+        this(dir.getFrontOffsetX(), dir.getFrontOffsetY(), dir.getFrontOffsetZ());
     }
 
     public AbstractPos(Vec3d vec)
@@ -116,7 +116,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
         //TODO maybe add a way to convert convert any vector into a direction from origin
         for (EnumFacing dir : EnumFacing.values())
         {
-            if (xi() == dir.getXOffset() && yi() == dir.getYOffset() && zi() == dir.getZOffset())
+            if (xi() == dir.getFrontOffsetX() && yi() == dir.getFrontOffsetY() && zi() == dir.getFrontOffsetZ())
             {
                 return dir;
             }
@@ -164,7 +164,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public R add(EnumFacing face)
     {
-        return add(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        return add(face.getFrontOffsetX(), face.getFrontOffsetY(), face.getFrontOffsetZ());
     }
 
     public R add(Vec3d vec)
@@ -174,7 +174,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public R sub(EnumFacing face)
     {
-        return sub(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        return sub(face.getFrontOffsetX(), face.getFrontOffsetY(), face.getFrontOffsetZ());
     }
 
     public R sub(Vec3d vec)
@@ -199,7 +199,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public R multiply(EnumFacing face)
     {
-        return multiply(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        return multiply(face.getFrontOffsetX(), face.getFrontOffsetY(), face.getFrontOffsetZ());
     }
 
     public R multiply(Vec3d vec)
@@ -209,7 +209,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public R divide(EnumFacing face)
     {
-        return divide(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        return divide(face.getFrontOffsetX(), face.getFrontOffsetY(), face.getFrontOffsetZ());
     }
 
     public R divide(Vec3d vec)

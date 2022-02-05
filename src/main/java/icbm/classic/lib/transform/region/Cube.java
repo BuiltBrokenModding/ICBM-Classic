@@ -603,7 +603,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
             {
                 if (loaded || (!(world instanceof WorldServer) || ((WorldServer) world).getChunkProvider().chunkExists(chunkX, chunkZ)))
                 {
-                    Chunk chunk = world.getChunk(chunkX, chunkZ);
+                    Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
                     if (chunk != null)
                     {
                         chunks.add(chunk);

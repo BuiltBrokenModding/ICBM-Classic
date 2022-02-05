@@ -45,7 +45,7 @@ public abstract class CapabilityPrefab implements ICapabilitySerializable<NBTTag
     @Override
     public final void deserializeNBT(NBTTagCompound nbt)
     {
-        if (nbt != null && !nbt.isEmpty())
+        if (nbt != null && !nbt.hasNoTags())
         {
             load(nbt);
         }

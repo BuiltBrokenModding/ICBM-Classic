@@ -302,7 +302,7 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
 
         if (this.blockInside != null && this.blockInside.getMaterial() != Material.AIR)
         {
-            this.blockInside.getBlock().onEntityCollision(this.world, tilePos, blockInside, this);
+            this.blockInside.getBlock().onEntityCollidedWithBlock(this.world, tilePos, blockInside, this);
         }
         onImpactTile(movingobjectposition);
     }
@@ -533,11 +533,11 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         if (nbt.hasKey(NBTConstants.SIDE_TILE))
         {
             //Legacy
-            this.sideTile = EnumFacing.byIndex(nbt.getShort(NBTConstants.SIDE_TILE));
+            this.sideTile = EnumFacing.getFront(nbt.getShort(NBTConstants.SIDE_TILE));
         }
         else
         {
-            this.sideTile = EnumFacing.byIndex(nbt.getByte(NBTConstants.SIDE_TILE_POS));
+            this.sideTile = EnumFacing.getFront(nbt.getByte(NBTConstants.SIDE_TILE_POS));
         }
         this.ticksInGround = nbt.getShort(NBTConstants.LIFE);
         if (nbt.hasKey(NBTConstants.IN_TILE))

@@ -47,7 +47,7 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setTranslationKey(ICBMConstants.PREFIX + "radarGun");
+        this.setUnlocalizedName(ICBMConstants.PREFIX + "radarGun");
         this.setRegistryName(ICBMConstants.DOMAIN, "radarGun");
     }
 
@@ -55,7 +55,7 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> lines, ITooltipFlag flagIn)
     {
-        String localization = LanguageUtility.getLocal(getTranslationKey() + ".info");
+        String localization = LanguageUtility.getLocal(getUnlocalizedName() + ".info");
         if (localization != null && !localization.isEmpty())
         {
             String[] split = localization.split(",");

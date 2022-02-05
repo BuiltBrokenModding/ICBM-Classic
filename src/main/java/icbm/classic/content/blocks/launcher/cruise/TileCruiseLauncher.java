@@ -143,7 +143,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
 
         //Check redstone
-        if (isServer() && this.ticks % REDSTONE_CHECK_RATE == 0 && this.world.getRedstonePowerFromNeighbors(getPos()) > 0)
+        if (isServer() && this.ticks % REDSTONE_CHECK_RATE == 0 && this.world.getStrongPower(getPos()) > 0)
         {
             this.launch();
         }

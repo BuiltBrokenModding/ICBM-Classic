@@ -117,7 +117,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn));
                 for (EnumFacing facing : EnumFacing.HORIZONTALS)
                 {
-                    BlockPos pos = getPos().add(facing.getXOffset(), facing.getYOffset(), facing.getZOffset());
+                    BlockPos pos = getPos().add(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
                     for (EnumFacing enumfacing : EnumFacing.values())
                     {
                         world.notifyNeighborsOfStateChange(pos.offset(enumfacing), getBlockType(), false);
@@ -368,7 +368,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
                 for (EnumFacing rotation : EnumFacing.HORIZONTALS)
                 {
-                    double dist = position.distance(new Point(this.getPos().getX() + rotation.getXOffset(), this.getPos().getZ() + rotation.getZOffset()));
+                    double dist = position.distance(new Point(this.getPos().getX() + rotation.getFrontOffsetX(), this.getPos().getZ() + rotation.getFrontOffsetZ()));
 
                     if (dist < closest || closest < 0)
                     {

@@ -369,7 +369,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      */
     public Chunk getChunk()
     {
-        return world.getChunk(toBlockPos());
+        return world.getChunkFromBlockCoords(toBlockPos());
     }
 
     /** Marks a block for update */

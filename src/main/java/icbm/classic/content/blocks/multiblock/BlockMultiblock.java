@@ -31,7 +31,7 @@ public class BlockMultiblock extends BlockContainer
     {
         super(Material.ROCK);
         this.setRegistryName(ICBMConstants.DOMAIN, "multiblock");
-        this.setTranslationKey(ICBMConstants.PREFIX + "multiblock");
+        this.setUnlocalizedName(ICBMConstants.PREFIX + "multiblock");
         this.setHardness(2f);
         needsRandomTick = true;
     }

@@ -24,9 +24,9 @@ public class RedmatterBlockCollector
             for (int stepB = -size; stepB <= size; stepB++)
             {
                 //Offset by wall center point
-                int rx = wall.getXOffset() * size;
-                int ry = wall.getYOffset() * size;
-                int rz = wall.getZOffset() * size;
+                int rx = wall.getFrontOffsetX() * size;
+                int ry = wall.getFrontOffsetY() * size;
+                int rz = wall.getFrontOffsetZ() * size;
 
                 //Offset by step position on the wall based on facing
                 if (wall == EnumFacing.DOWN || wall == EnumFacing.UP)

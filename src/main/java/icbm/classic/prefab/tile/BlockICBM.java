@@ -31,7 +31,7 @@ public abstract class BlockICBM extends BlockContainer
         blockHardness = 10f;
         blockResistance = 10f;
         setRegistryName(ICBMConstants.DOMAIN, name.toLowerCase());
-        setTranslationKey(ICBMConstants.PREFIX + name.toLowerCase());
+        setUnlocalizedName(ICBMConstants.PREFIX + name.toLowerCase());
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 
@@ -49,7 +49,7 @@ public abstract class BlockICBM extends BlockContainer
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.byIndex(meta));
+        return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.getFront(meta));
     }
 
     @Override

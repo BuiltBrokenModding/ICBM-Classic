@@ -25,7 +25,7 @@ public class ItemBase extends Item
 
     public ItemBase setName(String name)
     {
-        this.setTranslationKey(ICBMConstants.PREFIX + name);
+        this.setUnlocalizedName(ICBMConstants.PREFIX + name);
         this.setRegistryName(ICBMConstants.PREFIX + name);
         return this;
     }
@@ -38,7 +38,7 @@ public class ItemBase extends Item
         EntityPlayer player = Minecraft.getMinecraft().player;
 
         //Generic info, shared by item group
-        splitAdd(getTranslationKey() + ".info", list, false, true);
+        splitAdd(getUnlocalizedName() + ".info", list, false, true);
 
         if (hasDetailedInfo(stack, player))
         {
@@ -69,7 +69,7 @@ public class ItemBase extends Item
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
     {
         //Per item detailed info
-        splitAdd(getTranslationKey(stack) + ".info", list, true, true);
+        splitAdd(getUnlocalizedName(stack) + ".info", list, true, true);
     }
 
     /**
@@ -85,7 +85,7 @@ public class ItemBase extends Item
     protected void getShiftDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
     {
         //Per item detailed info
-        splitAdd(getTranslationKey(stack) + ".info.detailed", list, true, true);
+        splitAdd(getUnlocalizedName(stack) + ".info.detailed", list, true, true);
     }
 
     protected void splitAdd(String translationKey, List<String> list, boolean addKeyIfEmpty, boolean translate)

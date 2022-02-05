@@ -31,7 +31,7 @@ public class BlockSpikes extends Block
     {
         super(Material.IRON);
         this.setRegistryName(ICBMConstants.PREFIX + "spikes");
-        this.setTranslationKey(ICBMConstants.PREFIX + "spikes");
+        this.setUnlocalizedName(ICBMConstants.PREFIX + "spikes");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(1.0F);
     }
@@ -92,7 +92,7 @@ public class BlockSpikes extends Block
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getRenderLayer()
+    public BlockRenderLayer getBlockLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }
@@ -104,7 +104,7 @@ public class BlockSpikes extends Block
     }
 
     @Override
-    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity)
+    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity)
     {
         // If the entity is a living entity
         if (entity instanceof EntityLivingBase)
@@ -125,7 +125,7 @@ public class BlockSpikes extends Block
     @Override
     public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (tab == getCreativeTab())
+        if (tab == this.getCreativeTabToDisplayOn())
         {
             for (EnumSpikes spikes : EnumSpikes.values())
             {

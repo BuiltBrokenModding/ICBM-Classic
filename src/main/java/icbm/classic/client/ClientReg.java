@@ -212,7 +212,7 @@ public class ClientReg
         {
             //Add block state
             final HashMap<EnumFacing,ModelResourceLocation> facingModelMap = new HashMap<>();
-            final String resourcePath = data.getRegistryName().getNamespace() + ":explosives/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":explosives/" + data.getRegistryName().getResourcePath();
 
             for(EnumFacing facing : EnumFacing.VALUES)
             {
@@ -232,7 +232,7 @@ public class ClientReg
         ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockExplosive), new ItemModelMapperExplosive(itemBlockModelMap, itemBlockModelMap.get(ICBMExplosives.CONDENSED)));
         ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockExplosive), itemBlockModelMap.values()
                 .stream()
-                .map(mrl -> new ResourceLocation(mrl.getNamespace(), mrl.getPath()))
+                .map(mrl -> new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()))
                 .collect(Collectors.toList())
                 .toArray(new ResourceLocation[itemBlockModelMap.values().size()]));
     }
@@ -261,12 +261,12 @@ public class ClientReg
     {
         for (IExplosiveData data : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            final String resourcePath = data.getRegistryName().getNamespace() + ":grenades/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":grenades/" + data.getRegistryName().getResourcePath();
             grenadeModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
 
         ModelLoader.registerItemVariants(ItemReg.itemGrenade, grenadeModelMap.values()
-                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+                .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
         ModelLoader.setCustomMeshDefinition(ItemReg.itemGrenade, new ItemModelMapperExplosive(grenadeModelMap, grenadeModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
@@ -274,11 +274,11 @@ public class ClientReg
     {
         for (IExplosiveData data : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            final String resourcePath = data.getRegistryName().getNamespace() + ":bombcarts/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":bombcarts/" + data.getRegistryName().getResourcePath();
             cartModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         ModelLoader.registerItemVariants(ItemReg.itemBombCart, cartModelMap.values()
-                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+                .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
         ModelLoader.setCustomMeshDefinition(ItemReg.itemBombCart, new ItemModelMapperExplosive(cartModelMap, cartModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
@@ -286,11 +286,11 @@ public class ClientReg
     {
         for (IExplosiveData data : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            final String resourcePath = data.getRegistryName().getNamespace() + ":missiles/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":missiles/" + data.getRegistryName().getResourcePath();
             missileModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         ModelLoader.registerItemVariants(ItemReg.itemMissile, missileModelMap.values()
-                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+                .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
         ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
     }
 

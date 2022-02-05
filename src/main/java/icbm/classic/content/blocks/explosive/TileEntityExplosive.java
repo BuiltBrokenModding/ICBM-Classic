@@ -108,7 +108,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     @Override
     public EnumFacing getDirection()
     {
-        return EnumFacing.byIndex(this.getBlockMetadata());
+        return EnumFacing.getFront(this.getBlockMetadata());
     }
 
     @Override

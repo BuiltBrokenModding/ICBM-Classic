@@ -63,10 +63,10 @@ public class ItemCrafting extends ItemICBMBase
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack)
+    public String getUnlocalizedName(ItemStack stack)
     {
         String subName = getSubItemName(stack.getItemDamage());
-        return super.getTranslationKey(stack) + (subName != null ? "." + subName : "");
+        return super.getUnlocalizedName(stack) + (subName != null ? "." + subName : "");
     }
 
     public String getSubItemName(int index)
