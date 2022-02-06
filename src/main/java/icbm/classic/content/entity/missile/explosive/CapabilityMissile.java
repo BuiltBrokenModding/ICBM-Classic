@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
  */
 public class CapabilityMissile implements IMissile
 {
-
     public final EntityExplosiveMissile missile;
 
     public CapabilityMissile(EntityExplosiveMissile missile)

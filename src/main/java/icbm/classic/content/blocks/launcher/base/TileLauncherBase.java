@@ -294,7 +294,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5); //TODO store offset
 
                     //Trigger launch event
-                    missile.capabilityMissile.launch(target.x(), target.y(), target.z(), lockHeight);
+                    missile.missileCapability.launch(target.x(), target.y(), target.z(), lockHeight);
 
                     //Spawn entity
                     ((WorldServer)getWorld()).addScheduledTask(() -> getWorld().spawnEntity(missile));

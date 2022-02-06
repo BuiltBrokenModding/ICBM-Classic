@@ -53,51 +53,46 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     public static final float MISSILE_SPEED = 2; //TODO what does this do?
 
+    //Explosive cap vars
     public int explosiveID = -1;
+    public NBTTagCompound blastData = new NBTTagCompound();
+    public boolean isExploding = false;
+
+    // Balistic flight vars
     public int maxHeight = 200;
     public Pos targetPos = null;
     public Pos launcherPos = null;
-
-    /**
-     * State check to prevent the missile from blowing up twice
-     */
-    public boolean isExploding = false;
-
     public int targetHeight = -1;
-    // Difference
+    public double lockHeight = 3;
+    public double flatDistance;
+    public float missileFlightTime;
+    public float acceleration;
+    public boolean wasSimulated = false;
+
+    // Balisitc flight animation
+    private final int maxPreLaunchSmokeTimer = 20;
+    public int preLaunchSmokeTimer = getMaxPreLaunchSmokeTimer();
+    private LinkedList<Pos> lastSmokePos = new LinkedList<>();
+    public int launcherHasAirBelow = -1;
+
+    // Generic shared missile data
     public double deltaPathX;
     public double deltaPathY;
     public double deltaPathZ;
-    // Flat Distance
-    public double flatDistance;
-    // The flight time in ticks
-    public float missileFlightTime;
-    // Acceleration
-    public float acceleration;
-    // Protection Time
-    public int protectionTime = 2;
+    public Pos motionVector = new Pos();
+    private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
+
 
     // Missile Type
     public MissileFlightType missileType = MissileFlightType.PAD_LAUNCHER;
 
-    public Pos motionVector = new Pos();
 
-    public double lockHeight = 3;
 
-    public boolean wasSimulated = false;
+    public final IEMPReceiver empCapability = new CapabilityEmpMissile(this);
+    public final IMissile missileCapability = new CapabilityMissile(this);
 
-    // Used for the rocket launcher preventing the players from killing themselves.
-    private final HashSet<Entity> ignoreEntity = new HashSet<Entity>();
 
-    public NBTTagCompound blastData = new NBTTagCompound();
 
-    public IEMPReceiver capabilityEMP;
-    public final IMissile capabilityMissile = new CapabilityMissile(this);
-
-    private final int maxPreLaunchSmokeTimer = 20;
-    public int preLaunchSmokeTimer = getMaxPreLaunchSmokeTimer();
-    public int launcherHasAirBelow = -1;
-    private LinkedList<Pos> lastSmokePos = new LinkedList<>();
 
     public EntityExplosiveMissile(World w)
     {
@@ -113,15 +108,11 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     {
         if (capability == CapabilityEMP.EMP)
         {
-            if (capabilityEMP == null)
-            {
-                capabilityEMP = new CapabilityEmpMissile(this);
-            }
-            return (T) capabilityEMP;
+            return (T) empCapability;
         }
         else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
         {
-            return (T) capabilityMissile;
+            return (T) missileCapability;
         }
         //TODO add explosive capability
         return super.getCapability(capability, facing);
@@ -210,7 +201,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
 
     /**
-     * Used {@link #capabilityMissile} {@link CapabilityMissile#launch(double, double, double, double)}
+     * Used {@link #missileCapability} {@link CapabilityMissile#launch(double, double, double, double)}
      *
      * @param target
      */
@@ -230,7 +221,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
         //Trigger events
         //TODO add generic event
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(capabilityMissile);
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(missileCapability);
 
         //Trigger code
         this.recalculatePath();
@@ -256,7 +247,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     /**
-     * Used {@link #capabilityMissile} {@link CapabilityMissile#launch(double, double, double, double)}
+     * Used {@link #missileCapability} {@link CapabilityMissile#launch(double, double, double, double)}
      *
      * @param target
      */
@@ -272,7 +263,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     public EntityExplosiveMissile ignore(Entity entity)
     {
-        ignoreEntity.add(entity);
+        collisionIgnoreList.add(entity);
         return this;
     }
 
@@ -321,11 +312,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         //this.dataWatcher.addObject(17, 0);
     }
 
-    @Override
-    public boolean canBeCollidedWith()
-    {
-        return true;
-    }
+
 
     @Override
     protected void updateMotion()
@@ -385,7 +372,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
                     // Look at the next point
                     //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
                 }
-                this.protectionTime--;
             }
             else
             {
@@ -409,7 +395,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
 
         //Trigger events
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(capabilityMissile);
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);
 
         super.updateMotion();
     }
@@ -460,13 +446,13 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected boolean ignoreImpact(RayTraceResult hit)
     {
-        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(capabilityMissile, this, hit));
+        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(missileCapability, this, hit));
     }
 
     @Override
     protected void postImpact(RayTraceResult hit)
     {
-        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(capabilityMissile, this, hit));
+        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(missileCapability, this, hit));
     }
 
     @Override
@@ -529,7 +515,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public AxisAlignedBB getCollisionBox(Entity entity)
     {
-        if (ignoreEntity.contains(entity))
+        if (collisionIgnoreList.contains(entity))
         {
             return null;
         }

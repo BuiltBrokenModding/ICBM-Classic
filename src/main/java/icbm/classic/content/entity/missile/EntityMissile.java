@@ -12,4 +12,10 @@ public class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<
     {
         super(world);
     }
+
+    @Override
+    public boolean canBeCollidedWith()
+    {
+        return true;
+    }
 }

@@ -18,12 +18,12 @@ public class CapabilityEmpMissile extends CapabilityEmpKill<EntityExplosiveMissi
     @Override
     protected void setDeadEmp(IBlast emp_blast, float power)
     {
-        if (ConfigEMP.ALLOW_MISSILE_DESTROY && entity.isEntityAlive() && !entity.capabilityMissile.hasExploded())
+        if (ConfigEMP.ALLOW_MISSILE_DESTROY && entity.isEntityAlive() && !entity.missileCapability.hasExploded())
         {
             //Drop missile items
             if (ConfigEMP.ALLOW_MISSILE_DROPS)
             {
-                entity.capabilityMissile.dropMissileAsItem();
+                entity.missileCapability.dropMissileAsItem();
             }
 
             //Kill missile
