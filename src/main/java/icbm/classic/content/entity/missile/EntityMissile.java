@@ -8,6 +8,9 @@ import net.minecraft.world.World;
  */
 public class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E>
 {
+    /** Speed of the missile when fired directly without a target */
+    public static final float DIRECT_FLIGHT_SPEED = 2;
+
     public EntityMissile(World world)
     {
         super(world);

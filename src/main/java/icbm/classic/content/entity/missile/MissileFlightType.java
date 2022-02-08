@@ -7,9 +7,9 @@ package icbm.classic.content.entity.missile;
 @Deprecated
 public enum MissileFlightType
 {
-    /** Missile fired from a tile launcher, missile will ark up then back down */
+    /** Missile fired from a tile launcher, missile will arc up then back down */
     PAD_LAUNCHER(false),
-    /** Missile fired from a cruise launcher, missile will fire in a strait line */
+    /** Missile fired from a cruise launcher, missile will fire in a straight line */
     CRUISE_LAUNCHER(true),
     /** Missile fired from a hand launcher (RPG), missile will fire in a strait line */
     HAND_LAUNCHER(true),

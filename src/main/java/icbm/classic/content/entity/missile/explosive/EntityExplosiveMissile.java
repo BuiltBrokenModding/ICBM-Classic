@@ -32,6 +32,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -51,14 +52,12 @@ import java.util.LinkedList;
 public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile> implements IEntityAdditionalSpawnData
 {
 
-    public static final float MISSILE_SPEED = 2; //TODO what does this do?
-
     //Explosive cap vars
     public int explosiveID = -1;
     public NBTTagCompound blastData = new NBTTagCompound();
     public boolean isExploding = false;
 
-    // Balistic flight vars
+    // Ballistic flight vars
     public int maxHeight = 200;
     public Pos targetPos = null;
     public Pos launcherPos = null;
@@ -69,7 +68,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public float acceleration;
     public boolean wasSimulated = false;
 
-    // Balisitc flight animation
+    // Ballistic flight animation
     private final int maxPreLaunchSmokeTimer = 20;
     public int preLaunchSmokeTimer = getMaxPreLaunchSmokeTimer();
     private LinkedList<Pos> lastSmokePos = new LinkedList<>();
@@ -116,7 +115,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         }
         //TODO add explosive capability
         return super.getCapability(capability, facing);
-
     }
 
     @Override
@@ -147,14 +145,15 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         return distance < d0 * d0;
     }
 
-    public String getEntityName()
+    @Override
+    public String getName()
     {
         final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID);
         if (data != null)
         {
-            return "icbm.missile." + data.getRegistryName();
+            return I18n.translateToLocal("missile." + data.getRegistryName().toString() + ".name");
         }
-        return "icbm.missile";
+        return I18n.translateToLocal("missile.icbmclassic:generic.name");
     }
 
     @Override
@@ -237,11 +236,11 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         {
             if (target != null)
             {
-                ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
+                ICBMClassic.logger().info("Launching " + this.getName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi() + " to " + targetPos.xi() + ", " + targetPos.yi() + ", " + targetPos.zi());
             }
             else
             {
-                ICBMClassic.logger().info("Launching " + this.getEntityName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
+                ICBMClassic.logger().info("Launching " + this.getName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
             }
         }
     }
@@ -300,7 +299,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
             }
             else if (missileType.movesDirectly)
             {
-                shoot(deltaPathX, deltaPathY, deltaPathZ, MISSILE_SPEED, 0);
+                shoot(deltaPathX, deltaPathY, deltaPathZ, DIRECT_FLIGHT_SPEED, 0);
             }
         }
     }

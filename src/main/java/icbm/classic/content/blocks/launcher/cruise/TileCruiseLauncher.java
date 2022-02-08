@@ -6,6 +6,7 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.items.ItemMissile;
@@ -352,7 +353,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
             EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(world)
                     .init(xi() + 0.5, yi() + 1.5, zi() + 0.5,
-                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), EntityExplosiveMissile.MISSILE_SPEED, 1);
+                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), EntityMissile.DIRECT_FLIGHT_SPEED, 1);
 
             entityMissile.missileType = MissileFlightType.CRUISE_LAUNCHER;
             entityMissile.explosiveID = this.getInventory().getStackInSlot(0).getItemDamage(); //TODO encode entire itemstack

@@ -180,6 +180,8 @@ explosive.icbmclassic:antimatter.name=Antimatter Explosives
 explosive.icbmclassic:redmatter.name=Red Matter Explosives
 
 ## Missile Form
+missile.icbmclassic:generic.name=Missile
+
 missile.icbmclassic:condensed.name=Conventional Missile
 missile.icbmclassic:shrapnel.name=Shrapnel Missile
 missile.icbmclassic:incendiary.name=Incendiary Missile
