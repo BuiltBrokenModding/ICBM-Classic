@@ -140,9 +140,9 @@ public class CommonProxy implements IGuiHandler
 
     }
 
-    public void spawnAirParticle(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
+    public void spawnAirParticle(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
-        PacketSpawnAirParticle.sendToAllClients(world, position, v, v1, v2, red, green, blue, scale, ticksToLive);
+        PacketSpawnAirParticle.sendToAllClients(world, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
     }
 
     public void spawnMissileSmoke(EntityMissile missile)

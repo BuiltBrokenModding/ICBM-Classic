@@ -1,6 +1,5 @@
 package icbm.classic.client.fx;
 
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.particle.ParticleSmokeNormal;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,9 +11,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleAirICBM extends ParticleSmokeNormal
 {
-    public ParticleAirICBM(World worldIn, Pos pos, double vx, double vy, double vz, float scale)
+    public ParticleAirICBM(World worldIn, double x, double y, double z, double vx, double vy, double vz, float scale)
     {
-        super(worldIn, pos.x(), pos.y(), pos.z(), vx, vy, vz, scale);
+        super(worldIn, x, y, z, vx, vy, vz, scale);
     }
 
     public ParticleAirICBM setAge(int age)

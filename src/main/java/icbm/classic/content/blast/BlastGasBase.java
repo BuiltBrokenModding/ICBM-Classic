@@ -1,12 +1,11 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.explosion.IBlastTickable;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.potion.CustomPotionEffect;
-import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.NBTConstants;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +15,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -330,20 +330,22 @@ public class BlastGasBase extends Blast implements IBlastTickable
         return !isImpassable;
     }
 
-    private boolean isInRange(BlockPos pos, int radiusSq)
+    private boolean isInRange(final Vec3i pos, final int radiusSq)
     {
         return (int) Math.floor(pos.distanceSq(xi(), yi(), zi())) <= radiusSq;
     }
 
-    private void spawnGasParticles(BlockPos pos)
+    private void spawnGasParticles(final Vec3i pos)
     {
-        for (int j = 0; j < 1; j++) //TODO send packet to client to spawn all 5 at once
-        {
-            ICBMClassic.proxy.spawnAirParticle(world, new Pos(pos),
-                    (Math.random() - 0.5) / 2, (Math.random() - 0.5) / 2 - 0.1, (Math.random() - 0.5) / 2,
-                    this.red, this.green, this.blue,
-                    7.0F, duration);
-        }
+        ICBMClassic.proxy.spawnAirParticle(world,
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                (Math.random() - 0.5) / 2,
+                (Math.random() - 0.5) / 2 - 0.1,
+                (Math.random() - 0.5) / 2,
+                this.red, this.green, this.blue,
+                7.0F, duration);
     }
 
     @Override

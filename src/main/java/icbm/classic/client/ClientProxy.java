@@ -30,11 +30,11 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void spawnAirParticle(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
+    public void spawnAirParticle(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         if (world != null)
         {
-            ParticleAirICBM particleAirParticleICBM = new ParticleAirICBM(world, position, v, v1, v2, scale);
+            ParticleAirICBM particleAirParticleICBM = new ParticleAirICBM(world, x, y, z, v, v1, v2, scale);
             particleAirParticleICBM.setColor(red, green, blue, true);
             particleAirParticleICBM.setAge(ticksToLive);
             Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
@@ -80,8 +80,16 @@ public class ClientProxy extends CommonProxy
                                 for (int i = 0; i < 10; i++)
                                 {
                                     // smoke below the launcher
-                                    spawnAirParticle(missile.world, launcherSmokePosition, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 8, 180);
-                                    launcherSmokePosition = launcherSmokePosition.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+                                    spawnAirParticle(missile.world,
+                                            launcherSmokePosition.x(), launcherSmokePosition.y(), launcherSmokePosition.z(),
+                                            velocity.x(), velocity.y(), velocity.z(),
+                                            1, 1, 1,
+                                            8, 180);
+
+                                    launcherSmokePosition = launcherSmokePosition
+                                            .multiply(1 - 0.025 * Math.random(),
+                                                    1 - 0.025 * Math.random(),
+                                                    1 - 0.025 * Math.random());
                                 }
                             }
 
@@ -89,7 +97,11 @@ public class ClientProxy extends CommonProxy
                             {
                                 Pos velocity = new Pos(0, 0.25, 0).addRandom(missile.world.rand, 0.125);
                                 // smoke below the launcher
-                                spawnAirParticle(missile.world, position, velocity.x(), velocity.y(), velocity.z(), 1, 1, 1, 5, 40);
+                                spawnAirParticle(missile.world,
+                                        position.x(), position.y(), position.z(),
+                                        velocity.x(), velocity.y(), velocity.z(),
+                                        1, 1, 1,
+                                        5,40);
                             }
                         }
                         else
@@ -101,12 +113,20 @@ public class ClientProxy extends CommonProxy
                                 lastPos = missile.getLastSmokePos().get(0);
                                 missile.getLastSmokePos().remove(0);
                             }
-                            spawnAirParticle(missile.world, position, -missile.motionX * 0.75, -missile.motionY * 0.75, -missile.motionZ * 0.75, 1, 0.75f, 0, 5, 10);
+                            spawnAirParticle(missile.world,
+                                    position.x(), position.y(), position.z(),
+                                    -missile.motionX * 0.75, -missile.motionY * 0.75, -missile.motionZ * 0.75,
+                                    1, 0.75f, 0,
+                                    5, 10);
                             if (missile.ticksInAir > 5 && lastPos != null)
                             {
                                 for (int i = 0; i < 10; i++)
                                 {
-                                    spawnAirParticle(missile.world, lastPos, -missile.motionX * 0.5, -missile.motionY * 0.5, -missile.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + missile.posY / 100))), 100);
+                                    spawnAirParticle(missile.world,
+                                            lastPos.x(), lastPos.y(), lastPos.z(),
+                                            -missile.motionX * 0.5, -missile.motionY * 0.5, -missile.motionZ * 0.5,
+                                            1, 1, 1,
+                                            (int) Math.max(1d, 6d * (1 / (1 + missile.posY / 100))), 100);
                                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                                 }
                             }
@@ -132,7 +152,11 @@ public class ClientProxy extends CommonProxy
 
                 for (int i = 0; i < 10; i++)
                 {
-                    spawnAirParticle(missile.world, position, -missile.motionX * 0.5, -missile.motionY * 0.5, -missile.motionZ * 0.5, 1, 1, 1, (int) Math.max(1d, 6d * (1 / (1 + missile.posY / 100))), 100);
+                    spawnAirParticle(missile.world,
+                            position.x(), position.y(), position.z(),
+                            -missile.motionX * 0.5, -missile.motionY * 0.5, -missile.motionZ * 0.5,
+                            1, 1, 1,
+                            (int) Math.max(1d, 6d * (1 / (1 + missile.posY / 100))), 100);
                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                 }
             }
