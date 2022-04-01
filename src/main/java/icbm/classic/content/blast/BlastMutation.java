@@ -1,6 +1,7 @@
 package icbm.classic.content.blast;
 
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityPig;
@@ -16,33 +17,43 @@ public class BlastMutation extends Blast
     {
         if (!this.world().isRemote)
         {
-            AxisAlignedBB bounds = new AxisAlignedBB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
-            List<EntityLiving> entitiesNearby = world().getEntitiesWithinAABB(EntityLiving.class, bounds);
+            final AxisAlignedBB bounds = new AxisAlignedBB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
+            final List<EntityLiving> entitiesNearby = world().getEntitiesWithinAABB(EntityLiving.class, bounds);
 
             for (EntityLiving entity : entitiesNearby)
             {
-                if (entity instanceof EntityPig)
-                {
-                    EntityPigZombie newEntity = new EntityPigZombie(world());
-                    newEntity.preventEntitySpawning = true;
-                    newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
-                    entity.setDead();
-                    world().spawnEntity(newEntity);
-                }
-                else if (entity instanceof EntityVillager)
-                {
-                    EntityZombieVillager newEntity = new EntityZombieVillager(world());
-                    newEntity.preventEntitySpawning = true;
-                    newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
-                    newEntity.setForgeProfession(((EntityVillager)entity).getProfessionForge());
-                    entity.setDead();
-                    world().spawnEntity(newEntity);
-                }
+                applyMutationEffect(entity);
             }
         }
         return false;
     }
 
+    public static boolean applyMutationEffect(final EntityLivingBase entity)
+    {
+        if (entity instanceof EntityPig)
+        {
+            final EntityPigZombie newEntity = new EntityPigZombie(entity.world);
+            newEntity.preventEntitySpawning = true;
+            newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
+            entity.setDead();
+            entity.world.spawnEntity(newEntity);
+            return true;
+        }
+        else if (entity instanceof EntityVillager)
+        {
+            final EntityZombieVillager newEntity = new EntityZombieVillager(entity.world);
+            newEntity.preventEntitySpawning = true;
+            newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
+            newEntity.setForgeProfession(((EntityVillager) entity).getProfessionForge());
+            entity.setDead();
+            entity.world.spawnEntity(newEntity);
+            return true;
+        }
+        return false;
+    }
+
     @Override //disable the sound for this explosive
-    protected void playExplodeSound() {}
+    protected void playExplodeSound()
+    {
+    }
 }

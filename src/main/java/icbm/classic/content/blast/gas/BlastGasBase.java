@@ -1,17 +1,14 @@
-package icbm.classic.content.blast;
+package icbm.classic.content.blast.gas;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastTickable;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.potion.CustomPotionEffect;
+import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.NBTConstants;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -23,34 +20,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class BlastGasBase extends Blast implements IBlastTickable
+public abstract class BlastGasBase extends Blast implements IBlastTickable
 {
-    //Cache damage
-    public static final DamageSource CONTAGIUS_DAMAGE = new DamageSource("icbm.contagious");
-    public static final DamageSource CHEMICAL_DAMAGE = new DamageSource("icbm.chemical");
-
-    //Settings
+    /** Delay between running calculations */
     private static final int TICKS_BETWEEN_RUNS = 5;
 
-    //Cache usage
+    /** Mutable block pos for pathing */
     private static final BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
 
+    /** Duration of gas effect, also controls particles */
+    protected int duration;
 
-    private int duration;
-
-    // Color of particles
-    private float red = 1, green = 1, blue = 1;
     private boolean playShortSoundFX;
-    private boolean applyConfusionEffect, applyPoisonEffect, applyContagiousEffect, mutateEntities;
 
     private int lastRadius = 0;
 
-    //AOE
-    private HashSet<BlockPos> affectedBlocks = new HashSet();
-    private Queue<BlockPos> edgeBlocks = new LinkedList();
+    /** Blocks pathed */
+    private final HashSet<BlockPos> affectedBlocks = new HashSet();
+    /** Queue of edge blocks to path */
+    private final Queue<BlockPos> edgeBlocks = new LinkedList();
 
-    //Damage tracker for entities effected
-    private HashMap<EntityLivingBase, Integer> impactedEntityMap = new HashMap();
+    /** Entities impacted by gas */
+    private final HashMap<EntityLivingBase, Integer> impactedEntityMap = new HashMap();
     //TODO turn into entity capability to prevent damage stacking of several explosives
     //TODO use weak refs to not hold instances
 
@@ -65,39 +56,13 @@ public class BlastGasBase extends Blast implements IBlastTickable
         return Math.min(1, 2f * timePassed / duration + 0.1f);
     }
 
-    public BlastGasBase setRGB(float r, float g, float b)
-    {
-        this.red = r;
-        this.green = g;
-        this.blue = b;
-        return this;
-    }
-
-    public BlastGasBase setConfuse()
-    {
-        this.applyConfusionEffect = true;
-        return this;
-    }
-
-    public BlastGasBase setPoison()
-    {
-        this.applyPoisonEffect = true;
-        return this;
-    }
-
-    public BlastGasBase setContagious()
-    {
-        this.applyContagiousEffect = true;
-        this.mutateEntities = true;
-        return this;
-    }
-
     @Override
     public boolean doExplode(int callCount)
     {
         //Play start audio
         if (callCount == 0 && !this.playShortSoundFX)
         {
+            //TODO look into different sounds per type
             ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
 
@@ -107,14 +72,10 @@ public class BlastGasBase extends Blast implements IBlastTickable
             setEffectBoundsAndSpawnParticles(this.callCount); // recalculate the affected blocks (where particles spawn, poison is applied, etc.)
 
             //Trigger effects for user feedback
-            //generateGraphicEffect();
             generateAudioEffect();
 
-            //Spawn particles
-            //affectedBlocks.forEach(pos -> spawnGasParticles(pos));
-
             //Only run potion effect application for the following types
-            if (applyConfusionEffect || applyContagiousEffect || applyPoisonEffect || mutateEntities)
+            if (canEffectEntities())
             {
                 final double radius = this.getBlastRadius();
 
@@ -142,43 +103,9 @@ public class BlastGasBase extends Blast implements IBlastTickable
                     //Scale damage with hit count
                     final int hitCount = impactedEntityMap.get(entity);
 
-                    if (this.applyContagiousEffect)
-                    {
-                        ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity, 3);
-                        if (hitCount > 10)
-                        {
-                            entity.attackEntityFrom(CONTAGIUS_DAMAGE, (hitCount - 10f) / 5);
-                        }
-                    }
-
-                    if (this.applyPoisonEffect)
-                    {
-                        ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
-                        if (hitCount > 20)
-                        {
-                            entity.attackEntityFrom(CHEMICAL_DAMAGE, (hitCount - 10f) / 10);
-                        }
-                    }
-
-                    if (this.applyConfusionEffect)
-                    {
-                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0));
-                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
-                        entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
-                    }
+                    //Apply effects
+                    applyEffect(entity, hitCount);
                 }
-            }
-
-            //Trigger secondary blast which mutates mobs similar to a lightning strike
-            if (this.mutateEntities)
-            {
-                new BlastMutation()
-                .setBlastWorld(world())
-                .setBlastSource(this.exploder)
-                .setBlastPosition(location.x(), location.y(), location.z())
-                .setBlastSize(getBlastRadius())
-                .setExplosiveData(ICBMExplosives.MUTATION)
-                .buildBlast().runBlast(); //TODO trigger from explosive handler
             }
 
             //End explosion when we hit life timer
@@ -189,28 +116,36 @@ public class BlastGasBase extends Blast implements IBlastTickable
     }
 
     /**
+     * Checks if this gas explosion wants to apply effects to entities directly
+     *
+     * @return true to run effects
+     */
+    protected abstract boolean canEffectEntities();
+
+    /**
+     * Called to apply effects to entities
+     *
+     * @param entity   to impact
+     * @param hitCount level of impact
+     */
+    protected void applyEffect(final EntityLivingBase entity, final int hitCount)
+    {
+
+    }
+
+    /**
      * Checking that the entity can be harmed or an effect can be applied
      *
      * @param entity
-     * @return
+     * @return true to effect entity
      */
-    private boolean canGasEffect(EntityLivingBase entity)
+    protected boolean canGasEffect(EntityLivingBase entity)
     {
         //Ignore dead things
         if (entity.isEntityAlive())
         {
             //Always ignore non-gameplay characters
             if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative())
-            {
-                return false;
-            }
-
-            //Check that we can harm the entity
-            else if (applyContagiousEffect && entity.isEntityInvulnerable(CONTAGIUS_DAMAGE)) //TODO add ignore list for zombies and skeletons
-            {
-                return false;
-            }
-            else if (applyPoisonEffect && entity.isEntityInvulnerable(CHEMICAL_DAMAGE))
             {
                 return false;
             }
@@ -230,7 +165,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
         }
     }
 
-    private void setEffectBoundsAndSpawnParticles(int timePassed)
+    private void setEffectBoundsAndSpawnParticles(int timePassed) //TODO move to pathfinder object for reuse
     {
         final int maxSize = (int) Math.ceil(this.getBlastRadius());
         //Get and validate radius
@@ -254,9 +189,9 @@ public class BlastGasBase extends Blast implements IBlastTickable
         if (edgeBlocks.isEmpty())
         {
             affectedBlocks
-            .stream()
-            .filter((pos) -> Math.random() > 0.5)
-            .forEach(pos -> edgeBlocks.add(pos));
+                    .stream()
+                    .filter((pos) -> Math.random() > 0.5)
+                    .forEach(pos -> edgeBlocks.add(pos));
         }
 
         //Track blocks we pathed but didn't need
@@ -307,25 +242,33 @@ public class BlastGasBase extends Blast implements IBlastTickable
         edgeBlocks.addAll(nextSet);
     }
 
-    private boolean isValidPath(BlockPos pos, EnumFacing direction)
+    private boolean isValidPath(final BlockPos pos, final EnumFacing direction)
     {
-        IBlockState blockState = world.getBlockState(pos);
+        final IBlockState blockState = world.getBlockState(pos);
         final AxisAlignedBB aabb = blockState.getCollisionBoundingBox(world, pos);
         if (aabb == null) // if there is no bounding box, its pass through, so its a valid path
+        {
             return true;
+        }
 
         // whether or not the respective axes are completely stretched (they span form one side of the block to another)
-        boolean xFull = aabb.minX==0 && aabb.maxX == 1;
-        boolean yFull = aabb.minY==0 && aabb.maxY == 1;
-        boolean zFull = aabb.minZ==0 && aabb.maxZ == 1;
+        boolean xFull = aabb.minX == 0 && aabb.maxX == 1;
+        boolean yFull = aabb.minY == 0 && aabb.maxY == 1;
+        boolean zFull = aabb.minZ == 0 && aabb.maxZ == 1;
 
         boolean isImpassable = false;
         if (direction == EnumFacing.UP || direction == EnumFacing.DOWN)
+        {
             isImpassable = xFull && zFull;
+        }
         else if (direction == EnumFacing.NORTH || direction == EnumFacing.SOUTH)
+        {
             isImpassable = xFull && yFull;
+        }
         else if (direction == EnumFacing.WEST || direction == EnumFacing.EAST)
+        {
             isImpassable = zFull && yFull;
+        }
 
         return !isImpassable;
     }
@@ -335,7 +278,7 @@ public class BlastGasBase extends Blast implements IBlastTickable
         return (int) Math.floor(pos.distanceSq(xi(), yi(), zi())) <= radiusSq;
     }
 
-    private void spawnGasParticles(final Vec3i pos)
+    protected void spawnGasParticles(final Vec3i pos)
     {
         ICBMClassic.proxy.spawnAirParticle(world,
                 pos.getX(),
@@ -344,8 +287,25 @@ public class BlastGasBase extends Blast implements IBlastTickable
                 (Math.random() - 0.5) / 2,
                 (Math.random() - 0.5) / 2 - 0.1,
                 (Math.random() - 0.5) / 2,
-                this.red, this.green, this.blue,
+                getParticleColorRed(pos),
+                getParticleColorGreen(pos),
+                getParticleColorBlue(pos),
                 7.0F, duration);
+    }
+
+    protected float getParticleColorRed(final Vec3i pos)
+    {
+        return (float) Math.random();
+    }
+
+    protected float getParticleColorGreen(final Vec3i pos)
+    {
+        return (float) Math.random();
+    }
+
+    protected float getParticleColorBlue(final Vec3i pos)
+    {
+        return (float) Math.random();
     }
 
     @Override
@@ -353,13 +313,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
     {
         super.load(nbt);
         this.duration = nbt.getInteger(NBTConstants.DURATION);
-        this.applyContagiousEffect = nbt.getBoolean(NBTConstants.IS_CONTAGIOUS);
-        this.applyPoisonEffect = nbt.getBoolean(NBTConstants.IS_POISONOUS);
-        this.applyConfusionEffect = nbt.getBoolean(NBTConstants.IS_CONFUSE);
-        this.mutateEntities = nbt.getBoolean(NBTConstants.IS_MUTATE);
-        this.red = nbt.getFloat(NBTConstants.RED);
-        this.green = nbt.getFloat(NBTConstants.GREEN);
-        this.blue = nbt.getFloat(NBTConstants.BLUE);
         this.playShortSoundFX = nbt.getBoolean(NBTConstants.PLAY_SHORT_SOUND_FX);
     }
 
@@ -368,13 +321,6 @@ public class BlastGasBase extends Blast implements IBlastTickable
     {
         super.save(nbt);
         nbt.setInteger(NBTConstants.DURATION, this.duration);
-        nbt.setBoolean(NBTConstants.IS_CONTAGIOUS, this.applyContagiousEffect);
-        nbt.setBoolean(NBTConstants.IS_POISONOUS, this.applyPoisonEffect);
-        nbt.setBoolean(NBTConstants.IS_CONFUSE, this.applyConfusionEffect);
-        nbt.setBoolean(NBTConstants.IS_MUTATE, this.mutateEntities);
-        nbt.setFloat(NBTConstants.RED, this.red);
-        nbt.setFloat(NBTConstants.GREEN, this.green);
-        nbt.setFloat(NBTConstants.BLUE, this.blue);
         nbt.setBoolean(NBTConstants.PLAY_SHORT_SOUND_FX, this.playShortSoundFX);
     }
 }

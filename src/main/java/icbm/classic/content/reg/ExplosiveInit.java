@@ -17,13 +17,15 @@ import icbm.classic.content.blast.BlastEnderman;
 import icbm.classic.content.blast.BlastEndothermic;
 import icbm.classic.content.blast.BlastExothermic;
 import icbm.classic.content.blast.BlastFire;
-import icbm.classic.content.blast.BlastGasBase;
 import icbm.classic.content.blast.BlastMutation;
 import icbm.classic.content.blast.BlastRot;
 import icbm.classic.content.blast.BlastShrapnel;
 import icbm.classic.content.blast.BlastSonic;
 import icbm.classic.content.blast.BlastTNT;
 import icbm.classic.content.blast.BlastTNT.PushType;
+import icbm.classic.content.blast.gas.BlastChemical;
+import icbm.classic.content.blast.gas.BlastConfusion;
+import icbm.classic.content.blast.gas.BlastContagious;
 import icbm.classic.content.blast.redmatter.BlastRedmatterSpawner;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
@@ -77,8 +79,7 @@ public class ExplosiveInit
 
 
         ICBMExplosives.DEBILITATION = newEx(3, "debilitation", EnumTier.ONE,
-                () -> new BlastGasBase(20 * 30, false)
-                .setConfuse().setBlastSize(20));
+                () -> new BlastConfusion().setBlastSize(20));
 
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.DEBILITATION.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.DEBILITATION);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ICBMExplosives.DEBILITATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.DEBILITATION);
@@ -86,8 +87,7 @@ public class ExplosiveInit
 
 
         ICBMExplosives.CHEMICAL = newEx(4, "chemical", EnumTier.ONE,
-                () -> new BlastGasBase(20 * 30, false)
-                .setPoison().setRGB(0.8f, 0.8f, 0).setBlastSize(20));
+                () -> new BlastChemical().setBlastSize(20));
 
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.CHEMICAL.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CHEMICAL);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ICBMExplosives.CHEMICAL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.CHEMICAL);
@@ -126,8 +126,7 @@ public class ExplosiveInit
 
 
         ICBMExplosives.CONTAGIOUS = newEx(9, "contagious", EnumTier.TWO,
-                () -> new BlastGasBase(20 * 30, false)
-                .setContagious().setRGB(0.3f, 0.8f, 0).setBlastSize(20));
+                () -> new BlastContagious().setBlastSize(20));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.CONTAGIOUS.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.CONTAGIOUS);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.CONTAGIOUS.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.CONTAGIOUS);
 
