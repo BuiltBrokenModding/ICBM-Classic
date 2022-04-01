@@ -17,6 +17,7 @@ public final class ICBMExplosives
     public static IExplosiveData ANVIL;
     public static IExplosiveData REPULSIVE;
     public static IExplosiveData ATTRACTIVE;
+    public static IExplosiveData COLOR;
 
     //=================== Tier 2
     public static IExplosiveData FRAGMENTATION;

@@ -24,6 +24,7 @@ import icbm.classic.content.blast.BlastSonic;
 import icbm.classic.content.blast.BlastTNT;
 import icbm.classic.content.blast.BlastTNT.PushType;
 import icbm.classic.content.blast.gas.BlastChemical;
+import icbm.classic.content.blast.gas.BlastColor;
 import icbm.classic.content.blast.gas.BlastConfusion;
 import icbm.classic.content.blast.gas.BlastContagious;
 import icbm.classic.content.blast.redmatter.BlastRedmatterSpawner;
@@ -222,6 +223,10 @@ public class ExplosiveInit
         ///* 26 */MISSILE_ANTI(new MissileAnti());
         ///* 27 */MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO));
         ///* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster())
+
+        //New Explosives not part of classic original
+        ICBMExplosives.COLOR = newEx(-1, "colors", EnumTier.ONE,
+                () -> new BlastColor().setBlastSize(10));
     }
 
     private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)
