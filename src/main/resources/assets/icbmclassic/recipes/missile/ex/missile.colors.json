@@ -12,11 +12,12 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "m": {
-      "item": "icbmclassic:missile",
-      "data": 24
+      "item": "icbmclassic:colors",
+      "data": 27
     },
     "C": {
-      "item": "minecraft:dye"
+      "item": "minecraft:dye",
+      "data": 32767
     }
   }
 }
