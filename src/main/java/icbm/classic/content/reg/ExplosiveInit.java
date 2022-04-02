@@ -225,7 +225,7 @@ public class ExplosiveInit
         ///* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster())
 
         //New Explosives not part of classic original
-        ICBMExplosives.COLOR = newEx(-1, "colors", EnumTier.ONE,
+        ICBMExplosives.COLOR = newEx(27, "colors", EnumTier.ONE,
                 () -> new BlastColor().setBlastSize(10));
     }
 
