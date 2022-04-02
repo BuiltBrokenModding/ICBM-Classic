@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "icbmclassic:missile",
+    "data": 27,
+    "count": 1
+  },
+  "pattern": [
+    "CCC",
+    "CmC",
+    "CCC"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "m": {
+      "item": "icbmclassic:missile",
+      "data": 24
+    },
+    "C": {
+      "item": "minecraft:dye"
+    }
+  }
+}
