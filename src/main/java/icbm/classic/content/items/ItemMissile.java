@@ -71,6 +71,7 @@ public class ItemMissile extends ItemICBMBase
             {
                 items.add(new ItemStack(this, 1, id));
             }
+            items.add(new ItemStack(this, 1, 24)); //TODO fix work around for missile module not counting as a missile
         }
     }
 
