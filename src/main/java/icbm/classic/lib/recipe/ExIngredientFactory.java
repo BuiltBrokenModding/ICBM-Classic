@@ -33,7 +33,12 @@ public class ExIngredientFactory implements IIngredientFactory
     public static ItemStack getStack(JsonObject json)
     {
         final String device = JsonUtils.getString(json, DEVICE_KEY, ICBMClassicAPI.EX_BLOCK.toString());
-        final String explosive = JsonUtils.getString(json, "explosive");
+
+        //TODO fix having to work around missile module not showing in content registry as `icbmclassic:missile`
+        if("icbmclassic:missile.module".equalsIgnoreCase(device)) {
+            return new ItemStack(ItemReg.itemMissile, 1, 24);
+        }
+
         final String explosive = JsonUtils.getString(json, EX_KEY);
 
         final IExplosiveContentRegistry reg = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getContentRegistry(new ResourceLocation(device));
