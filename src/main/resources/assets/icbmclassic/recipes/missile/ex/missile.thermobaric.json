@@ -10,8 +10,8 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "m": {
-      "item": "icbmclassic:missile",
-      "data": 24
+      "type" : "icbmclassic:explosive",
+      "device": "icbmclassic:missile.module"
     },
     "c": {
       "item": "icbmclassic:explosives",
