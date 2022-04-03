@@ -96,7 +96,7 @@ public class EntityXmasSnowman extends EntityXmasSkeleton
         fragment.posZ += (deltaZ / distance) * 0.5;
 
         //Settings
-        final float randomAim = (float) (14 - this.world.getDifficulty().getId() * 4);
+        final float randomAim = (float) (14 - this.world.getDifficulty().getDifficultyId() * 4);
         final float power = 0.5F;
 
         //Aim arrow

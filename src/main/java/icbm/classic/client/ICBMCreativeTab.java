@@ -135,7 +135,7 @@ public class ICBMCreativeTab extends CreativeTabs
     }
 
     @Override
-    public ItemStack createIcon()
+    public ItemStack getTabIconItem()
     {
         return new ItemStack(ItemReg.itemMissile);
     }

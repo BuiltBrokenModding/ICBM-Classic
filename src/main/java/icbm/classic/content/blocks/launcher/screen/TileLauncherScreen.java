@@ -90,7 +90,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                 launchDelay--;
             }
             //Only launch if redstone
-            else if (ticks % 10 == 0 && world.getRedstonePowerFromNeighbors(getPos()) > 0) //TODO replace with countdown
+            else if (ticks % 10 == 0 && world.getStrongPower(getPos()) > 0) //TODO replace with countdown
             {
                 this.launch();
             }

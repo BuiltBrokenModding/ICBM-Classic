@@ -87,7 +87,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
                     sendDescPacket();
                 }
 
-                if (world.getRedstonePowerFromNeighbors(getPos()) > 0) //TODO convert to a state handler
+                if (world.getStrongPower(getPos()) > 0) //TODO convert to a state handler
                 {
                     fire();
                 }
@@ -202,7 +202,7 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
         if (this.checkExtract() && this.isReady())
         {
             //Finish and trigger
-            if (buildBlast().runBlast() == BlastState.TRIGGERED)
+            if (buildBlast().runBlast().state == BlastState.TRIGGERED)
             {
                 //Consume energy
                 this.extractEnergy();

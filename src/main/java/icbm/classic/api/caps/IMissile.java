@@ -2,7 +2,7 @@ package icbm.classic.api.caps;
 
 
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -20,7 +20,7 @@ public interface IMissile extends IWorldPosition
     /**
      * Called to trigger the missile's explosion logic
      */
-    BlastState doExplosion();
+    BlastResponse doExplosion();
 
     /**
      * Has the missile exploded
@@ -38,7 +38,7 @@ public interface IMissile extends IWorldPosition
      */
     default void destroyMissile(boolean fullExplosion) //TODO add reason as input data
     {
-        if (!hasExploded() && !doExplosion().good)
+        if (!hasExploded() && !doExplosion().state.good)
         {
             dropMissileAsItem();
         }

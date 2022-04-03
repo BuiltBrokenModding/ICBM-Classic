@@ -3,6 +3,7 @@ package icbm.classic.content.entity.missile;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
@@ -158,7 +159,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityEMP.EMP || super.hasCapability(capability, facing);
+        return capability == CapabilityEMP.EMP || capability == ICBMClassicAPI.MISSILE_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @SideOnly(Side.CLIENT)
@@ -477,7 +478,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
     }
 
     @Override
-    protected void onImpactTile()
+    protected void onImpactTile(RayTraceResult hit)
     {
         doExplosion();
     }
@@ -595,7 +596,23 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
         super.setDead();
     }
 
-    public BlastState doExplosion()
+    protected void logImpact() {
+        // TODO make optional via config
+        // TODO log to ICBM file separated from main config
+        // TODO offer hook for database logging
+        final String formatString = "Missile[%s] E_ID(%s) impacted at (%sx,%sy,%sz,%sd)";
+        final String formattedMessage = String.format(formatString,
+                this.explosiveID,
+                this.getEntityId(),
+                xi(),
+                yi(),
+                zi(),
+                world().provider.getDimension()
+        );
+        ICBMClassic.logger().info(formattedMessage);
+    }
+
+    public BlastResponse doExplosion()
     {
         //Eject from riding
         dismountRidingEntity();
@@ -608,7 +625,7 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
             if (!this.isExploding)
             {
                 //Log that the missile impacted
-                ICBMClassic.logger().info(this.getEntityName() + " (" + this.getEntityId() + ") exploded in " + (int) this.posX + ", " + (int) this.posY + ", " + (int) this.posZ);
+                logImpact();
 
                 //Make sure to note we are currently exploding
                 this.isExploding = true;
@@ -620,14 +637,13 @@ public class EntityMissile extends EntityProjectile implements IEntityAdditional
                 {
                     return ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosiveID, 1, blastData);
                 }
-                return BlastState.TRIGGERED;
+                return BlastState.TRIGGERED_CLIENT.genericResponse;
             }
-            return BlastState.ALREADY_TRIGGERED;
+            return BlastState.ALREADY_TRIGGERED.genericResponse;
         }
         catch (Exception e)
         {
-            ICBMClassic.logger().error("EntityMissile#normalExplode() - Unexpected error while triggering explosive on missile", e);
-            return BlastState.ERROR;
+            return new BlastResponse(BlastState.ERROR, e.getMessage(), e);
         }
     }
 

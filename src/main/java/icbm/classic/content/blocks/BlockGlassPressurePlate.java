@@ -20,14 +20,14 @@ public class BlockGlassPressurePlate extends BlockPressurePlate
         this.setHardness(0.3F);
         this.setSoundType(SoundType.GLASS);
         this.setRegistryName(ICBMConstants.PREFIX + "glassPressurePlate");
-        this.setTranslationKey(ICBMConstants.PREFIX + "glassPressurePlate");
+        this.setUnlocalizedName(ICBMConstants.PREFIX + "glassPressurePlate");
         this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setDefaultState(getDefaultState().withProperty(POWERED, false));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getRenderLayer()
+    public BlockRenderLayer getBlockLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }

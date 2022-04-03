@@ -247,9 +247,9 @@ public class BlastTNT extends Blast
 
         for (Entity entity : entities)
         {
-            double var13 = entity.getDistance(location.x(), location.y(), location.z()) / radius;
+            double distanceScale = entity.getDistance(location.x(), location.y(), location.z()) / radius;
 
-            if (var13 <= 1.0D)
+            if (distanceScale <= 1.0D)
             {
                 //Get delta
                 double xDifference = entity.posX - location.x();
@@ -266,12 +266,12 @@ public class BlastTNT extends Blast
 
                 if (type == PushType.ATTRACT)
                 {
-                    double modifier = var13 * force * (entity instanceof EntityPlayer ? 0.5 : 1);
+                    double modifier = distanceScale * force * (entity instanceof EntityPlayer ? 0.5 : 1);
                     entity.addVelocity(-xDifference * modifier, -yDifference * modifier, -zDifference * modifier);
                 }
                 else if (type == PushType.REPEL)
                 {
-                    double modifier = (1.0D - var13) * force * (entity instanceof EntityPlayer ? 0.5 : 1);
+                    double modifier = (1.0D - distanceScale) * force * (entity instanceof EntityPlayer ? 0.5 : 1);
                     entity.addVelocity(xDifference * modifier, yDifference * modifier, zDifference * modifier);
                 }
             }

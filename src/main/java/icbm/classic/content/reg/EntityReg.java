@@ -2,7 +2,15 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
-import icbm.classic.content.entity.*;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.content.entity.EntityBombCart;
+import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.EntityFragments;
+import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.EntityLightBeam;
+import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.entity.missile.EntityMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -33,6 +41,7 @@ public final class EntityReg
         event.getRegistry().register(buildEntityEntry(EntityGrenade.class, ICBMEntities.GRENADE, 50, 5));
         event.getRegistry().register(buildEntityEntry(EntityBombCart.class, ICBMEntities.BOMB_CART, 50, 2));
         event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, ICBMEntities.MISSILE_SEAT, 50, 2));
+        event.getRegistry().register(buildEntityEntry(EntityRedmatter.class, ICBMEntities.REDMATTER, 500, 1));
 
         /*
         //Green team

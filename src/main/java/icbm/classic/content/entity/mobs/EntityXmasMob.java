@@ -107,7 +107,7 @@ public abstract class EntityXmasMob extends EntityMob implements IRangedAttackMo
 
     protected float getProjectileRandom()
     {
-        return (float) (14 - this.world.getDifficulty().getId() * 4);
+        return (float) (14 - this.world.getDifficulty().getDifficultyId() * 4);
     }
 
     protected int getDamageForGun()

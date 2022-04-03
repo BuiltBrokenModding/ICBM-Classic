@@ -41,7 +41,6 @@ public class CommandBlastSpreadTest
     private final CommandBlastSpread command = new CommandBlastSpread();
 
     private IExplosiveData fakeExData;
-    private BlastState triggerState = BlastState.TRIGGERED;
 
     private final Queue<FakeBlast> blastsCreated = new LinkedList();
 
@@ -51,7 +50,7 @@ public class CommandBlastSpreadTest
         ICBMClassicAPI.EXPLOSIVE_REGISTRY = new ExplosiveRegistry();
         fakeExData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(new ResourceLocation("tree", "small"), EnumTier.ONE, () ->
         {
-            FakeBlast fakeBlast = new FakeBlast(triggerState);
+            FakeBlast fakeBlast = new FakeBlast(BlastState.TRIGGERED.genericResponse);
             blastsCreated.add(fakeBlast);
             return fakeBlast;
         });

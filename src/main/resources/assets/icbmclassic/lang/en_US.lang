@@ -274,7 +274,7 @@ explosive.icbmclassic:redMatter.info.9=Oh? You think you can escape
 explosive.icbmclassic:redMatter.info.10=Oh baby come back
 
 ## Special Missiles
-missile.name=Missile Module
+missile.icbmclassic:missile.name=Missile Module
 missile.icbmclassic:antiBallistic.name=Anti-ballistic Missile
 missile.icbmclassic:cluster.name=Cluster Missile
 missile.icbmclassic:nuclearCluster.name=Nuclear Cluster Missile

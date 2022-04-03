@@ -41,7 +41,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
         long time = System.nanoTime();
 
         //How many steps to go per rotation
-        final int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.radius));
+        final int steps = (int) Math.ceil(Math.PI * this.radius);
 
         double x;
         double y;

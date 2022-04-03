@@ -134,7 +134,7 @@ public class BlockExplosive extends BlockICBM
             TileEntityExplosive explosive = (TileEntityExplosive) tile;
             explosive.capabilityExplosive = new CapabilityExplosiveStack(itemStack.copy());
 
-            if (world.getRedstonePowerFromNeighbors(pos) > 0)
+            if (world.getStrongPower(pos) > 0)
             {
                 BlockExplosive.triggerExplosive(world, pos, false);
             }
@@ -169,7 +169,7 @@ public class BlockExplosive extends BlockICBM
     @Override
     public void neighborChanged(IBlockState thisBlock, World world, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        int power = world.getRedstonePowerFromNeighbors(pos);
+        int power = world.getStrongPower(pos);
         if (power > 0)
         {
             BlockExplosive.triggerExplosive(world, pos, false);
@@ -253,7 +253,7 @@ public class BlockExplosive extends BlockICBM
     @Override
     public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (tab == getCreativeTab())
+        if (tab == this.getCreativeTabToDisplayOn())
         {
             for (int id : ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosivesIDs())
             {

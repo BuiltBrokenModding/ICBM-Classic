@@ -54,7 +54,7 @@ public class BlastNuclear extends BlastThreaded
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
         //How many steps to go per rotation
-        final int steps = (int) Math.ceil(Math.PI / Math.atan(1.0D / this.getBlastRadius()));
+        final int steps = (int) Math.ceil(Math.PI * this.getBlastRadius());
 
         double x;
         double y;
@@ -69,16 +69,17 @@ public class BlastNuclear extends BlastThreaded
         double yaw;
         double pitch;
 
-        for (int phi_n = 0; phi_n < 2 * steps; phi_n++)
+        final int lineDensityScale = 2;
+        for (int yawSlices = 0; yawSlices < lineDensityScale * steps; yawSlices++)
         {
-            for (int theta_n = 0; theta_n < steps; theta_n++)
+            for (int pitchSlice = 0; pitchSlice < steps; pitchSlice++)
             {
                 //Calculate power
                 power = this.energy - (this.energy * world.rand.nextFloat() / 2);
 
                 //Get angles for rotation steps
-                yaw = Math.PI * 2 / steps * phi_n;
-                pitch = Math.PI / steps * theta_n;
+                yaw = (Math.PI / steps) * yawSlices;
+                pitch = (Math.PI / steps) * pitchSlice;
 
                 //Figure out vector to move for trace (cut in half to improve trace skipping blocks)
                 dx = sin(pitch) * cos(yaw) * 0.5;

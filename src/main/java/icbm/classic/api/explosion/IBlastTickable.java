@@ -9,7 +9,7 @@ public interface IBlastTickable extends IBlast
     /**
      * Called each tick the blast is alive.
      * <p>
-     * Normally called from {@link #getController()}
+     * Normally called from {@link #getEntity()}
      *
      * @param ticksExisted - ticks the controller is alive
      * @return true to set dead

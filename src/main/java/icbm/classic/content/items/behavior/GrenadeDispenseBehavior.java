@@ -34,7 +34,7 @@ public class GrenadeDispenseBehavior implements IBehaviorDispenseItem
         final EntityGrenade entity = new EntityGrenade(world);
         entity.setPosition(blockSource.getX(), blockSource.getY(), blockSource.getZ());
         entity.setItemStack(itemStack);
-        entity.setThrowableHeading(enumFacing.getXOffset(), 0.10000000149011612D, enumFacing.getZOffset(), 0.5F, 1.0F);
+        entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
         return entity;
     }
 }

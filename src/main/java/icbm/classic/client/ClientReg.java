@@ -2,13 +2,26 @@ package icbm.classic.client;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.mapper.BlockModelMapperExplosive;
 import icbm.classic.client.mapper.ItemModelMapperExplosive;
-import icbm.classic.client.render.entity.*;
+import icbm.classic.client.render.entity.RenderCreeperXmas;
+import icbm.classic.client.render.entity.RenderEntityBlock;
+import icbm.classic.client.render.entity.RenderExBlock;
+import icbm.classic.client.render.entity.RenderExplosion;
+import icbm.classic.client.render.entity.RenderFragments;
+import icbm.classic.client.render.entity.RenderGrenade;
+import icbm.classic.client.render.entity.RenderLightBeam;
+import icbm.classic.client.render.entity.RenderMissile;
+import icbm.classic.client.render.entity.RenderSeat;
+import icbm.classic.client.render.entity.RenderSkeletonXmas;
+import icbm.classic.client.render.entity.RenderSnowmanXmas;
+import icbm.classic.client.render.entity.RenderZombieXmas;
 import icbm.classic.config.ConfigItems;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREMPTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
@@ -21,9 +34,20 @@ import icbm.classic.content.blocks.launcher.screen.TESRLauncherScreen;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
-import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.content.entity.EntityExplosive;
+import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.EntityFragments;
+import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.EntityLightBeam;
+import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.mobs.*;
+import icbm.classic.content.entity.mobs.EntityXmasCreeper;
+import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
+import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
+import icbm.classic.content.entity.mobs.EntityXmasSnowman;
+import icbm.classic.content.entity.mobs.EntityXmasZombie;
+import icbm.classic.content.entity.mobs.EntityXmasZombieBoss;
 import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
@@ -149,22 +173,23 @@ public class ClientReg
         //---------------------------------------
         //Entity renders
         //---------------------------------------
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, manager -> new RenderExBlock(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, manager -> new RenderEntityBlock(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, manager -> new RenderExplosion(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, manager -> new RenderGrenade(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, manager -> new RenderLightBeam(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, manager -> new RenderFragments(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, manager -> new RenderSeat(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosive.class, RenderExBlock::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRedmatter.class, RenderRedmatter::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFlyingBlock.class, RenderEntityBlock::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, RenderExplosion::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class, RenderGrenade::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, RenderLightBeam::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, RenderFragments::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, RenderSeat::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, manager -> new RenderSkeletonXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, manager -> new RenderSkeletonXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, manager -> new RenderSnowmanXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, RenderSkeletonXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, RenderSnowmanXmas::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, manager -> new RenderZombieXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, manager -> new RenderZombieXmas(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, manager -> new RenderCreeperXmas(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, RenderZombieXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, RenderZombieXmas::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, RenderCreeperXmas::new);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
@@ -187,7 +212,7 @@ public class ClientReg
         {
             //Add block state
             final HashMap<EnumFacing,ModelResourceLocation> facingModelMap = new HashMap<>();
-            final String resourcePath = data.getRegistryName().getNamespace() + ":explosives/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":explosives/" + data.getRegistryName().getResourcePath();
 
             for(EnumFacing facing : EnumFacing.VALUES)
             {
@@ -207,7 +232,7 @@ public class ClientReg
         ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(BlockReg.blockExplosive), new ItemModelMapperExplosive(itemBlockModelMap, itemBlockModelMap.get(ICBMExplosives.CONDENSED)));
         ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.blockExplosive), itemBlockModelMap.values()
                 .stream()
-                .map(mrl -> new ResourceLocation(mrl.getNamespace(), mrl.getPath()))
+                .map(mrl -> new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()))
                 .collect(Collectors.toList())
                 .toArray(new ResourceLocation[itemBlockModelMap.values().size()]));
     }
@@ -236,12 +261,12 @@ public class ClientReg
     {
         for (IExplosiveData data : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            final String resourcePath = data.getRegistryName().getNamespace() + ":grenades/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":grenades/" + data.getRegistryName().getResourcePath();
             grenadeModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
 
         ModelLoader.registerItemVariants(ItemReg.itemGrenade, grenadeModelMap.values()
-                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+                .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
         ModelLoader.setCustomMeshDefinition(ItemReg.itemGrenade, new ItemModelMapperExplosive(grenadeModelMap, grenadeModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
@@ -249,11 +274,11 @@ public class ClientReg
     {
         for (IExplosiveData data : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            final String resourcePath = data.getRegistryName().getNamespace() + ":bombcarts/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":bombcarts/" + data.getRegistryName().getResourcePath();
             cartModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         ModelLoader.registerItemVariants(ItemReg.itemBombCart, cartModelMap.values()
-                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+                .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
         ModelLoader.setCustomMeshDefinition(ItemReg.itemBombCart, new ItemModelMapperExplosive(cartModelMap, cartModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
@@ -261,11 +286,11 @@ public class ClientReg
     {
         for (IExplosiveData data : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosives()) //TODO run loop once for all 4 content types
         {
-            final String resourcePath = data.getRegistryName().getNamespace() + ":missiles/" + data.getRegistryName().getPath();
+            final String resourcePath = data.getRegistryName().getResourceDomain() + ":missiles/" + data.getRegistryName().getResourcePath();
             missileModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
         ModelLoader.registerItemVariants(ItemReg.itemMissile, missileModelMap.values()
-                .stream().map(model -> new ResourceLocation(model.getNamespace() + ":" + model.getPath())).toArray(ResourceLocation[]::new));
+                .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
         ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
     }
 

@@ -46,7 +46,7 @@ public class ItemMissile extends ItemICBMBase
     }
 
     @Override
-    public String getTranslationKey(ItemStack itemstack)
+    public String getUnlocalizedName(ItemStack itemstack)
     {
         final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
         if (data != null)
@@ -57,7 +57,7 @@ public class ItemMissile extends ItemICBMBase
     }
 
     @Override
-    public String getTranslationKey()
+    public String getUnlocalizedName()
     {
         return "missile";
     }

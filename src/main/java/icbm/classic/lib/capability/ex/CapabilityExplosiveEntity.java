@@ -62,7 +62,7 @@ public class CapabilityExplosiveEntity implements IExplosive
             if (explosive != null)
             {
                 final NBTTagCompound tag = explosive.getCustomBlastData();
-                if (tag != null && !tag.isEmpty())
+                if (tag != null && !tag.hasNoTags())
                 {
                     return tag;
                 }

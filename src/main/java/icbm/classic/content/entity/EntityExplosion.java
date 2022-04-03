@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
  *
  * @author Calclavia
  */
+@Deprecated //TODO replace all usage with more focused entities per explosive
 public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData
 {
     private IBlast blast;
@@ -35,8 +36,6 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         this.preventEntitySpawning = true;
         this.noClip = true;
         this.setSize(0.98F, 0.98F);
-        //this.yOffset = this.height / 2.0F;
-        //this.renderDistanceWeight = 2f;
         this.ignoreFrustumCheck = true;
         this.ticksExisted = 0;
     }
@@ -96,7 +95,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     @Override
     public void onUpdate()
     {
-        if (this.getBlast() == null || this.getBlast().getController() != this || this.getBlast().isCompleted())
+        if (this.getBlast() == null || this.getBlast().getEntity() != this || this.getBlast().isCompleted())
         {
             this.setDead();
             return;

@@ -1,5 +1,7 @@
 package icbm.classic.api.explosion;
 
+import javax.annotation.Nullable;
+
 /**
  * Simple interface for use in creating blasts
  *
@@ -11,7 +13,8 @@ public interface IBlastFactory
 {
     /**
      * Creates a new blast
-     * @return
+     * @return new blast
      */
+    @Nullable
     IBlastInit create();
 }

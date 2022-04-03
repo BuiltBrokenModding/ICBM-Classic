@@ -22,8 +22,18 @@ public interface IBlastInit extends IBlast
      * @param size - size of the blast, this differs base on explosive of how it is used.
      * @return this
      */
-    IBlastInit setBlastSize(double size);
+    default IBlastInit setBlastSize(double size) {
+        return this;
+    }
 
+    /**
+     * Scales the size of the blast
+     * @param scale - multiplier to apply
+     * @return this
+     */
+    default IBlastInit scaleBlast(double scale) {
+        return this;
+    }
 
     /**
      * Called to set the source of the blast. Only
@@ -32,7 +42,10 @@ public interface IBlastInit extends IBlast
      * @param entity - source of the blast
      * @return this
      */
-    IBlastInit setBlastSource(Entity entity); //TODO maybe consider using a blame object that wrappers the source in case it dies
+    default IBlastInit setBlastSource(Entity entity)
+    { //TODO maybe consider using a blame object that wrappers the source in case it dies
+        return this;
+    }
 
     /**
      * Called to set the world of the blast. Only
@@ -64,7 +77,9 @@ public interface IBlastInit extends IBlast
      * @param customData - nbt save data
      * @return this
      */
-    IBlastInit setCustomData(@Nonnull NBTTagCompound customData);
+    default IBlastInit setCustomData(@Nonnull NBTTagCompound customData) {
+        return this;
+    }
 
     /**
      * Sets the entity that will control this blast.
@@ -76,7 +91,9 @@ public interface IBlastInit extends IBlast
      * @param entityController
      * @return this
      */
-    IBlastInit setEntityController(Entity entityController);
+    default IBlastInit setEntityController(Entity entityController) {
+        return this;
+    }
 
     /**
      * Sets the explosive data used to create this blast
@@ -84,7 +101,9 @@ public interface IBlastInit extends IBlast
      * @param data
      * @return this
      */
-    IBlastInit setExplosiveData(IExplosiveData data);
+    default IBlastInit setExplosiveData(IExplosiveData data) {
+        return this;
+    }
 
     /**
      * Called last to complete the build of the blast. Once

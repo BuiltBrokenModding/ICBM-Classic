@@ -180,7 +180,7 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
     public void readSpawnData(ByteBuf data)
     {
         this.fuse = data.readInt();
-        this._facing = EnumFacing.byIndex(data.readByte());
+        this._facing = EnumFacing.getFront(data.readByte());
         getExplosiveCap().deserializeNBT(ByteBufUtils.readTag(data));
     }
 
