@@ -1,23 +1,22 @@
 {
   "result": {
-    "item": "icbmclassic:missile",
-    "data": 27,
+    "device": "icbmclassic:missile",
+    "explosive": "icbmclassic:colors",
     "count": 1
   },
   "pattern": [
-    "CCC",
-    "CmC",
-    "CCC"
+    "mc"
   ],
-  "type": "minecraft:crafting_shaped",
+  "type": "icbmclassic:explosive",
   "key": {
     "m": {
-      "item": "icbmclassic:colors",
-      "data": 27
+      "type" : "icbmclassic:explosive",
+      "device": "icbmclassic:missile.module"
     },
-    "C": {
-      "item": "minecraft:dye",
-      "data": 32767
+    "c": {
+      "type" : "icbmclassic:explosive",
+      "device": "icbmclassic:block",
+      "explosive": "icbmclassic:colors"
     }
   }
 }
