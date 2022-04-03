@@ -215,6 +215,10 @@ public class ExplosiveInit
         ICBMExplosives.ROT = newEx(25, "rot", EnumTier.NONE, BlastRot::new);
         ICBMExplosives.MUTATION = newEx(26, "mutation", EnumTier.NONE, BlastMutation::new);
 
+        //New Explosives not part of classic original
+        ICBMExplosives.COLOR = newEx(27, "colors", EnumTier.ONE,
+                () -> new BlastColor().setBlastSize(10));
+
         ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
 
         //=================== Missiles
@@ -224,9 +228,7 @@ public class ExplosiveInit
         ///* 27 */MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO));
         ///* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster())
 
-        //New Explosives not part of classic original
-        ICBMExplosives.COLOR = newEx(27, "colors", EnumTier.ONE,
-                () -> new BlastColor().setBlastSize(10));
+
     }
 
     private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)
