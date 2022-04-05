@@ -1,0 +1,22 @@
+{
+  "result": {
+    "device": "icbmclassic:missile",
+    "explosive": "icbmclassic:condensed",
+    "count": 1
+  },
+  "pattern": [
+    "mc"
+  ],
+  "type": "icbmclassic:explosive",
+  "key": {
+    "m": {
+      "type" : "icbmclassic:explosive",
+      "device": "icbmclassic:missile.module"
+    },
+    "c": {
+      "type" : "icbmclassic:explosive",
+      "device": "icbmclassic:block",
+      "explosive": "icbmclassic:condensed"
+    }
+  }
+}
