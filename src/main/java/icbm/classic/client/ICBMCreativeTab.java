@@ -62,7 +62,7 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(ItemReg.itemBombCart);
 
         //Collect any non-defined items
-        for (Item item : Item.REGISTRY) //registries are frozen during FMLInitializationEvent, can safely iterate
+        for (Item item : ForgeRegistries.ITEMS) //registries are frozen during FMLInitializationEvent, can safely iterate
         {
             if (item != null)
             {
