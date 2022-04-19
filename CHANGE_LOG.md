@@ -8,10 +8,11 @@ This log contains changes made to the project. Each entry contains changed made 
 ### Runtime Changes
 
 * Changed: nuke and large blast step calculation to remove atan - small performance improvement
+* Fixed: Blocks with a hardness smaller than 0 (e.g. bedrock) are not included in thermobaric and nuclear blast power calculation
 
 ### Dev Changes
 
-* Depricated: IEnergyBuffer
+* Deprecated: IEnergyBuffer
 
 ## 4.1.0 - November 3rd, 2021
 

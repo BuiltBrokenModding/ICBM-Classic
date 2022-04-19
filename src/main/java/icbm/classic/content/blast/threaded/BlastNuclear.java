@@ -112,14 +112,14 @@ public class BlastNuclear extends BlastThreaded
                         final IBlockState state = world.getBlockState(blockPos);
                         final Block block = state.getBlock();
 
-                        //Ignore air blocks && Only break block that can be broken
-                        if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
+                        //Ignore air blocks
+                        if (!block.isAir(state, world, blockPos))
                         {
                             //Consume power based on block
                             power -= getResistance(blockPos, state);
 
-                            //If we still have power, break the block
-                            if (power > 0f)
+                            //Only break block that can be broken && If we still have power. Then break the block
+                            if (state.getBlockHardness(world, blockPos) >= 0 && power > 0f)
                             {
                                 edits.accept(blockPos);
                             }
