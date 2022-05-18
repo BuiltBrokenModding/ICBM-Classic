@@ -61,11 +61,11 @@ public class GuiRadarStation extends GuiContainerBase
 
         this.textFieldTriggerRange = new GuiTextField(0, fontRenderer, 210, 67, 30, 12);
         this.textFieldTriggerRange.setMaxStringLength(3);
-        this.textFieldTriggerRange.setText(this.tileEntity.safetyRange + "");
+        this.textFieldTriggerRange.setText(this.tileEntity.triggerRange + "");
 
         this.textFieldDetectionRange = new GuiTextField(1, fontRenderer, 210, 82, 30, 12);
         this.textFieldDetectionRange.setMaxStringLength(3);
-        this.textFieldDetectionRange.setText(this.tileEntity.alarmRange + "");
+        this.textFieldDetectionRange.setText(this.tileEntity.detectionRange + "");
 
         this.textFieldFrequency = new GuiTextField(2, fontRenderer, 210, 108, 30, 12);
         this.textFieldFrequency.setMaxStringLength(3);
@@ -144,8 +144,8 @@ public class GuiRadarStation extends GuiContainerBase
         try
         {
             int newSafetyRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldTriggerRange.getText())));
-            this.tileEntity.safetyRange = newSafetyRadius;
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("safeRange_C>S", TileRadarStation.SET_SAFETY_RANGE_PACKET_ID, this.tileEntity).addData(this.tileEntity.safetyRange));
+            this.tileEntity.triggerRange = newSafetyRadius;
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("safeRange_C>S", TileRadarStation.SET_SAFETY_RANGE_PACKET_ID, this.tileEntity).addData(this.tileEntity.triggerRange));
         }
         catch (NumberFormatException e)
         {
@@ -154,8 +154,8 @@ public class GuiRadarStation extends GuiContainerBase
         try
         {
             int newAlarmRadius = Math.min(TileRadarStation.MAX_DETECTION_RANGE, Math.max(0, Integer.parseInt(this.textFieldDetectionRange.getText())));
-            this.tileEntity.alarmRange = newAlarmRadius;
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("alarmRange_C>S", TileRadarStation.SET_ALARM_RANGE_PACKET_ID, this.tileEntity).addData(this.tileEntity.alarmRange));
+            this.tileEntity.detectionRange = newAlarmRadius;
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("alarmRange_C>S", TileRadarStation.SET_ALARM_RANGE_PACKET_ID, this.tileEntity).addData(this.tileEntity.detectionRange));
         }
         catch (NumberFormatException e)
         {
@@ -290,11 +290,11 @@ public class GuiRadarStation extends GuiContainerBase
 
         if (!this.textFieldTriggerRange.isFocused())
         {
-            this.textFieldTriggerRange.setText(this.tileEntity.safetyRange + "");
+            this.textFieldTriggerRange.setText(this.tileEntity.triggerRange + "");
         }
         if (!this.textFieldDetectionRange.isFocused())
         {
-            this.textFieldDetectionRange.setText(this.tileEntity.alarmRange + "");
+            this.textFieldDetectionRange.setText(this.tileEntity.detectionRange + "");
         }
     }
 }

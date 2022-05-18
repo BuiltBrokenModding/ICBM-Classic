@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.radarstation;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissile;
@@ -43,8 +44,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public static final int SET_FREQUENCY_PACKET_ID = 4;
 
     public float rotation = 0;
-    public int alarmRange = 100;
-    public int safetyRange = 50;
+    public int detectionRange = 100;
+    public int triggerRange = 50;
 
     public boolean emitAll = true;
 
@@ -96,7 +97,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 //Check for incoming and launch anti-missiles if
                 if (this.ticks % 20 == 0 && this.incomingMissiles.size() > 0) //TODO track if a anti-missile is already in air to hit target
                 {
-                    RadioRegistry.popMessage(world, this, getFrequency(), "fireAntiMissile", this.incomingMissiles.get(0));
+                    RadioRegistry.popMessage(world, this, getFrequency(), "fireAntiMissile", this.incomingMissiles.get(0)); //TODO use static var for event name
                 }
             }
             else
@@ -167,7 +168,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.incomingMissiles.clear();
         this.detectedEntities.clear();
 
-        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(alarmRange, MAX_DETECTION_RANGE));
+        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
+
+        ICBMClassic.logger().info("Radar" + entities.size());
 
         for (Entity entity : entities)
         {
@@ -241,15 +244,15 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
         double d = missile.targetPos.distance(this);
         //TODO simplify code to not use vector system
-        return d < this.safetyRange;
+        return d < this.triggerRange;
     }
 
     @Override
     protected PacketTile getGUIPacket()
     {
         PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
-        packet.write(alarmRange);
-        packet.write(safetyRange);
+        packet.write(detectionRange);
+        packet.write(triggerRange);
         packet.write(getFrequency());
         packet.write(detectedEntities.size());
         if (detectedEntities.size() > 0)
@@ -300,8 +303,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             {
                 if (ID == GUI_PACKET_ID)
                 {
-                    this.alarmRange = data.readInt();
-                    this.safetyRange = data.readInt();
+                    this.detectionRange = data.readInt();
+                    this.triggerRange = data.readInt();
                     this.setFrequency(data.readInt());
 
                     this.updateDrawList = true;
@@ -332,12 +335,12 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             {
                 if (ID == SET_SAFETY_RANGE_PACKET_ID)
                 {
-                    this.safetyRange = data.readInt();
+                    this.triggerRange = data.readInt();
                     return true;
                 }
                 else if (ID == SET_ALARM_RANGE_PACKET_ID)
                 {
-                    this.alarmRange = data.readInt();
+                    this.detectionRange = data.readInt();
                     return true;
                 }
                 else if (ID == SET_FREQUENCY_PACKET_ID)
@@ -392,8 +395,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.safetyRange = nbt.getInteger(NBTConstants.SAFETY_RADIUS);
-        this.alarmRange = nbt.getInteger(NBTConstants.ALARM_RADIUS);
+        this.triggerRange = nbt.getInteger(NBTConstants.SAFETY_RADIUS);
+        this.detectionRange = nbt.getInteger(NBTConstants.ALARM_RADIUS);
         this.emitAll = nbt.getBoolean(NBTConstants.EMIT_ALL);
     }
 
@@ -401,8 +404,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setInteger(NBTConstants.SAFETY_RADIUS, this.safetyRange);
-        nbt.setInteger(NBTConstants.ALARM_RADIUS, this.alarmRange);
+        nbt.setInteger(NBTConstants.SAFETY_RADIUS, this.triggerRange);
+        nbt.setInteger(NBTConstants.ALARM_RADIUS, this.detectionRange);
         nbt.setBoolean(NBTConstants.EMIT_ALL, this.emitAll);
         return super.writeToNBT(nbt);
     }
