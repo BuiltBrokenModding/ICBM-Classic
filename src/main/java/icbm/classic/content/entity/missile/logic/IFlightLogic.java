@@ -17,6 +17,8 @@ public interface IFlightLogic
      */
     void initializeFlight(double targetX, double targetY, double targetZ);
 
+    default void update() {}
+
     /**
      * Called to update the missile's velocity vector
      *

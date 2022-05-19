@@ -7,12 +7,9 @@ import java.util.LinkedList;
 
 public class BallisticFlightLogic {
 
-    public Pos targetPos = null;
-
     // Ballistic flight vars
     public int maxHeight = 200;
     public Pos launcherPos = null;
-    public int targetHeight = -1;
     public double lockHeight = 3;
     public double flatDistance;
     public float missileFlightTime;
@@ -32,10 +29,15 @@ public class BallisticFlightLogic {
     }
 
     public void update() {
+        // Calculate the distance difference of the missile
+        this.deltaPathX = this.ballisticFlightLogic.targetPos.x() - this.sourceOfProjectile.x();
+        this.deltaPathY = this.ballisticFlightLogic.targetPos.y() - this.sourceOfProjectile.y();
+        this.deltaPathZ = this.ballisticFlightLogic.targetPos.z() - this.sourceOfProjectile.z();
+
         // TODO: Calculate parabola and relative out the targetHeight.
         // Calculate the power required to reach the target co-ordinates
         // Ground Displacement
-        this.flatDistance = missile.sourceOfProjectile.toVector2().distance(this.targetPos.toVector2());
+        this.flatDistance = missile.missileCapability.targetData.calculateFlatDistance(missile.x(), missile.z());
         // Parabolic Height
         this.maxHeight = 160 + (int) (this.flatDistance * 3);
         // Flight time
@@ -46,4 +48,5 @@ public class BallisticFlightLogic {
             this.acceleration = (float) this.maxHeight * 2 / (this.missileFlightTime * this.missileFlightTime);
         }
     }
+
 }

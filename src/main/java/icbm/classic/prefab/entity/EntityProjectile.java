@@ -1,6 +1,6 @@
 package icbm.classic.prefab.entity;
 
-import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -67,6 +67,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public int ticksInGround;
     public int ticksInAir;
 
+
     public EntityProjectile(World world)
     {
         super(world);
@@ -77,10 +78,10 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     /**
      * Initialized the projectile to spawn from the shooter and aim at the target
      *
-     * @param shooter - spawn point, used for aiming and position offsets
-     * @param target - aim target
+     * @param shooter    - spawn point, used for aiming and position offsets
+     * @param target     - aim target
      * @param multiplier - power multiplier, mostly changes speed
-     * @param random - random multiplier
+     * @param random     - random multiplier
      * @return this
      */
     public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random)
@@ -106,7 +107,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             this.setLocationAndAngles(shooter.posX + subX, this.posY, shooter.posZ + subZ, yaw, pitch);
             this.shoot(deltaX, deltaY + (double) subY, deltaZ, multiplier, random);
         }
-        return (E)this;
+        return (E) this;
     }
 
     public E init(EntityLivingBase shooter, float multiplier, float distanceScale)
@@ -134,7 +135,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * (float) Math.PI));
         this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 1.0F);
 
-        return (E)this;
+        return (E) this;
     }
 
     @Override
@@ -175,8 +176,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 {
                     this.setDead();
                 }
-            }
-            else
+            } else
             {
                 //TODO change to apply gravity
                 this.inGround = false;
@@ -186,8 +186,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 this.ticksInGround = 0;
                 this.ticksInAir = 0;
             }
-        }
-        else
+        } else
         {
             //Kills the projectile if it moves forever into space
             ++this.ticksInAir;
@@ -251,8 +250,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY)
                 {
                     handleEntityCollision(rayHit, rayHit.entityHit);
-                }
-                else //Handle block hit
+                } else //Handle block hit
                 {
                     handleBlockCollision(rayHit);
                 }
@@ -493,83 +491,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
-    {
-        if (tilePos != null)
-        {
-            nbt.setInteger(NBTConstants.X_TILE_POS, this.tilePos.getX());
-            nbt.setInteger(NBTConstants.Y_TILE_POS, this.tilePos.getY());
-            nbt.setInteger(NBTConstants.Z_TILE_POS, this.tilePos.getZ());
-        }
-        nbt.setByte(NBTConstants.SIDE_TILE_POS, (byte) this.sideTile.ordinal());
-
-        if (blockInside != null)
-        {
-            nbt.setInteger(NBTConstants.IN_TILE_STATE, Block.getStateId(blockInside));
-        }
-
-        nbt.setShort(NBTConstants.LIFE, (short) this.ticksInGround);
-        nbt.setByte(NBTConstants.IN_GROUND, (byte) (this.inGround ? 1 : 0));
-        if (sourceOfProjectile != null)
-        {
-            nbt.setTag(NBTConstants.SOURCE_POS, sourceOfProjectile.toNBT());
-        }
-        if (shootingEntity != null)
-        {
-            nbt.setString(NBTConstants.SHOOTER_UUID, shootingEntity.getUniqueID().toString());
-        }
-    }
-
-    @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
-    {
-        if (nbt.hasKey(NBTConstants.X_TILE))
-        {
-            //Legacy
-            tilePos = new BlockPos(nbt.getShort(NBTConstants.X_TILE), nbt.getShort(NBTConstants.Y_TILE), nbt.getShort(NBTConstants.Z_TILE));
-        }
-        else if (nbt.hasKey(NBTConstants.X_TILE_POS))
-        {
-            tilePos = new BlockPos(nbt.getInteger(NBTConstants.X_TILE_POS), nbt.getInteger(NBTConstants.Y_TILE_POS), nbt.getInteger(NBTConstants.Z_TILE_POS));
-        }
-
-        if (nbt.hasKey(NBTConstants.SIDE_TILE))
-        {
-            //Legacy
-            this.sideTile = EnumFacing.getFront(nbt.getShort(NBTConstants.SIDE_TILE));
-        }
-        else
-        {
-            this.sideTile = EnumFacing.getFront(nbt.getByte(NBTConstants.SIDE_TILE_POS));
-        }
-        this.ticksInGround = nbt.getShort(NBTConstants.LIFE);
-        if (nbt.hasKey(NBTConstants.IN_TILE))
-        {
-            //Legacy
-            Block block = Block.getBlockById(nbt.getByte(NBTConstants.IN_TILE));
-            if (block != null)
-            {
-                int meta = nbt.getByte(NBTConstants.IN_DATA);
-                this.blockInside = block.getStateFromMeta(meta);
-            }
-        }
-        else if (nbt.hasKey(NBTConstants.IN_TILE_STATE))
-        {
-            this.blockInside = Block.getStateById(nbt.getInteger(NBTConstants.IN_TILE_STATE));
-        }
-
-        this.inGround = nbt.getByte(NBTConstants.IN_GROUND) == 1;
-        if (nbt.hasKey(NBTConstants.SOURCE_POS))
-        {
-            sourceOfProjectile = new Pos(nbt.getCompoundTag(NBTConstants.SOURCE_POS));
-        }
-        if (nbt.hasKey(NBTConstants.SHOOTER_UUID))
-        {
-            shootingEntityUUID = UUID.fromString(nbt.getString(NBTConstants.SHOOTER_UUID));
-        }
-    }
-
-    @Override
     protected boolean canTriggerWalking()
     {
         return false;
@@ -579,4 +500,40 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     {
         return hasHealth;
     }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound nbt)
+    {
+        SAVE_LOGIC.save(this, nbt);
+        super.writeEntityToNBT(nbt);
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound nbt)
+    {
+        super.readEntityFromNBT(nbt);
+        SAVE_LOGIC.load(this, nbt);
+    }
+
+    private static final NbtSaveHandler<EntityProjectile> SAVE_LOGIC = new NbtSaveHandler<EntityProjectile>()
+        //Stuck in ground data
+        .addRoot("ground")
+        /* */.nodeBlockPos("pos", (projectile) -> projectile.tilePos, (projectile, pos) -> projectile.tilePos = pos)
+        /* */.nodeFacing("side", (projectile) -> projectile.sideTile, (projectile, side) -> projectile.sideTile = side)
+        /* */.nodeBlockState("state", (projectile) -> projectile.blockInside, (projectile, blockState) -> projectile.blockInside = blockState)
+        .base()
+        //Flags
+        .addRoot("flags")
+        /* */.nodeBoolean("ground", (projectile) -> projectile.inGround, (projectile, flag) -> projectile.inGround = flag)
+        .base()
+        //Ticks
+        .addRoot("ticks")
+        /* */.nodeInteger("air", (projectile) -> projectile.ticksInAir, (projectile, flag) -> projectile.ticksInAir = flag)
+        /* */.nodeInteger("ground", (projectile) -> projectile.ticksInGround, (projectile, flag) -> projectile.ticksInGround = flag)
+        .base()
+        //Project source
+        .addRoot("source")
+        /* */.nodePos("pos", (projectile) -> projectile.sourceOfProjectile, (projectile, pos) -> projectile.sourceOfProjectile = pos)
+        /* */.nodeUUID("uuid", (projectile) -> projectile.shootingEntityUUID, (projectile, uuid) -> projectile.shootingEntityUUID = uuid)
+        .base();
 }

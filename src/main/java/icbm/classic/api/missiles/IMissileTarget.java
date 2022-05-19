@@ -38,4 +38,14 @@ public interface IMissileTarget extends INBTSerializable<NBTTagCompound> {
      * @return double or NaN if no target is set
      */
     double getZ();
+
+    /**
+     * Helper to get flat distance in x-z plane
+     * @return flat distance to target
+     */
+    default double calculateFlatDistance(double x, double z) {
+        double deltaX = getX() - x;
+        double deltaZ = getZ() - z;
+        return Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+    }
 }

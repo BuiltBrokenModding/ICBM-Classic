@@ -16,6 +16,7 @@ import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
+import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
 import icbm.classic.content.entity.missile.logic.TargetRangeDet;
 import icbm.classic.content.entity.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.CalculationHelpers;
@@ -43,6 +44,8 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Entity version of the missile
@@ -52,6 +55,7 @@ import java.util.LinkedList;
 public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile> implements IEntityAdditionalSpawnData
 {
     public final BallisticFlightLogic ballisticFlightLogic = new BallisticFlightLogic(this);
+    public final DirectFlightLogic directFlightLogic = new DirectFlightLogic(this);
     public final TargetRangeDet targetRangeDet = new TargetRangeDet(this);
 
     //Explosive cap vars
@@ -72,11 +76,8 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public MissileFlightType missileType = MissileFlightType.PAD_LAUNCHER;
 
 
-
     public final IEMPReceiver empCapability = new CapabilityEmpMissile(this);
-    public final IMissile missileCapability = new CapabilityMissile(this);
-
-
+    public final CapabilityMissile missileCapability = new CapabilityMissile(this);
 
 
     public EntityExplosiveMissile(World w)
@@ -94,8 +95,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         if (capability == CapabilityEMP.EMP)
         {
             return (T) empCapability;
-        }
-        else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
+        } else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
         {
             return (T) missileCapability;
         }
@@ -147,12 +147,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
 
     /**
-     * Used {@link #missileCapability} {@link CapabilityMissile#launch(double, double, double, double)}
-     *
-     * @param target
+     * Launches the missile
      */
     @Deprecated //TODO replace with a set target method and a launch with no args
-    public void launch(Pos target, int height)
+    public void launch()
     {
         if (height > 0)
         {
@@ -167,15 +165,19 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
         //Update data
         this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
-        this.ballisticFlightLogic.targetPos = target;
-        this.ballisticFlightLogic.targetHeight = this.ballisticFlightLogic.targetPos != null ? this.ballisticFlightLogic.targetPos.yi() : -1;
 
         //Trigger events
         //TODO add generic event
         ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(missileCapability);
 
         //Trigger code
-        this.recalculatePath();
+        if (missileType == MissileFlightType.PAD_LAUNCHER) //TODO replace with single flightLogic#update call
+        {
+            ballisticFlightLogic.update();
+        } else
+        {
+            directFlightLogic.update();
+        }
         this.updateMotion();
 
         //Play audio
@@ -186,16 +188,14 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         RadarRegistry.add(this);
         if (ConfigDebug.DEBUG_MISSILE_LAUNCHES)
         {
-            if (target != null)
-            {
-                ICBMClassic.logger().info("Launching " + this.getName() + " (" + this.getEntityId() + ") from "
-                        + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi()
-                        + " to " + this.ballisticFlightLogic.targetPos.xi() + ", " + this.ballisticFlightLogic.targetPos.yi() + ", " + this.ballisticFlightLogic.targetPos.zi());
-            }
-            else
-            {
-                ICBMClassic.logger().info("Launching " + this.getName() + " (" + this.getEntityId() + ") from " + sourceOfProjectile.xi() + ", " + sourceOfProjectile.yi() + ", " + sourceOfProjectile.zi());
-            }
+            ICBMClassic.logger().info(
+                String.format("Missile(%s): Launch triggered of type[%s] starting from '%s' and aimed at `%s`",
+                    this.getEntityId(),
+                    this.getName(),
+                    Optional.ofNullable(sourceOfProjectile).map(Objects::toString).orElse("'null'"),
+                    Optional.ofNullable(missileCapability.targetData).map(Objects::toString).orElse("'null'")
+                )
+            );
         }
     }
 
@@ -205,39 +205,12 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         return this;
     }
 
-    /**
-     * Calculates the data needed to get the missile moving on a set path
-     * <p>
-     * Path is based on the type of missile
-     * {@link MissileFlightType#PAD_LAUNCHER} -> Moves on an parabolic path
-     */
-    public void recalculatePath()
-    {
-        if (this.ballisticFlightLogic.targetPos != null)
-        {
-            // Calculate the distance difference of the missile
-            this.deltaPathX = this.ballisticFlightLogic.targetPos.x() - this.sourceOfProjectile.x();
-            this.deltaPathY = this.ballisticFlightLogic.targetPos.y() - this.sourceOfProjectile.y();
-            this.deltaPathZ = this.ballisticFlightLogic.targetPos.z() - this.sourceOfProjectile.z();
-
-            if (missileType == MissileFlightType.PAD_LAUNCHER)
-            {
-
-            }
-            else if (missileType.movesDirectly)
-            {
-                shoot(deltaPathX, deltaPathY, deltaPathZ, DIRECT_FLIGHT_SPEED, 0);
-            }
-        }
-    }
-
     @Override
     public void entityInit()
     {
         //this.dataWatcher.addObject(16, -1);
         //this.dataWatcher.addObject(17, 0);
     }
-
 
 
     @Override
@@ -276,8 +249,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
                                 this.motionX = this.deltaPathX / ballisticFlightLogic.missileFlightTime;
                                 this.motionZ = this.deltaPathZ / ballisticFlightLogic.missileFlightTime;
                             }
-                        }
-                        else
+                        } else
                         {
                             this.motionY -= this.ballisticFlightLogic.acceleration;
                             this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
@@ -291,15 +263,13 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
                             MissileTrackerHandler.simulateMissile(this);
                         }
                     }
-                }
-                else
+                } else
                 {
                     //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
                     // Look at the next point
                     //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
                 }
-            }
-            else
+            } else
             {
                 motionY = 0.001f;
                 this.ballisticFlightLogic.lockHeight -= motionY;
@@ -335,12 +305,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
             if (getPassengers().stream().anyMatch(entity -> entity instanceof EntityPlayerMP))
             {
                 return false;
-            }
-            else if (ballisticFlightLogic.wasSimulated)
+            } else if (ballisticFlightLogic.wasSimulated)
             {
                 return false;
-            }
-            else if (posY >= ConfigMissile.SIMULATION_START_HEIGHT)
+            } else if (posY >= ConfigMissile.SIMULATION_START_HEIGHT)
             {
                 return true;
             }
@@ -416,8 +384,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         if (this.ballisticFlightLogic.missileFlightTime <= 0 && this.missileType == MissileFlightType.PAD_LAUNCHER)
         {
             return height;
-        }
-        else if (this.missileType == MissileFlightType.CRUISE_LAUNCHER)
+        } else if (this.missileType == MissileFlightType.CRUISE_LAUNCHER)
         {
             return height / 10;
         }
@@ -429,7 +396,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     {
         return ballisticFlightLogic.lastSmokePos;
     }
-
 
 
     /**
@@ -457,8 +423,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
                 if (this.missileType.movesDirectly)
                 {
                     position = position.add(this.motionVector);
-                }
-                else
+                } else
                 {
                     position = position.add(motionX, tempMotionY - this.ballisticFlightLogic.acceleration, motionZ);
                 }
@@ -479,18 +444,19 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         super.setDead();
     }
 
-    protected void logImpact() {
+    protected void logImpact()
+    {
         // TODO make optional via config
         // TODO log to ICBM file separated from main config
         // TODO offer hook for database logging
         final String formatString = "Missile[%s] E_ID(%s) impacted at (%sx,%sy,%sz,%sd)";
         final String formattedMessage = String.format(formatString,
-                this.explosiveID,
-                this.getEntityId(),
-                xi(),
-                yi(),
-                zi(),
-                world().provider.getDimension()
+            this.explosiveID,
+            this.getEntityId(),
+            xi(),
+            yi(),
+            zi(),
+            world().provider.getDimension()
         );
         ICBMClassic.logger().info(formattedMessage);
     }
@@ -523,8 +489,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
                 return BlastState.TRIGGERED_CLIENT.genericResponse;
             }
             return BlastState.ALREADY_TRIGGERED.genericResponse;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             return new BlastResponse(BlastState.ERROR, e.getMessage(), e);
         }
