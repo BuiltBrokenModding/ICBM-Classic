@@ -3,7 +3,7 @@ package icbm.classic.content.blocks.radarstation;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.BlockReg;

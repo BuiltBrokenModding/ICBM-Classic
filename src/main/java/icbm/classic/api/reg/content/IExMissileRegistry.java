@@ -1,7 +1,7 @@
 package icbm.classic.api.reg.content;
 
 import icbm.classic.api.data.EntityInteractionFunction;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;

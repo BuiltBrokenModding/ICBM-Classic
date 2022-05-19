@@ -1,6 +1,6 @@
 package icbm.classic.content.entity.missile.explosive;
 
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.vector.Pos;

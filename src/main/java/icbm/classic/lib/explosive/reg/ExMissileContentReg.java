@@ -1,7 +1,7 @@
 package icbm.classic.lib.explosive.reg;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.data.EntityInteractionFunction;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.reg.IExplosiveData;

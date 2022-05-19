@@ -1,4 +1,4 @@
-package icbm.classic.api.caps;
+package icbm.classic.api.missiles;
 
 
 import icbm.classic.api.data.IWorldPosition;

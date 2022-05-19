@@ -2,7 +2,7 @@ package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.explosion.IBlast;

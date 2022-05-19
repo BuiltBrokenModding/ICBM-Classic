@@ -4,7 +4,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.explosion.BlastState;
@@ -39,8 +39,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
