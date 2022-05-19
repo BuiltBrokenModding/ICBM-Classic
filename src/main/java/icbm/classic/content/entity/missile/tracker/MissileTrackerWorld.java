@@ -3,6 +3,7 @@ package icbm.classic.content.entity.missile.tracker;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
@@ -62,13 +63,13 @@ public class MissileTrackerWorld extends WorldSavedData
             ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
 
         //Only run on server
-        if (!missile.world.isRemote && missile.ballisticFlightLogic.targetPos != null)
+        if (!missile.world.isRemote && missile.missileCapability.targetData != null)
         {
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 
             //Calculate distance
-            double dx = missile.ballisticFlightLogic.targetPos.x() - missile.posX;
-            double dz = missile.ballisticFlightLogic.targetPos.z() - missile.posZ;
+            double dx = missile.missileCapability.targetData.getX() - missile.posX;
+            double dz = missile.missileCapability.targetData.getZ() - missile.posZ;
             double dst = Math.sqrt(dx * dx + dz * dz);
 
             //Calculate duration and queue up
@@ -211,11 +212,11 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.ballisticFlightLogic.lockHeight = 0;
         missile.ballisticFlightLogic.acceleration = 0;
         missile.ballisticFlightLogic.preLaunchSmokeTimer = 0;
-        missile.ballisticFlightLogic.targetPos = mtd.targetPos;
+        missile.missileCapability.targetData = new BallisticTargetingData(mtd.targetPos, 0); //TODO missing impact height and need to encode target data
         missile.ballisticFlightLogic.wasSimulated = true;
 
         //Trigger launch event
-        missile.launch(missile.ballisticFlightLogic.targetPos, (int) missile.ballisticFlightLogic.lockHeight);
+        missile.launch();
 
         //Spawn entity
         missile.world().spawnEntity(missile);

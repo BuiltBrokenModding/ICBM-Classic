@@ -148,6 +148,5 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     public void deserializeNBT(NBTTagCompound nbt) {
 
         this.doFlight = nbt.getBoolean(NBT_DO_FLIGHT);
-        this.targetData =
     }
 }

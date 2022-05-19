@@ -5,7 +5,8 @@ import icbm.classic.lib.transform.vector.Pos;
 
 import java.util.LinkedList;
 
-public class BallisticFlightLogic {
+public class BallisticFlightLogic
+{
 
     // Ballistic flight vars
     public int maxHeight = 200;
@@ -24,15 +25,19 @@ public class BallisticFlightLogic {
 
     private final EntityExplosiveMissile missile;
 
-    public BallisticFlightLogic(EntityExplosiveMissile missile) {
+    private double deltaPathX, deltaPathY, deltaPathZ;
+
+    public BallisticFlightLogic(EntityExplosiveMissile missile)
+    {
         this.missile = missile;
     }
 
-    public void update() {
+    public void update()
+    {
         // Calculate the distance difference of the missile
-        this.deltaPathX = this.ballisticFlightLogic.targetPos.x() - this.sourceOfProjectile.x();
-        this.deltaPathY = this.ballisticFlightLogic.targetPos.y() - this.sourceOfProjectile.y();
-        this.deltaPathZ = this.ballisticFlightLogic.targetPos.z() - this.sourceOfProjectile.z();
+        this.deltaPathX = this.missile.missileCapability.targetData.getX() - this.missile.sourceOfProjectile.x();
+        this.deltaPathY = this.missile.missileCapability.targetData.getY() - this.missile.sourceOfProjectile.y();
+        this.deltaPathZ = this.missile.missileCapability.targetData.getZ() - this.missile.sourceOfProjectile.z();
 
         // TODO: Calculate parabola and relative out the targetHeight.
         // Calculate the power required to reach the target co-ordinates

@@ -2,6 +2,7 @@ package icbm.classic.content.entity.missile.logic;
 
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.lib.transform.vector.Pos;
 
 public class TargetRangeDet {
@@ -12,20 +13,29 @@ public class TargetRangeDet {
     }
 
     public void update() {
-        if (missile.ballisticFlightLogic.targetPos != null && missile.ballisticFlightLogic.targetHeight >= 0)
+        if (missile.missileCapability.targetData instanceof BallisticTargetingData)
         {
-            int deltaX = missile.ballisticFlightLogic.targetPos.xi() - (int) Math.floor(missile.posX);
-            int deltaY = missile.ballisticFlightLogic.targetPos.yi() - (int) Math.floor(missile.posY);
-            int deltaZ = missile.ballisticFlightLogic.targetPos.zi() - (int) Math.floor(missile.posZ);
-
-            if (inRange(1, deltaY) && inRange(1, deltaX) && inRange(1, deltaZ))
+            final double offset = ((BallisticTargetingData)missile.missileCapability.targetData).getImpactHeightOffset();
+            if(offset > 0)
             {
-                missile.doExplosion();
+                double deltaX = missile.missileCapability.targetData.getX() - missile.posX;
+                double deltaY = missile.missileCapability.targetData.getY() - missile.posY;
+                double deltaZ = missile.missileCapability.targetData.getZ() - missile.posZ;
+
+                //Validate we are near flat distance of the target
+                if (inRange(offset, deltaX) && inRange(offset, deltaZ))
+                {
+                    double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+                    if(distance <= offset)
+                    {
+                        missile.doExplosion();
+                    }
+                }
             }
         }
     }
 
-    private boolean inRange(int range, int value)
+    private boolean inRange(double range, double value)
     {
         return value <= range && value >= -range;
     }

@@ -33,6 +33,10 @@ public class BallisticTargetingData extends BasicTargetData {
         this.impactHeightOffset = impactHeightOffset;
     }
 
+    public double getImpactHeightOffset() {
+        return impactHeightOffset;
+    }
+
     @Override
     public NBTTagCompound serializeNBT() {
         final NBTTagCompound saveData = super.serializeNBT();

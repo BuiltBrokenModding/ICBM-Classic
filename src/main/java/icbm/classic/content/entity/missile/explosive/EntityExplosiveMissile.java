@@ -502,10 +502,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.ballisticFlightLogic.targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
+        // TODO this.ballisticFlightLogic.targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
         this.ballisticFlightLogic.launcherPos = new Pos(nbt.getCompoundTag(NBTConstants.LAUNCHER_POS));
         this.ballisticFlightLogic.acceleration = nbt.getFloat(NBTConstants.ACCELERATION);
-        this.ballisticFlightLogic.targetHeight = nbt.getInteger(NBTConstants.TARGET_HEIGHT);
+        // TODO this.ballisticFlightLogic.targetHeight = nbt.getInteger(NBTConstants.TARGET_HEIGHT);
         this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
         this.ticksInAir = nbt.getInteger(NBTConstants.TICKS_IN_AIR);
         this.ballisticFlightLogic.lockHeight = nbt.getDouble(NBTConstants.LOCK_HEIGHT);
@@ -521,9 +521,9 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        if (this.ballisticFlightLogic.targetPos != null)
+        // TODO if (this.ballisticFlightLogic.targetPos != null)
         {
-            nbt.setTag(NBTConstants.TARGET, this.ballisticFlightLogic.targetPos.toNBT());
+            // TODO nbt.setTag(NBTConstants.TARGET, this.ballisticFlightLogic.targetPos.toNBT());
         }
 
         if (this.ballisticFlightLogic.launcherPos != null)
@@ -533,7 +533,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
         nbt.setFloat(NBTConstants.ACCELERATION, this.ballisticFlightLogic.acceleration);
         nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
-        nbt.setInteger(NBTConstants.TARGET_HEIGHT, this.ballisticFlightLogic.targetHeight);
+        // TODO nbt.setInteger(NBTConstants.TARGET_HEIGHT, this.ballisticFlightLogic.targetHeight);
         nbt.setInteger(NBTConstants.TICKS_IN_AIR, this.ticksInAir);
         nbt.setDouble(NBTConstants.LOCK_HEIGHT, this.ballisticFlightLogic.lockHeight);
         nbt.setInteger(NBTConstants.MISSILE_TYPE, this.missileType.ordinal());
