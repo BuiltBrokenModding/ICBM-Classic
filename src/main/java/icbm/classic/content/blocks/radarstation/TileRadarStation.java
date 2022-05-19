@@ -231,7 +231,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         }
 
 
-        if (missile.targetPos == null)
+        if (missile.ballisticFlightLogic.targetPos == null)
         {
             Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
             Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
@@ -242,7 +242,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
         }
 
-        double d = missile.targetPos.distance(this);
+        double d = missile.ballisticFlightLogic.targetPos.distance(this);
         //TODO simplify code to not use vector system
         return d < this.triggerRange;
     }

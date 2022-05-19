@@ -62,13 +62,13 @@ public class MissileTrackerWorld extends WorldSavedData
             ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
 
         //Only run on server
-        if (!missile.world.isRemote && missile.targetPos != null)
+        if (!missile.world.isRemote && missile.ballisticFlightLogic.targetPos != null)
         {
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 
             //Calculate distance
-            double dx = missile.targetPos.x() - missile.posX;
-            double dz = missile.targetPos.z() - missile.posZ;
+            double dx = missile.ballisticFlightLogic.targetPos.x() - missile.posX;
+            double dz = missile.ballisticFlightLogic.targetPos.z() - missile.posZ;
             double dst = Math.sqrt(dx * dx + dz * dz);
 
             //Calculate duration and queue up
@@ -208,14 +208,14 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.motionY = -5;
         missile.motionZ = 0;
         missile.motionX = 0;
-        missile.lockHeight = 0;
-        missile.acceleration = 0;
-        missile.preLaunchSmokeTimer = 0;
-        missile.targetPos = mtd.targetPos;
-        missile.wasSimulated = true;
+        missile.ballisticFlightLogic.lockHeight = 0;
+        missile.ballisticFlightLogic.acceleration = 0;
+        missile.ballisticFlightLogic.preLaunchSmokeTimer = 0;
+        missile.ballisticFlightLogic.targetPos = mtd.targetPos;
+        missile.ballisticFlightLogic.wasSimulated = true;
 
         //Trigger launch event
-        missile.launch(missile.targetPos, (int) missile.lockHeight);
+        missile.launch(missile.ballisticFlightLogic.targetPos, (int) missile.ballisticFlightLogic.lockHeight);
 
         //Spawn entity
         missile.world().spawnEntity(missile);

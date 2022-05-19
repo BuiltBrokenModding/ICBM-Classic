@@ -46,7 +46,7 @@ public class MissileEventHandler
                     if (radarEntity.entity instanceof EntityExplosiveMissile)
                     {
                         final EntityExplosiveMissile missile = (EntityExplosiveMissile) radarEntity.entity;
-                        if(!missile.wasSimulated && missile.missileType == MissileFlightType.PAD_LAUNCHER)
+                        if(!missile.ballisticFlightLogic.wasSimulated && missile.missileType == MissileFlightType.PAD_LAUNCHER)
                         {
                             MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) radarEntity.entity);
                         }
