@@ -4,6 +4,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.events.ExplosiveContentRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
+import icbm.classic.api.reg.events.MissileTargetRegistryEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.CommandEntryPoint;
@@ -12,6 +13,9 @@ import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
 import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
+import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
+import icbm.classic.content.entity.missile.targeting.BasicTargetData;
+import icbm.classic.content.entity.missile.targeting.reg.MissileTargetRegistry;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -48,6 +52,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -218,7 +223,22 @@ public final class ICBMClassic
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 
+        handleMissileTargetRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
+    }
+
+    private void handleMissileTargetRegistry() {
+        final MissileTargetRegistry registry = new MissileTargetRegistry();
+        ICBMClassicAPI.TARGET_DATA_REGISTRY = registry;
+
+        registry.register(new ResourceLocation(ICBMConstants.DOMAIN, "basic"), BasicTargetData::new);
+        registry.register(new ResourceLocation(ICBMConstants.DOMAIN, "ballistic"), BallisticTargetingData::new);
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(registry));
+
+        //Lock to prevent late registry
+        registry.lock();
     }
 
     private void handleExRegistry(File configMainFolder)

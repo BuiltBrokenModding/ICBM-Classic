@@ -2,25 +2,34 @@ package icbm.classic.content.entity.missile.explosive;
 
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-public class CapabilityMissile implements IMissile
+public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompound>
 {
+    public static final String NBT_DO_FLIGHT = "do_flight";
+    public static final String NBT_TARGET_DATA = "target";
+
     public final EntityExplosiveMissile missile;
+    public IMissileTarget targetData;
+    public boolean doFlight = false;
 
     public CapabilityMissile(EntityExplosiveMissile missile)
     {
@@ -30,7 +39,7 @@ public class CapabilityMissile implements IMissile
     @Override
     public void dropMissileAsItem()
     {
-        ItemStack stack = toStack();
+        final ItemStack stack = toStack();
         if (stack != null && !stack.isEmpty() && world() != null)
         {
             world().spawnEntity(new EntityItem(world(), x(), y(), z(), stack));
@@ -69,15 +78,14 @@ public class CapabilityMissile implements IMissile
     }
 
     @Override
-    public void launch(double x, double y, double z, double height)
-    {
-        missile.launch(new Pos(x, y, z), (int) height);
+    public void setTargetData(IMissileTarget data) {
+        this.targetData = data;
     }
 
     @Override
-    public void launchNoTarget()
+    public void launch()
     {
-        missile.launch(null, 0);
+        this.doFlight = true;
     }
 
     @Override
@@ -122,5 +130,24 @@ public class CapabilityMissile implements IMissile
                     }
                 },
                 () -> new CapabilityMissile(null));
+    }
+
+    @Override
+    public NBTTagCompound serializeNBT() {
+        final NBTTagCompound saveData = new NBTTagCompound();
+
+        final NBTTagCompound targetSave = new NBTTagCompound();
+        saveData.setTag(NBT_TARGET_DATA, targetSave);
+
+        saveData.setBoolean(NBT_DO_FLIGHT, doFlight);
+
+        return saveData;
+    }
+
+    @Override
+    public void deserializeNBT(NBTTagCompound nbt) {
+
+        this.doFlight = nbt.getBoolean(NBT_DO_FLIGHT);
+        this.targetData =
     }
 }

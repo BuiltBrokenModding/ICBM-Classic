@@ -50,7 +50,7 @@ public interface IMissile extends IWorldPosition
      */
     default void dropMissileAsItem()
     {
-        ItemStack stack = toStack();
+        final ItemStack stack = toStack();
         if (stack != null && !stack.isEmpty() && world() != null)
         {
             world().spawnEntity(new EntityItem(world(), x(), y(), z(), stack));
@@ -78,17 +78,13 @@ public interface IMissile extends IWorldPosition
     Entity getMissileEntity();
 
     /**
-     * Tells the missile to fly towards the specific target
-     *
-     * @param x          - target
-     * @param y          - target
-     * @param z          - target
-     * @param lockHeight - height to above current to wait before turning towards target TODO change to distance for flat xz paths
+     * Sets the missile targeting data
+     * @param data defining the target and any specialized impact settings
      */
-    void launch(double x, double y, double z, double lockHeight); //TODO add results
+    void setTargetData(IMissileTarget data);
 
     /**
-     * Called to launch without a target and fly strait from rotation data
+     * Tells the missile to fly towards the specific target
      */
-    void launchNoTarget(); //TODO add results
+    void launch();
 }

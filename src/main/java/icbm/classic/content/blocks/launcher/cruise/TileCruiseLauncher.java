@@ -351,6 +351,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             this.extractEnergy();
 
+            //TODO set aim using targeting interface so we can abstract to IMissile
             EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(world)
                     .init(xi() + 0.5, yi() + 1.5, zi() + 0.5,
                             -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), EntityMissile.DIRECT_FLIGHT_SPEED, 1);
@@ -358,7 +359,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             entityMissile.missileType = MissileFlightType.CRUISE_LAUNCHER;
             entityMissile.explosiveID = this.getInventory().getStackInSlot(0).getItemDamage(); //TODO encode entire itemstack
             entityMissile.ballisticFlightLogic.acceleration = 1;
-            entityMissile.missileCapability.launchNoTarget();
+            entityMissile.missileCapability.launch();
             world.spawnEntity(entityMissile);
 
             //TODO we are missing the item NBT, this will prevent encoding data before using the missile

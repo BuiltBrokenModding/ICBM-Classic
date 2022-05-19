@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
@@ -294,7 +295,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     missile.setPosition(xi() + 0.5, yi() + 3, zi() + 0.5); //TODO store offset
 
                     //Trigger launch event
-                    missile.missileCapability.launch(target.x(), target.y(), target.z(), lockHeight);
+                    missile.missileCapability.setTargetData(new BallisticTargetingData(target, lockHeight));
+                    missile.missileCapability.launch();
 
                     //Spawn entity
                     ((WorldServer)getWorld()).addScheduledTask(() -> getWorld().spawnEntity(missile));
