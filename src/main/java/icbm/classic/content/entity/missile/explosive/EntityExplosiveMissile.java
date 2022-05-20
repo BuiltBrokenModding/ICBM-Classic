@@ -1,6 +1,5 @@
 package icbm.classic.content.entity.missile.explosive;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
@@ -10,12 +9,11 @@ import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
-import icbm.classic.content.entity.missile.logic.IFlightLogic;
+import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.content.entity.missile.logic.TargetRangeDet;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.NBTConstants;
@@ -24,25 +22,24 @@ import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -52,8 +49,8 @@ import java.util.Optional;
  */
 public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile> implements IEntityAdditionalSpawnData
 {
-    public final BallisticFlightLogic ballisticFlightLogic = new BallisticFlightLogic(this);
-    public final DirectFlightLogic directFlightLogic = new DirectFlightLogic(this);
+
+    private IMissileFlightLogic flightLogic;
     public final TargetRangeDet targetRangeDet = new TargetRangeDet(this);
 
     //Explosive cap vars
@@ -100,17 +97,14 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         return capability == CapabilityEMP.EMP || capability == ICBMClassicAPI.MISSILE_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    public IFlightLogic getFlightLogic()
+    public IMissileFlightLogic getFlightLogic()
     {
-        if (this.missileType == MissileFlightType.PAD_LAUNCHER)
-        {
-            return ballisticFlightLogic;
-        }
-        else if (this.missileType == MissileFlightType.DEAD_AIM)
-        {
-            return null;
-        }
-        return directFlightLogic;
+        return flightLogic;
+    }
+
+    public void setFlightLogic(IMissileFlightLogic flightLogic)
+    {
+        this.flightLogic = flightLogic;
     }
 
     @Override
@@ -156,10 +150,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     {
         if (missileCapability.doFlight)
         {
-            Optional.ofNullable(getFlightLogic()).ifPresent(IFlightLogic::onEntityTick);
+            Optional.ofNullable(getFlightLogic()).ifPresent(logic -> logic.onEntityTick(this, ticksInAir));
 
             //Handle effects
-            ICBMClassic.proxy.spawnMissileSmoke(this);
+            ICBMClassic.proxy.spawnMissileSmoke(this, getFlightLogic(), ticksInAir);
             ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
 
             //Trigger events
@@ -172,7 +166,8 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void decreaseMotion()
     {
-        if(getFlightLogic() == null || getFlightLogic().decreaseMotion()) {
+        if (getFlightLogic() == null || getFlightLogic().shouldDecreaseMotion(this))
+        {
             super.decreaseMotion();
         }
     }
@@ -349,14 +344,27 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         .addRoot("components")
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("flight",
             (missile) -> {
-                if (missile.missileType == MissileFlightType.PAD_LAUNCHER) //TODO make generic by saving flight logic type and constructing from registry
+                final NBTTagCompound save = new NBTTagCompound();
+                final IMissileFlightLogic logic = missile.getFlightLogic();
+                final NBTTagCompound logicSave = logic.save();
+                if (logicSave != null && !logicSave.hasNoTags())
                 {
-                    return missile.ballisticFlightLogic.serializeNBT();
+                    save.setTag("data", logicSave);
                 }
-                return null;
+                save.setString("id", logic.getRegistryName().toString());
+                return save;
             },
             (missile, data) -> {
-                missile.ballisticFlightLogic.deserializeNBT(data);
+                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
+                final IMissileFlightLogic logic = ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.build(saveId);
+                if (logic != null)
+                {
+                    if (data.hasKey("data"))
+                    {
+                        logic.load(data.getCompoundTag("data"));
+                    }
+                    missile.setFlightLogic(logic);
+                }
             }
         ))
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("missile",
@@ -365,4 +373,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         ))
         //TODO save explosive component when added
         .base();
+
+
 }

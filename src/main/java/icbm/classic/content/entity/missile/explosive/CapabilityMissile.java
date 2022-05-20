@@ -95,6 +95,10 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     {
         //Tell missile to start moving
         this.doFlight = true;
+        Optional.ofNullable(missile.getFlightLogic()).ifPresent(logic -> {
+            logic.calculateFlightPath(missile.world, missile.x(), missile.y(), missile.z(), targetData); //TODO show in launcher screen with predicted path and time
+            logic.start(missile);
+        });
 
         //Trigger events
         //TODO add generic event

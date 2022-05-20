@@ -1,6 +1,7 @@
 package icbm.classic.api.missiles;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -38,6 +39,8 @@ public interface IMissileTarget extends INBTSerializable<NBTTagCompound> {
      * @return double or NaN if no target is set
      */
     double getZ();
+
+    ResourceLocation getRegistryName();
 
     /**
      * Helper to get flat distance in x-z plane

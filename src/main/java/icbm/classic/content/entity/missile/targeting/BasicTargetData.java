@@ -1,11 +1,15 @@
 package icbm.classic.content.entity.missile.targeting;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileTarget;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class BasicTargetData implements IMissileTarget {
+
+    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "basic");
     private Vec3d position;
 
     public BasicTargetData() {
@@ -23,8 +27,6 @@ public class BasicTargetData implements IMissileTarget {
     public BasicTargetData(BlockPos pos) {
         this.position = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
-
-
 
     public Vec3d getPosition() {
         return position;
@@ -51,6 +53,12 @@ public class BasicTargetData implements IMissileTarget {
     @Override
     public double getZ() {
         return position != null ? position.z : Double.NaN;
+    }
+
+    @Override
+    public ResourceLocation getRegistryName()
+    {
+        return REG_NAME;
     }
 
     @Override

@@ -4,6 +4,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.events.ExplosiveContentRegistryEvent;
 import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
+import icbm.classic.api.reg.events.MissileFlightLogicRegistryEvent;
 import icbm.classic.api.reg.events.MissileTargetRegistryEvent;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.ICBMCommands;
@@ -13,6 +14,9 @@ import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
 import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
+import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
+import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
+import icbm.classic.content.entity.missile.logic.reg.MissileFlightLogicRegistry;
 import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.content.entity.missile.targeting.BasicTargetData;
 import icbm.classic.content.entity.missile.targeting.reg.MissileTargetRegistry;
@@ -181,8 +185,7 @@ public final class ICBMClassic
                     }
                 }
             }
-        }
-        else if (event.getName().equals(LootTableList.ENTITIES_CREEPER))
+        } else if (event.getName().equals(LootTableList.ENTITIES_CREEPER))
         {
             if (ConfigItems.ENABLE_SULFUR_LOOT_DROPS)
             {
@@ -224,18 +227,36 @@ public final class ICBMClassic
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 
         handleMissileTargetRegistry();
+        handleMissileFlightRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
     }
 
-    private void handleMissileTargetRegistry() {
+    private void handleMissileTargetRegistry()
+    {
         final MissileTargetRegistry registry = new MissileTargetRegistry();
-        ICBMClassicAPI.TARGET_DATA_REGISTRY = registry;
+        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = registry;
 
-        registry.register(new ResourceLocation(ICBMConstants.DOMAIN, "basic"), BasicTargetData::new);
-        registry.register(new ResourceLocation(ICBMConstants.DOMAIN, "ballistic"), BallisticTargetingData::new);
+        registry.register(BasicTargetData.REG_NAME, BasicTargetData::new);
+        registry.register(BallisticTargetingData.REG_NAME, BallisticTargetingData::new);
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(registry));
+
+        //Lock to prevent late registry
+        registry.lock();
+    }
+
+    private void handleMissileFlightRegistry()
+    {
+        final MissileFlightLogicRegistry registry = new MissileFlightLogicRegistry();
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = registry;
+
+        registry.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
+        registry.register(BallisticFlightLogic.REG_NAME, BallisticFlightLogic::new);
+
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(registry));
 
         //Lock to prevent late registry
         registry.lock();
@@ -354,9 +375,9 @@ public final class ICBMClassic
         metadata.modId = id;
         metadata.name = name;
         metadata.description = "ICBM is a Minecraft Mod that introduces intercontinental ballistic missiles to Minecraft. " +
-                "But the fun doesn't end there! This mod also features many different explosives, missiles and machines " +
-                "classified in three different tiers. If strategic warfare, carefully coordinated airstrikes, messing " +
-                "with matter and general destruction are up your alley, then this mod is for you!";
+            "But the fun doesn't end there! This mod also features many different explosives, missiles and machines " +
+            "classified in three different tiers. If strategic warfare, carefully coordinated airstrikes, messing " +
+            "with matter and general destruction are up your alley, then this mod is for you!";
         metadata.url = "http://www.builtbroken.com/";
         metadata.logoFile = "/icbm_logo.png";
         metadata.version = ICBMClassic.VERSION;

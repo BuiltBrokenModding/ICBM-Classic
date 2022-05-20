@@ -16,6 +16,7 @@ import net.minecraft.util.math.Vec3i;
  * Basic implementation of Pos3D that contains helper methods for interacting with MC worlds
  * Created by robert on 1/13/2015.
  */
+@Deprecated //Replace with vec3d and helper classes as needed
 public class Pos extends AbstractPos<Pos> implements IPos3D
 {
     public static final Pos zero = new Pos();

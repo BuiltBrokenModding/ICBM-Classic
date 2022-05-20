@@ -3,6 +3,7 @@ package icbm.classic.content.entity.missile;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
@@ -46,7 +47,7 @@ public class MissileEventHandler
                     if (radarEntity.entity instanceof EntityExplosiveMissile)
                     {
                         final EntityExplosiveMissile missile = (EntityExplosiveMissile) radarEntity.entity;
-                        if(!missile.ballisticFlightLogic.wasSimulated() && missile.missileType == MissileFlightType.PAD_LAUNCHER)
+                        if(missile.getFlightLogic() instanceof BallisticFlightLogic)
                         {
                             MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) radarEntity.entity);
                         }

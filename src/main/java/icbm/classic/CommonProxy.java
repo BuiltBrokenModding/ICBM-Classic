@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
@@ -145,7 +146,7 @@ public class CommonProxy implements IGuiHandler
         PacketSpawnAirParticle.sendToAllClients(world, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
     }
 
-    public void spawnMissileSmoke(EntityExplosiveMissile missile)
+    public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir) //TODO refactor to be packet based or wired to each flight logic type
     {
 
     }

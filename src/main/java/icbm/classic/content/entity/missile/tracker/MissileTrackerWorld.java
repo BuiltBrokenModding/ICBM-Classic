@@ -65,6 +65,9 @@ public class MissileTrackerWorld extends WorldSavedData
         //Only run on server
         if (!missile.world.isRemote && missile.missileCapability.targetData != null)
         {
+            //Clear flight logic, once we are out of simulation the computer is dead
+            missile.setFlightLogic(null);
+
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 
             //Calculate distance
@@ -202,15 +205,12 @@ public class MissileTrackerWorld extends WorldSavedData
 
         //Set data
         missile.readEntityFromNBT(mtd.missileData);
-        missile.missileType = MissileFlightType.DEAD_AIM; //Disable flight logic so we are not guided
-        missile.posY = 250;
+        missile.posY = 250; //TODO pull from config
         missile.posX = mtd.targetPos.x(); //TODO calculate arc position at 250 so we don't come in on top of the target
         missile.posZ = mtd.targetPos.z();
-        missile.motionY = -5;
+        missile.motionY = -5; //TODO get speed it would have been at the given time
         missile.motionZ = 0;
         missile.motionX = 0;
-        missile.missileCapability.targetData = new BallisticTargetingData(mtd.targetPos, 0);
-        missile.ballisticFlightLogic.markSimulationCompleted();
 
         //Trigger launch event
         missile.missileCapability.launch();
