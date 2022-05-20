@@ -1,4 +1,4 @@
-package icbm.classic.content.entity.missile.logic;
+package icbm.classic.content.entity.missile.logic.flight;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
@@ -82,26 +82,33 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     protected void calculatePath(double startX, double startY, double startZ, final IMissileTarget targetingData)
     {
-        // Calculate the distance difference of the missile
-        this.deltaPathX = targetingData.getX() - startX;
-        this.deltaPathY = targetingData.getY() - startY;
-        this.deltaPathZ = targetingData.getZ() - startZ;
+        if(targetingData != null)
+        {
+            // Calculate the distance difference of the missile
+            this.deltaPathX = targetingData.getX() - startX;
+            this.deltaPathY = targetingData.getY() - startY;
+            this.deltaPathZ = targetingData.getZ() - startZ;
 
-        // TODO: Calculate parabola and relative out the targetHeight.
-        // Calculate the power required to reach the target co-ordinates
-        // Ground Displacement
-        double flatDistance = targetingData.calculateFlatDistance(startX, startZ);
-        // Parabolic Height
-        // Ballistic flight vars
-        //TODO make config?
-        int arcHeightMax = 160 + (int) (flatDistance * 3);
-        // Flight time
-        missileFlightTime = (float) Math.max(100, 2 * flatDistance);
-        // Acceleration
-        this.acceleration = (float) arcHeightMax * 2 / (missileFlightTime * missileFlightTime);
+            // TODO: Calculate parabola and relative out the targetHeight.
+            // Calculate the power required to reach the target co-ordinates
+            // Ground Displacement
+            double flatDistance = targetingData.calculateFlatDistance(startX, startZ);
+            // Parabolic Height
+            // Ballistic flight vars
+            //TODO make config?
+            int arcHeightMax = 160 + (int) (flatDistance * 3);
+            // Flight time
+            missileFlightTime = (float) Math.max(100, 2 * flatDistance);
+            // Acceleration
+            this.acceleration = (float) arcHeightMax * 2 / (missileFlightTime * missileFlightTime);
 
-        //TODO test impact position, as this may be offset by lockHeight and deltaPathY causing it to miss slightly
-        //  In theory missile should be moving almost strait down on impact but could be a problem in some cases
+            //TODO test impact position, as this may be offset by lockHeight and deltaPathY causing it to miss slightly
+            //  In theory missile should be moving almost strait down on impact but could be a problem in some cases
+        }
+        else
+        {
+            acceleration = ConfigMissile.DIRECT_FLIGHT_SPEED;
+        }
     }
 
     @Override

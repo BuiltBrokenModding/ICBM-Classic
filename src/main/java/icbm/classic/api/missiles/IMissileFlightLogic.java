@@ -22,7 +22,9 @@ public interface IMissileFlightLogic
      *
      * Once call the implementation should lock and ignore additional calls.
      */
-    void calculateFlightPath(final World world, final double startX, final double startY, final double startZ, final IMissileTarget targetData);
+    default void calculateFlightPath(final World world, final double startX, final double startY, final double startZ, final IMissileTarget targetData) {
+
+    }
 
     /**
      * Called to start the flight logic

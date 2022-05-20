@@ -3,7 +3,7 @@ package icbm.classic.content.entity.missile;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
-import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;

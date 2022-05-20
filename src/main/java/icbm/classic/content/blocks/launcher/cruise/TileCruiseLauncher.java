@@ -5,10 +5,10 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
-import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
@@ -354,9 +354,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             //TODO set aim using targeting interface so we can abstract to IMissile
             EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(world)
                     .init(xi() + 0.5, yi() + 1.5, zi() + 0.5,
-                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), EntityMissile.DIRECT_FLIGHT_SPEED, 1);
+                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), ConfigMissile.DIRECT_FLIGHT_SPEED, 1);
 
-            entityMissile.setFlightLogic(new DirectFlightLogic());
+            entityMissile.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
             entityMissile.explosiveID = this.getInventory().getStackInSlot(0).getItemDamage(); //TODO encode entire itemstack
             entityMissile.missileCapability.launch();
             world.spawnEntity(entityMissile);

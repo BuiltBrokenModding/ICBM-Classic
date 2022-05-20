@@ -14,8 +14,9 @@ import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
 import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
-import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
-import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.entity.missile.logic.reg.MissileFlightLogicRegistry;
 import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.content.entity.missile.targeting.BasicTargetData;
@@ -56,7 +57,6 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -253,6 +253,7 @@ public final class ICBMClassic
 
         registry.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
         registry.register(BallisticFlightLogic.REG_NAME, BallisticFlightLogic::new);
+        registry.register(DeadFlightLogic.REG_NAME, DeadFlightLogic::new);
 
 
         //Fire registry event

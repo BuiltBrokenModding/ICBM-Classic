@@ -1,7 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
