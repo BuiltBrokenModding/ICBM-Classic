@@ -170,8 +170,6 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
         List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
 
-        ICBMClassic.logger().info("Radar" + entities.size());
-
         for (Entity entity : entities)
         {
             if (ICBMClassicHelpers.isMissile(entity)) //TODO && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
