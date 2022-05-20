@@ -56,10 +56,14 @@ public class RenderMissile extends Render<EntityExplosiveMissile>
         GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(pitch, 0.0F, 0.0F, 1.0F);
 
-        //Render missile
+        //Fix model translation issues
         GlStateManager.translate(0, -1.5, 0);
+
+        //Scale model
         final float scale = 2;
         GlStateManager.scale(scale, scale, scale);
+
+        //Render missile
         renderMissile(entityMissile.explosiveID,
                 entityMissile.world, entityMissile.posX, entityMissile.posY, entityMissile.posZ,
                 0, 0, 0, entityYaw, partialTicks);

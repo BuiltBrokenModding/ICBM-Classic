@@ -34,6 +34,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
@@ -115,13 +116,13 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
-        additionalMissileData.writeInt(this.explosiveID); //TODO write full explosive data
+        ByteBufUtils.writeTag(additionalMissileData, SAVE_LOGIC.save(this, new NBTTagCompound()));
     }
 
     @Override
     public void readSpawnData(ByteBuf additionalMissileData)
     {
-        this.explosiveID = additionalMissileData.readInt();
+        SAVE_LOGIC.load(this, ByteBufUtils.readTag(additionalMissileData));
     }
 
     @Override
