@@ -202,18 +202,15 @@ public class MissileTrackerWorld extends WorldSavedData
 
         //Set data
         missile.readEntityFromNBT(mtd.missileData);
-        missile.missileType = MissileFlightType.PAD_LAUNCHER;
+        missile.missileType = MissileFlightType.DEAD_AIM; //Disable flight logic so we are not guided
         missile.posY = 250;
-        missile.posX = mtd.targetPos.x();
+        missile.posX = mtd.targetPos.x(); //TODO calculate arc position at 250 so we don't come in on top of the target
         missile.posZ = mtd.targetPos.z();
         missile.motionY = -5;
         missile.motionZ = 0;
         missile.motionX = 0;
-        missile.ballisticFlightLogic.lockHeight = 0;
-        missile.ballisticFlightLogic.acceleration = 0;
-        missile.ballisticFlightLogic.preLaunchSmokeTimer = 0;
-        missile.missileCapability.targetData = new BallisticTargetingData(mtd.targetPos, 0); //TODO missing impact height and need to encode target data
-        missile.ballisticFlightLogic.wasSimulated = true;
+        missile.missileCapability.targetData = new BallisticTargetingData(mtd.targetPos, 0);
+        missile.ballisticFlightLogic.markSimulationCompleted();
 
         //Trigger launch event
         missile.launch();

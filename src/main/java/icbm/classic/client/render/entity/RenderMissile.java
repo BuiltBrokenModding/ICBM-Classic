@@ -73,10 +73,9 @@ public class RenderMissile extends Render<EntityExplosiveMissile>
         {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
-            Vec3d vec3d = entityMissile.motionVector.toVec3d();
             bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
             bufferbuilder.pos(x, y, z).color(0, 255, 0, 255).endVertex();
-            bufferbuilder.pos(x + vec3d.x * 2.0D, y + vec3d.y * 2.0D, z + vec3d.z * 2.0D).color(0, 255, 0, 2555).endVertex();
+            bufferbuilder.pos(x + entityMissile.motionX * 2.0D, y + entityMissile.motionY * 2.0D, z + entityMissile.motionZ * 2.0D).color(0, 255, 0, 2555).endVertex();
             tessellator.draw();
             GlStateManager.enableTexture2D();
             GlStateManager.enableLighting();

@@ -9,7 +9,6 @@ import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -52,11 +51,6 @@ public class ClientProxy extends CommonProxy
                 {
                     if (missile.world.isRemote && missile.motionY > -1)
                     {
-                        if (missile.ballisticFlightLogic.launcherHasAirBelow == -1)
-                        {
-                            BlockPos bp = new BlockPos(Math.signum(missile.posX) * Math.floor(Math.abs(missile.posX)), missile.posY - 2, Math.signum(missile.posZ) * Math.floor(Math.abs(missile.posZ)));
-                            missile.ballisticFlightLogic.launcherHasAirBelow = missile.world.isAirBlock(bp) ? 1 : 0;
-                        }
                         Pos position = new Pos((IPos3D) missile);
                         // The distance of the smoke relative
                         // to the missile.
@@ -71,10 +65,10 @@ public class ClientProxy extends CommonProxy
                         double z = Math.cos(Math.toRadians(missile.rotationYaw)) * dH;
                         position = position.add(x, y, z);
 
-                        if (missile.ballisticFlightLogic.preLaunchSmokeTimer > 0 && missile.ticksInAir <= missile.ballisticFlightLogic.maxPreLaunchSmokeTimer) // pre-launch phase
+                        if (missile.ballisticFlightLogic.getPreLaunchSmokeTimer() > 0 && missile.ticksInAir <= missile.ballisticFlightLogic.MAX_PRE_LAUNCH_SMOKE_TICKS) // pre-launch phase
                         {
                             Pos launcherSmokePosition = position.sub(0, 2, 0);
-                            if (missile.ballisticFlightLogic.launcherHasAirBelow == 1)
+                            if (missile.ballisticFlightLogic.launcherHasAirBelow)
                             {
                                 Pos velocity = new Pos(0, -1, 0).addRandom(missile.world.rand, 0.5);
                                 for (int i = 0; i < 10; i++)
@@ -106,12 +100,12 @@ public class ClientProxy extends CommonProxy
                         }
                         else
                         {
-                            missile.getLastSmokePos().add(position);
+                            missile.ballisticFlightLogic.getLastSmokePos().add(position);
                             Pos lastPos = null;
-                            if (missile.getLastSmokePos().size() > 5)
+                            if (missile.ballisticFlightLogic.getLastSmokePos().size() > 5)
                             {
-                                lastPos = missile.getLastSmokePos().get(0);
-                                missile.getLastSmokePos().remove(0);
+                                lastPos = missile.ballisticFlightLogic.getLastSmokePos().get(0);
+                                missile.ballisticFlightLogic.getLastSmokePos().remove(0);
                             }
                             spawnAirParticle(missile.world,
                                     position.x(), position.y(), position.z(),

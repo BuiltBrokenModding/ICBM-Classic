@@ -39,7 +39,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     /**
      * Used to track shooting entity after being loaded from a save
      */
-    public UUID shootingEntityUUID;
+    public UUID shootingEntityUUID; //TODO abstract as a shooter object so we can track player vs entity vs tile vs admin command
     /**
      * Location the projectile was fired from, use this over the shooting entity
      * to force argo on the source of the projectile. This way things like

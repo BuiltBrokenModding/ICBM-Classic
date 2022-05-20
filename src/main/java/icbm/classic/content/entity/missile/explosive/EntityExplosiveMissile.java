@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.explosion.BlastState;
@@ -12,28 +11,27 @@ import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
-import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
 import icbm.classic.content.entity.missile.logic.TargetRangeDet;
-import icbm.classic.content.entity.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
@@ -43,7 +41,6 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -65,12 +62,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
 
     // Generic shared missile data
-    public double deltaPathX;
-    public double deltaPathY;
-    public double deltaPathZ;
-    public Pos motionVector = new Pos();
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
-
 
     // Missile Type
     public MissileFlightType missileType = MissileFlightType.PAD_LAUNCHER;
@@ -137,7 +129,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public void onUpdate()
     {
-        if (ballisticFlightLogic.preLaunchSmokeTimer > 0)
+        if (ballisticFlightLogic.getPreLaunchSmokeTimer() > 0)
         {
             this.prevRotationPitch = 90;
         }
@@ -171,13 +163,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(missileCapability);
 
         //Trigger code
-        if (missileType == MissileFlightType.PAD_LAUNCHER) //TODO replace with single flightLogic#update call
-        {
-            ballisticFlightLogic.update();
-        } else
-        {
-            directFlightLogic.update();
-        }
         this.updateMotion();
 
         //Play audio
@@ -216,79 +201,17 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void updateMotion()
     {
-        if (this.ballisticFlightLogic.wasSimulated)
+        if (missileType == MissileFlightType.PAD_LAUNCHER) //TODO replace with single flightLogic#update call
         {
-            ballisticFlightLogic.preLaunchSmokeTimer = 0;
-        }
-
-        if (!this.world.isRemote)
+            ballisticFlightLogic.onEntityTick();
+        } else
         {
-
-            if (ballisticFlightLogic.preLaunchSmokeTimer <= 0 || this.missileType != MissileFlightType.PAD_LAUNCHER)
-            {
-                //Start motion
-                if (ticksInAir <= 0)
-                {
-                    this.ticksInAir = 2;
-                }
-
-                if (this.ticksInAir >= 0)
-                {
-                    if (this.missileType == MissileFlightType.PAD_LAUNCHER)
-                    {
-
-                        if (this.ballisticFlightLogic.lockHeight > 0)
-                        {
-                            this.motionY = ConfigMissile.LAUNCH_SPEED * this.ticksInAir * (this.ticksInAir / 2f);
-                            this.motionX = 0;
-                            this.motionZ = 0;
-                            this.ballisticFlightLogic.lockHeight -= this.motionY;
-                            if (this.ballisticFlightLogic.lockHeight <= 0)
-                            {
-                                this.motionY = this.ballisticFlightLogic.acceleration * (this.ballisticFlightLogic.missileFlightTime / 2);
-                                this.motionX = this.deltaPathX / ballisticFlightLogic.missileFlightTime;
-                                this.motionZ = this.deltaPathZ / ballisticFlightLogic.missileFlightTime;
-                            }
-                        } else
-                        {
-                            this.motionY -= this.ballisticFlightLogic.acceleration;
-                            this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                            // Look at the next point
-                            this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-                        }
-
-                        //Simulate missile
-                        if (shouldSimulate())
-                        {
-                            MissileTrackerHandler.simulateMissile(this);
-                        }
-                    }
-                } else
-                {
-                    //this.rotationPitch = (float) (Math.atan(this.motionY / (Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ))) * 180 / Math.PI);
-                    // Look at the next point
-                    //this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI);
-                }
-            } else
-            {
-                motionY = 0.001f;
-                this.ballisticFlightLogic.lockHeight -= motionY;
-                posY = ballisticFlightLogic.launcherPos.y() + 2.2f;
-                this.prevRotationPitch = 90f;
-                this.rotationPitch = 90f;
-                ICBMClassic.proxy.spawnMissileSmoke(this);
-                this.ticksInAir = 0;
-            }
-        }
-        if (ballisticFlightLogic.preLaunchSmokeTimer > 0)
-        {
-            ballisticFlightLogic.preLaunchSmokeTimer--;
+            directFlightLogic.onEntityTick();
         }
 
         //Handle effects
         ICBMClassic.proxy.spawnMissileSmoke(this);
         ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
-
 
         //Trigger events
         ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);
@@ -296,33 +219,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         super.updateMotion();
     }
 
-    protected boolean shouldSimulate()
-    {
-        //TODO predict position, if traveling into unloaded chunk simulate
-
-        if (ballisticFlightLogic.launcherPos != null)
-        {
-            if (getPassengers().stream().anyMatch(entity -> entity instanceof EntityPlayerMP))
-            {
-                return false;
-            } else if (ballisticFlightLogic.wasSimulated)
-            {
-                return false;
-            } else if (posY >= ConfigMissile.SIMULATION_START_HEIGHT)
-            {
-                return true;
-            }
-
-            //About to enter an unloaded chunk
-            final BlockPos pos = getPredictedPosition(1).toBlockPos();
-            if (!world.isBlockLoaded(pos))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    @Override
     protected void decreaseMotion()
     {
         if (this.missileType != MissileFlightType.PAD_LAUNCHER && ticksInAir > 1000)
@@ -381,7 +278,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public double getMountedYOffset()
     {
-        if (this.ballisticFlightLogic.missileFlightTime <= 0 && this.missileType == MissileFlightType.PAD_LAUNCHER)
+        if (this.ticksInAir <= 0 && this.missileType == MissileFlightType.PAD_LAUNCHER)
         {
             return height;
         } else if (this.missileType == MissileFlightType.CRUISE_LAUNCHER)
@@ -391,12 +288,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
         return height / 2 + motionY;
     }
-
-    public LinkedList<Pos> getLastSmokePos()
-    {
-        return ballisticFlightLogic.lastSmokePos;
-    }
-
 
     /**
      * Checks to see if an entity is touching the missile. If so, blow up!
@@ -409,28 +300,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
             return null;
         }
         return getEntityBoundingBox();
-    }
-
-    public Pos getPredictedPosition(int t) //TODO rewrite, no reason this should loop and it fails to account for curve path
-    {
-        Pos position = new Pos((IPos3D) this);
-        double tempMotionY = this.motionY;
-
-        if (this.ticksInAir > 20)
-        {
-            for (int i = 0; i < t; i++)
-            {
-                if (this.missileType.movesDirectly)
-                {
-                    position = position.add(this.motionVector);
-                } else
-                {
-                    position = position.add(motionX, tempMotionY - this.ballisticFlightLogic.acceleration, motionZ);
-                }
-            }
-        }
-
-        return position;
     }
 
     @Override
@@ -502,16 +371,11 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        // TODO this.ballisticFlightLogic.targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
-        this.ballisticFlightLogic.launcherPos = new Pos(nbt.getCompoundTag(NBTConstants.LAUNCHER_POS));
-        this.ballisticFlightLogic.acceleration = nbt.getFloat(NBTConstants.ACCELERATION);
-        // TODO this.ballisticFlightLogic.targetHeight = nbt.getInteger(NBTConstants.TARGET_HEIGHT);
         this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
-        this.ticksInAir = nbt.getInteger(NBTConstants.TICKS_IN_AIR);
-        this.ballisticFlightLogic.lockHeight = nbt.getDouble(NBTConstants.LOCK_HEIGHT);
-        this.missileType = MissileFlightType.get(nbt.getInteger(NBTConstants.MISSILE_TYPE));
-        this.ballisticFlightLogic.preLaunchSmokeTimer = nbt.getInteger(NBTConstants.PRE_LAUNCH_SMOKE_TIMER);
         this.blastData = nbt.getCompoundTag(NBTConstants.ADDITIONAL_MISSILE_DATA);
+
+        SAVE_LOGIC.load(this, nbt);
+
     }
 
     /**
@@ -521,23 +385,35 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        // TODO if (this.ballisticFlightLogic.targetPos != null)
-        {
-            // TODO nbt.setTag(NBTConstants.TARGET, this.ballisticFlightLogic.targetPos.toNBT());
-        }
 
-        if (this.ballisticFlightLogic.launcherPos != null)
-        {
-            nbt.setTag(NBTConstants.LAUNCHER_POS, this.ballisticFlightLogic.launcherPos.toNBT());
-        }
-
-        nbt.setFloat(NBTConstants.ACCELERATION, this.ballisticFlightLogic.acceleration);
         nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
-        // TODO nbt.setInteger(NBTConstants.TARGET_HEIGHT, this.ballisticFlightLogic.targetHeight);
-        nbt.setInteger(NBTConstants.TICKS_IN_AIR, this.ticksInAir);
-        nbt.setDouble(NBTConstants.LOCK_HEIGHT, this.ballisticFlightLogic.lockHeight);
-        nbt.setInteger(NBTConstants.MISSILE_TYPE, this.missileType.ordinal());
-        nbt.setInteger(NBTConstants.PRE_LAUNCH_SMOKE_TIMER, this.ballisticFlightLogic.preLaunchSmokeTimer);
         nbt.setTag(NBTConstants.ADDITIONAL_MISSILE_DATA, this.blastData);
+
+        SAVE_LOGIC.save(this, nbt);
     }
+
+    private static final NbtSaveHandler<EntityExplosiveMissile> SAVE_LOGIC = new NbtSaveHandler<EntityExplosiveMissile>()
+        .mainRoot()
+        /* */.nodeInteger("launch_type", (missile) -> missile.missileType.ordinal(), (missile, integer) -> missile.missileType = MissileFlightType.get(integer))
+
+        .base()
+        .addRoot("components")
+        /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("flight",
+            (missile) -> {
+                if (missile.missileType == MissileFlightType.PAD_LAUNCHER) //TODO make generic by saving flight logic type and constructing from registry
+                {
+                    return missile.ballisticFlightLogic.serializeNBT();
+                }
+                return null;
+            },
+            (missile, data) -> {
+                missile.ballisticFlightLogic.deserializeNBT(data);
+            }
+        ))
+        /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("missile",
+            (missile) -> missile.missileCapability.serializeNBT(),
+            (missile, data) -> missile.missileCapability.deserializeNBT(data)
+        ))
+        //TODO save explosive component when added
+        .base();
 }

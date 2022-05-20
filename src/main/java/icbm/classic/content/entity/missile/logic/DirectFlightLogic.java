@@ -1,11 +1,12 @@
 package icbm.classic.content.entity.missile.logic;
 
+import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.content.entity.missile.EntityMissile;
 
 /**
  * Created by Robin Seifert on 2/8/2022.
  */
-public class DirectFlightLogic implements IFlightLogic
+public class DirectFlightLogic implements IFlightLogic<IMissileTarget>
 {
     private final EntityMissile missile;
 
@@ -15,11 +16,11 @@ public class DirectFlightLogic implements IFlightLogic
     }
 
     @Override
-    public void initializeFlight(double targetX, double targetY, double targetZ)
+    public void initializeFlight(IMissileTarget targetData)
     {
-        final double deltaPathX = targetX - missile.x();
-        final double deltaPathY = targetY - missile.y();
-        final double deltaPathZ = targetZ - missile.z();
+        final double deltaPathX = targetData.getX() - missile.x();
+        final double deltaPathY = targetData.getY() - missile.y();
+        final double deltaPathZ = targetData.getZ() - missile.z();
 
         missile.shoot(deltaPathX, deltaPathY, deltaPathZ, EntityMissile.DIRECT_FLIGHT_SPEED, 0);
     }

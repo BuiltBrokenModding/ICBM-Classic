@@ -1,5 +1,7 @@
 package icbm.classic.content.entity.missile.logic;
 
+import icbm.classic.api.missiles.IMissileTarget;
+
 /**
  * Handles motion update logic for missiles
  *
@@ -10,14 +12,14 @@ package icbm.classic.content.entity.missile.logic;
  *
  * Created by Robin Seifert on 2/7/2022.
  */
-public interface IFlightLogic
+public interface IFlightLogic<TargetData extends IMissileTarget>
 {
     /**
      * Called to set variables needed to run the flight logic
      */
-    void initializeFlight(double targetX, double targetY, double targetZ);
+    void initializeFlight(TargetData targetData);
 
-    default void update() {}
+    default void onEntityTick() {}
 
     /**
      * Called to update the missile's velocity vector
@@ -29,7 +31,10 @@ public interface IFlightLogic
     }
 
     /**
-     * Called to get the position over several ticks
+     * Called to get the position over several ticks. Do not use this
+     * to calculate position for anti-missile systems. Assume the anti-missile system
+     * doesn't understand the exact flight logic and only understands motion vector.
+     * This way we get a fair gameplay mechanic of anti-missile systems missing.
      *
      * @param builder - function to build position, {@link net.minecraft.util.math.Vec3d#Vec3d(double, double, double)}
      * @param <V>     - return type of the builder

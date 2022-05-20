@@ -9,16 +9,33 @@ public class NbtSaveHandler<E>
 {
     private final List<NbtSaveRoot<E>> roots = new LinkedList();
 
-    public void save(E objectToSave, NBTTagCompound save)
+    public NBTTagCompound save(E objectToSave, NBTTagCompound save)
     {
-        roots.forEach(node -> save.setTag(node.getSaveKey(), node.save(objectToSave)));
+        roots.forEach(node -> {
+            //Root workaround
+            if(node.getSaveKey() == null) {
+                node.nodes.forEach(subNode -> save.setTag(node.getSaveKey(), node.save(objectToSave)));
+            }
+            else {
+                save.setTag(node.getSaveKey(), node.save(objectToSave));
+            }
+        });
+        return save;
     }
 
     public void load(E objectToLoad, NBTTagCompound save)
     {
         if (!save.hasNoTags())
         {
-            roots.forEach(node -> node.load(objectToLoad, save.getCompoundTag(node.getSaveKey())));
+            roots.forEach(node -> {
+                //Root workaround
+                if(node.getSaveKey() == null) {
+                    node.nodes.forEach(subNode -> node.load(objectToLoad, save.getCompoundTag(node.getSaveKey())));
+                }
+                else {
+                    node.load(objectToLoad, save.getCompoundTag(node.getSaveKey()));
+                }
+            });
         }
     }
 
@@ -26,5 +43,9 @@ public class NbtSaveHandler<E>
         final NbtSaveRoot<E> root = new NbtSaveRoot<>(name, this, null);
         roots.add(root);
         return root;
+    }
+
+    public NbtSaveRoot<E> mainRoot() {
+        return addRoot(null);
     }
 }

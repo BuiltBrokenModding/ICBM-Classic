@@ -19,7 +19,7 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     private final String name;
     private final NbtSaveHandler<E> handler;
     private final NbtSaveRoot<E> parent;
-    private final List<INbtSaveNode> nodes = new LinkedList();
+    public final List<INbtSaveNode> nodes = new LinkedList();
 
     public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent)
     {
@@ -58,9 +58,9 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         return root;
     }
 
-    public <O extends NBTBase> NbtSaveRoot<E> node(final String name, Function<E, O> save, BiConsumer<E, O> load)
+    public <O extends NBTBase> NbtSaveRoot<E> node(NbtSaveNode<E, O> node)
     {
-        nodes.add(new NbtSaveNode(name, save, load));
+        nodes.add(node);
         return this;
     }
 
@@ -77,6 +77,15 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         nodes.add(new NbtSaveNode<E, NBTTagDouble>(name,
             (obj) -> new NBTTagDouble(save.apply(obj)),
             (obj, data) -> load.accept(obj, data.getDouble())
+        ));
+        return this;
+    }
+
+    public NbtSaveRoot<E> nodeFloat(final String name, Function<E, Float> save, BiConsumer<E, Float> load)
+    {
+        nodes.add(new NbtSaveNode<E, NBTTagFloat>(name,
+            (obj) -> new NBTTagFloat(save.apply(obj)),
+            (obj, data) -> load.accept(obj, data.getFloat())
         ));
         return this;
     }
