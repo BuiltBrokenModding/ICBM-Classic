@@ -4,7 +4,7 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.prefab.item.ItemICBMElectrical;
@@ -103,7 +103,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                     if(!world.isRemote)
                                     {
                                         EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(player.world).init(player, EntityMissile.DIRECT_FLIGHT_SPEED, 1);
-                                        entityMissile.missileType = MissileFlightType.HAND_LAUNCHER;
+                                        entityMissile.setFlightLogic(new DirectFlightLogic());
                                         entityMissile.explosiveID = explosiveID;
                                         entityMissile.missileCapability.launch();
                                         world.spawnEntity(entityMissile);

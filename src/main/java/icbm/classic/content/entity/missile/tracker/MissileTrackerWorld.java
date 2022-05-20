@@ -1,9 +1,7 @@
 package icbm.classic.content.entity.missile.tracker;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
-import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;

@@ -10,7 +10,6 @@ import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
 import icbm.classic.api.missiles.IMissileFlightLogic;
@@ -35,7 +34,6 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
@@ -49,7 +47,6 @@ import java.util.Optional;
  */
 public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile> implements IEntityAdditionalSpawnData
 {
-
     private IMissileFlightLogic flightLogic;
     public final TargetRangeDet targetRangeDet = new TargetRangeDet(this);
 
@@ -60,9 +57,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
-
-    // Missile Type
-    public MissileFlightType missileType = MissileFlightType.PAD_LAUNCHER;
 
     public final IEMPReceiver empCapability = new CapabilityEmpMissile(this);
     public final CapabilityMissile missileCapability = new CapabilityMissile(this);
@@ -122,14 +116,12 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
         additionalMissileData.writeInt(this.explosiveID); //TODO write full explosive data
-        additionalMissileData.writeInt(this.missileType.ordinal());
     }
 
     @Override
     public void readSpawnData(ByteBuf additionalMissileData)
     {
         this.explosiveID = additionalMissileData.readInt();
-        this.missileType = MissileFlightType.values()[additionalMissileData.readInt()];
     }
 
     @Override
@@ -222,10 +214,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public double getMountedYOffset()
     {
-        if (this.ticksInAir <= 0 && this.missileType == MissileFlightType.PAD_LAUNCHER)
+        if (this.ticksInAir <= 0 && this.getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
         {
             return height;
-        } else if (this.missileType == MissileFlightType.CRUISE_LAUNCHER)
+        } else if (this.getFlightLogic() instanceof DirectFlightLogic)
         {
             return height / 10;
         }
@@ -337,10 +329,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     private static final NbtSaveHandler<EntityExplosiveMissile> SAVE_LOGIC = new NbtSaveHandler<EntityExplosiveMissile>()
-        .mainRoot()
-        /* */.nodeInteger("launch_type", (missile) -> missile.missileType.ordinal(), (missile, integer) -> missile.missileType = MissileFlightType.get(integer))
-
-        .base()
         .addRoot("components")
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("flight",
             (missile) -> {
