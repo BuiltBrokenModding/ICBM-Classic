@@ -99,6 +99,9 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         missileFlightTime = (float) Math.max(100, 2 * flatDistance);
         // Acceleration
         this.acceleration = (float) arcHeightMax * 2 / (missileFlightTime * missileFlightTime);
+
+        //TODO test impact position, as this may be offset by lockHeight and deltaPathY causing it to miss slightly
+        //  In theory missile should be moving almost strait down on impact but could be a problem in some cases
     }
 
     @Override
