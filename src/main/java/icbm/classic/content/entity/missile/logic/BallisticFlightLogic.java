@@ -251,6 +251,13 @@ public class BallisticFlightLogic implements IFlightLogic<BallisticTargetingData
     }
 
     @Override
+    public boolean decreaseMotion()
+    {
+        //Disable gravity and friction
+        return false;
+    }
+
+    @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
         SAVE_LOGIC.load(this, nbt);

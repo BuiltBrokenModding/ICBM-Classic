@@ -37,4 +37,10 @@ public class DirectFlightLogic implements IFlightLogic<IMissileTarget>
                 missile.z() + missile.motionZ * ticks
         );
     }
+
+    @Override
+    public boolean decreaseMotion()
+    {
+        return this.missile.ticksInAir > 1000; //TODO add config for fuel timer and adjust based on handheld vs cruise launcher
+    }
 }

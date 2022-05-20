@@ -24,6 +24,8 @@ public class BasicTargetData implements IMissileTarget {
         this.position = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
+
+
     public Vec3d getPosition() {
         return position;
     }

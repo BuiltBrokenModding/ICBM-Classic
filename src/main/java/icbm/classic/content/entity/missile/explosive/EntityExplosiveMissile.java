@@ -15,6 +15,7 @@ import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.MissileFlightType;
 import icbm.classic.content.entity.missile.logic.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.logic.DirectFlightLogic;
+import icbm.classic.content.entity.missile.logic.IFlightLogic;
 import icbm.classic.content.entity.missile.logic.TargetRangeDet;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.NBTConstants;
@@ -60,13 +61,11 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public NBTTagCompound blastData = new NBTTagCompound();
     public boolean isExploding = false;
 
-
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
 
     // Missile Type
     public MissileFlightType missileType = MissileFlightType.PAD_LAUNCHER;
-
 
     public final IEMPReceiver empCapability = new CapabilityEmpMissile(this);
     public final CapabilityMissile missileCapability = new CapabilityMissile(this);
@@ -101,6 +100,19 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         return capability == CapabilityEMP.EMP || capability == ICBMClassicAPI.MISSILE_CAPABILITY || super.hasCapability(capability, facing);
     }
 
+    public IFlightLogic getFlightLogic()
+    {
+        if (this.missileType == MissileFlightType.PAD_LAUNCHER)
+        {
+            return ballisticFlightLogic;
+        }
+        else if (this.missileType == MissileFlightType.DEAD_AIM)
+        {
+            return null;
+        }
+        return directFlightLogic;
+    }
+
     @Override
     public String getName()
     {
@@ -129,59 +141,8 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public void onUpdate()
     {
-        if (ballisticFlightLogic.getPreLaunchSmokeTimer() > 0)
-        {
-            this.prevRotationPitch = 90;
-        }
         targetRangeDet.update();
         super.onUpdate();
-    }
-
-
-    /**
-     * Launches the missile
-     */
-    @Deprecated //TODO replace with a set target method and a launch with no args
-    public void launch()
-    {
-        if (height > 0)
-        {
-            this.ballisticFlightLogic.lockHeight = height;
-        }
-
-        //Start motion
-        if (ticksInAir <= 0)
-        {
-            this.ticksInAir = 2;
-        }
-
-        //Update data
-        this.sourceOfProjectile = new Pos((IPos3D) this); //TODO get source of launch
-
-        //Trigger events
-        //TODO add generic event
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(missileCapability);
-
-        //Trigger code
-        this.updateMotion();
-
-        //Play audio
-        ICBMSounds.MISSILE_LAUNCH.play(world, posX, posY, posZ, 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
-
-        //Trigger events
-        // TODO add an event system here
-        RadarRegistry.add(this);
-        if (ConfigDebug.DEBUG_MISSILE_LAUNCHES)
-        {
-            ICBMClassic.logger().info(
-                String.format("Missile(%s): Launch triggered of type[%s] starting from '%s' and aimed at `%s`",
-                    this.getEntityId(),
-                    this.getName(),
-                    Optional.ofNullable(sourceOfProjectile).map(Objects::toString).orElse("'null'"),
-                    Optional.ofNullable(missileCapability.targetData).map(Objects::toString).orElse("'null'")
-                )
-            );
-        }
     }
 
     public EntityExplosiveMissile ignore(Entity entity)
@@ -191,30 +152,19 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     @Override
-    public void entityInit()
-    {
-        //this.dataWatcher.addObject(16, -1);
-        //this.dataWatcher.addObject(17, 0);
-    }
-
-
-    @Override
     protected void updateMotion()
     {
-        if (missileType == MissileFlightType.PAD_LAUNCHER) //TODO replace with single flightLogic#update call
+        if (missileCapability.doFlight)
         {
-            ballisticFlightLogic.onEntityTick();
-        } else
-        {
-            directFlightLogic.onEntityTick();
+            Optional.ofNullable(getFlightLogic()).ifPresent(IFlightLogic::onEntityTick);
+
+            //Handle effects
+            ICBMClassic.proxy.spawnMissileSmoke(this);
+            ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
+
+            //Trigger events
+            ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);
         }
-
-        //Handle effects
-        ICBMClassic.proxy.spawnMissileSmoke(this);
-        ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F) * 1F, (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
-
-        //Trigger events
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);
 
         super.updateMotion();
     }
@@ -222,8 +172,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void decreaseMotion()
     {
-        if (this.missileType != MissileFlightType.PAD_LAUNCHER && ticksInAir > 1000)
-        {
+        if(getFlightLogic() == null || getFlightLogic().decreaseMotion()) {
             super.decreaseMotion();
         }
     }

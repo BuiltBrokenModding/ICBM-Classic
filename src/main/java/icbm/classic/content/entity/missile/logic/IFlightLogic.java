@@ -4,12 +4,12 @@ import icbm.classic.api.missiles.IMissileTarget;
 
 /**
  * Handles motion update logic for missiles
- *
+ * <p>
  * Goal of this is to act much like a flight computer. It is not meant to be
  * a targeting system or smart AI guidance system. All logic should be simplistic
  * and built on basic rules. More advanced logic should instead interact with
  * the flight system to help guide it through updates to target or variable data.
- *
+ * <p>
  * Created by Robin Seifert on 2/7/2022.
  */
 public interface IFlightLogic<TargetData extends IMissileTarget>
@@ -19,7 +19,19 @@ public interface IFlightLogic<TargetData extends IMissileTarget>
      */
     void initializeFlight(TargetData targetData);
 
-    default void onEntityTick() {}
+    default void onEntityTick()
+    {
+    }
+
+    /**
+     * Callback to allow taking control of gravity and friction
+     *
+     * @return true to allow normal friction and gravity to apply
+     */
+    default boolean decreaseMotion()
+    {
+        return true;
+    }
 
     /**
      * Called to update the missile's velocity vector

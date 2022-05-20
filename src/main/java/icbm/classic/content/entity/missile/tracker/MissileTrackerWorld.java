@@ -213,7 +213,7 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.ballisticFlightLogic.markSimulationCompleted();
 
         //Trigger launch event
-        missile.launch();
+        missile.missileCapability.launch();
 
         //Spawn entity
         missile.world().spawnEntity(missile);
