@@ -23,6 +23,9 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
 
     public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent)
     {
+        if(name == null) {
+            throw new IllegalArgumentException("save key can't be null");
+        }
         this.name = name;
         this.handler = handler;
         this.parent = parent;
