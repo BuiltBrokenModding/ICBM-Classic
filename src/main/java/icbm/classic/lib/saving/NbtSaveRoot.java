@@ -50,9 +50,14 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     @Override
     public void load(E objectToLoad, NBTTagCompound save)
     {
-        if (!save.hasNoTags())
+        if (save != null && !save.hasNoTags())
         {
-            nodes.forEach(node -> node.load(objectToLoad, save.getTag(node.getSaveKey())));
+            nodes.forEach(node -> {
+                if (save.hasKey(node.getSaveKey()))
+                {
+                    node.load(objectToLoad, save.getTag(node.getSaveKey()));
+                }
+            });
         }
     }
 
@@ -113,6 +118,16 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
     {
         return node(new SaveNodeUUID<E>(name, save, load));
+    }
+
+    /**
+     * Goes up one nested level
+     *
+     * @return parent, can be null if this root is at base
+     */
+    public NbtSaveRoot<E> parent()
+    {
+        return parent;
     }
 
     /**

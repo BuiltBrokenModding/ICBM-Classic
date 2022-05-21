@@ -172,6 +172,29 @@ public class NbtSaveHandleTest
         }
 
         @Test
+        @DisplayName("Validate loading with a root but no matching data for nodes to use")
+        void load_rootWithNodesButNoMatchingData() {
+            //Setup
+            final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>()
+                .addRoot("bob")
+                .nodeInteger("j", null, (t, i) -> t.field1 = i)
+                .base();
+
+            final NBTTagCompound saveToLoad = new NBTTagCompound();
+            saveToLoad.setInteger("i", 3);
+            saveToLoad.setString("bob", "dave");
+
+            final RandomSaveThing saveThing = new RandomSaveThing();
+
+            //Invoke
+            saveHandler.load(saveThing, saveToLoad);
+
+            //Check nothing was loaded
+            Assertions.assertEquals(1, saveThing.field1);
+            Assertions.assertEquals("", saveThing.field2);
+        }
+
+        @Test
         @DisplayName("Validate loading with a root with nodes to accept save data")
         void load_rootWithNodes() {
             //Setup
@@ -227,7 +250,7 @@ public class NbtSaveHandleTest
 
 
 
-    class RandomSaveThing {
+    private class RandomSaveThing {
         public int field1 = 1;
         public String field2 = "";
     }

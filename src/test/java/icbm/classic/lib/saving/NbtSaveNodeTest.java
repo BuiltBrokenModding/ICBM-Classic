@@ -41,7 +41,7 @@ public class NbtSaveNodeTest
         Assertions.assertEquals("56789", simpleTestObject.someField);
     }
 
-    class SimpleTestObject {
+    private class SimpleTestObject {
         public String someField = "abcd";
     }
 }
