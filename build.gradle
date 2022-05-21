@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url 'https://plugins.gradle.org/m2/' }
         mavenCentral()
         maven {
             name 'FancyGradle'
@@ -19,14 +20,28 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'wtf.gofancy.fancygradle'
 
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+import org.apache.tools.ant.filters.ReplaceTokens
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+version = "${version_major}.${version_minor}.${version_revis}"
+archivesBaseName = "ICBM-classic-${version_mc}"
 
 fancyGradle {
     patches {
         resources
         coremods
         asm
+    }
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+        outputDir = compileJava.destinationDir
+        testOutputDir = compileTestJava.destinationDir
     }
 }
 
@@ -40,7 +55,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation files('libs/MinecraftJUnit-1.4.0-deobf.jar')
+    testImplementation files('libs/MinecraftJUnit-1.4.0-deobf.jar') //TODO use forge gradle to deobf for me testImplementation fg.deobf('whateveridc:MinecraftJUnit:1.4.0')
+    //TODO example  runtimeOnly(fg.deobf(group = "mezz.jei", name = "jei-1.16.5", version = "7.7.1.121"))
 
     //Mockito
     testImplementation 'org.mockito:mockito-inline:4.3.1'
@@ -76,6 +92,19 @@ minecraft {
     }
 }
 
+task filterTokens(type: Sync) {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property 'version', version
+
+    from sourceSets.main.java
+    filter(ReplaceTokens, tokens: [VERSION: version.toString()])
+    into "$buildDir/filteredSrc"
+}
+
+compileJava {
+    source = filterTokens.outputs
+}
+
 test {
     useJUnitPlatform()
 
@@ -85,14 +114,59 @@ test {
     mkdir './run_tests'
 }
 
+processResources {
+
+    // required to allow file expansion later
+    duplicatesStrategy = 'include'
+
+    // this will ensure that this task is redone when the versions change.
+    inputs.property 'version', version
+    inputs.property 'mcversion', version_mc
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+
+        // replace version and mcversion
+        expand 'version': version, 'mcversion': version_mc
+    }
+
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+
+    //Borrow from darkhax, thank you
+    doLast {
+
+        def jsonMinifyStart = System.currentTimeMillis()
+        def jsonMinified = 0
+        def jsonBytesSaved = 0
+
+        fileTree(dir: outputs.files.asPath, include: '**/*.json').each {
+
+            File file = it
+            jsonMinified++
+            def oldLength = file.length()
+            file.text = JsonOutput.toJson(new JsonSlurper().parse(file))
+            jsonBytesSaved += oldLength - file.length()
+        }
+
+        println('Minified ' + jsonMinified + ' json files. Saved ' + jsonBytesSaved + ' bytes. Took ' + (System.currentTimeMillis() - jsonMinifyStart) + 'ms.')
+    }
+}
+
 jar {
     manifest.mainAttributes(
             "Built-By": System.properties['user.name'],
             "Created-By": "Gradle ${gradle.gradleVersion}",
             'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
             'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
+            'Specification-Title': "ICBM-Classic",
+            'Specification-Vendor': "Built Broken Modding",
+            'Specification-Version': "${project.version}",
+            "Implementation-Title": project.archivesBaseName,
+            "Implementation-Version": "${project.version}",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "FMLAT": "ICBMClassic_at.cfg")
 }
