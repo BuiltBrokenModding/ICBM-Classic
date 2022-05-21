@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 public class NbtSaveNodeTest
 {
-
     @Test
     void init_checkSaveKey() {
         final NbtSaveNode node = new NbtSaveNode("tree", null, null);
@@ -14,11 +13,18 @@ public class NbtSaveNodeTest
     }
 
     @Test
+    void init_nullSaveKey_throwsError() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> new NbtSaveNode(null, null, null),
+            "save key can't be null");
+    }
+
+    @Test
     void save() {
         final SimpleTestObject simpleTestObject = new SimpleTestObject();
         simpleTestObject.someField = "123454";
         final NbtSaveNode<SimpleTestObject, NBTTagString> node
-            = new NbtSaveNode<SimpleTestObject, NBTTagString>(null, (obj) -> new NBTTagString(obj.someField), null);
+            = new NbtSaveNode<SimpleTestObject, NBTTagString>("test", (obj) -> new NBTTagString(obj.someField), null);
 
         Assertions.assertEquals(new NBTTagString("123454"), node.save(simpleTestObject));
     }
@@ -29,7 +35,7 @@ public class NbtSaveNodeTest
         final NBTTagString saveData = new NBTTagString("56789");
 
         final NbtSaveNode<SimpleTestObject, NBTTagString> node
-            = new NbtSaveNode<SimpleTestObject, NBTTagString>(null, null, (obj, data) -> simpleTestObject.someField = data.getString());
+            = new NbtSaveNode<SimpleTestObject, NBTTagString>("test", null, (obj, data) -> simpleTestObject.someField = data.getString());
 
         node.load(simpleTestObject, saveData);
         Assertions.assertEquals("56789", simpleTestObject.someField);

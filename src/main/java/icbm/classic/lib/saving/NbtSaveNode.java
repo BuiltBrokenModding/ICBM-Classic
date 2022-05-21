@@ -12,6 +12,9 @@ public class NbtSaveNode<SaveObject, NbtData extends NBTBase> implements INbtSav
     private final BiConsumer<SaveObject, NbtData> load;
 
     public NbtSaveNode(final String name, Function<SaveObject, NbtData> save, BiConsumer<SaveObject, NbtData> load) {
+        if(name == null) {
+            throw new IllegalArgumentException("save key can't be null");
+        }
         this.name = name;
         this.save = save;
         this.load = load;
