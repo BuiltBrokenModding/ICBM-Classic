@@ -2,6 +2,7 @@ package icbm.classic.lib.saving;
 
 import net.minecraft.nbt.NBTTagCompound;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +59,22 @@ public class NbtSaveRootTest
 
             final NBTTagCompound expectedSave = new NBTTagCompound();
             expectedSave.setInteger("i", 4567);
+
+            final NBTTagCompound save = root.save(thing);
+
+            Assertions.assertEquals(expectedSave, save);
+        }
+
+        @Test
+        @DisplayName("Validate nodes can return null to skip saving")
+        void withNodeButNullSaveTag() {
+            final RandomThingMany thing = new RandomThingMany();
+            thing.field1 = 4567;
+
+            final NbtSaveRoot<RandomThingMany> root = new NbtSaveRoot<RandomThingMany>("thing", null, null)
+                .node(new NbtSaveNode("i", (t) -> null, null));
+
+            final NBTTagCompound expectedSave = new NBTTagCompound();
 
             final NBTTagCompound save = root.save(thing);
 

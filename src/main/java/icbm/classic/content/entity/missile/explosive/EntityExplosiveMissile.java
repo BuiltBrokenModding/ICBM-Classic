@@ -312,7 +312,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         this.blastData = nbt.getCompoundTag(NBTConstants.ADDITIONAL_MISSILE_DATA);
 
         SAVE_LOGIC.load(this, nbt);
-
     }
 
     /**

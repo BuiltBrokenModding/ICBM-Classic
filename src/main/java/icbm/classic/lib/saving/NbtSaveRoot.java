@@ -43,7 +43,13 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NBTTagCompound save(E objectToSave)
     {
         final NBTTagCompound tagCompound = new NBTTagCompound();
-        nodes.forEach(node -> tagCompound.setTag(node.getSaveKey(), node.save(objectToSave)));
+        nodes.forEach(node -> {
+            final NBTBase tag = node.save(objectToSave);
+            if(tag != null)
+            {
+                tagCompound.setTag(node.getSaveKey(), tag);
+            }
+        });
         return tagCompound;
     }
 
