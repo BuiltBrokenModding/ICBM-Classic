@@ -1,5 +1,6 @@
 package icbm.classic.lib.saving;
 
+import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +24,8 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
 
     public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent)
     {
-        if(name == null) {
+        if (name == null)
+        {
             throw new IllegalArgumentException("save key can't be null");
         }
         this.name = name;
@@ -69,144 +71,49 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
 
     public NbtSaveRoot<E> nodeInteger(final String name, Function<E, Integer> save, BiConsumer<E, Integer> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagInt>(name,
-            (obj) -> new NBTTagInt(save.apply(obj)),
-            (obj, data) -> load.accept(obj, data.getInt())));
-        return this;
+        return node(new SaveNodeInteger<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeDouble(final String name, Function<E, Double> save, BiConsumer<E, Double> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagDouble>(name,
-            (obj) -> new NBTTagDouble(save.apply(obj)),
-            (obj, data) -> load.accept(obj, data.getDouble())
-        ));
-        return this;
+        return node(new SaveNodeDouble<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeFloat(final String name, Function<E, Float> save, BiConsumer<E, Float> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagFloat>(name,
-            (obj) -> new NBTTagFloat(save.apply(obj)),
-            (obj, data) -> load.accept(obj, data.getFloat())
-        ));
-        return this;
+        return node(new SaveNodeFloat<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeBoolean(final String name, Function<E, Boolean> save, BiConsumer<E, Boolean> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagByte>(name,
-            (obj) -> new NBTTagByte((byte) (save.apply(obj) ? 1 : 0)),
-            (obj, data) -> load.accept(obj, data.getByte() == 1)
-        ));
-        return this;
+        return node(new SaveNodeBoolean<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeBlockPos(final String name, Function<E, BlockPos> save, BiConsumer<E, BlockPos> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagCompound>(name,
-            (obj) -> {
-                final BlockPos pos = save.apply(obj);
-                if (pos != null)
-                {
-                    final NBTTagCompound compound = new NBTTagCompound();
-                    compound.setInteger("x", pos.getX());
-                    compound.setInteger("y", pos.getY());
-                    compound.setInteger("z", pos.getZ());
-                    return compound;
-                }
-                return null;
-            },
-            (obj, data) -> {
-                final BlockPos pos = new BlockPos(
-                    data.getInteger("x"),
-                    data.getInteger("y"),
-                    data.getInteger("z")
-                );
-                load.accept(obj, pos);
-            }));
-        return this;
+        return node(new SaveNodeBlockPos<E>(name, save, load));
     }
 
+    @Deprecated
     public NbtSaveRoot<E> nodePos(final String name, Function<E, Pos> save, BiConsumer<E, Pos> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagCompound>(name,
-            (obj) -> {
-                final Pos pos = save.apply(obj);
-                if (pos != null)
-                {
-                    final NBTTagCompound compound = new NBTTagCompound();
-                    compound.setDouble("x", pos.getX());
-                    compound.setDouble("y", pos.getY());
-                    compound.setDouble("z", pos.getZ());
-                    return compound;
-                }
-                return null;
-            },
-            (obj, data) -> {
-                final Pos pos = new Pos(
-                    data.getDouble("x"),
-                    data.getDouble("y"),
-                    data.getDouble("z")
-                );
-                load.accept(obj, pos);
-            }));
-        return this;
+        return node(new SaveNodePos<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeFacing(final String name, Function<E, EnumFacing> save, BiConsumer<E, EnumFacing> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagByte>(name,
-            (obj) -> {
-                final EnumFacing facing = save.apply(obj);
-                if (facing != null)
-                {
-                    final byte b = (byte) facing.getIndex();
-                    return new NBTTagByte(b);
-                }
-                return null;
-            },
-            (obj, data) -> {
-                byte b = data.getByte();
-                EnumFacing facing = EnumFacing.getFront(b);
-                load.accept(obj, facing);
-            }));
-        return this;
+        return node(new SaveNodeFacing<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeBlockState(final String name, Function<E, IBlockState> save, BiConsumer<E, IBlockState> load)
     {
-        nodes.add(new NbtSaveNode<E, NBTTagCompound>(name,
-            (obj) -> {
-                final IBlockState blockState = save.apply(obj);
-                if (blockState != null)
-                {
-                    return NBTUtil.writeBlockState(new NBTTagCompound(), blockState);
-                }
-                return null;
-            },
-            (obj, data) -> {
-                load.accept(obj, NBTUtil.readBlockState(data));
-            }));
-        return this;
+        return node(new SaveNodeBlockState<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
-{
-    nodes.add(new NbtSaveNode<E, NBTTagCompound>(name,
-        (obj) -> {
-            final UUID blockState = save.apply(obj);
-            if (blockState != null)
-            {
-                return NBTUtil.createUUIDTag(blockState);
-            }
-            return null;
-        },
-        (obj, data) -> {
-            load.accept(obj, NBTUtil.getUUIDFromTag(data));
-        }));
-    return this;
-}
+    {
+        return node(new SaveNodeUUID<E>(name, save, load));
+    }
 
     /**
      * Goes to top most level in save tree
