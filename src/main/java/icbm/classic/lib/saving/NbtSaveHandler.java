@@ -71,7 +71,7 @@ public class NbtSaveHandler<E>
      */
     public NBTTagCompound save(E objectToSave, NBTTagCompound save)
     {
-        roots.forEach(node -> save.setTag(node.getSaveKey(), node.save(objectToSave)));
+        roots.forEach(root -> save.setTag(root.getSaveKey(), root.save(objectToSave)));
         mainRoot.nodes.forEach(subNode -> save.setTag(subNode.getSaveKey(), subNode.save(objectToSave)));
         return save;
     }
@@ -86,8 +86,8 @@ public class NbtSaveHandler<E>
     {
         if (!save.hasNoTags())
         {
-            roots.forEach(node -> node.load(objectToLoad, save.getCompoundTag(node.getSaveKey())));
-            mainRoot.nodes.forEach(subNode -> subNode.load(objectToLoad, save.getCompoundTag(subNode.getSaveKey())));
+            roots.forEach(root -> root.load(objectToLoad, save.getCompoundTag(root.getSaveKey())));
+            mainRoot.nodes.forEach(subNode -> subNode.load(objectToLoad, save.getTag(subNode.getSaveKey())));
         }
     }
 
