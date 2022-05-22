@@ -98,6 +98,9 @@ public class BlastTNT extends Blast
      */
     protected void calculateDamage() //TODO thread
     {
+        //TODO fix, alg seems to be making non-semetric shapes in harder blocks.
+        //      TnT vanilla will do 3x3
+        //      Condensed will do a 2x4 shaft with a few offshoots but doesn't scale correctly
         if (!this.world().isRemote)
         {
             for (int xs = 0; xs < this.raysPerAxis; ++xs)
@@ -106,6 +109,7 @@ public class BlastTNT extends Blast
                 {
                     for (int zs = 0; zs < this.raysPerAxis; ++zs)
                     {
+                        //Only run on edges of the cube
                         if (xs == 0 || xs == this.raysPerAxis - 1 || ys == 0 || ys == this.raysPerAxis - 1 || zs == 0 || zs == this.raysPerAxis - 1)
                         {
                             //Delta distance
@@ -182,7 +186,7 @@ public class BlastTNT extends Blast
                 //Get block
                 final IBlockState blockState = world().getBlockState(blockDestroyedPos);
 
-                ///Generate effect
+                ///Generate effect TODO send a single packet with a list of block pos, this will do a 80% reduction in packet byte data
                 PacketSpawnBlockExplosion.sendToAllClients(world(), x(), y(), z(), getBlastRadius(), blockDestroyedPos);
 
                 //Only edit block if not air
