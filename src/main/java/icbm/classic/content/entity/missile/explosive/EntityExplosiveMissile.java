@@ -335,12 +335,15 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
             (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
                 final NBTTagCompound save = new NBTTagCompound();
                 final IMissileFlightLogic logic = missile.getFlightLogic();
-                final NBTTagCompound logicSave = logic.save();
-                if (logicSave != null && !logicSave.hasNoTags())
+                if(logic != null)
                 {
-                    save.setTag("data", logicSave);
+                    final NBTTagCompound logicSave = logic.save();
+                    if (logicSave != null && !logicSave.hasNoTags())
+                    {
+                        save.setTag("data", logicSave);
+                    }
+                    save.setString("id", logic.getRegistryName().toString());
                 }
-                save.setString("id", logic.getRegistryName().toString());
                 return save;
             },
             (missile, data) -> {
