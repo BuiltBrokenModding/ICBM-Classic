@@ -27,12 +27,14 @@ public class BallisticFlightLogic implements IMissileFlightLogic
      * Ticks to animate slowly rising from the launcher
      */
     public static final int PAD_WARM_UP_TIME = 20 * 2; //TODO add config
-    public static final int MISSILE_CLIMB_HEIGHT = 2; //TODO add config
+    public static final double MISSILE_CLIMB_HEIGHT = 2; //TODO add config
 
     /**
      * Flag to indicate there is air blocks under the launcher
      */
     public boolean launcherHasAirBelow = false;
+
+    public boolean hasStartedFlight = false;
 
     /**
      * Height Y to wait before starting arc
@@ -56,7 +58,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     /**
      * Distance to slowly climb before starting normal path
      */
-    private int climbHeight = MISSILE_CLIMB_HEIGHT;
+    private double climbHeight = MISSILE_CLIMB_HEIGHT;
 
     /**
      * Difference in distance from target, used as acceleration
@@ -118,29 +120,35 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     @Override
     public void onEntityTick(Entity entity, int ticksInAir)
     {
-        if (!entity.world.isRemote)
-        {
-            runServerLogic(entity, ticksInAir);
-        }
-
+        //Warm up on pad for nice animation
         if (padWarmUpTimer > 0)
         {
             padWarmUpTimer--;
             idleMissileOnPad(entity, ticksInAir);
-        } else if (climbHeight > 0)
+        }
+        //Slowly climb out of the launcher TODO get climb height from launcher
+        else if (climbHeight > 0)
         {
             doSlowClimb(entity, ticksInAir);
         }
+        //Starts the missile into normal flight
+        else if (!hasStartedFlight) {
+            hasStartedFlight = true;
+            entity.motionY = this.acceleration * (missileFlightTime / 2);
+            entity.motionX = this.deltaPathX / missileFlightTime;
+            entity.motionZ = this.deltaPathZ / missileFlightTime;
+        }
+        //Normal path logic
+        else {
+            runFlightLogic(entity, ticksInAir);
+        }
+
+        ICBMClassic.logger().info(String.format("Missile: %.2f, %.2f, %.2f, %.2f, %.2f", entity.motionX, entity.motionY, entity.motionZ, climbHeight, lockHeight));
     }
 
-    protected boolean canStartFlightLogic()
+    protected void runFlightLogic(Entity entity, int ticksInAir)
     {
-        return padWarmUpTimer <= 0 && climbHeight <= 0;
-    }
-
-    protected void runServerLogic(Entity entity, int ticksInAir)
-    {
-        if (canStartFlightLogic())
+        if (!entity.world.isRemote)
         {
             //Move up if we are still in lock height
             if (this.lockHeight > 0)
@@ -166,12 +174,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         entity.motionX = 0;
         entity.motionZ = 0;
         this.lockHeight -= entity.motionY; //TODO fix to account for slow animation climb
-        if (this.lockHeight <= 0)
-        {
-            entity.motionY = this.acceleration * (missileFlightTime / 2); //TODO this doesn't match init alg
-            entity.motionX = this.deltaPathX / missileFlightTime;
-            entity.motionZ = this.deltaPathZ / missileFlightTime;
-        }
     }
 
     protected void alignWithMotion(Entity entity)
@@ -189,7 +191,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
      */
     protected void doSlowClimb(Entity entity, int ticksInAir)
     {
-        entity.motionY += 0.1f;
+        entity.motionY += 0.005f; //TODO add config
         lockHeight -= entity.motionY;
         climbHeight -= entity.motionY;
     }
@@ -203,7 +205,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     protected void idleMissileOnPad(Entity entity, int ticksInAir)
     {
         entity.prevRotationPitch = entity.rotationPitch = 90;
-        //ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir);
+        //ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir); TODO implement custom smoke logic that generates small cloud at base of launcher
     }
 
     @Override
@@ -286,9 +288,9 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         //Stuck in ground data
         .addRoot("flags")
         /* */.nodeBoolean("air_under", (bl) -> bl.launcherHasAirBelow, (bl, data) -> bl.launcherHasAirBelow = data)
+        /* */.nodeBoolean("flight_started", (bl) -> bl.hasStartedFlight, (bl, data) -> bl.hasStartedFlight = data)
         .base()
         .addRoot("inputs")
-        /* */.nodeDouble("lock_height", (bl) -> bl.lockHeight, (bl, i) -> bl.lockHeight = i)
         /* */.nodeDouble("start_x", (bl) -> bl.startX, (bl, i) -> bl.startX = i)
         /* */.nodeDouble("start_y", (bl) -> bl.startY, (bl, i) -> bl.startY = i)
         /* */.nodeDouble("start_z", (bl) -> bl.startZ, (bl, i) -> bl.startZ = i)
@@ -300,8 +302,10 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         /* */.nodeDouble("delta_y", (bl) -> bl.deltaPathY, (bl, data) -> bl.deltaPathY = data)
         /* */.nodeDouble("delta_z", (bl) -> bl.deltaPathZ, (bl, data) -> bl.deltaPathZ = data)
         .base()
-        .addRoot("ticks")
-        /* */.nodeInteger("pre_launch", (bl) -> bl.padWarmUpTimer, (bl, data) -> bl.padWarmUpTimer = data)
+        .addRoot("timers")
+        /* */.nodeInteger("engine_warm_up", (bl) -> bl.padWarmUpTimer, (bl, data) -> bl.padWarmUpTimer = data)
+        /* */.nodeDouble("climb_height", (bl) -> bl.climbHeight, (bl, data) -> bl.climbHeight = data)
+        /* */.nodeDouble("lock_height", (bl) -> bl.lockHeight, (bl, i) -> bl.lockHeight = i)
         .base();
 
 }
