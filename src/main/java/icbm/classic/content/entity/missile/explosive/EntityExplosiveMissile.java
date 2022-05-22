@@ -12,7 +12,6 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.entity.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.content.entity.missile.logic.TargetRangeDet;
 import icbm.classic.lib.CalculationHelpers;
@@ -142,13 +141,16 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void updateMotion()
     {
-        if (missileCapability.doFlight)
+        if (missileCapability.canRunFlightLogic())
         {
-            Optional.ofNullable(getFlightLogic()).ifPresent(logic -> logic.onEntityTick(this, ticksInAir));
+            Optional.ofNullable(getFlightLogic()).ifPresent(logic -> {
+                logic.onEntityTick(this, ticksInAir);
 
-            //Handle effects
-            ICBMClassic.proxy.spawnMissileSmoke(this, getFlightLogic(), ticksInAir);
-            ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
+                if(logic.shouldRunEngineEffects(this)) {
+                    ICBMClassic.proxy.spawnMissileSmoke(this, getFlightLogic(), ticksInAir);
+                    ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
+                }
+            });
 
             //Trigger events
             ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);

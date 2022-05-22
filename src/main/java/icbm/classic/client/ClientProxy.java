@@ -3,12 +3,10 @@ package icbm.classic.client;
 import com.builtbroken.jlib.data.vector.IPos3D;
 
 import icbm.classic.CommonProxy;
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
-import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -105,7 +103,7 @@ public class ClientProxy extends CommonProxy
                         double z = Math.cos(Math.toRadians(entity.rotationYaw)) * dH;
                         position = position.add(x, y, z);
 
-                        if (((BallisticFlightLogic) flightLogic).getPreLaunchSmokeTimer() > 0 && ticksInAir <= BallisticFlightLogic.MAX_PRE_LAUNCH_SMOKE_TICKS) // pre-launch phase
+                        if (((BallisticFlightLogic) flightLogic).getPadWarmUpTimer() > 0 && ticksInAir <= BallisticFlightLogic.PAD_WARM_UP_TIME) // pre-launch phase
                         {
                             Pos launcherSmokePosition = position.sub(0, 2, 0);
                             if (((BallisticFlightLogic)flightLogic).launcherHasAirBelow)

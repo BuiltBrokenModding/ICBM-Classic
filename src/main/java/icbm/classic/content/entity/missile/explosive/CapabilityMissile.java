@@ -4,7 +4,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
-import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
@@ -13,7 +12,6 @@ import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -24,7 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
@@ -38,7 +35,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 {
     public final EntityExplosiveMissile missile;
     public IMissileTarget targetData;
-    public boolean doFlight = false;
+    private boolean doFlight = false;
 
     public CapabilityMissile(EntityExplosiveMissile missile)
     {
@@ -185,7 +182,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 
     private static final NbtSaveHandler<CapabilityMissile> SAVE_LOGIC = new NbtSaveHandler<CapabilityMissile>()
         .addRoot("flags")
-        /* */.nodeBoolean("do_flight", (cap) -> cap.doFlight, (cap, i) -> cap.doFlight = i)
+        /* */.nodeBoolean("do_flight", (cap) -> cap.canRunFlightLogic(), (cap, i) -> cap.doFlight = i)
         .base()
         .mainRoot()
         /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
@@ -216,4 +213,9 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
             }
         ))
         .base();
+
+    public boolean canRunFlightLogic()
+    {
+        return doFlight;
+    }
 }

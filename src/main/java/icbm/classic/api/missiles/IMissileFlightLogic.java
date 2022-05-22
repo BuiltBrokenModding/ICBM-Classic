@@ -88,6 +88,14 @@ public interface IMissileFlightLogic
 
     }
 
+    /**
+     * Call back to see if the engine effects should run
+     * @return true to run default engine effects
+     */
+    default boolean shouldRunEngineEffects(Entity entity) {
+        return true;
+    }
+
     @FunctionalInterface
     interface MotionUpdateFunc
     {

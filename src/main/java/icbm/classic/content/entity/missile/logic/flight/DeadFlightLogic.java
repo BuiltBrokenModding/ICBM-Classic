@@ -29,6 +29,15 @@ public class DeadFlightLogic implements IMissileFlightLogic
     }
 
     @Override
+    public boolean shouldRunEngineEffects(Entity entity) {
+        return hasFuel(entity);
+    }
+
+    protected boolean hasFuel(Entity entity) {
+        return entity.ticksExisted <= fuelTicks;
+    }
+
+    @Override
     public NBTTagCompound save()
     {
         final NBTTagCompound tagCompound = new NBTTagCompound();
@@ -61,6 +70,6 @@ public class DeadFlightLogic implements IMissileFlightLogic
     @Override
     public boolean shouldDecreaseMotion(Entity entity)
     {
-        return entity.ticksExisted >= fuelTicks;
+        return !hasFuel(entity);
     }
 }

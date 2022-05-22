@@ -26,7 +26,8 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     /**
      * Ticks to animate slowly rising from the launcher
      */
-    public static final int MAX_PRE_LAUNCH_SMOKE_TICKS = 20 * 5; //TODO add config
+    public static final int PAD_WARM_UP_TIME = 20 * 2; //TODO add config
+    public static final int MISSILE_CLIMB_HEIGHT = 2; //TODO add config
 
     /**
      * Flag to indicate there is air blocks under the launcher
@@ -36,7 +37,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     /**
      * Height Y to wait before starting arc
      */
-    public double lockHeight = 3;
+    public double lockHeight = 0;
     /**
      * Tick runtime of flight arc
      */
@@ -48,9 +49,14 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
 
     /**
-     * Timer for launching animation
+     * Timer for missile to wait on pad before climbing
      */
-    private int preLaunchSmokeTimer = MAX_PRE_LAUNCH_SMOKE_TICKS;
+    private int padWarmUpTimer = PAD_WARM_UP_TIME;
+
+    /**
+     * Distance to slowly climb before starting normal path
+     */
+    private int climbHeight = MISSILE_CLIMB_HEIGHT;
 
     /**
      * Difference in distance from target, used as acceleration
@@ -81,7 +87,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     protected void calculatePath(double startX, double startY, double startZ, final IMissileTarget targetingData)
     {
-        if(targetingData != null)
+        if (targetingData != null)
         {
             // Calculate the distance difference of the missile
             this.deltaPathX = targetingData.getX() - startX;
@@ -103,8 +109,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
             //TODO test impact position, as this may be offset by lockHeight and deltaPathY causing it to miss slightly
             //  In theory missile should be moving almost strait down on impact but could be a problem in some cases
-        }
-        else
+        } else
         {
             acceleration = ConfigMissile.DIRECT_FLIGHT_SPEED;
         }
@@ -118,16 +123,24 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             runServerLogic(entity, ticksInAir);
         }
 
-        if (getPreLaunchSmokeTimer() > 0)
+        if (padWarmUpTimer > 0)
         {
-            preLaunchSmokeTimer = getPreLaunchSmokeTimer() - 1;
-            handleSlowAnimationClimb(entity, ticksInAir);
+            padWarmUpTimer--;
+            idleMissileOnPad(entity, ticksInAir);
+        } else if (climbHeight > 0)
+        {
+            doSlowClimb(entity, ticksInAir);
         }
+    }
+
+    protected boolean canStartFlightLogic()
+    {
+        return padWarmUpTimer <= 0 && climbHeight <= 0;
     }
 
     protected void runServerLogic(Entity entity, int ticksInAir)
     {
-        if (getPreLaunchSmokeTimer() <= 0)
+        if (canStartFlightLogic())
         {
             //Move up if we are still in lock height
             if (this.lockHeight > 0)
@@ -137,7 +150,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             {
                 //Apply arc acceleration logic
                 entity.motionY -= this.acceleration;
-
                 alignWithMotion(entity);
             }
 
@@ -169,13 +181,34 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180 / Math.PI);
     }
 
-    protected void handleSlowAnimationClimb(Entity entity, int ticksInAir)
+    /**
+     * Has the missile slow climb up before start full motion
+     *
+     * @param entity     representing the missile
+     * @param ticksInAir the missile has been in the air
+     */
+    protected void doSlowClimb(Entity entity, int ticksInAir)
     {
-        entity.motionY = 0.001f;
-        this.lockHeight -= entity.motionY;
+        entity.motionY += 0.1f;
+        lockHeight -= entity.motionY;
+        climbHeight -= entity.motionY;
+    }
 
+    /**
+     * Has the missile wait on the pad while it's engines start and generate a lot of smoke
+     *
+     * @param entity     representing the missile
+     * @param ticksInAir the missile has been in the air
+     */
+    protected void idleMissileOnPad(Entity entity, int ticksInAir)
+    {
         entity.prevRotationPitch = entity.rotationPitch = 90;
-        ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir);
+        //ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir);
+    }
+
+    @Override
+    public boolean shouldRunEngineEffects(Entity entity) {
+        return padWarmUpTimer <= 0;
     }
 
     protected boolean shouldSimulate(Entity entity)
@@ -183,8 +216,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         if (entity.getPassengers().stream().anyMatch(rider -> rider instanceof EntityPlayerMP))
         {
             return false;
-        }
-        else if (entity.posY >= ConfigMissile.SIMULATION_START_HEIGHT)
+        } else if (entity.posY >= ConfigMissile.SIMULATION_START_HEIGHT)
         {
             return true;
         }
@@ -220,9 +252,10 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         return REG_NAME;
     }
 
-    public int getPreLaunchSmokeTimer()
+    @Deprecated
+    public int getPadWarmUpTimer()
     {
-        return preLaunchSmokeTimer;
+        return padWarmUpTimer;
     }
 
     public LinkedList<Pos> getLastSmokePos()
@@ -241,7 +274,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     {
         SAVE_LOGIC.load(this, nbt);
     }
-    
+
     @Override
     public boolean shouldDecreaseMotion(Entity entity)
     {
@@ -268,7 +301,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         /* */.nodeDouble("delta_z", (bl) -> bl.deltaPathZ, (bl, data) -> bl.deltaPathZ = data)
         .base()
         .addRoot("ticks")
-        /* */.nodeInteger("pre_launch", (bl) -> bl.preLaunchSmokeTimer, (bl, data) -> bl.preLaunchSmokeTimer = data)
+        /* */.nodeInteger("pre_launch", (bl) -> bl.padWarmUpTimer, (bl, data) -> bl.padWarmUpTimer = data)
         .base();
 
 }
