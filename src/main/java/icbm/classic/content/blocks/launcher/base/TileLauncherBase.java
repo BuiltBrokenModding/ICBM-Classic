@@ -293,7 +293,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     //Set data
                     missile.explosiveID = explosiveData.getRegistryID(); //TODO we are missing explosive blast data
                     missile.sourceOfProjectile = new Pos((TileEntity) this); //TODO store our launcher instance or UUID
-                    missile.setPositionAndRotation(xi() + 0.5, yi() + 2.2, zi() + 0.5, 0, 90); //TODO store offset as variable, sync with missile height
+                    missile.setPosition(xi() + 0.5, yi() + 2.2, zi() + 0.5); //TODO store offset as variable, sync with missile height
 
                     //Trigger launch event
                     missile.missileCapability.setTargetData(new BallisticTargetingData(target, lockHeight));

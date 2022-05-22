@@ -164,6 +164,11 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     @Override
+    protected void rotateTowardsMotion() {
+        //Clearing default logic to flight controllers can handle motion
+    }
+
+    @Override
     protected void decreaseMotion()
     {
         if (getFlightLogic() == null || getFlightLogic().shouldDecreaseMotion(this))

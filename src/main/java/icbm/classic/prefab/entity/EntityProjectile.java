@@ -375,6 +375,19 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.posY += this.motionY;
         this.posZ += this.motionZ;
 
+        rotateTowardsMotion();
+
+        //Decrease motion so the projectile stops
+        decreaseMotion();
+
+        //Set position
+        this.setPosition(this.posX, this.posY, this.posZ);
+
+        //Adjust for collision      TODO check if works, rewrite code to prevent clip through of block
+        this.doBlockCollisions();
+    }
+
+    protected void rotateTowardsMotion() {
         //Get rotation from motion
         float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
@@ -406,15 +419,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
         this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
         //-------------------------------------
-
-        //Decrease motion so the projectile stops
-        decreaseMotion();
-
-        //Set position
-        this.setPosition(this.posX, this.posY, this.posZ);
-
-        //Adjust for collision      TODO check if works, rewrite code to prevent clip through of block
-        this.doBlockCollisions();
     }
 
     protected void decreaseMotion()
