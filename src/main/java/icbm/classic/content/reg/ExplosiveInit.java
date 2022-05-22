@@ -121,10 +121,10 @@ public class ExplosiveInit
 
         //=================== Tier 2
         ICBMExplosives.FRAGMENTATION = newEx(8, "fragmentation", EnumTier.TWO,
-                () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15));
+                () -> new BlastShrapnel().setExplosive().setBlastSize(15));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.FRAGMENTATION.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.FRAGMENTATION);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.FRAGMENTATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.FRAGMENTATION);
-
+        //TODO add fire version of fragmentation with smaller animated flames
 
         ICBMExplosives.CONTAGIOUS = newEx(9, "contagious", EnumTier.TWO,
                 () -> new BlastContagious().setBlastSize(20));
