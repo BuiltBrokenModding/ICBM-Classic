@@ -142,8 +142,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         else {
             runFlightLogic(entity, ticksInAir);
         }
-
-        ICBMClassic.logger().info(String.format("Missile: %.2f, %.2f, %.2f, %.2f, %.2f", entity.motionX, entity.motionY, entity.motionZ, climbHeight, lockHeight));
     }
 
     protected void runFlightLogic(Entity entity, int ticksInAir)
@@ -204,7 +202,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
      */
     protected void idleMissileOnPad(Entity entity, int ticksInAir)
     {
-        entity.prevRotationPitch = entity.rotationPitch = 90;
+        entity.rotationPitch = 90;
         //ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir); TODO implement custom smoke logic that generates small cloud at base of launcher
     }
 
