@@ -64,7 +64,7 @@ public class RenderMissile extends Render<EntityExplosiveMissile>
         GlStateManager.scale(scale, scale, scale);
 
         //Render missile
-        renderMissile(entityMissile.explosiveID,
+        renderMissile(entityMissile.explosive.toStack(),
                 entityMissile.world, entityMissile.posX, entityMissile.posY, entityMissile.posZ,
                 0, 0, 0, entityYaw, partialTicks);
 
@@ -94,14 +94,6 @@ public class RenderMissile extends Render<EntityExplosiveMissile>
     protected ResourceLocation getEntityTexture(EntityExplosiveMissile entity)
     {
         return null;
-    }
-
-    public void renderMissile(int explosiveID, World world, double wx, double wy, double wz,
-                              double x, double y, double z, float entityYaw, float partialTicks)
-    {
-        renderMissile(new ItemStack(ItemReg.itemMissile, 1, explosiveID),
-                world, wx, wy, wz,
-                x, y, z, entityYaw, partialTicks);
     }
 
     public void renderMissile(ItemStack missileStack, TileEntity tileEntity,

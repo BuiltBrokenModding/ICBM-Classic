@@ -4,6 +4,8 @@ import com.builtbroken.mc.testing.junit.TestManager;
 import icbm.classic.TestUtils;
 import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.entity.missile.targeting.BasicTargetData;
+import icbm.classic.content.reg.ItemReg;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterAll;
@@ -40,9 +42,7 @@ public class EntityExplosiveMissileTest
         final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
         missile.missileCapability.setTargetData(new BasicTargetData(1, 2, 3));
         missile.missileCapability.setFlightLogic(new DeadFlightLogic(4567));
-        missile.explosiveID = 4567;
-        missile.blastData = new NBTTagCompound();
-        missile.blastData.setInteger("scale", 4);
+        missile.explosive.setStack(new ItemStack(ItemReg.itemMissile, 1, 0));
 
         //Setup save we expect to get
         final NBTTagCompound expectedSave = new NBTTagCompound();

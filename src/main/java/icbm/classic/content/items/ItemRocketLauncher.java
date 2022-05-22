@@ -85,9 +85,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                 // Check the player's inventory and look for missiles.
                 for (int slot = 0; slot < player.inventory.getSizeInventory(); slot++)
                 {
-                    ItemStack inventoryStack = player.inventory.getStackInSlot(slot);
+                    final ItemStack inventoryStack = player.inventory.getStackInSlot(slot);
 
-                    if (inventoryStack != null)
+                    if (!inventoryStack.isEmpty())
                     {
                         if (inventoryStack.getItem() instanceof ItemMissile) //TODO add capability
                         {
@@ -105,7 +105,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                         EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(player.world)
                                             .init(player, ConfigMissile.DIRECT_FLIGHT_SPEED, 1);
                                         entityMissile.missileCapability.setFlightLogic(new DeadFlightLogic(ConfigMissile.HANDHELD_FUEL));
-                                        entityMissile.explosiveID = explosiveID;
+                                        entityMissile.explosive.setStack(inventoryStack);
                                         entityMissile.missileCapability.launch();
                                         world.spawnEntity(entityMissile);
 

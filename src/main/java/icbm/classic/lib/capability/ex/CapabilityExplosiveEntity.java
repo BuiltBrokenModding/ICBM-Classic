@@ -86,6 +86,7 @@ public class CapabilityExplosiveEntity implements IExplosive
     public void onDefuse()
     {
         entity.world.spawnEntity(new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, toStack().copy()));
+        entity.setDead();
     }
 
     public void setStack(@Nonnull ItemStack stack)

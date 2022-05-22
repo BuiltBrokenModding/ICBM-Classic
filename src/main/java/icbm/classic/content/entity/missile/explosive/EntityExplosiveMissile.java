@@ -17,6 +17,7 @@ import icbm.classic.content.entity.missile.logic.TargetRangeDet;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
+import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -50,9 +51,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 {
     public final TargetRangeDet targetRangeDet = new TargetRangeDet(this);
 
-    //Explosive cap vars
-    public int explosiveID = -1;
-    public NBTTagCompound blastData = new NBTTagCompound();
+    public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
     public boolean isExploding = false;
 
     // Generic shared missile data
@@ -81,6 +80,9 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         {
             return (T) missileCapability;
         }
+        else if(capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY) {
+            return (T) explosive;
+        }
         //TODO add explosive capability
         return super.getCapability(capability, facing);
     }
@@ -88,13 +90,16 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityEMP.EMP || capability == ICBMClassicAPI.MISSILE_CAPABILITY || super.hasCapability(capability, facing);
+        return capability == CapabilityEMP.EMP
+            || capability == ICBMClassicAPI.MISSILE_CAPABILITY
+            || capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY
+            || super.hasCapability(capability, facing);
     }
 
     @Override
     public String getName()
     {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(this.explosiveID);
+        final IExplosiveData data = explosive.getExplosiveData();
         if (data != null)
         {
             return I18n.translateToLocal("missile." + data.getRegistryName().toString() + ".name");
@@ -256,9 +261,9 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         // TODO make optional via config
         // TODO log to ICBM file separated from main config
         // TODO offer hook for database logging
-        final String formatString = "Missile[%s] E_ID(%s) impacted at (%sx,%sy,%sz,%sd)";
+        final String formatString = "Missile[%s] E(%s) impacted at (%sx,%sy,%sz,%sd)";
         final String formattedMessage = String.format(formatString,
-            this.explosiveID,
+            Optional.ofNullable(this.explosive.getExplosiveData()).map(IExplosiveData::getRegistryName).map(ResourceLocation::toString).orElseGet(() -> "null"),
             this.getEntityId(),
             xi(),
             yi(),
@@ -291,7 +296,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
                 if (!this.world.isRemote)
                 {
-                    return ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosiveID, 1, blastData);
+                    return ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosive);
                 }
                 return BlastState.TRIGGERED_CLIENT.genericResponse;
             }
@@ -324,8 +329,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     private static final NbtSaveHandler<EntityExplosiveMissile> SAVE_LOGIC = new NbtSaveHandler<EntityExplosiveMissile>()
         .mainRoot()
-        /* */.nodeInteger(NBTConstants.EXPLOSIVE_ID, (missile) -> missile.explosiveID, (missile, i) -> missile.explosiveID = i)
-        /* */.node(new NbtSaveNode<>(NBTConstants.ADDITIONAL_MISSILE_DATA, (missile) -> missile.blastData, (missile, data) -> missile.blastData = data))
+        /* */.node(new NbtSaveNode<>("explosive",
+            (missile) -> missile.explosive.serializeNBT(),
+            (missile, data) -> missile.explosive.deserializeNBT(data))
+        )
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("missile",
             (missile) -> missile.missileCapability.serializeNBT(),
             (missile, data) -> missile.missileCapability.deserializeNBT(data)

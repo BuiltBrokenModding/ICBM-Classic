@@ -357,7 +357,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                             -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), ConfigMissile.DIRECT_FLIGHT_SPEED, 1);
 
             entityMissile.missileCapability.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
-            entityMissile.explosiveID = this.getInventory().getStackInSlot(0).getItemDamage(); //TODO encode entire itemstack
+            entityMissile.explosive.setStack(this.getInventory().getStackInSlot(0)); //TODO encode entire itemstack
             entityMissile.missileCapability.launch();
             world.spawnEntity(entityMissile);
 

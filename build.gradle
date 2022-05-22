@@ -104,9 +104,9 @@ task filterTokens(type: Sync) {
     into "$buildDir/sources"
 }
 
-compileJava {
+/*compileJava {
     source = filterTokens.outputs
-}
+}*/
 
 test {
     useJUnitPlatform()

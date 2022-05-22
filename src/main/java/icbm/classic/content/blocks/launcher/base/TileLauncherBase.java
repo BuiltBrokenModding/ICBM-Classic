@@ -291,7 +291,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     EntityExplosiveMissile missile = new EntityExplosiveMissile(getWorld()); //TODO generate entity from item using handler
 
                     //Set data
-                    missile.explosiveID = explosiveData.getRegistryID(); //TODO we are missing explosive blast data
+                    missile.explosive.setStack(getMissileStack()); //TODO we are missing explosive blast data
                     missile.sourceOfProjectile = new Pos((TileEntity) this); //TODO store our launcher instance or UUID
                     missile.setPosition(xi() + 0.5, yi() + 2.2, zi() + 0.5); //TODO store offset as variable, sync with missile height
 
