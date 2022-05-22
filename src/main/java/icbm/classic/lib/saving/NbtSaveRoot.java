@@ -42,10 +42,21 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     @Override
     public NBTTagCompound save(E objectToSave)
     {
-        final NBTTagCompound tagCompound = new NBTTagCompound();
+        return save(objectToSave, new NBTTagCompound());
+    }
+
+    /**
+     * Entry point for {@link NbtSaveHandler#save(Object, NBTTagCompound)} to save directly to main root. Shouldn't
+     * be used by anything else.
+     *
+     * @param objectToSave used to save
+     * @param tagCompound to save against
+     * @return save
+     */
+    protected NBTTagCompound save(E objectToSave, NBTTagCompound tagCompound) {
         nodes.forEach(node -> {
             final NBTBase tag = node.save(objectToSave);
-            if(tag != null)
+            if(tag != null && !tag.hasNoTags())
             {
                 tagCompound.setTag(node.getSaveKey(), tag);
             }

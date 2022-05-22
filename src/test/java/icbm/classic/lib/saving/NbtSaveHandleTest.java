@@ -103,6 +103,46 @@ public class NbtSaveHandleTest
             //Check
             Assertions.assertEquals(expectedSave, save);
         }
+
+        @Test
+        @DisplayName("Validate handles main root with a node that returns null for data")
+        void mainRoot_nullTagData() {
+            //Setup
+            final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>()
+                .mainRoot()
+                .node(new NbtSaveNode<>("i", (r) -> null, null))
+                .base();
+
+            final NBTTagCompound expectedSave = new NBTTagCompound();
+
+            final RandomSaveThing saveThing = new RandomSaveThing();
+
+            //Invoke
+            final NBTTagCompound save = saveHandler.save(saveThing, new NBTTagCompound());
+
+            //Check
+            Assertions.assertEquals(expectedSave, save);
+        }
+
+        @Test
+        @DisplayName("Validate handles main root with a node that returns empty data")
+        void mainRoot_emptyTagData() {
+            //Setup
+            final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>()
+                .mainRoot()
+                .node(new NbtSaveNode<>("i", (r) -> new NBTTagCompound(), null))
+                .base();
+
+            final NBTTagCompound expectedSave = new NBTTagCompound();
+
+            final RandomSaveThing saveThing = new RandomSaveThing();
+
+            //Invoke
+            final NBTTagCompound save = saveHandler.save(saveThing, new NBTTagCompound());
+
+            //Check
+            Assertions.assertEquals(expectedSave, save);
+        }
     }
 
     @Nested

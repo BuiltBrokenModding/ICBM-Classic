@@ -1,5 +1,6 @@
 package icbm.classic.lib.saving;
 
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.LinkedList;
@@ -72,7 +73,7 @@ public class NbtSaveHandler<E>
     public NBTTagCompound save(E objectToSave, NBTTagCompound save)
     {
         roots.forEach(root -> save.setTag(root.getSaveKey(), root.save(objectToSave)));
-        mainRoot.nodes.forEach(subNode -> save.setTag(subNode.getSaveKey(), subNode.save(objectToSave)));
+        mainRoot.save(objectToSave, save);
         return save;
     }
 

@@ -82,6 +82,22 @@ public class NbtSaveRootTest
         }
 
         @Test
+        @DisplayName("Validate nodes can return empty to skip saving")
+        void withNodeButEmptySaveTag() {
+            final RandomThingMany thing = new RandomThingMany();
+            thing.field1 = 4567;
+
+            final NbtSaveRoot<RandomThingMany> root = new NbtSaveRoot<RandomThingMany>("thing", null, null)
+                .node(new NbtSaveNode("i", (t) -> new NBTTagCompound(), null));
+
+            final NBTTagCompound expectedSave = new NBTTagCompound();
+
+            final NBTTagCompound save = root.save(thing);
+
+            Assertions.assertEquals(expectedSave, save);
+        }
+
+        @Test
         void nestedNodes() {
             final RandomThingMany thing = new RandomThingMany();
             thing.field1 = 4567;
