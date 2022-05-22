@@ -85,7 +85,7 @@ public class NbtSaveHandler<E>
      */
     public void load(E objectToLoad, NBTTagCompound save)
     {
-        if (!save.hasNoTags())
+        if (save != null && !save.hasNoTags())
         {
             roots.forEach(root -> {
                 if(save.hasKey(root.getSaveKey()))

@@ -291,9 +291,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     EntityExplosiveMissile missile = new EntityExplosiveMissile(getWorld()); //TODO generate entity from item using handler
 
                     //Set data
-                    missile.explosiveID = explosiveData.getRegistryID(); //TODO we are missile explosive blast data
+                    missile.explosiveID = explosiveData.getRegistryID(); //TODO we are missing explosive blast data
                     missile.sourceOfProjectile = new Pos((TileEntity) this); //TODO store our launcher instance or UUID
-                    missile.setPosition(xi() + 0.5, yi() + 2.2, zi() + 0.5); //TODO store offset as variable, sync with missile height
+                    missile.setPositionAndRotation(xi() + 0.5, yi() + 2.2, zi() + 0.5, 0, 90); //TODO store offset as variable, sync with missile height
 
                     //Trigger launch event
                     missile.missileCapability.setTargetData(new BallisticTargetingData(target, lockHeight));
@@ -307,7 +307,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     if (seat != null && seat.getRidingEntity() != null) //TODO add hook to disable riding some missiles
                     {
                         Entity entity = seat.getRidingEntity();
-                        seat.getRidingEntity().startRiding(null);
+                        seat.getRidingEntity().removePassengers();
                         entity.startRiding(missile);
                     }
 

@@ -116,13 +116,17 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
-        ByteBufUtils.writeTag(additionalMissileData, SAVE_LOGIC.save(this, new NBTTagCompound()));
+        final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
+        ICBMClassic.logger().info("Missile: write spawn data " + saveData.toString());
+        ByteBufUtils.writeTag(additionalMissileData, saveData);
     }
 
     @Override
     public void readSpawnData(ByteBuf additionalMissileData)
     {
-        SAVE_LOGIC.load(this, ByteBufUtils.readTag(additionalMissileData));
+        final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
+        SAVE_LOGIC.load(this, saveData);
+        ICBMClassic.logger().info("Missile: read spawn data " + saveData.toString());
     }
 
     @Override
@@ -311,9 +315,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        this.explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
-        this.blastData = nbt.getCompoundTag(NBTConstants.ADDITIONAL_MISSILE_DATA);
-
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -324,14 +325,14 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-
-        nbt.setInteger(NBTConstants.EXPLOSIVE_ID, this.explosiveID);
-        nbt.setTag(NBTConstants.ADDITIONAL_MISSILE_DATA, this.blastData);
-
         SAVE_LOGIC.save(this, nbt);
     }
 
     private static final NbtSaveHandler<EntityExplosiveMissile> SAVE_LOGIC = new NbtSaveHandler<EntityExplosiveMissile>()
+        .mainRoot()
+        /* */.nodeInteger(NBTConstants.EXPLOSIVE_ID, (missile) -> missile.explosiveID, (missile, i) -> missile.explosiveID = i)
+        /* */.node(new NbtSaveNode<>(NBTConstants.ADDITIONAL_MISSILE_DATA, (missile) -> missile.blastData, (missile, data) -> missile.blastData = data))
+        .base()
         .addRoot("components")
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("flight",
             (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
