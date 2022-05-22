@@ -26,7 +26,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     /**
      * Ticks to animate slowly rising from the launcher
      */
-    public static final int MAX_PRE_LAUNCH_SMOKE_TICKS = 20; //TODO add config
+    public static final int MAX_PRE_LAUNCH_SMOKE_TICKS = 20 * 5; //TODO add config
 
     /**
      * Flag to indicate there is air blocks under the launcher
@@ -50,7 +50,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     /**
      * Timer for launching animation
      */
-    private int preLaunchSmokeTimer = 0;
+    private int preLaunchSmokeTimer = MAX_PRE_LAUNCH_SMOKE_TICKS;
 
     /**
      * Difference in distance from target, used as acceleration
@@ -66,7 +66,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
-        this.preLaunchSmokeTimer = MAX_PRE_LAUNCH_SMOKE_TICKS;
 
         //Setup arc data
         calculatePath(startX, startY, startZ, targetData);
@@ -122,6 +121,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         if (getPreLaunchSmokeTimer() > 0)
         {
             preLaunchSmokeTimer = getPreLaunchSmokeTimer() - 1;
+            handleSlowAnimationClimb(entity, ticksInAir);
         }
     }
 
@@ -145,9 +145,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             {
                 MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
             }
-        } else
-        {
-            handleSlowAnimationClimb(entity, ticksInAir);
         }
     }
 
@@ -175,11 +172,9 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     protected void handleSlowAnimationClimb(Entity entity, int ticksInAir)
     {
         entity.motionY = 0.001f;
-        this.lockHeight -= entity.motionY; //TODO not sure why we are updating motion when we are forcing position as well
+        this.lockHeight -= entity.motionY;
 
-        entity.posY = startY + 2.2f; //TODO why 2.2f?
-        entity.prevRotationPitch = 90f;
-        entity.rotationPitch = 90f;
+        entity.prevRotationPitch = entity.rotationPitch = 90;
         ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir);
     }
 
@@ -258,6 +253,12 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         //Stuck in ground data
         .addRoot("flags")
         /* */.nodeBoolean("air_under", (bl) -> bl.launcherHasAirBelow, (bl, data) -> bl.launcherHasAirBelow = data)
+        .base()
+        .addRoot("inputs")
+        /* */.nodeDouble("lock_height", (bl) -> bl.lockHeight, (bl, i) -> bl.lockHeight = i)
+        /* */.nodeDouble("start_x", (bl) -> bl.startX, (bl, i) -> bl.startX = i)
+        /* */.nodeDouble("start_y", (bl) -> bl.startY, (bl, i) -> bl.startY = i)
+        /* */.nodeDouble("start_z", (bl) -> bl.startZ, (bl, i) -> bl.startZ = i)
         .base()
         .addRoot("calculated")
         /* */.nodeFloat("flight_time", (bl) -> bl.missileFlightTime, (bl, data) -> bl.missileFlightTime = data)
