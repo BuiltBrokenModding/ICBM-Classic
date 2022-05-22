@@ -29,8 +29,8 @@ import javax.annotation.Nullable;
 public class RenderMissile extends Render<EntityExplosiveMissile>
 {
 
-    private EntityItem entityItem;
-    private RenderEntityItem2 renderEntityItem;
+    private final EntityItem entityItem;
+    private final RenderEntityItem2 renderEntityItem;
 
     public static RenderMissile INSTANCE;
 
@@ -57,7 +57,7 @@ public class RenderMissile extends Render<EntityExplosiveMissile>
         GlStateManager.rotate(pitch, 0.0F, 0.0F, 1.0F);
 
         //Fix model translation issues
-        GlStateManager.translate(0, -1.5, 0);
+        GlStateManager.translate(0, -1.5, 0); //TODO missile has a very slight 1px~ offset in either x or z
 
         //Scale model
         final float scale = 2;

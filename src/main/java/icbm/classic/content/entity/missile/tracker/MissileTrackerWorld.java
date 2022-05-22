@@ -64,7 +64,7 @@ public class MissileTrackerWorld extends WorldSavedData
         if (!missile.world.isRemote && missile.missileCapability.targetData != null)
         {
             //Clear flight logic, once we are out of simulation the computer is dead
-            missile.setFlightLogic(null);
+            missile.missileCapability.setFlightLogic(null);
 
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 

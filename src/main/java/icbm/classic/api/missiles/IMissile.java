@@ -20,6 +20,7 @@ public interface IMissile extends IWorldPosition
     /**
      * Called to trigger the missile's explosion logic
      */
+    @Deprecated //Missile is being changed to not handle blast info
     BlastResponse doExplosion();
 
     /**
@@ -27,6 +28,7 @@ public interface IMissile extends IWorldPosition
      *
      * @return true if missile has exploded or is in the process of exploding
      */
+    @Deprecated //Missile is being changed to not handle blast info
     boolean hasExploded();
 
     /**
@@ -70,21 +72,36 @@ public interface IMissile extends IWorldPosition
     //TODO store location and source of missile launch
 
     /**
-     * Gets the entity that is host to this
-     * missile capability.
+     * Gets the entity that is host to this missile capability.
      *
-     * @return
+     * @return entity
      */
     Entity getMissileEntity();
 
     /**
      * Sets the missile targeting data
+     *
      * @param data defining the target and any specialized impact settings
      */
     void setTargetData(IMissileTarget data);
 
+    IMissileTarget getTargetData();
+
     /**
-     * Tells the missile to fly towards the specific target
+     * Sets the flight logic to use for the missile
+     * @param logic to use
+     */
+    void setFlightLogic(IMissileFlightLogic logic);
+
+    IMissileFlightLogic getFlightLogic();
+
+    /**
+     * Tells the missile to start motion
+     *
+     * This will trigger flight logic to run calculation and lock in start conditions.
+     * After which the entity will start moving and handle any updates as required.
+     *
+     * Once launched don't expect the flight logic or other systems to allow modifications.
      */
     void launch();
 }

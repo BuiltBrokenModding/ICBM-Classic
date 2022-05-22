@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
@@ -35,6 +36,8 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 {
     public final EntityExplosiveMissile missile;
     public IMissileTarget targetData;
+
+    private IMissileFlightLogic flightLogic;
     private boolean doFlight = false;
 
     public CapabilityMissile(EntityExplosiveMissile missile)
@@ -89,11 +92,29 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     }
 
     @Override
+    public IMissileTarget getTargetData()
+    {
+        return this.targetData;
+    }
+
+    @Override
+    public void setFlightLogic(IMissileFlightLogic logic)
+    {
+        this.flightLogic = logic;
+    }
+
+    @Override
+    public IMissileFlightLogic getFlightLogic()
+    {
+        return this.flightLogic;
+    }
+
+    @Override
     public void launch()
     {
         //Tell missile to start moving
         this.doFlight = true;
-        Optional.ofNullable(missile.getFlightLogic()).ifPresent(logic -> {
+        Optional.ofNullable(getFlightLogic()).ifPresent(logic -> {
             logic.calculateFlightPath(missile.world, missile.x(), missile.y(), missile.z(), targetData); //TODO show in launcher screen with predicted path and time
             logic.start(missile);
         });
@@ -209,6 +230,34 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                         target.deserializeNBT(data.getCompoundTag("data"));
                     }
                     cap.setTargetData(target);
+                }
+            }
+        ))
+        /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("flight",
+            (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
+                final NBTTagCompound save = new NBTTagCompound();
+                final IMissileFlightLogic logic = missile.getFlightLogic();
+                if(logic != null)
+                {
+                    final NBTTagCompound logicSave = logic.save();
+                    if (logicSave != null && !logicSave.hasNoTags())
+                    {
+                        save.setTag("data", logicSave);
+                    }
+                    save.setString("id", logic.getRegistryName().toString());
+                }
+                return save;
+            },
+            (missile, data) -> {
+                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
+                final IMissileFlightLogic logic = ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.build(saveId);
+                if (logic != null)
+                {
+                    if (data.hasKey("data"))
+                    {
+                        logic.load(data.getCompoundTag("data"));
+                    }
+                    missile.setFlightLogic(logic);
                 }
             }
         ))

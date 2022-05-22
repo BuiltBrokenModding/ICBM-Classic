@@ -39,7 +39,7 @@ public class EntityExplosiveMissileTest
         //Setup save target
         final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
         missile.missileCapability.setTargetData(new BasicTargetData(1, 2, 3));
-        missile.setFlightLogic(new DeadFlightLogic(4567));
+        missile.missileCapability.setFlightLogic(new DeadFlightLogic(4567));
         missile.explosiveID = 4567;
         missile.blastData = new NBTTagCompound();
         missile.blastData.setInteger("scale", 4);

@@ -48,7 +48,6 @@ import java.util.Optional;
  */
 public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile> implements IEntityAdditionalSpawnData
 {
-    private IMissileFlightLogic flightLogic;
     public final TargetRangeDet targetRangeDet = new TargetRangeDet(this);
 
     //Explosive cap vars
@@ -90,16 +89,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
         return capability == CapabilityEMP.EMP || capability == ICBMClassicAPI.MISSILE_CAPABILITY || super.hasCapability(capability, facing);
-    }
-
-    public IMissileFlightLogic getFlightLogic()
-    {
-        return flightLogic;
-    }
-
-    public void setFlightLogic(IMissileFlightLogic flightLogic)
-    {
-        this.flightLogic = flightLogic;
     }
 
     @Override
@@ -147,11 +136,11 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     {
         if (missileCapability.canRunFlightLogic())
         {
-            Optional.ofNullable(getFlightLogic()).ifPresent(logic -> {
+            Optional.ofNullable(missileCapability.getFlightLogic()).ifPresent(logic -> {
                 logic.onEntityTick(this, ticksInAir);
 
                 if(logic.shouldRunEngineEffects(this)) {
-                    ICBMClassic.proxy.spawnMissileSmoke(this, getFlightLogic(), ticksInAir);
+                    ICBMClassic.proxy.spawnMissileSmoke(this, logic, ticksInAir);
                     ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
                 }
             });
@@ -171,7 +160,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void decreaseMotion()
     {
-        if (getFlightLogic() == null || getFlightLogic().shouldDecreaseMotion(this))
+        if (missileCapability.getFlightLogic() == null || missileCapability.getFlightLogic().shouldDecreaseMotion(this))
         {
             super.decreaseMotion();
         }
@@ -227,10 +216,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public double getMountedYOffset()
     {
-        if (this.ticksInAir <= 0 && this.getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
+        if (this.ticksInAir <= 0 && missileCapability.getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
         {
             return height;
-        } else if (this.getFlightLogic() instanceof DeadFlightLogic)
+        } else if (missileCapability.getFlightLogic() instanceof DeadFlightLogic)
         {
             return height / 10;
         }
@@ -337,41 +326,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         .mainRoot()
         /* */.nodeInteger(NBTConstants.EXPLOSIVE_ID, (missile) -> missile.explosiveID, (missile, i) -> missile.explosiveID = i)
         /* */.node(new NbtSaveNode<>(NBTConstants.ADDITIONAL_MISSILE_DATA, (missile) -> missile.blastData, (missile, data) -> missile.blastData = data))
-        .base()
-        .addRoot("components")
-        /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("flight",
-            (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
-                final NBTTagCompound save = new NBTTagCompound();
-                final IMissileFlightLogic logic = missile.getFlightLogic();
-                if(logic != null)
-                {
-                    final NBTTagCompound logicSave = logic.save();
-                    if (logicSave != null && !logicSave.hasNoTags())
-                    {
-                        save.setTag("data", logicSave);
-                    }
-                    save.setString("id", logic.getRegistryName().toString());
-                }
-                return save;
-            },
-            (missile, data) -> {
-                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
-                final IMissileFlightLogic logic = ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.build(saveId);
-                if (logic != null)
-                {
-                    if (data.hasKey("data"))
-                    {
-                        logic.load(data.getCompoundTag("data"));
-                    }
-                    missile.setFlightLogic(logic);
-                }
-            }
-        ))
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("missile",
             (missile) -> missile.missileCapability.serializeNBT(),
             (missile, data) -> missile.missileCapability.deserializeNBT(data)
         ))
-        //TODO save explosive component when added
         .base();
 
 

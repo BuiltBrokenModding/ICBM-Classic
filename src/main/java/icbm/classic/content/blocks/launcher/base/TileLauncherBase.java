@@ -297,7 +297,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
 
                     //Trigger launch event
                     missile.missileCapability.setTargetData(new BallisticTargetingData(target, lockHeight));
-                    missile.setFlightLogic(new BallisticFlightLogic());
+                    missile.missileCapability.setFlightLogic(new BallisticFlightLogic());
                     missile.missileCapability.launch();
 
                     //Spawn entity

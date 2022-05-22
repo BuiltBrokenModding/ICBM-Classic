@@ -104,7 +104,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                                     {
                                         EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(player.world)
                                             .init(player, ConfigMissile.DIRECT_FLIGHT_SPEED, 1);
-                                        entityMissile.setFlightLogic(new DeadFlightLogic(ConfigMissile.HANDHELD_FUEL));
+                                        entityMissile.missileCapability.setFlightLogic(new DeadFlightLogic(ConfigMissile.HANDHELD_FUEL));
                                         entityMissile.explosiveID = explosiveID;
                                         entityMissile.missileCapability.launch();
                                         world.spawnEntity(entityMissile);
