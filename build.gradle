@@ -80,12 +80,13 @@ minecraft {
 
     runs {
         client {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run/client')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
         }
 
         server {
+            workingDirectory project.file('run/server')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
         }
@@ -110,8 +111,8 @@ test {
 
     maxHeapSize = '1G'
     failFast = false
-    workingDir = './run_tests'
-    mkdir './run_tests'
+    workingDir = './run/tests'
+    mkdir './run/tests'
 }
 
 processResources {
