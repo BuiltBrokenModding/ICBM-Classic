@@ -94,12 +94,14 @@ minecraft {
 }
 
 task filterTokens(type: Sync) {
+    duplicatesStrategy = 'include'
+
     // this will ensure that this task is redone when the versions change.
     inputs.property 'version', version
 
     from sourceSets.main.java
     filter(ReplaceTokens, tokens: [VERSION: version.toString()])
-    into "$buildDir/filteredSrc"
+    into "$buildDir/sources"
 }
 
 compileJava {
