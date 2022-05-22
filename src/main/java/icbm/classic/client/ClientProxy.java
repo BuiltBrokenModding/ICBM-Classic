@@ -3,13 +3,18 @@ package icbm.classic.client;
 import com.builtbroken.jlib.data.vector.IPos3D;
 
 import icbm.classic.CommonProxy;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,6 +44,40 @@ public class ClientProxy extends CommonProxy
             particleAirParticleICBM.setAge(ticksToLive);
             Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
         }
+    }
+
+    @Override
+    public void spawnExplosionParticles(final World world, final double sourceX, final double sourceY, final double sourceZ, final double blastScale, final BlockPos blockPos)
+    {
+        //Random position near destroyed block
+        final double particleX = (blockPos.getX() + world.rand.nextFloat());
+        final double particleY = (blockPos.getY() + world.rand.nextFloat());
+        final double particleZ = (blockPos.getZ() + world.rand.nextFloat());
+
+        //Get delta from center of blast so particles move out
+        double particleMX = particleX - sourceX;
+        double particleMY = particleY - sourceY;
+        double particleMZ = particleZ - sourceZ;
+
+        //Normalize motion vector
+        final double speed = MathHelper.sqrt(particleMX * particleMX + particleMY * particleMY + particleMZ * particleMZ);
+        particleMX /= speed;
+        particleMY /= speed;
+        particleMZ /= speed;
+
+        //Give motion vector a randomized multiplier based on blast size
+        double multiplier = 0.5D / (speed / blastScale + 0.1D);
+        multiplier *= (world.rand.nextFloat() * world.rand.nextFloat() + 0.3F);
+        particleMX *= multiplier;
+        particleMY *= multiplier;
+        particleMZ *= multiplier;
+
+        world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL,
+            (particleX + sourceX) / 2.0D,
+            (particleY + sourceY) / 2.0D,
+            (particleZ + sourceZ) / 2.0D,
+            particleMX, particleMY, particleMZ);
+        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, particleX, particleY, particleZ, particleMX, particleMY, particleMZ);
     }
 
     @Override
