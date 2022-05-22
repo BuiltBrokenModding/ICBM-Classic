@@ -4,12 +4,15 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -17,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -32,9 +36,6 @@ import java.util.Optional;
  */
 public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompound>
 {
-    public static final String NBT_DO_FLIGHT = "do_flight";
-    public static final String NBT_TARGET_DATA = "target";
-
     public final EntityExplosiveMissile missile;
     public IMissileTarget targetData;
     public boolean doFlight = false;
@@ -173,18 +174,46 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     @Override
     public NBTTagCompound serializeNBT() {
         final NBTTagCompound saveData = new NBTTagCompound();
-
-        final NBTTagCompound targetSave = new NBTTagCompound();
-        saveData.setTag(NBT_TARGET_DATA, targetSave);
-
-        saveData.setBoolean(NBT_DO_FLIGHT, doFlight);
-
+        SAVE_LOGIC.save(this, saveData);
         return saveData;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-
-        this.doFlight = nbt.getBoolean(NBT_DO_FLIGHT);
+       SAVE_LOGIC.load(this, nbt);
     }
+
+    private static final NbtSaveHandler<CapabilityMissile> SAVE_LOGIC = new NbtSaveHandler<CapabilityMissile>()
+        .addRoot("flags")
+        /* */.nodeBoolean("do_flight", (cap) -> cap.doFlight, (cap, i) -> cap.doFlight = i)
+        .base()
+        .mainRoot()
+        /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
+            (cap) -> { //TODO convert to class so we can have targeting items and launcher reuse
+                if(cap.targetData != null) {
+                    final NBTTagCompound tagCompound = new NBTTagCompound();
+                    final NBTTagCompound logicSave = cap.targetData.serializeNBT();
+                    if (logicSave != null && !logicSave.hasNoTags())
+                    {
+                        tagCompound.setTag("data", logicSave);
+                    }
+                    tagCompound.setString("id", cap.targetData.getRegistryName().toString());
+                    return tagCompound;
+                }
+                return null;
+            },
+            (cap, data) -> {
+                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
+                final IMissileTarget target = ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.build(saveId);
+                if (target != null)
+                {
+                    if (data.hasKey("data"))
+                    {
+                        target.deserializeNBT(data.getCompoundTag("data"));
+                    }
+                    cap.setTargetData(target);
+                }
+            }
+        ))
+        .base();
 }

@@ -15,9 +15,9 @@ import net.minecraft.world.World;
 public class DirectFlightLogic extends DeadFlightLogic
 {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "direct");
-    double motionX;
-    double motionY;
-    double motionZ;
+    private double motionX; //TODO do we need to save?
+    private double motionY;
+    private double motionZ;
 
     @Override
     public void calculateFlightPath(World world, double startX, double startY, double startZ, IMissileTarget targetData)

@@ -11,6 +11,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.entity.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.content.entity.missile.logic.TargetRangeDet;
@@ -218,7 +219,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         if (this.ticksInAir <= 0 && this.getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
         {
             return height;
-        } else if (this.getFlightLogic() instanceof DirectFlightLogic)
+        } else if (this.getFlightLogic() instanceof DeadFlightLogic)
         {
             return height / 10;
         }
@@ -331,7 +332,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     private static final NbtSaveHandler<EntityExplosiveMissile> SAVE_LOGIC = new NbtSaveHandler<EntityExplosiveMissile>()
         .addRoot("components")
         /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("flight",
-            (missile) -> {
+            (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
                 final NBTTagCompound save = new NBTTagCompound();
                 final IMissileFlightLogic logic = missile.getFlightLogic();
                 final NBTTagCompound logicSave = logic.save();
