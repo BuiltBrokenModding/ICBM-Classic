@@ -38,6 +38,7 @@ public interface IMissile extends IWorldPosition
      *                      True will trigger a the missile's normal explosion
      *                      False will trigger a TNT explosion
      */
+    @Deprecated //removing as missiles will have HP and should be attacked rather than directly destroyed by outside actions
     default void destroyMissile(boolean fullExplosion) //TODO add reason as input data
     {
         if (!hasExploded() && !doExplosion().state.good)
@@ -50,6 +51,7 @@ public interface IMissile extends IWorldPosition
     /**
      * Drops the specified missile as an item.
      */
+    @Deprecated //removing as we shouldn't expose a method directly to drop as item, this should be hidden as implementation
     default void dropMissileAsItem()
     {
         final ItemStack stack = toStack();
@@ -60,6 +62,7 @@ public interface IMissile extends IWorldPosition
     }
 
     @Nullable
+    @Deprecated //removing as not all missiles will have items
     ItemStack toStack();
 
     /**
