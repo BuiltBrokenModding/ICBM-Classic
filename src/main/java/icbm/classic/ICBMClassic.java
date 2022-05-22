@@ -109,7 +109,7 @@ public final class ICBMClassic
 
     public static final int MAP_HEIGHT = 255;
 
-    protected static Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
+    private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
 
 
     public static final PacketManager packetHandler = new PacketManager(ICBMConstants.DOMAIN);
