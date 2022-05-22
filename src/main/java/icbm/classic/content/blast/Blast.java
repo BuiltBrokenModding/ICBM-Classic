@@ -360,12 +360,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 continue;
             }
 
-            if (entity instanceof IMissile)
-            {
-                ((IMissile) entity).destroyMissile(true);
-                continue;
-            }
-
             if (entity instanceof EntityItem && !destroyItem)
             {
                 continue;
