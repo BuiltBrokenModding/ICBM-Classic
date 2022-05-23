@@ -48,6 +48,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This tile entity is for the base of the missile launcher
@@ -114,10 +115,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
             if (ticks % 3 == 0)
             {
                 //Update seat position
-                if (seat != null)
-                {
-                    seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5);
-                }
+                Optional.ofNullable(seat).ifPresent(seat ->  seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5));
 
                 //Create seat if missile
                 if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
@@ -132,10 +130,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                 //Destroy seat if no missile
                 else if (getMissileStack().isEmpty() && seat != null)
                 {
-                    if (seat.getRidingEntity() != null)
-                    {
-                        seat.getRidingEntity().startRiding(null);
-                    }
+                    Optional.ofNullable(seat.getRidingEntity()).ifPresent(Entity::removePassengers);
                     seat.setDead();
                     seat = null;
                 }
