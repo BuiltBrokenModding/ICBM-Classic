@@ -98,6 +98,11 @@ public class ICBMCreativeTab extends CreativeTabs
 
     protected void collectSubItems(final Item item, final NonNullList<ItemStack> masterList)
     {
+        if (item == null)
+        {
+            return;
+        }
+
         //Collect stacks
         final NonNullList<ItemStack> collectedItemStacks = NonNullList.create();
         item.getSubItems(this, collectedItemStacks);
