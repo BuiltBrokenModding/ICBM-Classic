@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile
+public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile
 {
     /**
      * The entity who shot this projectile and can be used for damage calculations
@@ -60,8 +60,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     //In ground data
     public BlockPos tilePos = new BlockPos(0, 0, 0);
     public EnumFacing sideTile = EnumFacing.UP;
-    protected IBlockState blockInside = Blocks.AIR.getDefaultState();
-    protected boolean inGround = false;
+    public IBlockState blockInside = Blocks.AIR.getDefaultState();
+    public boolean inGround = false;
 
     //Timers
     public int ticksInGround;

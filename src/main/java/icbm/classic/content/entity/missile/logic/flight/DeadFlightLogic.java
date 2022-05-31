@@ -72,4 +72,12 @@ public class DeadFlightLogic implements IMissileFlightLogic
     {
         return !hasFuel(entity);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof DeadFlightLogic) {
+            return fuelTicks == ((DeadFlightLogic) other).fuelTicks;
+        }
+        return false;
+    }
 }

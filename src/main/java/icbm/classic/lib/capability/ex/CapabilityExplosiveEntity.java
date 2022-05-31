@@ -97,4 +97,19 @@ public class CapabilityExplosiveEntity implements IExplosive
         }
         this.stack = stack.copy().splitStack(1);
     }
+
+    @Override
+    public int hashCode() {
+        return 31 * stack.getItem().hashCode() + stack.getItemDamage();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) || other instanceof IExplosive && ItemStack.areItemsEqual(((IExplosive) other).toStack(), toStack());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("CapabilityExplosiveEntity[%s]@%s", toStack(), super.hashCode());
+    }
 }

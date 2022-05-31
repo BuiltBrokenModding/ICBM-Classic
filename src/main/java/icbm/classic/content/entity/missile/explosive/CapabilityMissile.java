@@ -2,6 +2,7 @@ package icbm.classic.content.entity.missile.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.missiles.IMissileFlightLogic;
@@ -266,5 +267,20 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     public boolean canRunFlightLogic()
     {
         return doFlight;
+    }
+
+    @Override
+    public int hashCode() {
+        return missile != null ? missile.hashCode() : super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof CapabilityMissile) {
+            return Objects.equals(((CapabilityMissile) other).flightLogic, flightLogic)
+                && Objects.equals(((CapabilityMissile) other).targetData, targetData)
+                && ((CapabilityMissile) other).doFlight == doFlight;
+        }
+        return false;
     }
 }

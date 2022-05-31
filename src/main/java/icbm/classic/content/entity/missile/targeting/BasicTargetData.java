@@ -2,10 +2,13 @@ package icbm.classic.content.entity.missile.targeting;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileTarget;
+import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.Objects;
 
 public class BasicTargetData implements IMissileTarget {
 
@@ -76,5 +79,13 @@ public class BasicTargetData implements IMissileTarget {
         double y = nbt.getDouble("y");
         double z = nbt.getDouble("z");
         this.position = new Vec3d(x, y, z);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof BasicTargetData) {
+            return Objects.equals(((BasicTargetData) other).position, position);
+        }
+        return false;
     }
 }

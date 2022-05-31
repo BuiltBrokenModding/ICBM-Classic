@@ -4,10 +4,13 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.config.ConfigMissile;
+import icbm.classic.content.entity.missile.targeting.BasicTargetData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+
+import java.util.Objects;
 
 /**
  * Created by Robin Seifert on 2/8/2022.
@@ -62,5 +65,17 @@ public class DirectFlightLogic extends DeadFlightLogic
     public ResourceLocation getRegistryName()
     {
         return REG_NAME;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof DirectFlightLogic) {
+            return
+                super.equals(other) //super does some checks on it's own fields
+                && Math.abs(((DirectFlightLogic) other).motionX - motionX) <= 0.0001 //floating error handling
+                && Math.abs(((DirectFlightLogic) other).motionY - motionY) <= 0.0001
+                && Math.abs(((DirectFlightLogic) other).motionZ - motionZ) <= 0.0001;
+        }
+        return false;
     }
 }
