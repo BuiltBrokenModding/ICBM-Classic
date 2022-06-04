@@ -1,6 +1,8 @@
 package icbm.classic.content.blast.imp;
 
+import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
+import icbm.classic.api.explosion.responses.BlastForgeResponses;
 import icbm.classic.api.explosion.responses.BlastNullResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
@@ -17,25 +19,29 @@ public abstract class BlastBase implements IBlastInit
     private double x, y, z;
     private boolean locked;
 
-    @Nonnull
-    @Override
-    public BlastResponse runBlast()
-    {
-        if(world != null) {
-            final EntityRedmatter entityRedmatter = new EntityRedmatter(world);
-            entityRedmatter.posX = x();
-            entityRedmatter.posY = y();
-            entityRedmatter.posZ = z();
-            world.spawnEntity(entityRedmatter);
-        }
-        return BlastNullResponses.WORLD.get();
-    }
-
     @Override
     public void clearBlast()
     {
 
     }
+
+    @Nonnull
+    @Override
+    public BlastResponse runBlast()
+    {
+        final World world = world();
+        if (world != null)
+        {
+            if(!world.isRemote)
+            {
+                return triggerBlast();
+            }
+            return BlastState.TRIGGERED.genericResponse;
+        }
+        return BlastNullResponses.WORLD.get();
+    }
+
+    protected abstract BlastResponse triggerBlast();
 
     //<editor-fold desc="pos-data">
     @Override
