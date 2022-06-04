@@ -43,7 +43,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     /**
      * Tick runtime of flight arc
      */
-    private float missileFlightTime;
+    private int missileFlightTime;
     /**
      * Motion Y acceleration for arc to work
      */
@@ -65,21 +65,27 @@ public class BallisticFlightLogic implements IMissileFlightLogic
      */
     private double deltaPathX, deltaPathY, deltaPathZ;
     private double startX, startY, startZ;
+    private double endX, endY, endZ;
 
     private final LinkedList<Pos> clientLastSmokePos = new LinkedList<>();
 
     @Override
     public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
     {
+        //Record start and end position
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
 
-        //Setup arc data
-        calculatePath(startX, startY, startZ, targetData);
+        if(targetData != null)
+        {
+            this.endX = targetData.getX();
+            this.endY = targetData.getY();
+            this.endZ = targetData.getZ();
+        }
 
         //Check if we have air under the launcher, used for animation smoke during launch
-        final BlockPos blockUnderLauncher = new BlockPos(
+        final BlockPos blockUnderLauncher = new BlockPos( //TODO move to launcher
             Math.signum(startX) * Math.floor(Math.abs(startX)),
             startY - 2, //TODO is this checking the correct block?
             Math.signum(startZ) * Math.floor(Math.abs(startZ))
@@ -87,41 +93,46 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         this.launcherHasAirBelow = world.isAirBlock(blockUnderLauncher);
     }
 
-    protected void calculatePath(double startX, double startY, double startZ, final IMissileTarget targetingData)
+    protected void calculatePath()
     {
-        if (targetingData != null)
-        {
-            // Calculate the distance difference of the missile
-            this.deltaPathX = targetingData.getX() - startX;
-            this.deltaPathY = targetingData.getY() - startY;
-            this.deltaPathZ = targetingData.getZ() - startZ;
+        // Calculate the distance difference of the missile
+        this.deltaPathX = endX - startX;
+        this.deltaPathY = endY - startY;
+        this.deltaPathZ = endZ - startZ;
 
-            // TODO: Calculate parabola and relative out the targetHeight.
-            // Calculate the power required to reach the target co-ordinates
-            // Ground Displacement
-            double flatDistance = targetingData.calculateFlatDistance(startX, startZ);
-            // Parabolic Height
-            // Ballistic flight vars
-            //TODO make config?
-            int arcHeightMax = 160 + (int) (flatDistance * 3);
-            // Flight time
-            missileFlightTime = (float) Math.max(100, 2 * flatDistance);
-            // Acceleration
-            this.acceleration = (float) arcHeightMax * 2 / (missileFlightTime * missileFlightTime);
+        //Path constants
+        final float ticksPerMeterFlat = 2f;
+        final float maxFlightTime = 100f;
+        final float heightToDistanceScale = 3f;
+        final float maxHeight = 1000f;
+        final float initialArcHeight = 160f;
+        final float minHeight = 100f;
 
-            //TODO test impact position, as this may be offset by lockHeight and deltaPathY causing it to miss slightly
-            //  In theory missile should be moving almost strait down on impact but could be a problem in some cases
-        } else
-        {
-            acceleration = ConfigMissile.DIRECT_FLIGHT_SPEED;
-        }
+        // TODO: Calculate parabola and relative out the targetHeight.
+        // Calculate the power required to reach the target co-ordinates
+        // Ground Displacement
+        final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
+
+        // Parabolic Height
+        // Ballistic flight vars
+        final float arcHeightMax = Math.min(maxHeight, Math.max(minHeight, initialArcHeight + (flatDistance * heightToDistanceScale)));
+
+        // Flight time
+        final float time = (int)Math.floor(Math.max(maxFlightTime, ticksPerMeterFlat  * flatDistance));
+        missileFlightTime = (int)Math.floor(time);
+
+        // Acceleration
+        double heightToDistance = arcHeightMax / flatDistance;
+        double heightToTime = arcHeightMax / time;
+        double timeToDistance = time  / flatDistance;
+        this.acceleration = (float)(((arcHeightMax - heightToDistance) * heightToDistance) / (time / timeToDistance) / (heightToTime * flatDistance));
     }
 
     @Override
     public void onEntityTick(Entity entity, int ticksInAir)
     {
         //Warm up on pad for nice animation
-        if (padWarmUpTimer > 0)
+        if (padWarmUpTimer > 0) //TODO have launcher control warmup time for better animation
         {
             padWarmUpTimer--;
             idleMissileOnPad(entity, ticksInAir);
@@ -133,8 +144,10 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         }
         //Starts the missile into normal flight
         else if (!hasStartedFlight) {
+
             hasStartedFlight = true;
-            entity.motionY = this.acceleration * (missileFlightTime / 2);
+            calculatePath();
+            entity.motionY = this.acceleration * ((float)missileFlightTime / 2f);
             entity.motionX = this.deltaPathX / missileFlightTime;
             entity.motionZ = this.deltaPathZ / missileFlightTime;
         }
@@ -292,9 +305,12 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         /* */.nodeDouble("start_x", (bl) -> bl.startX, (bl, i) -> bl.startX = i)
         /* */.nodeDouble("start_y", (bl) -> bl.startY, (bl, i) -> bl.startY = i)
         /* */.nodeDouble("start_z", (bl) -> bl.startZ, (bl, i) -> bl.startZ = i)
+        /* */.nodeDouble("end_x", (bl) -> bl.endZ, (bl, i) -> bl.endX = i)
+        /* */.nodeDouble("end_y", (bl) -> bl.endY, (bl, i) -> bl.endY = i)
+        /* */.nodeDouble("end_z", (bl) -> bl.endZ, (bl, i) -> bl.endZ = i)
         .base()
         .addRoot("calculated")
-        /* */.nodeFloat("flight_time", (bl) -> bl.missileFlightTime, (bl, data) -> bl.missileFlightTime = data)
+        /* */.nodeInteger("flight_time", (bl) -> bl.missileFlightTime, (bl, data) -> bl.missileFlightTime = data)
         /* */.nodeFloat("acceleration", (bl) -> bl.acceleration, (bl, data) -> bl.acceleration = data)
         /* */.nodeDouble("delta_x", (bl) -> bl.deltaPathX, (bl, data) -> bl.deltaPathX = data)
         /* */.nodeDouble("delta_y", (bl) -> bl.deltaPathY, (bl, data) -> bl.deltaPathY = data)
