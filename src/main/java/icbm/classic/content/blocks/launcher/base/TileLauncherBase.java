@@ -236,7 +236,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     protected Pos applyInaccuracy(Pos target)
     {
         // Apply inaccuracy
-        int inaccuracy = 30; //TODO customize more
+        float inaccuracy = 30f; //TODO config
 
         //Get value from support frame
         if (this.supportFrame != null)
@@ -248,10 +248,10 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         //TODO add tier based inaccuracy, higher tier missiles have a high chance of hitting
 
         //Randomize distance
-        inaccuracy = getWorld().rand.nextInt(inaccuracy);
+        inaccuracy = inaccuracy * getWorld().rand.nextFloat();
 
         //Randomize radius drop
-        angle.setYaw(getWorld().rand.nextFloat() * 360);
+        angle.setYaw(getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
 
         //Apply inaccuracy to target position and return
         return target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
