@@ -31,7 +31,7 @@ public class SaveNodeIntegerTest
         Assertions.assertEquals(123, thing.i);
     }
 
-    class IntSaveThing {
+    static class IntSaveThing {
         public int i;
     }
 }
