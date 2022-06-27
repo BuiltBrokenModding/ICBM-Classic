@@ -5,6 +5,7 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.CommonProxy;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
+import icbm.classic.client.fx.ParticleLauncherSmoke;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.lib.transform.vector.Pos;
@@ -172,18 +173,22 @@ public class ClientProxy extends CommonProxy
         double posZ = entity.posZ;
 
         //Spawn smoke TODO add config for smoke amount
-        for (int smokeCount = 0; smokeCount < 5; smokeCount++)
+        for (int smokeCount = 0; smokeCount < 10; smokeCount++)
         {
-            double velX = (random.nextFloat() - random.nextFloat()) * 0.3;
-            double velY = 1 - (random.nextFloat() * 0.5);
-            double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
+            //Randomize flight direction down in a cone
+            final double velX = (random.nextFloat() - random.nextFloat()) * 0.3;
+            final double velY = 1 - (random.nextFloat() * 0.5);
+            final double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
 
-            // smoke below the launcher
-            spawnAirParticle(world, //TODO spawn custom particle that can noClip launcher base
+            //spawn smoke
+            final ParticleLauncherSmoke particleAirParticleICBM = new ParticleLauncherSmoke(world,
                 posX, posY, posZ,
                 velX, -velY, velZ,
-                1, 1, 1,
-                8, 180);
+                1 + 2 * random.nextFloat()
+            );
+            particleAirParticleICBM.setColor(1, 1, 1, true);
+            particleAirParticleICBM.setAge(180);
+            Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
         }
     }
 }
