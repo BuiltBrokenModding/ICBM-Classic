@@ -78,17 +78,14 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             this.endY = targetData.getY();
             this.endZ = targetData.getZ();
         }
-
-        //Check if we have air under the launcher, used for animation smoke during launch
-        final BlockPos blockUnderLauncher = new BlockPos( //TODO move to launcher
-            Math.signum(startX) * Math.floor(Math.abs(startX)),
-            startY - 2, //TODO is this checking the correct block?
-            Math.signum(startZ) * Math.floor(Math.abs(startZ))
-        );
     }
 
     protected void calculatePath()
     {
+        //TODO rebuild to calculate arc up to maxHeight and move at a fixed speed instead of speed of sound+++++
+        //TODO once it reaches maxHeight have it fly flat to make for a smoother player riding experience
+        //TODO at end of arc if we can't fix the target offset have the missile fly at an angle strait at the target to fix accuracy issues
+
         // Calculate the distance difference of the missile
         this.deltaPathX = endX - startX;
         this.deltaPathY = endY - startY;
