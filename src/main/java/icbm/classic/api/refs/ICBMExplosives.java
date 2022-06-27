@@ -19,6 +19,8 @@ public final class ICBMExplosives
     public static IExplosiveData ATTRACTIVE;
     public static IExplosiveData COLOR;
 
+    public static IExplosiveData SMOKE;
+
     //=================== Tier 2
     public static IExplosiveData FRAGMENTATION;
     public static IExplosiveData CONTAGIOUS;

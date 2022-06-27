@@ -3,14 +3,7 @@ package icbm.classic.content.reg;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
-import icbm.classic.content.entity.EntityBombCart;
-import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.EntityFragments;
-import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.entity.EntityLightBeam;
-import icbm.classic.content.entity.EntityPlayerSeat;
+import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -32,8 +25,8 @@ public final class EntityReg
     @SubscribeEvent
     public static void registerEntity(RegistryEvent.Register<EntityEntry> event)
     {
-        event.getRegistry().register(buildEntityEntry(EntityFlyingBlock.class, ICBMEntities.BLOCK_GRAVITY, 128, 15));
-        event.getRegistry().register(buildEntityEntry(EntityFragments.class, ICBMEntities.BLOCK_FRAGMENT, 40, 8));
+        event.getRegistry().register(buildEntityEntry(EntityFlyingBlock.class, ICBMEntities.BLOCK_GRAVITY, 128, 1));
+        event.getRegistry().register(buildEntityEntry(EntityFragments.class, ICBMEntities.BLOCK_FRAGMENT, 40, 1));
         event.getRegistry().register(buildEntityEntry(EntityExplosive.class, ICBMEntities.BLOCK_EXPLOSIVE, 50, 5));
         event.getRegistry().register(buildEntityEntry(EntityExplosiveMissile.class, ICBMEntities.MISSILE, 500, 1));
         event.getRegistry().register(buildEntityEntry(EntityExplosion.class, ICBMEntities.EXPLOSION, 100, 5));
@@ -42,6 +35,7 @@ public final class EntityReg
         event.getRegistry().register(buildEntityEntry(EntityBombCart.class, ICBMEntities.BOMB_CART, 50, 2));
         event.getRegistry().register(buildEntityEntry(EntityPlayerSeat.class, ICBMEntities.MISSILE_SEAT, 50, 2));
         event.getRegistry().register(buildEntityEntry(EntityRedmatter.class, ICBMEntities.REDMATTER, 500, 1));
+        event.getRegistry().register(buildEntityEntry(EntitySmoke.class, ICBMEntities.SMOKE, 100, 15));
 
         /*
         //Green team

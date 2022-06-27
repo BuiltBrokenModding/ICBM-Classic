@@ -29,11 +29,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     public static final int PAD_WARM_UP_TIME = 20 * 2; //TODO add config
     public static final double MISSILE_CLIMB_HEIGHT = 2; //TODO add config
 
-    /**
-     * Flag to indicate there is air blocks under the launcher
-     */
-    public boolean launcherHasAirBelow = false;
-
     public boolean hasStartedFlight = false;
 
     /**
@@ -90,7 +85,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             startY - 2, //TODO is this checking the correct block?
             Math.signum(startZ) * Math.floor(Math.abs(startZ))
         );
-        this.launcherHasAirBelow = world.isAirBlock(blockUnderLauncher);
     }
 
     protected void calculatePath()
@@ -216,7 +210,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     protected void idleMissileOnPad(Entity entity, int ticksInAir)
     {
         entity.rotationPitch = entity.prevRotationPitch = 90;
-        //ICBMClassic.proxy.spawnMissileSmoke(entity, this, ticksInAir); TODO implement custom smoke logic that generates small cloud at base of launcher
+        ICBMClassic.proxy.spawnPadSmoke(entity, this, ticksInAir);
     }
 
     @Override
@@ -298,7 +292,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     private static final NbtSaveHandler<BallisticFlightLogic> SAVE_LOGIC = new NbtSaveHandler<BallisticFlightLogic>()
         //Stuck in ground data
         .addRoot("flags")
-        /* */.nodeBoolean("air_under", (bl) -> bl.launcherHasAirBelow, (bl, data) -> bl.launcherHasAirBelow = data)
         /* */.nodeBoolean("flight_started", (bl) -> bl.hasStartedFlight, (bl, data) -> bl.hasStartedFlight = data)
         .base()
         .addRoot("inputs")

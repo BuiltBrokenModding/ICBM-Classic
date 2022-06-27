@@ -169,4 +169,8 @@ public class CommonProxy implements IGuiHandler
     {
 
     }
+
+    public void spawnPadSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir) {
+
+    }
 }
