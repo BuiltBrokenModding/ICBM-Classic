@@ -1,6 +1,8 @@
 package icbm.classic.content.blocks.launcher.base;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.lib.NBTConstants;
@@ -44,6 +46,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -55,13 +58,13 @@ import java.util.Optional;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine implements IMultiTileHost, IInventoryProvider<ExternalInventory>
+public class TileLauncherBase extends TileMachine implements IMultiTileHost
 {
 
     public static List<BlockPos> northSouthMultiBlockCache = new ArrayList();
     public static List<BlockPos> eastWestMultiBlockCache = new ArrayList();
 
-    private static EulerAngle angle = new EulerAngle(0, 0, 0);
+    private static final EulerAngle angle = new EulerAngle(0, 0, 0);
 
     static
     {
@@ -89,10 +92,12 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
      */
     public EntityPlayerSeat seat;
 
-    // The tier of this launcher base
     private boolean _destroyingStructure = false;
 
-    ExternalInventory inventory;
+    private boolean checkMissileCollision = true;
+    private boolean hasMissileCollision = false;
+
+    private final LauncherInventory inventory = new LauncherInventory(this);
 
     /**
      * Client's render cached object, used in place of inventory to avoid affecting GUIs
@@ -114,6 +119,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         {
             if (ticks % 3 == 0)
             {
+                checkMissileCollision = true;
+
                 //Update seat position
                 Optional.ofNullable(seat).ifPresent(seat ->  seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5));
 
@@ -180,13 +187,15 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
+        //Run before screen check to prevent looping
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return getInventory() != null;
+            return true;
         }
+        //Check if we can pass to launcher screen
         else if (launchScreen != null)
         {
-            return launchScreen.hasCapability(capability, facing);
+            return launchScreen.hasCapability(capability, facing); //TODO pass in self to prevent looping
         }
         return super.hasCapability(capability, facing);
     }
@@ -197,7 +206,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) getInventory().itemHandlerWrapper;
+            return (T) inventory;
         }
         else if (launchScreen != null)
         {
@@ -206,7 +215,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         return super.getCapability(capability, facing);
     }
 
-    @Override
     public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
     {
         if (slot == 0)
@@ -215,16 +223,18 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         }
     }
 
-    @Override
-    public boolean canStore(ItemStack stack, EnumFacing side)
-    {
-        return stack != null && stack.getItem() == ItemReg.itemMissile;
-    }
+    public boolean checkForMissileInBounds() {
+        //Limit how often we check for collision
+        if(checkMissileCollision)
+        {
+            checkMissileCollision = false;
 
-    @Override
-    public boolean canRemove(ItemStack stack, EnumFacing side)
-    {
-        return true;
+            //Validate the space above the launcher is free of entities, mostly for smooth reload visuals
+            final AxisAlignedBB collisionCheck = new AxisAlignedBB(xi(), yi(), zi(), xi() + 1, yi() + 5, zi() + 1);
+            final List<EntityMissile> entities = world.getEntitiesWithinAABB(EntityMissile.class, collisionCheck);
+            hasMissileCollision = entities.size() > 0;
+        }
+        return hasMissileCollision;
     }
 
     @Override
@@ -307,7 +317,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                     }
 
                     //Remove item
-                    getInventory().decrStackSize(0, 1);
+                    inventory.extractItem(0, 1, false);
+                    checkMissileCollision = true;
                 }
                 return true;
             }
@@ -372,7 +383,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        getInventory().load(nbt.getCompoundTag(NBTConstants.INVENTORY)); //TODO datafixer to replace inventory
+        inventory.deserializeNBT(nbt.getCompoundTag(NBTConstants.INVENTORY));
     }
 
     /**
@@ -381,7 +392,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setTag(NBTConstants.INVENTORY, getInventory().save(new NBTTagCompound()));
+        nbt.setTag(NBTConstants.INVENTORY, inventory.serializeNBT());
         return super.writeToNBT(nbt);
     }
 
@@ -405,7 +416,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
         {
             return cachedMissileStack;
         }
-        return getInventory().getStackInSlot(0);
+        return inventory.getStackInSlot(0);
     }
 
     public boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
@@ -430,10 +441,10 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
                 {
                     if (isServer())
                     {
-                        getInventory().setInventorySlotContents(0, heldItem);
+                        final ItemStack stackLeft = inventory.insertItem(0, heldItem, false);
                         if (!player.capabilities.isCreativeMode)
                         {
-                            player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                            player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, stackLeft);
                             player.inventoryContainer.detectAndSendChanges();
                         }
                     }
@@ -447,7 +458,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
             {
 
                 player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, this.getMissileStack());
-                getInventory().setInventorySlotContents(0, ItemStack.EMPTY);
+                inventory.extractItem(0, 1, false);
                 player.inventoryContainer.detectAndSendChanges();
             }
             return true;
@@ -459,22 +470,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost, IIn
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
-    }
-
-    @Override
-    public ExternalInventory getInventory()
-    {
-        if (inventory == null)
-        {
-            inventory = new ExternalInventory(this, 1);
-        }
-        return inventory;
-    }
-
-    @Override
-    public boolean canStore(ItemStack stack, int slot, EnumFacing side)
-    {
-        return slot == 0 && stack.getItem() instanceof ItemMissile;
     }
 
     //==========================================

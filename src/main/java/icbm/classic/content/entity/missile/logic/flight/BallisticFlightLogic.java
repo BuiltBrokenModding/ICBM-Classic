@@ -80,6 +80,9 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         }
     }
 
+    //TODO wire IMissile to connect to ILauncher so we can get launcher source and let the launcher know when we are clear
+    //TODO code launcher to not reload until clear, use the all clear flag from the missile combined with collision checks and dead checks
+
     protected void calculatePath()
     {
         //TODO rebuild to calculate arc up to maxHeight and move at a fixed speed instead of speed of sound+++++
