@@ -80,7 +80,7 @@ public final class ICBMClassicAPI
     public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;
 
     @CapabilityInject(IMissileLauncher.class)
-    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
+    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null; //TODO not implemented
 
     @CapabilityInject(IBlastVelocity.class)
     public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;

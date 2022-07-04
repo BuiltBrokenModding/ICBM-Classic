@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
@@ -21,6 +22,7 @@ import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.ExternalInventory;
@@ -104,7 +106,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
      */
     public ItemStack cachedMissileStack;
 
-    public final IMissileHolder missileHolder = null; //TODO wrapper to inventory or wrapper inventory to holder (likely better option)
+    public final IMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
     public final IMissileLauncher missileLauncher = null; //TODO implement, screen will now only set data instead of being the launcher
 
     /**
@@ -188,7 +190,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
         //Run before screen check to prevent looping
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return true;
         }
@@ -208,19 +210,15 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         {
             return (T) inventory;
         }
+        else if(capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
+        {
+            return (T) missileHolder;
+        }
         else if (launchScreen != null)
         {
             return launchScreen.getCapability(capability, facing);
         }
         return super.getCapability(capability, facing);
-    }
-
-    public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
-    {
-        if (slot == 0)
-        {
-            sendDescPacket();
-        }
     }
 
     public boolean checkForMissileInBounds() {
