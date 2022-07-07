@@ -71,7 +71,13 @@ public class LauncherMissileSource implements IMissileSource
 
     @Override
     public void load(NBTTagCompound save) {
+        SAVE_LOGIC.load(this, save);
+    }
 
+    @Override
+    public ResourceLocation getRegistryName()
+    {
+        return REG_NAME;
     }
 
     private static final NbtSaveHandler<LauncherMissileSource> SAVE_LOGIC = new NbtSaveHandler<LauncherMissileSource>()

@@ -2,6 +2,7 @@ package icbm.classic.api.missiles;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -71,6 +72,13 @@ public interface IMissileSource
     default void load(NBTTagCompound save) {
 
     }
+
+    /**
+     * Registry name to use with {@link icbm.classic.api.ICBMClassicAPI#MISSILE_SOURCE_REGISTRY}
+     *
+     * @return save id
+     */
+    ResourceLocation getRegistryName();
 
     enum MissileSourceType {
         BLOCK,

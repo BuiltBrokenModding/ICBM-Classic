@@ -277,6 +277,34 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                 }
             }
         ))
+        /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("source",
+            (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
+                final NBTTagCompound save = new NBTTagCompound();
+                final IMissileSource source = missile.getMissileSource();
+                if(source != null)
+                {
+                    final NBTTagCompound sourceSave = source.save();
+                    if (sourceSave != null && !sourceSave.hasNoTags())
+                    {
+                        save.setTag("data", sourceSave);
+                    }
+                    save.setString("id", source.getRegistryName().toString());
+                }
+                return save;
+            },
+            (missile, data) -> {
+                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
+                final IMissileSource source = ICBMClassicAPI.MISSILE_SOURCE_REGISTRY.build(saveId);
+                if (source != null)
+                {
+                    if (data.hasKey("data"))
+                    {
+                        source.load(data.getCompoundTag("data"));
+                    }
+                    missile.setMissileSource(source);
+                }
+            }
+        ))
         .base();
 
     public boolean canRunFlightLogic()
