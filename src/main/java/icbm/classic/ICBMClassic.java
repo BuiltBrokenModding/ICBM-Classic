@@ -2,10 +2,7 @@ package icbm.classic;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.events.ExplosiveContentRegistryEvent;
-import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
-import icbm.classic.api.reg.events.MissileFlightLogicRegistryEvent;
-import icbm.classic.api.reg.events.MissileTargetRegistryEvent;
+import icbm.classic.api.reg.events.*;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.CommandEntryPoint;
@@ -13,11 +10,13 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
+import icbm.classic.content.blocks.launcher.LauncherMissileSource;
 import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.entity.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.entity.missile.logic.reg.MissileFlightLogicRegistry;
+import icbm.classic.content.entity.missile.source.reg.MissileSourceRegistry;
 import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
 import icbm.classic.content.entity.missile.targeting.BasicTargetData;
 import icbm.classic.content.entity.missile.targeting.reg.MissileTargetRegistry;
@@ -224,6 +223,7 @@ public final class ICBMClassic
 
         handleMissileTargetRegistry();
         handleMissileFlightRegistry();
+        handleMissileSourceRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
     }
 
@@ -254,6 +254,21 @@ public final class ICBMClassic
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(registry));
+
+        //Lock to prevent late registry
+        registry.lock();
+    }
+
+    private void handleMissileSourceRegistry()
+    {
+        final MissileSourceRegistry registry = new MissileSourceRegistry();
+        ICBMClassicAPI.MISSILE_SOURCE_REGISTRY = registry;
+
+        registry.register(LauncherMissileSource.REG_NAME, LauncherMissileSource::new);
+
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new MissileSourceRegistryEvent(registry));
 
         //Lock to prevent late registry
         registry.lock();

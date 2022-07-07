@@ -1,5 +1,7 @@
 package icbm.classic.content.blocks.launcher;
 
+import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileSource;
 import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -7,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -17,12 +20,18 @@ import java.util.UUID;
 
 public class LauncherMissileSource implements IMissileSource
 {
+    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block.launcher");
     private World world;
     private BlockPos position;
 
     public LauncherMissileSource(World world, BlockPos pos) {
         this.world = world;
         this.position = pos;
+    }
+
+    public LauncherMissileSource()
+    {
+        //Used for save/load only
     }
 
     @Override

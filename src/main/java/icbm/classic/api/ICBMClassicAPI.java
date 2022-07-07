@@ -14,6 +14,7 @@ import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.api.reg.content.IExMissileRegistry;
 import icbm.classic.api.reg.obj.IMissileFlightLogicReg;
+import icbm.classic.api.reg.obj.IMissileSourceReg;
 import icbm.classic.api.reg.obj.IMissileTargetReg;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
@@ -46,6 +47,9 @@ public final class ICBMClassicAPI
     public static IMissileTargetReg MISSILE_TARGET_DATA_REGISTRY;
     /** Registry for flight logic save/load in missiles */
     public static IMissileFlightLogicReg MISSILE_FLIGHT_LOGIC_REGISTRY;
+
+    /** Registry for missile source save/load in missiles */
+    public static IMissileSourceReg MISSILE_SOURCE_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 
