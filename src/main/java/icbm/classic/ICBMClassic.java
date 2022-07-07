@@ -36,6 +36,8 @@ import icbm.classic.datafix.TileRadarStationDataFixer;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
+import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.explosive.reg.ExBlockContentReg;
@@ -206,6 +208,8 @@ public final class ICBMClassic
         CapabilityExplosive.register();
         CapabilityBlast.register();
         CapabilityBlastVelocity.register();
+        CapabilityMissileHolder.register();
+        CapabilityMissileStack.register();
 
         //Register data fixers
         modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);

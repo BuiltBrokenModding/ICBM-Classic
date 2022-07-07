@@ -99,6 +99,21 @@ public interface IMissile extends IWorldPosition
     IMissileFlightLogic getFlightLogic();
 
     /**
+     * Sets the missile source information
+     * @param source
+     */
+    void setMissileSource(IMissileSource source);
+
+    /**
+     * Gets the missile source
+     *
+     * Should not be exposed to the player
+     *
+     * @return source
+     */
+    IMissileSource getMissileSource();
+
+    /**
      * Tells the missile to start motion
      *
      * This will trigger flight logic to run calculation and lock in start conditions.

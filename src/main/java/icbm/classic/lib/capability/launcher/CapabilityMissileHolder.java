@@ -2,7 +2,6 @@ package icbm.classic.lib.capability.launcher;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IMissileHolder;
-import icbm.classic.api.caps.IMissileLauncher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
@@ -41,7 +40,7 @@ public class CapabilityMissileHolder implements IMissileHolder
     @Override
     public boolean canSupportMissile(ItemStack stack)
     {
-        return stack.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+        return stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }
 
     public static void register()

@@ -7,6 +7,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
+import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
@@ -21,7 +22,6 @@ import java.util.List;
 
 public class ItemMissile extends ItemICBMBase
 {
-
     public ItemMissile()
     {
         super("missile");
@@ -35,8 +35,8 @@ public class ItemMissile extends ItemICBMBase
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
         final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        //provider.add("missile", ICBMClassicAPI.MISSILE_CAPABILITY, new CapabilityMissile()); //TODO create an itemstack version
         provider.add("explosive", ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
+        provider.add("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilityMissileStack(stack));
         return provider;
     }
 

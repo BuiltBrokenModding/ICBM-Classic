@@ -6,6 +6,7 @@ import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.missiles.IMissileFlightLogic;
+import icbm.classic.api.missiles.IMissileSource;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
@@ -37,6 +38,8 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 {
     public final EntityExplosiveMissile missile;
     public IMissileTarget targetData;
+
+    private IMissileSource firingSource;
 
     private IMissileFlightLogic flightLogic;
     private boolean doFlight = false;
@@ -108,6 +111,18 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     public IMissileFlightLogic getFlightLogic()
     {
         return this.flightLogic;
+    }
+
+    @Override
+    public void setMissileSource(IMissileSource source)
+    {
+        this.firingSource = source;
+    }
+
+    @Override
+    public IMissileSource getMissileSource()
+    {
+        return firingSource;
     }
 
     @Override

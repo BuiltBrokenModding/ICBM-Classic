@@ -2,6 +2,7 @@ package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
@@ -73,8 +74,13 @@ public final class ICBMClassicAPI
     @CapabilityInject(IExplosive.class)
     public static Capability<IExplosive> EXPLOSIVE_CAPABILITY = null;
 
+    /** Only applies to entities */
     @CapabilityInject(IMissile.class)
     public static Capability<IMissile> MISSILE_CAPABILITY = null;
+
+    /** Only applies to ItemStack */
+    @CapabilityInject(ICapabilityMissileStack.class)
+    public static Capability<ICapabilityMissileStack> MISSILE_STACK_CAPABILITY = null;
 
     @CapabilityInject(IMissileHolder.class)
     public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;

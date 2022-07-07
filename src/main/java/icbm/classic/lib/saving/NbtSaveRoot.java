@@ -7,6 +7,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,13 +52,14 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
      * be used by anything else.
      *
      * @param objectToSave used to save
-     * @param tagCompound to save against
+     * @param tagCompound  to save against
      * @return save
      */
-    protected NBTTagCompound save(E objectToSave, NBTTagCompound tagCompound) {
+    protected NBTTagCompound save(E objectToSave, NBTTagCompound tagCompound)
+    {
         nodes.forEach(node -> {
             final NBTBase tag = node.save(objectToSave);
-            if(tag != null && !tag.hasNoTags())
+            if (tag != null && !tag.hasNoTags())
             {
                 tagCompound.setTag(node.getSaveKey(), tag);
             }
@@ -114,6 +117,25 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodeBlockPos(final String name, Function<E, BlockPos> save, BiConsumer<E, BlockPos> load)
     {
         return node(new SaveNodeBlockPos<E>(name, save, load));
+    }
+
+    public NbtSaveRoot<E> nodeWorldDim(final String name, Function<E, World> save, BiConsumer<E, World> load)
+    {
+        return node(new NbtSaveNode<E, NBTTagInt>(name,
+            (e) -> {
+                final World world = save.apply(e);
+                if (world != null && world.provider != null)
+                {
+                    return new NBTTagInt(world.provider.getDimension());
+                }
+                return null;
+            },
+            (e, data) -> {
+                final int dim = data.getInt();
+                final World world = DimensionManager.getWorld(dim);
+                load.accept(e, world);
+            }
+        ));
     }
 
     @Deprecated

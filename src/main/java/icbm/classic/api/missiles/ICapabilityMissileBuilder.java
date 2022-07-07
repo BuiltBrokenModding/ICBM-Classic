@@ -1,13 +1,15 @@
 package icbm.classic.api.missiles;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import javax.swing.text.html.parser.Entity;
-
 /**
- * Applied to itemstacks that have the ability to be stored and used as missiles
+ * Applied to objects that have the ability to build missiles
+ *
+ * Can be applied {@link net.minecraft.item.ItemStack} to create missile items
+ * or containers of missiles.
  */
-public interface IMissileStack
+public interface ICapabilityMissileBuilder
 {
     /**
      * Called to generate a new missile

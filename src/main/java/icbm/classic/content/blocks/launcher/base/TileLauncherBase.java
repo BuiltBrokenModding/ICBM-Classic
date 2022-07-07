@@ -3,6 +3,9 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
+import icbm.classic.api.missiles.IMissile;
+import icbm.classic.content.blocks.launcher.LauncherMissileSource;
 import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.targeting.BallisticTargetingData;
@@ -41,6 +44,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
@@ -124,7 +128,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
                 checkMissileCollision = true;
 
                 //Update seat position
-                Optional.ofNullable(seat).ifPresent(seat ->  seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5));
+                Optional.ofNullable(seat).ifPresent(seat -> seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5));
 
                 //Create seat if missile
                 if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
@@ -209,21 +213,20 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
             return (T) inventory;
-        }
-        else if(capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
+        } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return (T) missileHolder;
-        }
-        else if (launchScreen != null)
+        } else if (launchScreen != null)
         {
             return launchScreen.getCapability(capability, facing);
         }
         return super.getCapability(capability, facing);
     }
 
-    public boolean checkForMissileInBounds() {
+    public boolean checkForMissileInBounds()
+    {
         //Limit how often we check for collision
-        if(checkMissileCollision)
+        if (checkMissileCollision)
         {
             checkMissileCollision = false;
 
@@ -280,10 +283,11 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         }
 
         final ItemStack stack = getMissileStack();
-        if (stack.getItem() == ItemReg.itemMissile) //TODO capability
+        if (stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null))
         {
-            IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(stack.getItemDamage(), true);
-            if (explosiveData != null)
+            final ICapabilityMissileStack missileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+
+            if (missileStack != null)
             {
                 target = applyInaccuracy(target);
 
@@ -291,27 +295,25 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
 
                 if (isServer())
                 {
-                    EntityExplosiveMissile missile = new EntityExplosiveMissile(getWorld()); //TODO generate entity from item using handler
-
-                    //Set data
-                    missile.explosive.setStack(getMissileStack()); //TODO we are missing explosive blast data
-                    missile.sourceOfProjectile = new Pos((TileEntity) this); //TODO store our launcher instance or UUID
-                    missile.setPosition(xi() + 0.5, yi() + 2.2, zi() + 0.5); //TODO store offset as variable, sync with missile height
+                    final IMissile missile = missileStack.newMissile(world());
+                    final Entity entity = missile.getMissileEntity();
+                    entity.setPosition(xi() + 0.5, yi() + 2.2, zi() + 0.5);  //TODO store offset as variable, sync with missile height
 
                     //Trigger launch event
-                    missile.missileCapability.setTargetData(new BallisticTargetingData(target, lockHeight));
-                    missile.missileCapability.setFlightLogic(new BallisticFlightLogic());
-                    missile.missileCapability.launch();
+                    missile.setTargetData(new BallisticTargetingData(target, lockHeight));
+                    missile.setFlightLogic(new BallisticFlightLogic());
+                    missile.setMissileSource( new LauncherMissileSource(world, getPos())); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
+                    missile.launch();
 
                     //Spawn entity
-                    ((WorldServer)getWorld()).addScheduledTask(() -> getWorld().spawnEntity(missile));
+                    ((WorldServer) getWorld()).addScheduledTask(() -> getWorld().spawnEntity(entity));
 
                     //Grab rider
                     if (seat != null && seat.getRidingEntity() != null) //TODO add hook to disable riding some missiles
                     {
-                        Entity entity = seat.getRidingEntity();
+                        final Entity seatRider = seat.getRidingEntity();
                         seat.getRidingEntity().removePassengers();
-                        entity.startRiding(missile);
+                        seatRider.startRiding(entity);
                     }
 
                     //Remove item
@@ -366,8 +368,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         if (tier == EnumTier.ONE)
         {
             return ConfigLauncher.LAUNCHER_RANGE_TIER1;
-        }
-        else if (tier == EnumTier.TWO)
+        } else if (tier == EnumTier.TWO)
         {
             return ConfigLauncher.LAUNCHER_RANGE_TIER2;
         }
@@ -414,7 +415,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         {
             return cachedMissileStack;
         }
-        return inventory.getStackInSlot(0);
+        return missileHolder.getMissileStack();
     }
 
     public boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
@@ -449,8 +450,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
                     return true;
                 }
             }
-        }
-        else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
+        } else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
         {
             if (isServer())
             {
@@ -541,9 +541,9 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         //Only update if state has changed
         if (facingDirection != getRotation()
 
-                //Prevent up and down placement
-                && facingDirection != EnumFacing.UP
-                && facingDirection != EnumFacing.DOWN)
+            //Prevent up and down placement
+            && facingDirection != EnumFacing.UP
+            && facingDirection != EnumFacing.DOWN)
         {
             //Clear old structure
             if (isServer())
