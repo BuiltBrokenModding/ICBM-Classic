@@ -141,7 +141,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 
         //Trigger events
         // TODO add an event system here
-        RadarRegistry.add(this.missile);
+        RadarRegistry.add(this.missile); //TODO replace with capability and have radar system listen for entity spawn event
 
         //Play audio
         ICBMSounds.MISSILE_LAUNCH.play(this.missile.world, this.missile.posX, this.missile.posY, this.missile.posZ,
