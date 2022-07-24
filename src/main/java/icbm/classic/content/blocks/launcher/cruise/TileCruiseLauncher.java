@@ -224,11 +224,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeBoolean(!getInventory().getStackInSlot(0).isEmpty());
-        if (getInventory().getStackInSlot(0).isEmpty())
-        {
-            ByteBufUtils.writeItemStack(buf, getInventory().getStackInSlot(0));
-        }
+        ByteBufUtils.writeItemStack(buf, this.getInventory().getStackInSlot(0));
 
         buf.writeInt(getTarget().xi());
         buf.writeInt(getTarget().yi());
@@ -242,14 +238,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
-        if (buf.readBoolean())
-        {
-            cachedMissileStack = ByteBufUtils.readItemStack(buf);
-        }
-        else
-        {
-            cachedMissileStack = ItemStack.EMPTY;
-        }
+        cachedMissileStack = ByteBufUtils.readItemStack(buf);
+
         setTarget(new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
 
         currentAim.setYaw(buf.readDouble());
