@@ -4,6 +4,9 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
+import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
@@ -26,6 +29,7 @@ import icbm.classic.prefab.tile.IGuiTile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -296,8 +300,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected boolean hasMissile()
     {
-        final ItemStack stackInSlot = this.getInventory().getStackInSlot(0);
-        return stackInSlot.getItem() == ItemReg.itemMissile && ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(stackInSlot.getItemDamage());
+        return this.getInventory().getStackInSlot(0).hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }
 
     protected boolean hasTarget()
@@ -339,23 +342,31 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         if (this.canLaunch())
         {
-            this.extractEnergy();
+            final ItemStack inventoryStack = this.getInventory().getStackInSlot(0); //TODO set into missile holder
 
-            //TODO set aim using targeting interface so we can abstract to IMissile
-            EntityExplosiveMissile entityMissile = new EntityExplosiveMissile(world)
-                    .init(xi() + 0.5, yi() + 1.5, zi() + 0.5,
-                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), ConfigMissile.DIRECT_FLIGHT_SPEED, 1);
+            if(inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
+                final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+                if(capabilityMissileStack != null) {
+                    final IMissile missile = capabilityMissileStack.newMissile(world);
+                    final Entity entity = missile.getMissileEntity();
+                    if(entity instanceof IMissileAiming) {
 
-            entityMissile.missileCapability.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
-            entityMissile.explosive.setStack(this.getInventory().getStackInSlot(0)); //TODO encode entire itemstack
-            entityMissile.missileCapability.launch();
-            world.spawnEntity(entityMissile);
+                        //Aim missile
+                        ((IMissileAiming) entity).initAimingPosition(xi() + 0.5, yi() + 1.5, zi() + 0.5,
+                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
 
-            //TODO we are missing the item NBT, this will prevent encoding data before using the missile
+                        //Setup missile
+                        missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
+                        missile.launch();
 
-            //Clear slot last so we can still access data as needed or roll back changes if a crash happens
-            this.getInventory().decrStackSize(0, 1);
-            return true;
+                        if(world.spawnEntity(entity)) {
+                            this.extractEnergy();
+                            this.getInventory().setInventorySlotContents(0, capabilityMissileStack.consumeMissile());
+                            return true;
+                        }
+                    }
+                }
+            }
         }
 
         return false;
@@ -411,11 +422,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public boolean canStore(ItemStack itemStack, EnumFacing side)
     {
-        if (itemStack != null && itemStack.getItem() instanceof ItemMissile && this.getInventory().getStackInSlot(0) == null)
-        {
-            return ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(itemStack.getItemDamage());
-        }
-        return false;
+        return itemStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null) && this.getInventory().getStackInSlot(0).isEmpty();
     }
 
     @Override
