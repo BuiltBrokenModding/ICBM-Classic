@@ -1,5 +1,6 @@
 package icbm.classic.prefab.entity;
 
+import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -29,7 +30,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile
+public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming
 {
     /**
      * The entity who shot this projectile and can be used for damage calculations
@@ -84,6 +85,7 @@ public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM 
      * @param random     - random multiplier
      * @return this
      */
+    @Deprecated
     public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random)
     {
         this.shootingEntity = shooter;
@@ -110,11 +112,7 @@ public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM 
         return (E) this;
     }
 
-    public E init(EntityLivingBase shooter, float multiplier, float distanceScale)
-    {
-        return init(shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ, shooter.rotationYaw, shooter.rotationPitch, multiplier, distanceScale);
-    }
-
+    @Deprecated
     public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale)
     {
         //this.renderDistanceWeight = 10.0D;
@@ -136,6 +134,12 @@ public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM 
         this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 1.0F);
 
         return (E) this;
+    }
+
+    @Override
+    public void initAimingPosition(double x, double y, double z, float yaw, float pitch, float offsetMultiplier, float forceMultiplier)
+    {
+        init(x, y, z, yaw, pitch, forceMultiplier, offsetMultiplier);
     }
 
     @Override
