@@ -90,6 +90,8 @@ item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or mi
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s rockets
 item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
+item.icbmclassic:rocketLauncher.error.IMissileAiming=Missile %1 doesn't implement IMissileAiming to allow for use in handheld launchers
+item.icbmclassic:rocketLauncher.error.spawning=Missile spawning was canceled by world
 
 ## Crafting items
 item.icbmclassic:ingot.steel.name=Steel Ingot
