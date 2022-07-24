@@ -50,12 +50,6 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     }
 
     @Override
-    public ItemStack toStack()
-    {
-        return missile.explosive.toStack();
-    }
-
-    @Override
     public int getTicksInAir()
     {
         return missile.ticksInAir;

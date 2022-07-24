@@ -16,11 +16,6 @@ import javax.annotation.Nullable;
  */
 public interface IMissile extends IWorldPosition
 {
-
-    @Nullable
-    @Deprecated //removing as not all missiles will have items
-    ItemStack toStack();
-
     /**
      * The amount of ticks this missile has been flying for. Returns -1 if the missile is not
      * flying.
