@@ -17,33 +17,6 @@ import javax.annotation.Nullable;
 public interface IMissile extends IWorldPosition
 {
 
-    /**
-     * Called to trigger the missile's explosion logic
-     */
-    @Deprecated //Missile is being changed to not handle blast info
-    BlastResponse doExplosion();
-
-    /**
-     * Has the missile exploded
-     *
-     * @return true if missile has exploded or is in the process of exploding
-     */
-    @Deprecated //Missile is being changed to not handle blast info
-    boolean hasExploded();
-
-    /**
-     * Drops the specified missile as an item.
-     */
-    @Deprecated //removing as we shouldn't expose a method directly to drop as item, this should be hidden as implementation
-    default void dropMissileAsItem()
-    {
-        final ItemStack stack = toStack();
-        if (stack != null && !stack.isEmpty() && world() != null)
-        {
-            world().spawnEntity(new EntityItem(world(), x(), y(), z(), stack));
-        }
-    }
-
     @Nullable
     @Deprecated //removing as not all missiles will have items
     ItemStack toStack();

@@ -50,29 +50,6 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     }
 
     @Override
-    public void dropMissileAsItem()
-    {
-        final ItemStack stack = toStack();
-        if (stack != null && !stack.isEmpty() && world() != null)
-        {
-            world().spawnEntity(new EntityItem(world(), x(), y(), z(), stack));
-        }
-        missile.setDead();
-    }
-
-    @Override
-    public BlastResponse doExplosion()
-    {
-        return missile.doExplosion();
-    }
-
-    @Override
-    public boolean hasExploded()
-    {
-        return missile.isExploding;
-    }
-
-    @Override
     public ItemStack toStack()
     {
         return missile.explosive.toStack();
