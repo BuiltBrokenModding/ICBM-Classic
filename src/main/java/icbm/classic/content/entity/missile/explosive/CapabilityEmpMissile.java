@@ -1,33 +1,37 @@
 package icbm.classic.content.entity.missile.explosive;
 
+import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.missiles.IMissile;
+import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
 import icbm.classic.config.ConfigEMP;
+import net.minecraft.world.World;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public class CapabilityEmpMissile extends CapabilityEmpKill<EntityExplosiveMissile>
+public class CapabilityEmpMissile implements IEMPReceiver
 {
-    public CapabilityEmpMissile(EntityExplosiveMissile entity)
+    final IMissile missile;
+    public CapabilityEmpMissile(IMissile missile)
     {
-        super(entity);
+       this.missile = missile;
     }
 
     @Override
-    protected void setDeadEmp(IBlast emp_blast, float power)
+    public float applyEmpAction(World world, double x, double y, double z, IBlast emp_blast, float power, boolean doAction)
     {
-        if (ConfigEMP.ALLOW_MISSILE_DESTROY && entity.isEntityAlive() && !entity.missileCapability.hasExploded())
+        if(ConfigEMP.ALLOW_MISSILES && missile.getMissileEntity() != null && missile.getMissileEntity().isEntityAlive())
         {
-            //Drop missile items
-            if (ConfigEMP.ALLOW_MISSILE_DROPS)
+            if (doAction)
             {
-                entity.missileCapability.dropMissileAsItem();
+                //Kill guidance and start falling out of the sky
+                missile.setFlightLogic(new DeadFlightLogic(0));
+                //TODO add random chance to disable fuse and have the missile dud on impact
             }
-
-            //Kill missile
-            entity.setDead();
         }
+        return power;
     }
 }

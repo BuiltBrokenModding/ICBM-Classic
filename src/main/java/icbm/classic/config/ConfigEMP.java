@@ -15,9 +15,9 @@ public class ConfigEMP
     @Config.Comment("Should a lighting effect be applied to the creeper to super charge it due to EMP effect?")
     public static boolean ALLOW_LIGHTING_CREEPER = true;
 
-    @Config.Name("allow_missiles_destroy")
-    @Config.Comment("Should the EMP effect kill missile entities mid flight?")
-    public static boolean ALLOW_MISSILE_DESTROY = true;
+    @Config.Name("allow_missiles")
+    @Config.Comment("Should the EMP effect disable missile guidance systems?")
+    public static boolean ALLOW_MISSILES = true;
 
     @Config.Name("allow_missiles_drop")
     @Config.Comment("Should EMP effect trigger missiles entities to drop as items when killed?")

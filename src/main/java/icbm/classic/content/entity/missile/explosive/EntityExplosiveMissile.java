@@ -57,8 +57,9 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
 
-    public final IEMPReceiver empCapability = new CapabilityEmpMissile(this);
+
     public final CapabilityMissile missileCapability = new CapabilityMissile(this);
+    public final IEMPReceiver empCapability = new CapabilityEmpMissile(missileCapability);
 
 
     public EntityExplosiveMissile(World w)
