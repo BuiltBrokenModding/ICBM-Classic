@@ -3,11 +3,13 @@ package icbm.classic.command;
 import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import com.builtbroken.mc.testing.junit.world.FakeWorld;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
@@ -17,13 +19,12 @@ import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.world.World;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import net.minecraftforge.common.capabilities.Capability;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -35,6 +36,11 @@ public class CommandUtilsTest
 {
 
     private static final TestManager testManager = new TestManager("CommandUtils", Assertions::fail);
+
+    @BeforeAll
+    public static void setup() {
+        ICBMClassicAPI.MISSILE_CAPABILITY = Mockito.mock(Capability.class);
+    }
 
     @AfterEach
     public void cleanupBetweenTests()

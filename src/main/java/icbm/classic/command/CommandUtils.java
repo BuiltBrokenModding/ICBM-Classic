@@ -1,5 +1,6 @@
 package icbm.classic.command;
 
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
@@ -66,7 +67,7 @@ public class CommandUtils
      */
     public static boolean isMissile(Entity entity)
     {
-        return entity instanceof EntityExplosiveMissile;
+        return entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
     }
 
     /**
