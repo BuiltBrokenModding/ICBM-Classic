@@ -32,23 +32,6 @@ public interface IMissile extends IWorldPosition
     boolean hasExploded();
 
     /**
-     * Called to ask the missile to blow up on next tick
-     *
-     * @param fullExplosion -
-     *                      True will trigger a the missile's normal explosion
-     *                      False will trigger a TNT explosion
-     */
-    @Deprecated //removing as missiles will have HP and should be attacked rather than directly destroyed by outside actions
-    default void destroyMissile(boolean fullExplosion) //TODO add reason as input data
-    {
-        if (!hasExploded() && !doExplosion().state.good)
-        {
-            dropMissileAsItem();
-        }
-        //TODO trigger destroy event
-    }
-
-    /**
      * Drops the specified missile as an item.
      */
     @Deprecated //removing as we shouldn't expose a method directly to drop as item, this should be hidden as implementation
