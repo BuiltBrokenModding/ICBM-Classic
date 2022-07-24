@@ -1,11 +1,10 @@
 package icbm.classic.content.blocks.radarstation;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.network.IPacket;
@@ -182,7 +181,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                         this.detectedEntities.add(entity);
                     }
 
-                    if (this.isMissileGoingToHit((EntityExplosiveMissile) entity))
+                    if (this.isMissileGoingToHit(newMissile))
                     {
                         if (this.incomingMissiles.size() > 0)
                         {
@@ -221,28 +220,21 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
      * @param missile - missile being checked
      * @return true if it will
      */
-    public boolean isMissileGoingToHit(EntityExplosiveMissile missile)
+    public boolean isMissileGoingToHit(IMissile missile)
     {
-        if (missile == null)
+        if (missile == null || missile.getMissileEntity() == null || !missile.getMissileEntity().isEntityAlive())
         {
             return false;
         }
+        //TODO rewrite this as a 2D without objects for less memory waste
 
+        Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
+        Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
 
-        if (missile.missileCapability.targetData == null)
-        {
-            Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
-            Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
+        double nextDistance = mpos.addVector(missile.getMissileEntity().motionX, missile.getMissileEntity().motionY, missile.getMissileEntity().motionZ).distanceTo(rpos);   // next distance from missile to radar
+        double currentDistance = mpos.distanceTo(rpos); // current distance from missile to radar
 
-            double nextDistance = mpos.add(missile.getVelocity().toVec3d()).distanceTo(rpos);   // next distance from missile to radar
-            double currentDistance = mpos.distanceTo(rpos); // current distance from missile to radar
-
-            return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
-        }
-
-        //TODO optimize to not do distance flat but manhatten distance for better performance
-        //  https://en.wikipedia.org/wiki/Taxicab_geometry
-        return missile.missileCapability.targetData.calculateFlatDistance(pos.getX() + 0.5, pos.getY() + 0.5) < this.triggerRange;
+        return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
     }
 
     @Override
@@ -262,9 +254,10 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                     packet.write(entity.getEntityId());
 
                     int type = RadarObjectType.OTHER.ordinal();
-                    if (entity instanceof EntityExplosiveMissile)
+                    if (entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)) //TODO make a way to detect for explosive missiles, need to filter out AB missiles
                     {
-                        type = isMissileGoingToHit((EntityExplosiveMissile) entity) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
+                        final IMissile missile = entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+                        type = isMissileGoingToHit(missile) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
                     }
                     packet.write(type);
                 }
