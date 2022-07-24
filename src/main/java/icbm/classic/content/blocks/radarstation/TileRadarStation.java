@@ -167,11 +167,11 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         this.incomingMissiles.clear();
         this.detectedEntities.clear();
 
-        List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
+        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
 
         for (Entity entity : entities)
         {
-            if (ICBMClassicHelpers.isMissile(entity)) //TODO && ((EntityMissile) entity).getExplosiveType() != Explosives.MISSILE_ANTI.handler)
+            if (ICBMClassicHelpers.isMissile(entity))
             {
                 final IMissile newMissile = ICBMClassicHelpers.getMissile(entity);
                 if (newMissile != null && newMissile.getTicksInAir() > 1)
@@ -188,7 +188,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                             /** Sort in order of distance */
                             double dist = new Pos((TileEntity) this).distance(newMissile);
 
-                            for (int i = 0; i < this.incomingMissiles.size(); i++)
+                            for (int i = 0; i < this.incomingMissiles.size(); i++) //TODO switch to priority list
                             {
                                 IMissile missile = this.incomingMissiles.get(i);
 
@@ -249,12 +249,12 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         {
             for (Entity entity : detectedEntities)
             {
-                if (entity != null && entity.isEntityAlive())
+                if (entity != null && entity.isEntityAlive()) //TODO run filter before sending so we don't rewrite empty data
                 {
-                    packet.write(entity.getEntityId());
+                    packet.write(entity.getEntityId()); //TODO send 2D coords instead of entity info
 
                     int type = RadarObjectType.OTHER.ordinal();
-                    if (entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)) //TODO make a way to detect for explosive missiles, need to filter out AB missiles
+                    if (entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null))
                     {
                         final IMissile missile = entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
                         type = isMissileGoingToHit(missile) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
