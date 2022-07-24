@@ -158,11 +158,7 @@ public class BlastSonic extends Blast implements IBlastTickable
         final List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
         for (Entity entity : allEntities)
         {
-            if (entity instanceof IMissile)
-            {
-                ((IMissile) entity).destroyMissile(true); //TODO change from guided to dummy fire
-            }
-            else if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
+            if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
             {
                 //Get difference
                 double xDelta = entity.posX - location.x();
