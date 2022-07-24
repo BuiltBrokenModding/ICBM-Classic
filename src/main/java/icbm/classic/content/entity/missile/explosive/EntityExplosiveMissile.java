@@ -193,7 +193,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        if (!world.isRemote && entityHit.getRidingEntity() != this)
+        if (!world.isRemote && entityHit.getRidingEntity() != this && entityHit != shootingEntity)
         {
             super.onImpactEntity(entityHit, velocity);
             doExplosion();
@@ -210,7 +210,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         }
 
         //Handle player riding missile
-        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(this, player)))
+        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(missileCapability, player)))
         {
             player.startRiding(this);
             return true;

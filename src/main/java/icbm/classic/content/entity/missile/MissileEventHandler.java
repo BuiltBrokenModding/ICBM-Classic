@@ -1,7 +1,9 @@
 package icbm.classic.content.entity.missile;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.MissileRideEvent;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.entity.missile.tracker.MissileTrackerHandler;
@@ -26,10 +28,14 @@ public class MissileEventHandler
     public static void onEntityMount(EntityMountEvent event)
     {
         if (event.isDismounting()
-                && event.getEntityBeingMounted() instanceof EntityExplosiveMissile
+                && event.getEntityBeingMounted().hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)
                 && event.getEntityMounting() instanceof EntityPlayer)
         {
-            event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop((EntityExplosiveMissile) event.getEntityBeingMounted(), (EntityPlayer) event.getEntityMounting())));
+            IMissile missile = event.getEntityBeingMounted().getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+            if(missile != null)
+            {
+                event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop(missile, (EntityPlayer) event.getEntityMounting())));
+            }
         }
     }
 

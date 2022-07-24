@@ -1,16 +1,16 @@
 package icbm.classic.api.events;
 
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.api.missiles.IMissile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class MissileRideEvent extends Event
 {
-    public final EntityExplosiveMissile missile;
+    public final IMissile missile;
     public final EntityPlayer player;
 
-    public MissileRideEvent(EntityExplosiveMissile missile, EntityPlayer player)
+    public MissileRideEvent(IMissile missile, EntityPlayer player)
     {
         this.missile = missile;
         this.player = player;
@@ -23,7 +23,7 @@ public class MissileRideEvent extends Event
     @Cancelable
     public static class Start extends MissileRideEvent
     {
-        public Start(EntityExplosiveMissile missile, EntityPlayer player)
+        public Start(IMissile missile, EntityPlayer player)
         {
             super(missile, player);
         }
@@ -36,7 +36,7 @@ public class MissileRideEvent extends Event
     @Cancelable
     public static class Stop extends MissileRideEvent
     {
-        public Stop(EntityExplosiveMissile missile, EntityPlayer player)
+        public Stop(IMissile missile, EntityPlayer player)
         {
             super(missile, player);
         }
