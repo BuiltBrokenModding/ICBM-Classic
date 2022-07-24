@@ -22,9 +22,6 @@ public interface IMissile extends IWorldPosition
      */
     int getTicksInAir(); //TODO maybe change to a status? onGround, inAir, preFlight, impacted
 
-
-    //TODO store location and source of missile launch
-
     /**
      * Gets the entity that is host to this missile capability.
      *
