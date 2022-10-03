@@ -313,14 +313,6 @@ public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM 
     }
 
     /**
-     * Deprecated due to precision issues with hit position
-     */
-    @Deprecated
-    protected void onImpactTile()
-    {
-    }
-
-    /**
      * Called when the projectile impacts a tile.
      * Data about the hit is stored in the entity
      * include location, block, and meta
@@ -329,7 +321,7 @@ public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM 
      */
     protected void onImpactTile(RayTraceResult hit)
     {
-        onImpactTile();
+        onImpact();
     }
 
     /**
@@ -368,8 +360,19 @@ public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM 
                 }
 
             }
-            this.setDead();
+           onImpact();
         }
+    }
+
+    /**
+     * Generalized impact callback, used to do cleanup
+     * steps regardless of impact reason.
+     *
+     * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
+     * better handling of impacts.
+     */
+    protected void onImpact() {
+        this.setDead();
     }
 
     protected void updateMotion()

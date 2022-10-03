@@ -47,20 +47,14 @@ import java.util.Optional;
  *
  * @Author - Calclavia, Darkguardsman
  */
-public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile> implements IEntityAdditionalSpawnData
+public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile>
 {
+    /** Targeting range handler and settings for triggering explosive before impact */
     public final TargetRangeDet targetRangeDet = new TargetRangeDet(this);
 
+    /** Explosive data and settings */
     public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
-    public boolean isExploding = false;
-
-    // Generic shared missile data
-    private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
-
-
-    public final CapabilityMissile missileCapability = new CapabilityMissile(this);
-    public final IEMPReceiver empCapability = new CapabilityEmpMissile(missileCapability);
-
+    public boolean isExploding = false; //TODO see if this should be in cap
 
     public EntityExplosiveMissile(World w)
     {
@@ -74,26 +68,16 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (capability == CapabilityEMP.EMP)
-        {
-            return (T) empCapability;
-        } else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
-        {
-            return (T) missileCapability;
-        }
-        else if(capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY) {
+        if(capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY) {
             return (T) explosive;
         }
-        //TODO add explosive capability
         return super.getCapability(capability, facing);
     }
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityEMP.EMP
-            || capability == ICBMClassicAPI.MISSILE_CAPABILITY
-            || capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY
+        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY
             || super.hasCapability(capability, facing);
     }
 
@@ -112,8 +96,8 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
         final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
-        ICBMClassic.logger().info("Missile: write spawn data " + saveData.toString());
         ByteBufUtils.writeTag(additionalMissileData, saveData);
+        super.writeSpawnData(additionalMissileData);
     }
 
     @Override
@@ -121,7 +105,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     {
         final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
         SAVE_LOGIC.load(this, saveData);
-        ICBMClassic.logger().info("Missile: read spawn data " + saveData.toString());
+        super.readSpawnData(additionalMissileData);
     }
 
     @Override
@@ -129,75 +113,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     {
         targetRangeDet.update();
         super.onUpdate();
-    }
-
-    public EntityExplosiveMissile ignore(Entity entity)
-    {
-        collisionIgnoreList.add(entity);
-        return this;
-    }
-
-    @Override
-    protected void updateMotion()
-    {
-        if (missileCapability.canRunFlightLogic())
-        {
-            Optional.ofNullable(missileCapability.getFlightLogic()).ifPresent(logic -> {
-                logic.onEntityTick(this, ticksInAir);
-
-                if(logic.shouldRunEngineEffects(this)) {
-                    ICBMClassic.proxy.spawnMissileSmoke(this, logic, ticksInAir);
-                    ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
-                }
-            });
-
-            //Trigger events
-            ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);
-        }
-
-        super.updateMotion();
-    }
-
-    @Override
-    protected void rotateTowardsMotion() {
-        //Clearing default logic to flight controllers can handle motion
-    }
-
-    @Override
-    protected void decreaseMotion()
-    {
-        if (missileCapability.getFlightLogic() == null || missileCapability.getFlightLogic().shouldDecreaseMotion(this))
-        {
-            super.decreaseMotion();
-        }
-    }
-
-    @Override
-    protected void onImpactTile(RayTraceResult hit)
-    {
-        doExplosion();
-    }
-
-    @Override
-    protected boolean ignoreImpact(RayTraceResult hit)
-    {
-        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(missileCapability, this, hit));
-    }
-
-    @Override
-    protected void postImpact(RayTraceResult hit)
-    {
-        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(missileCapability, this, hit));
-    }
-
-    @Override
-    protected void onImpactEntity(Entity entityHit, float velocity)
-    {
-        if (!world.isRemote && entityHit.getRidingEntity() != this && entityHit != shootingEntity)
-        {
-            super.onImpactEntity(entityHit, velocity);
-            doExplosion();
-        }
     }
 
     @Override
@@ -208,92 +123,24 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         {
             return true;
         }
-
-        //Handle player riding missile
-        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(missileCapability, player)))
-        {
-            player.startRiding(this);
-            return true;
-        }
-
-        return false;
+        return super.processInitialInteract(player, hand);
     }
 
     @Override
-    public double getMountedYOffset()
-    {
-        if (this.ticksInAir <= 0 && missileCapability.getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
-        {
-            return height;
-        } else if (missileCapability.getFlightLogic() instanceof DeadFlightLogic)
-        {
-            return height / 10;
-        }
-
-        return height / 2 + motionY;
+    protected void onImpact() {
+        super.onImpact();
+        doExplosion();
     }
 
-    /**
-     * Checks to see if an entity is touching the missile. If so, blow up!
-     */
-    @Override
-    public AxisAlignedBB getCollisionBox(Entity entity)
+    public BlastResponse doExplosion() //TODO move to capability
     {
-        if (collisionIgnoreList.contains(entity))
-        {
-            return null;
-        }
-        return getEntityBoundingBox();
-    }
-
-    @Override
-    public void setDead()
-    {
-        if (!world.isRemote)
-        {
-            RadarRegistry.remove(this);
-        }
-
-        super.setDead();
-    }
-
-    protected void logImpact()
-    {
-        // TODO make optional via config
-        // TODO log to ICBM file separated from main config
-        // TODO offer hook for database logging
-        final String formatString = "Missile[%s] E(%s) impacted at (%sx,%sy,%sz,%sd)";
-        final String formattedMessage = String.format(formatString,
-            Optional.ofNullable(this.explosive.getExplosiveData()).map(IExplosiveData::getRegistryName).map(ResourceLocation::toString).orElseGet(() -> "null"),
-            this.getEntityId(),
-            xi(),
-            yi(),
-            zi(),
-            world().provider.getDimension()
-        );
-        ICBMClassic.logger().info(formattedMessage);
-    }
-
-    public BlastResponse doExplosion()
-    {
-        //Eject from riding
-        dismountRidingEntity();
-        //Eject passengers
-        removePassengers();
-
         try
         {
             // Make sure the missile is not already exploding
             if (!this.isExploding)
             {
-                //Log that the missile impacted
-                logImpact();
-
                 //Make sure to note we are currently exploding
                 this.isExploding = true;
-
-                //Kill the misisle entity
-                setDead();
 
                 if (!this.world.isRemote)
                 {
@@ -308,9 +155,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         }
     }
 
-    /**
-     * (abstract) Protected helper method to read subclass entity additionalMissileData from NBT.
-     */
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt)
     {
@@ -318,9 +162,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         SAVE_LOGIC.load(this, nbt);
     }
 
-    /**
-     * (abstract) Protected helper method to write subclass entity additionalMissileData to NBT.
-     */
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt)
     {
@@ -334,11 +175,5 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
             (missile) -> missile.explosive.serializeNBT(),
             (missile, data) -> missile.explosive.deserializeNBT(data))
         )
-        /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("missile",
-            (missile) -> missile.missileCapability.serializeNBT(),
-            (missile, data) -> missile.missileCapability.deserializeNBT(data)
-        ))
         .base();
-
-
 }
