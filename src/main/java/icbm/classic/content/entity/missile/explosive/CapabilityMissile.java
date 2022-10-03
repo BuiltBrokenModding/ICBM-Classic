@@ -10,6 +10,7 @@ import icbm.classic.api.missiles.IMissileSource;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
+import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.radar.RadarRegistry;
@@ -36,15 +37,15 @@ import java.util.Optional;
  */
 public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompound>
 {
-    public final EntityExplosiveMissile missile;
-    public IMissileTarget targetData;
+    private final EntityMissile missile;
+    private IMissileTarget targetData;
 
     private IMissileSource firingSource;
 
     private IMissileFlightLogic flightLogic;
     private boolean doFlight = false;
 
-    public CapabilityMissile(EntityExplosiveMissile missile)
+    public CapabilityMissile(EntityMissile missile)
     {
         this.missile = missile;
     }
@@ -102,7 +103,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
         //Tell missile to start moving
         this.doFlight = true;
         Optional.ofNullable(getFlightLogic()).ifPresent(logic -> {
-            logic.calculateFlightPath(missile.world, missile.x(), missile.y(), missile.z(), targetData); //TODO show in launcher screen with predicted path and time
+            logic.calculateFlightPath(world(), x(), y(), z(), getTargetData() ); //TODO show in launcher screen with predicted path and time
             logic.start(missile);
         });
 
@@ -115,8 +116,8 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
         RadarRegistry.add(this.missile); //TODO replace with capability and have radar system listen for entity spawn event
 
         //Play audio
-        ICBMSounds.MISSILE_LAUNCH.play(this.missile.world, this.missile.posX, this.missile.posY, this.missile.posZ,
-            1F, (1.0F + CalculationHelpers.randFloatRange(this.missile.world.rand, 0.2F)) * 0.7F, true);
+        ICBMSounds.MISSILE_LAUNCH.play(world(), x(), y(), z(),
+            1F, (1.0F + CalculationHelpers.randFloatRange(world().rand, 0.2F)) * 0.7F, true);
 
 
         if (ConfigDebug.DEBUG_MISSILE_LAUNCHES)
@@ -125,8 +126,8 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                 String.format("Missile(%s): Launch triggered of type[%s] starting from '%s' and aimed at `%s`",
                     this.missile.getEntityId(),
                     this.missile.getName(),
-                    Optional.ofNullable(this.missile.sourceOfProjectile).map(Objects::toString).orElse("'null'"),
-                    Optional.ofNullable(this.missile.missileCapability.targetData).map(Objects::toString).orElse("'null'")
+                    Optional.ofNullable(this.getMissileSource()).map(Objects::toString).orElse("'null'"),
+                    Optional.ofNullable(this.getTargetData()).map(Objects::toString).orElse("'null'")
                 )
             );
         }
@@ -195,14 +196,14 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
         .mainRoot()
         /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
             (cap) -> { //TODO convert to class so we can have targeting items and launcher reuse
-                if(cap.targetData != null) {
+                if(cap.getTargetData() != null) {
                     final NBTTagCompound tagCompound = new NBTTagCompound();
-                    final NBTTagCompound logicSave = cap.targetData.serializeNBT();
+                    final NBTTagCompound logicSave = cap.getTargetData().serializeNBT();
                     if (logicSave != null && !logicSave.hasNoTags())
                     {
                         tagCompound.setTag("data", logicSave);
                     }
-                    tagCompound.setString("id", cap.targetData.getRegistryName().toString());
+                    tagCompound.setString("id", cap.getTargetData().getRegistryName().toString());
                     return tagCompound;
                 }
                 return null;

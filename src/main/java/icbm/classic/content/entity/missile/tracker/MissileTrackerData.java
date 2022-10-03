@@ -23,7 +23,7 @@ public class MissileTrackerData
     //Constructors
     public MissileTrackerData(EntityExplosiveMissile missile)
     {
-        targetPos = new Pos(missile.missileCapability.targetData.getPosition()); //TODO switch to storing targeting data
+        targetPos = new Pos(missile.missileCapability.getTargetData().getPosition()); //TODO switch to storing targeting data
         missileData = missile.writeToNBT(new NBTTagCompound());
         missileData.removeTag("Pos");
     }
