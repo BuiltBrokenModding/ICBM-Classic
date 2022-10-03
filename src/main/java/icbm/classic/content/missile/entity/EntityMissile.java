@@ -42,7 +42,7 @@ import java.util.Optional;
 /**
  * Created by Robin Seifert on 12/12/2021.
  */
-public class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E> implements IEntityAdditionalSpawnData
+public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E> implements IEntityAdditionalSpawnData
 {
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();

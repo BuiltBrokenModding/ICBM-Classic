@@ -50,7 +50,7 @@ public class MissileEventHandler
             if (map != null)
             {
                 map.collectEntitiesInChunk(chunk.x, chunk.z, (radarEntity -> {
-                    if (radarEntity.entity instanceof EntityExplosiveMissile)
+                    if (radarEntity.entity instanceof EntityExplosiveMissile) //TODO rewrite to work on any missile via capability system
                     {
                         final EntityExplosiveMissile missile = (EntityExplosiveMissile) radarEntity.entity;
                         if(missile.missileCapability.getFlightLogic() instanceof BallisticFlightLogic)

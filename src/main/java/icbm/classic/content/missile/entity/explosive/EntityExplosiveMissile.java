@@ -1,46 +1,26 @@
 package icbm.classic.content.missile.entity.explosive;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.events.MissileEvent;
-import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.missile.entity.CapabilityEmpMissile;
-import icbm.classic.content.missile.entity.CapabilityMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
-import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.logic.TargetRangeDet;
-import icbm.classic.lib.CalculationHelpers;
-import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.explosive.ExplosiveHandler;
-import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Optional;
 
 /**
  * Entity version of the missile
