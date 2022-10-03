@@ -1,6 +1,6 @@
 package icbm.classic.api.events;
 
-import icbm.classic.content.entity.missile.tracker.LoadedChunkPair;
+import icbm.classic.content.missile.tracker.LoadedChunkPair;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;

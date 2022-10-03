@@ -1,6 +1,6 @@
 package icbm.classic;
 
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;

@@ -1,7 +1,6 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
-import icbm.classic.content.reg.ItemReg;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +12,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

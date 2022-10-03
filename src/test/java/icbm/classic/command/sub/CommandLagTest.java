@@ -4,7 +4,7 @@ import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import icbm.classic.TestUtils;
 import icbm.classic.command.FakeBlast;
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntitySheep;

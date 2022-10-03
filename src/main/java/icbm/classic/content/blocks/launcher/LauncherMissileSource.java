@@ -1,22 +1,14 @@
 package icbm.classic.content.blocks.launcher;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileSource;
-import icbm.classic.content.entity.missile.explosive.CapabilityMissile;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.internal.EntitySpawnHandler;
-
-import java.lang.ref.WeakReference;
-import java.util.UUID;
 
 public class LauncherMissileSource implements IMissileSource
 {

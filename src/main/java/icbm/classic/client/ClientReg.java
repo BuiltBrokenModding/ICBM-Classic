@@ -24,7 +24,7 @@ import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.mobs.EntityXmasCreeper;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;

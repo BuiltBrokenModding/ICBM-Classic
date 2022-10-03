@@ -4,7 +4,6 @@ import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import icbm.classic.prefab.tile.IGuiTile;
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

@@ -4,7 +4,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.entity.missile.explosive.EntityExplosiveMissile;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;

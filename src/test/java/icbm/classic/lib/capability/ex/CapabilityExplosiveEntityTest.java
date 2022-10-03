@@ -1,19 +1,11 @@
 package icbm.classic.lib.capability.ex;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.content.entity.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.entity.missile.logic.reg.MissileFlightLogicRegistry;
-import icbm.classic.content.entity.missile.targeting.BasicTargetData;
-import icbm.classic.content.entity.missile.targeting.reg.MissileTargetRegistry;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CapabilityExplosiveEntityTest
 {
