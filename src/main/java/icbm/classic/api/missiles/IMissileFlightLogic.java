@@ -38,7 +38,7 @@ public interface IMissileFlightLogic
     /**
      * Called each tick of the missile
      */
-    default void onEntityTick(Entity entity, int ticksInAir)
+    default void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
     }
 

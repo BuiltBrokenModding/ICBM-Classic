@@ -1,17 +1,26 @@
 package icbm.classic.content.missile.entity.anti;
 
+import icbm.classic.ICBMConstants;
+import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 
 /**
  * Handles scanning for targets
  */
-public class AntiMissileTarget {
+public class AntiMissileTarget implements IMissileTarget {
+
+    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "anti.missile");
 
     private static final int MAX_TARGETS = 5;
     private static final int SCAN_DELAY = 10;
@@ -96,5 +105,46 @@ public class AntiMissileTarget {
         }
 
         return currentTarget;
+    }
+
+    @Override
+    public Vec3d getPosition() {
+        return getTarget() != null ? getTarget().getPositionVector() : null;
+    }
+
+    @Override
+    public boolean isValid() {
+        return isValid(getTarget());
+    }
+
+    @Override
+    public double getX() {
+        return Optional.ofNullable(getTarget()).map((entity) -> entity.posX).orElse(0.0);
+    }
+
+    @Override
+    public double getY() {
+        return Optional.ofNullable(getTarget()).map((entity) -> entity.posY).orElse(0.0);
+    }
+
+    @Override
+    public double getZ() {
+        return Optional.ofNullable(getTarget()).map((entity) -> entity.posZ).orElse(0.0);
+    }
+
+    @Override
+    public ResourceLocation getRegistryName() {
+        return REG_NAME;
+    }
+
+    @Override
+    public NBTTagCompound serializeNBT() {
+        //TODO find a way to save current target
+        return null;
+    }
+
+    @Override
+    public void deserializeNBT(NBTTagCompound nbt) {
+
     }
 }

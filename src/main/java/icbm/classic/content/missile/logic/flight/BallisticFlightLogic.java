@@ -2,6 +2,7 @@ package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.config.ConfigMissile;
@@ -123,7 +124,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     }
 
     @Override
-    public void onEntityTick(Entity entity, int ticksInAir)
+    public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
         //Warm up on pad for nice animation
         if (padWarmUpTimer > 0) //TODO have launcher control warmup time for better animation

@@ -191,27 +191,38 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
         /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
             (cap) -> { //TODO convert to class so we can have targeting items and launcher reuse
                 if(cap.getTargetData() != null) {
-                    final NBTTagCompound tagCompound = new NBTTagCompound();
-                    final NBTTagCompound logicSave = cap.getTargetData().serializeNBT();
-                    if (logicSave != null && !logicSave.hasNoTags())
-                    {
-                        tagCompound.setTag("data", logicSave);
+                    //Not all target components are restored via save, some are always present on the entity
+                    if (cap.getTargetData().getRegistryName() != null) {
+                        final NBTTagCompound tagCompound = new NBTTagCompound();
+                        final NBTTagCompound logicSave = cap.getTargetData().serializeNBT();
+                        if (logicSave != null && !logicSave.hasNoTags()) {
+                            tagCompound.setTag("data", logicSave);
+                        }
+                        tagCompound.setString("id", cap.getTargetData().getRegistryName().toString());
+                        return tagCompound;
                     }
-                    tagCompound.setString("id", cap.getTargetData().getRegistryName().toString());
-                    return tagCompound;
+                    else {
+                        return cap.getTargetData().serializeNBT();
+                    }
                 }
                 return null;
-            },
-            (cap, data) -> {
-                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
-                final IMissileTarget target = ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.build(saveId);
-                if (target != null)
-                {
-                    if (data.hasKey("data"))
-                    {
-                        target.deserializeNBT(data.getCompoundTag("data"));
+            },            (cap, data) -> {
+
+
+                //Attempt to restore target object from save
+                if(cap.getTargetData() == null) {
+                    final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
+                    final IMissileTarget target = ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.build(saveId);
+                    if (target != null) {
+                        if (data.hasKey("data")) {
+                            target.deserializeNBT(data.getCompoundTag("data"));
+                        }
+                        cap.setTargetData(target);
                     }
-                    cap.setTargetData(target);
+                }
+                //Cap has hard locked target wrapper, restore any data directly to object
+                else {
+                    cap.getTargetData().deserializeNBT(data);
                 }
             }
         ))
