@@ -101,11 +101,73 @@ public class RadarScanLogicTest {
         Assertions.assertSame(missile, antiMissile.scanLogic.getTarget());
     }
 
-    private <T extends Entity> T spawnEntity(Function<World, T> creator, double x, double y, double z) {
+    //Validate we target the first few missiles only
+    @DisplayName("Target: 10 targets but only store 5")
+    @Test
+    void severalTarget_findFiveTargets() {
+        final EntityExplosiveMissile[] missiles = new EntityExplosiveMissile[]{
+            spawnEntity(EntityExplosiveMissile::new, 101, 100, 100), // +1x
+            spawnEntity(EntityExplosiveMissile::new, 100, 100, 102), // +2z
+            spawnEntity(EntityExplosiveMissile::new, 100, 103, 100), // +3y
+            spawnEntity(EntityExplosiveMissile::new, 100, 96, 100), // -4y
+            spawnEntity(EntityExplosiveMissile::new, 100, 100, 95), //-5z
+            spawnEntity(EntityExplosiveMissile::new, 94, 100, 100), //-6x
+        };
+
+        antiMissile.scanLogic.refreshTargets();
+
+        //First target
+        Assertions.assertSame(missiles[0], antiMissile.scanLogic.getTarget());
+        missiles[0].setDead();
+
+        //Second target
+        Assertions.assertSame(missiles[1], antiMissile.scanLogic.getTarget());
+        missiles[1].setDead();
+
+        //Third target
+        Assertions.assertSame(missiles[2], antiMissile.scanLogic.getTarget());
+        missiles[2].setDead();
+
+        //Fourth target
+        Assertions.assertSame(missiles[3], antiMissile.scanLogic.getTarget());
+        missiles[3].setDead();
+
+        //Last target
+        Assertions.assertSame(missiles[4], antiMissile.scanLogic.getTarget());
+        missiles[4].setDead();
+
+        //First target
+        Assertions.assertNull(antiMissile.scanLogic.getTarget());
+    }
+
+    //Ensures that we can tick trigger an update
+    @DisplayName("Validate lifecycle updates")
+    @Test
+    void tickingLifecycle() {
+        final EntityExplosiveMissile missile = spawnEntity(EntityExplosiveMissile::new, 105, 100, 100);
+
+        //After 10 ticks we should trigger scanning
+        for(int i = 0; i < 10; i++) {
+            antiMissile.scanLogic.tick();
+            Assertions.assertNull(antiMissile.scanLogic.getTarget());
+        }
+
+        antiMissile.scanLogic.tick();
+        Assertions.assertSame(missile, antiMissile.scanLogic.getTarget());
+
+    }
+
+    private <T extends Entity> T spawnEntity(Function<World, T> creator, double x, double y, double z) { //TODO move to testing helper library
+        //Create entity and set position
         final Entity entity = creator.apply(world);
         entity.setPosition(x, y, z);
+
+        //Force spawn so chunk loads
         entity.forceSpawn = true;
+
+        //Validate we spawned correctly, fail test if we get wrong data as no entity can result in false positive
         Assertions.assertTrue(world.spawnEntity(entity), "Failed to spawn mob for test");
+
         return (T) entity;
     }
 }

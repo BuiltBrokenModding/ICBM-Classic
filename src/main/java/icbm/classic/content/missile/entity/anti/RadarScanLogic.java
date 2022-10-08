@@ -82,9 +82,17 @@ public class RadarScanLogic {
 
     public Entity getTarget() {
 
-        //Update current target if current is no longer valid
-        while (!isValid(currentTarget) && targets.peek() != null) {
+        //Invalidate target if it is no longer valid (likely dead)
+        if(!isValid(currentTarget)) {
+            currentTarget = null;
+        }
+
+        //Loop until we find a good target or run out of targets
+        while (currentTarget == null && targets.peek() != null) {
             currentTarget = targets.poll();
+            if(!isValid(currentTarget)) {
+                currentTarget = null;
+            }
         }
 
         return currentTarget;
