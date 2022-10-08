@@ -22,6 +22,12 @@ import java.util.LinkedList;
 
 public class BallisticFlightLogic implements IMissileFlightLogic
 {
+    //TODO recode to break apart movement into sub-logic
+    //  Change silo startup to act as a delayed launch
+    //  Have it switch to lock height flight logic next
+    //  Then have it switch to the actual ballistic flight logic next
+    //  Idea will be to cleanup the code and allow for better control in each version
+
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ballistic");
 
     /**
@@ -172,6 +178,11 @@ public class BallisticFlightLogic implements IMissileFlightLogic
                 MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
             }
         }
+    }
+
+    @Override
+    public boolean canSafelyExitLogic() {
+        return hasStartedFlight;
     }
 
     protected void handleLockHeight(Entity entity, int ticksInAir)

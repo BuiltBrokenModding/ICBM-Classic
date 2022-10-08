@@ -96,6 +96,23 @@ public interface IMissileFlightLogic
         return true;
     }
 
+    /**
+     * Checks to see if we can safely exit the flight logic without issues.
+     *
+     * This is called often before switching from one flight logic set to another. Specific
+     * cases may be a missile is exiting a launcher and now wants to move to target updating
+     * logic. Such as with the AB missiles that may fly towards a target.
+     *
+     * Safe usually means we have finished any startup movements and are at low risk
+     * to impacting walls in a player's base. This doesn't mean we should check if it is
+     * actually safe unless the flight logic is built for that purpose.
+     *
+     * @return true if logic is safe to exit
+     */
+    default boolean canSafelyExitLogic() {
+        return true;
+    }
+
     @FunctionalInterface
     interface MotionUpdateFunc
     {

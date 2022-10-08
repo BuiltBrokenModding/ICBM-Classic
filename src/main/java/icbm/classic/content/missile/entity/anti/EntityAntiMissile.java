@@ -33,7 +33,7 @@ public class EntityAntiMissile extends EntityMissile<EntityAntiMissile> {
         final Entity currentTarget = scanLogic.getTarget();
 
         //Switch to follow logic once we have a target in range, launcher will set initial flight logic to get it out of the tube
-        if(!hasStartedFollowing && currentTarget != null) {
+        if(!hasStartedFollowing && currentTarget != null && this.getMissileCapability().getFlightLogic().canSafelyExitLogic()) {
             hasStartedFollowing = true;
             //TODO play missile lock sound effect
             this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigAntiMissile.FUEL));
