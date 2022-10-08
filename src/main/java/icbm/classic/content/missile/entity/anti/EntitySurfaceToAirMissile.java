@@ -4,7 +4,6 @@ import icbm.classic.config.ConfigAntiMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -15,12 +14,12 @@ import javax.annotation.Nullable;
 /**
  * Created by Robin Seifert on 11/30/2021.
  */
-public class EntityAntiMissile extends EntityMissile<EntityAntiMissile> {
-    protected final AntiMissileTarget scanLogic = new AntiMissileTarget(this);
+public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirMissile> {
+    protected final SAMTargetData scanLogic = new SAMTargetData(this);
 
     private boolean hasStartedFollowing = false;
 
-    public EntityAntiMissile(World world) {
+    public EntitySurfaceToAirMissile(World world) {
         super(world);
         this.getMissileCapability().setTargetData(scanLogic); //TODO create custom missileCap to force getTarget()
     }
@@ -32,6 +31,7 @@ public class EntityAntiMissile extends EntityMissile<EntityAntiMissile> {
 
         final Entity currentTarget = scanLogic.getTarget();
 
+        //TODO code version of ballistic flight logic that switches for us without manually checking
         //Switch to follow logic once we have a target in range, launcher will set initial flight logic to get it out of the tube
         if(!hasStartedFollowing && currentTarget != null && this.getMissileCapability().getFlightLogic().canSafelyExitLogic()) {
             hasStartedFollowing = true;
@@ -39,6 +39,7 @@ public class EntityAntiMissile extends EntityMissile<EntityAntiMissile> {
             this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigAntiMissile.FUEL));
         }
 
+        //TODO move to object that gets a tick() invoke `ProximityKillHandler`
         //Handle kill target logic
         if(currentTarget != null) {
             final double distance = this.getDistance(currentTarget);

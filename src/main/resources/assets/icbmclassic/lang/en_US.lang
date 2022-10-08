@@ -82,7 +82,7 @@ item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
 
 item.icbmclassic:tracker.name=Tracker
-item.icbmclassic:tracker.info=Track entities and set homing missiles
+item.icbmclassic:tracker.info=Not implemented, set for removal
 
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
 item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or missile launches
@@ -92,6 +92,9 @@ item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s
 item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
 item.icbmclassic:rocketLauncher.error.IMissileAiming=Missile %1 doesn't implement IMissileAiming to allow for use in handheld launchers
 item.icbmclassic:rocketLauncher.error.spawning=Missile spawning was canceled by world
+
+item.icbmclassic:surface_to_air_missile.name=Surface to Air Missile
+item.icbmclassic:surface_to_air_missile.info=Missile designed to fire from the ground to attack flying targets
 
 ## Crafting items
 item.icbmclassic:ingot.steel.name=Steel Ingot

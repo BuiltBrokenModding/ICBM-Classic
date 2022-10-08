@@ -18,6 +18,7 @@ import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.items.ItemRocketLauncher;
 import icbm.classic.content.items.ItemSignalDisrupter;
 import icbm.classic.content.items.ItemTracker;
+import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
@@ -101,6 +102,7 @@ public class ItemReg
         event.getRegistry().register(new ItemLaserDetonator());
         event.getRegistry().register(new ItemRocketLauncher());
         event.getRegistry().register(new ItemMissile());
+        event.getRegistry().register(new ItemSurfaceToAirMissile());
 
         //Block items
         event.getRegistry().register(new ItemBlock(BlockReg.blockGlassPlate).setRegistryName(BlockReg.blockGlassPlate.getRegistryName()));

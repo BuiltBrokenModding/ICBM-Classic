@@ -3,7 +3,6 @@ package icbm.classic.content.missile.entity.anti;
 import com.builtbroken.mc.testing.junit.TestManager;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.world.World;
@@ -11,17 +10,17 @@ import org.junit.jupiter.api.*;
 
 import java.util.function.Function;
 
-public class AntiMissileTargetTest {
+public class SAMTargetDataTest {
 
     static TestManager testManager = new TestManager("radarScanLogic", Assertions::fail);
 
     final World world = testManager.getWorld();
 
-    EntityAntiMissile antiMissile;
+    EntitySurfaceToAirMissile antiMissile;
 
     @BeforeEach
     void beforeEach() {
-        antiMissile = spawnEntity(EntityAntiMissile::new, 100, 100, 100);
+        antiMissile = spawnEntity(EntitySurfaceToAirMissile::new, 100, 100, 100);
     }
 
     @AfterAll

@@ -4,7 +4,6 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -18,7 +17,7 @@ import java.util.Queue;
 /**
  * Handles scanning for targets
  */
-public class AntiMissileTarget implements IMissileTarget {
+public class SAMTargetData implements IMissileTarget {
 
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "anti.missile");
 
@@ -30,11 +29,11 @@ public class AntiMissileTarget implements IMissileTarget {
 
     private Entity currentTarget;
 
-    private final EntityAntiMissile host;
+    private final EntitySurfaceToAirMissile host;
 
     private int scanDelayTick = 0;
 
-    public AntiMissileTarget(EntityAntiMissile host) {
+    public SAMTargetData(EntitySurfaceToAirMissile host) {
         this.host = host;
     }
 
