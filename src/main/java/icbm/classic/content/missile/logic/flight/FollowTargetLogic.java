@@ -19,6 +19,14 @@ public class FollowTargetLogic extends DeadFlightLogic
 {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "direct.follow");
 
+    public FollowTargetLogic() {
+        //For save/load
+    }
+
+    public FollowTargetLogic(int fuel) {
+        super(fuel);
+    }
+
     @Override
     public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
