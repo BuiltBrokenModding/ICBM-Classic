@@ -5,15 +5,11 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
-import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.responses.BlastResponse;
-import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
-import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
@@ -24,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -47,8 +42,8 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
 
-    public final CapabilityMissile missileCapability = new CapabilityMissile(this);
-    public final IEMPReceiver empCapability = new CapabilityEmpMissile(missileCapability);
+    private CapabilityMissile missileCapability; //TODO refactor to use interface so parts can be better customized
+    private final IEMPReceiver empCapability = new CapabilityEmpMissile(getMissileCapability());
 
     /** Toggle to note the missile has impacted something and already triggered impact logic */
     protected boolean hasImpacted = false;
@@ -63,10 +58,10 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     {
         if (capability == CapabilityEMP.EMP)
         {
-            return (T) empCapability;
+            return (T) getEmpCapability();
         } else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
         {
-            return (T) missileCapability;
+            return (T) getMissileCapability();
         }
         return super.getCapability(capability, facing);
     }
@@ -79,6 +74,17 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             || super.hasCapability(capability, facing);
     }
 
+    public CapabilityMissile getMissileCapability() {
+        if(missileCapability == null) {
+            missileCapability = new CapabilityMissile(this);
+        }
+        return missileCapability;
+    }
+
+    public IEMPReceiver getEmpCapability() {
+        return empCapability;
+    }
+
     public EntityMissile ignore(Entity entity)
     {
         collisionIgnoreList.add(entity);
@@ -88,10 +94,10 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     protected void updateMotion()
     {
-        if (missileCapability.canRunFlightLogic())
+        if (getMissileCapability().canRunFlightLogic())
         {
-            Optional.ofNullable(missileCapability.getFlightLogic()).ifPresent(logic -> {
-                logic.onEntityTick(this, ticksInAir);
+            Optional.ofNullable(getMissileCapability().getFlightLogic()).ifPresent(logic -> {
+                logic.onEntityTick(this, missileCapability, ticksInAir);
 
                 if(logic.shouldRunEngineEffects(this)) {
                     ICBMClassic.proxy.spawnMissileSmoke(this, logic, ticksInAir);
@@ -100,7 +106,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             });
 
             //Trigger events
-            ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(missileCapability);
+            ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(getMissileCapability());
         }
 
         super.updateMotion();
@@ -109,7 +115,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     protected void decreaseMotion()
     {
-        if (missileCapability.getFlightLogic() == null || missileCapability.getFlightLogic().shouldDecreaseMotion(this))
+        if (getMissileCapability().getFlightLogic() == null || getMissileCapability().getFlightLogic().shouldDecreaseMotion(this))
         {
             super.decreaseMotion();
         }
@@ -176,7 +182,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
         //Handle player riding missile
-        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(missileCapability, player)))
+        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(getMissileCapability(), player)))
         {
             player.startRiding(this);
             return true;
@@ -188,10 +194,10 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     public double getMountedYOffset()
     {
-        if (this.ticksInAir <= 0 && missileCapability.getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
+        if (this.ticksInAir <= 0 && getMissileCapability().getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
         {
             return height;
-        } else if (missileCapability.getFlightLogic() instanceof DeadFlightLogic)
+        } else if (getMissileCapability().getFlightLogic() instanceof DeadFlightLogic)
         {
             return height / 10;
         }
@@ -202,13 +208,13 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     protected boolean ignoreImpact(RayTraceResult hit)
     {
-        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(missileCapability, this, hit));
+        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(getMissileCapability(), this, hit));
     }
 
     @Override
     protected void postImpact(RayTraceResult hit)
     {
-        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(missileCapability, this, hit));
+        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(getMissileCapability(), this, hit));
     }
 
     @Override
@@ -284,8 +290,8 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     private static final NbtSaveHandler<EntityMissile> SAVE_LOGIC = new NbtSaveHandler<EntityMissile>()
         .mainRoot()
         /* */.node(new NbtSaveNode<EntityMissile, NBTTagCompound>("missile",
-            (missile) -> missile.missileCapability.serializeNBT(),
-            (missile, data) -> missile.missileCapability.deserializeNBT(data)
+            (missile) -> missile.getMissileCapability().serializeNBT(),
+            (missile, data) -> missile.getMissileCapability().deserializeNBT(data)
         ))
         .base();
 }

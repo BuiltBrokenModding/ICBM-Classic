@@ -53,7 +53,7 @@ public class MissileEventHandler
                     if (radarEntity.entity instanceof EntityExplosiveMissile) //TODO rewrite to work on any missile via capability system
                     {
                         final EntityExplosiveMissile missile = (EntityExplosiveMissile) radarEntity.entity;
-                        if(missile.missileCapability.getFlightLogic() instanceof BallisticFlightLogic)
+                        if(missile.getMissileCapability().getFlightLogic() instanceof BallisticFlightLogic)
                         {
                             MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) radarEntity.entity);
                         }

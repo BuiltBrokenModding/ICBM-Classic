@@ -11,14 +11,14 @@ public class TargetRangeDet {
     }
 
     public void update() {
-        if (missile.missileCapability.getTargetData() instanceof BallisticTargetingData)
+        if (missile.getMissileCapability().getTargetData() instanceof BallisticTargetingData)
         {
-            final double offset = ((BallisticTargetingData)missile.missileCapability.getTargetData() ).getImpactHeightOffset();
+            final double offset = ((BallisticTargetingData) missile.getMissileCapability().getTargetData() ).getImpactHeightOffset();
             if(offset > 0)
             {
-                double deltaX = missile.missileCapability.getTargetData() .getX() - missile.posX;
-                double deltaY = missile.missileCapability.getTargetData() .getY() - missile.posY;
-                double deltaZ = missile.missileCapability.getTargetData() .getZ() - missile.posZ;
+                double deltaX = missile.getMissileCapability().getTargetData() .getX() - missile.posX;
+                double deltaY = missile.getMissileCapability().getTargetData() .getY() - missile.posY;
+                double deltaZ = missile.getMissileCapability().getTargetData() .getZ() - missile.posZ;
 
                 //Validate we are near flat distance of the target
                 if (inRange(offset, deltaX) && inRange(offset, deltaZ))

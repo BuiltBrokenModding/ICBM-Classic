@@ -28,7 +28,7 @@ public class CapabilityMissileStack implements ICapabilityMissileStack
     {
         final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
         missile.explosive.setStack(stack);
-        return missile.missileCapability;
+        return missile.getMissileCapability();
     }
 
     public static void register()

@@ -61,16 +61,16 @@ public class MissileTrackerWorld extends WorldSavedData
             ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
 
         //Only run on server
-        if (!missile.world.isRemote && missile.missileCapability.getTargetData()  != null)
+        if (!missile.world.isRemote && missile.getMissileCapability().getTargetData()  != null)
         {
             //Clear flight logic, once we are out of simulation the computer is dead
-            missile.missileCapability.setFlightLogic(null);
+            missile.getMissileCapability().setFlightLogic(null);
 
             final MissileTrackerData mtd = new MissileTrackerData(missile);
 
             //Calculate distance
-            double dx = missile.missileCapability.getTargetData().getX() - missile.posX;
-            double dz = missile.missileCapability.getTargetData().getZ() - missile.posZ;
+            double dx = missile.getMissileCapability().getTargetData().getX() - missile.posX;
+            double dz = missile.getMissileCapability().getTargetData().getZ() - missile.posZ;
             double dst = Math.sqrt(dx * dx + dz * dz);
 
             //Calculate duration and queue up
@@ -211,7 +211,7 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.motionX = 0;
 
         //Trigger launch event
-        missile.missileCapability.launch();
+        missile.getMissileCapability().launch();
 
         //Spawn entity
         missile.world().spawnEntity(missile);

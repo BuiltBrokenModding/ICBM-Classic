@@ -78,8 +78,8 @@ public class EntityExplosiveMissileTest
         {
             //Setup save target
             final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
-            missile.missileCapability.setTargetData(new BasicTargetData(1, 2, 3));
-            missile.missileCapability.setFlightLogic(new DeadFlightLogic(4567));
+            missile.getMissileCapability().setTargetData(new BasicTargetData(1, 2, 3));
+            missile.getMissileCapability().setFlightLogic(new DeadFlightLogic(4567));
             missile.explosive.setStack(new ItemStack(Items.STONE_AXE));
 
             //Invoke save
@@ -106,8 +106,8 @@ public class EntityExplosiveMissileTest
         {
             //Setup save target
             final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
-            missile.missileCapability.setTargetData(new BasicTargetData(1, 2, 3));
-            missile.missileCapability.setFlightLogic(new DeadFlightLogic(4567));
+            missile.getMissileCapability().setTargetData(new BasicTargetData(1, 2, 3));
+            missile.getMissileCapability().setFlightLogic(new DeadFlightLogic(4567));
             missile.explosive.setStack(new ItemStack(Items.STONE_AXE));
 
             //Invoke save
@@ -135,7 +135,7 @@ public class EntityExplosiveMissileTest
 
             //Validate fields from missile
             Assertions.assertEquals(missile.explosive, newMissile.explosive);
-            Assertions.assertEquals(missile.missileCapability, newMissile.missileCapability);
+            Assertions.assertEquals(missile.getMissileCapability(), newMissile.getMissileCapability());
         }
     }
 
