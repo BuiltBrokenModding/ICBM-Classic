@@ -168,7 +168,7 @@ public class ClientReg
         RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, RenderFragments::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, RenderSeat::new);
         RenderingRegistry.registerEntityRenderingHandler(EntitySmoke.class, RenderSmoke::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosiveMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
+        RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, RenderSkeletonXmas::new);

@@ -3,7 +3,9 @@ package icbm.classic.content.missile.entity.anti;
 import icbm.classic.config.ConfigAntiMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -15,6 +17,8 @@ import javax.annotation.Nullable;
  * Created by Robin Seifert on 11/30/2021.
  */
 public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirMissile> {
+
+    private ItemStack renderStackCache;
     protected final SAMTargetData scanLogic = new SAMTargetData(this);
 
     private boolean hasStartedFollowing = false;
@@ -66,5 +70,16 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         //TODO add AB capability so radars can redirect targets
         return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    public ItemStack toStack() {
+        if(world.isRemote) {
+            if(renderStackCache == null) {
+                renderStackCache = new ItemStack(ItemReg.itemSAM);
+            }
+            return renderStackCache;
+        }
+        return new ItemStack(ItemReg.itemSAM);
     }
 }

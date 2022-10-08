@@ -17,6 +17,7 @@ import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -294,4 +295,6 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             (missile, data) -> missile.getMissileCapability().deserializeNBT(data)
         ))
         .base();
+
+    public abstract ItemStack toStack();
 }
