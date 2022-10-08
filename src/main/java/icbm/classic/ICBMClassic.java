@@ -12,9 +12,11 @@ import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
 import icbm.classic.content.blocks.launcher.LauncherMissileSource;
 import icbm.classic.content.missile.entity.CapabilityMissile;
+import icbm.classic.content.missile.entity.anti.AntiMissileTarget;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
+import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import icbm.classic.content.missile.logic.reg.MissileFlightLogicRegistry;
 import icbm.classic.content.missile.source.reg.MissileSourceRegistry;
 import icbm.classic.content.missile.targeting.BallisticTargetingData;
@@ -234,6 +236,7 @@ public final class ICBMClassic
 
         registry.register(BasicTargetData.REG_NAME, BasicTargetData::new);
         registry.register(BallisticTargetingData.REG_NAME, BallisticTargetingData::new);
+        registry.register(AntiMissileTarget.REG_NAME, () -> null); //Can't be restored from save but reserving name
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(registry));
@@ -250,6 +253,7 @@ public final class ICBMClassic
         registry.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
         registry.register(BallisticFlightLogic.REG_NAME, BallisticFlightLogic::new);
         registry.register(DeadFlightLogic.REG_NAME, DeadFlightLogic::new);
+        registry.register(FollowTargetLogic.REG_NAME, FollowTargetLogic::new);
 
 
         //Fire registry event
