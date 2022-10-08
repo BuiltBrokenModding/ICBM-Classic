@@ -11,7 +11,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.function.Function;
 
-public class RadarScanLogicTest {
+public class AntiMissileTargetTest {
 
     static TestManager testManager = new TestManager("radarScanLogic", Assertions::fail);
 

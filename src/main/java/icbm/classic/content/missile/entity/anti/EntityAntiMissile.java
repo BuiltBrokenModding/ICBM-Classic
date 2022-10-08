@@ -1,8 +1,6 @@
 package icbm.classic.content.missile.entity.anti;
 
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.lib.capability.emp.CapabilityEMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,7 +12,7 @@ import javax.annotation.Nullable;
  */
 public class EntityAntiMissile extends EntityMissile<EntityAntiMissile>
 {
-   protected final RadarScanLogic scanLogic = new RadarScanLogic(this);
+   protected final AntiMissileTarget scanLogic = new AntiMissileTarget(this);
 
     public EntityAntiMissile(World world)
     {

@@ -11,7 +11,7 @@ import java.util.Queue;
 /**
  * Handles scanning for targets
  */
-public class RadarScanLogic {
+public class AntiMissileTarget {
 
     private static final int MAX_TARGETS = 5;
     private static final int SCAN_DELAY = 10;
@@ -25,7 +25,7 @@ public class RadarScanLogic {
 
     private int scanDelayTick = 0;
 
-    public RadarScanLogic(EntityAntiMissile host) {
+    public AntiMissileTarget(EntityAntiMissile host) {
         this.host = host;
     }
 
