@@ -138,8 +138,13 @@ public class AntiMissileTarget implements IMissileTarget {
     }
 
     @Override
+    public boolean shouldRestoreFromSave() {
+        return false;
+    }
+
+    @Override
     public NBTTagCompound serializeNBT() {
-        //TODO find a way to save current target
+        //TODO find a way to save current target so we don't change targets after save/load
         return null;
     }
 
