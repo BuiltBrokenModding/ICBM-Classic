@@ -1,6 +1,6 @@
 # Blender v2.76 (sub 0) OBJ File: 'missile_anti.blend'
 # www.blender.org
-mtllib missile_anti.mtl
+mtllib missile_sam.mtl
 o body_Shape1
 v 0.250000 -0.037500 -0.250000
 v -0.250000 -0.037500 -0.250000

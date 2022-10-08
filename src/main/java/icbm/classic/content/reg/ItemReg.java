@@ -77,6 +77,9 @@ public class ItemReg
     @ObjectHolder(ICBMConstants.PREFIX + "wire")
     public static ItemCrafting itemWire;
 
+    @ObjectHolder(ICBMConstants.PREFIX + "surface_to_air_missile")
+    public static ItemSurfaceToAirMissile itemSAM;
+
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {

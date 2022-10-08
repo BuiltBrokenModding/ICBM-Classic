@@ -1,5 +1,6 @@
 package icbm.classic.client;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
@@ -24,6 +25,7 @@ import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.mobs.EntityXmasCreeper;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
@@ -133,6 +135,7 @@ public class ClientReg
         newItemModel(ItemReg.itemLaserDetonator, 0, "inventory", "");
         newItemModel(ItemReg.itemRocketLauncher, 0, "inventory", "");
         newItemModel(ItemReg.itemBattery, 0, "inventory", "");
+        ModelLoader.setCustomModelResourceLocation(ItemReg.itemSAM, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/surface_to_air", "inventory"));
 
         //crafting parts
         if(ConfigItems.ENABLE_CRAFTING_ITEMS)
