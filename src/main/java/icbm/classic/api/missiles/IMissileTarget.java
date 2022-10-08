@@ -43,6 +43,18 @@ public interface IMissileTarget extends INBTSerializable<NBTTagCompound> {
     ResourceLocation getRegistryName();
 
     /**
+     * Called to see if the missile should save's as an ID for restore. Some
+     * missile types are hardcoded with specific target wrappers. Meaning
+     * they will always be present and thus don't need to restore between
+     * game saves
+     *
+     * @return true to save, false to only store cache data
+     */
+    default boolean shouldRestoreFromSave() {
+        return true;
+    }
+
+    /**
      * Helper to get flat distance in x-z plane
      * @return flat distance to target
      */
