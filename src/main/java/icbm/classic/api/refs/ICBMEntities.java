@@ -9,10 +9,13 @@ import net.minecraft.util.ResourceLocation;
  */
 public final class ICBMEntities
 {
+
+    //TODO refactor all entity names to match vanilla `_` style
     public static final ResourceLocation BLOCK_GRAVITY = new ResourceLocation(ICBMClassicAPI.ID, "block.gravity");
     public static final ResourceLocation BLOCK_FRAGMENT = new ResourceLocation(ICBMClassicAPI.ID, "block.fragment");
     public static final ResourceLocation BLOCK_EXPLOSIVE = new ResourceLocation(ICBMClassicAPI.ID, "block.explosive");
-    public static final ResourceLocation MISSILE = new ResourceLocation(ICBMClassicAPI.ID, "missile");
+    public static final ResourceLocation MISSILE_EXPLOSIVE = new ResourceLocation(ICBMClassicAPI.ID, "missile"); //TODO refactor to "explosive_missile" next major MC version
+    public static final ResourceLocation MISSILE_SAM = new ResourceLocation(ICBMClassicAPI.ID, "surface_to_air_missile");
     public static final ResourceLocation EXPLOSION = new ResourceLocation(ICBMClassicAPI.ID, "holder.explosion");
     public static final ResourceLocation BEAM = new ResourceLocation(ICBMClassicAPI.ID, "beam.light");
     public static final ResourceLocation GRENADE = new ResourceLocation(ICBMClassicAPI.ID, "item.grenade");
