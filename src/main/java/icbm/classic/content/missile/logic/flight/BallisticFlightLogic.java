@@ -101,18 +101,18 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         this.deltaPathY = endY - startY;
         this.deltaPathZ = endZ - startZ;
 
-        //Path constants
-        final float ticksPerMeterFlat = 2f;
-        final float maxFlightTime = 100f;
-        final float heightToDistanceScale = 3f;
-        final float maxHeight = 1000f;
-        final float initialArcHeight = 160f;
-        final float minHeight = 100f;
-
         // TODO: Calculate parabola and relative out the targetHeight.
         // Calculate the power required to reach the target co-ordinates
         // Ground Displacement
         final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
+
+        //Path constants
+        final float ticksPerMeterFlat = 2f;
+        final float maxFlightTime = 100f;
+        final float heightToDistanceScale = flatDistance > 1000 ? 3f : 1f;
+        final float maxHeight = 1000f;
+        final float initialArcHeight = flatDistance > 100 ? 160f : 0;
+        final float minHeight = flatDistance > 100 ? 100f : 0;
 
         // Parabolic Height
         // Ballistic flight vars
