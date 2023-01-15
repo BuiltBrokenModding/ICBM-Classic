@@ -11,8 +11,16 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.function.BooleanSupplier;
 
 /**
+ * Checks if the given ore-dictionary value matches our condition
  *
- * Created by Dark(DarkGuardsman, Robert) on 3/20/2018.
+ * condition(false) -> requires no ore-dictionary values to be present
+ * condition(true) -> requires at least 1 valid stack to match the name
+ *
+ * Json:
+ *  "condition" -> true/false, true you are looking for it, false you are looking for it to not exist
+ *  "value" -> string name of the ore value to find, Ex: "ingotSteel"
+ *
+ * Created by Dark(DarkGuardsman, Robin) on 3/20/2018.
  */
 public class ConditionOreValue implements IConditionFactory
 {
@@ -26,15 +34,8 @@ public class ConditionOreValue implements IConditionFactory
 
     private boolean hasOreValue(String value, boolean check)
     {
-        NonNullList<ItemStack> list = OreDictionary.getOres(value);
-        boolean hasValue = false;
-        for (ItemStack stack : list)
-        {
-            if (!stack.isEmpty())
-            {
-                return hasValue == check;
-            }
-        }
-        return hasValue == check;
+        final NonNullList<ItemStack> list = OreDictionary.getOres(value);
+        return !check && (list == null || list.isEmpty())
+            || check == (list != null && list.stream().anyMatch(stack -> stack != null && !stack.isEmpty()));
     }
 }
