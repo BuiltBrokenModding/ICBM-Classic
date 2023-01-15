@@ -4,6 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.TargetRangeDet;
 import icbm.classic.content.reg.ItemReg;
@@ -15,8 +16,10 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -48,10 +51,37 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     @Override
+    public float getMaxHealth()
+    {
+        if(explosive.getExplosiveData() != null ) {
+            switch (explosive.getExplosiveData().getTier()) {
+                case TWO:
+                    return ConfigMissile.TIER_2_HEALTH;
+                case THREE:
+                    return ConfigMissile.TIER_3_HEALTH;
+                case FOUR:
+                    return ConfigMissile.TIER_4_HEALTH;
+            }
+        }
+        return ConfigMissile.TIER_1_HEALTH;
+    }
+
+    @Override
+    protected void onDestroyedBy(DamageSource source, float damage)
+    {
+       super.onDestroyedBy(source, damage);
+       // TODO add config
+       // TODO add random chance modifier
+       if(source.isExplosion() || source.isFireDamage()) {
+           doExplosion();
+       }
+    }
+
+    @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
         if(capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY) {
-            return (T) explosive;
+            return ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(explosive);
         }
         return super.getCapability(capability, facing);
     }

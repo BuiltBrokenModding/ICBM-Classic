@@ -22,11 +22,6 @@ public class ConfigAntiMissile
     @Config.RangeInt(min = 0)
     public static int FUEL = 200;
 
-    @Config.Name("attack_distance")
-    @Config.Comment("Distance (meters) from target to trigger damage effect")
-    @Config.RangeInt(min = 0)
-    public static float ATTACK_DISTANCE = 0.5f;
-
     @Config.Name("attack_damage")
     @Config.Comment("Damage (hearts) to apply to the target when impacting")
     @Config.RangeInt(min = 0)

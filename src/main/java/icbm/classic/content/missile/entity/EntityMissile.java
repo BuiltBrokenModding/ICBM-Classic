@@ -6,6 +6,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
@@ -52,6 +53,13 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     public EntityMissile(World world)
     {
         super(world);
+        this.hasHealth = true;
+    }
+
+    @Override
+    public float getMaxHealth()
+    {
+        return ConfigMissile.TIER_1_HEALTH;
     }
 
     @Override

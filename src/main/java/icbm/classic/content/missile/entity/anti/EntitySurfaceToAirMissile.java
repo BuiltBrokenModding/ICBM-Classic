@@ -63,8 +63,8 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
             if (currentTarget != null) {
                 final double distance = this.getDistance(currentTarget);
 
-            if(distance <= ConfigAntiMissile.ATTACK_DISTANCE) {
-                //TODO add custom damage source that reflects owner of the AB missile
+                if (distance <= ConfigAntiMissile.FLIGHT_SPEED) {
+                    //TODO add custom damage source that reflects owner of the AB missile, damage is impact-blunt
                     currentTarget.attackEntityFrom(new EntityDamageSource("missile", this), ConfigAntiMissile.ATTACK_DAMAGE);
                     //TODO play sound effect of missile exploding
                     this.setDead();

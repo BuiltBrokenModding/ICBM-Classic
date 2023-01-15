@@ -17,6 +17,7 @@ public class ConfigMissile
     @Config.Comment("Speed (meters per tick) limiter of the missile when fired directly without a target")
     @Config.RangeDouble(min = 0.0001, max = 10)
     public static float DIRECT_FLIGHT_SPEED = 2;
+
     @Config.Name("speed_launch_pad")
     @Config.Comment("Speed (meters per tick) limiter of the missile when moving upwards out of the launcher")
     @Config.RangeDouble(min = 0.0001, max = 10)
@@ -36,4 +37,24 @@ public class ConfigMissile
     @Config.Comment("Fuel (ticks) before a missile fired from a handheld launcher starts to fall out of the air")
     @Config.RangeInt(min = 0)
     public static int HANDHELD_FUEL = 200;
+
+    @Config.Name("health_tier_1")
+    @Config.Comment("Amount of damage a missile can take from any source before death")
+    @Config.RangeInt(min = 1)
+    public static int TIER_1_HEALTH = 50;
+
+    @Config.Name("health_tier_2")
+    @Config.Comment("Amount of damage a missile can take from any source before death")
+    @Config.RangeInt(min = 1)
+    public static int TIER_2_HEALTH = 80;
+
+    @Config.Name("health_tier_3")
+    @Config.Comment("Amount of damage a missile can take from any source before death")
+    @Config.RangeInt(min = 1)
+    public static int TIER_3_HEALTH = 100;
+
+    @Config.Name("health_tier_4")
+    @Config.Comment("Amount of damage a missile can take from any source before death")
+    @Config.RangeInt(min = 1)
+    public static int TIER_4_HEALTH = 200;
 }
