@@ -173,7 +173,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
                 alignWithMotion(entity);
             }
 
-            if (entity instanceof EntityMissile && shouldSimulate(entity))
+            if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
             {
                 MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
             }
