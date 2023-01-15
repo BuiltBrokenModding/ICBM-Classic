@@ -40,7 +40,7 @@ public class CapabilityMissileHolder implements IMissileHolder
     @Override
     public boolean canSupportMissile(ItemStack stack)
     {
-        return stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        return inventory.isItemValid(slot, stack);
     }
 
     public static void register()

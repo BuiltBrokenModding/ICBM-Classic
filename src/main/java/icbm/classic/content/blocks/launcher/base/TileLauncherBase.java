@@ -423,25 +423,20 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
 
     public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem)
     {
-        if (heldItem.getItem() instanceof ItemMissile && this.getMissileStack().isEmpty())
+        if (this.getMissileStack().isEmpty() && missileHolder.canSupportMissile(heldItem))
         {
-            if (heldItem.getItem() instanceof ItemMissile)
+            if (isServer())
             {
-                if (this.getMissileStack().isEmpty())
+                final ItemStack stackLeft = inventory.insertItem(0, heldItem, false);
+                if (!player.capabilities.isCreativeMode)
                 {
-                    if (isServer())
-                    {
-                        final ItemStack stackLeft = inventory.insertItem(0, heldItem, false);
-                        if (!player.capabilities.isCreativeMode)
-                        {
-                            player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, stackLeft);
-                            player.inventoryContainer.detectAndSendChanges();
-                        }
-                    }
-                    return true;
+                    player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, stackLeft);
+                    player.inventoryContainer.detectAndSendChanges();
                 }
             }
-        } else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
+            return true;
+        }
+        else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
         {
             if (isServer())
             {
