@@ -96,39 +96,28 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (this.getInventory().getStackInSlot(0).getItem() != ItemReg.itemMissile)
+        else if (!hasMissile())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
         }
+        else if (!hasTarget())
+        {
+            status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
+        }
+        else if (this.isTooClose(getTarget()))
+        {
+            status = LanguageUtility.getLocal("gui.launcherCruise.targetToClose");
+        }
+        else if (!canSpawnMissileWithNoCollision())
+        {
+            status = LanguageUtility.getLocal("gui.launcherCruise.noRoom");
+        }
         else
         {
-            final IExplosive explosive = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0));
-            if (explosive == null)
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
-            }
-            else if (!hasMissile())
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
-            }
-            else if (!hasTarget())
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
-            }
-            else if (this.isTooClose(getTarget()))
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.targetToClose");
-            }
-            else if (!canSpawnMissileWithNoCollision())
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.noRoom");
-            }
-            else
-            {
-                color = "\u00a72";
-                status = LanguageUtility.getLocal("gui.launcherCruise.statusReady");
-            }
+            color = "\u00a72";
+            status = LanguageUtility.getLocal("gui.launcherCruise.statusReady");
         }
+
         return color + status;
     }
 

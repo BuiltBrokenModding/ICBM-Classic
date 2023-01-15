@@ -1,7 +1,17 @@
-# Next release TODO:
+# Ready for merge
 
 - [X] AB Kill logic (Not dying after killing missile)
-- [ ] Test Save/Load
+- [X] AB tacking issue with base launcher
+- [X] Cruise Missile AB as item (UI thinks it is invalid, likely server does as well)
+- [ ] Base Launcher Missile AB as item (right click of missile is not working as expected)
+- [ ] Unit Test Saving: Explosive (TileEntity, Item)
+- [ ] Unit Test Saving: Grenade (Entity, Item)
+- [ ] Unit Test Saving: Carts (Entity, Item)
+- [ ] Unit Test Saving: Missiles (Entity, Item)
+- [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
+
+# Next release TODO:
+
 - [ ] Fix smoke localizations and textures
 - [ ] Fix AB config translations
 - [ ] Improve Smoke usefulness
@@ -9,10 +19,8 @@
 - [ ] AB missile scaling problems
 - [ ] AB missile model?
 - [ ] AB missile recipe
-- [ ] Missile Health Balance
-- [ ] Missile Armor balance
-- [ ] Cruise Missile AB as item (UI thinks it is invalid, likely server does as well)
-- [ ] Base Launcher Missile AB as item (right click of missile is not working as expected)
+- [ ] Radar redstone not updating correctly
+
 
 # TODO future launcher rewrite
 
@@ -23,6 +31,8 @@
 
 ## TODO future radar rewrite
 
+- [ ] Line of sight
+- [ ] Time in air before detection starts or height above ground?
 - [ ] Custom radar AABB
 - [ ] Radar UI colorization for danager
 - [ ] Change scale of radar grid to show AABB and range
@@ -41,3 +51,5 @@
 - [ ] Cluster missiles
 - [ ] Homing missiles
 - [ ] Holiday themed armies
+- [ ] Missile Health Balance
+- [ ] Missile Armor balance
