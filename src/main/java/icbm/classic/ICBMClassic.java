@@ -180,7 +180,7 @@ public final class ICBMClassic
                     }
                 }
             }
-        } else if (event.getName().equals(LootTableList.ENTITIES_CREEPER))
+        } else if (event.getName().equals(LootTableList.ENTITIES_CREEPER) || event.getName().equals(LootTableList.ENTITIES_BLAZE))
         {
             if (ConfigItems.ENABLE_SULFUR_LOOT_DROPS)
             {

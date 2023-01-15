@@ -15,11 +15,16 @@
 - [ ] Fix smoke localizations and textures
 - [ ] Fix AB config translations
 - [ ] Improve Smoke usefulness
-- [ ] Fix recipes (nuke, ???)
+- [ ] Nuke (alt for lacking uranium items)
+- [ ] debilitation explosive (alt for lacking sulfur)
+- [ ] incendiary explosive (alt for lacking sulfur)
 - [ ] AB missile scaling problems
 - [ ] AB missile model?
-- [ ] AB missile recipe
+- [X] AB missile recipe
 - [X] Radar redstone not updating correctly
+- [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
+- [ ] Balance recipes for IC2
+
 
 # After MC update (likely after radar and launcher rewrites)
 
@@ -64,3 +69,5 @@
 - [ ] Missile Health Balance
 - [ ] Missile Armor balance
 - [ ] Battery Slots
+- [ ] Saltpeter crafting (likely had a furnace recipe)
+- [ ] Alt path to get Sulfur drops
