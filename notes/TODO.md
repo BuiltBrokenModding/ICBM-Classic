@@ -3,7 +3,7 @@
 - [X] AB Kill logic (Not dying after killing missile)
 - [X] AB tacking issue with base launcher
 - [X] Cruise Missile AB as item (UI thinks it is invalid, likely server does as well)
-- [ ] Base Launcher Missile AB as item (right click of missile is not working as expected)
+- [X] Base Launcher Missile AB as item (right click of missile is not working as expected)
 - [ ] Unit Test Saving: Explosive (TileEntity, Item)
 - [ ] Unit Test Saving: Grenade (Entity, Item)
 - [ ] Unit Test Saving: Carts (Entity, Item)
@@ -28,15 +28,19 @@
 - [ ] Use static models for launcher (try to do this with missile as well of possible)
 - [ ] decouple controller from base
 - [ ] redstone doesn't connect to launcher
+- [ ] UI customization of ballistic flight path (Arc min height, max height, fuel burn speed)
+- [ ] Fuel for missiles (more visualized max range)
 
 ## TODO future radar rewrite
 
-- [ ] Line of sight
+- [ ] Line of sight (Only show radar areas not blocked by large objects)
 - [ ] Time in air before detection starts or height above ground?
-- [ ] Custom radar AABB
+- [ ] Custom radar AABB (min xyz, max xyz, with max distance from radar)
 - [ ] Radar UI colorization for danager
 - [ ] Change scale of radar grid to show AABB and range
 - [ ] See if we can render an overlay of the area from a top down, can use pixel colors to save performance
+- [ ] Better redstone control (side, output min, output max, missile detection equation (missiles - minCount > detectionCount))
+- [ ] Way to see scan area outside of UI
 
 # TODO future (Art update)
 
@@ -53,3 +57,4 @@
 - [ ] Holiday themed armies
 - [ ] Missile Health Balance
 - [ ] Missile Armor balance
+- [ ] Battery Slots

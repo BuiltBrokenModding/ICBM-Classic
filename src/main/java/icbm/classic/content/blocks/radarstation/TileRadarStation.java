@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.radarstation;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.lib.NBTConstants;
@@ -13,7 +14,6 @@ import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
@@ -46,11 +46,11 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public int detectionRange = 100;
     public int triggerRange = 50;
 
-    public boolean emitAll = true;
+    public boolean enableRedstoneOutput = true;
 
-    public List<Entity> detectedEntities = new ArrayList<Entity>();
+    public final List<Entity> detectedEntities = new ArrayList<Entity>();
     /** List of all incoming missiles, in order of distance. */
-    private List<IMissile> incomingMissiles = new ArrayList();
+    private final List<IMissile> incomingMissiles = new ArrayList();
 
     ExternalInventory inventory;
 
@@ -99,29 +99,23 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                     RadioRegistry.popMessage(world, this, getFrequency(), "fireAntiMissile", this.incomingMissiles.get(0)); //TODO use static var for event name
                 }
             }
+            // No power, reset state
             else
             {
-                if (detectedEntities.size() > 0)
-                {
-                    world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, false));
-                }
-
                 incomingMissiles.clear();
                 detectedEntities.clear();
             }
 
             //Update redstone state
-            final boolean shouldBeOn = checkExtract() && detectedEntities.size() > 0;
+            final boolean shouldBeOn = checkExtract() && hasIncomingMissiles();
+            ICBMClassic.logger().info(this + " " + shouldBeOn + " " + incomingMissiles.size() + " " + world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY));
+
             if (world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
             {
-                world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn));
-                for (EnumFacing facing : EnumFacing.HORIZONTALS)
+                world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);
+                for (EnumFacing facing : EnumFacing.values())
                 {
-                    BlockPos pos = getPos().add(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
-                    for (EnumFacing enumfacing : EnumFacing.values())
-                    {
-                        world.notifyNeighborsOfStateChange(pos.offset(enumfacing), getBlockType(), false);
-                    }
+                    world.notifyNeighborsOfStateChange(pos.offset(facing), getBlockType(), false);
                 }
             }
         }
@@ -347,38 +341,15 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
     public int getStrongRedstonePower(EnumFacing side)
     {
-        if (incomingMissiles.size() > 0)
+        if (this.enableRedstoneOutput) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
         {
-            if (this.emitAll)
-            {
-                return Math.min(15, 5 + incomingMissiles.size());
-            }
-
-            for (IMissile incomingMissile : this.incomingMissiles)
-            {
-                Point position = new Point(incomingMissile.x(), incomingMissile.y());
-                EnumFacing missileTravelDirection = EnumFacing.DOWN;
-                double closest = -1;
-
-                for (EnumFacing rotation : EnumFacing.HORIZONTALS)
-                {
-                    double dist = position.distance(new Point(this.getPos().getX() + rotation.getFrontOffsetX(), this.getPos().getZ() + rotation.getFrontOffsetZ()));
-
-                    if (dist < closest || closest < 0)
-                    {
-                        missileTravelDirection = rotation;
-                        closest = dist;
-                    }
-                }
-
-                if (missileTravelDirection.getOpposite().ordinal() == side.ordinal())
-                {
-                    return Math.min(15, 5 + incomingMissiles.size());
-                }
-            }
+            return Math.min(15, 1 + incomingMissiles.size());
         }
-
         return 0;
+    }
+
+    public boolean hasIncomingMissiles() {
+        return incomingMissiles.size() > 0;
     }
 
     /** Reads a tile entity from NBT. */
@@ -388,7 +359,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         super.readFromNBT(nbt);
         this.triggerRange = nbt.getInteger(NBTConstants.SAFETY_RADIUS);
         this.detectionRange = nbt.getInteger(NBTConstants.ALARM_RADIUS);
-        this.emitAll = nbt.getBoolean(NBTConstants.EMIT_ALL);
+        this.enableRedstoneOutput = nbt.getBoolean(NBTConstants.EMIT_ALL);
     }
 
     /** Writes a tile entity to NBT. */
@@ -397,7 +368,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     {
         nbt.setInteger(NBTConstants.SAFETY_RADIUS, this.triggerRange);
         nbt.setInteger(NBTConstants.ALARM_RADIUS, this.detectionRange);
-        nbt.setBoolean(NBTConstants.EMIT_ALL, this.emitAll);
+        nbt.setBoolean(NBTConstants.EMIT_ALL, this.enableRedstoneOutput);
         return super.writeToNBT(nbt);
     }
 

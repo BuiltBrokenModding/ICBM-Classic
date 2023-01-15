@@ -78,8 +78,8 @@ public class BlockRadarStation extends BlockICBM
                 final TileEntity tile = world.getTileEntity(pos);
                 if (tile instanceof TileRadarStation)
                 {
-                    ((TileRadarStation) tile).emitAll = !((TileRadarStation) tile).emitAll;
-                    player.sendMessage(new TextComponentTranslation(((TileRadarStation) tile).emitAll ? "message.radar.redstone.on" : "message.radar.redstone.off"));
+                    ((TileRadarStation) tile).enableRedstoneOutput = !((TileRadarStation) tile).enableRedstoneOutput;
+                    player.sendMessage(new TextComponentTranslation(((TileRadarStation) tile).enableRedstoneOutput ? "message.radar.redstone.on" : "message.radar.redstone.off"));
                 }
                 else
                 {
