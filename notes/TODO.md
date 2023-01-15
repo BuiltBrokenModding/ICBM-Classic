@@ -21,6 +21,11 @@
 - [ ] AB missile recipe
 - [X] Radar redstone not updating correctly
 
+# After MC update (likely after radar and launcher rewrites)
+
+- [ ] Missile module as it's own item (not using explosive ID, similar to what we did with AB missile)
+- [ ] Item per explosive (missile, grenade, cart, block, etc)
+- [ ] Drop crafting items
 
 # TODO future launcher rewrite
 
