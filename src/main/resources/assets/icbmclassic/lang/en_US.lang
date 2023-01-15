@@ -63,6 +63,9 @@ item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
 item.icbmclassic:saltpeter.name=Saltpeter
 item.icbmclassic:saltpeter.info=Used in the creation of gunpowder
 
+item.icbmclassic:saltpeter_ball.name=Saltpeter Starter
+item.icbmclassic:saltpeter_ball.info=Use in furnace to extract saltpeter
+
 item.icbmclassic:poisonPowder.name=Poison Powder
 item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 

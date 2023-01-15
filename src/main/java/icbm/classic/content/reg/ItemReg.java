@@ -58,10 +58,14 @@ public class ItemReg
     public static Item itemGrenade;
     @ObjectHolder(ICBMConstants.PREFIX + "bombcart")
     public static Item itemBombCart;
+
     @ObjectHolder(ICBMConstants.PREFIX + "sulfurDust")
     public static Item itemSulfurDust;
     @ObjectHolder(ICBMConstants.PREFIX + "saltpeter")
     public static Item itemSaltpeterDust;
+    @ObjectHolder(ICBMConstants.PREFIX + "saltpeter_ball")
+    public static Item itemSaltpeterBall;
+
     @ObjectHolder(ICBMConstants.PREFIX + "poisonPowder")
     public static Item itemPoisonPowder;
     @ObjectHolder(ICBMConstants.PREFIX + "battery")
@@ -95,6 +99,8 @@ public class ItemReg
         event.getRegistry().register(saltpeterItem);
         OreDictionary.registerOre("dustSaltpeter", saltpeterItem);
 
+        // Crafting item used to make saltpeter dust
+        event.getRegistry().register(new ItemBase().setName("saltpeter_ball").setCreativeTab(ICBMClassic.CREATIVE_TAB));
 
         event.getRegistry().register(new ItemAntidote().setName("antidote"));
         event.getRegistry().register(new ItemSignalDisrupter());

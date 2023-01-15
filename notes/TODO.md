@@ -69,5 +69,6 @@
 - [ ] Missile Health Balance
 - [ ] Missile Armor balance
 - [ ] Battery Slots
-- [ ] Saltpeter crafting (likely had a furnace recipe)
-- [ ] Alt path to get Sulfur drops
+- [X] Saltpeter crafting (likely had a furnace recipe)
+- [ ] Alt path to get Sulfur drops (newer mc has rocks in caves that could work as an on-break loot table)
+- [ ] saltpeter recipe supports sewage fluid instead of water if present

@@ -126,6 +126,7 @@ public class ClientReg
         newItemModel(ItemReg.itemPoisonPowder, 0, "inventory", "");
         newItemModel(ItemReg.itemSulfurDust, 0, "inventory", "");
         newItemModel(ItemReg.itemSaltpeterDust, 0, "inventory", "");
+        newItemModel(ItemReg.itemSaltpeterBall, 0, "inventory", "");
         newItemModel(ItemReg.itemAntidote, 0, "inventory", "");
         newItemModel(ItemReg.itemSignalDisrupter, 0, "inventory", "");
         newItemModel(ItemReg.itemTracker, 0, "inventory", "");
