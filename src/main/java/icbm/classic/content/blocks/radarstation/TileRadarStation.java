@@ -108,8 +108,6 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
             //Update redstone state
             final boolean shouldBeOn = checkExtract() && hasIncomingMissiles();
-            ICBMClassic.logger().info(this + " " + shouldBeOn + " " + incomingMissiles.size() + " " + world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY));
-
             if (world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
             {
                 world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);

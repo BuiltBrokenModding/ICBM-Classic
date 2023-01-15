@@ -19,7 +19,7 @@
 - [ ] AB missile scaling problems
 - [ ] AB missile model?
 - [ ] AB missile recipe
-- [ ] Radar redstone not updating correctly
+- [X] Radar redstone not updating correctly
 
 
 # TODO future launcher rewrite
@@ -41,6 +41,7 @@
 - [ ] See if we can render an overlay of the area from a top down, can use pixel colors to save performance
 - [ ] Better redstone control (side, output min, output max, missile detection equation (missiles - minCount > detectionCount))
 - [ ] Way to see scan area outside of UI
+- [ ] Trigger delays on redstone and radio signal for AB missiles
 
 # TODO future (Art update)
 
