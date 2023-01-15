@@ -30,7 +30,7 @@ public class FollowTargetLogic extends DeadFlightLogic
     @Override
     public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
-        if(missile.getTargetData() != null) //TODO if we have no target data have missile fly around in random directions until it hits something
+        if(!entity.world.isRemote && missile.getTargetData() != null) //TODO if we have no target data have missile fly around in random directions until it hits something
         {
             double motionX = missile.getTargetData().getX() - entity.posX;
             double motionY = missile.getTargetData().getY() - entity.posY;

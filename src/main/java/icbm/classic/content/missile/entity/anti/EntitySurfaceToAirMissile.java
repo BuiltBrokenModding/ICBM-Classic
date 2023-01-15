@@ -1,6 +1,7 @@
 package icbm.classic.content.missile.entity.anti;
 
 import icbm.classic.config.ConfigAntiMissile;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import icbm.classic.content.reg.ItemReg;
@@ -29,30 +30,45 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
     }
 
     @Override
+    public float getMaxHealth()
+    {
+        return ConfigMissile.TIER_2_HEALTH;
+    }
+
+    @Override
     public void onUpdate() {
-        //Scan for targets
-        scanLogic.tick();
 
-        final Entity currentTarget = scanLogic.getTarget();
+        if(!world.isRemote) {
 
-        //TODO code version of ballistic flight logic that switches for us without manually checking
-        //Switch to follow logic once we have a target in range, launcher will set initial flight logic to get it out of the tube
-        if(!hasStartedFollowing && currentTarget != null && this.getMissileCapability().getFlightLogic().canSafelyExitLogic()) {
-            hasStartedFollowing = true;
-            //TODO play missile lock sound effect
-            this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigAntiMissile.FUEL));
-        }
+            //Scan for targets
+            scanLogic.tick();
 
-        //TODO move to object that gets a tick() invoke `ProximityKillHandler`
-        //Handle kill target logic
-        if(currentTarget != null) {
-            final double distance = this.getDistance(currentTarget);
+            final Entity currentTarget = scanLogic.getTarget();
+
+            //TODO code version of ballistic flight logic that switches for us without manually checking
+            //Switch to follow logic once we have a target in range, launcher will set initial flight logic to get it out of the tube
+            if (!hasStartedFollowing && currentTarget != null && this.getMissileCapability().getFlightLogic().canSafelyExitLogic()) {
+                hasStartedFollowing = true;
+                //TODO play missile lock sound effect
+
+                // Update our targeting system to track sam targets, some flight systems will use their own targeting logic
+                this.getMissileCapability().setTargetData(scanLogic);
+
+                // Update out flight logic to follow our sam target
+                this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigAntiMissile.FUEL));
+            }
+
+            //TODO move to object that gets a tick() invoke `ProximityKillHandler`
+            //Handle kill target logic
+            if (currentTarget != null) {
+                final double distance = this.getDistance(currentTarget);
 
             if(distance <= ConfigAntiMissile.ATTACK_DISTANCE) {
                 //TODO add custom damage source that reflects owner of the AB missile
-                currentTarget.attackEntityFrom(new EntityDamageSource("missile", this), ConfigAntiMissile.ATTACK_DAMAGE);
-                //TODO play sound effect of missile exploding
-                this.setDead();
+                    currentTarget.attackEntityFrom(new EntityDamageSource("missile", this), ConfigAntiMissile.ATTACK_DAMAGE);
+                    //TODO play sound effect of missile exploding
+                    this.setDead();
+                }
             }
         }
 
