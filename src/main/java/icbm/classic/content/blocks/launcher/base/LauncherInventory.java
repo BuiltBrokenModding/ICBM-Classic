@@ -31,7 +31,7 @@ public class LauncherInventory extends ItemStackHandler
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack)
     {
-        return stack.getItem() == ItemReg.itemMissile; //TODO check for capability
+        return stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }
 
     @Override
