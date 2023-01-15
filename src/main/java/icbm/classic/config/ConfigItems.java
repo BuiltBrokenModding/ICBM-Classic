@@ -37,7 +37,7 @@ public class ConfigItems
     public static boolean ENABLE_BATTERY = true;
 
     @Config.Name("enable_sulfur_drops")
-    @Config.Comment("Enables dropping sulfur from creepers. Use a loot table mod to change the drop rates.")
+    @Config.Comment("Enables dropping sulfur from creepers and blazes. Use a loot table mod to change the drop rates.")
     @Config.RequiresMcRestart
     public static boolean ENABLE_SULFUR_LOOT_DROPS = true;
 

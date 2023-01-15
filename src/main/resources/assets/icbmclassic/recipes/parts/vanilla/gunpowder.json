@@ -1,0 +1,54 @@
+{
+  "result": {
+    "item": "minecraft:gunpowder",
+    "data": 0,
+    "count": 3
+  },
+  "pattern": [
+    "CS",
+    "P "
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "minecraft:coal",
+        "data": 0
+      },
+      {
+        "item": "minecraft:coal",
+        "data": 1
+      }
+    ],
+    {
+      "type": "forge:ore_dict",
+      "ore": "dustSulfur"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dustSaltpeter"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "forge:and",
+      "values": [
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "false",
+          "value": "dustCarbon"
+        },
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "false",
+          "value": "dustCharcoal"
+        },
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "false",
+          "value": "dustCoal"
+        }
+      ]
+    }
+  ]
+}
