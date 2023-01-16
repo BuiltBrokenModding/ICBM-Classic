@@ -37,10 +37,11 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
 
-    public final static int GUI_PACKET_ID = 1;
+    public static final int GUI_PACKET_ID = 1;
     public static final int SET_SAFETY_RANGE_PACKET_ID = 2;
     public static final int SET_ALARM_RANGE_PACKET_ID = 3;
     public static final int SET_FREQUENCY_PACKET_ID = 4;
+    public static final int DESC_PACKET = 5;
 
     public float rotation = 0;
     public int detectionRange = 100;
@@ -54,9 +55,12 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
     ExternalInventory inventory;
 
+    // UI data
     protected List<Pos> guiDrawPoints = new ArrayList();
     protected RadarObjectType[] types;
     protected boolean updateDrawList = true;
+    public boolean hasIncomingMissiles = false;
+    public boolean hasDetectedEntities = false;
 
     @Override
     public ExternalInventory getInventory()
@@ -158,6 +162,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     {
         this.incomingMissiles.clear();
         this.detectedEntities.clear();
+        this.updateClient = true;
 
         final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
 
@@ -267,14 +272,16 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
-        setEnergy(buf.readInt());
+        this.hasDetectedEntities = buf.readBoolean(); //TODO sync counts if we display in UI
+        this.hasIncomingMissiles = buf.readBoolean();
     }
 
     @Override
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeInt(getEnergy());
+        buf.writeBoolean(this.detectedEntities.size() > 0);
+        buf.writeBoolean(this.incomingMissiles.size() > 0);
     }
 
     @Override
@@ -290,14 +297,15 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                     this.triggerRange = data.readInt();
                     this.setFrequency(data.readInt());
 
+                    // Reset state
                     this.updateDrawList = true;
-
                     types = null;
                     detectedEntities.clear(); //TODO recode so we are not getting entities client side
 
                     int entityListSize = data.readInt();
                     types = new RadarObjectType[entityListSize];
 
+                    // Read incoming detection list data
                     for (int i = 0; i < entityListSize; i++)
                     {
                         int id = data.readInt();

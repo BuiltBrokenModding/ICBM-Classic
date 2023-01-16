@@ -18,12 +18,14 @@ public class TESRRadarStation extends TileEntitySpecialRenderer<TileRadarStation
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "radar.png");
     public static final ResourceLocation TEXTURE_FILE_OFF = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "radar_off.png");
+    public static final ResourceLocation TEXTURE_FILE_RED = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "radar_red.png");
+    public static final ResourceLocation TEXTURE_FILE_YELLOW = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "radar_yellow.png");
 
     public static final ModelRadarStation MODEL = new ModelRadarStation();
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void render(TileRadarStation te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+    public void render(TileRadarStation radar, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
         GlStateManager.pushMatrix();
 
@@ -32,29 +34,37 @@ public class TESRRadarStation extends TileEntitySpecialRenderer<TileRadarStation
         GlStateManager.rotate(180F, 0.0F, 0.0F, 1.0F);
 
         //Assign texture
-        if (te.hasPower())
+        if (radar.hasPower())
         {
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
+            if(radar.hasIncomingMissiles) {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_RED);
+            }
+            else if(radar.hasDetectedEntities) {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_YELLOW);
+            }
+            else {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
+            }
         }
         else
         {
             FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_OFF);
         }
 
-        if(te.getRotation() == EnumFacing.NORTH)
+        if(radar.getRotation() == EnumFacing.NORTH)
         {
             GlStateManager.rotate(180F, 0.0F, 1F, 0);
         }
-        else if(te.getRotation() == EnumFacing.WEST)
+        else if(radar.getRotation() == EnumFacing.WEST)
         {
             GlStateManager.rotate(90F, 0.0F, 1F, 0);
         }
-        else if(te.getRotation() == EnumFacing.EAST)
+        else if(radar.getRotation() == EnumFacing.EAST)
         {
             GlStateManager.rotate(-90F, 0.0F, 1F, 0);
         }
 
-        MODEL.render(0.0625f, 0f, te.rotation);
+        MODEL.render(0.0625f, 0f, radar.rotation);
         GlStateManager.popMatrix();
     }
 }
