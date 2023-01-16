@@ -374,7 +374,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     {
         if (this.enableRedstoneOutput && incomingThreats.size() > 0) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
         {
-            return Math.min(15, 1 + incomingThreats.size());
+            return Math.min(15, incomingThreats.size());
         }
         return 0;
     }
