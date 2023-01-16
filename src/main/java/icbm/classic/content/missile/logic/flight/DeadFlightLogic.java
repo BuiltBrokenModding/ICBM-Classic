@@ -1,6 +1,7 @@
 package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,7 +33,13 @@ public class DeadFlightLogic implements IMissileFlightLogic
     }
 
     protected boolean hasFuel(Entity entity) {
-        return entity.ticksExisted <= fuelTicks;
+        return fuelTicks >= 0;
+    }
+
+    @Override
+    public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
+    {
+        fuelTicks--;
     }
 
     @Override
