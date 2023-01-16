@@ -14,6 +14,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -47,6 +48,9 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
      */
     protected void writeData(Object object, ByteBuf buffer)
     {
+        if(object instanceof Consumer) {
+            ((Consumer<ByteBuf>) object).accept(buffer);
+        }
         if (object.getClass().isArray())
         {
             for (int i = 0; i < Array.getLength(object); i++)

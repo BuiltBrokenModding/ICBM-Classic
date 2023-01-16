@@ -28,6 +28,21 @@ public class FollowTargetLogic extends DeadFlightLogic
     }
 
     @Override
+    public float engineSmokeRed(Entity entity) {
+        return 1;
+    }
+
+    @Override
+    public float engineSmokeGreen(Entity entity) {
+        return 0.5f;
+    }
+
+    @Override
+    public float engineSmokeBlue(Entity entity) {
+        return 0.5f;
+    }
+
+    @Override
     public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
         super.onEntityTick(entity, missile, ticksInAir);

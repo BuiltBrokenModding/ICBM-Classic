@@ -154,7 +154,7 @@ public class ClientProxy extends CommonProxy
                     spawnAirParticle(entity.world,
                             position.x(), position.y(), position.z(),
                             -entity.motionX * 0.5, -entity.motionY * 0.5, -entity.motionZ * 0.5,
-                            1, 1, 1,
+                        flightLogic.engineSmokeRed(entity), flightLogic.engineSmokeGreen(entity), flightLogic.engineSmokeBlue(entity),
                             (int) Math.max(1d, 6d * (1 / (1 + entity.posY / 100))), 100);
                     position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
                 }

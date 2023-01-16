@@ -70,6 +70,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     @Override
     public void setFlightLogic(IMissileFlightLogic logic)
     {
+        this.missile.syncClient = true;
         this.flightLogic = logic;
     }
 

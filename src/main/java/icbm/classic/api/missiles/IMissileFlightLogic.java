@@ -96,6 +96,19 @@ public interface IMissileFlightLogic
         return true;
     }
 
+    default float engineSmokeRed(Entity entity) {
+        // TODO consider using an object for storing settings
+        return 1;
+    }
+
+    default float engineSmokeGreen(Entity entity) {
+        return 1;
+    }
+
+    default float engineSmokeBlue(Entity entity) {
+        return 1;
+    }
+
     /**
      * Checks to see if we can safely exit the flight logic without issues.
      *

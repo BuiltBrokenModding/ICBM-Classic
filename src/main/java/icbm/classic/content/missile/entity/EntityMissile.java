@@ -11,6 +11,9 @@ import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.network.packet.PacketEntity;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
@@ -35,11 +38,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Created by Robin Seifert on 12/12/2021.
  */
-public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E> implements IEntityAdditionalSpawnData
+public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E> implements IEntityAdditionalSpawnData, IPacketIDReceiver
 {
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
@@ -49,6 +53,8 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
     /** Toggle to note the missile has impacted something and already triggered impact logic */
     protected boolean hasImpacted = false;
+
+    protected boolean syncClient = false;
 
     public EntityMissile(World world)
     {
@@ -98,6 +104,16 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     {
         collisionIgnoreList.add(entity);
         return this;
+    }
+
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+
+        if(syncClient) {
+            this.syncClient = false;
+            sendDescriptionPacket();
+        }
     }
 
     @Override
@@ -260,6 +276,22 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             world().provider.getDimension()
         );
         ICBMClassic.logger().info(formattedMessage);
+    }
+
+    @Override
+    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket type) {
+        if(id == 1) {
+            readSpawnData(buf);
+            return true;
+        }
+        return false;
+    }
+
+    protected void sendDescriptionPacket() {
+        final PacketEntity packet = new PacketEntity("EntityMissile#desc", this.getEntityId(), 1);
+        Consumer<ByteBuf> dataWriter = (byteBuf) -> writeSpawnData(byteBuf);
+        packet.addData(dataWriter);
+        ICBMClassic.packetHandler.sendToAllAround(packet, world, posX, posY, posZ, 200);
     }
 
     @Override
