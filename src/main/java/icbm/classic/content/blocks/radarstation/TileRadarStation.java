@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.radarstation;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
@@ -120,10 +121,15 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
             final boolean shouldBeOn = checkExtract() && hasIncomingMissiles();
             if (world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
             {
-                world.setBlockState(getPos(), getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);
+                final BlockPos selfPos = getPos();
+
+                ICBMClassic.logger().info("Updating redstone state " + shouldBeOn);
+                world.setBlockState(selfPos, getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);
                 for (EnumFacing facing : EnumFacing.values())
                 {
-                    world.notifyNeighborsOfStateChange(pos.offset(facing), getBlockType(), false);
+                    final BlockPos targetPos = selfPos.offset(facing);
+                    world.neighborChanged(targetPos, getBlockType(), getPos());
+                    world.notifyNeighborsOfStateExcept(targetPos, getBlockType(), facing.getOpposite());
                 }
             }
         }
@@ -366,7 +372,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
     public int getStrongRedstonePower(EnumFacing side)
     {
-        if (this.enableRedstoneOutput) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
+        if (this.enableRedstoneOutput && incomingThreats.size() > 0) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
         {
             return Math.min(15, 1 + incomingThreats.size());
         }
