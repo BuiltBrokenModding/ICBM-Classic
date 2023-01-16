@@ -1,8 +1,8 @@
 package icbm.classic.content.blocks.radarstation;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
@@ -41,17 +41,22 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public static final int SET_SAFETY_RANGE_PACKET_ID = 2;
     public static final int SET_ALARM_RANGE_PACKET_ID = 3;
     public static final int SET_FREQUENCY_PACKET_ID = 4;
-    public static final int DESC_PACKET = 5;
 
-    public float rotation = 0;
+    /** Range to detect any radar contracts */
     public int detectionRange = 100;
+
+    /** Range to trigger if a threat will land in the area */
     public int triggerRange = 50;
 
+    /** True if we should output redstone */
     public boolean enableRedstoneOutput = true;
 
-    public final List<Entity> detectedEntities = new ArrayList<Entity>();
-    /** List of all incoming missiles, in order of distance. */
-    private final List<IMissile> incomingMissiles = new ArrayList();
+    /** All entities detected by the radar */
+    private final List<Entity> detectedRadarEntities = new ArrayList();
+    /** All detected threats in our radar range*/
+    private final List<Entity> detectedThreats = new ArrayList<Entity>();
+    /** Threats that will cause harm to our protection area */
+    private final List<IMissile> incomingThreats = new ArrayList(); //TODO decouple from missile so we can track other entities
 
     ExternalInventory inventory;
 
@@ -61,6 +66,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     protected boolean updateDrawList = true;
     public boolean hasIncomingMissiles = false;
     public boolean hasDetectedEntities = false;
+    public float rotation = 0;
 
     @Override
     public ExternalInventory getInventory()
@@ -98,16 +104,16 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 }
 
                 //Check for incoming and launch anti-missiles if
-                if (this.ticks % 20 == 0 && this.incomingMissiles.size() > 0) //TODO track if a anti-missile is already in air to hit target
+                if (this.ticks % 20 == 0 && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
                 {
-                    RadioRegistry.popMessage(world, this, getFrequency(), "fireAntiMissile", this.incomingMissiles.get(0)); //TODO use static var for event name
+                    RadioRegistry.popMessage(world, this, getFrequency(), "fireAntiMissile", this.incomingThreats.get(0)); //TODO use static var for event name
                 }
             }
             // No power, reset state
             else
             {
-                incomingMissiles.clear();
-                detectedEntities.clear();
+                incomingThreats.clear();
+                detectedThreats.clear();
             }
 
             //Update redstone state
@@ -128,9 +134,9 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 if (updateDrawList)
                 {
                     guiDrawPoints.clear();
-                    for (int i = 0; i < detectedEntities.size(); i++)
+                    for (int i = 0; i < detectedThreats.size(); i++)
                     {
-                        Entity entity = detectedEntities.get(i);
+                        Entity entity = detectedThreats.get(i);
                         if (entity != null)
                         {
                             guiDrawPoints.add(new Pos(entity.posX, entity.posZ, types[i].ordinal()));
@@ -160,55 +166,68 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
 
     private void doScan() //TODO document and thread
     {
-        this.incomingMissiles.clear();
-        this.detectedEntities.clear();
+        this.detectedRadarEntities.clear();
+        this.incomingThreats.clear();
+        this.detectedThreats.clear();
         this.updateClient = true;
 
         final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
 
-        for (Entity entity : entities)
+        // Store all radar contracts in range for nice visuals
+        this.detectedRadarEntities.addAll(entities);
+
+        // Loop list of contacts to ID threats
+        for (Entity entity : detectedRadarEntities)
         {
-            if (ICBMClassicHelpers.isMissile(entity))
+            if (isThreat(entity))
             {
                 final IMissile newMissile = ICBMClassicHelpers.getMissile(entity);
                 if (newMissile != null && newMissile.getTicksInAir() > 1)
                 {
-                    if (!this.detectedEntities.contains(entity))
-                    {
-                        this.detectedEntities.add(entity);
-                    }
+                    this.detectedThreats.add(entity);
 
                     if (this.isMissileGoingToHit(newMissile))
                     {
-                        if (this.incomingMissiles.size() > 0)
+                        if (this.incomingThreats.size() > 0)
                         {
-                            /** Sort in order of distance */
+                            // Sort in order of distance
                             double dist = new Pos((TileEntity) this).distance(newMissile);
 
-                            for (int i = 0; i < this.incomingMissiles.size(); i++) //TODO switch to priority list
+                            for (int i = 0; i < this.incomingThreats.size(); i++) //TODO switch to priority list
                             {
-                                IMissile missile = this.incomingMissiles.get(i);
+                                IMissile missile = this.incomingThreats.get(i);
 
                                 if (dist < new Pos((TileEntity) this).distance(missile))
                                 {
-                                    this.incomingMissiles.add(i, missile);
+                                    this.incomingThreats.add(i, missile);
                                     break;
                                 }
-                                else if (i == this.incomingMissiles.size() - 1)
+                                else if (i == this.incomingThreats.size() - 1)
                                 {
-                                    this.incomingMissiles.add(missile);
+                                    this.incomingThreats.add(missile);
                                     break;
                                 }
                             }
                         }
                         else
                         {
-                            this.incomingMissiles.add(newMissile);
+                            this.incomingThreats.add(newMissile);
                         }
                     }
                 }
             }
         }
+    }
+
+    public static boolean isThreat(Entity entity)
+    {
+        // TODO let users customize threat list
+        return entity != null
+            // Ignore SAM missiles
+            && !(entity instanceof EntitySurfaceToAirMissile)
+            // Track explosive missiles (using caps to allow other mods to interact more easily)
+            && entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)
+            && entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null); //TODO recode to use a radar classification system
     }
 
     /**
@@ -241,20 +260,20 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         packet.write(detectionRange);
         packet.write(triggerRange);
         packet.write(getFrequency());
-        packet.write(detectedEntities.size());
-        if (detectedEntities.size() > 0)
+        packet.write(detectedRadarEntities.size());
+        if (detectedRadarEntities.size() > 0)
         {
-            for (Entity entity : detectedEntities)
+            for (Entity entity : detectedRadarEntities)
             {
                 if (entity != null && entity.isEntityAlive()) //TODO run filter before sending so we don't rewrite empty data
                 {
                     packet.write(entity.getEntityId()); //TODO send 2D coords instead of entity info
 
                     int type = RadarObjectType.OTHER.ordinal();
-                    if (entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null))
+                    if (isThreat(entity))
                     {
                         final IMissile missile = entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
-                        type = isMissileGoingToHit(missile) ? RadarObjectType.MISSILE_IMPACT.ordinal() : RadarObjectType.MISSILE.ordinal();
+                        type = isMissileGoingToHit(missile) ? RadarObjectType.THREAT_IMPACT.ordinal() : RadarObjectType.THREAT.ordinal();
                     }
                     packet.write(type);
                 }
@@ -280,8 +299,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeBoolean(this.detectedEntities.size() > 0);
-        buf.writeBoolean(this.incomingMissiles.size() > 0);
+        buf.writeBoolean(this.detectedThreats.size() > 0);
+        buf.writeBoolean(this.incomingThreats.size() > 0);
     }
 
     @Override
@@ -300,7 +319,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                     // Reset state
                     this.updateDrawList = true;
                     types = null;
-                    detectedEntities.clear(); //TODO recode so we are not getting entities client side
+                    detectedThreats.clear(); //TODO recode so we are not getting entities client side
 
                     int entityListSize = data.readInt();
                     types = new RadarObjectType[entityListSize];
@@ -314,7 +333,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                             Entity entity = world.getEntityByID(id);
                             if (entity != null)
                             {
-                                detectedEntities.add(entity);
+                                detectedThreats.add(entity);
                             }
                         }
                         types[i] = RadarObjectType.get(data.readInt());
@@ -349,13 +368,13 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     {
         if (this.enableRedstoneOutput) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
         {
-            return Math.min(15, 1 + incomingMissiles.size());
+            return Math.min(15, 1 + incomingThreats.size());
         }
         return 0;
     }
 
     public boolean hasIncomingMissiles() {
-        return incomingMissiles.size() > 0;
+        return incomingThreats.size() > 0;
     }
 
     /** Reads a tile entity from NBT. */

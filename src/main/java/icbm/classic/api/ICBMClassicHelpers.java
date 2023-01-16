@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -79,6 +80,12 @@ public final class ICBMClassicHelpers
         return entity != null && entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
     }
 
+    /**
+     * Helper to get the capability of {@link IMissile} from an entity
+     *
+     * @param entity to pull from
+     * @return capability
+     */
     public static IMissile getMissile(Entity entity)
     {
         return entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);

@@ -212,15 +212,16 @@ public class GuiRadarStation extends GuiContainerBase
                 final double x = pos.x();
                 final double z = pos.y();
 
+                // TODO recode to not use throw away objects for better performance
                 Point position = new Point(radarCenter.x() + (x - this.tileEntity.getPos().getX()) / this.radarMapRadius,
                         radarCenter.y() - (z - this.tileEntity.getPos().getZ()) / this.radarMapRadius);
 
                 switch (type)
                 {
-                    case MISSILE:
+                    case THREAT:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_YELLOW_DOT);
                         break;
-                    case MISSILE_IMPACT:
+                    case THREAT_IMPACT:
                         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_RED_DOT);
                         break;
                     case OTHER:
@@ -243,7 +244,7 @@ public class GuiRadarStation extends GuiContainerBase
                     }
                     else
                     {
-                        this.info = (type == RadarObjectType.MISSILE ? "\u00a76" : "\u00a74") + String.format(LanguageUtility.getLocal("gui.misc.missile"), (int)x, (int)z);
+                        this.info = (type == RadarObjectType.THREAT ? "\u00a76" : "\u00a74") + String.format(LanguageUtility.getLocal("gui.misc.missile"), (int)x, (int)z);
                     }
                 }
             }

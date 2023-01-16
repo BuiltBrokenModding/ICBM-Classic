@@ -41,13 +41,17 @@ public class BlockRadarStation extends BlockICBM
     @Override
     public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side)
     {
-        return true;
+        final TileEntity tileEntity = world.getTileEntity(pos);
+        if(tileEntity instanceof TileRadarStation) {
+            return ((TileRadarStation) tileEntity).enableRedstoneOutput;
+        }
+        return false;
     }
 
     @Override
     public boolean canProvidePower(IBlockState state)
     {
-        return true;
+        return state.getValue(REDSTONE_PROPERTY);
     }
 
     @Override

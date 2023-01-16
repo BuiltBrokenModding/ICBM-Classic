@@ -52,6 +52,8 @@
 - [ ] Better redstone control (side, output min, output max, missile detection equation (missiles - minCount > detectionCount))
 - [ ] Way to see scan area outside of UI
 - [ ] Trigger delays on redstone and radio signal for AB missiles
+- [ ] radar classification system to give entities a shape, size, and threat level. Allowing an abstraction from just reporting explosive missiles
+- [ ] cleanup radar map to use consumer pattern so it stops wasting as much RAM making `arraylists` all the time
 
 # TODO future (Art update)
 
