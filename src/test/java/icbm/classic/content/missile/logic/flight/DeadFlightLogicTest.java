@@ -64,10 +64,9 @@ class DeadFlightLogicTest
     @Test
     void shouldDecreaseMotion_pastDead_true()
     {
-        final DeadFlightLogic deadFlightLogic = new DeadFlightLogic(1000);
+        final DeadFlightLogic deadFlightLogic = new DeadFlightLogic(0);
 
         EntityArrow entityArrow = new EntityTippedArrow(world);
-        entityArrow.ticksExisted = 1001;
 
         Assertions.assertTrue(deadFlightLogic.shouldDecreaseMotion(entityArrow));
     }

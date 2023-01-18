@@ -94,10 +94,11 @@ import java.util.List;
  * <p>
  * Orginal author and creator of the mod: Calclavia
  */
-@Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic", version = "@VERSION@")
+@Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION)
 @Mod.EventBusSubscriber
 public final class ICBMClassic
 {
+    public static final String VERSION = "@VERSION@";
 
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
 

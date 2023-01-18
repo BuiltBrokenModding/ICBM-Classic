@@ -33,7 +33,7 @@ public class DeadFlightLogic implements IMissileFlightLogic
     }
 
     protected boolean hasFuel(Entity entity) {
-        return fuelTicks >= 0;
+        return fuelTicks > 0;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package icbm.classic.prefab.entity;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
@@ -13,6 +14,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * Base entity class to be shared by most entities
