@@ -106,7 +106,7 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     {
         if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
         {
-            return (T) this;
+            return ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(this);
         }
         return null;
     }
