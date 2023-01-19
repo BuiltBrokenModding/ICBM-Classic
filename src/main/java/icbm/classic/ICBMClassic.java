@@ -281,7 +281,7 @@ public final class ICBMClassic
         registry.lock();
     }
 
-    private void handleExRegistry(File configMainFolder)
+    public void handleExRegistry(File configMainFolder)
     {
         //Init registry
         final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
@@ -293,7 +293,9 @@ public final class ICBMClassic
         ICBMClassicAPI.EX_MISSILE_REGISTRY = new ExMissileContentReg();
 
         //Load data
-        explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
+        if(configMainFolder != null) {
+            explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
+        }
 
         //Register default content types
         explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_BLOCK_REGISTRY);
@@ -326,7 +328,9 @@ public final class ICBMClassic
         explosiveRegistry.completeLock();
 
         //Save registry, at this point everything should be registered
-        explosiveRegistry.saveReg();
+        if(configMainFolder != null) {
+            explosiveRegistry.saveReg();
+        }
     }
 
     @Mod.EventHandler
