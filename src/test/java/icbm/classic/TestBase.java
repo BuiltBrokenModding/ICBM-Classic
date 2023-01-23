@@ -2,6 +2,7 @@ package icbm.classic;
 
 import com.adelean.inject.resources.junit.jupiter.WithGson;
 import com.builtbroken.mc.testing.junit.TestManager;
+import com.google.common.base.Suppliers;
 import com.google.gson.*;
 
 import com.lunarshark.nbttool.utils.JsonUtils;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.Assertions;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.IdentityHashMap;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
 public abstract class TestBase {
 
@@ -38,6 +41,13 @@ public abstract class TestBase {
     public void afterEachTest()
     {
         testManager.cleanupBetweenTests();
+    }
+
+    protected static <T> Capability<T> getCapOrCreate(Class<T> type, Runnable runnable) {
+        return Optional.ofNullable(getCap(type)).orElseGet(() -> {
+            runnable.run();
+            return getCap(type);
+        });
     }
 
     protected static <T> Capability<T> getCap(Class<T> type) {

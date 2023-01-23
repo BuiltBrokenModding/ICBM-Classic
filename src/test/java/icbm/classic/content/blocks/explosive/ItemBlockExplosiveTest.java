@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.explosive;
 import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.TestBase;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
@@ -12,24 +13,23 @@ import net.minecraft.init.Bootstrap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 @TestWithResources
-class TileEntityExplosiveTest extends TestBase {
+class ItemBlockExplosiveTest extends TestBase {
 
-    @GivenJsonResource("data/saves/4.0.0/tileEntity_IncendiaryExplosive.json")
+    @GivenJsonResource("data/saves/4.0.0/itemstack_ContagiousExplosives.json")
     NBTTagCompound version4save;
 
-    private static Block block;
     private static Item item;
-    private static final BlockPos pos = new BlockPos(5, 6, 7);
 
-    public TileEntityExplosiveTest() {
-        super("tile");
+    public ItemBlockExplosiveTest() {
+        super(null);
     }
 
     @BeforeAll
@@ -44,31 +44,25 @@ class TileEntityExplosiveTest extends TestBase {
         ICBMClassic.INSTANCE.handleExRegistry(null);
 
         // Register block for placement
-        ForgeRegistries.BLOCKS.register(block = new BlockExplosive());
+        final Block block = new BlockExplosive();
+        ForgeRegistries.BLOCKS.register(block);
         ForgeRegistries.ITEMS.register(item = new ItemBlockExplosive(block).setRegistryName(block.getRegistryName()));
     }
 
     @Test
     @DisplayName("Loads from old version 4.0.0 save file")
     void loadFromVersion4() {
-        final World world = testManager.getWorld();
-
-        // Place block in world, ensure it places or else error
-        Assertions.assertTrue(world.setBlockState(pos, block.getDefaultState()));
 
         // Validate we have a test file
         Assertions.assertNotNull(version4save);
 
-        // Check for our tile
-        final TileEntity entity = world.getTileEntity(pos);
-        Assertions.assertInstanceOf(TileEntityExplosive.class, entity);
+        // Load stack
+        final ItemStack stack = new ItemStack(version4save);
 
-        // Invoke loading
-        entity.readFromNBT(version4save);
+        // Create compare stack
+        final ItemStack expected = new ItemStack(item, 1, 9);
 
-        // Validate we load the capability with the correct item stack
-        final IExplosive capability = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-        Assertions.assertNotNull(capability);
-        Assertions.assertTrue(ItemStack.areItemsEqual(new ItemStack(item, 1, 2), capability.toStack()));
+        // Compare stacks
+        Assertions.assertTrue(ItemStack.areItemsEqual(expected, stack));
     }
 }
