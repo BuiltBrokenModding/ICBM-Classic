@@ -15,10 +15,6 @@ public class EntityBombCartTest extends TestBase {
     @GivenJsonResource("data/saves/4.0.0/entity_ExplosiveCart_sonic.json")
     NBTTagCompound version4save;
 
-    public EntityBombCartTest() {
-        super(null);
-    }
-
     @Test
     @DisplayName("Loads from old version 4.0.0 save file")
     void loadFromVersion4() {

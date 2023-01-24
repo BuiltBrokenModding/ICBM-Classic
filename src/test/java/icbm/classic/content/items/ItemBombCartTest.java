@@ -1,4 +1,4 @@
-package icbm.classic.content.blocks.explosive;
+package icbm.classic.content.items;
 
 import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
@@ -7,7 +7,6 @@ import icbm.classic.TestBase;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
-import net.minecraft.block.Block;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,16 +18,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @TestWithResources
-class ItemBlockExplosiveTest extends TestBase {
+public class ItemBombCartTest extends TestBase {
 
-    @GivenJsonResource("data/saves/4.0.0/itemstack_ContagiousExplosives.json")
+    @GivenJsonResource("data/saves/4.0.0/itemstack_ExplosiveCart_sonic.json")
     NBTTagCompound version4save;
 
     private static Item item;
-
-    public ItemBlockExplosiveTest() {
-        super(null);
-    }
 
     @BeforeAll
     public static void beforeAllTests()
@@ -42,9 +37,7 @@ class ItemBlockExplosiveTest extends TestBase {
         ICBMClassic.INSTANCE.handleExRegistry(null);
 
         // Register block for placement
-        final Block block = new BlockExplosive();
-        ForgeRegistries.BLOCKS.register(block);
-        ForgeRegistries.ITEMS.register(item = new ItemBlockExplosive(block).setRegistryName(block.getRegistryName()));
+        ForgeRegistries.ITEMS.register(item = new ItemBombCart().setName("bombcart").setCreativeTab(ICBMClassic.CREATIVE_TAB));
     }
 
     @Test
@@ -54,16 +47,16 @@ class ItemBlockExplosiveTest extends TestBase {
         // Validate we have a test file
         Assertions.assertNotNull(version4save);
 
-        // Load stack
+        // Load stack from file
         final ItemStack stack = new ItemStack(version4save);
 
         // Create compare stack
-        final ItemStack expected = new ItemStack(item, 1, 9);
+        final ItemStack expected = new ItemStack(item, 1, 10);
 
         // Compare stacks
         Assertions.assertTrue(ItemStack.areItemsEqual(expected, stack));
 
         // Confirm capability returns the correct explosive
-        assertExplosive(stack, "icbmclassic:contagious", new NBTTagCompound());
+        assertExplosive(stack, "icbmclassic:sonic", new NBTTagCompound());
     }
 }

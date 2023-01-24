@@ -8,7 +8,7 @@
     },
     {
       "type": 2,
-      "data": 9,
+      "data": 10,
       "key": "Damage"
     },
     {
@@ -24,7 +24,7 @@
     },
     {
       "type": 8,
-      "data": "icbmclassic:explosives",
+      "data": "icbmclassic:bombcart",
       "key": "id"
     }
   ]
