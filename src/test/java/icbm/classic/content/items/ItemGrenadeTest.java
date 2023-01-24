@@ -1,19 +1,28 @@
 package icbm.classic.content.items;
 
 import com.builtbroken.mc.testing.junit.TestManager;
+import icbm.classic.ICBMClassic;
+import icbm.classic.TestBase;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Bootstrap;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -27,15 +36,23 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 12/25/2019.
  */
-public class TestItemGrenade
+public class ItemGrenadeTest extends TestBase
 {
-    final ItemGrenade itemGrenade = new ItemGrenade();
-    static TestManager testManager = new TestManager("itemGrenade", Assertions::fail);
+    private static Item item;
 
-    @AfterAll
-    public static void afterAllTests()
+    @BeforeAll
+    public static void beforeAllTests()
     {
-       testManager.tearDownTest();
+        // Start vanilla
+        Bootstrap.register();
+
+        // Setup explosive registry
+        ICBMClassicAPI.EXPLOSIVE_CAPABILITY = getCapOrCreate(IExplosive.class, CapabilityExplosive::register);
+        ICBMClassic.INSTANCE = new ICBMClassic();
+        ICBMClassic.INSTANCE.handleExRegistry(null);
+
+        // Register block for placement
+        ForgeRegistries.ITEMS.register(item = new ItemGrenade().setName("grenade").setCreativeTab(ICBMClassic.CREATIVE_TAB));
     }
 
     @Test
@@ -43,7 +60,7 @@ public class TestItemGrenade
     {
         final EntityPlayer player = spy(testManager.getPlayer());
         final World world = testManager.getWorld();
-        final ItemStack stack = new ItemStack(itemGrenade, 1, 0);
+        final ItemStack stack = new ItemStack(item, 1, 0);
 
         //Set player inventory and held
         player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
@@ -52,13 +69,13 @@ public class TestItemGrenade
         doNothing().when(player).setActiveHand(EnumHand.MAIN_HAND);
 
         //Trigger action
-        final ActionResult<ItemStack> result = itemGrenade.onItemRightClick(world, player, EnumHand.MAIN_HAND);
+        final ActionResult<ItemStack> result = item.onItemRightClick(world, player, EnumHand.MAIN_HAND);
 
         //Main hand should be set
         verify(player, times(1)).setActiveHand(EnumHand.MAIN_HAND);
 
         //Check result
-        Assertions.assertEquals(itemGrenade, result.getResult().getItem());
+        Assertions.assertEquals(item, result.getResult().getItem());
         Assertions.assertEquals(EnumActionResult.SUCCESS, result.getType());
     }
 
@@ -68,9 +85,10 @@ public class TestItemGrenade
         final EntityPlayer player = testManager.getPlayer();
         final World world = spy(testManager.getWorld());
 
-        ItemStack stack = new ItemStack(itemGrenade, 2, 0);
+        ItemStack stack = new ItemStack(item, 2, 0);
+
         //Trigger action
-        itemGrenade.onPlayerStoppedUsing(stack, world, player, ItemGrenade.MAX_USE_DURATION);
+        item.onPlayerStoppedUsing(stack, world, player, ItemGrenade.MAX_USE_DURATION);
 
         //Check that we spawned the entity
         final ArgumentCaptor<Entity> entityArgumentCaptor = ArgumentCaptor.forClass(Entity.class);

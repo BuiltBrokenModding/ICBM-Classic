@@ -6,7 +6,7 @@
 - [X] Base Launcher Missile AB as item (right click of missile is not working as expected)
 - [X] Unit Test Saving: Explosive (TileEntity, Item)
 - [ ] Unit Test Saving: Grenade (Entity, Item)
-- [ ] Unit Test Saving: Carts (Entity, Item)
+- [X] Unit Test Saving: Carts (Entity, Item)
 - [ ] Unit Test Saving: Missiles (Entity, Item)
 - [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
 
