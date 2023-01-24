@@ -4,7 +4,7 @@
 - [X] AB tacking issue with base launcher
 - [X] Cruise Missile AB as item (UI thinks it is invalid, likely server does as well)
 - [X] Base Launcher Missile AB as item (right click of missile is not working as expected)
-- [ ] Unit Test Saving: Explosive (TileEntity, Item)
+- [X] Unit Test Saving: Explosive (TileEntity, Item)
 - [ ] Unit Test Saving: Grenade (Entity, Item)
 - [ ] Unit Test Saving: Carts (Entity, Item)
 - [ ] Unit Test Saving: Missiles (Entity, Item)
@@ -12,6 +12,7 @@
 
 # Next release TODO:
 
+- [ ] Migrate BombCart to capability and have it store ItemStack used to place
 - [ ] Fix smoke localizations and textures
 - [ ] Fix AB config translations
 - [ ] Improve Smoke usefulness
