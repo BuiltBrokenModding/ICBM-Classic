@@ -40,7 +40,7 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
         return ICBMClassicHelpers.getExplosive(explosiveID, false);
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public NBTTagCompound getCustomBlastData()
     {

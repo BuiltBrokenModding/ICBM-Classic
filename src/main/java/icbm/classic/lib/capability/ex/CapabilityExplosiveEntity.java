@@ -52,6 +52,7 @@ public class CapabilityExplosiveEntity implements IExplosive
         return ICBMExplosives.CONDENSED;
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound getCustomBlastData()
     {
