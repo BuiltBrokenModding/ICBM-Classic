@@ -1,5 +1,7 @@
 package icbm.classic.content.items;
 
+import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
+import com.adelean.inject.resources.junit.jupiter.TestWithResources;
 import com.builtbroken.mc.testing.junit.TestManager;
 import icbm.classic.ICBMClassic;
 import icbm.classic.TestBase;
@@ -14,16 +16,14 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -34,10 +34,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Created by Dark(DarkGuardsman, Robert) on 12/25/2019.
+ * Created by Dark(DarkGuardsman, Robin) on 12/25/2019.
  */
+@TestWithResources
 public class ItemGrenadeTest extends TestBase
 {
+    @GivenJsonResource("data/saves/4.0.0/itemstack_Greande_shrapnel.json")
+    NBTTagCompound version4save;
+
     private static Item item;
 
     @BeforeAll
@@ -105,5 +109,25 @@ public class ItemGrenadeTest extends TestBase
 
         //Check that we called shrink
         Assertions.assertEquals(1, stack.getCount());
+    }
+
+    @Test
+    @DisplayName("Loads from old version 4.0.0 save file")
+    void loadFromVersion4() {
+
+        // Validate we have a test file
+        Assertions.assertNotNull(version4save);
+
+        // Load stack
+        final ItemStack stack = new ItemStack(version4save);
+
+        // Create compare stack
+        final ItemStack expected = new ItemStack(item, 1, 1);
+
+        // Compare stacks
+        Assertions.assertTrue(ItemStack.areItemsEqual(expected, stack));
+
+        // Confirm capability returns the correct explosive
+        assertExplosive(stack, "icbmclassic:shrapnel", new NBTTagCompound());
     }
 }

@@ -37,7 +37,12 @@ public class ItemGrenade extends ItemBase
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
-        return new CapabilityExplosiveStack(stack);
+        final CapabilityExplosiveStack capabilityExplosive = new CapabilityExplosiveStack(stack);
+        if(nbt != null)
+        {
+            capabilityExplosive.deserializeNBT(nbt);
+        }
+        return capabilityExplosive;
     }
 
     @Override
