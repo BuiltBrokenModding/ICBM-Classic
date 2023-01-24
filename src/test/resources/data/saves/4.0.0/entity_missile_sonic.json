@@ -1,0 +1,143 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 5,
+      "data": 0.0067674597,
+      "key": "acceleration"
+    },
+    {
+      "type": 10,
+      "data": [],
+      "key": "additionalMissileData"
+    },
+    {
+      "type": 3,
+      "data": 10,
+      "key": "explosiveID"
+    },
+    {
+      "type": 1,
+      "data": 0,
+      "key": "inGround"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "inTileState"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "-240.0",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "79.0",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "-114.0",
+          "key": "z"
+        }
+      ],
+      "key": "launcherPos"
+    },
+    {
+      "type": 2,
+      "data": 0,
+      "key": "life"
+    },
+    {
+      "type": 6,
+      "data": "2.466699971238995",
+      "key": "lockHeight"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "missileType"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "preLaunchSmokeTimer"
+    },
+    {
+      "type": 1,
+      "data": 1,
+      "key": "sideTilePos"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "-239.5",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "82.0",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "-113.5",
+          "key": "z"
+        }
+      ],
+      "key": "sourcePos"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "-3.800950301043004",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "0.0",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "13.210577605538393",
+          "key": "z"
+        }
+      ],
+      "key": "target"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "targetHeight"
+    },
+    {
+      "type": 3,
+      "data": 29,
+      "key": "ticksInAir"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "xTilePos"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "yTilePos"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "zTilePos"
+    }
+  ]
+}

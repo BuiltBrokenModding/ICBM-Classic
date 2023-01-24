@@ -186,7 +186,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 
     private static final NbtSaveHandler<CapabilityMissile> SAVE_LOGIC = new NbtSaveHandler<CapabilityMissile>()
         .addRoot("flags")
-        /* */.nodeBoolean("do_flight", (cap) -> cap.canRunFlightLogic(), (cap, i) -> cap.doFlight = i)
+        /* */.nodeBoolean("doFlight", (cap) -> cap.canRunFlightLogic(), (cap, i) -> cap.doFlight = i)
         .base()
         .mainRoot()
         /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
