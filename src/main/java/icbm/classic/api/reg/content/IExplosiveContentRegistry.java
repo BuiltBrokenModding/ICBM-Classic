@@ -71,6 +71,24 @@ public interface IExplosiveContentRegistry
      * registry should be created to mirror the previous
      * registry.
      *
+     * @param data for explosive instance
+     * @return new device stack
+     */
+    default ItemStack getDeviceStack(IExplosiveData data) {
+        return getDeviceStack(data.getRegistryName());
+    }
+
+    /**
+     * Creates a new explosive device represented by
+     * this registry.
+     * <p>
+     * Ex: Missile stack
+     * <p>
+     * Note each registry should only have 1 item mapped to
+     * it as a time. If another item is desired then a
+     * registry should be created to mirror the previous
+     * registry.
+     *
      * @param regName - registry name of the explosive
      * @return new device stack
      */
