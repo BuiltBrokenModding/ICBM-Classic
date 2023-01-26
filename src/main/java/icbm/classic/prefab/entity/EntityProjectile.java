@@ -30,7 +30,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming
+public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming
 {
     /**
      * The entity who shot this projectile and can be used for damage calculations
