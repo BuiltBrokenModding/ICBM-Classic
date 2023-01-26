@@ -6,6 +6,7 @@ import com.google.common.base.Suppliers;
 import com.google.gson.*;
 
 import com.lunarshark.nbttool.utils.JsonUtils;
+import com.lunarshark.nbttool.utils.SaveToJson;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
@@ -17,12 +18,16 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.opentest4j.AssertionFailedError;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class TestBase {
 
@@ -87,5 +92,31 @@ public abstract class TestBase {
 
         // Validate correct custom tag data
         Assertions.assertEquals(customTag, explosive.getCustomBlastData());
+    }
+
+    protected void assertTags(NBTTagCompound expectedTag, NBTTagCompound actualTag) {
+        if(!expectedTag.equals(actualTag)) {
+            throw new AssertionFailedError("Compound tags do not match",  outputJson(expectedTag), outputJson(actualTag));
+        }
+    }
+    protected String outputJson(NBTTagCompound tag) {
+        JsonObject saveData = sortAndGet(SaveToJson.convertToGsonObjects(tag));
+        return gson.toJson(saveData);
+    }
+
+    private static JsonObject sortAndGet(JsonObject jsonObject) {
+        final List<String> keySet = jsonObject.entrySet().stream().map(Map.Entry::getKey).sorted().collect(Collectors.toList());
+        final JsonObject temp = new JsonObject();
+        for (String key : keySet) {
+            JsonElement ele = jsonObject.get(key);
+            if (ele.isJsonObject()) {
+                ele = sortAndGet(ele.getAsJsonObject());
+                temp.add(key, ele);
+            } else if (ele.isJsonArray()) {
+                temp.add(key, ele.getAsJsonArray());
+            } else
+                temp.add(key, ele.getAsJsonPrimitive());
+        }
+        return temp;
     }
 }
