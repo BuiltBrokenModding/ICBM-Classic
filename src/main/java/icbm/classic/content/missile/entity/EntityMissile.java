@@ -289,8 +289,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
     protected void sendDescriptionPacket() {
         final PacketEntity packet = new PacketEntity("EntityMissile#desc", this.getEntityId(), 1);
-        Consumer<ByteBuf> dataWriter = (byteBuf) -> writeSpawnData(byteBuf);
-        packet.addData(dataWriter);
+        packet.addData(this::writeSpawnData);
         ICBMClassic.packetHandler.sendToAllAround(packet, world, posX, posY, posZ, 200);
     }
 
