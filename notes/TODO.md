@@ -8,10 +8,13 @@
 - [X] Unit Test Saving: Grenade (Entity, Item)
 - [X] Unit Test Saving: Carts (Entity, Item)
 - [ ] Unit Test Saving: Missiles (Entity, Item)
-- [ ] DataFixer EntityProjectile
-- [ ] DataFixer EntityMissile (EntityExplosiveMissile)
+- [X] DataFixer EntityProjectile
+- [X] DataFixer EntityMissile (EntityExplosiveMissile)
 - [ ] DataFixer out of map missiles
 - [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
+- [ ] Source data for player
+- [ ] Source data for cruise launcher
+- [ ] Source data for other>>> needed for converting old saves
 
 # Next release TODO:
 

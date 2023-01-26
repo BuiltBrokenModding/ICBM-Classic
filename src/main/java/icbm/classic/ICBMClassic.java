@@ -30,10 +30,7 @@ import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
 import icbm.classic.content.reg.ExplosiveInit;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.datafix.EntityExplosiveDataFixer;
-import icbm.classic.datafix.EntityGrenadeDataFixer;
-import icbm.classic.datafix.TileExplosivesDataFixer;
-import icbm.classic.datafix.TileRadarStationDataFixer;
+import icbm.classic.datafix.*;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
@@ -219,6 +216,7 @@ public final class ICBMClassic
         modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, new EntityMissileDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileRadarStationDataFixer());
 
