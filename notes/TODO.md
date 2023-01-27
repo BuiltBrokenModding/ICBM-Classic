@@ -10,8 +10,8 @@
 - [ ] Unit Test Saving: Missiles (Entity, Item)
 - [X] DataFixer EntityProjectile
 - [X] DataFixer EntityMissile (EntityExplosiveMissile)
-- [ ] RPG missiles
-- [ ] Cruise missiles
+- [X] DataFixer RPG missiles
+- [ ] DataFixer Cruise missiles
 - [ ] DataFixer out of map missiles
 - [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
 - [X] Source data for player

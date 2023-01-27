@@ -4,9 +4,11 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.missile.source.MissileSourceEntity;
 import icbm.classic.content.missile.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.targeting.BasicTargetData;
 import net.minecraft.block.Block;
@@ -15,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.datafix.IFixableData;
+
+import java.util.UUID;
 
 public class EntityMissileDataFixer implements IFixableData
 {
@@ -73,7 +77,7 @@ public class EntityMissileDataFixer implements IFixableData
 
         convertTargetData(existingSave, missile, missileType);
         convertFlightLogic(existingSave, missile, missileType);
-        convertTargetSource(existingSave, missile, missileType);
+        convertMissileSource(existingSave, missile, missileType);
     }
 
     private void convertExplosiveData(NBTTagCompound existingSave) {
@@ -95,39 +99,26 @@ public class EntityMissileDataFixer implements IFixableData
     }
 
     private void convertTargetData(NBTTagCompound existingSave, NBTTagCompound missile, int missileType) {
+        if(existingSave.hasKey("target")) {
+            final NBTTagCompound targetData = new NBTTagCompound();
+            missile.setTag("target", targetData);
 
-        final NBTTagCompound targetData = new NBTTagCompound();
-        missile.setTag("target", targetData);
+            final NBTTagCompound data = new NBTTagCompound();
+            targetData.setTag("data", data);
 
-        final NBTTagCompound data = new NBTTagCompound();
-        targetData.setTag("data", data);
+            // Set id, old saves would have used missile type for this
+            targetData.setString("id", missileType == 0 ? BallisticTargetingData.REG_NAME.toString() : BasicTargetData.REG_NAME.toString());
 
-        // Set id, old saves would have used missile type for this
-        targetData.setString("id", missileType == 0 ? BallisticTargetingData.REG_NAME.toString() : BasicTargetData.REG_NAME.toString());
+            // target -> compound with xyz
+            data.setDouble("x", existingSave.getCompoundTag("target").getDouble("x"));
+            data.setDouble("y", existingSave.getCompoundTag("target").getDouble("y"));
+            data.setDouble("z", existingSave.getCompoundTag("target").getDouble("z"));
 
-        // target -> compound with xyz
-        data.setDouble("x", existingSave.getCompoundTag("target").getDouble("x"));
-        data.setDouble("y", existingSave.getCompoundTag("target").getDouble("y"));
-        data.setDouble("z", existingSave.getCompoundTag("target").getDouble("z"));
-
-        // targetHeight -> int
-        if(missileType == 0) {
-            data.setDouble("impact_height", existingSave.getInteger("targetHeight"));
-        }
-        else if(missileType == 2) {
-            /*
-            // sourcePos -> compound with x y z
-            // Shooter-UUID -> string
-            final NBTTagCompound source = new NBTTagCompound();
-            existingSave.setTag("source", source);
-            if(existingSave.hasKey("Shooter-UUID", 8)) {
-                final UUID uuid = UUID.fromString(existingSave.getString("Shooter-UUID"));
-                source.setTag("uuid", NBTUtil.createUUIDTag(uuid));
+            // targetHeight -> int
+            if (missileType == 0) {
+                data.setDouble("impact_height", existingSave.getInteger("targetHeight"));
             }
-            source.setTag("pos", existingSave.getCompoundTag("sourcePos"));
-             */
         }
-
     }
 
     private void convertFlightLogic(NBTTagCompound existingSave, NBTTagCompound missile, int missileType) {
@@ -140,7 +131,7 @@ public class EntityMissileDataFixer implements IFixableData
         // Set id, old saves would have used missile type for this
         targetData.setString("id", missileType == 0 ? BallisticFlightLogic.REG_NAME.toString() : DeadFlightLogic.REG_NAME.toString()); //TODO verify for cruise and hand held
 
-
+        // Ballistic missile
         if(missileType == 0) {
 
             int preLauncherTime = existingSave.getInteger("preLaunchSmokeTimer");
@@ -173,19 +164,29 @@ public class EntityMissileDataFixer implements IFixableData
             timers.setInteger("engine_warm_up", preLauncherTime);
             timers.setDouble("lock_height", lockHeight);
         }
+        // Cruise
+        else if(missileType == 1) {
+            data.setInteger("fuel", ConfigMissile.CRUISE_FUEL);
+        }
+        // RPG
+        else if(missileType == 2) {
+            data.setInteger("fuel", ConfigMissile.HANDHELD_FUEL);
+        }
     }
 
-    private void convertTargetSource(NBTTagCompound existingSave, NBTTagCompound missile, int missileType) {
-        if(missileType == 0) {
+    private void convertMissileSource(NBTTagCompound existingSave, NBTTagCompound missile, int missileType) {
 
-            final NBTTagCompound targetData = new NBTTagCompound();
-            missile.setTag("source", targetData);
+        // Ballistic and cruise missiles
+        if(missileType == 0 || missileType == 1) {
+
+            final NBTTagCompound missileSource = new NBTTagCompound();
+            missile.setTag("source", missileSource);
 
             final NBTTagCompound data = new NBTTagCompound();
-            targetData.setTag("data", data);
+            missileSource.setTag("data", data);
 
             // Set id, old saves would have used missile type for this
-            targetData.setString("id", MissileSourceBlock.REG_NAME.toString());
+            missileSource.setString("id", MissileSourceBlock.REG_NAME.toString());
 
             final NBTTagCompound blockPos = new NBTTagCompound();
             data.setTag("block_pos", blockPos);
@@ -196,6 +197,34 @@ public class EntityMissileDataFixer implements IFixableData
             blockPos.setInteger("z", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("z")));
 
             // old save didn't store source dimension, this might cause odd event messages in the future
+        }
+        // RPG missiles
+        else if(missileType == 2) {
+
+            // sourcePos -> compound with x y z
+            // Shooter-UUID -> string
+
+            final NBTTagCompound missileSource = new NBTTagCompound();
+            missile.setTag("source", missileSource);
+
+            final NBTTagCompound data = new NBTTagCompound();
+            missileSource.setTag("data", data);
+
+            // Set id, old saves would have used missile type for this
+            missileSource.setString("id", MissileSourceEntity.REG_NAME.toString());
+
+            final NBTTagCompound pos = new NBTTagCompound();
+            data.setTag("pos", pos);
+
+            // launcherPos -> compound with x y z
+            pos.setDouble("x", existingSave.getCompoundTag("sourcePos").getDouble("x"));
+            pos.setDouble("y", existingSave.getCompoundTag("sourcePos").getDouble("y"));
+            pos.setDouble("z", existingSave.getCompoundTag("sourcePos").getDouble("z"));
+
+            if(existingSave.hasKey("Shooter-UUID", 8)) {
+                final UUID uuid = UUID.fromString(existingSave.getString("Shooter-UUID"));
+                data.setTag("uuid", NBTUtil.createUUIDTag(uuid));
+            }
         }
     }
 

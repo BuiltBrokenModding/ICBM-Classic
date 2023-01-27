@@ -11,7 +11,7 @@
         },
         {
           "type": 2,
-          "data": 12,
+          "data": 10,
           "key": "Damage"
         },
         {
@@ -125,7 +125,7 @@
               "data": [
                 {
                   "type": 3,
-                  "data": 83,
+                  "data": 200,
                   "key": "fuel"
                 }
               ],

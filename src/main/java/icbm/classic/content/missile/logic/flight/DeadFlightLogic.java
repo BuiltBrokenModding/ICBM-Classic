@@ -3,6 +3,7 @@ package icbm.classic.content.missile.logic.flight;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileFlightLogic;
+import icbm.classic.config.ConfigMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -53,7 +54,9 @@ public class DeadFlightLogic implements IMissileFlightLogic
     @Override
     public void load(NBTTagCompound save)
     {
-        fuelTicks = save.getInteger("fuel");
+        if(save.hasKey("fuel")) {
+            fuelTicks = save.getInteger("fuel");
+        }
     }
 
     @Override

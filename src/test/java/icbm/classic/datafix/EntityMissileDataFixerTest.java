@@ -6,7 +6,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.TestBase;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.content.items.ItemGrenade;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
@@ -22,10 +21,16 @@ import org.junit.jupiter.api.Test;
 public class EntityMissileDataFixerTest extends TestBase {
 
     @GivenJsonResource("data/saves/4.0.0/entity_missile_sonic.json")
-    NBTTagCompound version400save;
+    NBTTagCompound ballastic400save;
 
     @GivenJsonResource("data/saves/4.2.0/entity_missile_sonic.json")
-    NBTTagCompound version420save;
+    NBTTagCompound ballastic420save;
+
+    @GivenJsonResource("data/saves/4.0.0/entity_missile_rpg.json")
+    NBTTagCompound rpg400save;
+
+    @GivenJsonResource("data/saves/4.2.0/entity_missile_rpg.json")
+    NBTTagCompound rpg420save;
 
     final EntityMissileDataFixer dataFixer = new EntityMissileDataFixer();
 
@@ -45,20 +50,38 @@ public class EntityMissileDataFixerTest extends TestBase {
     }
 
     @Test
-    @DisplayName("Loads from old version 4.0.0 save file")
-    void loadFromVersion4() {
+    @DisplayName("Updates v4.0.0 ballastic missile save")
+    void loadFromVersion4_ballistic() {
 
         // Check that we have saves
-        Assertions.assertNotNull(version400save);
-        Assertions.assertNotNull(version420save);
+        Assertions.assertNotNull(ballastic400save);
+        Assertions.assertNotNull(ballastic420save);
 
         // Modify expected to ignore fields we don't convert but a normal save would still have
-        DataFixerHelpers.removeNestedTag(version420save, "missile", "flight", "data", "calculated");
-        DataFixerHelpers.removeNestedTag(version420save, "missile", "flight", "data", "timers", "climb_height");
-        DataFixerHelpers.removeNestedTag(version420save, "missile", "source", "data", "dimension");
+        DataFixerHelpers.removeNestedTag(ballastic420save, "missile", "flight", "data", "calculated");
+        DataFixerHelpers.removeNestedTag(ballastic420save, "missile", "flight", "data", "timers", "climb_height");
+        DataFixerHelpers.removeNestedTag(ballastic420save, "missile", "source", "data", "dimension");
 
-        final NBTTagCompound updatedSave = dataFixer.fixTagCompound(version400save);
+        final NBTTagCompound updatedSave = dataFixer.fixTagCompound(ballastic400save);
 
-        assertTags(version420save, updatedSave);
+        assertTags(ballastic420save, updatedSave);
+    }
+
+    @Test
+    @DisplayName("Updates v4.0.0 rpg missile save")
+    void loadFromVersion4_rpg() {
+
+        // Check that we have saves
+        Assertions.assertNotNull(rpg400save);
+        Assertions.assertNotNull(rpg420save);
+
+        // Modify expected to ignore fields we don't convert but a normal save would still have
+        DataFixerHelpers.removeNestedTag(rpg420save, "missile", "source", "data", "dimension");
+        DataFixerHelpers.removeNestedTag(rpg420save, "health");
+        DataFixerHelpers.removeNestedTag(rpg420save, "missile", "source", "data", "entity");
+
+        final NBTTagCompound updatedSave = dataFixer.fixTagCompound(rpg400save);
+
+        assertTags(rpg420save, updatedSave);
     }
 }
