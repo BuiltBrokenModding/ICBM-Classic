@@ -36,6 +36,13 @@ idea {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
+    // https://projectlombok.org/setup/gradle
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
     //Mods
     implementation files('libs/industrialcraft-2-2.8.170-ex112-api.jar')
     implementation files('libs/NBT-Exporter-1.0-forgelib.jar')

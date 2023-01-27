@@ -3,7 +3,7 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.content.blocks.launcher.LauncherMissileSource;
+import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.targeting.BallisticTargetingData;
@@ -15,7 +15,6 @@ import icbm.classic.api.tile.multiblock.IMultiTile;
 import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
@@ -293,7 +292,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
                     //Trigger launch event
                     missile.setTargetData(new BallisticTargetingData(target, lockHeight));
                     missile.setFlightLogic(new BallisticFlightLogic());
-                    missile.setMissileSource( new LauncherMissileSource(world, getPos())); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
+                    missile.setMissileSource( new MissileSourceBlock(world, getPos(), getBlockState(), null)); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
                     missile.launch();
 
                     //Spawn entity

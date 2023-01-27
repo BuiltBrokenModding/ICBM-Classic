@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -94,6 +95,11 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         return this;
     }
 
+    public NbtSaveRoot<E> nodeString(final String name, Function<E, String> save, BiConsumer<E, String> load)
+    {
+        return node(new SaveNodeString(name, save, load));
+    }
+
     public NbtSaveRoot<E> nodeInteger(final String name, Function<E, Integer> save, BiConsumer<E, Integer> load)
     {
         return node(new SaveNodeInteger<E>(name, save, load));
@@ -117,6 +123,11 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodeBlockPos(final String name, Function<E, BlockPos> save, BiConsumer<E, BlockPos> load)
     {
         return node(new SaveNodeBlockPos<E>(name, save, load));
+    }
+
+    public NbtSaveRoot<E> nodeVec3d(final String name, Function<E, Vec3d> save, BiConsumer<E, Vec3d> load)
+    {
+        return node(new SaveNodeVec3d<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeWorldDim(final String name, Function<E, World> save, BiConsumer<E, World> load)

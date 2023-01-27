@@ -28,11 +28,15 @@ public interface IMissileSource
     World getWorld();
 
     /**
-     * Get entity responsible for firing
+     * Get entity responsible for firing the current missile. This may not
+     * be the original entity but could be a cluster missiles or other missile
+     * creation source.
+     *
+     * @param actual entity who started the entire chain of entities
      *
      * @return entity
      */
-    Entity getFiringEntity();
+    Entity getFiringEntity(boolean actual);
 
     /**
      * Type of source
@@ -80,6 +84,7 @@ public interface IMissileSource
      */
     ResourceLocation getRegistryName();
 
+    @Deprecated //TODO replace with interfaces (IMissileSourceBlock, IMissileSourceEntity) that act as sub-types of the main sorta like events
     enum MissileSourceType {
         BLOCK,
         ENTITY

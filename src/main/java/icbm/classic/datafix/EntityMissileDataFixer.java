@@ -4,7 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.blocks.launcher.LauncherMissileSource;
+import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.targeting.BallisticTargetingData;
@@ -15,8 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.datafix.IFixableData;
-
-import java.util.UUID;
 
 public class EntityMissileDataFixer implements IFixableData
 {
@@ -187,7 +185,7 @@ public class EntityMissileDataFixer implements IFixableData
             targetData.setTag("data", data);
 
             // Set id, old saves would have used missile type for this
-            targetData.setString("id", LauncherMissileSource.REG_NAME.toString());
+            targetData.setString("id", MissileSourceBlock.REG_NAME.toString());
 
             final NBTTagCompound blockPos = new NBTTagCompound();
             data.setTag("block_pos", blockPos);

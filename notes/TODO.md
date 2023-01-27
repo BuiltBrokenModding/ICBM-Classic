@@ -10,11 +10,13 @@
 - [ ] Unit Test Saving: Missiles (Entity, Item)
 - [X] DataFixer EntityProjectile
 - [X] DataFixer EntityMissile (EntityExplosiveMissile)
+- [ ] RPG missiles
+- [ ] Cruise missiles
 - [ ] DataFixer out of map missiles
 - [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
-- [ ] Source data for player
-- [ ] Source data for cruise launcher
-- [ ] Source data for other>>> needed for converting old saves
+- [X] Source data for player
+- [X] Source data for cruise launcher
+- [X] Source data for other>>> needed for converting old saves
 
 # Next release TODO:
 
@@ -31,6 +33,7 @@
 - [X] Radar redstone not updating correctly
 - [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - [ ] Balance recipes for IC2
+- [ ] RPG missiles colliding with player (creative collider???)
 
 
 # After MC update (likely after radar and launcher rewrites)
@@ -47,6 +50,9 @@
 - [ ] redstone doesn't connect to launcher
 - [ ] UI customization of ballistic flight path (Arc min height, max height, fuel burn speed)
 - [ ] Fuel for missiles (more visualized max range)
+- [ ] Track owner of launcher
+- [ ] Track launching method (redstone, remote, etc)
+- [ ] Passed tracked data into launcher source for better event handling
 
 ## TODO future radar rewrite
 

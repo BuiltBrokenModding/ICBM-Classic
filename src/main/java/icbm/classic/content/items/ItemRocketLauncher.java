@@ -7,6 +7,8 @@ import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.missile.source.EntitySourceData;
+import icbm.classic.content.missile.source.MissileSourceEntity;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.client.Minecraft;
@@ -105,6 +107,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
                                     //Init missile
                                     missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.HANDHELD_FUEL));
+                                    missile.setMissileSource(new MissileSourceEntity(world, entity.getPositionVector(), new EntitySourceData(player)));
                                     missile.launch();
 
                                     //Spawn entity into world

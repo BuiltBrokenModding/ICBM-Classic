@@ -10,7 +10,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
-import icbm.classic.content.blocks.launcher.LauncherMissileSource;
+import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.entity.CapabilityMissile;
 import icbm.classic.content.missile.entity.anti.SAMTargetData;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
@@ -18,6 +18,7 @@ import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import icbm.classic.content.missile.logic.reg.MissileFlightLogicRegistry;
+import icbm.classic.content.missile.source.MissileSourceEntity;
 import icbm.classic.content.missile.source.reg.MissileSourceRegistry;
 import icbm.classic.content.missile.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.targeting.BasicTargetData;
@@ -269,8 +270,8 @@ public final class ICBMClassic
         final MissileSourceRegistry registry = new MissileSourceRegistry();
         ICBMClassicAPI.MISSILE_SOURCE_REGISTRY = registry;
 
-        registry.register(LauncherMissileSource.REG_NAME, LauncherMissileSource::new);
-
+        registry.register(MissileSourceBlock.REG_NAME, MissileSourceBlock::new);
+        registry.register(MissileSourceEntity.REG_NAME, MissileSourceEntity::new);
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileSourceRegistryEvent(registry));
