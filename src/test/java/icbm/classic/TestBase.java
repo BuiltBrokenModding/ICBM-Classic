@@ -105,11 +105,19 @@ public abstract class TestBase {
         Assertions.assertEquals(customTag, explosive.getCustomBlastData());
     }
 
+    protected void assertFloating(float expected, float actual, float precisionRange) {
+        float delta = Math.abs(expected - actual);
+        if(delta > precisionRange) {
+            Assertions.fail(String.format("Actual: %s is off by %s from Expected: %s with range of %s", actual, delta, expected, precisionRange));
+        }
+    }
+
     protected void assertTags(NBTTagCompound expectedTag, NBTTagCompound actualTag) {
         if(!expectedTag.equals(actualTag)) {
             throw new AssertionFailedError("Compound tags do not match",  outputJson(expectedTag), outputJson(actualTag));
         }
     }
+
     protected String outputJson(NBTTagCompound tag) {
         JsonObject saveData = sortAndGet(SaveToJson.convertToGsonObjects(tag));
         return gson.toJson(saveData);
