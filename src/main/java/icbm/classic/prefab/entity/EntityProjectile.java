@@ -59,9 +59,13 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     protected DamageSource impact_damageSource = DamageSource.ANVIL;
 
     //In ground data
+    /** Block position projectile is stuck inside */
     public BlockPos tilePos = new BlockPos(0, 0, 0);
+    /** Face of tile we are stuck inside */
     public EnumFacing sideTile = EnumFacing.UP;
+    /** Block state we are stuck inside */
     public IBlockState blockInside = Blocks.AIR.getDefaultState();
+    /** Toggle to note we are stuck in a tile on the ground */
     public boolean inGround = false;
 
     //Timers

@@ -186,7 +186,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 
     private static final NbtSaveHandler<CapabilityMissile> SAVE_LOGIC = new NbtSaveHandler<CapabilityMissile>()
         .addRoot("flags")
-        /* */.nodeBoolean("doFlight", (cap) -> cap.canRunFlightLogic(), (cap, i) -> cap.doFlight = i)
+        /* */.nodeBoolean("doFlight", CapabilityMissile::canRunFlightLogic, (cap, i) -> cap.doFlight = i)
         .base()
         .mainRoot()
         /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
@@ -207,9 +207,8 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                     }
                 }
                 return null;
-            },            (cap, data) -> {
-
-
+            },
+            (cap, data) -> {
                 //Attempt to restore target object from save
                 if(cap.getTargetData() == null) {
                     final ResourceLocation saveId = new ResourceLocation(data.getString("id"));

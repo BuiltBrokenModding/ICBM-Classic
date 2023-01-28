@@ -44,7 +44,7 @@
       "data": [
         {
           "type": 1,
-          "data": 0,
+          "data": 1,
           "key": "ground"
         }
       ],
@@ -58,17 +58,17 @@
           "data": [
             {
               "type": 3,
-              "data": 0,
+              "data": 10,
               "key": "x"
             },
             {
               "type": 3,
-              "data": 0,
+              "data": 5,
               "key": "y"
             },
             {
               "type": 3,
-              "data": 0,
+              "data": 290,
               "key": "z"
             }
           ],
@@ -76,7 +76,7 @@
         },
         {
           "type": 1,
-          "data": 1,
+          "data": 5,
           "key": "side"
         },
         {
@@ -84,7 +84,7 @@
           "data": [
             {
               "type": 8,
-              "data": "minecraft:air",
+              "data": "minecraft:stone",
               "key": "Name"
             }
           ],
@@ -95,13 +95,8 @@
     },
     {
       "type": 5,
-      "data": 0.0,
+      "data": 43.1,
       "key": "health"
-    },
-    {
-      "type": 8,
-      "data": "icbmclassic:explosive_missile",
-      "key": "id"
     },
     {
       "type": 10,
@@ -125,7 +120,7 @@
               "data": [
                 {
                   "type": 3,
-                  "data": 200,
+                  "data": 135,
                   "key": "fuel"
                 }
               ],
@@ -227,7 +222,7 @@
         },
         {
           "type": 3,
-          "data": 0,
+          "data": 45,
           "key": "ground"
         }
       ],
