@@ -48,6 +48,9 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         this.inAirKillTime = 144000 /* 2 hours */;
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
+
+        // Init health as explosive field is not set at time of health registration
+        setHealth(getMaxHealth());
     }
 
     @Override
