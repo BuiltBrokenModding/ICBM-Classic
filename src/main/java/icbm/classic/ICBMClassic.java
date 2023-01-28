@@ -94,7 +94,7 @@ import java.util.List;
  */
 @Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION)
 @Mod.EventBusSubscriber
-public final class ICBMClassic
+public class ICBMClassic
 {
     public static final String VERSION = "@VERSION@";
 
@@ -231,7 +231,7 @@ public final class ICBMClassic
         handleExRegistry(event.getModConfigurationDirectory());
     }
 
-    private void handleMissileTargetRegistry()
+    void handleMissileTargetRegistry()
     {
         final MissileTargetRegistry registry = new MissileTargetRegistry();
         ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = registry;
@@ -247,7 +247,7 @@ public final class ICBMClassic
         registry.lock();
     }
 
-    private void handleMissileFlightRegistry()
+    void handleMissileFlightRegistry()
     {
         final MissileFlightLogicRegistry registry = new MissileFlightLogicRegistry();
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = registry;
@@ -265,7 +265,7 @@ public final class ICBMClassic
         registry.lock();
     }
 
-    private void handleMissileSourceRegistry()
+    void handleMissileSourceRegistry()
     {
         final MissileSourceRegistry registry = new MissileSourceRegistry();
         ICBMClassicAPI.MISSILE_SOURCE_REGISTRY = registry;
@@ -280,7 +280,7 @@ public final class ICBMClassic
         registry.lock();
     }
 
-    public void handleExRegistry(File configMainFolder)
+    void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls
     {
         //Init registry
         final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();

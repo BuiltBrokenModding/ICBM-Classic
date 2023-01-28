@@ -33,14 +33,6 @@ class ItemBlockExplosiveTest extends TestBase {
     @BeforeAll
     public static void beforeAllTests()
     {
-        // Start vanilla
-        Bootstrap.register();
-
-        // Setup explosive registry
-        ICBMClassicAPI.EXPLOSIVE_CAPABILITY = getCapOrCreate(IExplosive.class, CapabilityExplosive::register);
-        ICBMClassic.INSTANCE = new ICBMClassic();
-        ICBMClassic.INSTANCE.handleExRegistry(null);
-
         // Register block for placement
         final Block block = new BlockExplosive();
         ForgeRegistries.BLOCKS.register(block);

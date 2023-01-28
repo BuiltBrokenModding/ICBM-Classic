@@ -10,14 +10,18 @@ import com.lunarshark.nbttool.utils.SaveToJson;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.items.ItemGrenade;
+import net.minecraft.init.Bootstrap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.opentest4j.AssertionFailedError;
 
 import javax.annotation.Nonnull;
@@ -44,6 +48,13 @@ public abstract class TestBase {
         }
     }
 
+    @BeforeAll
+    public static void loadGameAndMod()
+    {
+        Bootstrap.register();
+        ICBMClassicMock.init();
+    }
+
     @AfterAll
     public static void afterAllTests()
     {
@@ -63,7 +74,7 @@ public abstract class TestBase {
         });
     }
 
-    protected static <T> Capability<T> getCap(Class<T> type) {
+    public static <T> Capability<T> getCap(Class<T> type) {
         try {
             final Field field = CapabilityManager.class.getDeclaredField("providers");
             field.setAccessible(true);

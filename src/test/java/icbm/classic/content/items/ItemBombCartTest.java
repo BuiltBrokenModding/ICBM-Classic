@@ -28,14 +28,6 @@ public class ItemBombCartTest extends TestBase {
     @BeforeAll
     public static void beforeAllTests()
     {
-        // Start vanilla
-        Bootstrap.register();
-
-        // Setup explosive registry
-        ICBMClassicAPI.EXPLOSIVE_CAPABILITY = getCapOrCreate(IExplosive.class, CapabilityExplosive::register);
-        ICBMClassic.INSTANCE = new ICBMClassic();
-        ICBMClassic.INSTANCE.handleExRegistry(null);
-
         // Register block for placement
         ForgeRegistries.ITEMS.register(item = new ItemBombCart().setName("bombcart").setCreativeTab(ICBMClassic.CREATIVE_TAB));
     }
