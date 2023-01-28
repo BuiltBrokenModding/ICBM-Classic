@@ -283,7 +283,7 @@
             },
             {
               "type": 8,
-              "data": "icbmclassic:block.launcher",
+              "data": "icbmclassic:block",
               "key": "id"
             }
           ],
