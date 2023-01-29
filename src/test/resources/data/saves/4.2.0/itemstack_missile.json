@@ -30,7 +30,7 @@
     },
     {
       "type": 8,
-      "data": "icbmclassic:missile",
+      "data": "icbmclassic:explosive_missile",
       "key": "id"
     }
   ]
