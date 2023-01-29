@@ -14,8 +14,8 @@
 - [X] DataFixer EntityProjectile
 - [X] DataFixer EntityMissile (EntityExplosiveMissile)
 - [X] DataFixer RPG missiles
-- [ ] DataFixer Cruise missiles
-- [ ] DataFixer out of map missiles
+- [X] DataFixer Cruise missiles
+- [X] DataFixer out of map missiles
 - [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
 - [X] Source data for player
 - [X] Source data for cruise launcher
@@ -38,6 +38,7 @@
 - [ ] Balance recipes for IC2
 - [ ] RPG missiles colliding with player (creative collider???)
 - [ ] Missile item frame doesn't render properly
+- [ ] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
 
 
 # After MC update (likely after radar and launcher rewrites)
@@ -93,3 +94,4 @@
 - [ ] Alt path to get Sulfur drops (newer mc has rocks in caves that could work as an on-break loot table)
 - [ ] saltpeter recipe supports sewage fluid instead of water if present
 - [ ] change `IMissileFlightLogic#shouldRunEngineEffects` to return an object containing settings (effect type, size, color, etc)
+- [ ] create interface to customize what data is saved when simulating missile to avoid wasted data

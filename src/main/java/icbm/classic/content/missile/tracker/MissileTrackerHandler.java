@@ -1,7 +1,9 @@
 package icbm.classic.content.missile.tracker;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -35,7 +37,15 @@ public class MissileTrackerHandler
      */
     public static void simulateMissile(EntityExplosiveMissile missile)
     {
-        getOrCreateHandler(missile.world, true).simulateMissile(missile);
+        // Can't save missiles that are dead, riding another entity, or have a player riding
+        if(missile != null && !missile.isDead && !missile.isRiding() && noPlayer(missile)) {
+            getOrCreateHandler(missile.world, true).simulateMissile(missile);
+        }
+    }
+
+    private static boolean noPlayer(EntityMissile missile) {
+        // TODO check for riding chains
+        return missile.getPassengers().stream().noneMatch(e -> e instanceof EntityPlayer);
     }
 
     /**
