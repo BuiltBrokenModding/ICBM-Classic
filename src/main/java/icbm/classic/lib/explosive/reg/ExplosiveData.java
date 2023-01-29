@@ -4,6 +4,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
+import lombok.ToString;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.Set;
  *
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
+@ToString(of={"regName", "id"})
 public class ExplosiveData implements IExplosiveData
 {
     public final ResourceLocation regName;
