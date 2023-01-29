@@ -1,0 +1,121 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "18.76324154322225",
+          "key": "pitch"
+        },
+        {
+          "type": 6,
+          "data": "0.0",
+          "key": "roll"
+        },
+        {
+          "type": 6,
+          "data": "213.2750258565684",
+          "key": "yaw"
+        }
+      ],
+      "key": "currentAim"
+    },
+    {
+      "type": 3,
+      "data": 20000,
+      "key": "energy"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "frequency"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:cruiselauncher",
+      "key": "id"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 9,
+          "data": [
+            {
+              "type": 10,
+              "data": [
+                {
+                  "type": 1,
+                  "data": 1,
+                  "key": "Count"
+                },
+                {
+                  "type": 2,
+                  "data": 4,
+                  "key": "Damage"
+                },
+                {
+                  "type": 10,
+                  "data": [
+                    {
+                      "type": 10,
+                      "data": [
+                        {
+                          "type": 10,
+                          "data": [],
+                          "key": "explosive"
+                        }
+                      ],
+                      "key": "Parent"
+                    }
+                  ],
+                  "key": "ForgeCaps"
+                },
+                {
+                  "type": 1,
+                  "data": 0,
+                  "key": "Slot"
+                },
+                {
+                  "type": 8,
+                  "data": "icbmclassic:missile",
+                  "key": "id"
+                }
+              ]
+            }
+          ],
+          "key": "Items"
+        }
+      ],
+      "key": "inventory"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "425984.0",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "263794.0",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "649130.0",
+          "key": "z"
+        }
+      ],
+      "key": "target"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "tier"
+    }
+  ]
+}

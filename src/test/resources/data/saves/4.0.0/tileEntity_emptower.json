@@ -1,0 +1,30 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 1,
+      "data": 0,
+      "key": "empMode"
+    },
+    {
+      "type": 3,
+      "data": 60,
+      "key": "empRadius"
+    },
+    {
+      "type": 3,
+      "data": 1000000,
+      "key": "energy"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:emptower",
+      "key": "id"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "tier"
+    }
+  ]
+}

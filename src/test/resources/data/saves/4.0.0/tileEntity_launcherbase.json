@@ -1,0 +1,26 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 8,
+      "data": "icbmclassic:launcherbase",
+      "key": "id"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 9,
+          "data": [],
+          "key": "Items"
+        }
+      ],
+      "key": "inventory"
+    },
+    {
+      "type": 3,
+      "data": 2,
+      "key": "tier"
+    }
+  ]
+}

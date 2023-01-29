@@ -1,0 +1,15 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 8,
+      "data": "icbmclassic:launcherframe",
+      "key": "id"
+    },
+    {
+      "type": 3,
+      "data": 2,
+      "key": "tier"
+    }
+  ]
+}

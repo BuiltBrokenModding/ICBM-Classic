@@ -1,0 +1,40 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 3,
+      "data": 100,
+      "key": "alarmRadius"
+    },
+    {
+      "type": 1,
+      "data": 1,
+      "key": "emitAll"
+    },
+    {
+      "type": 3,
+      "data": 20000,
+      "key": "energy"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "frequency"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:radarstation",
+      "key": "id"
+    },
+    {
+      "type": 3,
+      "data": 50,
+      "key": "safetyRadius"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "tier"
+    }
+  ]
+}
