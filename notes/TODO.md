@@ -1,4 +1,3 @@
-
 # Next release TODO:
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
@@ -19,6 +18,20 @@
 - [X] RPG missiles colliding with player (creative collider???)
 - [ ] Missile item frame doesn't render properly
 - [ ] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
+
+# broken recipes
+
+- [X] Colorful grenade recipe
+- [X] Smoke cart recipe
+- [X] Colorful missile has two recipes
+- [X] Smoke missile
+- [X] Smoke grenade
+- [ ] Emps explosive
+- [X] Colorful cart has two recipes
+- [X] Smoke cart has two recipes
+- [X] Colorful explosive has two recipes (might be EMPs? Nope, was regen)
+- [X] Nuke explosive looks odd
+- [X] smoke's explosive recipe doesn't look to be it's own
 
 
 # After MC update (likely after radar and launcher rewrites)

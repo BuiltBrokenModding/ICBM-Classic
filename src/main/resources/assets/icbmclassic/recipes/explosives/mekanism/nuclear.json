@@ -1,0 +1,49 @@
+{
+  "result": {
+    "item": "icbmclassic:explosives",
+    "data": 15,
+    "count": 1
+  },
+  "pattern": [
+    "tit",
+    "iii",
+    "tit"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "t": {
+      "item": "icbmclassic:explosives",
+      "data": 13
+    },
+    "i": {
+      "item": "mekanism:atomicalloy"
+    }
+  },
+  "conditions": [
+    {
+      "type": "forge:and",
+      "values": [
+        {
+          "type": "forge:and",
+          "values": [
+            {
+              "type": "icbmclassic:ore_value",
+              "condition": "false",
+              "value": "ingotUranium"
+            },
+            {
+              "type": "icbmclassic:ore_value",
+              "condition": "false",
+              "value": "pelletUranium235"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item_exists",
+          "condition": "true",
+          "item": "mekanism:atomicalloy"
+        }
+      ]
+    }
+  ]
+}

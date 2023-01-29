@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:colors",
+    "explosive": "icbmclassic:smoke",
     "device": "icbmclassic:grenade",
     "count": 1
   },
@@ -16,7 +16,7 @@
     },
     "x": {
       "type" : "icbmclassic:explosive",
-      "explosive": "icbmclassic:colors"
+      "explosive": "icbmclassic:smoke"
     }
   }
 }

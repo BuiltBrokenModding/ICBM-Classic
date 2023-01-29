@@ -25,5 +25,22 @@
         "ore": "pelletUranium235"
       }
     ]
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:or",
+      "values": [
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "true",
+          "value": "ingotUranium"
+        },
+        {
+          "type": "icbmclassic:ore_value",
+          "condition": "true",
+          "value": "pelletUranium235"
+        }
+      ]
+    }
+  ]
 }

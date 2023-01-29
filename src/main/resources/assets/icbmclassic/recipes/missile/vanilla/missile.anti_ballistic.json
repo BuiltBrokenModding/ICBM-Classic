@@ -11,7 +11,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "m": {
-      "item": "icbmclassic:missile",
+      "item": "icbmclassic:explosive_missile",
       "data": 24
     },
     "e": {
