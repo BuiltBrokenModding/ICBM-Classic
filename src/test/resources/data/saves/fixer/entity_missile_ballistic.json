@@ -2,6 +2,29 @@
   "type": 10,
   "data": [
     {
+      "type": 9,
+      "data": [
+        {
+          "type": 6,
+          "data": "123.1"
+        },
+        {
+          "type": 6,
+          "data": "67.56"
+        },
+        {
+          "type": 6,
+          "data": "205.5"
+        }
+      ],
+      "key": "Pos"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:explosive_missile",
+      "key": "id"
+    },
+    {
       "type": 10,
       "data": [
         {
@@ -260,7 +283,7 @@
             },
             {
               "type": 8,
-              "data": "icbmclassic:block.launcher",
+              "data": "icbmclassic:block",
               "key": "id"
             }
           ],

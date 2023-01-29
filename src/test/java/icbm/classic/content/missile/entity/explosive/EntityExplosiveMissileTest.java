@@ -2,30 +2,15 @@ package icbm.classic.content.missile.entity.explosive;
 
 import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
-import com.builtbroken.mc.testing.junit.TestManager;
-import com.ibm.icu.impl.Assert;
-import icbm.classic.ICBMClassic;
 import icbm.classic.TestBase;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.items.ItemGrenade;
 import icbm.classic.content.items.ItemMissile;
-import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.missile.logic.reg.MissileFlightLogicRegistry;
 import icbm.classic.content.missile.source.EntitySourceData;
 import icbm.classic.content.missile.source.MissileSourceEntity;
-import icbm.classic.content.missile.targeting.BasicTargetData;
-import icbm.classic.content.missile.targeting.reg.MissileTargetRegistry;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.capability.ex.CapabilityExplosive;
-import icbm.classic.prefab.entity.EntityICBMTest;
-import icbm.classic.prefab.entity.EntityProjectileTest;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Bootstrap;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -33,10 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
 
 @TestWithResources
@@ -49,7 +31,7 @@ public class EntityExplosiveMissileTest extends TestBase
     public static void beforeAllTests()
     {
         // Register missile for loading explosive stack from save
-        ForgeRegistries.ITEMS.register(ItemReg.itemMissile = new ItemMissile());
+        ForgeRegistries.ITEMS.register(ItemReg.itemExplosiveMissile = new ItemMissile());
     }
 
     @Test

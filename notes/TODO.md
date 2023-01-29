@@ -7,11 +7,15 @@
 - [X] Unit Test Saving: Explosive (TileEntity, Item)
 - [X] Unit Test Saving: Grenade (Entity, Item)
 - [X] Unit Test Saving: Carts (Entity, Item)
-- [ ] Unit Test Saving: Missiles (Entity, Item)
+- [X] Unit Test Saving: Missiles Entity RPG
+- [ ] Unit Test Saving: Missiles Entity Ballistic
+- [ ] Unit Test Saving: Missiles Entity Cruise
+- [ ] Unit Test Saving: Missiles Item
 - [X] DataFixer EntityProjectile
 - [X] DataFixer EntityMissile (EntityExplosiveMissile)
 - [X] DataFixer RPG missiles
 - [ ] DataFixer Cruise missiles
+- [ ] DataFixer missile item
 - [ ] DataFixer out of map missiles
 - [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
 - [X] Source data for player
@@ -21,7 +25,7 @@
 # Next release TODO:
 
 - [ ] Migrate BombCart to capability and have it store ItemStack used to place
-- [ ] Fix smoke localizations and textures
+- [ ] Fix smoke localizations and texturea
 - [ ] Fix AB config translations
 - [ ] Improve Smoke usefulness
 - [ ] Nuke (alt for lacking uranium items)
@@ -34,6 +38,7 @@
 - [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - [ ] Balance recipes for IC2
 - [ ] RPG missiles colliding with player (creative collider???)
+- [ ] Missile item frame doesn't render properly
 
 
 # After MC update (likely after radar and launcher rewrites)
@@ -75,6 +80,7 @@
 - [ ] remove crafting items
 - [ ] tool textures
 - [ ] 3D model for laser
+- [ ] Fake missiles for decoration
 
 # TODO future +2
 

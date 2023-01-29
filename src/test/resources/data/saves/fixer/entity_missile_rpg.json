@@ -1,5 +1,4 @@
 {
-  "type": 10,
   "data": [
     {
       "type": 10,
@@ -44,7 +43,7 @@
       "data": [
         {
           "type": 1,
-          "data": 1,
+          "data": 0,
           "key": "ground"
         }
       ],
@@ -58,17 +57,17 @@
           "data": [
             {
               "type": 3,
-              "data": 10,
+              "data": 0,
               "key": "x"
             },
             {
               "type": 3,
-              "data": 5,
+              "data": 0,
               "key": "y"
             },
             {
               "type": 3,
-              "data": 290,
+              "data": 0,
               "key": "z"
             }
           ],
@@ -76,7 +75,7 @@
         },
         {
           "type": 1,
-          "data": 5,
+          "data": 1,
           "key": "side"
         },
         {
@@ -84,19 +83,8 @@
           "data": [
             {
               "type": 8,
-              "data": "minecraft:stone",
+              "data": "minecraft:air",
               "key": "Name"
-            },
-            {
-              "type": 10,
-              "data": [
-                {
-                  "type": 8,
-                  "data": "stone",
-                  "key": "variant"
-                }
-              ],
-              "key": "Properties"
             }
           ],
           "key": "state"
@@ -105,9 +93,9 @@
       "key": "ground"
     },
     {
-      "type": 5,
-      "data": 43.1,
-      "key": "health"
+      "type": 8,
+      "data": "icbmclassic:explosive_missile",
+      "key": "id"
     },
     {
       "type": 10,
@@ -131,7 +119,7 @@
               "data": [
                 {
                   "type": 3,
-                  "data": 135,
+                  "data": 200,
                   "key": "fuel"
                 }
               ],
@@ -151,43 +139,6 @@
             {
               "type": 10,
               "data": [
-                {
-                  "type": 3,
-                  "data": 0,
-                  "key": "dimension"
-                },
-                {
-                  "type": 10,
-                  "data": [
-                    {
-                      "type": 8,
-                      "data": "Player890",
-                      "key": "name"
-                    },
-                    {
-                      "type": 1,
-                      "data": 1,
-                      "key": "player"
-                    },
-                    {
-                      "type": 10,
-                      "data": [
-                        {
-                          "type": 4,
-                          "data": "-8122821596986775482",
-                          "key": "L"
-                        },
-                        {
-                          "type": 4,
-                          "data": "2454671487114819752",
-                          "key": "M"
-                        }
-                      ],
-                      "key": "uuid"
-                    }
-                  ],
-                  "key": "entity"
-                },
                 {
                   "type": 10,
                   "data": [
@@ -233,11 +184,12 @@
         },
         {
           "type": 3,
-          "data": 45,
+          "data": 0,
           "key": "ground"
         }
       ],
       "key": "ticks"
     }
-  ]
+  ],
+  "type": 10
 }
