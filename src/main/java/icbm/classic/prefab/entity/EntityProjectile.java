@@ -9,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -144,6 +145,16 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public void initAimingPosition(double x, double y, double z, float yaw, float pitch, float offsetMultiplier, float forceMultiplier)
     {
         init(x, y, z, yaw, pitch, forceMultiplier, offsetMultiplier);
+    }
+
+    @Override
+    public void initAimingPosition(Entity shooter, float offsetMultiplier, float forceMultiplier) {
+        this.shootingEntity = shooter;
+        initAimingPosition(
+            shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ,
+            shooter.rotationYaw, shooter.rotationPitch,
+            offsetMultiplier, forceMultiplier
+        );
     }
 
     @Override

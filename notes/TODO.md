@@ -16,7 +16,7 @@
 - [X] Radar redstone not updating correctly
 - [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - [ ] Balance recipes for IC2
-- [ ] RPG missiles colliding with player (creative collider???)
+- [X] RPG missiles colliding with player (creative collider???)
 - [ ] Missile item frame doesn't render properly
 - [ ] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
 
@@ -38,6 +38,12 @@
 - [ ] Track owner of launcher
 - [ ] Track launching method (redstone, remote, etc)
 - [ ] Passed tracked data into launcher source for better event handling
+- [ ] Have missile spawn from PRG visually, ensure we raytrace for collisions to perevent shooting through walls
+- [ ] Scale down RPG missiles
+- [ ] Add new missile item purely for RPG that are smaller in scale
+- [ ] Add fuel item (coal + redstone), all missiles default with a little but range in silo will change fuel usage
+- [ ] Add fuel tank to silos, will use fuel item to add to level but other mods could add fluid support for automation
+- [ ] Make fuel config driven(on/off, fuel usage rate, electricity usage rates)
 
 ## TODO future radar rewrite
 

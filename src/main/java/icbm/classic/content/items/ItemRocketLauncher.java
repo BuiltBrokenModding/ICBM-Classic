@@ -44,7 +44,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 {
     private static final int ENERGY = 1000000;
     private static final int firingDelay = 1000;
-    private HashMap<String, Long> clickTimePlayer = new HashMap<String, Long>();
+    private final HashMap<String, Long> clickTimePlayer = new HashMap<String, Long>();
 
     public ItemRocketLauncher()
     {
