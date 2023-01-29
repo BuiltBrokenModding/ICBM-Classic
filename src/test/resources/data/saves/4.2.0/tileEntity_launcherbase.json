@@ -43,19 +43,24 @@
                   "key": "ForgeCaps"
                 },
                 {
-                  "type": 1,
+                  "type": 3,
                   "data": 0,
                   "key": "Slot"
                 },
                 {
                   "type": 8,
-                  "data": "icbmclassic:missile",
+                  "data": "icbmclassic:explosive_missile",
                   "key": "id"
                 }
               ]
             }
           ],
           "key": "Items"
+        },
+        {
+          "type": 3,
+          "data": 1,
+          "key": "Size"
         }
       ],
       "key": "inventory"
@@ -67,17 +72,17 @@
     },
     {
       "type": 3,
-      "data": 48,
+      "data": 72,
       "key": "x"
     },
     {
       "type": 3,
-      "data": 69,
+      "data": 64,
       "key": "y"
     },
     {
       "type": 3,
-      "data": 0,
+      "data": 205,
       "key": "z"
     }
   ]
