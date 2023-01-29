@@ -13,6 +13,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.items.ItemGrenade;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.opentest4j.AssertionFailedError;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -137,5 +140,15 @@ public abstract class TestBase {
                 temp.add(key, ele.getAsJsonPrimitive());
         }
         return temp;
+    }
+
+    protected NBTTagCompound readSaveFile(File file) {
+        try(FileInputStream fileinputstream = new FileInputStream(file)) {
+            return CompressedStreamTools.readCompressed(fileinputstream);
+        }
+        catch (Exception e) {
+            Assertions.fail("Failed to load save file: " + file);
+        }
+        return null;
     }
 }

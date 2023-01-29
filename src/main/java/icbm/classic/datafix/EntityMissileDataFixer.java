@@ -25,6 +25,8 @@ public class EntityMissileDataFixer implements IFixableData
 {
     private static final String ENTITY_ID = "id";
 
+    public static final EntityMissileDataFixer INSTANCE = new EntityMissileDataFixer();
+
     // TODO wrap everything in optionals in case any field is null
 
     @Override
@@ -178,7 +180,7 @@ public class EntityMissileDataFixer implements IFixableData
     private void convertMissileSource(NBTTagCompound existingSave, NBTTagCompound missile, int missileType) {
 
         // Ballistic and cruise missiles
-        if(missileType == 0 || missileType == 1) {
+        if(missileType == 0) {
 
             final NBTTagCompound missileSource = new NBTTagCompound();
             missile.setTag("source", missileSource);
@@ -196,6 +198,27 @@ public class EntityMissileDataFixer implements IFixableData
             blockPos.setInteger("x", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("x")));
             blockPos.setInteger("y", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("y")));
             blockPos.setInteger("z", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("z")));
+
+            // old save didn't store source dimension, this might cause odd event messages in the future
+        }
+        // Ballistic and cruise missiles
+        else  if(missileType == 1) {
+            final NBTTagCompound missileSource = new NBTTagCompound();
+            missile.setTag("source", missileSource);
+
+            final NBTTagCompound data = new NBTTagCompound();
+            missileSource.setTag("data", data);
+
+            // Set id, old saves would have used missile type for this
+            missileSource.setString("id", MissileSourceBlock.REG_NAME.toString());
+
+            final NBTTagCompound blockPos = new NBTTagCompound();
+            data.setTag("block_pos", blockPos);
+
+            // launcherPos -> compound with x y z
+            blockPos.setInteger("x", (int)Math.floor(existingSave.getCompoundTag("sourcePos").getDouble("x")));
+            blockPos.setInteger("y", (int)Math.floor(existingSave.getCompoundTag("sourcePos").getDouble("y")));
+            blockPos.setInteger("z", (int)Math.floor(existingSave.getCompoundTag("sourcePos").getDouble("z")));
 
             // old save didn't store source dimension, this might cause odd event messages in the future
         }

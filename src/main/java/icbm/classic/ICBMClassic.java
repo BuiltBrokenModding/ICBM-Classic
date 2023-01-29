@@ -217,7 +217,7 @@ public class ICBMClassic
         modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
-        modFixs.registerFix(FixTypes.ENTITY, new EntityMissileDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, EntityMissileDataFixer.INSTANCE);
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileRadarStationDataFixer());
 
