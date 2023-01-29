@@ -1,6 +1,5 @@
 package icbm.classic.client;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
@@ -26,7 +25,6 @@ import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.entity.mobs.EntityXmasCreeper;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
@@ -277,9 +275,9 @@ public class ClientReg
             final String resourcePath = data.getRegistryName().getResourceDomain() + ":missiles/" + data.getRegistryName().getResourcePath();
             missileModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
-        ModelLoader.registerItemVariants(ItemReg.itemMissile, missileModelMap.values()
+        ModelLoader.registerItemVariants(ItemReg.itemExplosiveMissile, missileModelMap.values()
                 .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
-        ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemExplosiveMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
     }
 
     protected static void registerCraftingRender(ItemCrafting itemCrafting)

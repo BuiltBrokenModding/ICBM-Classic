@@ -2,6 +2,7 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
@@ -24,6 +25,7 @@ import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -42,8 +44,8 @@ public class ItemReg
     public static Item itemSignalDisrupter;
     @ObjectHolder(ICBMConstants.PREFIX + "tracker")
     public static Item itemTracker;
-    @ObjectHolder(ICBMConstants.PREFIX + "missile")
-    public static Item itemMissile;
+    @ObjectHolder(ICBMConstants.PREFIX + "explosive_missile")
+    public static Item itemExplosiveMissile;
     @ObjectHolder(ICBMConstants.PREFIX + "defuser")
     public static Item itemDefuser;
     @ObjectHolder(ICBMConstants.PREFIX + "radarGun")
@@ -85,6 +87,18 @@ public class ItemReg
     public static ItemSurfaceToAirMissile itemSAM;
 
     @SubscribeEvent
+    public static void missingMapping(RegistryEvent.MissingMappings<Item> event) {
+
+        // Name was changed in v4.2.0
+        final ResourceLocation oldMissileName = new ResourceLocation(ICBMConstants.DOMAIN, "missile");
+        for(RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getMappings()) {
+            if (oldMissileName.equals(mapping.key)) {
+                mapping.remap(itemExplosiveMissile);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
         //Items
@@ -110,7 +124,7 @@ public class ItemReg
         event.getRegistry().register(new ItemRemoteDetonator());
         event.getRegistry().register(new ItemLaserDetonator());
         event.getRegistry().register(new ItemRocketLauncher());
-        event.getRegistry().register(new ItemMissile());
+        event.getRegistry().register(new ItemMissile().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemSurfaceToAirMissile());
 
         //Block items

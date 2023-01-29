@@ -58,7 +58,7 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(ItemReg.itemBattery);
 
         orderItem(BlockReg.blockExplosive);
-        orderItem(ItemReg.itemMissile);
+        orderItem(ItemReg.itemExplosiveMissile);
         orderItem(ItemReg.itemGrenade);
         orderItem(ItemReg.itemBombCart);
 
@@ -143,6 +143,6 @@ public class ICBMCreativeTab extends CreativeTabs
     @Override
     public ItemStack getTabIconItem()
     {
-        return new ItemStack(ItemReg.itemMissile);
+        return new ItemStack(ItemReg.itemExplosiveMissile);
     }
 }

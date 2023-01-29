@@ -1,5 +1,6 @@
 package icbm.classic.content.reg;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
@@ -7,12 +8,14 @@ import icbm.classic.content.entity.*;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
@@ -20,8 +23,18 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 @Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public final class EntityReg
 {
-
     private static int nextEntityID = 0;
+
+    @SubscribeEvent
+    public static void missingMapping(RegistryEvent.MissingMappings<EntityEntry> event) {
+        // Name was changed in v4.2.0
+        final ResourceLocation oldMissileName = new ResourceLocation(ICBMConstants.DOMAIN, "missile");
+        for(RegistryEvent.MissingMappings.Mapping<EntityEntry> mapping : event.getMappings()) {
+            if (oldMissileName.equals(mapping.key)) {
+                mapping.remap(ForgeRegistries.ENTITIES.getValue(ICBMEntities.MISSILE_EXPLOSIVE));
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void registerEntity(RegistryEvent.Register<EntityEntry> event)

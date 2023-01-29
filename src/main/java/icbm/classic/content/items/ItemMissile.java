@@ -8,6 +8,7 @@ import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
+import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,11 +21,10 @@ import net.minecraft.util.NonNullList;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemMissile extends ItemICBMBase
+public class ItemMissile extends ItemBase
 {
     public ItemMissile()
     {
-        super("missile");
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);

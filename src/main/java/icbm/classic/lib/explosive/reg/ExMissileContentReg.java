@@ -69,7 +69,7 @@ public class ExMissileContentReg extends ExplosiveContentRegistry implements IEx
         IExplosiveData ex = getExplosive(regName);
         if(ex != null)
         {
-            return new ItemStack(ItemReg.itemMissile, 1, ex.getRegistryID());
+            return new ItemStack(ItemReg.itemExplosiveMissile, 1, ex.getRegistryID());
         }
         return null;
     }
