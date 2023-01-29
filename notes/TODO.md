@@ -1,28 +1,8 @@
-# Ready for merge
-
-- [X] AB Kill logic (Not dying after killing missile)
-- [X] AB tacking issue with base launcher
-- [X] Cruise Missile AB as item (UI thinks it is invalid, likely server does as well)
-- [X] Base Launcher Missile AB as item (right click of missile is not working as expected)
-- [X] Unit Test Saving: Explosive (TileEntity, Item)
-- [X] Unit Test Saving: Grenade (Entity, Item)
-- [X] Unit Test Saving: Carts (Entity, Item)
-- [X] Unit Test Saving: Missiles Entity RPG
-- [ ] Unit Test Saving: Missiles Entity Ballistic
-- [ ] Unit Test Saving: Missiles Entity Cruise
-- [X] Unit Test Saving: Missiles Item
-- [X] DataFixer EntityProjectile
-- [X] DataFixer EntityMissile (EntityExplosiveMissile)
-- [X] DataFixer RPG missiles
-- [X] DataFixer Cruise missiles
-- [X] DataFixer out of map missiles
-- [ ] Unit Test Saving: Launchers (TileEntity, Inventory holding onto missile data)
-- [X] Source data for player
-- [X] Source data for cruise launcher
-- [X] Source data for other>>> needed for converting old saves
 
 # Next release TODO:
 
+- [ ] Unit Test Saving: Missiles Entity Ballistic
+- [ ] Unit Test Saving: Missiles Entity Cruise
 - [ ] Migrate BombCart to capability and have it store ItemStack used to place
 - [ ] Fix smoke localizations and texturea
 - [ ] Fix AB config translations
