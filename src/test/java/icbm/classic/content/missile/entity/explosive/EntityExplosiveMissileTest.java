@@ -2,6 +2,7 @@ package icbm.classic.content.missile.entity.explosive;
 
 import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
+import icbm.classic.ICBMClassic;
 import icbm.classic.TestBase;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
@@ -31,7 +32,7 @@ public class EntityExplosiveMissileTest extends TestBase
     public static void beforeAllTests()
     {
         // Register missile for loading explosive stack from save
-        ForgeRegistries.ITEMS.register(ItemReg.itemExplosiveMissile = new ItemMissile());
+        ForgeRegistries.ITEMS.register(ItemReg.itemExplosiveMissile = new ItemMissile().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
     }
 
     @Test
