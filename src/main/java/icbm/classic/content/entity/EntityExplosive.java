@@ -103,8 +103,6 @@ public class EntityExplosive extends Entity implements IRotatable, IEntityAdditi
 
     public void explode()
     {
-        //TODO hook particles to blast, as well hook to explosive handler
-        this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, 0.0D, 0.0D, 0.0D);
         ExplosiveHandler.createExplosion(this, this.world, this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, getExplosiveCap());
         this.setDead();
     }

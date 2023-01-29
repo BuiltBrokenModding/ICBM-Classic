@@ -7,6 +7,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.function.Consumer;
+
 /**
  * Base object for all custom packets using in VoltzEngine.
  * </p>
@@ -40,8 +42,13 @@ public interface IPacket<P extends IPacket>
      */
     void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer);
 
+    @Deprecated
     default P addData(Object... objects)
     {
+        return (P) this;
+    }
+
+    default P addData(Consumer<ByteBuf> writer) {
         return (P) this;
     }
 

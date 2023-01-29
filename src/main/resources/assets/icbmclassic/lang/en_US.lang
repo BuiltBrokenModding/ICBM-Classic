@@ -63,6 +63,9 @@ item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
 item.icbmclassic:saltpeter.name=Saltpeter
 item.icbmclassic:saltpeter.info=Used in the creation of gunpowder
 
+item.icbmclassic:saltpeter_ball.name=Saltpeter Starter
+item.icbmclassic:saltpeter_ball.info=Use in furnace to extract saltpeter
+
 item.icbmclassic:poisonPowder.name=Poison Powder
 item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 
@@ -82,7 +85,7 @@ item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
 
 item.icbmclassic:tracker.name=Tracker
-item.icbmclassic:tracker.info=Track entities and set homing missiles
+item.icbmclassic:tracker.info=Not implemented, set for removal
 
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
 item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or missile launches
@@ -90,6 +93,11 @@ item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or mi
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s rockets
 item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
+item.icbmclassic:rocketLauncher.error.IMissileAiming=Missile %1 doesn't implement IMissileAiming to allow for use in handheld launchers
+item.icbmclassic:rocketLauncher.error.spawning=Missile spawning was canceled by world
+
+item.icbmclassic:surface_to_air_missile.name=Surface to Air Missile
+item.icbmclassic:surface_to_air_missile.info=Missile designed to fire from the ground to attack flying targets
 
 ## Crafting items
 item.icbmclassic:ingot.steel.name=Steel Ingot
@@ -180,6 +188,8 @@ explosive.icbmclassic:antimatter.name=Antimatter Explosives
 explosive.icbmclassic:redmatter.name=Red Matter Explosives
 
 ## Missile Form
+missile.icbmclassic:generic.name=Missile
+
 missile.icbmclassic:condensed.name=Conventional Missile
 missile.icbmclassic:shrapnel.name=Shrapnel Missile
 missile.icbmclassic:incendiary.name=Incendiary Missile

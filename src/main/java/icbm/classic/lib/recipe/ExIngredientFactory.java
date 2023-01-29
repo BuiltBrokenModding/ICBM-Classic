@@ -36,7 +36,7 @@ public class ExIngredientFactory implements IIngredientFactory
 
         //TODO fix having to work around missile module not showing in content registry as `icbmclassic:missile`
         if("icbmclassic:missile.module".equalsIgnoreCase(device)) {
-            return new ItemStack(ItemReg.itemMissile, 1, 24);
+            return new ItemStack(ItemReg.itemExplosiveMissile, 1, 24);
         }
 
         final String explosive = JsonUtils.getString(json, EX_KEY);

@@ -1,11 +1,15 @@
 package icbm.classic.content.items;
 
-import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
+import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.config.ConfigMain;
-import icbm.classic.content.entity.missile.MissileFlightType;
+import icbm.classic.config.ConfigMissile;
+import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.missile.source.EntitySourceData;
+import icbm.classic.content.missile.source.MissileSourceEntity;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -82,51 +86,62 @@ public class ItemRocketLauncher extends ItemICBMElectrical
             if (this.getEnergy(stack) >= ENERGY || player.capabilities.isCreativeMode)
             {
                 // Check the player's inventory and look for missiles.
-                for (int slot = 0; slot < player.inventory.getSizeInventory(); slot++)
+                for (int slot = 0; slot < player.inventory.getSizeInventory(); slot++) //TODO add ammo wheel to select missile to use
                 {
-                    ItemStack inventoryStack = player.inventory.getStackInSlot(slot);
+                    final ItemStack inventoryStack = player.inventory.getStackInSlot(slot);
 
-                    if (inventoryStack != null)
+                    if (inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null))
                     {
-                        if (inventoryStack.getItem() instanceof ItemMissile) //TODO add capability
+                        final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+                        if (capabilityMissileStack != null)
                         {
-                            final int explosiveID = inventoryStack.getItemDamage();
-                            final IExplosiveData exData = ICBMClassicHelpers.getExplosive(explosiveID, true);
-
-                            if (exData != null)
+                            if (!world.isRemote)
                             {
-                                // Limit the missile to tier two.
-                                //TODO add hook to block firing some missiles from launcher
-                                if (exData.getTier().ordinal() + 1 <= ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT || player.capabilities.isCreativeMode)
-                                {
-                                    if(!world.isRemote)
-                                    {
-                                        EntityMissile entityMissile = new EntityMissile(player);
-                                        entityMissile.missileType = MissileFlightType.HAND_LAUNCHER;
-                                        entityMissile.explosiveID = explosiveID;
-                                        entityMissile.acceleration = 1;
-                                        entityMissile.capabilityMissile.launchNoTarget();
-                                        world.spawnEntity(entityMissile);
+                                final IMissile missile = capabilityMissileStack.newMissile(world);
+                                final Entity entity = missile.getMissileEntity();
 
-                                        if (player.isSneaking())
+                                if (entity instanceof IMissileAiming)
+                                {
+                                    //Setup aiming and offset from player
+                                    ((IMissileAiming) entity).initAimingPosition(player, 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
+
+                                    //Init missile
+                                    missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.HANDHELD_FUEL));
+                                    missile.setMissileSource(new MissileSourceEntity(world, entity.getPositionVector(), new EntitySourceData(player)));
+                                    missile.launch();
+
+                                    //Spawn entity into world
+                                    if(world.spawnEntity(entity))
+                                    {
+                                        if (player.isSneaking()) //TODO allow missile to have control of when riding is allowed
                                         {
-                                            player.startRiding(entityMissile);
+                                            player.startRiding(entity);
                                             player.setSneaking(false);
                                         }
 
                                         if (!player.capabilities.isCreativeMode)
                                         {
-                                            player.inventory.setInventorySlotContents(slot, ItemStack.EMPTY);
+                                            player.inventory.setInventorySlotContents(slot, capabilityMissileStack.consumeMissile());
                                             player.inventoryContainer.detectAndSendChanges();
                                             this.discharge(stack, ENERGY, true);
                                         }
                                     }
-
-                                    //Store last time player launched a rocket
-                                    clickTimePlayer.put(player.getName(), System.currentTimeMillis());
-                                    return;
+                                    else
+                                    {
+                                        player.sendStatusMessage(new TextComponentTranslation("item.icbmclassic:rocketLauncher.error.spawning"), true);
+                                    }
                                 }
+                                else
+                                {
+                                    player.sendStatusMessage(new TextComponentTranslation("item.icbmclassic:rocketLauncher.error.IMissileAiming", inventoryStack), true);
+                                }
+
+                                //Exit loop to prevent firing all missiles in inventory
+                                return;
                             }
+
+                            //Store last time player launched a rocket
+                            clickTimePlayer.put(player.getName(), System.currentTimeMillis());
                         }
                     }
                 }
@@ -160,13 +175,13 @@ public class ItemRocketLauncher extends ItemICBMElectrical
         final String key = "item.icbmclassic:rocketLauncher.info";
         String translation = LanguageUtility.getLocal(key);
 
-        if(translation.contains("%s"))
+        if (translation.contains("%s"))
         {
             String str = String.format(translation, String.valueOf(ConfigMain.ROCKET_LAUNCHER_TIER_FIRE_LIMIT));
             splitAdd(str, list, false, false);
         }
 
-        if(Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isCreative())
+        if (Minecraft.getMinecraft().player != null && Minecraft.getMinecraft().player.isCreative())
             list.add(new TextComponentTranslation("item.icbmclassic:rocketLauncher.info.creative").setStyle(new Style().setColor(TextFormatting.LIGHT_PURPLE)).getFormattedText());
     }
 }

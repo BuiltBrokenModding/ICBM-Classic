@@ -130,16 +130,19 @@ public final class RadarRegistry
      */
     public static List<Entity> getAllLivingObjectsWithin(World world, Cube cube)
     {
-        List<Entity> list = Lists.<Entity>newArrayList();
+        // TODO recode to take filter as input to reduce output list
+        // TODO recode to use a consumer pattern, if so ignore filter and let consumer be the filter
+
+        final List<Entity> list = Lists.<Entity>newArrayList();
         if (RADAR_MAPS.containsKey(world.provider.getDimension()))
         {
-            RadarMap map = getRadarMapForWorld(world);
+            final RadarMap map = getRadarMapForWorld(world);
             if (map != null)
             {
-                List<RadarEntity> objects = map.getRadarObjects(cube, true);
+                final List<RadarEntity> objects = map.getRadarObjects(cube, true);
                 for (RadarEntity object : objects)
                 {
-                    if (object instanceof RadarEntity && object.isValid())
+                    if (object != null && object.isValid())
                     {
                         Entity entity = ((RadarEntity) object).entity;
                         if (entity != null && !entity.isDead)

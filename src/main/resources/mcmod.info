@@ -1,0 +1,16 @@
+[
+{
+  "modid": "icbmclassic",
+  "name": "ICBM Classic",
+  "description": "Classic version of ICBM",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://www.curseforge.com/minecraft/mc-mods/icbm-classic",
+  "updateUrl": "",
+  "authorList": ["DarkCow", "Calclavia"],
+  "credits": "bl4ckscor3, dmod, ghxx, m1w3st, tgame14",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

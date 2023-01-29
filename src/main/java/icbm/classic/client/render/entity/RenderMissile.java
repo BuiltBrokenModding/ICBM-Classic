@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.reg.ItemReg;
+import icbm.classic.content.missile.entity.EntityMissile;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +13,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -29,8 +28,8 @@ import javax.annotation.Nullable;
 public class RenderMissile extends Render<EntityMissile>
 {
 
-    private EntityItem entityItem;
-    private RenderEntityItem2 renderEntityItem;
+    private final EntityItem entityItem;
+    private final RenderEntityItem2 renderEntityItem;
 
     public static RenderMissile INSTANCE;
 
@@ -56,11 +55,15 @@ public class RenderMissile extends Render<EntityMissile>
         GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(pitch, 0.0F, 0.0F, 1.0F);
 
-        //Render missile
-        GlStateManager.translate(0, -1.5, 0);
+        //Fix model translation issues
+        GlStateManager.translate(0, -1.5, 0); //TODO missile has a very slight 1px~ offset in either x or z
+
+        //Scale model
         final float scale = 2;
         GlStateManager.scale(scale, scale, scale);
-        renderMissile(entityMissile.explosiveID,
+
+        //Render missile
+        renderMissile(entityMissile.toStack(),
                 entityMissile.world, entityMissile.posX, entityMissile.posY, entityMissile.posZ,
                 0, 0, 0, entityYaw, partialTicks);
 
@@ -73,10 +76,9 @@ public class RenderMissile extends Render<EntityMissile>
         {
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
-            Vec3d vec3d = entityMissile.motionVector.toVec3d();
             bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
             bufferbuilder.pos(x, y, z).color(0, 255, 0, 255).endVertex();
-            bufferbuilder.pos(x + vec3d.x * 2.0D, y + vec3d.y * 2.0D, z + vec3d.z * 2.0D).color(0, 255, 0, 2555).endVertex();
+            bufferbuilder.pos(x + entityMissile.motionX * 2.0D, y + entityMissile.motionY * 2.0D, z + entityMissile.motionZ * 2.0D).color(0, 255, 0, 2555).endVertex();
             tessellator.draw();
             GlStateManager.enableTexture2D();
             GlStateManager.enableLighting();
@@ -91,14 +93,6 @@ public class RenderMissile extends Render<EntityMissile>
     protected ResourceLocation getEntityTexture(EntityMissile entity)
     {
         return null;
-    }
-
-    public void renderMissile(int explosiveID, World world, double wx, double wy, double wz,
-                              double x, double y, double z, float entityYaw, float partialTicks)
-    {
-        renderMissile(new ItemStack(ItemReg.itemMissile, 1, explosiveID),
-                world, wx, wy, wz,
-                x, y, z, entityYaw, partialTicks);
     }
 
     public void renderMissile(ItemStack missileStack, TileEntity tileEntity,

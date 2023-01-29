@@ -1,0 +1,257 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 2,
+          "data": 300,
+          "key": "Air"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "Dimension"
+        },
+        {
+          "type": 5,
+          "data": 0.0,
+          "key": "FallDistance"
+        },
+        {
+          "type": 2,
+          "data": -1,
+          "key": "Fire"
+        },
+        {
+          "type": 1,
+          "data": 0,
+          "key": "Invulnerable"
+        },
+        {
+          "type": 9,
+          "data": [
+            {
+              "type": 6,
+              "data": "0.500047386656661"
+            },
+            {
+              "type": 6,
+              "data": "1.4851261753356084"
+            },
+            {
+              "type": 6,
+              "data": "-0.001669972814403767"
+            }
+          ],
+          "key": "Motion"
+        },
+        {
+          "type": 1,
+          "data": 0,
+          "key": "OnGround"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "PortalCooldown"
+        },
+        {
+          "type": 9,
+          "data": [
+            {
+              "type": 5,
+              "data": 90.191345
+            },
+            {
+              "type": 5,
+              "data": 71.391335
+            }
+          ],
+          "key": "Rotation"
+        },
+        {
+          "type": 4,
+          "data": "-6177206117707800281",
+          "key": "UUIDLeast"
+        },
+        {
+          "type": 4,
+          "data": "1773996770735704719",
+          "key": "UUIDMost"
+        },
+        {
+          "type": 1,
+          "data": 0,
+          "key": "UpdateBlocked"
+        },
+        {
+          "type": 5,
+          "data": 1.5141045E-4,
+          "key": "acceleration"
+        },
+        {
+          "type": 10,
+          "data": [],
+          "key": "additionalMissileData"
+        },
+        {
+          "type": 3,
+          "data": 4,
+          "key": "explosiveID"
+        },
+        {
+          "type": 1,
+          "data": 0,
+          "key": "inGround"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "inTileState"
+        },
+        {
+          "type": 10,
+          "data": [
+            {
+              "type": 6,
+              "data": "25.0",
+              "key": "x"
+            },
+            {
+              "type": 6,
+              "data": "68.0",
+              "key": "y"
+            },
+            {
+              "type": 6,
+              "data": "12.0",
+              "key": "z"
+            }
+          ],
+          "key": "launcherPos"
+        },
+        {
+          "type": 2,
+          "data": 0,
+          "key": "life"
+        },
+        {
+          "type": 6,
+          "data": "-0.08234011160311638",
+          "key": "lockHeight"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "missileType"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "preLaunchSmokeTimer"
+        },
+        {
+          "type": 1,
+          "data": 1,
+          "key": "sideTilePos"
+        },
+        {
+          "type": 10,
+          "data": [
+            {
+              "type": 6,
+              "data": "25.5",
+              "key": "x"
+            },
+            {
+              "type": 6,
+              "data": "71.0",
+              "key": "y"
+            },
+            {
+              "type": 6,
+              "data": "12.5",
+              "key": "z"
+            }
+          ],
+          "key": "sourcePos"
+        },
+        {
+          "type": 10,
+          "data": [
+            {
+              "type": 6,
+              "data": "9987.054351608229",
+              "key": "x"
+            },
+            {
+              "type": 6,
+              "data": "0.0",
+              "key": "y"
+            },
+            {
+              "type": 6,
+              "data": "-20.767897003956243",
+              "key": "z"
+            }
+          ],
+          "key": "target"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "targetHeight"
+        },
+        {
+          "type": 3,
+          "data": 205,
+          "key": "ticksInAir"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "xTilePos"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "yTilePos"
+        },
+        {
+          "type": 3,
+          "data": 0,
+          "key": "zTilePos"
+        }
+      ],
+      "key": "data"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "9987.054351608229",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "0.0",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "-20.767897003956243",
+          "key": "z"
+        }
+      ],
+      "key": "target"
+    },
+    {
+      "type": 3,
+      "data": 958,
+      "key": "ticks"
+    }
+  ]
+}

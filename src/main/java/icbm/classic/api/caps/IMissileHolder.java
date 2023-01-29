@@ -17,33 +17,27 @@ public interface IMissileHolder
 {
 
     /**
-     * Access the missile as an itemstack
+     * Gets the itemstack currently in the missile slot. This
+     * may not actually be a missile if something bypassed checks
      *
-     * @return
+     * @return stack in slot
      */
     ItemStack getMissileStack();
 
     /**
-     * Set the missile stack.
-     * <p>
-     * Does not validate the stack and will
-     * override any checks
-     *
-     * @param stack
-     */
-    void setMissileStack(ItemStack stack);
-
-    /**
      * Called to insert the missile into the holder
      *
+     * Insert will run {@link #canSupportMissile(ItemStack)} so no need
+     * to call it before.
+     *
      * @param stack    - stack
-     * @param doInsert - true to insert, false to test
+     * @param simulate - true to test insert, false to apply
      * @return remaining stack or empty stack if taken
      */
-    ItemStack insertMissileStack(ItemStack stack, boolean doInsert);
+    ItemStack insertMissileStack(ItemStack stack, boolean simulate);
 
     /**
-     * Is the missile support by the holder
+     * Is the missile supported by the holder.
      *
      * @param stack - stack
      * @return true if supported

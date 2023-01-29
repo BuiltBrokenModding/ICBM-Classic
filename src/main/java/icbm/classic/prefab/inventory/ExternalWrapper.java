@@ -41,7 +41,7 @@ public class ExternalWrapper implements IItemHandlerModifiable
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
     {
-        if (!stack.isEmpty() && slot >= 0 && slot < inventory.getSizeInventory())
+        if (!stack.isEmpty() && slot >= 0 && slot < inventory.getSizeInventory() && inventory.canInsertItem(slot, stack, null))
         {
             ItemStack slotStack = getStackInSlot(slot);
             if (slotStack.isEmpty())
@@ -96,7 +96,7 @@ public class ExternalWrapper implements IItemHandlerModifiable
     public ItemStack extractItem(int slot, int amount, boolean simulate)
     {
         ItemStack slotStack = getStackInSlot(slot);
-        if (!slotStack.isEmpty())
+        if (!slotStack.isEmpty() && inventory.canExtractItem(slot, slotStack, null))
         {
             ItemStack copy = slotStack.copy();
             if (copy.getCount() >= amount)

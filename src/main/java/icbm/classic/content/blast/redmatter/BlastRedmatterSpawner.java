@@ -17,35 +17,26 @@ import javax.annotation.Nonnull;
  */
 public class BlastRedmatterSpawner extends BlastBase
 {
-    private float startingSize = 1f;
-    private float maxSize = ConfigBlast.REDMATTER.MAX_SIZE;
+    private float startingSize = 1f; //TODO config and expose to NBT
+    private final float maxSize = ConfigBlast.REDMATTER.MAX_SIZE; //TODO expose to NBT
 
     @Nonnull
     @Override
-    public BlastResponse runBlast()
+    public BlastResponse triggerBlast()
     {
-        final World world = world();
-        if (world != null)
-        {
-            if(!world.isRemote)
-            {
-                //Build entity
-                final EntityRedmatter entityRedmatter = new EntityRedmatter(world);
-                entityRedmatter.posX = x();
-                entityRedmatter.posY = y();
-                entityRedmatter.posZ = z();
-                entityRedmatter.setBlastSize(startingSize);
-                entityRedmatter.setBlastMaxSize(maxSize);
+        //Build entity
+        final EntityRedmatter entityRedmatter = new EntityRedmatter(world());
+        entityRedmatter.posX = x();
+        entityRedmatter.posY = y();
+        entityRedmatter.posZ = z();
+        entityRedmatter.setBlastSize(startingSize);
+        entityRedmatter.setBlastMaxSize(maxSize);
 
-                //Attempt to spawn
-                if (world.spawnEntity(entityRedmatter))
-                {
-                    return BlastState.TRIGGERED.genericResponse;
-                }
-                return BlastForgeResponses.ENTITY_SPAWNING.get();
-            }
+        //Attempt to spawn
+        if (world().spawnEntity(entityRedmatter))
+        {
             return BlastState.TRIGGERED.genericResponse;
         }
-        return BlastNullResponses.WORLD.get();
+        return BlastForgeResponses.ENTITY_SPAWNING.get();
     }
 }

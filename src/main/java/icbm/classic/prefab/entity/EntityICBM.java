@@ -1,5 +1,6 @@
 package icbm.classic.prefab.entity;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
@@ -13,6 +14,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * Base entity class to be shared by most entities
@@ -33,17 +35,17 @@ public abstract class EntityICBM extends Entity implements IWorldPosition
     @Override
     protected void entityInit()
     {
-        this.dataManager.register(HEALTH, Float.valueOf(0));
+        this.dataManager.register(HEALTH, (float) 0);
     }
 
     public float getHealth()
     {
-        return ((Float)this.dataManager.get(HEALTH)).floatValue();
+        return this.dataManager.get(HEALTH);
     }
 
     public void setHealth(float health)
     {
-        this.dataManager.set(HEALTH, Float.valueOf(MathHelper.clamp(health, 0.0F, this.getMaxHealth())));
+        this.dataManager.set(HEALTH, MathHelper.clamp(health, 0.0F, this.getMaxHealth()));
     }
 
     public float getMaxHealth()

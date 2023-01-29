@@ -2,8 +2,7 @@ package icbm.classic.lib.network.netty;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.network.packet.PacketPlayerItem;
-import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.network.packet.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
@@ -22,6 +21,9 @@ public class PacketEncoderDecoderHandler extends FMLIndexedMessageToMessageCodec
     {
         addPacket(PacketTile.class);
         addPacket(PacketPlayerItem.class);
+        addPacket(PacketSpawnAirParticle.class);
+        addPacket(PacketSpawnBlockExplosion.class);
+        addPacket(PacketEntity.class);
     }
 
     public void addPacket(Class<? extends IPacket> clazz)

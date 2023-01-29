@@ -4,6 +4,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -27,8 +28,8 @@ public interface IExplosive
      *
      * @return nbt
      */
-    @Nullable
-    NBTTagCompound getCustomBlastData();
+    @Nonnull
+    NBTTagCompound getCustomBlastData(); //TODO replace with interface instead of using NBT to directly apply changes
 
     /**
      * Gets the stack version of the explosive

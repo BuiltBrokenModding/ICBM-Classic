@@ -10,18 +10,7 @@ import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.content.blast.BlastAntiGravitational;
-import icbm.classic.content.blast.BlastBreach;
-import icbm.classic.content.blast.BlastEMP;
-import icbm.classic.content.blast.BlastEnderman;
-import icbm.classic.content.blast.BlastEndothermic;
-import icbm.classic.content.blast.BlastExothermic;
-import icbm.classic.content.blast.BlastFire;
-import icbm.classic.content.blast.BlastMutation;
-import icbm.classic.content.blast.BlastRot;
-import icbm.classic.content.blast.BlastShrapnel;
-import icbm.classic.content.blast.BlastSonic;
-import icbm.classic.content.blast.BlastTNT;
+import icbm.classic.content.blast.*;
 import icbm.classic.content.blast.BlastTNT.PushType;
 import icbm.classic.content.blast.gas.BlastChemical;
 import icbm.classic.content.blast.gas.BlastColor;
@@ -121,10 +110,10 @@ public class ExplosiveInit
 
         //=================== Tier 2
         ICBMExplosives.FRAGMENTATION = newEx(8, "fragmentation", EnumTier.TWO,
-                () -> new BlastShrapnel().setFlaming().setExplosive().setBlastSize(15));
+                () -> new BlastShrapnel().setExplosive().setBlastSize(15));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.FRAGMENTATION.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.FRAGMENTATION);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.FRAGMENTATION.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.FRAGMENTATION);
-
+        //TODO add fire version of fragmentation with smaller animated flames
 
         ICBMExplosives.CONTAGIOUS = newEx(9, "contagious", EnumTier.TWO,
                 () -> new BlastContagious().setBlastSize(20));
@@ -216,8 +205,8 @@ public class ExplosiveInit
         ICBMExplosives.MUTATION = newEx(26, "mutation", EnumTier.NONE, BlastMutation::new);
 
         //New Explosives not part of classic original
-        ICBMExplosives.COLOR = newEx(27, "colors", EnumTier.ONE,
-                () -> new BlastColor().setBlastSize(10));
+        ICBMExplosives.COLOR = newEx(-1, "colors", EnumTier.ONE, () -> new BlastColor().setBlastSize(10));
+        ICBMExplosives.SMOKE = newEx(-1, "smoke", EnumTier.ONE, BlastSmoke::new); //TODO add scale for smoke count, and ticks alive as NBT var
 
         ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
 
@@ -227,8 +216,6 @@ public class ExplosiveInit
         ///* 26 */MISSILE_ANTI(new MissileAnti());
         ///* 27 */MISSILE_CLUSTER(new MissileCluster("cluster", EnumTier.TWO));
         ///* 28 */MISSILE_CLUSTER_NUKE(new MissileNuclearCluster())
-
-
     }
 
     private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)

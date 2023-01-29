@@ -1,0 +1,84 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 8,
+      "data": "icbmclassic:launcherbase",
+      "key": "id"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 9,
+          "data": [
+            {
+              "type": 10,
+              "data": [
+                {
+                  "type": 1,
+                  "data": 1,
+                  "key": "Count"
+                },
+                {
+                  "type": 2,
+                  "data": 1,
+                  "key": "Damage"
+                },
+                {
+                  "type": 10,
+                  "data": [
+                    {
+                      "type": 10,
+                      "data": [
+                        {
+                          "type": 10,
+                          "data": [],
+                          "key": "explosive"
+                        }
+                      ],
+                      "key": "Parent"
+                    }
+                  ],
+                  "key": "ForgeCaps"
+                },
+                {
+                  "type": 1,
+                  "data": 0,
+                  "key": "Slot"
+                },
+                {
+                  "type": 8,
+                  "data": "icbmclassic:missile",
+                  "key": "id"
+                }
+              ]
+            }
+          ],
+          "key": "Items"
+        }
+      ],
+      "key": "inventory"
+    },
+    {
+      "type": 3,
+      "data": 2,
+      "key": "tier"
+    },
+    {
+      "type": 3,
+      "data": 48,
+      "key": "x"
+    },
+    {
+      "type": 3,
+      "data": 69,
+      "key": "y"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "z"
+    }
+  ]
+}

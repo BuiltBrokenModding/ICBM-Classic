@@ -2,6 +2,7 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
@@ -18,11 +19,13 @@ import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.content.items.ItemRocketLauncher;
 import icbm.classic.content.items.ItemSignalDisrupter;
 import icbm.classic.content.items.ItemTracker;
+import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,8 +44,8 @@ public class ItemReg
     public static Item itemSignalDisrupter;
     @ObjectHolder(ICBMConstants.PREFIX + "tracker")
     public static Item itemTracker;
-    @ObjectHolder(ICBMConstants.PREFIX + "missile")
-    public static Item itemMissile;
+    @ObjectHolder(ICBMConstants.PREFIX + "explosive_missile")
+    public static Item itemExplosiveMissile;
     @ObjectHolder(ICBMConstants.PREFIX + "defuser")
     public static Item itemDefuser;
     @ObjectHolder(ICBMConstants.PREFIX + "radarGun")
@@ -57,10 +60,14 @@ public class ItemReg
     public static Item itemGrenade;
     @ObjectHolder(ICBMConstants.PREFIX + "bombcart")
     public static Item itemBombCart;
+
     @ObjectHolder(ICBMConstants.PREFIX + "sulfurDust")
     public static Item itemSulfurDust;
     @ObjectHolder(ICBMConstants.PREFIX + "saltpeter")
     public static Item itemSaltpeterDust;
+    @ObjectHolder(ICBMConstants.PREFIX + "saltpeter_ball")
+    public static Item itemSaltpeterBall;
+
     @ObjectHolder(ICBMConstants.PREFIX + "poisonPowder")
     public static Item itemPoisonPowder;
     @ObjectHolder(ICBMConstants.PREFIX + "battery")
@@ -75,6 +82,21 @@ public class ItemReg
     public static ItemCrafting itemCircuit;
     @ObjectHolder(ICBMConstants.PREFIX + "wire")
     public static ItemCrafting itemWire;
+
+    @ObjectHolder(ICBMConstants.PREFIX + "surface_to_air_missile")
+    public static ItemSurfaceToAirMissile itemSAM;
+
+    @SubscribeEvent
+    public static void missingMapping(RegistryEvent.MissingMappings<Item> event) {
+
+        // Name was changed in v4.2.0
+        final ResourceLocation oldMissileName = new ResourceLocation(ICBMConstants.DOMAIN, "missile");
+        for(RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getMappings()) {
+            if (oldMissileName.equals(mapping.key)) {
+                mapping.remap(itemExplosiveMissile);
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -91,6 +113,8 @@ public class ItemReg
         event.getRegistry().register(saltpeterItem);
         OreDictionary.registerOre("dustSaltpeter", saltpeterItem);
 
+        // Crafting item used to make saltpeter dust
+        event.getRegistry().register(new ItemBase().setName("saltpeter_ball").setCreativeTab(ICBMClassic.CREATIVE_TAB));
 
         event.getRegistry().register(new ItemAntidote().setName("antidote"));
         event.getRegistry().register(new ItemSignalDisrupter());
@@ -100,7 +124,8 @@ public class ItemReg
         event.getRegistry().register(new ItemRemoteDetonator());
         event.getRegistry().register(new ItemLaserDetonator());
         event.getRegistry().register(new ItemRocketLauncher());
-        event.getRegistry().register(new ItemMissile());
+        event.getRegistry().register(new ItemMissile().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemSurfaceToAirMissile());
 
         //Block items
         event.getRegistry().register(new ItemBlock(BlockReg.blockGlassPlate).setRegistryName(BlockReg.blockGlassPlate.getRegistryName()));

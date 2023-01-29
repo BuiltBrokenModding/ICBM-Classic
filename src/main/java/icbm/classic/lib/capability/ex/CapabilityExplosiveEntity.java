@@ -52,6 +52,7 @@ public class CapabilityExplosiveEntity implements IExplosive
         return ICBMExplosives.CONDENSED;
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound getCustomBlastData()
     {
@@ -86,6 +87,7 @@ public class CapabilityExplosiveEntity implements IExplosive
     public void onDefuse()
     {
         entity.world.spawnEntity(new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, toStack().copy()));
+        entity.setDead();
     }
 
     public void setStack(@Nonnull ItemStack stack)
@@ -95,5 +97,20 @@ public class CapabilityExplosiveEntity implements IExplosive
             ICBMClassic.logger().error("CapabilityExplosive[" + entity + "] Was set with a stack that is not an explosive [" + stack + "]");
         }
         this.stack = stack.copy().splitStack(1);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * stack.getItem().hashCode() + stack.getItemDamage();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other) || other instanceof IExplosive && ItemStack.areItemsEqual(((IExplosive) other).toStack(), toStack());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("CapabilityExplosiveEntity[%s]@%s", toStack(), super.hashCode());
     }
 }

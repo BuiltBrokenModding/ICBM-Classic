@@ -1,6 +1,7 @@
 package icbm.classic.prefab.entity;
 
-import icbm.classic.lib.NBTConstants;
+import icbm.classic.api.missiles.IMissileAiming;
+import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,7 +13,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -25,7 +30,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public abstract class EntityProjectile extends EntityICBM implements IProjectile
+public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming
 {
     /**
      * The entity who shot this projectile and can be used for damage calculations
@@ -35,7 +40,7 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
     /**
      * Used to track shooting entity after being loaded from a save
      */
-    public UUID shootingEntityUUID;
+    public UUID shootingEntityUUID; //TODO abstract as a shooter object so we can track player vs entity vs tile vs admin command
     /**
      * Location the projectile was fired from, use this over the shooting entity
      * to force argo on the source of the projectile. This way things like
@@ -54,14 +59,19 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
     protected DamageSource impact_damageSource = DamageSource.ANVIL;
 
     //In ground data
+    /** Block position projectile is stuck inside */
     public BlockPos tilePos = new BlockPos(0, 0, 0);
+    /** Face of tile we are stuck inside */
     public EnumFacing sideTile = EnumFacing.UP;
-    protected IBlockState blockInside = Blocks.AIR.getDefaultState();
-    protected boolean inGround = false;
+    /** Block state we are stuck inside */
+    public IBlockState blockInside = Blocks.AIR.getDefaultState();
+    /** Toggle to note we are stuck in a tile on the ground */
+    public boolean inGround = false;
 
     //Timers
     public int ticksInGround;
     public int ticksInAir;
+
 
     public EntityProjectile(World world)
     {
@@ -70,70 +80,70 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         this.setSize(0.5F, 0.5F);
     }
 
-    public EntityProjectile(World world, double x, double y, double z)
+    /**
+     * Initialized the projectile to spawn from the shooter and aim at the target
+     *
+     * @param shooter    - spawn point, used for aiming and position offsets
+     * @param target     - aim target
+     * @param multiplier - power multiplier, mostly changes speed
+     * @param random     - random multiplier
+     * @return this
+     */
+    @Deprecated
+    public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random)
     {
-        super(world);
-        this.setPosition(x, y, z);
-        this.sourceOfProjectile = new Pos(x, y, z);
-    }
-
-    public EntityProjectile(World world, EntityLivingBase shooter, EntityLivingBase target, float p_i1755_4_, float p_i1755_5_)
-    {
-        this(world);
         this.shootingEntity = shooter;
         this.sourceOfProjectile = new Pos(shooter);
 
         this.posY = shooter.posY + (double) shooter.getEyeHeight() - 0.10000000149011612D;
-        double d0 = target.posX - shooter.posX;
-        double d1 = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - this.posY;
-        double d2 = target.posZ - shooter.posZ;
-        double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        double deltaX = target.posX - shooter.posX;
+        double deltaY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - this.posY; //TODO why div3
+        double deltaZ = target.posZ - shooter.posZ;
+        double deltaMag = MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ);
 
-        if (d3 >= 1.0E-7D)
+        if (deltaMag >= 1.0E-7D) //TODO why the small num? rounding likely but maybe a better solution
         {
-            float f2 = (float) (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0F;
-            float f3 = (float) (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
-            double d4 = d0 / d3;
-            double d5 = d2 / d3;
-            this.setLocationAndAngles(shooter.posX + d4, this.posY, shooter.posZ + d5, f2, f3);
-            float f4 = (float) d3 * 0.2F;
-            this.shoot(d0, d1 + (double) f4, d2, p_i1755_4_, p_i1755_5_);
+            float yaw = (float) (Math.atan2(deltaZ, deltaX) * 180.0D / Math.PI) - 90.0F;
+            float pitch = (float) (-(Math.atan2(deltaY, deltaMag) * 180.0D / Math.PI));
+
+            double subX = deltaX / deltaMag;
+            double subZ = deltaZ / deltaMag;
+            float subY = (float) deltaMag * 0.2F; //TODO why the 0.2F
+
+            this.setLocationAndAngles(shooter.posX + subX, this.posY, shooter.posZ + subZ, yaw, pitch);
+            this.shoot(deltaX, deltaY + (double) subY, deltaZ, multiplier, random);
         }
+        return (E) this;
     }
 
-    public EntityProjectile(World world, EntityLivingBase shooter, float f)
+    @Deprecated
+    public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale)
     {
-        this(world, shooter, f, 1);
-    }
-
-    public EntityProjectile(World world, EntityLivingBase shooter, float f, float distanceScale)
-    {
-        this(world, shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ, shooter.rotationYaw, shooter.rotationPitch, f, distanceScale);
-    }
-
-    public EntityProjectile(World world, double x, double y, double z, float yaw, float pitch, float speedScale, float distanceScale)
-    {
-        super(world);
         //this.renderDistanceWeight = 10.0D;
         this.sourceOfProjectile = new Pos(x, y, z);
 
         this.setSize(0.5F, 0.5F);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
+
+        //TODO figure out why we are updating position by rotation after spawning
         this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
         this.posY -= 0.10000000149011612D;
         this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
         this.setPosition(this.posX, this.posY, this.posZ);
         //this.yOffset = 0.0F;
+
         this.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * (float) Math.PI));
-        this.shoot(this.motionX, this.motionY, this.motionZ, speedScale, 1.0F);
+        this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 1.0F);
+
+        return (E) this;
     }
 
     @Override
-    protected void entityInit()
+    public void initAimingPosition(double x, double y, double z, float yaw, float pitch, float offsetMultiplier, float forceMultiplier)
     {
-        super.entityInit();
+        init(x, y, z, yaw, pitch, forceMultiplier, offsetMultiplier);
     }
 
     @Override
@@ -174,8 +184,7 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
                 {
                     this.setDead();
                 }
-            }
-            else
+            } else
             {
                 //TODO change to apply gravity
                 this.inGround = false;
@@ -185,8 +194,7 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
                 this.ticksInGround = 0;
                 this.ticksInAir = 0;
             }
-        }
-        else
+        } else
         {
             //Kills the projectile if it moves forever into space
             ++this.ticksInAir;
@@ -250,8 +258,7 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
                 if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY)
                 {
                     handleEntityCollision(rayHit, rayHit.entityHit);
-                }
-                else //Handle block hit
+                } else //Handle block hit
                 {
                     handleBlockCollision(rayHit);
                 }
@@ -267,7 +274,9 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         return false;
     }
 
-    protected void postImpact(RayTraceResult hit) {}
+    protected void postImpact(RayTraceResult hit)
+    {
+    }
 
     /**
      * Called to see if collision checks should be ignored on the
@@ -308,14 +317,6 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
     }
 
     /**
-     * Deprecated due to precision issues with hit position
-     */
-    @Deprecated
-    protected void onImpactTile()
-    {
-    }
-
-    /**
      * Called when the projectile impacts a tile.
      * Data about the hit is stored in the entity
      * include location, block, and meta
@@ -324,7 +325,7 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
      */
     protected void onImpactTile(RayTraceResult hit)
     {
-        onImpactTile();
+        onImpact();
     }
 
     /**
@@ -363,8 +364,19 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
                 }
 
             }
-            this.setDead();
+           onImpact();
         }
+    }
+
+    /**
+     * Generalized impact callback, used to do cleanup
+     * steps regardless of impact reason.
+     *
+     * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
+     * better handling of impacts.
+     */
+    protected void onImpact() {
+        this.setDead();
     }
 
     protected void updateMotion()
@@ -374,6 +386,19 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         this.posY += this.motionY;
         this.posZ += this.motionZ;
 
+        rotateTowardsMotion();
+
+        //Decrease motion so the projectile stops
+        decreaseMotion();
+
+        //Set position
+        this.setPosition(this.posX, this.posY, this.posZ);
+
+        //Adjust for collision      TODO check if works, rewrite code to prevent clip through of block
+        this.doBlockCollisions();
+    }
+
+    protected void rotateTowardsMotion() {
         //Get rotation from motion
         float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
@@ -405,15 +430,6 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
         this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
         this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
         //-------------------------------------
-
-        //Decrease motion so the projectile stops
-        decreaseMotion();
-
-        //Set position
-        this.setPosition(this.posX, this.posY, this.posZ);
-
-        //Adjust for collision      TODO check if works, rewrite code to prevent clip through of block
-        this.doBlockCollisions();
     }
 
     protected void decreaseMotion()
@@ -490,83 +506,6 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
-    {
-        if (tilePos != null)
-        {
-            nbt.setInteger(NBTConstants.X_TILE_POS, this.tilePos.getX());
-            nbt.setInteger(NBTConstants.Y_TILE_POS, this.tilePos.getY());
-            nbt.setInteger(NBTConstants.Z_TILE_POS, this.tilePos.getZ());
-        }
-        nbt.setByte(NBTConstants.SIDE_TILE_POS, (byte) this.sideTile.ordinal());
-
-        if (blockInside != null)
-        {
-            nbt.setInteger(NBTConstants.IN_TILE_STATE, Block.getStateId(blockInside));
-        }
-
-        nbt.setShort(NBTConstants.LIFE, (short) this.ticksInGround);
-        nbt.setByte(NBTConstants.IN_GROUND, (byte) (this.inGround ? 1 : 0));
-        if (sourceOfProjectile != null)
-        {
-            nbt.setTag(NBTConstants.SOURCE_POS, sourceOfProjectile.toNBT());
-        }
-        if (shootingEntity != null)
-        {
-            nbt.setString(NBTConstants.SHOOTER_UUID, shootingEntity.getUniqueID().toString());
-        }
-    }
-
-    @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
-    {
-        if (nbt.hasKey(NBTConstants.X_TILE))
-        {
-            //Legacy
-            tilePos = new BlockPos(nbt.getShort(NBTConstants.X_TILE), nbt.getShort(NBTConstants.Y_TILE), nbt.getShort(NBTConstants.Z_TILE));
-        }
-        else if (nbt.hasKey(NBTConstants.X_TILE_POS))
-        {
-            tilePos = new BlockPos(nbt.getInteger(NBTConstants.X_TILE_POS), nbt.getInteger(NBTConstants.Y_TILE_POS), nbt.getInteger(NBTConstants.Z_TILE_POS));
-        }
-
-        if (nbt.hasKey(NBTConstants.SIDE_TILE))
-        {
-            //Legacy
-            this.sideTile = EnumFacing.getFront(nbt.getShort(NBTConstants.SIDE_TILE));
-        }
-        else
-        {
-            this.sideTile = EnumFacing.getFront(nbt.getByte(NBTConstants.SIDE_TILE_POS));
-        }
-        this.ticksInGround = nbt.getShort(NBTConstants.LIFE);
-        if (nbt.hasKey(NBTConstants.IN_TILE))
-        {
-            //Legacy
-            Block block = Block.getBlockById(nbt.getByte(NBTConstants.IN_TILE));
-            if (block != null)
-            {
-                int meta = nbt.getByte(NBTConstants.IN_DATA);
-                this.blockInside = block.getStateFromMeta(meta);
-            }
-        }
-        else if (nbt.hasKey(NBTConstants.IN_TILE_STATE))
-        {
-            this.blockInside = Block.getStateById(nbt.getInteger(NBTConstants.IN_TILE_STATE));
-        }
-
-        this.inGround = nbt.getByte(NBTConstants.IN_GROUND) == 1;
-        if (nbt.hasKey(NBTConstants.SOURCE_POS))
-        {
-            sourceOfProjectile = new Pos(nbt.getCompoundTag(NBTConstants.SOURCE_POS));
-        }
-        if (nbt.hasKey(NBTConstants.SHOOTER_UUID))
-        {
-            shootingEntityUUID = UUID.fromString(nbt.getString(NBTConstants.SHOOTER_UUID));
-        }
-    }
-
-    @Override
     protected boolean canTriggerWalking()
     {
         return false;
@@ -576,4 +515,42 @@ public abstract class EntityProjectile extends EntityICBM implements IProjectile
     {
         return hasHealth;
     }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound nbt)
+    {
+        SAVE_LOGIC.save(this, nbt);
+        super.writeEntityToNBT(nbt);
+    }
+
+    @Override
+    public void readEntityFromNBT(NBTTagCompound nbt)
+    {
+        super.readEntityFromNBT(nbt);
+        SAVE_LOGIC.load(this, nbt);
+    }
+
+    private static final NbtSaveHandler<EntityProjectile> SAVE_LOGIC = new NbtSaveHandler<EntityProjectile>()
+        //Stuck in ground data
+        .addRoot("ground")
+        /* */.nodeBlockPos("pos", (projectile) -> projectile.tilePos, (projectile, pos) -> projectile.tilePos = pos)
+        /* */.nodeFacing("side", (projectile) -> projectile.sideTile, (projectile, side) -> projectile.sideTile = side)
+        /* */.nodeBlockState("state", (projectile) -> projectile.blockInside, (projectile, blockState) -> projectile.blockInside = blockState)
+        .base()
+        //Flags
+        .addRoot("flags")
+        /* */.nodeBoolean("ground", (projectile) -> projectile.inGround, (projectile, flag) -> projectile.inGround = flag)
+        .base()
+        //Ticks
+        .addRoot("ticks")
+        /* */.nodeInteger("air", (projectile) -> projectile.ticksInAir, (projectile, flag) -> projectile.ticksInAir = flag)
+        /* */.nodeInteger("ground", (projectile) -> projectile.ticksInGround, (projectile, flag) -> projectile.ticksInGround = flag)
+        .base();
+        //Project source, if needed implement in each projectile directly. or add a boolean toggle to .addRoot. As missile doesn't need source nor shooter due to missile.targetData
+        /*
+        .addRoot("source")
+        .nodePos("pos", (projectile) -> projectile.sourceOfProjectile, (projectile, pos) -> projectile.sourceOfProjectile = pos)
+        .nodeUUID("uuid", (projectile) -> projectile.shootingEntityUUID, (projectile, uuid) -> projectile.shootingEntityUUID = uuid)
+        .base();
+        */
 }

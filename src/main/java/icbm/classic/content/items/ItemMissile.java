@@ -1,11 +1,14 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
+import icbm.classic.lib.capability.missile.CapabilityMissileStack;
+import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
@@ -18,12 +21,10 @@ import net.minecraft.util.NonNullList;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemMissile extends ItemICBMBase
+public class ItemMissile extends ItemBase
 {
-
     public ItemMissile()
     {
-        super("missile");
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
@@ -33,9 +34,9 @@ public class ItemMissile extends ItemICBMBase
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
-        ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        //provider.add("missile", ICBMClassicAPI.MISSILE_CAPABILITY, new CapabilityMissile()); //TODO create an itemstack version
-        provider.add(NBTConstants.EXPLOSIVE, ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
+        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
+        provider.add("explosive", ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
+        provider.add("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilityMissileStack(stack));
         return provider;
     }
 
@@ -48,10 +49,17 @@ public class ItemMissile extends ItemICBMBase
     @Override
     public String getUnlocalizedName(ItemStack itemstack)
     {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
-        if (data != null)
+        if (itemstack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
         {
-            return "missile." + data.getRegistryName();
+            final IExplosive explosive = itemstack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+            if (explosive != null)
+            {
+                final IExplosiveData data = explosive.getExplosiveData();
+                if (data != null)
+                {
+                    return "missile." + data.getRegistryName();
+                }
+            }
         }
         return "missile";
     }

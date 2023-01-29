@@ -4,11 +4,13 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
+import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.api.tile.IRadioWaveSender;
+import icbm.classic.config.ConfigMissile;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
-import icbm.classic.content.entity.missile.EntityMissile;
-import icbm.classic.content.entity.missile.MissileFlightType;
-import icbm.classic.content.items.ItemMissile;
+import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.NBTConstants;
@@ -25,6 +27,7 @@ import icbm.classic.prefab.tile.IGuiTile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -93,39 +96,28 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (this.getInventory().getStackInSlot(0).getItem() != ItemReg.itemMissile)
+        else if (!hasMissile())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
         }
+        else if (!hasTarget())
+        {
+            status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
+        }
+        else if (this.isTooClose(getTarget()))
+        {
+            status = LanguageUtility.getLocal("gui.launcherCruise.targetToClose");
+        }
+        else if (!canSpawnMissileWithNoCollision())
+        {
+            status = LanguageUtility.getLocal("gui.launcherCruise.noRoom");
+        }
         else
         {
-            final IExplosive explosive = ICBMClassicHelpers.getExplosive(this.getInventory().getStackInSlot(0));
-            if (explosive == null)
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
-            }
-            else if (!hasMissile())
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.notCruiseMissile");
-            }
-            else if (!hasTarget())
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.statusInvalid");
-            }
-            else if (this.isTooClose(getTarget()))
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.targetToClose");
-            }
-            else if (!canSpawnMissileWithNoCollision())
-            {
-                status = LanguageUtility.getLocal("gui.launcherCruise.noRoom");
-            }
-            else
-            {
-                color = "\u00a72";
-                status = LanguageUtility.getLocal("gui.launcherCruise.statusReady");
-            }
+            color = "\u00a72";
+            status = LanguageUtility.getLocal("gui.launcherCruise.statusReady");
         }
+
         return color + status;
     }
 
@@ -223,11 +215,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeBoolean(!getInventory().getStackInSlot(0).isEmpty());
-        if (getInventory().getStackInSlot(0).isEmpty())
-        {
-            ByteBufUtils.writeItemStack(buf, getInventory().getStackInSlot(0));
-        }
+        ByteBufUtils.writeItemStack(buf, this.getInventory().getStackInSlot(0));
 
         buf.writeInt(getTarget().xi());
         buf.writeInt(getTarget().yi());
@@ -241,14 +229,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
-        if (buf.readBoolean())
-        {
-            cachedMissileStack = ByteBufUtils.readItemStack(buf);
-        }
-        else
-        {
-            cachedMissileStack = ItemStack.EMPTY;
-        }
+        cachedMissileStack = ByteBufUtils.readItemStack(buf);
+
         setTarget(new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
 
         currentAim.setYaw(buf.readDouble());
@@ -305,8 +287,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected boolean hasMissile()
     {
-        final ItemStack stackInSlot = this.getInventory().getStackInSlot(0);
-        return stackInSlot.getItem() == ItemReg.itemMissile && ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(stackInSlot.getItemDamage());
+        return this.getInventory().getStackInSlot(0).hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }
 
     protected boolean hasTarget()
@@ -348,20 +329,31 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         if (this.canLaunch())
         {
-            this.extractEnergy();
+            final ItemStack inventoryStack = this.getInventory().getStackInSlot(0); //TODO set into missile holder
 
-            EntityMissile entityMissile = new EntityMissile(world, xi() + 0.5, yi() + 1.5, zi() + 0.5, -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 2);
-            entityMissile.missileType = MissileFlightType.CRUISE_LAUNCHER;
-            entityMissile.explosiveID = this.getInventory().getStackInSlot(0).getItemDamage(); //TODO encode entire itemstack
-            entityMissile.acceleration = 1;
-            entityMissile.capabilityMissile.launchNoTarget();
-            world.spawnEntity(entityMissile);
+            if(inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
+                final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+                if(capabilityMissileStack != null) {
+                    final IMissile missile = capabilityMissileStack.newMissile(world);
+                    final Entity entity = missile.getMissileEntity();
+                    if(entity instanceof IMissileAiming) {
 
-            //TODO we are missing the item NBT, this will prevent encoding data before using the missile
+                        //Aim missile
+                        ((IMissileAiming) entity).initAimingPosition(xi() + 0.5, yi() + 1.5, zi() + 0.5,
+                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
 
-            //Clear slot last so we can still access data as needed or roll back changes if a crash happens
-            this.getInventory().decrStackSize(0, 1);
-            return true;
+                        //Setup missile
+                        missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
+                        missile.launch();
+
+                        if(world.spawnEntity(entity)) {
+                            this.extractEnergy();
+                            this.getInventory().setInventorySlotContents(0, capabilityMissileStack.consumeMissile());
+                            return true;
+                        }
+                    }
+                }
+            }
         }
 
         return false;
@@ -417,11 +409,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public boolean canStore(ItemStack itemStack, EnumFacing side)
     {
-        if (itemStack != null && itemStack.getItem() instanceof ItemMissile && this.getInventory().getStackInSlot(0) == null)
-        {
-            return ICBMClassicAPI.EX_MISSILE_REGISTRY.isEnabled(itemStack.getItemDamage());
-        }
-        return false;
+        return itemStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null) && this.getInventory().getStackInSlot(0).isEmpty();
     }
 
     @Override

@@ -1,42 +1,56 @@
 package icbm.classic.content.entity;
 
+import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
+import com.adelean.inject.resources.junit.jupiter.TestWithResources;
 import com.builtbroken.mc.testing.junit.TestManager;
+import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMClassicMock;
+import icbm.classic.TestBase;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.items.ItemGrenade;
+import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
+import net.minecraft.init.Bootstrap;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 3/28/2020.
  */
-public class EntityGrenadeTest
+@TestWithResources
+public class EntityGrenadeTest extends TestBase
 {
-    private static TestManager testManager = new TestManager("EntityGrenade", Assertions::fail);
-
+    @GivenJsonResource("data/saves/4.0.0/entity_grenade_sharpnel.json")
+    NBTTagCompound version4save;
 
     @BeforeAll
-    static void setup()
+    public static void beforeAllTests()
     {
-        ICBMClassicAPI.EXPLOSIVE_CAPABILITY = (Capability<IExplosive>) Mockito.mock(Capability.class);
+        // Register block for placement
+        ForgeRegistries.ITEMS.register(new ItemGrenade().setName("grenade"));
     }
 
-    @AfterEach
-    public void cleanupBetweenTests()
-    {
-        testManager.cleanupBetweenTests();
-    }
+    @Test
+    @DisplayName("Loads from old version 4.0.0 save file")
+    void loadFromVersion4() {
+        final World world = testManager.getWorld();
+        final EntityGrenade grenade = new EntityGrenade(world);
 
-    @AfterAll
-    public static void tearDown()
-    {
-        testManager.tearDownTest();
-        ICBMClassicAPI.EXPLOSIVE_CAPABILITY = null;
+        // Validate we have a test file
+        Assertions.assertNotNull(version4save);
+
+        // Load entity custom save
+        grenade.readEntityFromNBT(version4save);
+
+        // Validate we have an explosive of the correct type
+        assertExplosive(grenade.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null), "icbmclassic:shrapnel", new NBTTagCompound());
     }
 
     @Test
@@ -50,9 +64,6 @@ public class EntityGrenadeTest
     void getCapability_explosiveCap()
     {
         final EntityGrenade entityGrenade = new EntityGrenade(testManager.getWorld());
-
-        //Mock cast as mockito is odd
-        Mockito.when(ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(entityGrenade.explosive)).thenReturn(entityGrenade.explosive);
 
         final IExplosive capability = entityGrenade.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
 

@@ -1,0 +1,33 @@
+{
+  "result": {
+    "item": "icbmclassic:saltpeter_ball",
+    "data": 0,
+    "count": 4
+  },
+  "pattern": [
+    "DPD",
+    "PWP",
+    "DPD"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "type": "forge:ore_dict",
+      "ore": "dirt"
+    },
+    "P": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "treeLeaves"
+      },
+      {
+        "type": "forge:ore_dict",
+        "ore": "treeSapling"
+      }
+    ],
+    "W": {
+      "item": "minecraft:water_bucket",
+      "data": 0
+    }
+  }
+}
