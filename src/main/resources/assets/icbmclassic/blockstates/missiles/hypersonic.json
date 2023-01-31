@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:missiles/tier1/missile_anvil.obj",
+    "model": "icbmclassic:missiles/tier3/missile_nuclear.obj",
     "transform": {
       "thirdperson_lefthand": {
         "rotation": [
@@ -40,6 +40,25 @@
           0
         ],
         "scale": 0.25
+      },
+      "fixed": {
+        "rotation": [
+          {
+            "x": 0
+          },
+          {
+            "y": 0
+          },
+          {
+            "z": 45
+          }
+        ],
+        "translation": [
+          0.3,
+          -0.2,
+          0.1
+        ],
+        "scale": 0.15
       },
       "gui": {
         "rotation": [

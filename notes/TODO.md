@@ -6,39 +6,30 @@
 - [X] Fix smoke localizations and textures
 - [ ] Fix AB config translations
 - [X] Improve Smoke usefulness
-- [ ] Nuke (alt for lacking uranium items)
-- [ ] debilitation explosive (alt for lacking sulfur)
-- [ ] incendiary explosive (alt for lacking sulfur)
-- [ ] AB missile scaling problems
-- [ ] AB missile model?
+- [X] Nuke (alt for lacking uranium items)
+- [X] AB missile scaling problems
+- [X] AB missile model?
 - [X] AB missile recipe
 - [X] Radar redstone not updating correctly
-- [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
-- [ ] Balance recipes for IC2
 - [X] RPG missiles colliding with player (creative collider???)
 - [ ] Missile item frame doesn't render properly
 - [ ] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
 
-# broken recipes
+# Recipe issues
 
-- [X] Colorful grenade recipe
-- [X] Smoke cart recipe
-- [X] Colorful missile has two recipes
-- [X] Smoke missile
-- [X] Smoke grenade
 - [ ] Emps explosive
-- [X] Colorful cart has two recipes
-- [X] Smoke cart has two recipes
-- [X] Colorful explosive has two recipes (might be EMPs? Nope, was regen)
-- [X] Nuke explosive looks odd
-- [X] smoke's explosive recipe doesn't look to be it's own
-
+- [ ] Code generator for carts
+- [ ] Code generator for grenades
+- [ ] debilitation explosive (alt for lacking sulfur)
+- [ ] incendiary explosive (alt for lacking sulfur)
 
 # After MC update (likely after radar and launcher rewrites)
 
 - [ ] Missile module as it's own item (not using explosive ID, similar to what we did with AB missile)
 - [ ] Item per explosive (missile, grenade, cart, block, etc)
 - [ ] Drop crafting items
+- [ ] Dart game using fake missile items
+- [ ] Dispenser logic for missiles
 
 # TODO future launcher rewrite
 
@@ -94,3 +85,5 @@
 - [ ] saltpeter recipe supports sewage fluid instead of water if present
 - [ ] change `IMissileFlightLogic#shouldRunEngineEffects` to return an object containing settings (effect type, size, color, etc)
 - [ ] create interface to customize what data is saved when simulating missile to avoid wasted data
+- [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
+- [ ] Balance recipes for IC2
