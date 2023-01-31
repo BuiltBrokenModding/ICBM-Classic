@@ -70,7 +70,14 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
             setDead();
         }
 
-        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY + 0.1f, posZ, 0, 0f, 0); //TODO add color
+        // TODO scale with age with mid life having most, early low and later trailing off
+        final int spawnCount = 3 + world.rand.nextInt(4);
+        for(int i = 0; i < spawnCount; i++) {
+            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY + 0.1f, posZ,
+                0.05f * world.rand.nextFloat() - 0.05f * world.rand.nextFloat(),
+                0.1f,
+                0.05f * world.rand.nextFloat() - 0.05f * world.rand.nextFloat());
+        }
     }
 
     @Override
