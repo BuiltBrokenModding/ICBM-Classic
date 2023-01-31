@@ -169,6 +169,7 @@ explosive.icbmclassic:repulsive.name=Repulsive Explosives
 explosive.icbmclassic:attractive.name=Attractive Explosives
 explosive.icbmclassic:nightmare.name=Nightmare Explosives
 explosive.icbmclassic:colors.name=Colorful Explosives
+explosive.icbmclassic:smoke.name=Smoke Marking Explosives
 
 explosive.icbmclassic:fragmentation.name=Fragmentation Explosives
 explosive.icbmclassic:contagious.name=Contagious Explosives
@@ -199,6 +200,7 @@ missile.icbmclassic:anvil.name=Anvil Missile
 missile.icbmclassic:repulsive.name=Repulsive Missile
 missile.icbmclassic:attractive.name=Attractive Missile
 missile.icbmclassic:colors.name=Colorful Missile
+missile.icbmclassic:smoke.name=Smoke Marking Missile
 
 missile.icbmclassic:fragmentation.name=Fragmentation Missile
 missile.icbmclassic:contagious.name=Contagious Missile
@@ -228,6 +230,7 @@ bombcart.icbmclassic:repulsive.name=Repulsive Minecart
 bombcart.icbmclassic:attractive.name=Attractive Minecart
 bombcart.icbmclassic:nightmare.name=Nightmare Minecart
 bombcart.icbmclassic:colors.name=Colorful Minecart
+bombcart.icbmclassic:smoke.name=Smoke Marking Minecart
 
 bombcart.icbmclassic:fragmentation.name=Fragmentation Minecart
 bombcart.icbmclassic:contagious.name=Contagious Minecart
@@ -256,6 +259,7 @@ explosive.icbmclassic:anvil.info=What's up doc
 explosive.icbmclassic:repulsive.info=Pushes everyone away
 explosive.icbmclassic:attractive.info=Pulls everyone in
 explosive.icbmclassic:colors.info=So many colors!!!
+explosive.icbmclassic:smoke.info=Short smoke signal for target testing
 
 explosive.icbmclassic:fragmentation.info=Devastates the landscape with high velocity fragments
 explosive.icbmclassic:contagious.info=Have you ever heard of the plague?
@@ -304,6 +308,7 @@ grenade.icbmclassic:anvil.name=Anvil Grenade
 grenade.icbmclassic:repulsive.name=Repulsive Grenade
 grenade.icbmclassic:attractive.name=Attractive Grenade
 grenade.icbmclassic:colors.name=Colorful Grenade
+grenade.icbmclassic:smoke.name=Smoke Marking Grenade
 
 ## ICBM Misc Blocks
 tile.icbmclassic:concrete.0.name=Concrete

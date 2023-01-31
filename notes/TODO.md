@@ -3,9 +3,9 @@
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
 - [ ] Migrate BombCart to capability and have it store ItemStack used to place
-- [ ] Fix smoke localizations and texturea
+- [X] Fix smoke localizations and textures
 - [ ] Fix AB config translations
-- [ ] Improve Smoke usefulness
+- [X] Improve Smoke usefulness
 - [ ] Nuke (alt for lacking uranium items)
 - [ ] debilitation explosive (alt for lacking sulfur)
 - [ ] incendiary explosive (alt for lacking sulfur)
