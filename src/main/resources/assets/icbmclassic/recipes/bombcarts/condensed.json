@@ -1,7 +1,7 @@
 {
   "result": {
-    "item": "icbmclassic:bombcart",
-    "data": 1,
+    "explosive": "icbmclassic:condensed",
+    "device": "icbmclassic:minecart",
     "count": 1
   },
   "pattern": [
@@ -14,8 +14,8 @@
       "item": "minecraft:minecart"
     },
     "a": {
-      "item": "icbmclassic:explosives",
-      "data": 1
+      "explosive": "icbmclassic:condensed",
+      "count": 1
     }
   }
 }
