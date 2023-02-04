@@ -1,5 +1,6 @@
 package icbm.classic.api.caps;
 
+import icbm.classic.api.ICBMClassicAPI;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -23,6 +24,15 @@ public interface IMissileHolder
      * @return stack in slot
      */
     ItemStack getMissileStack();
+
+    /**
+     * Checks if the missile stack is a missile
+     *
+     * @return true if missile
+     */
+    default boolean hasMissile() {
+        return getMissileStack().hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+    }
 
     /**
      * Called to insert the missile into the holder
