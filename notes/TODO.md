@@ -5,7 +5,7 @@
 - [X] Fix AB config translations
 - [X] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
 
-# Recipe issues
+## Recipe issues
 
 - [ ] Emps explosive
 - [ ] Code generator for carts
@@ -38,6 +38,9 @@
 - [ ] Add fuel item (coal + redstone), all missiles default with a little but range in silo will change fuel usage
 - [ ] Add fuel tank to silos, will use fuel item to add to level but other mods could add fluid support for automation
 - [ ] Make fuel config driven(on/off, fuel usage rate, electricity usage rates)
+- [ ] Simulated missiles are not taking with them entities attached
+- [ ] Spawn eggs on missiles
+- [ ] Mechanic to add entities to missile (leash?)
 
 ## TODO future radar rewrite
 

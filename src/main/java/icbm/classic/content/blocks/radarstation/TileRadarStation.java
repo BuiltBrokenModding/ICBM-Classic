@@ -8,6 +8,7 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -29,6 +30,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +109,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 //Check for incoming and launch anti-missiles if
                 if (this.ticks % 20 == 0 && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
                 {
-                    RadioRegistry.popMessage(world, this, getFrequency(), "fireAntiMissile", this.incomingThreats.get(0)); //TODO use static var for event name
+                    RadioRegistry.popMessage(world, this, getFrequency(), RadioHeaders.SAM_TRIGGER.header, this.incomingThreats.get(0)); //TODO use static var for event name
                 }
             }
             // No power, reset state

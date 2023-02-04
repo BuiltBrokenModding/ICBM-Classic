@@ -29,7 +29,7 @@ public interface IRadioWaveSender extends IWorldPosition
      * @param header   - description of the data
      * @param data     - data that was sent
      */
-    default void onMessageReceived(IRadioWaveReceiver receiver, float hz, String header, Object[] data)
+    default void onMessageReceived(IRadioWaveReceiver receiver, float hz, String header, Object[] data) /// TODO switch header and data to packet object
     {
         //Optional, not really used by most tiles, only exists for special use cases
     }

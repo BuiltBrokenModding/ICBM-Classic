@@ -370,7 +370,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         if (isServer() && frequency == this.getFrequency())
         {
             //Laser detonator signal
-            if (messageHeader.equals("activateLauncherWithTarget")) //TODO cache headers somewhere like API references
+            if (messageHeader.equals(RadioHeaders.FIRE_AT_TARGET.header))
             {
                 final Pos pos = (Pos) data[0];
                 if (!isTooClose(pos))
@@ -380,7 +380,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 }
             }
             //Remote detonator signal
-            else if (messageHeader.equals("activateLauncher"))
+            else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
             {
                 ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
                 launch();

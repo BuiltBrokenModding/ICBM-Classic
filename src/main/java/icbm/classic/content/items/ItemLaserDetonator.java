@@ -7,6 +7,7 @@ import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.ICBMClassic;
+import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.prefab.FakeRadioSender;
@@ -25,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -89,23 +91,24 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     @Override
     public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
-        ItemStack stack = player.inventory.getCurrentItem();
-        if (stack != null && stack.getItem() == this)
+        final ItemStack stack = player.inventory.getCurrentItem();
+        if (stack.getItem() == this)
         {
             if (!player.world.isRemote)
             {
                 int x = buf.readInt();
                 int y = buf.readInt();
                 int z = buf.readInt();
+
                 LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, new BlockPos(x, y, z), player);
 
                 if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
                     return false;
 
                 if(event.pos == null) //someone set the pos in the event to null, use original data
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(x, y, z));
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, new Pos(x, y, z));
                 else
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), "activateLauncherWithTarget", new Pos(event.pos.getX(), event.pos.getY(), event.pos.getZ()));
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, new Pos(event.pos.getX(), event.pos.getY(), event.pos.getZ()));
             }
             else
             {
