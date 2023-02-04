@@ -8,9 +8,11 @@ import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
+import icbm.classic.content.blocks.launcher.base.LauncherInventory;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
@@ -35,11 +37,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
+import javax.annotation.Nullable;
+
+public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile
 {
     public static final int DESCRIPTION_PACKET_ID = 0;
     public static final int SET_FREQUENCY_PACKET_ID = 1;
@@ -63,19 +69,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
-    private ExternalInventory inventory;
+    public final CruiseInventory inventory = new CruiseInventory(this);
+    private final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
 
     private boolean doLaunchNext = false;
-
-    @Override
-    public ExternalInventory getInventory()
-    {
-        if (inventory == null)
-        {
-            inventory = new ExternalInventory(this, 2);
-        }
-        return inventory;
-    }
 
     /**
      * Gets the display status of the missile launcher
@@ -92,11 +89,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusNoPower");
         }
-        else if (this.getInventory().getStackInSlot(0).isEmpty())
+        // Checks for empty slot
+        else if (missileHolder.getMissileStack().isEmpty())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.statusEmpty");
         }
-        else if (!hasMissile())
+        // Checks for valid missile
+        else if (!missileHolder.hasMissile())
         {
             status = LanguageUtility.getLocal("gui.launcherCruise.invalidMissile");
         }
@@ -223,7 +222,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        ByteBufUtils.writeItemStack(buf, this.getInventory().getStackInSlot(0));
+        ByteBufUtils.writeItemStack(buf, this.missileHolder.getMissileStack());
 
         buf.writeInt(getTarget().xi());
         buf.writeInt(getTarget().yi());
@@ -252,7 +251,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        getInventory().load(nbt.getCompoundTag(NBTConstants.INVENTORY));
+        inventory.deserializeNBT(nbt.getCompoundTag(NBTConstants.INVENTORY));
         currentAim.readFromNBT(nbt.getCompoundTag(NBTConstants.CURRENT_AIM));
         initFromLoad();
     }
@@ -263,7 +262,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setTag(NBTConstants.INVENTORY, getInventory().save(new NBTTagCompound()));
+        nbt.setTag(NBTConstants.INVENTORY, inventory.serializeNBT());
         nbt.setTag(NBTConstants.CURRENT_AIM, currentAim.writeNBT(new NBTTagCompound()));
         return super.writeToNBT(nbt);
     }
@@ -288,15 +287,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         return hasTarget()
                 && isAimed()
-                && hasMissile()
+                && missileHolder.hasMissile()
                 && hasChargeToFire()
                 && !this.isTooClose(this.getTarget())
                 && canSpawnMissileWithNoCollision();
-    }
-
-    protected boolean hasMissile()
-    {
-        return this.getInventory().getStackInSlot(0).hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }
 
     protected boolean hasTarget()
@@ -339,7 +333,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         this.doLaunchNext = false;
         if (this.canLaunch())
         {
-            final ItemStack inventoryStack = this.getInventory().getStackInSlot(0); //TODO set into missile holder
+            final ItemStack inventoryStack = missileHolder.getMissileStack();
 
             if(inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
                 final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
@@ -358,7 +352,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
                         if(world.spawnEntity(entity)) {
                             this.extractEnergy();
-                            this.getInventory().setInventorySlotContents(0, capabilityMissileStack.consumeMissile());
+                            inventory.setStackInSlot(0, capabilityMissileStack.consumeMissile());
                             return true;
                         }
                     }
@@ -418,12 +412,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public boolean canStore(ItemStack itemStack, EnumFacing side)
-    {
-        return itemStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null) && this.getInventory().getStackInSlot(0).isEmpty();
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
         return new Cube(-2, 0, -2, 2, 3, 2).add(new Pos((IPos3D) this)).toAABB();
@@ -439,5 +427,30 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public Object getClientGuiElement(int id, EntityPlayer player)
     {
         return new GuiCruiseLauncher(player, this);
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        //Run before screen check to prevent looping
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (facing == EnumFacing.DOWN || facing == null) || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
+        {
+            return true;
+        }
+        return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            return (T) inventory;
+        } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
+        {
+            return (T) missileHolder;
+        }
+        return super.getCapability(capability, facing);
     }
 }

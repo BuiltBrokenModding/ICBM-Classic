@@ -4,6 +4,7 @@ import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
 {
@@ -11,9 +12,9 @@ public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
     {
         super(player, tileEntity);
         // Missile Slot
-        this.addSlotToContainer(new Slot(tileEntity.getInventory(), 0, 151, 23));
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 0, 151, 23));
         // Battery Slot
-        this.addSlotToContainer(new Slot(tileEntity.getInventory(), 1, 151, 47));
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 1, 151, 47));
         addPlayerInventory(player);
     }
 
