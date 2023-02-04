@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
+import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -231,7 +232,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     protected boolean shouldSimulate(Entity entity)
     {
-        if (entity.getPassengers().stream().anyMatch(rider -> rider instanceof EntityPlayerMP))
+        if (EntityMissile.hasPlayerRiding(entity))
         {
             return false;
         } else if (entity.posY >= ConfigMissile.SIMULATION_START_HEIGHT)

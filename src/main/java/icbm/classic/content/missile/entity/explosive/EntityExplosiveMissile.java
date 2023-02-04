@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -129,7 +130,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     @Override
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
+    public boolean processInitialInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand)
     {
         //Allow missile to override interaction
         if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand))

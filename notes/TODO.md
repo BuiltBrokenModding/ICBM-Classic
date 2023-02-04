@@ -3,8 +3,7 @@
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
 - [X] Fix AB config translations
-- [ ] Missiles point wrong direction in GUI, should match sword angle
-- [ ] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
+- [X] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
 
 # Recipe issues
 
@@ -62,6 +61,7 @@
 - [ ] tool textures
 - [ ] 3D model for laser
 - [ ] Fake missiles for decoration
+- [ ] Missiles point wrong direction in GUI, should match sword angle
 
 # TODO future +2
 

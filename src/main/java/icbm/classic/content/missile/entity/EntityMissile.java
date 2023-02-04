@@ -20,7 +20,11 @@ import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityMinecartEmpty;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemMinecart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -35,6 +39,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Optional;
@@ -203,7 +208,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
+    public boolean processInitialInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand)
     {
         //Handle player riding missile
         if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(getMissileCapability(), player)))
@@ -244,10 +249,22 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity)
     {
-        if (!world.isRemote && entityHit.getRidingEntity() != this && entityHit != shootingEntity)
+        if (!world.isRemote && !isRider(entityHit) && entityHit != shootingEntity)
         {
             super.onImpactEntity(entityHit, velocity);
         }
+    }
+
+    public boolean isRider(Entity entity) {
+        return entity != null && (entity.getRidingEntity() == this || isRider(entity.getRidingEntity()));
+    }
+
+    public boolean hasPlayerRiding() {
+        return hasPlayerRiding(this);
+    }
+
+    public static boolean hasPlayerRiding(Entity entity) {
+        return entity.getPassengers().stream().anyMatch(e -> e instanceof EntityPlayer || hasPlayerRiding(e));
     }
 
     @Override
