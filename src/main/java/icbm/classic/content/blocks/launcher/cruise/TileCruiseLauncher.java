@@ -14,6 +14,7 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
@@ -63,6 +64,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
     private ExternalInventory inventory;
+
+    private boolean doLaunchNext = false;
 
     @Override
     public ExternalInventory getInventory()
@@ -132,10 +135,14 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
 
         //Check redstone
-        if (isServer() && this.ticks % REDSTONE_CHECK_RATE == 0 && this.world.getStrongPower(getPos()) > 0)
+        if (isServer() && isAimed() && shouldFire())
         {
             this.launch();
         }
+    }
+
+    private boolean shouldFire() {
+        return doLaunchNext || this.ticks % REDSTONE_CHECK_RATE == 0 && this.world.getStrongPower(getPos()) > 0;
     }
 
     @Override
@@ -143,6 +150,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         super.setTarget(target);
         updateAimAngle();
+    }
+
+    protected boolean isAimed() {
+        return currentAim.isWithin(aim, 0.01);
     }
 
     protected void updateAimAngle()
@@ -276,6 +287,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public boolean canLaunch()
     {
         return hasTarget()
+                && isAimed()
                 && hasMissile()
                 && hasChargeToFire()
                 && !this.isTooClose(this.getTarget())
@@ -324,6 +336,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     //@Override
     public boolean launch()
     {
+        this.doLaunchNext = false;
         if (this.canLaunch())
         {
             final ItemStack inventoryStack = this.getInventory().getStackInSlot(0); //TODO set into missile holder
@@ -376,6 +389,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 if (!isTooClose(pos))
                 {
                     setTarget(pos);
+                    this.doLaunchNext = true;
                     ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Aiming missile at " + pos));
                 }
             }
@@ -383,7 +397,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
             else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
             {
                 ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
-                launch();
+                this.doLaunchNext = true;
             }
         }
     }
