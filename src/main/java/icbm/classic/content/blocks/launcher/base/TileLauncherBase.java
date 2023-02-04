@@ -299,11 +299,13 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
                     ((WorldServer) getWorld()).addScheduledTask(() -> getWorld().spawnEntity(entity));
 
                     //Grab rider
-                    if (seat != null && seat.getRidingEntity() != null) //TODO add hook to disable riding some missiles
+                    if (seat != null && !seat.getPassengers().isEmpty()) //TODO add hook to disable riding some missiles
                     {
-                        final Entity seatRider = seat.getRidingEntity();
-                        seat.getRidingEntity().removePassengers();
-                        seatRider.startRiding(entity);
+                        final List<Entity> riders = seat.getPassengers();
+                        riders.forEach(r -> {
+                            entity.dismountRidingEntity();
+                            r.startRiding(entity);
+                        });
                     }
 
                     //Remove item
