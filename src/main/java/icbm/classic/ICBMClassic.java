@@ -198,20 +198,11 @@ public class ICBMClassic
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        //Verify that our nbt tag strings are distinct. If this fails then this will crash Minecraft!
-        NBTConstants.ensureThatAllTagNamesAreDistinct();
-
         proxy.preInit();
         EnergySystem.register(new EnergySystemFE());
 
         //Register caps
-        CapabilityEMP.register();
-        CapabilityMissile.register();
-        CapabilityExplosive.register();
-        CapabilityBlast.register();
-        CapabilityBlastVelocity.register();
-        CapabilityMissileHolder.register();
-        CapabilityMissileStack.register();
+        registerCapabilities();
 
         //Register data fixers
         modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);
@@ -229,6 +220,16 @@ public class ICBMClassic
         handleMissileFlightRegistry();
         handleMissileSourceRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
+    }
+
+    void registerCapabilities() {
+        CapabilityEMP.register();
+        CapabilityMissile.register();
+        CapabilityExplosive.register();
+        CapabilityBlast.register();
+        CapabilityBlastVelocity.register();
+        CapabilityMissileHolder.register();
+        CapabilityMissileStack.register();
     }
 
     void handleMissileTargetRegistry()
