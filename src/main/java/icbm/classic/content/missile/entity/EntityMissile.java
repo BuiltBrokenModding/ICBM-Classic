@@ -6,7 +6,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigMissile;
+import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
@@ -38,7 +38,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Created by Robin Seifert on 12/12/2021.

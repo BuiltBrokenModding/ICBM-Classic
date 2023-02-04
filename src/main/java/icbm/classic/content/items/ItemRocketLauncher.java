@@ -5,7 +5,7 @@ import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.config.ConfigMain;
-import icbm.classic.config.ConfigMissile;
+import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.source.EntitySourceData;
 import icbm.classic.content.missile.source.MissileSourceEntity;

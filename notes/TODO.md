@@ -2,17 +2,8 @@
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
-- [ ] Migrate BombCart to capability and have it store ItemStack used to place
-- [X] Fix smoke localizations and textures
 - [ ] Fix AB config translations
-- [X] Improve Smoke usefulness
-- [X] Nuke (alt for lacking uranium items)
-- [X] AB missile scaling problems
-- [X] AB missile model?
-- [X] AB missile recipe
-- [X] Radar redstone not updating correctly
-- [X] RPG missiles colliding with player (creative collider???)
-- [ ] Missile item frame doesn't render properly
+- [ ] Missiles point wrong direction in GUI, should match sword angle
 - [ ] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
 
 # Recipe issues
@@ -80,10 +71,10 @@
 - [ ] Missile Health Balance
 - [ ] Missile Armor balance
 - [ ] Battery Slots
-- [X] Saltpeter crafting (likely had a furnace recipe)
 - [ ] Alt path to get Sulfur drops (newer mc has rocks in caves that could work as an on-break loot table)
 - [ ] saltpeter recipe supports sewage fluid instead of water if present
 - [ ] change `IMissileFlightLogic#shouldRunEngineEffects` to return an object containing settings (effect type, size, color, etc)
 - [ ] create interface to customize what data is saved when simulating missile to avoid wasted data
 - [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - [ ] Balance recipes for IC2
+- [ ] Migrate BombCart to capability and have it store ItemStack used to place

@@ -2,13 +2,11 @@ package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.missiles.IMissileTarget;
-import icbm.classic.config.ConfigAntiMissile;
-import icbm.classic.config.ConfigMissile;
+import icbm.classic.config.missile.ConfigMissile;
+import icbm.classic.config.missile.ConfigSAMMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 /**
  * Follows the location of the target data
@@ -58,9 +56,9 @@ public class FollowTargetLogic extends DeadFlightLogic
             motionZ /= velocity;
 
             //Set motion
-            entity.motionX = motionX * ConfigAntiMissile.FLIGHT_SPEED;
-            entity.motionY = motionY * ConfigAntiMissile.FLIGHT_SPEED;
-            entity.motionZ = motionZ * ConfigAntiMissile.FLIGHT_SPEED;
+            entity.motionX = motionX * ConfigMissile.SAM_MISSILE.FLIGHT_SPEED;
+            entity.motionY = motionY * ConfigMissile.SAM_MISSILE.FLIGHT_SPEED;
+            entity.motionZ = motionZ * ConfigMissile.SAM_MISSILE.FLIGHT_SPEED;
 
             //Update rotation
             float f3 = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);

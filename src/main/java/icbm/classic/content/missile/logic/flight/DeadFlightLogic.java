@@ -3,7 +3,6 @@ package icbm.classic.content.missile.logic.flight;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileFlightLogic;
-import icbm.classic.config.ConfigMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;

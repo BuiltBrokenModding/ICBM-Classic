@@ -1,7 +1,7 @@
 package icbm.classic.content.missile.entity.anti;
 
-import icbm.classic.config.ConfigAntiMissile;
-import icbm.classic.config.ConfigMissile;
+import icbm.classic.config.missile.ConfigSAMMissile;
+import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import icbm.classic.content.reg.ItemReg;
@@ -55,7 +55,7 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
                 this.getMissileCapability().setTargetData(scanLogic);
 
                 // Update out flight logic to follow our sam target
-                this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigAntiMissile.FUEL));
+                this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigMissile.SAM_MISSILE.FUEL));
             }
 
             //TODO move to object that gets a tick() invoke `ProximityKillHandler`
@@ -63,9 +63,9 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
             if (currentTarget != null) {
                 final double distance = this.getDistance(currentTarget);
 
-                if (distance <= ConfigAntiMissile.FLIGHT_SPEED) {
+                if (distance <= ConfigMissile.SAM_MISSILE.FLIGHT_SPEED) {
                     //TODO add custom damage source that reflects owner of the AB missile, damage is impact-blunt
-                    currentTarget.attackEntityFrom(new EntityDamageSource("missile", this), ConfigAntiMissile.ATTACK_DAMAGE);
+                    currentTarget.attackEntityFrom(new EntityDamageSource("missile", this), ConfigMissile.SAM_MISSILE.ATTACK_DAMAGE);
                     //TODO play sound effect of missile exploding
                     this.setDead();
                 }

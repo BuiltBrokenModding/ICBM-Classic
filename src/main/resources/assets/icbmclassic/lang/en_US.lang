@@ -16,6 +16,7 @@ config.icbmclassic:thread.title=Thread
 config.icbmclassic:item.title=Item
 config.icbmclassic:ic2.title=Industrial Craft 2
 config.icbmclassic:debug.title=Debug
+config.icbmclassic:missile.sam.title=Surface to Air Missile
 
 ## Chat commands
 

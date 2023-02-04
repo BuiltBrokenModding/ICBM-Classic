@@ -2,16 +2,13 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.config.ConfigMissile;
+import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.network.IPacket;

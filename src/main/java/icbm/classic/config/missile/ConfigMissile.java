@@ -1,4 +1,4 @@
-package icbm.classic.config;
+package icbm.classic.config.missile;
 
 import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
@@ -57,4 +57,7 @@ public class ConfigMissile
     @Config.Comment("Amount of damage a missile can take from any source before death")
     @Config.RangeInt(min = 1)
     public static int TIER_4_HEALTH = 200;
+
+    @Config.LangKey("config.icbmclassic:missile.sam.title")
+    public static ConfigSAMMissile SAM_MISSILE = new ConfigSAMMissile();
 }
