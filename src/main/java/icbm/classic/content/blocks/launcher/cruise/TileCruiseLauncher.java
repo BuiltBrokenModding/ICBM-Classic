@@ -70,7 +70,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
     public final CruiseInventory inventory = new CruiseInventory(this);
-    private final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
+    private final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, CruiseInventory.SLOT_MISSILE);
 
     private boolean doLaunchNext = false;
 
@@ -128,7 +128,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
         lastRotationUpdate = System.nanoTime();
 
-        //this.discharge(this.containingItems[1]); TODO
+        // Fill internal battery
+        this.dischargeItem(inventory.getEnergySlot());
 
         //Update current aim
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
