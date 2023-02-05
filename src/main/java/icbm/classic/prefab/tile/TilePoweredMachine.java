@@ -5,7 +5,10 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
+import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.energy.system.IEnergySystem;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -57,10 +60,21 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
     {
         if (needsPower())
         {
-            IEnergyBuffer buffer = getEnergyBuffer(null);
+            final IEnergyBuffer buffer = getEnergyBuffer(null);
             if (buffer != null)
             {
                 buffer.removeEnergyFromStorage(getEnergyConsumption(), true);
+            }
+        }
+    }
+
+    public void dischargeItem(ItemStack itemStack) {
+        final IEnergySystem system = EnergySystem.getSystem(itemStack, null);
+        if(system != null) {
+            final int energyLeftToStore = getEnergyBufferSize() - getEnergy();
+            if(energyLeftToStore > 0) {
+                final int removed = system.removeEnergy(itemStack, null, energyLeftToStore, false);
+                this.setEnergy(this.getEnergy() + removed);
             }
         }
     }

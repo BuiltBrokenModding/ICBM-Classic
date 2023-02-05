@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 public class EnergySystemFE implements IEnergySystem
 {
     private Field energyStorageField;
-    private boolean failedenergyStorageField;
+    private boolean failedEnergyStorageField;
 
     @Override
     public boolean canSupport(Object object, EnumFacing side)
@@ -56,7 +56,7 @@ public class EnergySystemFE implements IEnergySystem
     }
 
     @Override
-    public int setEnergy(Object object, EnumFacing side, int energy, boolean doAction)
+    public int setEnergy(Object object, EnumFacing side, int energy, boolean simulate)
     {
         IEnergyStorage storage = getCapability(object, side);
 
@@ -67,7 +67,7 @@ public class EnergySystemFE implements IEnergySystem
             //Edge case work around to help remove all energy, yes this will need to be done per mod
             if (storage instanceof EnergyStorage)
             {
-                if (!failedenergyStorageField)
+                if (!failedEnergyStorageField)
                 {
                     try
                     {
@@ -80,12 +80,12 @@ public class EnergySystemFE implements IEnergySystem
                     }
                     catch (Exception ex)
                     {
-                        failedenergyStorageField = true;
+                        failedEnergyStorageField = true;
                         ICBMClassic.logger().error("Failed to access EnergyStorage#energy to set energy value directly", ex);
                     }
                 }
             }
-            return removeEnergy(object, side, Integer.MAX_VALUE, doAction);
+            return removeEnergy(object, side, Integer.MAX_VALUE, simulate);
         }
         return 0;
     }
@@ -93,7 +93,7 @@ public class EnergySystemFE implements IEnergySystem
     @Override
     public boolean canSetEnergyDirectly(Object object, EnumFacing side)
     {
-        return !failedenergyStorageField && getCapability(object, side) instanceof EnergyStorage;
+        return !failedEnergyStorageField && getCapability(object, side) instanceof EnergyStorage;
     }
 
     @Override
@@ -119,23 +119,23 @@ public class EnergySystemFE implements IEnergySystem
     }
 
     @Override
-    public int addEnergy(Object object, EnumFacing side, int energyToAdd, boolean doAction)
+    public int addEnergy(Object object, EnumFacing side, int energyToAdd, boolean simulate)
     {
         IEnergyStorage storage = getCapability(object, side);
         if (storage != null)
         {
-            return storage.receiveEnergy(energyToAdd, !doAction);
+            return storage.receiveEnergy(energyToAdd, simulate);
         }
         return 0;
     }
 
     @Override
-    public int removeEnergy(Object object, EnumFacing side, int energyToRemove, boolean doAction)
+    public int removeEnergy(Object object, EnumFacing side, int energyToRemove, boolean simulate)
     {
         IEnergyStorage storage = getCapability(object, side);
         if (storage != null)
         {
-            return storage.extractEnergy(energyToRemove, doAction);
+            return storage.extractEnergy(energyToRemove, simulate);
         }
         return 0;
     }
