@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.lib.energy.system.EnergySystem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -9,6 +10,9 @@ import javax.annotation.Nonnull;
 
 public class CruiseInventory extends ItemStackHandler
 {
+    public static final int SLOT_MISSILE = 0;
+    public static final int SLOT_BATTERY = 1;
+
     private final TileCruiseLauncher host;
 
     public CruiseInventory(TileCruiseLauncher host)
@@ -17,10 +21,23 @@ public class CruiseInventory extends ItemStackHandler
         this.host = host;
     }
 
+    public ItemStack getEnergySlot() {
+        return getStackInSlot(SLOT_BATTERY);
+    }
+
+    @Override
+    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
+    {
+        return isItemValid(slot, stack) ? super.insertItem(slot, stack, simulate) : stack;
+    }
+
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack)
     {
-        return stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        if(slot == SLOT_BATTERY) {
+            return EnergySystem.getSystem(stack, null) != null;
+        }
+        return slot == SLOT_MISSILE && stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }
 
     @Override

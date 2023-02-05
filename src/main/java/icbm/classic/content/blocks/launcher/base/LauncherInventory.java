@@ -25,7 +25,7 @@ public class LauncherInventory extends ItemStackHandler
         {
             return stack;
         }
-        return super.insertItem(slot, stack, simulate);
+        return isItemValid(slot, stack) ? super.insertItem(slot, stack, simulate) : stack;
     }
 
     @Override
