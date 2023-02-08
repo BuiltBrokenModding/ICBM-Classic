@@ -23,7 +23,9 @@
 
 # TODO future launcher rewrite
 
+- [ ] Drop tiers, no reason to have tiers as a gating mechanic. Do 1 launcher set with attachments for different feature.
 - [ ] Split multi-block
+- [ ] Make launcher base a single block with optional visual rails
 - [ ] Use static models for launcher (try to do this with missile as well of possible)
 - [ ] decouple controller from base
 - [ ] redstone doesn't connect to launcher
@@ -41,6 +43,29 @@
 - [ ] Simulated missiles are not taking with them entities attached
 - [ ] Spawn eggs on missiles
 - [ ] Mechanic to add entities to missile (leash?)
+
+## Cruise Launcher Model
+
+- Needs to match cold-war era tows and AT rockets
+- 3 leg design, 2 in front and 1 in back
+- Green and dark metal texture
+- Show battery when installed... show on base of launcher
+- Show cables when attached... show on base of launcher towards connection point
+- Show missile on top of the launcher
+- Handle rotation from ball joint
+- Show launch button and little computer screen
+- Show optional laser pointer aiming at target
+- Optional, allow extending the height to mirror some AT rockets poking over cover
+
+## Silo
+
+- 1x1x1 block footprint
+- Slightly indented on top to have missile set inside a cradle like shape
+- Dark metal texture
+- Grate on top with hole for smoke collection
+- Grate on bottom for smoke exit
+- Power/Fluid/Item connections on sides
+- Few lights on top to show status
 
 ## TODO future radar rewrite
 
