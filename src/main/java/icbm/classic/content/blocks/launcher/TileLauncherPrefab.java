@@ -68,6 +68,7 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
      *
      * @param target
      */
+    @Deprecated //TODO switch with blockPos
     public void setTarget(Pos target)
     {
         LauncherSetTargetEvent event = new LauncherSetTargetEvent(this, target);
@@ -95,13 +96,6 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
         }
 
         return super.writeToNBT(nbt);
-    }
-
-    public String getStatus()
-    {
-        String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
-        return color + status;
     }
 
     @Override

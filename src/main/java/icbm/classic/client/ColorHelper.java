@@ -1,13 +1,28 @@
 package icbm.classic.client;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.lwjgl.util.Color;
 
 /**
  * Created by Robin Seifert on 4/1/2022.
  */
+@NoArgsConstructor(access = AccessLevel.NONE)
 public final class ColorHelper
 {
-    private ColorHelper() {}
+    public static float[] argbToFloats(int argb) {
+        float alpha = (float) (argb >> 24 & 255) / 255.0F;
+
+        float red = (float) (argb >> 16 & 255) / 255.0F;
+        float green = (float) (argb >> 8 & 255) / 255.0F;
+        float blue = (float) (argb & 255) / 255.0F;
+
+        return new float[]{red, green, blue, alpha};
+    }
+
+    public static int toARGB(int red, int green, int blue, int alpha) {
+        return ((alpha & 255) << 24) + ((red & 255) << 16) + ((green & 255) << 8) + (blue & 255);
+    }
 
     /**
      * From java.awt.Color... copied and modified to avoid loading awt module

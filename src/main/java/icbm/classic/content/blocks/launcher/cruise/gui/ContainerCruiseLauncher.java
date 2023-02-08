@@ -1,5 +1,6 @@
-package icbm.classic.content.blocks.launcher.cruise;
+package icbm.classic.content.blocks.launcher.cruise.gui;
 
+import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -12,10 +13,10 @@ public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
     {
         super(player, tileEntity);
         // Missile Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 0, 151, 23));
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 0, 88, 47));
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 1, 151, 47));
-        addPlayerInventory(player);
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 1, 141, 47));
+        addPlayerInventory(player, 7, 84);
     }
 
     /** Called to transfer a stack from one inventory to the other eg. when shift clicking. */

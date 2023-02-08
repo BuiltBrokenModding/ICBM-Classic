@@ -212,7 +212,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
      *
      * @return The string to be displayed
      */
-    @Override
     public String getStatus()
     {
         String color = "\u00a74";

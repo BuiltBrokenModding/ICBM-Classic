@@ -2,8 +2,7 @@
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
-- [X] Fix AB config translations
-- [X] Entity riding stacks on  missiles containing a player, shouldn't be allowed for MissileTrackerWorld
+- [ ] Launch button cruise launcher UI
 
 ## Recipe issues
 
@@ -35,14 +34,29 @@
 - [ ] Track launching method (redstone, remote, etc)
 - [ ] Passed tracked data into launcher source for better event handling
 - [ ] Have missile spawn from PRG visually, ensure we raytrace for collisions to perevent shooting through walls
-- [ ] Scale down RPG missiles
-- [ ] Add new missile item purely for RPG that are smaller in scale
 - [ ] Add fuel item (coal + redstone), all missiles default with a little but range in silo will change fuel usage
 - [ ] Add fuel tank to silos, will use fuel item to add to level but other mods could add fluid support for automation
 - [ ] Make fuel config driven(on/off, fuel usage rate, electricity usage rates)
 - [ ] Simulated missiles are not taking with them entities attached
 - [ ] Spawn eggs on missiles
 - [ ] Mechanic to add entities to missile (leash?)
+
+## Hand Launcher
+
+- [ ] Scale down RPG missiles
+- [ ] Add new missile item purely for RPG that are smaller in scale
+
+## Cruise Launcher
+
+- [ ] Angle aiming: yaw, pitch
+- [ ] UI toggle to switch between pos, angle, relative(pos + self#blockPos)
+- [ ] Angle limits
+- [ ] Rotation speed adjustments
+- [ ] Min range bypass and display using visuals (laser line with colors?)
+- [ ] Colorblind friendly error indicators in UI
+- [ ] Do a controlled translation line split for error text (can do this in general as well for better display of text)
+- [ ] Improve energy bar render UI
+- [ ] Improve energy bar tooltip format (add commas and metric increments to save space k FE, M FE)
 
 ## Cruise Launcher Model
 
@@ -57,7 +71,7 @@
 - Show optional laser pointer aiming at target
 - Optional, allow extending the height to mirror some AT rockets poking over cover
 
-## Silo
+## Silo Model
 
 - 1x1x1 block footprint
 - Slightly indented on top to have missile set inside a cradle like shape
@@ -67,7 +81,7 @@
 - Power/Fluid/Item connections on sides
 - Few lights on top to show status
 
-## TODO future radar rewrite
+# TODO future radar rewrite
 
 - [ ] Line of sight (Only show radar areas not blocked by large objects)
 - [ ] Time in air before detection starts or height above ground?

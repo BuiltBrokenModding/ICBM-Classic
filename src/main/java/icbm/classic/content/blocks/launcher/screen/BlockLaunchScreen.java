@@ -120,7 +120,7 @@ public class BlockLaunchScreen extends BlockICBM
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
 
                         String translation = LanguageUtility.getLocal("chat.launcher.status");
-                        translation = translation.replace("%s", screen.getStatus());
+                        translation = translation.replace("%s", screen.getStatus()); //TODO remove status being a separate translation
                         player.sendMessage(new TextComponentString(translation));
                     }
                 }

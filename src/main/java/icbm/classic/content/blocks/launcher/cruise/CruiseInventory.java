@@ -3,10 +3,12 @@ package icbm.classic.content.blocks.launcher.cruise;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.energy.system.IEnergySystem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 public class CruiseInventory extends ItemStackHandler
 {
@@ -35,7 +37,7 @@ public class CruiseInventory extends ItemStackHandler
     public boolean isItemValid(int slot, @Nonnull ItemStack stack)
     {
         if(slot == SLOT_BATTERY) {
-            return EnergySystem.getSystem(stack, null) != null;
+            return EnergySystem.isEnergyItem(stack, null);
         }
         return slot == SLOT_MISSILE && stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
     }

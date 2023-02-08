@@ -14,12 +14,15 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 public class GuiContainerBase extends GuiContainer
 {
@@ -28,13 +31,13 @@ public class GuiContainerBase extends GuiContainer
 
     public ResourceLocation baseTexture;
 
-    public String tooltip = "";
+    public String currentTooltipText = "";
 
-    protected HashMap<Rectangle, String> tooltips = new HashMap();
+    protected HashMap<Rectangle, Supplier<String>> tooltips = new HashMap();
     protected ArrayList<GuiTextField> fields = new ArrayList();
 
-    protected int containerWidth;
-    protected int containerHeight;
+    protected int containerLeft;
+    protected int containerTop;
 
     /** Debug toogle to render text for the ID and inventory ID for a slot */
     public boolean renderSlotDebugIDs = false;
@@ -123,29 +126,34 @@ public class GuiContainerBase extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        for (Entry<Rectangle, String> entry : this.tooltips.entrySet())
+
+        // Figure out which tooltip to render
+        for (Entry<Rectangle, Supplier<String>> entry : this.tooltips.entrySet())
         {
+            // First box with mouse wins
             if (entry.getKey().isWithin(new Point(mouseX - this.guiLeft, mouseY - this.guiTop)))
             {
-                this.tooltip = entry.getValue();
+                this.currentTooltipText = entry.getValue().get();
                 break;
             }
         }
 
-        if (this.tooltip != null && this.tooltip != "")
+        // Render current tooltip if not empty
+        if (!StringUtils.isEmpty(this.currentTooltipText))
         {
-            java.util.List<String> lines = LanguageUtility.splitByLine(tooltip);
-            this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines.toArray(new String[lines.size()])); //TODO find a way to not have to convert to array to improve render time
+            java.util.List<String> lines = LanguageUtility.splitByLine(currentTooltipText);
+            this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines);
         }
 
-        this.tooltip = "";
+        // Reset tooltip for next render tick
+        this.currentTooltipText = "";
     }
 
     @Override
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
     {
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
-        renderHoveredToolTip(p_73863_1_, p_73863_2_);
+        renderHoveredToolTip(p_73863_1_, p_73863_2_); //TODO consider render tooltips in this step
         if (fields != null && fields.size() > 0)
         {
             GlStateManager.disableLighting();
@@ -197,13 +205,13 @@ public class GuiContainerBase extends GuiContainer
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
         drawDefaultBackground();
-        this.containerWidth = (this.width - this.xSize) / 2;
-        this.containerHeight = (this.height - this.ySize) / 2;
+        this.containerLeft = (this.width - this.xSize) / 2;
+        this.containerTop = (this.height - this.ySize) / 2;
 
         this.mc.renderEngine.bindTexture(this.baseTexture);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        this.drawTexturedModalRect(this.containerWidth, this.containerHeight, 0, 0, this.xSize, this.ySize);
+        this.drawTexturedModalRect(this.containerLeft, this.containerTop, 0, 0, this.xSize, this.ySize);
     }
 
     //TODO update and docs
@@ -229,7 +237,7 @@ public class GuiContainerBase extends GuiContainer
         this.mc.renderEngine.bindTexture(GUI_COMPONENTS);
         GlStateManager.color(r, g, b, 1.0F);
 
-        this.drawTexturedModalRect(this.containerWidth + x, this.containerHeight + y, 0, 0, 18, 18);
+        this.drawTexturedModalRect(this.containerLeft + x, this.containerTop + y, 0, 0, 18, 18);
     }
 
     /**
@@ -309,7 +317,7 @@ public class GuiContainerBase extends GuiContainer
     }
 
     //TODO update and docs
-    public void drawTooltip(int x, int y, String... toolTips)
+    public void drawTooltip(int x, int y, Collection<String> toolTips)
     {
         if (!GuiScreen.isShiftKeyDown())
         {
@@ -318,55 +326,54 @@ public class GuiContainerBase extends GuiContainer
                 GlStateManager.disableRescaleNormal();
                 GlStateManager.disableDepth();
 
-                int var5 = 0;
-                int var6;
-                int var7;
+                int textMaxWidth = 0;
 
-                for (var6 = 0; var6 < toolTips.length; ++var6)
+                // Render all my lines
+                for (String line : toolTips)
                 {
-                    var7 = Minecraft.getMinecraft().fontRenderer.getStringWidth(toolTips[var6]);
+                    final int lineWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(line);
 
-                    if (var7 > var5)
+                    // Tack longest line
+                    if (lineWidth > textMaxWidth)
                     {
-                        var5 = var7;
+                        textMaxWidth = lineWidth;
                     }
                 }
 
-                var6 = x + 12;
-                var7 = y - 12;
+                int backgroundX = x + 12;
+                int backgroundY = y - 12;
 
                 int var9 = 8;
 
-                if (toolTips.length > 1)
+                if (toolTips.size() > 1)
                 {
-                    var9 += 2 + (toolTips.length - 1) * 10;
+                    var9 += 2 + (toolTips.size()- 1) * 10;
                 }
 
-                if (this.guiTop + var7 + var9 + 6 > this.height)
+                if (this.guiTop + backgroundY + var9 + 6 > this.height)
                 {
-                    var7 = this.height - var9 - this.guiTop - 6;
+                    backgroundY = this.height - var9 - this.guiTop - 6;
                 }
 
                 this.zLevel = 300;
                 int var10 = -267386864;
-                this.drawGradientRect(var6 - 3, var7 - 4, var6 + var5 + 3, var7 - 3, var10, var10);
-                this.drawGradientRect(var6 - 3, var7 + var9 + 3, var6 + var5 + 3, var7 + var9 + 4, var10, var10);
-                this.drawGradientRect(var6 - 3, var7 - 3, var6 + var5 + 3, var7 + var9 + 3, var10, var10);
-                this.drawGradientRect(var6 - 4, var7 - 3, var6 - 3, var7 + var9 + 3, var10, var10);
-                this.drawGradientRect(var6 + var5 + 3, var7 - 3, var6 + var5 + 4, var7 + var9 + 3, var10, var10);
+                this.drawGradientRect(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
+                this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
+                this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var10, var10);
+                this.drawGradientRect(backgroundX - 4, backgroundY - 3, backgroundX - 3, backgroundY + var9 + 3, var10, var10);
+                this.drawGradientRect(backgroundX + textMaxWidth + 3, backgroundY - 3, backgroundX + textMaxWidth + 4, backgroundY + var9 + 3, var10, var10);
                 int var11 = 1347420415;
                 int var12 = (var11 & 16711422) >> 1 | var11 & -16777216;
-                this.drawGradientRect(var6 - 3, var7 - 3 + 1, var6 - 3 + 1, var7 + var9 + 3 - 1, var11, var12);
-                this.drawGradientRect(var6 + var5 + 2, var7 - 3 + 1, var6 + var5 + 3, var7 + var9 + 3 - 1, var11, var12);
-                this.drawGradientRect(var6 - 3, var7 - 3, var6 + var5 + 3, var7 - 3 + 1, var11, var11);
-                this.drawGradientRect(var6 - 3, var7 + var9 + 2, var6 + var5 + 3, var7 + var9 + 3, var12, var12);
+                this.drawGradientRect(backgroundX - 3, backgroundY - 3 + 1, backgroundX - 3 + 1, backgroundY + var9 + 3 - 1, var11, var12);
+                this.drawGradientRect(backgroundX + textMaxWidth + 2, backgroundY - 3 + 1, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3 - 1, var11, var12);
+                this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY - 3 + 1, var11, var11);
+                this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
 
-                for (int var13 = 0; var13 < toolTips.length; ++var13)
+                // Draw text shadows
+                for (String line : toolTips)
                 {
-                    String var14 = toolTips[var13];
-
-                    Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(var14, var6, var7, -1);
-                    var7 += 10;
+                    Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line, backgroundX, backgroundY, -1);
+                    backgroundY += 10;
                 }
 
                 this.zLevel = 0;
