@@ -360,7 +360,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     // Is the target too close?
     public boolean isTooClose(Pos target)
     {
-        return new Pos(getPos()).add(0.5).distance(new Pos(target.x() + .5, target.z() + .5, target.z() + .5)) < 20;
+        return new Pos(getPos()).add(0.5).distance(new Pos(target.x() + .5, target.y() + .5, target.z() + .5)) < 20;
     }
 
     @Override
