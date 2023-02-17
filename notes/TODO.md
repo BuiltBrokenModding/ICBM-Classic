@@ -2,13 +2,16 @@
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
-- [ ] Launch button cruise launcher UI
 
 ## Recipe issues
 
-- [ ] Emps explosive
 - [ ] Code generator for carts
 - [ ] Code generator for grenades
+
+# Next release
+
+- [ ] Add handling for EMP effect on tiles
+- [ ] Add fuse disable chance for missiles when EMP hits 
 - [ ] debilitation explosive (alt for lacking sulfur)
 - [ ] incendiary explosive (alt for lacking sulfur)
 
@@ -80,6 +83,17 @@
 - Grate on bottom for smoke exit
 - Power/Fluid/Item connections on sides
 - Few lights on top to show status
+
+# TODO emp tower rewrite
+
+- [ ] Remove modes
+- [ ] Show power usage in UI
+- [ ] Scale power usage with range
+- [ ] Add cooldown with animation and UI feedback
+- [ ] Add focus area of effect allowing users to have EMP go towards sky only in a cone
+- [ ] Rework UI to be closer to vanilla UIs
+- [ ] Add visual feedback to show area of effect
+- [ ] Add hz remote triggering
 
 # TODO future radar rewrite
 

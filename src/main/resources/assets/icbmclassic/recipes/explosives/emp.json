@@ -1,0 +1,30 @@
+{
+  "result": {
+    "explosive": "icbmclassic:emp",
+    "count": 1
+  },
+  "pattern": [
+    "rer",
+    "sas",
+    "sss"
+  ],
+  "type": "icbmclassic:explosive",
+  "key": {
+    "a": {
+      "type" : "icbmclassic:explosive",
+      "explosive": "icbmclassic:repulsive"
+    },
+    "e": {
+      "item": "icbmclassic:battery",
+      "data": 0
+    },
+    "r": {
+      "item": "minecraft:redstone",
+      "data": 0
+    },
+    "s": {
+      "item": "icbmclassic:wire",
+      "data": 0
+    }
+  }
+}
