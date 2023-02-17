@@ -1,4 +1,5 @@
 {
+  "type": "icbmclassic:explosive",
   "result": {
     "explosive": "icbmclassic:colors",
     "device": "icbmclassic:grenade",
@@ -8,14 +9,13 @@
     "s",
     "x"
   ],
-  "type": "icbmclassic:explosive",
   "key": {
     "s": {
-      "item": "minecraft:string",
-      "data": 0
+      "type": "forge:ore_dict",
+      "ore": "string"
     },
     "x": {
-      "type" : "icbmclassic:explosive",
+      "type": "icbmclassic:explosive",
       "explosive": "icbmclassic:colors"
     }
   }

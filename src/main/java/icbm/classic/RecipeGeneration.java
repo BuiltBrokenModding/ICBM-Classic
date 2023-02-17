@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import icbm.classic.api.ICBMClassicAPI;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,13 +14,13 @@ import java.io.Writer;
 
 public class RecipeGeneration {
 
-    protected void cartRecipes() {
+    public static void cartRecipes() {
         final File saveFolder = new File(".", "recipes/bombcarts");
         saveFolder.mkdirs();
 
         final Gson gson =  new GsonBuilder().setPrettyPrinting().create();
 
-        ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives().stream().forEach(ex -> {
+        ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives().forEach(ex -> {
 
             final File file = new File(saveFolder, ex.getRegistryName().getResourcePath() + ".json");
 
@@ -61,13 +62,13 @@ public class RecipeGeneration {
         });
     }
 
-    protected void grenadeRecipes() {
+    public static void grenadeRecipes() {
         final File saveFolder = new File(".", "recipes/grenades");
         saveFolder.mkdirs();
 
         final Gson gson =  new GsonBuilder().setPrettyPrinting().create();
 
-        ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives().stream().forEach(ex -> {
+        ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosives().forEach(ex -> {
 
             final File file = new File(saveFolder, ex.getRegistryName().getResourcePath() + ".json");
 
@@ -77,14 +78,14 @@ public class RecipeGeneration {
             // Result section
             final JsonObject resultJson = new JsonObject();
             resultJson.addProperty("explosive", ex.getRegistryName().toString());
-            resultJson.addProperty("device", "icbmclassic:minecart");
+            resultJson.addProperty("device", "icbmclassic:grenade");
             resultJson.addProperty("count", 1);
             recipeJson.add("result", resultJson);
 
             // pattern section
             final JsonArray patternJson = new JsonArray();
-            patternJson.add("a");
-            patternJson.add("c");
+            patternJson.add("s");
+            patternJson.add("x");
             recipeJson.add("pattern", patternJson);
 
             // pattern section
@@ -92,13 +93,14 @@ public class RecipeGeneration {
             recipeJson.add("key", keyJson);
 
             final JsonObject key1 = new JsonObject();
-            key1.addProperty("item", "minecraft:minecart");
-            keyJson.add("c", key1);
+            key1.addProperty("type","forge:ore_dict");
+            key1.addProperty("ore", "string");
+            keyJson.add("s", key1);
 
             final JsonObject key2 = new JsonObject();
             key2.addProperty("type", "icbmclassic:explosive");
             key2.addProperty("explosive", ex.getRegistryName().toString());
-            keyJson.add("a", key2);
+            keyJson.add("x", key2);
 
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(recipeJson, writer);

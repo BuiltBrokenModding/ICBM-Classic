@@ -1,7 +1,7 @@
 {
   "type": "icbmclassic:explosive",
   "result": {
-    "explosive": "icbmclassic:smoke",
+    "explosive": "icbmclassic:attractive",
     "device": "icbmclassic:grenade",
     "count": 1
   },
@@ -16,7 +16,7 @@
     },
     "x": {
       "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:smoke"
+      "explosive": "icbmclassic:attractive"
     }
   }
 }
