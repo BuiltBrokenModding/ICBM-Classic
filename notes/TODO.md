@@ -1,11 +1,7 @@
-# Next release TODO:
+# Unit tests:
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
-
-## Recipe issues
-
-- [ ] Code generator for grenades
 
 # Next release
 
