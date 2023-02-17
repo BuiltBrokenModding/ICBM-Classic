@@ -1,5 +1,9 @@
 package icbm.classic;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.events.*;
@@ -32,7 +36,6 @@ import icbm.classic.content.potion.PoisonToxin;
 import icbm.classic.content.reg.ExplosiveInit;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.datafix.*;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
@@ -58,6 +61,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -82,8 +86,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mod class for ICBM Classic, contains all loading code and references to objects crated by the mod.

@@ -5,7 +5,6 @@
 
 ## Recipe issues
 
-- [ ] Code generator for carts
 - [ ] Code generator for grenades
 
 # Next release

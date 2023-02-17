@@ -1,4 +1,5 @@
 {
+  "type": "icbmclassic:explosive",
   "result": {
     "explosive": "icbmclassic:shrapnel",
     "device": "icbmclassic:minecart",
@@ -8,14 +9,13 @@
     "a",
     "c"
   ],
-  "type": "minecraft:crafting_shaped",
   "key": {
     "c": {
       "item": "minecraft:minecart"
     },
     "a": {
-      "explosive": "icbmclassic:shrapnel",
-      "count": 1
+      "type": "icbmclassic:explosive",
+      "explosive": "icbmclassic:shrapnel"
     }
   }
 }

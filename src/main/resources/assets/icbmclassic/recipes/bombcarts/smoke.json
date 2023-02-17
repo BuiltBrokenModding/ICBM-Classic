@@ -1,4 +1,5 @@
 {
+  "type": "icbmclassic:explosive",
   "result": {
     "explosive": "icbmclassic:smoke",
     "device": "icbmclassic:minecart",
@@ -8,13 +9,12 @@
     "a",
     "c"
   ],
-  "type": "icbmclassic:explosive",
   "key": {
     "c": {
       "item": "minecraft:minecart"
     },
     "a": {
-      "type" : "icbmclassic:explosive",
+      "type": "icbmclassic:explosive",
       "explosive": "icbmclassic:smoke"
     }
   }

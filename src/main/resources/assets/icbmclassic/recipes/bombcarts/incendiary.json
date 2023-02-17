@@ -1,21 +1,21 @@
 {
+  "type": "icbmclassic:explosive",
   "result": {
-    "item": "icbmclassic:bombcart",
-    "data": 3,
+    "explosive": "icbmclassic:incendiary",
+    "device": "icbmclassic:minecart",
     "count": 1
   },
   "pattern": [
     "a",
     "c"
   ],
-  "type": "minecraft:crafting_shaped",
   "key": {
     "c": {
       "item": "minecraft:minecart"
     },
     "a": {
-      "item": "icbmclassic:explosives",
-      "data": 3
+      "type": "icbmclassic:explosive",
+      "explosive": "icbmclassic:incendiary"
     }
   }
 }
