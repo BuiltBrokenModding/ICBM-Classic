@@ -1,7 +1,7 @@
 {
   "type": "icbmclassic:explosive",
   "result": {
-    "explosive": "icbmclassic:colors",
+    "explosive": "icbmclassic:anvil",
     "device": "icbmclassic:missile",
     "count": 1
   },
@@ -16,7 +16,7 @@
     "x": {
       "type": "icbmclassic:explosive",
       "device": "icbmclassic:block",
-      "explosive": "icbmclassic:colors"
+      "explosive": "icbmclassic:anvil"
     }
   }
 }

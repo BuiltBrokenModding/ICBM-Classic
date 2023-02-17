@@ -1,20 +1,20 @@
 {
+  "type": "icbmclassic:explosive",
   "result": {
-    "device": "icbmclassic:missile",
     "explosive": "icbmclassic:shrapnel",
+    "device": "icbmclassic:missile",
     "count": 1
   },
   "pattern": [
-    "mc"
+    "mx"
   ],
-  "type": "icbmclassic:explosive",
   "key": {
     "m": {
-      "type" : "icbmclassic:explosive",
+      "type": "icbmclassic:explosive",
       "device": "icbmclassic:missile.module"
     },
-    "c": {
-      "type" : "icbmclassic:explosive",
+    "x": {
+      "type": "icbmclassic:explosive",
       "device": "icbmclassic:block",
       "explosive": "icbmclassic:shrapnel"
     }

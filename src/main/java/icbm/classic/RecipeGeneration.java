@@ -110,4 +110,53 @@ public class RecipeGeneration {
             }
         });
     }
+
+    public static void missileRecipes() {
+        final File saveFolder = new File(".", "recipes/missiles");
+        saveFolder.mkdirs();
+
+        final Gson gson =  new GsonBuilder().setPrettyPrinting().create();
+
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosives().forEach(ex -> {
+
+            final File file = new File(saveFolder, ex.getRegistryName().getResourcePath() + ".json");
+
+            final JsonObject recipeJson = new JsonObject();
+            recipeJson.addProperty("type", "icbmclassic:explosive");
+
+            // Result section
+            final JsonObject resultJson = new JsonObject();
+            resultJson.addProperty("explosive", ex.getRegistryName().toString());
+            resultJson.addProperty("device", "icbmclassic:missile");
+            resultJson.addProperty("count", 1);
+            recipeJson.add("result", resultJson);
+
+            // pattern section
+            final JsonArray patternJson = new JsonArray();
+            patternJson.add("mx");
+            recipeJson.add("pattern", patternJson);
+
+            // pattern section
+            final JsonObject keyJson = new JsonObject();
+            recipeJson.add("key", keyJson);
+
+            final JsonObject key1 = new JsonObject();
+            key1.addProperty("type","icbmclassic:explosive");
+            key1.addProperty("device", "icbmclassic:missile.module");
+            keyJson.add("m", key1);
+
+            final JsonObject key2 = new JsonObject();
+            key2.addProperty("type", "icbmclassic:explosive");
+            key2.addProperty("device", "icbmclassic:block");
+            key2.addProperty("explosive", ex.getRegistryName().toString());
+            keyJson.add("x", key2);
+
+            try (Writer writer = new FileWriter(file)) {
+                gson.toJson(recipeJson, writer);
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 }
