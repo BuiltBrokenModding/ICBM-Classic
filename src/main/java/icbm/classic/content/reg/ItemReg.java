@@ -116,7 +116,7 @@ public class ItemReg
         // Crafting item used to make saltpeter dust
         event.getRegistry().register(new ItemBase().setName("saltpeter_ball").setCreativeTab(ICBMClassic.CREATIVE_TAB));
 
-        event.getRegistry().register(new ItemAntidote().setName("antidote"));
+        event.getRegistry().register(new ItemAntidote().setName("antidote").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemSignalDisrupter());
         event.getRegistry().register(new ItemTracker());
         event.getRegistry().register(new ItemDefuser());
