@@ -17,6 +17,7 @@
 - [ ] Drop crafting items
 - [ ] Dart game using fake missile items
 - [ ] Dispenser logic for missiles
+- [ ] remove crafting items
 
 # TODO future launcher rewrite
 
@@ -108,7 +109,6 @@
 
 - [ ] Cart textures
 - [ ] Grenade textures
-- [ ] remove crafting items
 - [ ] tool textures
 - [ ] 3D model for laser
 - [ ] Fake missiles for decoration
