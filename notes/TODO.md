@@ -6,7 +6,7 @@
 - ~~Shrapnel~~
 - ~~Incendiary~~
 - ~~Debilitation~~
-- Chemical
+- ~~Chemical~~
 - Anvil
 - Repulsive
 - Attractive
@@ -76,6 +76,10 @@
 - EMP Tower
 - Radar
 - Silo Screen
+
+## Audio
+
+- Chemical should make a glass breaking sound on impact followed by gas leaking
 
 # Unit tests:
 
