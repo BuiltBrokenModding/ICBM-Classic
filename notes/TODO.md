@@ -1,3 +1,82 @@
+# Graphics Overhaul
+
+## Missiles Tier 1
+
+- ~~Condensed~~
+- ~~Shrapnel~~
+- Incendiary
+- Debilitation
+- Chemical
+- Anvil
+- Repulsive
+- Attractive
+- Colorful
+- Smoke
+- Missile Module
+
+## Missiles Tier 2
+
+- Fragmentation
+- Contagious
+- Sonic
+- Breaching
+- Thermometric
+
+## Missiles Tier 3
+
+- Nuclear
+- EMP
+- Exothermic
+- Endothermic
+- Anti-Gravitational
+- Ender
+- Hypersonic
+
+## Missiles Special
+
+- Antimatter
+- Red Matter
+- Surface to Air Missile
+
+## Blocks Model
+
+- Silo (Pad)
+- Silo Frame Internal (Pad + Supports internal to block + extensions)
+- Silo Frame External (Supports on outside, current rear support but as 1^3 blocks )
+- Silo Support External (Side supports today, but as 1^3 blocks)
+- Silo Screen
+- Cruise Launcher
+- Radar Controller
+- EMP Tower
+
+## Block Textures
+
+- Reinforced Glass connected textures and new textures at 16x16
+- Concrete textures
+- Spikes
+
+## Items
+
+- RPG Model
+- Radar Gun
+- Remote Det
+- Laser Det
+- Tracker
+- Signal Disrupter
+- Defuser
+- Battery
+- Grenades
+- Carts
+- Wire Items
+- Steel clump
+- Bronze clump
+
+## GUI
+
+- EMP Tower
+- Radar
+- Silo Screen
+
 # Unit tests:
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
