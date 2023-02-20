@@ -4,8 +4,8 @@
 
 - ~~Condensed~~
 - ~~Shrapnel~~
-- Incendiary
-- Debilitation
+- ~~Incendiary~~
+- ~~Debilitation~~
 - Chemical
 - Anvil
 - Repulsive
@@ -88,6 +88,7 @@
 - [ ] Add fuse disable chance for missiles when EMP hits 
 - [ ] debilitation explosive (alt for lacking sulfur)
 - [ ] incendiary explosive (alt for lacking sulfur)
+- [ ] BlastConfusion keeps re-apply poison causing it to not take effect
 
 # After MC update (likely after radar and launcher rewrites)
 
