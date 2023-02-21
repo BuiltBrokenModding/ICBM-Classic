@@ -9,7 +9,7 @@
 - ~~Chemical~~
 - ~~Anvil~~
 - ~~Repulsive~~
-- Attractive
+- ~~Attractive~~
 - ~~Colorful~~
 - ~~Smoke~~
 - ~~Missile Module~~
