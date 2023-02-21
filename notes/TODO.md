@@ -8,7 +8,7 @@
 - ~~Debilitation~~
 - ~~Chemical~~
 - ~~Anvil~~
-- Repulsive
+- ~~Repulsive~~
 - Attractive
 - ~~Colorful~~
 - ~~Smoke~~
