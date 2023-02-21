@@ -145,8 +145,8 @@ public class GuiCruiseLauncher extends GuiContainerBase
     public void mouseClicked(int par1, int par2, int par3) throws IOException
     {
         super.mouseClicked(par1, par2, par3);
-        this.fieldTarget.mouseClicked(par1 - containerLeft, par2 - containerTop, par3);
-        this.fieldHz.mouseClicked(par1 - containerLeft, par2 - containerTop, par3);
+        this.fieldTarget.mouseClicked(par1 - guiLeft, par2 - guiTop, par3);
+        this.fieldHz.mouseClicked(par1 - guiLeft, par2 - guiTop, par3);
     }
 
     @Override

@@ -36,8 +36,6 @@ public class GuiContainerBase extends GuiContainer
     protected HashMap<Rectangle, Supplier<String>> tooltips = new HashMap();
     protected ArrayList<GuiTextField> fields = new ArrayList();
 
-    protected int containerLeft;
-    protected int containerTop;
 
     /** Debug toogle to render text for the ID and inventory ID for a slot */
     public boolean renderSlotDebugIDs = false;
@@ -205,13 +203,11 @@ public class GuiContainerBase extends GuiContainer
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
         drawDefaultBackground();
-        this.containerLeft = (this.width - this.xSize) / 2;
-        this.containerTop = (this.height - this.ySize) / 2;
 
         this.mc.renderEngine.bindTexture(this.baseTexture);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        this.drawTexturedModalRect(this.containerLeft, this.containerTop, 0, 0, this.xSize, this.ySize);
+        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
 
     //TODO update and docs
@@ -237,7 +233,7 @@ public class GuiContainerBase extends GuiContainer
         this.mc.renderEngine.bindTexture(GUI_COMPONENTS);
         GlStateManager.color(r, g, b, 1.0F);
 
-        this.drawTexturedModalRect(this.containerLeft + x, this.containerTop + y, 0, 0, 18, 18);
+        this.drawTexturedModalRect(this.guiLeft + x, this.guiTop + y, 0, 0, 18, 18);
     }
 
     /**
