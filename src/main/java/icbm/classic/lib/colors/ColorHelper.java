@@ -2,7 +2,6 @@ package icbm.classic.lib.colors;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.lwjgl.util.Color;
 
 /**
  * Created by Robin Seifert on 4/1/2022.
