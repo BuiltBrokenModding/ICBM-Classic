@@ -1,8 +1,8 @@
 package icbm.classic.content.blast.gas;
 
-import icbm.classic.client.ColorHelper;
+import icbm.classic.lib.colors.ColorB;
+import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.util.math.Vec3i;
-import org.lwjgl.util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class BlastColor extends BlastGasBase
     public static final int COLOR_COUNT = 100;
 
     /** Random set of particle colors */
-    public static final List<Color> PARTICLE_COLORS = new ArrayList(COLOR_COUNT);
+    public static final List<ColorB> PARTICLE_COLORS = new ArrayList(COLOR_COUNT);
 
     /** True of random colors have been setup, done once per game */
     private static boolean hasSetupColors = false;

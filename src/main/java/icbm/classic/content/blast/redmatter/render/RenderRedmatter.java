@@ -1,7 +1,8 @@
 package icbm.classic.content.blast.redmatter.render;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.client.ColorHelper;
+import icbm.classic.lib.colors.ColorB;
+import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -28,10 +29,10 @@ public class RenderRedmatter extends Render<EntityRedmatter>
 {
     public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "blackhole.png");
     public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "grey.png");
-    public static List<Color> randomColorsForBeams = new ArrayList();
+    public static List<ColorB> randomColorsForBeams = new ArrayList();
 
-    public Color colorIn = new Color(255, 255, 255); //TODO figure out how this works
-    public Color colorOut = new Color(0, 0, 0);
+    public ColorB colorIn = new ColorB(255, 255, 255); //TODO figure out how this works
+    public ColorB colorOut = new ColorB(0, 0, 0);
 
     public RenderRedmatter(RenderManager renderManager)
     {
@@ -233,8 +234,8 @@ public class RenderRedmatter extends Render<EntityRedmatter>
             GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F + rotationScale * 360.0F, 0.0F, 0.0F, 1.0F);
 
             //Get color based on state
-            Color colorOut = this.colorOut;
-            Color colorIn = this.colorIn;
+            ColorB colorOut = this.colorOut;
+            ColorB colorIn = this.colorIn;
             if (ConfigBlast.REDMATTER.RENDER_COLORED_BEAMS)
             {
                 if (beamIndex < randomColorsForBeams.size())

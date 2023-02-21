@@ -1,6 +1,6 @@
 package icbm.classic.prefab.gui;
 
-import icbm.classic.client.ColorHelper;
+import icbm.classic.lib.colors.ColorHelper;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.client.gui.FontRenderer;
