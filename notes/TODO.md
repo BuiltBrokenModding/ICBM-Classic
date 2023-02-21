@@ -12,7 +12,7 @@
 - Attractive
 - ~~Colorful~~
 - ~~Smoke~~
-- Missile Module
+- ~~Missile Module~~
 
 ## Missiles Tier 2
 
@@ -102,13 +102,15 @@
 - [ ] Punching bag missile -> no damage, only pushes impacted entity very far
 - [ ] Rope missile  -> when fired will leash anything nearby
 - [ ] Cargo rocket -> Can do a 3x3 grid of items
+- [ ] Creeper -> easter egg type that has a mini-creeper rendered on top
 
 # Explosive types
 
 - [ ] Torch -> lights up an area
 - [ ] Glass dome -> for KiriCattus
 - [ ] Marking Smoke (colored) -> improve marking smoke to customize color
-- [ ] Smoke missile -> Actual smoke cloud, reduce user render distance
+- [ ] Smoke -> Actual smoke cloud, reduce user render distance
+- [ ] Egg spawn -> Spawns mobs using existing spawn items
 
 # After MC update (likely after radar and launcher rewrites)
 
@@ -118,6 +120,7 @@
 - [ ] Dart game using fake missile items
 - [ ] Dispenser logic for missiles
 - [ ] remove crafting items
+- [ ] missile module per tier
 
 # TODO future launcher rewrite
 
