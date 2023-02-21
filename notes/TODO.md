@@ -11,7 +11,7 @@
 - Repulsive
 - Attractive
 - ~~Colorful~~
-- Smoke
+- ~~Smoke~~
 - Missile Module
 
 ## Missiles Tier 2
