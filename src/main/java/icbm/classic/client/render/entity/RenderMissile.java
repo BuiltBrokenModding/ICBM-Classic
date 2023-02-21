@@ -1,11 +1,11 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -37,7 +37,7 @@ public class RenderMissile extends Render<EntityMissile>
     {
         super(renderManager);
         entityItem = new EntityItem(null);
-        renderEntityItem = new RenderEntityItem2(renderManager, Minecraft.getMinecraft().getRenderItem());
+        renderEntityItem = new RenderEntityItem2(renderManager, Minecraft.getMinecraft().getRenderItem(), ItemCameraTransforms.TransformType.NONE);
     }
 
     @Override

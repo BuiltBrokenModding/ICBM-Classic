@@ -23,11 +23,13 @@ public class RenderEntityItem2 extends Render<EntityItem>
 {
     private final RenderItem itemRenderer;
     private final Random random = new Random();
+    private final ItemCameraTransforms.TransformType transformType;
 
-    public RenderEntityItem2(RenderManager renderManagerIn, RenderItem p_i46167_2_)
+    public RenderEntityItem2(RenderManager renderManagerIn, RenderItem p_i46167_2_, ItemCameraTransforms.TransformType transformType)
     {
         super(renderManagerIn);
         this.itemRenderer = p_i46167_2_;
+        this.transformType = transformType;
         this.shadowSize = 0.15F;
         this.shadowOpaque = 0.75F;
     }
@@ -63,7 +65,7 @@ public class RenderEntityItem2 extends Render<EntityItem>
         }
 
         GlStateManager.pushMatrix();
-        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, ItemCameraTransforms.TransformType.GROUND, false);
+        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, ItemCameraTransforms.TransformType.NONE, false);
         this.itemRenderer.renderItem(itemstack, ibakedmodel);
         GlStateManager.popMatrix();
 
