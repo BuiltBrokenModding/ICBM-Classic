@@ -10,7 +10,7 @@
 - Anvil
 - Repulsive
 - Attractive
-- Colorful
+- ~~Colorful~~
 - Smoke
 - Missile Module
 
@@ -93,6 +93,22 @@
 - [ ] debilitation explosive (alt for lacking sulfur)
 - [ ] incendiary explosive (alt for lacking sulfur)
 - [ ] BlastConfusion keeps re-apply poison causing it to not take effect
+- [ ] Config for projectile damage (Fragments, shrapnel, anvil)
+- [ ] Min-Max damage limits for projectiles
+- [ ] Damage types for projectiles
+
+# Missile types
+
+- [ ] Punching bag missile -> no damage, only pushes impacted entity very far
+- [ ] Rope missile  -> when fired will leash anything nearby
+- [ ] Cargo rocket -> Can do a 3x3 grid of items
+
+# Explosive types
+
+- [ ] Torch -> lights up an area
+- [ ] Glass dome -> for KiriCattus
+- [ ] Marking Smoke (colored) -> improve marking smoke to customize color
+- [ ] Smoke missile -> Actual smoke cloud, reduce user render distance
 
 # After MC update (likely after radar and launcher rewrites)
 
