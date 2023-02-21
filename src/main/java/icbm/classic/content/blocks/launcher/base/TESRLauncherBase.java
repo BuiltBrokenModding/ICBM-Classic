@@ -79,9 +79,6 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
                 GlStateManager.rotate(90F, 0F, 1F, 0F);
             }
 
-            //float scale = 3f;
-            //GlStateManager.scale(scale, scale, scale);
-
             RenderMissile.INSTANCE.renderMissile(launcher.getMissileStack(), launcher, 0, 0, 0, 0, 0);
             GlStateManager.popMatrix();
         }

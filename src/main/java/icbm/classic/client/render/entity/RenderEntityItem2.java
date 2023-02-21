@@ -65,7 +65,7 @@ public class RenderEntityItem2 extends Render<EntityItem>
         }
 
         GlStateManager.pushMatrix();
-        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, ItemCameraTransforms.TransformType.NONE, false);
+        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, transformType, false);
         this.itemRenderer.renderItem(itemstack, ibakedmodel);
         GlStateManager.popMatrix();
 

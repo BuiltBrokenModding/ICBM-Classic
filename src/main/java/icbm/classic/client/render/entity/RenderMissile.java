@@ -46,21 +46,17 @@ public class RenderMissile extends Render<EntityMissile>
         //Setup
         GlStateManager.pushMatrix();
 
-        //Translate
-        GlStateManager.translate(x, y, z);
+        //Translate to center of entity collider
+        GlStateManager.translate(x, y + 0.2, z);
 
         //Rotate
-        float yaw = entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * partialTicks - 90;
+        float yaw = entityMissile.prevRotationYaw + (entityMissile.rotationYaw - entityMissile.prevRotationYaw) * partialTicks - 180;
         float pitch = entityMissile.prevRotationPitch + (entityMissile.rotationPitch - entityMissile.prevRotationPitch) * partialTicks - 90;
-        GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(pitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(yaw, 0F, 1F, 0F);
+        GlStateManager.rotate(pitch, 1F, 0F, 0F);
 
-        //Fix model translation issues
-        GlStateManager.translate(0, -1.5, 0); //TODO missile has a very slight 1px~ offset in either x or z
-
-        //Scale model
-        final float scale = 2;
-        GlStateManager.scale(scale, scale, scale);
+        //Translate to rotation point of model TODO extract from model file
+        GlStateManager.translate(0, -0.8, 0);
 
         //Render missile
         renderMissile(entityMissile.toStack(),
