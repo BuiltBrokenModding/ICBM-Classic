@@ -7,7 +7,7 @@
 - ~~Incendiary~~
 - ~~Debilitation~~
 - ~~Chemical~~
-- Anvil
+- ~~Anvil~~
 - Repulsive
 - Attractive
 - ~~Colorful~~
