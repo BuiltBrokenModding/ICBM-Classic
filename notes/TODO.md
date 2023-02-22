@@ -16,8 +16,8 @@
 
 ## Missiles Tier 2
 
-- Fragmentation
-- Contagious
+- ~~Fragmentation~~
+- ~~Contagious~~
 - Sonic
 - Breaching
 - Thermometric
