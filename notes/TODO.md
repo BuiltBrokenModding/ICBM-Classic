@@ -20,7 +20,7 @@
 - ~~Contagious~~
 - ~~Sonic~~
 - ~~Breaching~~
-- Thermobaric
+- ~~Thermobaric~~
 
 ## Missiles Tier 3
 
