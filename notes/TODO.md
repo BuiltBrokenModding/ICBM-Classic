@@ -18,9 +18,9 @@
 
 - ~~Fragmentation~~
 - ~~Contagious~~
-- Sonic
+- ~~Sonic~~
 - Breaching
-- Thermometric
+- Thermobaric
 
 ## Missiles Tier 3
 
@@ -30,7 +30,6 @@
 - Endothermic
 - Anti-Gravitational
 - Ender
-- Hypersonic
 
 ## Missiles Special
 
