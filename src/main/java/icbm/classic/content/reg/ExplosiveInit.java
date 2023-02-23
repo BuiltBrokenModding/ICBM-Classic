@@ -179,6 +179,9 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.ENDER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.ENDER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ENDER);
 
+        // Hypersonic was removed in 4.3.0 and is kept as a numeric placeholder as a hardcoded id until next MC update
+        ICBMExplosives.HYPERSONIC = newEx(21, "hypersonic", EnumTier.NONE, null);
+
         //=================== Tier 4
         ICBMExplosives.ANTIMATTER = newEx(22, "antimatter", EnumTier.FOUR,
                 () -> new BlastAntimatter().setBlastSize(ConfigBlast.ANTIMATTER_SIZE));
