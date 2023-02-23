@@ -3,6 +3,7 @@ package icbm.classic.datafix;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.refs.ICBMEntities;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.source.MissileSourceBlock;
@@ -11,6 +12,7 @@ import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.source.MissileSourceEntity;
 import icbm.classic.content.missile.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.targeting.BasicTargetData;
+import icbm.classic.lib.NBTConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -56,6 +58,27 @@ public class EntityMissileDataFixer implements IFixableData
             DataFixerHelpers.removeTags(existingSave, "xTilePos", "yTilePos", "zTilePos");
             DataFixerHelpers.removeTags(existingSave, "sideTilePos", "inTileState");
             DataFixerHelpers.removeTags(existingSave, "life", "ticksInAir");
+        }
+        else if (existingSave.hasKey(ENTITY_ID) && existingSave.getString(ENTITY_ID).equalsIgnoreCase(ICBMEntities.MISSILE_EXPLOSIVE.toString())) {
+
+            // Move hypersonic to sonic
+            if(existingSave.hasKey("explosive")) {
+
+                final NBTTagCompound stackSave = existingSave.getCompoundTag(NBTConstants.EXPLOSIVE_STACK);
+                if(stackSave.hasKey("Damage")) {
+                    final int damage = stackSave.getInteger("Damage");
+
+                    if(damage == ICBMExplosives.HYPERSONIC.getRegistryID()) {
+
+                        // Change to sonic id
+                        stackSave.setInteger("Damage", ICBMExplosives.SONIC.getRegistryID());
+
+                        // Wipe out custom data, shouldn't exist but could crash a 3rd-party's code
+                        stackSave.removeTag("tag");
+                        stackSave.removeTag("ForgeCaps");
+                    }
+                }
+            }
         }
         return existingSave;
     }
@@ -289,6 +312,6 @@ public class EntityMissileDataFixer implements IFixableData
     @Override
     public int getFixVersion()
     {
-        return 1;
+        return 2;
     }
 }

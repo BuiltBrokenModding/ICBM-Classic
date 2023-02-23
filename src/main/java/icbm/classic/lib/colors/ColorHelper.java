@@ -1,8 +1,7 @@
-package icbm.classic.client;
+package icbm.classic.lib.colors;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.lwjgl.util.Color;
 
 /**
  * Created by Robin Seifert on 4/1/2022.
@@ -27,7 +26,7 @@ public final class ColorHelper
     /**
      * From java.awt.Color... copied and modified to avoid loading awt module
      */
-    public static Color HSBtoRGB(float hue, float saturation, float brightness) {
+    public static ColorB HSBtoRGB(float hue, float saturation, float brightness) {
         int r = 0, g = 0, b = 0;
         if (saturation == 0) {
             r = g = b = (int) (brightness * 255.0f + 0.5f);
@@ -70,6 +69,6 @@ public final class ColorHelper
                     break;
             }
         }
-        return new Color(r, g, b);
+        return new ColorB(r, g, b);
     }
 }

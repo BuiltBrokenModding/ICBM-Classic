@@ -179,10 +179,8 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.ENDER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.ENDER.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ENDER);
 
-
-        ICBMExplosives.HYPERSONIC = newEx(21, "hypersonic", EnumTier.THREE, () -> new BlastSonic().setShockWave().setBlastSize(20)); //TODO find Missile model
-        ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.HYPERSONIC.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.HYPERSONIC);
-        ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.HYPERSONIC.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.HYPERSONIC);
+        // Hypersonic was removed in 4.3.0 and is kept as a numeric placeholder as a hardcoded id until next MC update
+        ICBMExplosives.HYPERSONIC = newEx(21, "hypersonic", EnumTier.NONE, null);
 
         //=================== Tier 4
         ICBMExplosives.ANTIMATTER = newEx(22, "antimatter", EnumTier.FOUR,

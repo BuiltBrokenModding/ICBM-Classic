@@ -22,7 +22,7 @@ public class PropertyExplosive implements IProperty<IExplosiveData>
     @Override
     public Collection<IExplosiveData> getAllowedValues()
     {
-        return ICBMClassicAPI.EX_BLOCK_REGISTRY.getExplosives();
+        return ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives();
     }
 
     @Override

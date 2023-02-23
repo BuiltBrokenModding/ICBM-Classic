@@ -213,12 +213,14 @@ public class ICBMClassic
         registerCapabilities();
 
         //Register data fixers
-        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);
+        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 2);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, new EntityBombCartDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, EntityMissileDataFixer.INSTANCE);
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileRadarStationDataFixer());
+        modFixs.registerFix(FixTypes.ITEM_INSTANCE, new ItemStackDataFixer());
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
