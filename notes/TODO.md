@@ -26,7 +26,7 @@
 
 - ~~Nuclear~~
 - ~~EMP~~
-- Exothermic
+- ~~Exothermic~~
 - Endothermic
 - Anti-Gravitational
 - Ender
