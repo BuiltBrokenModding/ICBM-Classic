@@ -29,7 +29,7 @@
 - ~~Exothermic~~
 - ~~Endothermic~~
 - Anti-Gravitational
-- Ender
+- ~~Ender~~
 
 ## Missiles Special
 
