@@ -24,8 +24,8 @@
 
 ## Missiles Tier 3
 
-- Nuclear
-- EMP
+- ~~Nuclear~~
+- ~~EMP~~
 - Exothermic
 - Endothermic
 - Anti-Gravitational
@@ -57,6 +57,7 @@
 ## Items
 
 - RPG Model
+- Render warhead from each model on RPG
 - Radar Gun
 - Remote Det
 - Laser Det
