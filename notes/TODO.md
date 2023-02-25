@@ -35,7 +35,7 @@
 
 - ~~Antimatter~~
 - ~~Red Matter~~
-- Surface to Air Missile
+- ~~Surface to Air Missile~~
 
 https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
 
