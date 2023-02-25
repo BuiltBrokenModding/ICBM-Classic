@@ -28,7 +28,7 @@
 - ~~EMP~~
 - ~~Exothermic~~
 - ~~Endothermic~~
-- Anti-Gravitational
+- ~~Anti-Gravitational~~
 - ~~Ender~~
 
 ## Missiles Special
