@@ -34,8 +34,12 @@
 ## Missiles Special
 
 - Antimatter
-- Red Matter
+- ~~Red Matter~~
 - Surface to Air Missile
+
+https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
+
+Redmatter fluid in missile, have it move in circle for center tank and left-right inverse on lower tubes. 2 pixels left, 2 pixels right, repeat to give a centrifuge like visual.
 
 ## Blocks Model
 
