@@ -154,10 +154,12 @@ public class TileLauncherBase extends TilePoweredMachine
     protected Vec3d applyInaccuracy(BlockPos target)
     {
         // Apply inaccuracy
-        float inaccuracy = 30f; //TODO config
+        double inaccuracy = ConfigLauncher.MIN_INACCURACY;
 
-        //TODO add distance based inaccuracy addition
-        //TODO add tier based inaccuracy, higher tier missiles have a high chance of hitting
+        // Add inaccuracy based on range
+        double distance = getDistanceSq(target.getX(), target.getY(), target.getZ());
+        double scale = distance / ConfigLauncher.RANGE;
+        inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY;
 
         //Randomize distance
         inaccuracy = inaccuracy * getWorld().rand.nextFloat();
