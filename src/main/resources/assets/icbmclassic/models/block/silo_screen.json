@@ -1,0 +1,19 @@
+{
+  "parent": "block/cube",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, 135, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.40, 0.40, 0.40 ]
+    }
+  },
+  "textures": {
+    "particle": "icbmclassic:blocks/silo_screen/side",
+    "down": "icbmclassic:blocks/silo_screen/bottom",
+    "up": "icbmclassic:blocks/silo_screen/top",
+    "north": "icbmclassic:blocks/silo_screen/face",
+    "east": "icbmclassic:blocks/silo_screen/side",
+    "south": "icbmclassic:blocks/silo_screen/side",
+    "west": "icbmclassic:blocks/silo_screen/side"
+  }
+}

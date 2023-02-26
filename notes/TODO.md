@@ -22,15 +22,13 @@ Redmatter fluid in missile, have it move in circle for center tank and left-righ
 
 ## Blocks Model
 
-- Silo (Pad)
+- ~~Silo (Pad)~~
 - Silo (Connector) -> goes under frame as a full block to provide wire connections to silo pad
-- Silo Frame Internal (Pad + Supports internal to block + extensions)
-- Silo Frame External (Supports on outside, current rear support but as 1^3 blocks )
-- Silo Support External (Side supports today, but as 1^3 blocks)
-- Silo Screen
-- Cruise Launcher
-- Radar Controller
-- EMP Tower
+- ~~Silo Frame~~
+- ~~Silo Screen~~
+- Cruise Launcher -> static model, with upper animated model
+- Radar Controller -> static model no animation
+- EMP Tower -> static model with two state (charged, discharged) with charged having an animated electric creeper like texture
 
 ## Block Textures
 

@@ -37,13 +37,6 @@ import javax.annotation.Nullable;
  */
 public class BlockLaunchScreen extends BlockICBM
 {
-    //values by trial and error
-    private static final float px = 1.0F / 16.0F; //one pixel
-    private static final AxisAlignedBB THREE_NORTH   = new AxisAlignedBB(3 * px,     0, 2 * px,     13 * px,     10.5F * px, 12 * px);
-    private static final AxisAlignedBB THREE_SOUTH   = new AxisAlignedBB(13 * px,    0, 14 * px,    3 * px,      10.5F * px, 4 * px);
-    private static final AxisAlignedBB THREE_EAST    = new AxisAlignedBB(14 * px,    0, 13 * px,    4 * px,      10.5F * px, 3 * px);
-    private static final AxisAlignedBB THREE_WEST    = new AxisAlignedBB(2 * px,     0, 3 * px,     12 * px,     10.5F * px, 13 * px);
-
     public BlockLaunchScreen()
     {
         super("launcherscreen");
@@ -52,24 +45,7 @@ public class BlockLaunchScreen extends BlockICBM
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
-        if(state.getBlock() instanceof BlockLaunchScreen) //sometimes things happen that make this necessary
-        {
-            switch(state.getValue(ROTATION_PROP))
-            {
-                case NORTH: return THREE_NORTH;
-                case SOUTH: return THREE_SOUTH;
-                case EAST: return THREE_EAST;
-                case WEST: return THREE_WEST;
-                default: return super.getBoundingBox(state, source, pos);
-            }
-        }
-        return super.getBoundingBox(state, source, pos);
+        return EnumBlockRenderType.MODEL;
     }
 
     @Override
@@ -153,17 +129,5 @@ public class BlockLaunchScreen extends BlockICBM
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
         return new TileLauncherScreen();
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
     }
 }
