@@ -1,4 +1,4 @@
-package icbm.classic.content.blocks.launcher;
+package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.LauncherSetTargetEvent;
@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 
+@Deprecated
 public abstract class TileLauncherPrefab extends TileFrequency implements IRadioWaveReceiver
 {
     /** Target position of the launcher */
@@ -71,11 +72,11 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     @Deprecated //TODO switch with blockPos
     public void setTarget(Pos target)
     {
-        LauncherSetTargetEvent event = new LauncherSetTargetEvent(this, target);
+        LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, getPos(), target.toBlockPos());
 
         if(!MinecraftForge.EVENT_BUS.post(event))
         {
-            this._targetPos = (event.target == null ? target : event.target).floor();
+            this._targetPos = event.target == null ? Pos.zero : new Pos(event.target);
             updateClient = true;
         }
     }
@@ -108,10 +109,5 @@ public abstract class TileLauncherPrefab extends TileFrequency implements IRadio
     public Cube getRadioReceiverRange()
     {
         return RadioRegistry.INFINITE;
-    }
-
-    public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
-    {
-        updateClient = true;
     }
 }

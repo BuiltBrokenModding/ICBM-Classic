@@ -13,22 +13,22 @@ import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.TileMachine;
+import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
@@ -46,12 +46,9 @@ import java.util.Optional;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine
+public class TileLauncherBase extends TilePoweredMachine
 {
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
-
-    // The connected missile launcher frame
-    public TileLauncherScreen launchScreen = null;
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
@@ -107,29 +104,6 @@ public class TileLauncherBase extends TileMachine
                 }
             }
         }
-        //1 second update
-        if (ticks % 20 == 0)
-        {
-            //Only update if frame or screen is invalid
-            if (launchScreen == null || launchScreen.isInvalid())
-            {
-                this.launchScreen = null;
-
-                //Check on all 4 sides
-                for (EnumFacing rotation : EnumFacing.HORIZONTALS)
-                {
-                    //Get tile entity on side
-                    Pos position = new Pos(getPos()).add(rotation);
-                    TileEntity tileEntity = this.world.getTileEntity(position.toBlockPos());
-
-                    //If screen, tell the screen the base exists
-                    if (tileEntity instanceof TileLauncherScreen)
-                    {
-                        this.launchScreen = (TileLauncherScreen) tileEntity;
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -139,11 +113,6 @@ public class TileLauncherBase extends TileMachine
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return true;
-        }
-        //Check if we can pass to launcher screen
-        else if (launchScreen != null)
-        {
-            return launchScreen.hasCapability(capability, facing); //TODO pass in self to prevent looping
         }
         return super.hasCapability(capability, facing);
     }
@@ -158,9 +127,6 @@ public class TileLauncherBase extends TileMachine
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return (T) missileHolder;
-        } else if (launchScreen != null)
-        {
-            return launchScreen.getCapability(capability, facing);
         }
         return super.getCapability(capability, facing);
     }
@@ -186,7 +152,7 @@ public class TileLauncherBase extends TileMachine
         return new TextComponentTranslation("gui.launcherBase.name");
     }
 
-    protected Pos applyInaccuracy(Pos target)
+    protected Vec3d applyInaccuracy(BlockPos target)
     {
         // Apply inaccuracy
         float inaccuracy = 30f; //TODO config
@@ -201,16 +167,16 @@ public class TileLauncherBase extends TileMachine
         angle.setYaw(getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
 
         //Apply inaccuracy to target position and return
-        return target.add(angle.x() * inaccuracy, 0, angle.z() * inaccuracy);
+        return new Vec3d((target.getX() + 0.5) + angle.x() * inaccuracy, 0, (target.getX() + 0.5) + angle.z() * inaccuracy);
     }
 
     /**
      * Launches the missile
      *
-     * @param target     - The target in which the missile will land in
+     * @param targetPos     - The target in which the missile will land in
      * @param lockHeight - height to wait before curving the missile
      */
-    public boolean launchMissile(Pos target, int lockHeight)
+    public boolean launchMissile(BlockPos targetPos, int lockHeight)
     {
         //Allow canceling missile launches
         if (MinecraftForge.EVENT_BUS.post(new LauncherEvent.PreLaunch(missileLauncher, missileHolder)))
@@ -225,7 +191,7 @@ public class TileLauncherBase extends TileMachine
 
             if (missileStack != null)
             {
-                target = applyInaccuracy(target);
+                final Vec3d target = applyInaccuracy(targetPos);
 
                 //TODO add distance check? --- something seems to be missing
 
@@ -265,7 +231,7 @@ public class TileLauncherBase extends TileMachine
     }
 
     // Checks if the missile target is in range
-    public boolean isInRange(Pos target)
+    public boolean isInRange(BlockPos target)
     {
         if (target != null)
         {
@@ -280,20 +246,19 @@ public class TileLauncherBase extends TileMachine
      * @param target
      * @return
      */
-    public boolean isTargetTooClose(Pos target)
+    public boolean isTargetTooClose(BlockPos target)
     {
-        // Check if it is greater than the minimum range
-        return new Pos(this.x(), 0, this.z()).distance(new Pos(target.x(), 0, target.z())) < 10;
+        final int minDistance = 10;
+        final int deltaX = Math.abs(target.getX() - getPos().getX());
+        final int deltaZ = Math.abs(target.getZ() - getPos().getZ());
+        return deltaX < minDistance || deltaZ < minDistance;
     }
 
-    // Is the target too far?
-    public boolean isTargetTooFar(Pos target)
+    public boolean isTargetTooFar(BlockPos target)
     {
-        // Checks if it is greater than the maximum range for the launcher base
-        double distance = new Pos(this.x(), 0, this.z()).distance(new Pos(target.x(), 0, target.z()));
-
-
-        return distance > ConfigLauncher.LAUNCHER_RANGE;
+        final int deltaX = Math.abs(target.getX() - getPos().getX());
+        final int deltaZ = Math.abs(target.getZ() - getPos().getZ());
+        return deltaX > ConfigLauncher.RANGE || deltaZ > ConfigLauncher.RANGE;
     }
 
     /**
@@ -339,18 +304,6 @@ public class TileLauncherBase extends TileMachine
         return missileHolder.getMissileStack();
     }
 
-    public boolean onPlayerRightClick(EntityPlayer player, EnumHand hand, ItemStack heldItem)
-    {
-
-        if (!tryInsertMissile(player, hand, heldItem) && launchScreen != null)
-        {
-            return BlockReg.blockLaunchScreen.onBlockActivated(world, launchScreen.getPos(), world.getBlockState(launchScreen.getPos()), player, hand, EnumFacing.NORTH, 0, 0, 0);
-            //return launchScreen.onPlayerActivated(player, side, hit);
-        }
-
-        return true;
-    }
-
     public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem)
     {
         if (this.getMissileStack().isEmpty() && missileHolder.canSupportMissile(heldItem))
@@ -384,5 +337,17 @@ public class TileLauncherBase extends TileMachine
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
+    }
+
+    @Override
+    public int getEnergyConsumption()
+    {
+        return ConfigLauncher.POWER_COST;
+    }
+
+    @Override
+    public int getEnergyBufferSize()
+    {
+        return ConfigLauncher.POWER_CAPACITY;
     }
 }

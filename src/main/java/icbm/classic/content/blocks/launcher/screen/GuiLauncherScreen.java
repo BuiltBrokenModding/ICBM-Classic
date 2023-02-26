@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -73,9 +74,9 @@ public class GuiLauncherScreen extends GuiContainerBase
         }
         else
         {
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x()) + "");
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z()) + "");
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
+            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().getX()) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().getZ()) + "");
+            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().getY()) + "");
         }
     }
 
@@ -92,10 +93,10 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         try
         {
-            Pos newTarget = new Pos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
+            BlockPos newTarget = new BlockPos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
 
             this.tileEntity.setTarget(newTarget);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileLauncherScreen.SET_TARGET_PACKET_ID, this.tileEntity).addData(this.tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileLauncherScreen.SET_TARGET_PACKET_ID, this.tileEntity).addData(this.tileEntity.getTarget().getX(), this.tileEntity.getTarget().getY(), this.tileEntity.getTarget().getZ()));
         }
         catch (NumberFormatException e)
         {
@@ -182,9 +183,6 @@ public class GuiLauncherScreen extends GuiContainerBase
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
-        int containerPosX = (this.width - this.xSize) / 2;
-        int containerPosY = (this.height - this.ySize) / 2;
-
         drawDefaultBackground();
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -192,18 +190,6 @@ public class GuiLauncherScreen extends GuiContainerBase
         containerWidth = (this.width - this.xSize) / 2;
         containerHeight = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(containerWidth, containerHeight, 0, 0, this.xSize, this.ySize);
-
-        //Draw energy bar
-        if (tileEntity.getEnergy() > 0)
-        {
-            float energyScale = tileEntity.getEnergy() / (float) tileEntity.getEnergyBufferSize();
-
-            final int textureX = 352 / 2;
-            final int textureWidth = 8;
-            final int textureHeight = 142 / 2;
-            final int height = (int) Math.min(textureHeight, Math.floor(textureHeight * energyScale));
-            this.drawTexturedModalRect(containerPosX + 168, containerPosY + 65 + (textureHeight - height), textureX, textureHeight - height, textureWidth, height);
-        }
     }
 
     @Override
@@ -213,15 +199,15 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         if (!this.target_xCoord_field.isFocused())
         {
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x()) + "");
+            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().getX()) + "");
         }
         if (!this.target_zCoord_field.isFocused())
         {
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z()) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().getY()) + "");
         }
         if (!this.target_yCoord_field.isFocused())
         {
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y()) + "");
+            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().getZ()) + "");
         }
 
         if (!this.lock_height_field.isFocused())

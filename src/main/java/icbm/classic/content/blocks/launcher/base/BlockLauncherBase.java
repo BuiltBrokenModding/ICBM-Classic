@@ -48,7 +48,7 @@ public class BlockLauncherBase extends BlockContainer
         final TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileLauncherBase)
         {
-            return ((TileLauncherBase) tile).onPlayerRightClick(playerIn, hand, playerIn.getHeldItem(hand));
+            return ((TileLauncherBase) tile).tryInsertMissile(playerIn, hand, playerIn.getHeldItem(hand));
         }
         return false;
     }

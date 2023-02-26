@@ -87,7 +87,7 @@ public class BlockLaunchScreen extends BlockICBM
                     {
                         if (location.world() == world)
                         {
-                            screen.setTarget(new Pos(location.x(), location.y(), location.z()));
+                            screen.setTarget(new BlockPos(location.xi(), location.yi(), location.zi()));
                             player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
                         }
                         else
@@ -100,7 +100,7 @@ public class BlockLaunchScreen extends BlockICBM
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
                     }
                 }
-                else if(screen.launcherBase == null || !screen.launcherBase.tryInsertMissile(player, hand, player.getHeldItem(hand)))
+                else
                 {
                     player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
                 }

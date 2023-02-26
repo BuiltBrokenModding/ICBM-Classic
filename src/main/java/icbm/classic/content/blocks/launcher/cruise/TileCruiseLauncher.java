@@ -7,7 +7,6 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
@@ -387,15 +386,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
                 this.doLaunchNext = true;
             }
-        }
-    }
-
-    @Override
-    public void onInventoryChanged(int slot, ItemStack prev, ItemStack item)
-    {
-        if (slot == 0)
-        {
-            updateClient = true;
         }
     }
 

@@ -96,19 +96,19 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         {
             if (!player.world.isRemote)
             {
-                int x = buf.readInt();
-                int y = buf.readInt();
-                int z = buf.readInt();
+                final int x = buf.readInt();
+                final int y = buf.readInt();
+                final int z = buf.readInt();
+                final BlockPos pos = new BlockPos(x, y, z);
 
-                LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, new BlockPos(x, y, z), player);
-
+                final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, pos, player);
                 if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
                     return false;
 
                 if(event.pos == null) //someone set the pos in the event to null, use original data
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, new Pos(x, y, z));
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, pos);
                 else
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, new Pos(event.pos.getX(), event.pos.getY(), event.pos.getZ()));
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, event.pos);
             }
             else
             {

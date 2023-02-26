@@ -15,55 +15,20 @@ public class ConfigLauncher
     /** Max range for the launcher tier 3 */
     @Config.Name("max_range")
     @Config.Comment("Range of silo launcher in blocks (meters)")
-    public static int LAUNCHER_RANGE = 10000;
+    public static int RANGE = 10000;
 
     /** Size of the energy buffer for the launcher tier 3 */
-    @Config.Name("tier_3_power_capacity")
-    @Config.Comment("Size of the energy buffer for the tier 3 launcher")
-    public static int LAUNCHER_POWER_CAP_TIER3 = 36000;
-    /** Size of the energy buffer for the launcher tier 2 */
-    @Config.Name("tier_2_power_capacity")
-    @Config.Comment("Size of the energy buffer for the tier 2 launcher")
-    public static int LAUNCHER_POWER_CAP_TIER2 = 16000;
-    /** Size of the energy buffer for the launcher tier 1 */
-    @Config.Name("tier_1_power_capacity")
-    @Config.Comment("Size of the energy buffer for the tier 1 launcher")
-    public static int LAUNCHER_POWER_CAP_TIER1 = 5000;
+    @Config.Name("tpower_capacity")
+    @Config.Comment("Size of the energy buffer")
+    public static int POWER_CAPACITY = 1200;
 
     /** Energy usage for the launcher tier 3 */
-    @Config.Name("tier_3_power_per_launch")
-    @Config.Comment("Energy consumed per launch for the tier 3 launcher")
-    public static int LAUNCHER_POWER_USAGE_TIER3 = 12000;
-    /** Energy usage for the launcher tier 2 */
-    @Config.Name("tier_2_power_per_launch")
-    @Config.Comment("Energy consumed per launch for the tier 2 launcher")
-    public static int LAUNCHER_POWER_USAGE_TIER2 = 8000;
-    /** Energy usage for the launcher tier 1 */
-    @Config.Name("tier_1_power_per_launch")
-    @Config.Comment("Energy consumed per launch for the tier 1 launcher")
-    public static int LAUNCHER_POWER_USAGE_TIER1 = 4000;
+    @Config.Name("power_per_launch")
+    @Config.Comment("Energy consumed per launcher")
+    public static int POWER_COST = 1200;
 
     /** Energy usage for the launcher tier 3 */
-    @Config.Name("tier_3_delay")
-    @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 3 launcher")
-    public static int LAUNCHER_DELAY_TIER3 = 60;
-    /** Energy usage for the launcher tier 2 */
-    @Config.Name("tier_2_delay")
-    @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 2 launcher")
-    public static int LAUNCHER_DELAY_TIER2 = 80;
-    /** Energy usage for the launcher tier 1 */
-    @Config.Name("tier_1_delay")
-    @Config.Comment("Time in ticks (20 ticks a second) to delay missile launching for the tier 1 launcher")
-    public static int LAUNCHER_DELAY_TIER1 = 100;
-
-
-    @Config.Name("tier_3_redstone")
-    @Config.Comment("true if missiles can be launched with the tier 3 launcher using redstone, false to disable")
-    public static boolean LAUNCHER_REDSTONE_TIER3 = true;
-    @Config.Name("tier_2_redstone")
-    @Config.Comment("true if missiles can be launched with the tier 2 launcher using redstone, false to disable")
-    public static boolean LAUNCHER_REDSTONE_TIER2 = true;
-    @Config.Name("tier_1_redstone")
-    @Config.Comment("true if missiles can be launched with the tier 1 launcher using redstone, false to disable")
-    public static boolean LAUNCHER_REDSTONE_TIER1 = true;
+    @Config.Name("launch_cooldown")
+    @Config.Comment("Time in ticks (20 ticks a second) before launcher can fire again")
+    public static int COOLDOWN = 20;
 }

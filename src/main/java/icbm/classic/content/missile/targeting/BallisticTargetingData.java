@@ -20,12 +20,6 @@ public class BallisticTargetingData extends BasicTargetData {
         //Used for save/load
     }
 
-    @Deprecated //TODO remove pos references in code
-    public BallisticTargetingData(Pos position, int impactHeightOffset) {
-        super(position.x(), position.y(), position.z());
-        this.impactHeightOffset = impactHeightOffset;
-    }
-
     public BallisticTargetingData(Vec3d position, int impactHeightOffset) {
         super(position);
         this.impactHeightOffset = impactHeightOffset;
