@@ -7,11 +7,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -24,11 +27,19 @@ public class BlockLauncherBase extends BlockContainer
     public BlockLauncherBase()
     {
         super(Material.IRON);
-        blockHardness = 10f;
-        blockResistance = 10f;
+        this.blockHardness = 10f;
+        this.blockResistance = 10f;
+        this.fullBlock = true;
         setRegistryName(ICBMConstants.DOMAIN, "launcherbase");
         setUnlocalizedName(ICBMConstants.PREFIX + "launcherbase");
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
+    }
+
+    @Deprecated
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        // Needed to prevent render lighting issues for missiles
+        return false;
     }
 
     @Override
@@ -45,7 +56,14 @@ public class BlockLauncherBase extends BlockContainer
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+        return EnumBlockRenderType.MODEL;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer()
+    {
+        return BlockRenderLayer.SOLID;
     }
 
     @Nullable

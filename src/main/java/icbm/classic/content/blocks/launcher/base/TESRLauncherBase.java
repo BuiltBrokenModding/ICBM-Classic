@@ -16,11 +16,15 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
     {
         super.render(launcher, x, y, z, partialTicks, destroyStage, alpha);
 
+        final float blockHeight = 1f;
+        final float blockCenter = 0.5f;
+        final float missileCenter = 1.5f;
+
         //Render missile
         if (!launcher.getMissileStack().isEmpty())
         {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5F, y + 0.4f + 1.5f, z + 0.5F);
+            GlStateManager.translate(x + blockCenter, y + blockHeight + missileCenter, z + blockCenter);
             if (launcher.getRotation() == EnumFacing.NORTH || launcher.getRotation() == EnumFacing.SOUTH)
             {
                 GlStateManager.rotate(90F, 0F, 1F, 0F);
