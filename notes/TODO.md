@@ -1,7 +1,98 @@
+# Graphics Overhaul
+
+## Missiles Tier 1
+
+- ~~Condensed~~
+- ~~Shrapnel~~
+- ~~Incendiary~~
+- ~~Debilitation~~
+- ~~Chemical~~
+- ~~Anvil~~
+- ~~Repulsive~~
+- ~~Attractive~~
+- ~~Colorful~~
+- ~~Smoke~~
+- ~~Missile Module~~
+
+## Missiles Tier 2
+
+- ~~Fragmentation~~
+- ~~Contagious~~
+- ~~Sonic~~
+- ~~Breaching~~
+- ~~Thermobaric~~
+
+## Missiles Tier 3
+
+- ~~Nuclear~~
+- ~~EMP~~
+- ~~Exothermic~~
+- ~~Endothermic~~
+- ~~Anti-Gravitational~~
+- ~~Ender~~
+
+## Missiles Special
+
+- ~~Antimatter~~
+- ~~Red Matter~~
+- ~~Surface to Air Missile~~
+
+https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
+
+Redmatter fluid in missile, have it move in circle for center tank and left-right inverse on lower tubes. 2 pixels left, 2 pixels right, repeat to give a centrifuge like visual.
+
+## Blocks Model
+
+- Silo (Pad)
+- Silo Frame Internal (Pad + Supports internal to block + extensions)
+- Silo Frame External (Supports on outside, current rear support but as 1^3 blocks )
+- Silo Support External (Side supports today, but as 1^3 blocks)
+- Silo Screen
+- Cruise Launcher
+- Radar Controller
+- EMP Tower
+
+## Block Textures
+
+- Reinforced Glass connected textures and new textures at 16x16
+- Concrete textures
+- Spikes
+
+## Items
+
+- RPG Model
+- Render warhead from each model on RPG
+- Radar Gun
+- Remote Det
+- Laser Det
+- Tracker
+- Signal Disrupter
+- Defuser
+- Battery
+- Grenades
+- Carts
+- Wire Items
+- Steel clump
+- Bronze clump
+
+## GUI
+
+- EMP Tower
+- Radar
+- Silo Screen
+
+## Audio
+
+- Chemical should make a glass breaking sound on impact followed by gas leaking
+
 # Unit tests:
 
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
+
+# Explosive rework
+
+- Exothermic water handling -> should make steam instead of removing water
 
 # Next release
 
@@ -9,6 +100,25 @@
 - [ ] Add fuse disable chance for missiles when EMP hits 
 - [ ] debilitation explosive (alt for lacking sulfur)
 - [ ] incendiary explosive (alt for lacking sulfur)
+- [ ] BlastConfusion keeps re-apply poison causing it to not take effect
+- [ ] Config for projectile damage (Fragments, shrapnel, anvil)
+- [ ] Min-Max damage limits for projectiles
+- [ ] Damage types for projectiles
+
+# Missile types
+
+- [ ] Punching bag missile -> no damage, only pushes impacted entity very far
+- [ ] Rope missile  -> when fired will leash anything nearby
+- [ ] Cargo rocket -> Can do a 3x3 grid of items
+- [ ] Creeper -> easter egg type that has a mini-creeper rendered on top
+
+# Explosive types
+
+- [ ] Torch -> lights up an area
+- [ ] Glass dome -> for KiriCattus
+- [ ] Marking Smoke (colored) -> improve marking smoke to customize color
+- [ ] Smoke -> Actual smoke cloud, reduce user render distance
+- [ ] Egg spawn -> Spawns mobs using existing spawn items
 
 # After MC update (likely after radar and launcher rewrites)
 
@@ -17,6 +127,8 @@
 - [ ] Drop crafting items
 - [ ] Dart game using fake missile items
 - [ ] Dispenser logic for missiles
+- [ ] remove crafting items
+- [ ] missile module per tier
 
 # TODO future launcher rewrite
 
@@ -108,7 +220,6 @@
 
 - [ ] Cart textures
 - [ ] Grenade textures
-- [ ] remove crafting items
 - [ ] tool textures
 - [ ] 3D model for laser
 - [ ] Fake missiles for decoration

@@ -275,9 +275,17 @@ public class ClientReg
             final String resourcePath = data.getRegistryName().getResourceDomain() + ":missiles/" + data.getRegistryName().getResourcePath();
             missileModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
+
+        // Missile module, also used as fallback for all renders
+        final ModelResourceLocation fallback = new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/missile", "inventory");
+        missileModelMap.put(ICBMExplosives.MISSILEMODULE, fallback);
+
+        // Register variants to item so model files load
         ModelLoader.registerItemVariants(ItemReg.itemExplosiveMissile, missileModelMap.values()
                 .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
-        ModelLoader.setCustomMeshDefinition(ItemReg.itemExplosiveMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
+
+        // Custom def to handle fallback for missing models
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemExplosiveMissile, new ItemModelMapperExplosive(missileModelMap, fallback));
     }
 
     protected static void registerCraftingRender(ItemCrafting itemCrafting)
