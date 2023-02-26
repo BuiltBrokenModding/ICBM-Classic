@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.launcher.frame;
 
-import icbm.classic.api.EnumTier;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -33,8 +32,8 @@ public class BlockLaunchFrame extends BlockICBM
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
-        final boolean frameAbove = isFrame(worldIn, pos.offset(EnumFacing.UP));
-        final boolean frameUnder = isFrame(worldIn, pos.offset(EnumFacing.DOWN));
+        final boolean frameAbove = isConnection(worldIn, pos.offset(EnumFacing.UP));
+        final boolean frameUnder = isConnection(worldIn, pos.offset(EnumFacing.DOWN));
         if(frameAbove && frameUnder) {
             return state.withProperty(FRAME_STATE, EnumFrameState.MIDDLE);
         }
@@ -47,9 +46,9 @@ public class BlockLaunchFrame extends BlockICBM
         return state.withProperty(FRAME_STATE, EnumFrameState.MIDDLE);
     }
 
-    private boolean isFrame(IBlockAccess worldIn, BlockPos pos) {
+    private boolean isConnection(IBlockAccess worldIn, BlockPos pos) {
         final IBlockState state = worldIn.getBlockState(pos);
-        return state.getBlock() == this;
+        return state.getBlock() == this || state.getBlock() == BlockReg.blockLaunchScreen;
     }
 
     @Deprecated
