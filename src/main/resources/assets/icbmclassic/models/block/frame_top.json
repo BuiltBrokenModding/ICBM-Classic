@@ -1,0 +1,105 @@
+{
+	"credit": "QueenOfMissiles",
+	"textures": {
+		"0": "icbmclassic:blocks/silo_frame/frame",
+		"particle": "icbmclassic:blocks/silo_frame/frame"
+	},
+	"elements": [
+		{
+			"name": "Pipe",
+			"from": [6, 0, 2],
+			"to": [8, 11, 4],
+			"faces": {
+				"north": {"uv": [12, 0, 14, 11], "texture": "#0"},
+				"east": {"uv": [12, 0, 14, 11], "texture": "#0"},
+				"south": {"uv": [12, 0, 14, 11], "texture": "#0"},
+				"west": {"uv": [12, 0, 14, 11], "texture": "#0"},
+				"up": {"uv": [2, 2, 4, 4], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Frame1",
+			"from": [2, 0, 2],
+			"to": [4, 13, 4],
+			"faces": {
+				"north": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"east": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"south": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"west": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Frame2",
+			"from": [12, 0, 2],
+			"to": [14, 13, 4],
+			"faces": {
+				"north": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"east": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"south": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"west": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Frame3",
+			"from": [12, 0, 12],
+			"to": [14, 13, 14],
+			"faces": {
+				"north": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"east": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"south": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"west": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Frame4",
+			"from": [2, 0, 12],
+			"to": [4, 13, 14],
+			"faces": {
+				"north": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"east": {"uv": [0, 0, 2, 13], "texture": "#0"},
+				"south": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"west": {"uv": [14, 0, 16, 13], "texture": "#0"},
+				"up": {"uv": [2, 0, 4, 2], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Wire1",
+			"from": [4, 0, 13],
+			"to": [12, 13, 13],
+			"faces": {
+				"north": {"uv": [4, 3, 12, 16], "texture": "#0"},
+				"south": {"uv": [4, 3, 12, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Wire2",
+			"from": [4, 0, 3],
+			"to": [12, 13, 3],
+			"faces": {
+				"north": {"uv": [4, 3, 12, 16], "texture": "#0"},
+				"south": {"uv": [4, 3, 12, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Wire3",
+			"from": [3, 0, 4],
+			"to": [3, 13, 12],
+			"faces": {
+				"east": {"uv": [4, 3, 12, 16], "texture": "#0"},
+				"west": {"uv": [4, 3, 12, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "Wire4",
+			"from": [13, 0, 4],
+			"to": [13, 13, 12],
+			"faces": {
+				"east": {"uv": [4, 3, 12, 16], "texture": "#0"},
+				"west": {"uv": [4, 3, 12, 16], "texture": "#0"}
+			}
+		}
+	]
+}

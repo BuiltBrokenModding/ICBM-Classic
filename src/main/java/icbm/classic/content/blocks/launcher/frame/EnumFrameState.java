@@ -5,8 +5,7 @@ import net.minecraft.util.IStringSerializable;
 public enum EnumFrameState implements IStringSerializable {
     TOP,
     MIDDLE,
-    BOTTOM,
-    DEFAULT;
+    BOTTOM;
 
     @Override
     public String getName() {

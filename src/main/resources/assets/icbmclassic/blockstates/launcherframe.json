@@ -1,156 +1,39 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:launcher/support.obj",
-    "transform": {
-      "thirdperson_lefthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          -0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "thirdperson_righthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "gui": {
-        "rotation": [
-          {
-            "x": 25
-          },
-          {
-            "y": 45
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.3,
-          -0.2,
-          0
-        ],
-        "scale": [0.5, 0.2, 0.5]
-      },
-      "firstperson_righthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.3,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "firstperson_lefthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "ground": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.11,
-          0,
-          0.11
-        ],
-        "scale": 0.3
-      }
-    }
+    "model": "icbmclassic:frame_middle"
   },
   "variants": {
-    "tier": {
-      "one" :
+    "inventory": {
+      "model": "icbmclassic:frame_middle"
+    },
+    "type": {
+      "top" :
       {
-        "model": "icbmclassic:launcher/support.obj"
+        "model": "icbmclassic:frame_top"
       },
-      "two" :
+      "middle" :
       {
-        "model": "icbmclassic:launcher/support.obj"
+        "model": "icbmclassic:frame_middle"
       },
-      "three" :
+      "bottom" :
       {
-        "model": "icbmclassic:launcher/support.obj"
+        "model": "icbmclassic:frame_bottom"
       }
     },
     "rotation": {
       "up": {},
-      "down": {
-        "x": 180
-      },
+      "down": {},
       "north": {
-        "x": 90
+        "y": 0
       },
       "south": {
-        "x": 270
+        "y": 180
       },
       "east": {
-        "x": 90,
         "y": 90
       },
       "west": {
-        "x": 90,
         "y": 270
       }
     }

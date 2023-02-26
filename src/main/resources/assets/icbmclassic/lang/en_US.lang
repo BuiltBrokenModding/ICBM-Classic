@@ -127,10 +127,8 @@ tile.icbmclassic:launcherscreen.1.name=Launcher Control Panel T2
 tile.icbmclassic:launcherscreen.2.name=Launcher Control Panel T3
 tile.icbmclassic:launcherscreen.info=Used to fire missiles from launchers
 
-tile.icbmclassic:launcherframe.0.name=Launcher Support Frame T1
-tile.icbmclassic:launcherframe.1.name=Launcher Support Frame T2
-tile.icbmclassic:launcherframe.2.name=Launcher Support Frame T3
-tile.icbmclassic:launcherframe.info=Improves accuracy of missiles
+tile.icbmclassic:launcherframe.0.name=Launcher Frame
+tile.icbmclassic:launcherframe.info=Optional decoration block for launchers
 
 tile.icbmclassic:radarstation.name=Radar Station
 tile.icbmclassic:radarstation.info=Detects missiles in flight
