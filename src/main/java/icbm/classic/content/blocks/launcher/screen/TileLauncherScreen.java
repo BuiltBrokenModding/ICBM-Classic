@@ -119,7 +119,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                         //this.tier = data.readInt();
                         this.clientEnergyBar = data.readInt();
                         this.setFrequency(data.readInt());
-                        this.lockHeight = data.readShort();
+                        this.lockHeight = data.readInt();
                         this.setTarget(new BlockPos(data.readInt(), data.readInt(), data.readInt()));
                         return true;
                     }
@@ -137,7 +137,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 }
                 case LOCK_HEIGHT_PACKET_ID:
                 {
-                    this.lockHeight = (short) Math.max(Math.min(data.readShort(), Short.MAX_VALUE), 3);
+                    this.lockHeight = data.readInt();
                     return true;
                 }
                 case LAUNCH_PACKET_ID:

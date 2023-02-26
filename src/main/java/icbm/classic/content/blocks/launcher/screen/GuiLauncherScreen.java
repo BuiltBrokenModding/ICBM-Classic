@@ -153,6 +153,7 @@ public class GuiLauncherScreen extends GuiContainerBase
     {
         this.target_xCoord_field.drawTextBox();
         this.target_zCoord_field.drawTextBox();
+        this.target_yCoord_field.drawTextBox();
 
         // Draw the air detonation GUI
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.detHeight"), 12, 68, 4210752);
@@ -203,11 +204,11 @@ public class GuiLauncherScreen extends GuiContainerBase
         }
         if (!this.target_zCoord_field.isFocused())
         {
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().getY()) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().getZ()) + "");
         }
         if (!this.target_yCoord_field.isFocused())
         {
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().getZ()) + "");
+            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().getY()) + "");
         }
 
         if (!this.lock_height_field.isFocused())
