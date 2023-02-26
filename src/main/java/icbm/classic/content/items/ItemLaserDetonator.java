@@ -92,28 +92,25 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
         final ItemStack stack = player.inventory.getCurrentItem();
-        if (stack.getItem() == this)
+        if (stack.getItem() == this && !player.world.isRemote)
         {
-            if (!player.world.isRemote)
-            {
-                final int x = buf.readInt();
-                final int y = buf.readInt();
-                final int z = buf.readInt();
+            final int x = buf.readInt();
+            final int y = buf.readInt();
+            final int z = buf.readInt();
+
+            // Fire on main thread
+            ((WorldServer) player.getEntityWorld()).addScheduledTask(() -> {
                 final BlockPos pos = new BlockPos(x, y, z);
 
                 final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, pos, player);
-                if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
-                    return false;
+                if (!MinecraftForge.EVENT_BUS.post(event)) {
 
-                if(event.pos == null) //someone set the pos in the event to null, use original data
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, pos);
-                else
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, event.pos);
-            }
-            else
-            {
-                player.sendMessage(new TextComponentString("Not encoded with launch data! Right click on launcher screen to encode."));
-            }
+                    if (event.pos == null) //someone set the pos in the event to null, use original data
+                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, pos);
+                    else
+                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, event.pos);
+                }
+            });
         }
         return true;
     }
