@@ -71,6 +71,14 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     private final LinkedList<Pos> clientLastSmokePos = new LinkedList<>();
 
+    public BallisticFlightLogic(int lockHeight) {
+        this.lockHeight = lockHeight;
+    }
+
+    public BallisticFlightLogic() {
+
+    }
+
     @Override
     public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
     {
