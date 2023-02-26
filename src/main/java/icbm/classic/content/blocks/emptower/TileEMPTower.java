@@ -5,11 +5,8 @@ import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
-import icbm.classic.api.tile.multiblock.IMultiTile;
-import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastEMP;
-import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.prefab.inventory.ExternalInventory;
@@ -19,9 +16,6 @@ import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -29,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Logic side of the EMP tower block */
-public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150; //TODO move to config with a min & max
@@ -243,66 +237,6 @@ public class TileEMPTower extends TilePoweredMachine implements IMultiTileHost, 
     public int getMaxCooldown()
     {
         return 120; //TODO add to config
-    }
-
-    //==========================================
-    //==== Multi-Block code
-    //=========================================
-
-    //TODO convert all multi-block code to a handler object that tracks the pattern and state of the structure to remove repetitive code
-
-    @Override
-    public void onMultiTileAdded(IMultiTile tileMulti)
-    {
-        if (multiBlockContains(tileMulti))
-        {
-            tileMulti.setHost(this);
-        }
-    }
-
-    @Override
-    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
-    {
-        if (!_destroyingStructure && multiBlockContains(tileMulti))
-        {
-            MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean multiBlockContains(IMultiTile tile)
-    {
-        return tile instanceof TileEntity
-                && getLayoutOfMultiBlock().contains(getRelativePosition((TileEntity) tile));
-    }
-
-    @Override
-    public void onTileInvalidate(IMultiTile tileMulti)
-    {
-
-    }
-
-    @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
-    {
-        if (isServer())
-        {
-            openGui(player, 0);
-        }
-        return true;
-    }
-
-    @Override
-    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
-    {
-
-    }
-
-    @Override
-    public List<BlockPos> getLayoutOfMultiBlock()
-    {
-        return tileMapCache;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package icbm.classic.content.blocks.emptower;
 
-import icbm.classic.DummyMultiTile;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.refs.ICBMExplosives;
@@ -54,6 +53,7 @@ public class TestTileEMPTower
         ICBMExplosives.EMP = null;
     }
 
+    /*
     @Test
     void testGetLayoutOfMultiBlock_containsLayout()
     {
@@ -162,7 +162,7 @@ public class TestTileEMPTower
 
         //Invoke method
         Assertions.assertFalse(tileEMPTower.onMultiTileBroken(tileMulti, null, true));
-    }
+    }*/
 
     @Test
     void testGenerateEmp_all()

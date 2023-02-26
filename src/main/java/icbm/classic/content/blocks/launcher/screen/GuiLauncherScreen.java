@@ -86,17 +86,9 @@ public class GuiLauncherScreen extends GuiContainerBase
         super.keyTyped(par1, par2);
         this.target_xCoord_field.textboxKeyTyped(par1, par2);
         this.target_zCoord_field.textboxKeyTyped(par1, par2);
-
-        if (tileEntity.getTier().ordinal() >= 1)
-        {
-            this.target_yCoord_field.textboxKeyTyped(par1, par2);
-            this.lock_height_field.textboxKeyTyped(par1, par2);
-
-            if (tileEntity.getTier().ordinal() > 1)
-            {
-                this.target_freq_field.textboxKeyTyped(par1, par2);
-            }
-        }
+        this.target_yCoord_field.textboxKeyTyped(par1, par2);
+        this.lock_height_field.textboxKeyTyped(par1, par2);
+        this.target_freq_field.textboxKeyTyped(par1, par2);
 
         try
         {
@@ -142,18 +134,9 @@ public class GuiLauncherScreen extends GuiContainerBase
         super.mouseClicked(par1, par2, par3);
         this.target_xCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
         this.target_zCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
-
-        if (tileEntity.getTier().ordinal() >= 1)
-        {
-            this.target_yCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
-            this.lock_height_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
-
-            if (tileEntity.getTier().ordinal() > 1)
-            {
-                this.target_freq_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
-            }
-        }
-
+        this.target_yCoord_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
+        this.lock_height_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
+        this.target_freq_field.mouseClicked(par1 - containerWidth, par2 - containerHeight, par3);
     }
 
     @Override
@@ -171,20 +154,13 @@ public class GuiLauncherScreen extends GuiContainerBase
         this.target_zCoord_field.drawTextBox();
 
         // Draw the air detonation GUI
-        if (tileEntity.getTier().ordinal() >= 1)
-        {
-            this.target_yCoord_field.drawTextBox();
-            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.detHeight"), 12, 68, 4210752);
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.detHeight"), 12, 68, 4210752);
 
-            this.lock_height_field.drawTextBox();
-            this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.lockHeight"), 12, 83, 4210752);
+        this.lock_height_field.drawTextBox();
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.lockHeight"), 12, 83, 4210752);
 
-            if (tileEntity.getTier().ordinal() > 1)
-            {
-                this.target_freq_field.drawTextBox();
-                this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 12, 98, 4210752);
-            }
-        }
+        this.target_freq_field.drawTextBox();
+        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.freq"), 12, 98, 4210752);
 
         this.fontRenderer.drawString("", 45, 6, 4210752);
         this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherscreen.name"), 30, 6, 4210752);
@@ -194,14 +170,6 @@ public class GuiLauncherScreen extends GuiContainerBase
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.misc.ZCoord"), 25, 55, 4210752);
 
         int inaccuracy = 30;
-
-        if (this.tileEntity.launcherBase != null)
-        {
-            if (this.tileEntity.launcherBase.supportFrame != null)
-            {
-                inaccuracy = this.tileEntity.launcherBase.supportFrame.getInaccuracy();
-            }
-        }
 
         this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.inaccuracy").replaceAll("%p", "" + inaccuracy), 12, 113, 4210752);
 

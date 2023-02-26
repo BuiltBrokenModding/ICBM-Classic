@@ -1,45 +1,24 @@
 # Graphics Overhaul
 
-## Missiles Tier 1
+## Missiles Work Left
 
-- ~~Condensed~~
-- ~~Shrapnel~~
-- ~~Incendiary~~
-- ~~Debilitation~~
-- ~~Chemical~~
-- ~~Anvil~~
-- ~~Repulsive~~
-- ~~Attractive~~
-- ~~Colorful~~
-- ~~Smoke~~
-- ~~Missile Module~~
-
-## Missiles Tier 2
-
-- ~~Fragmentation~~
-- ~~Contagious~~
-- ~~Sonic~~
-- ~~Breaching~~
-- ~~Thermobaric~~
-
-## Missiles Tier 3
-
-- ~~Nuclear~~
-- ~~EMP~~
-- ~~Exothermic~~
-- ~~Endothermic~~
-- ~~Anti-Gravitational~~
-- ~~Ender~~
-
-## Missiles Special
-
-- ~~Antimatter~~
-- ~~Red Matter~~
-- ~~Surface to Air Missile~~
+- Glass texture render
+- Engine smoke position
+- Engine smoke color
+- UI scale
+- Frame scale
+- Silo rendering missiles as a block state
 
 https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
 
 Redmatter fluid in missile, have it move in circle for center tank and left-right inverse on lower tubes. 2 pixels left, 2 pixels right, repeat to give a centrifuge like visual.
+
+## Multi-Block Rework
+
+- Multi-Block -> Place launcher frame
+- EMP Tower -> Place multi-block self as a state
+- Replace old back frame with frame decoration blocks
+- tool interaction with multi-block (radar gun, laser det, tracker)
 
 ## Blocks Model
 
@@ -150,6 +129,8 @@ Redmatter fluid in missile, have it move in circle for center tank and left-righ
 - [ ] Simulated missiles are not taking with them entities attached
 - [ ] Spawn eggs on missiles
 - [ ] Mechanic to add entities to missile (leash?)
+
+- Change accuracy to be based on range? Forcing players to move closer to have a better hit chance
 
 ## Hand Launcher
 

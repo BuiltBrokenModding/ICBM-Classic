@@ -39,10 +39,6 @@ public class BlockLaunchScreen extends BlockICBM
 {
     //values by trial and error
     private static final float px = 1.0F / 16.0F; //one pixel
-    private static final AxisAlignedBB ONE_TWO_NORTH = new AxisAlignedBB(3 * px,     0, 6 * px,     13 * px,     9.5F * px,  10.75F * px);
-    private static final AxisAlignedBB ONE_TWO_SOUTH = new AxisAlignedBB(13 * px,    0, 5.25F * px, 3 * px,      9.5F * px,  10 * px);
-    private static final AxisAlignedBB ONE_TWO_EAST  = new AxisAlignedBB(5.25F * px, 0, 13 * px,    10 * px,     9.5F * px,  3 * px);
-    private static final AxisAlignedBB ONE_TWO_WEST  = new AxisAlignedBB(6 * px,     0, 3 * px,     10.75F * px, 9.5F * px,  13 * px);
     private static final AxisAlignedBB THREE_NORTH   = new AxisAlignedBB(3 * px,     0, 2 * px,     13 * px,     10.5F * px, 12 * px);
     private static final AxisAlignedBB THREE_SOUTH   = new AxisAlignedBB(13 * px,    0, 14 * px,    3 * px,      10.5F * px, 4 * px);
     private static final AxisAlignedBB THREE_EAST    = new AxisAlignedBB(14 * px,    0, 13 * px,    4 * px,      10.5F * px, 3 * px);
@@ -64,34 +60,15 @@ public class BlockLaunchScreen extends BlockICBM
     {
         if(state.getBlock() instanceof BlockLaunchScreen) //sometimes things happen that make this necessary
         {
-            switch(state.getValue(TIER_PROP))
+            switch(state.getValue(ROTATION_PROP))
             {
-                case ONE: case TWO:
-                {
-                    switch(state.getValue(ROTATION_PROP))
-                    {
-                        case NORTH: return ONE_TWO_NORTH;
-                        case SOUTH: return ONE_TWO_SOUTH;
-                        case EAST: return ONE_TWO_EAST;
-                        case WEST: return ONE_TWO_WEST;
-                        default: return super.getBoundingBox(state, source, pos);
-                    }
-                }
-                case THREE:
-                {
-                    switch(state.getValue(ROTATION_PROP))
-                    {
-                        case NORTH: return THREE_NORTH;
-                        case SOUTH: return THREE_SOUTH;
-                        case EAST: return THREE_EAST;
-                        case WEST: return THREE_WEST;
-                        default: return super.getBoundingBox(state, source, pos);
-                    }
-                }
+                case NORTH: return THREE_NORTH;
+                case SOUTH: return THREE_SOUTH;
+                case EAST: return THREE_EAST;
+                case WEST: return THREE_WEST;
                 default: return super.getBoundingBox(state, source, pos);
             }
         }
-
         return super.getBoundingBox(state, source, pos);
     }
 
@@ -108,13 +85,6 @@ public class BlockLaunchScreen extends BlockICBM
                 ItemStack stack = player.getHeldItem(hand);
                 if (stack.getItem() == Items.REDSTONE)
                 {
-                    if((screen._tier == EnumTier.ONE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER1)
-                            || (screen._tier == EnumTier.TWO && !ConfigLauncher.LAUNCHER_REDSTONE_TIER2)
-                            || (screen._tier == EnumTier.THREE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER3))
-                    {
-                        return false;
-                    }
-
                     if (!screen.launch()) //canLaunch is called in launch and launch returns false if cannot launch
                     {
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
@@ -173,12 +143,6 @@ public class BlockLaunchScreen extends BlockICBM
             if(tileEntity instanceof TileLauncherScreen && world.isBlockPowered(pos))
             {
                 TileLauncherScreen screen = (TileLauncherScreen)tileEntity;
-                if((screen._tier == EnumTier.ONE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER1)
-                        || (screen._tier == EnumTier.TWO && !ConfigLauncher.LAUNCHER_REDSTONE_TIER2)
-                        || (screen._tier == EnumTier.THREE && !ConfigLauncher.LAUNCHER_REDSTONE_TIER3))
-                {
-                    return;
-                }
                 screen.launch(); //canLaunch gets called by launch
             }
         }
@@ -201,56 +165,5 @@ public class BlockLaunchScreen extends BlockICBM
     public boolean isFullCube(IBlockState state)
     {
         return false;
-    }
-
-    @Override
-    public int damageDropped(IBlockState state)
-    {
-        return state.getValue(TIER_PROP).ordinal();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, ROTATION_PROP, TIER_PROP);
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
-        EnumTier tier = EnumTier.ONE;
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof TileLauncherScreen)
-        {
-            tier = ((TileLauncherScreen) tile)._tier;
-        }
-        return state.withProperty(TIER_PROP, tier);
-    }
-
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
-    {
-        ItemStack stack = placer.getHeldItem(hand);
-
-        //set tier and horizontal facing. latter seems to be the other way around as for other BlockICBMs, so super is not called and the rotation is set here instead
-        return getDefaultState().withProperty(TIER_PROP, EnumTier.get(stack.getItemDamage())).withProperty(ROTATION_PROP, placer.getHorizontalFacing().getOpposite());
-    }
-
-    @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack stack)
-    {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileLauncherScreen)
-        {
-            ((TileLauncherScreen) tile)._tier = EnumTier.get(stack.getItemDamage());
-        }
-    }
-
-    @Override
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
-    {
-        items.add(new ItemStack(this, 1, 0));
-        items.add(new ItemStack(this, 1, 1));
-        items.add(new ItemStack(this, 1, 2));
     }
 }

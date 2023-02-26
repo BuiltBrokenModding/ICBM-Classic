@@ -2,10 +2,8 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.items.ItemAntidote;
 import icbm.classic.content.items.ItemBattery;
 import icbm.classic.content.items.ItemBombCart;
@@ -21,7 +19,6 @@ import icbm.classic.content.items.ItemSignalDisrupter;
 import icbm.classic.content.items.ItemTracker;
 import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
 import icbm.classic.prefab.item.ItemBase;
-import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -137,7 +134,7 @@ public class ItemReg
         event.getRegistry().register(new ItemBlock(BlockReg.blockEmpTower).setRegistryName(BlockReg.blockEmpTower.getRegistryName()));
         event.getRegistry().register(new ItemBlock(BlockReg.blockRadarStation).setRegistryName(BlockReg.blockRadarStation.getRegistryName()));
         event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchSupport));
-        event.getRegistry().register(new ItemBlockRotatedMultiTile(BlockReg.blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
+        event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchBase));
         event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchScreen));
         event.getRegistry().register(new ItemBlock(BlockReg.blockCruiseLauncher).setRegistryName(BlockReg.blockCruiseLauncher.getRegistryName()));
 

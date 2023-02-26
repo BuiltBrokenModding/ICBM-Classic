@@ -17,8 +17,7 @@ import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.content.blocks.launcher.frame.TESRLauncherFrame;
-import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
+import icbm.classic.content.blocks.launcher.frame.EnumFrameState;
 import icbm.classic.content.blocks.launcher.screen.TESRLauncherScreen;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
@@ -113,12 +112,9 @@ public class ClientReg
         //Machines
         newBlockModel(BlockReg.blockEmpTower, 0, "inventory", "");
         newBlockModel(BlockReg.blockRadarStation, 0, "inventory", "");
-
-        registerLauncherPart(BlockReg.blockLaunchBase);
-        registerLauncherPart(BlockReg.blockLaunchSupport);
-        registerLauncherPart(BlockReg.blockLaunchScreen);
-
-        registerMultiBlockRenders();
+        newBlockModel(BlockReg.blockLaunchBase, 0, "inventory", "");
+        newBlockModel(BlockReg.blockLaunchScreen, 0, "inventory", "");
+        newBlockModel(BlockReg.blockLaunchSupport, 0, "inventory", "");
 
         //items
         newItemModel(ItemReg.itemPoisonPowder, 0, "inventory", "");
@@ -179,17 +175,9 @@ public class ClientReg
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new TESRLauncherFrame());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherScreen.class, new TESRLauncherScreen());
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
-    }
-
-    protected static void registerMultiBlockRenders()
-    {
-        //Disable rendering of the block, Fixes JSON errors as well
-        ModelLoader.setCustomStateMapper(BlockReg.multiBlock, block -> Collections.emptyMap());
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.multiBlock));
     }
 
     protected static void registerExBlockRenders()
@@ -221,26 +209,6 @@ public class ClientReg
                 .map(mrl -> new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()))
                 .collect(Collectors.toList())
                 .toArray(new ResourceLocation[itemBlockModelMap.values().size()]));
-    }
-
-    protected static void registerLauncherPart(Block block)
-    {
-        final String resourcePath = block.getRegistryName().toString();
-
-        ModelLoader.setCustomStateMapper(block, new DefaultStateMapper()
-        {
-            @Override
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                return new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties()));
-            }
-        });
-        for (EnumTier tier : new EnumTier[]{EnumTier.ONE, EnumTier.TWO, EnumTier.THREE})
-        {
-            IBlockState state = block.getDefaultState().withProperty(BlockICBM.TIER_PROP, tier).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
-            String properties_string = getPropertyString(state.getProperties());
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), tier.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
-        }
     }
 
     protected static void registerGrenadeRenders()
@@ -312,46 +280,5 @@ public class ClientReg
     {
         if(item != null) //incase the item was disabled via config or doesn't exist due to something else
             ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName() + sub, varient));
-    }
-
-    public static String getPropertyString(Map<IProperty<?>, Comparable<?>> values, String... extrasArgs)
-    {
-        StringBuilder stringbuilder = new StringBuilder();
-
-        for (Map.Entry<IProperty<?>, Comparable<?>> entry : values.entrySet())
-        {
-            if (stringbuilder.length() != 0)
-            {
-                stringbuilder.append(",");
-            }
-
-            IProperty<?> iproperty = entry.getKey();
-            stringbuilder.append(iproperty.getName());
-            stringbuilder.append("=");
-            stringbuilder.append(getPropertyName(iproperty, entry.getValue()));
-        }
-
-
-        if (stringbuilder.length() == 0)
-        {
-            stringbuilder.append("inventory");
-        }
-
-        for (String args : extrasArgs)
-        {
-            if (stringbuilder.length() != 0)
-            {
-                stringbuilder.append(",");
-            }
-            stringbuilder.append(args);
-        }
-
-        return stringbuilder.toString();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> comparable)
-    {
-        return property.getName((T) comparable);
     }
 }

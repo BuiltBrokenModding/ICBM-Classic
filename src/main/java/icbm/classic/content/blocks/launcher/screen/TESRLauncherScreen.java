@@ -18,12 +18,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TESRLauncherScreen extends TileEntitySpecialRenderer<TileLauncherScreen>
 {
     public static final ResourceLocation TEXTURE_FILE_0 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_0.png");
-    public static final ResourceLocation TEXTURE_FILE_1 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_1.png");
-    public static final ResourceLocation TEXTURE_FILE_2 = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "launcher_2.png");
 
     public static final ModelTier1LauncherScreen model0 = new ModelTier1LauncherScreen();
-    public static final ModelTier2LauncherScreen model1 = new ModelTier2LauncherScreen();
-    public static final ModelTier3LauncherScreen model2 = new ModelTier3LauncherScreen();
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -47,21 +43,8 @@ public class TESRLauncherScreen extends TileEntitySpecialRenderer<TileLauncherSc
                 break;
         }
 
-        switch (te.getTier())
-        {
-            case TWO:
-                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_1);
-                model1.render(0.0625F);
-                break;
-            case THREE:
-                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_2);
-                model2.render(0.0625F);
-                break;
-            default:
-                FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
-                model0.render(0.0625F);
-                break;
-        }
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE_0);
+        model0.render(0.0625F);
         GlStateManager.popMatrix();
     }
 

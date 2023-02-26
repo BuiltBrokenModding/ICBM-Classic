@@ -13,17 +13,9 @@ import net.minecraftforge.common.config.Config;
 public class ConfigLauncher
 {
     /** Max range for the launcher tier 3 */
-    @Config.Name("tier_3_range")
-    @Config.Comment("Range of tier 3 launcher in blocks (meters)")
-    public static int LAUNCHER_RANGE_TIER3 = 10000;
-    /** Max range for the launcher tier 2 */
-    @Config.Name("tier_2_range")
-    @Config.Comment("Range of tier 2 launcher in blocks (meters)")
-    public static int LAUNCHER_RANGE_TIER2 = 3000;
-    /** Max range for the launcher tier 1 */
-    @Config.Name("tier_1_range")
-    @Config.Comment("Range of tier 1 launcher in blocks (meters)")
-    public static int LAUNCHER_RANGE_TIER1 = 1000;
+    @Config.Name("max_range")
+    @Config.Comment("Range of silo launcher in blocks (meters)")
+    public static int LAUNCHER_RANGE = 10000;
 
     /** Size of the energy buffer for the launcher tier 3 */
     @Config.Name("tier_3_power_capacity")

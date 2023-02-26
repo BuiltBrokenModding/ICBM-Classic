@@ -7,8 +7,6 @@ import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.events.RadarGunTraceEvent;
 import icbm.classic.api.items.IWorldPosItem;
-import icbm.classic.api.tile.multiblock.IMultiTile;
-import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -105,14 +103,6 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
 
         Location location = new Location(world, pos);
         TileEntity tile = location.getTileEntity();
-        if (tile instanceof IMultiTile)
-        {
-            IMultiTileHost host = ((IMultiTile) tile).getHost();
-            if (host instanceof TileEntity)
-            {
-                tile = (TileEntity) host;
-            }
-        }
 
         if (player.isSneaking())
         {

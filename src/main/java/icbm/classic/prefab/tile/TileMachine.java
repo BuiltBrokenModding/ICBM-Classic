@@ -54,9 +54,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
 
     protected int ticks = -1;
 
-    // Cache until block state can be updated
-    public EnumTier _tier = EnumTier.ONE;
-
     List<EntityPlayer> playersWithGUI = new ArrayList();
 
     @Override
@@ -97,11 +94,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
 
     protected void onFirstTick()
     {
-        //TODO remove set state hack when Forge patches TE access in get drops
-        if (getBlockState().getProperties().containsKey(BlockICBM.TIER_PROP))
-        {
-            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.TIER_PROP, getTier()));
-        }
     }
 
     @Override
@@ -117,20 +109,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
         {
             ICBMClassic.packetHandler.sendToAllAround(packetTile, this);
         }
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound)
-    {
-        super.readFromNBT(compound);
-        _tier = EnumTier.get(compound.getInteger(NBTConstants.TIER));
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
-        compound.setInteger(NBTConstants.TIER, _tier.ordinal());
-        return super.writeToNBT(compound);
     }
 
     @Override
@@ -214,12 +192,10 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
 
     public void writeDescPacket(ByteBuf buf)
     {
-        buf.writeInt(_tier.ordinal());
     }
 
     public void readDescPacket(ByteBuf buf)
     {
-        _tier = EnumTier.get(buf.readInt());
     }
 
     /**
@@ -262,27 +238,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
             if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
             {
                 world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
-            }
-        }
-    }
-
-    public EnumTier getTier()
-    {
-        return _tier;
-    }
-
-    public void setTier(EnumTier tier)
-    {
-        if (tier != getTier())
-        {
-            this._tier = tier;
-            if (isServer())
-            {
-                IBlockState state = getBlockState();
-                if (state.getProperties().containsKey(BlockICBM.TIER_PROP))
-                {
-                    world.setBlockState(pos, state.withProperty(BlockICBM.TIER_PROP, tier));
-                }
             }
         }
     }

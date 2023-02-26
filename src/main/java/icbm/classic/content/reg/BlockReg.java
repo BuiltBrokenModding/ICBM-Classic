@@ -69,7 +69,6 @@ public class BlockReg
         event.getRegistry().register(new BlockSpikes());
         event.getRegistry().register(new BlockConcrete());
         event.getRegistry().register(new BlockReinforcedGlass());
-        //event.getRegistry().register(blockCombatRail = new BlockReinforcedRail());
         event.getRegistry().register(new BlockExplosive());
 
         event.getRegistry().register(new BlockEmpTower());

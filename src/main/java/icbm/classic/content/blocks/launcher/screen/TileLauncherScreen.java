@@ -183,18 +183,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         if (this.canLaunch() && this.launcherBase.launchMissile(this.getTarget(), this.lockHeight))
         {
             //Reset delay
-            switch (getTier())
-            {
-                case ONE:
-                    launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER1;
-                    break;
-                case TWO:
-                    launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER2;
-                    break;
-                case THREE:
-                    launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER3;
-                    break;
-            }
+            launchDelay = ConfigLauncher.LAUNCHER_DELAY_TIER3;
 
             //Remove energy
             this.extractEnergy();
@@ -271,26 +260,12 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
     @Override
     public int getEnergyConsumption()
     {
-        switch (this.getTier())
-        {
-            case ONE:
-                return ConfigLauncher.LAUNCHER_POWER_USAGE_TIER1;
-            case TWO:
-                return ConfigLauncher.LAUNCHER_POWER_USAGE_TIER2;
-        }
         return ConfigLauncher.LAUNCHER_POWER_USAGE_TIER3;
     }
 
     @Override
     public int getEnergyBufferSize()
     {
-        switch (this.getTier())
-        {
-            case ONE:
-                return ConfigLauncher.LAUNCHER_POWER_CAP_TIER1;
-            case TWO:
-                return ConfigLauncher.LAUNCHER_POWER_CAP_TIER2;
-        }
         return ConfigLauncher.LAUNCHER_POWER_CAP_TIER3;
     }
 
@@ -313,14 +288,13 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
         {
             //Floor frequency as we do not care about sub ranges
             int frequency = (int) Math.floor(hz);
-            //Only tier 3 (2 for tier value) can be remotely fired
-            if (getTier() == EnumTier.THREE && frequency == getFrequency() && launcherBase != null)
+            if (frequency == getFrequency() && launcherBase != null)
             {
                 //Laser detonator signal
                 if (messageHeader.equals(RadioHeaders.FIRE_AT_TARGET.header))
                 {
                     Pos pos = (Pos) data[0];
-                    if (new Pos((IPos3D) this).distance(pos) < this.launcherBase.getRange())
+                    if (new Pos((IPos3D) this).distance(pos) <= ConfigLauncher.LAUNCHER_RANGE)
                     {
                         setTarget(pos);
                         launch();

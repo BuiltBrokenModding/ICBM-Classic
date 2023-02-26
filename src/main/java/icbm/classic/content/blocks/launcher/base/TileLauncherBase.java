@@ -11,19 +11,13 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.events.LauncherEvent;
-import icbm.classic.api.tile.multiblock.IMultiTile;
-import icbm.classic.api.tile.multiblock.IMultiTileHost;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.tile.BlockICBM;
-import icbm.classic.api.EnumTier;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -35,7 +29,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
@@ -45,7 +38,6 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,41 +46,17 @@ import java.util.Optional;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine implements IMultiTileHost
+public class TileLauncherBase extends TileMachine
 {
-
-    public static List<BlockPos> northSouthMultiBlockCache = new ArrayList();
-    public static List<BlockPos> eastWestMultiBlockCache = new ArrayList();
-
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
 
-    static
-    {
-        northSouthMultiBlockCache.add(new BlockPos(1, 0, 0));
-        northSouthMultiBlockCache.add(new BlockPos(1, 1, 0));
-        northSouthMultiBlockCache.add(new BlockPos(1, 2, 0));
-        northSouthMultiBlockCache.add(new BlockPos(-1, 0, 0));
-        northSouthMultiBlockCache.add(new BlockPos(-1, 1, 0));
-        northSouthMultiBlockCache.add(new BlockPos(-1, 2, 0));
-
-        eastWestMultiBlockCache.add(new BlockPos(0, 0, 1));
-        eastWestMultiBlockCache.add(new BlockPos(0, 1, 1));
-        eastWestMultiBlockCache.add(new BlockPos(0, 2, 1));
-        eastWestMultiBlockCache.add(new BlockPos(0, 0, -1));
-        eastWestMultiBlockCache.add(new BlockPos(0, 1, -1));
-        eastWestMultiBlockCache.add(new BlockPos(0, 2, -1));
-    }
-
     // The connected missile launcher frame
-    public TileLauncherFrame supportFrame = null;
     public TileLauncherScreen launchScreen = null;
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
      */
     public EntityPlayerSeat seat;
-
-    private boolean _destroyingStructure = false;
 
     private boolean checkMissileCollision = true;
     private boolean hasMissileCollision = false;
@@ -143,14 +111,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         if (ticks % 20 == 0)
         {
             //Only update if frame or screen is invalid
-            if (this.supportFrame == null || launchScreen == null || launchScreen.isInvalid() || this.supportFrame.isInvalid())
+            if (launchScreen == null || launchScreen.isInvalid())
             {
-                //Reset data
-                if (this.supportFrame != null)
-                {
-                    this.supportFrame.launcherBase = null;
-                }
-                this.supportFrame = null;
                 this.launchScreen = null;
 
                 //Check on all 4 sides
@@ -160,18 +122,8 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
                     Pos position = new Pos(getPos()).add(rotation);
                     TileEntity tileEntity = this.world.getTileEntity(position.toBlockPos());
 
-                    //If frame update rotation
-                    if (tileEntity instanceof TileLauncherFrame)
-                    {
-                        this.supportFrame = (TileLauncherFrame) tileEntity;
-                        this.supportFrame.launcherBase = this;
-                        if (isServer())
-                        {
-                            this.supportFrame.setRotation(getRotation());
-                        }
-                    }
                     //If screen, tell the screen the base exists
-                    else if (tileEntity instanceof TileLauncherScreen)
+                    if (tileEntity instanceof TileLauncherScreen)
                     {
                         this.launchScreen = (TileLauncherScreen) tileEntity;
                     }
@@ -238,12 +190,6 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
     {
         // Apply inaccuracy
         float inaccuracy = 30f; //TODO config
-
-        //Get value from support frame
-        if (this.supportFrame != null)
-        {
-            inaccuracy = this.supportFrame.getInaccuracy();
-        }
 
         //TODO add distance based inaccuracy addition
         //TODO add tier based inaccuracy, higher tier missiles have a high chance of hitting
@@ -347,24 +293,7 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
         double distance = new Pos(this.x(), 0, this.z()).distance(new Pos(target.x(), 0, target.z()));
 
 
-        return distance > getRange();
-    }
-
-    public double getRange()
-    {
-        return getRangeForTier(getTier());
-    }
-
-    public static double getRangeForTier(EnumTier tier)
-    {
-        if (tier == EnumTier.ONE)
-        {
-            return ConfigLauncher.LAUNCHER_RANGE_TIER1;
-        } else if (tier == EnumTier.TWO)
-        {
-            return ConfigLauncher.LAUNCHER_RANGE_TIER2;
-        }
-        return ConfigLauncher.LAUNCHER_RANGE_TIER3;
+        return distance > ConfigLauncher.LAUNCHER_RANGE;
     }
 
     /**
@@ -455,98 +384,5 @@ public class TileLauncherBase extends TileMachine implements IMultiTileHost
     public AxisAlignedBB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
-    }
-
-    //==========================================
-    //==== Multi-Block code
-    //=========================================
-
-    @Override
-    public void onMultiTileAdded(IMultiTile tileMulti)
-    {
-        if (tileMulti instanceof TileEntity)
-        {
-            BlockPos pos = ((TileEntity) tileMulti).getPos().subtract(getPos());
-            if (getLayoutOfMultiBlock().contains(pos))
-            {
-                tileMulti.setHost(this);
-            }
-        }
-    }
-
-    @Override
-    public boolean onMultiTileBroken(IMultiTile tileMulti, Object source, boolean harvest)
-    {
-        if (!_destroyingStructure && tileMulti instanceof TileEntity)
-        {
-            BlockPos pos = ((TileEntity) tileMulti).getPos().subtract(getPos());
-            if (getLayoutOfMultiBlock().contains(pos))
-            {
-                MultiBlockHelper.destroyMultiBlockStructure(this, harvest, true, true);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void onTileInvalidate(IMultiTile tileMulti)
-    {
-
-    }
-
-    @Override
-    public boolean onMultiTileActivated(IMultiTile tile, EntityPlayer player, EnumHand hand, EnumFacing side, float xHit, float yHit, float zHit)
-    {
-        return this.onPlayerRightClick(player, hand, player.getHeldItem(hand));
-    }
-
-    @Override
-    public void onMultiTileClicked(IMultiTile tile, EntityPlayer player)
-    {
-
-    }
-
-    @Override
-    public List<BlockPos> getLayoutOfMultiBlock()
-    {
-        return getLayoutOfMultiBlock(getRotation());
-    }
-
-    public static List<BlockPos> getLayoutOfMultiBlock(EnumFacing facing)
-    {
-        if (facing == EnumFacing.EAST || facing == EnumFacing.WEST)
-        {
-            return eastWestMultiBlockCache;
-        }
-        return northSouthMultiBlockCache;
-    }
-
-    @Override
-    public void setRotation(EnumFacing facingDirection)
-    {
-        //Only update if state has changed
-        if (facingDirection != getRotation()
-
-            //Prevent up and down placement
-            && facingDirection != EnumFacing.UP
-            && facingDirection != EnumFacing.DOWN)
-        {
-            //Clear old structure
-            if (isServer())
-            {
-                MultiBlockHelper.destroyMultiBlockStructure(this, false, true, false);
-            }
-
-            //Update block state
-            world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
-
-            //Create new structure
-            if (isServer())
-            {
-                MultiBlockHelper.buildMultiBlock(getWorld(), this, true, true);
-                markDirty();
-            }
-        }
     }
 }
