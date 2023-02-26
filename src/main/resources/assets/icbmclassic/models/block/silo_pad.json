@@ -1,0 +1,9 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "side": "icbmclassic:blocks/silo_side",
+    "top": "icbmclassic:blocks/silo_top",
+    "bottom": "icbmclassic:blocks/silo_bottom",
+    "particle": "icbmclassic:blocks/silo_side"
+  }
+}
