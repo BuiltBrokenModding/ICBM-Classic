@@ -90,6 +90,10 @@ Redmatter fluid in missile, have it move in circle for center tank and left-righ
 - [ ] Unit Test Saving: Missiles Entity Ballistic
 - [ ] Unit Test Saving: Missiles Entity Cruise
 
+# Explosive rework
+
+- Exothermic water handling -> should make steam instead of removing water
+
 # Next release
 
 - [ ] Add handling for EMP effect on tiles
