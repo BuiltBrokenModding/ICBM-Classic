@@ -166,7 +166,7 @@ public class TileLauncherBase extends TilePoweredMachine
         angle.setYaw(getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
 
         //Apply inaccuracy to target position and return
-        return new Vec3d((target.getX() + 0.5) + angle.x() * inaccuracy, 0, (target.getX() + 0.5) + angle.z() * inaccuracy);
+        return new Vec3d((target.getX() + 0.5) + angle.x() * inaccuracy, 0, (target.getZ() + 0.5) + angle.z() * inaccuracy);
     }
 
     /**
