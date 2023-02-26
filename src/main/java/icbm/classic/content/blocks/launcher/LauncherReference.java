@@ -52,12 +52,14 @@ public class LauncherReference {
                 // If launcher store and return
                 if (tile instanceof TileLauncherBase) {
                     launcherBase = (TileLauncherBase) tile;
+                    break;
                 }
                 // If component: attempt to get host from it
                 else if (tile instanceof ILauncherComponent) {
                     final LauncherReference reference = ((ILauncherComponent) tile).getReference();
                     if (!reference.isSearchingForHost) {
                        launcherBase = reference.findHost((t) -> shouldIgnore != null && shouldIgnore.apply(t) || t == host);
+                       break;
                     }
                 }
             }

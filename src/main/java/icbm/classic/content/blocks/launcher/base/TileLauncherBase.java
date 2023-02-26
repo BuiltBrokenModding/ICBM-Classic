@@ -34,6 +34,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -109,12 +111,9 @@ public class TileLauncherBase extends TilePoweredMachine
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        //Run before screen check to prevent looping
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
-        {
-            return true;
-        }
-        return super.hasCapability(capability, facing);
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+            || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
+            || super.hasCapability(capability, facing);
     }
 
     @Override

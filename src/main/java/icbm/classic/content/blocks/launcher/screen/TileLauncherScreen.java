@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.tile.IRadioWaveReceiver;
 import icbm.classic.api.tile.IRadioWaveSender;
@@ -31,7 +32,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Optional;
@@ -324,6 +328,26 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public void setFrequency(int frequency)
     {
         this.frequency = frequency;
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return super.hasCapability(capability, facing) || Optional.ofNullable(getLauncher()).map(launcher -> launcher.hasCapability(capability, facing)).orElse(false);
+    }
+
+    @Override
+    @Nullable
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (getLauncher() != null)
+        {
+            final T cap = getLauncher().getCapability(capability, facing);
+            if(cap != null) {
+                return cap;
+            }
+        }
+        return super.getCapability(capability, facing);
     }
 
     @Override
