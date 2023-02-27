@@ -40,6 +40,7 @@ public class LauncherInventory extends ItemStackHandler
         if (slot == 0)
         {
             host.sendDescPacket();
+            host.markDirty();
         }
     }
 }

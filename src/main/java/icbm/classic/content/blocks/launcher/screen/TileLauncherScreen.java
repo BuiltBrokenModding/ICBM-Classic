@@ -56,7 +56,8 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     /** Frequency of the device */
     private int frequency = 0;
 
-    public int clientEnergyBar = 0;
+    public int clientEnergyStored = 0;
+    public int clientEnergyCapacity = 0;
 
     private final LauncherNode launcherNode = new LauncherNode(this);
 
@@ -88,8 +89,9 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Override
     public PacketTile getDescPacket()
     {
-        final int energy = 0; //Optional.ofNullable(getLauncher()).map(TilePoweredMachine::getEnergy).orElse(0);
-        return new PacketTile("desc", 0, this).addData(energy, this.getFrequency(), this.lockHeight, this.getTarget().getX(), this.getTarget().getY(), this.getTarget().getZ());
+        final int energy = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getEnergyStored()).orElse(0);
+        final int energyCap = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getMaxEnergyStored()).orElse(0);
+        return new PacketTile("desc", 0, this).addData(energy, energyCap, this.getFrequency(), this.lockHeight, this.getTarget().getX(), this.getTarget().getY(), this.getTarget().getZ());
     }
 
     @Override
@@ -110,7 +112,8 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                     if (isClient())
                     {
                         //this.tier = data.readInt();
-                        this.clientEnergyBar = data.readInt();
+                        this.clientEnergyStored = data.readInt();
+                        this.clientEnergyCapacity = data.readInt();
                         this.setFrequency(data.readInt());
                         this.lockHeight = data.readInt();
                         this.setTarget(new BlockPos(data.readInt(), data.readInt(), data.readInt()));
@@ -209,7 +212,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 return LanguageUtility.getLocal("gui.launcherscreen.statusFar");
             }
             return "";
-        }).filter(s -> !s.isEmpty()).findFirst().orElse(null);
+        }).filter(s -> !s.isEmpty()).findFirst().orElse(LanguageUtility.getLocal("gui.launcherscreen.statusReady"));
     }
 
     @Override

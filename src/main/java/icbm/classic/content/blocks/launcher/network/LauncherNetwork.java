@@ -21,8 +21,8 @@ public class LauncherNetwork implements ICapabilityProvider {
     @Getter
     private final List<TileLauncherBase> launchers = new LinkedList(); // TODO move launcher to cap interface
 
-    private final NetworkEnergyStorage energyStorage = new NetworkEnergyStorage(this);
-    private final NetworkInventory inventory = new NetworkInventory(this);
+    public final NetworkEnergyStorage energyStorage = new NetworkEnergyStorage(this);
+    public final NetworkInventory inventory = new NetworkInventory(this);
 
     public void invalidate(LauncherNode source) {
         final HashSet<LauncherNode> components = new HashSet(this.components);
