@@ -156,16 +156,16 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
      * Calls the missile launcher base to launch it's missile towards a targeted location
      * @return true if launched, false if not
      */
-    public boolean launch(TileLauncherBase launcher)
+    public boolean launch(TileLauncherBase launcher, int launcherCount)
     {
-        return this.canLaunch(launcher) && launcher.launchMissile(this.getTarget(), this.lockHeight); //TODO move lockHeight to launchPad
+        return this.canLaunch(launcher) && launcher.launchMissile(this.getTarget(), this.lockHeight, launcherCount); //TODO move lockHeight to launchPad
     }
 
     public boolean fireAllLaunchers() {
         // TODO add chain fire delay settings to screen
         boolean hasFired = false;
         for(TileLauncherBase launcher : getLaunchers()) {
-            if(launch(launcher)) {
+            if(launch(launcher, getLaunchers().size())) {
                 hasFired = true;
             }
         }

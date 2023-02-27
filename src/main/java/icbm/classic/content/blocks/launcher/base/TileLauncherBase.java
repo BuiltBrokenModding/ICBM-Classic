@@ -167,7 +167,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         return new TextComponentTranslation("gui.launcherBase.name");
     }
 
-    protected Vec3d applyInaccuracy(BlockPos target)
+    protected Vec3d applyInaccuracy(BlockPos target, int launcherCount)
     {
         // Apply inaccuracy
         double inaccuracy = ConfigLauncher.MIN_INACCURACY;
@@ -176,6 +176,11 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         double distance = getDistanceSq(target.getX(), target.getY(), target.getZ());
         double scale = distance / ConfigLauncher.RANGE;
         inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY;
+
+        // Add inaccuracy for each launcher fired in circuit
+        if(launcherCount > 1) {
+            inaccuracy += (launcherCount - 1) * ConfigLauncher.SCALED_LAUNCHER_COST;
+        }
 
         //Randomize distance
         inaccuracy = inaccuracy * getWorld().rand.nextFloat();
@@ -193,7 +198,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
      * @param targetPos     - The target in which the missile will land in
      * @param lockHeight - height to wait before curving the missile
      */
-    public boolean launchMissile(BlockPos targetPos, int lockHeight)
+    public boolean launchMissile(BlockPos targetPos, int lockHeight, int launcherCount)
     {
         //Allow canceling missile launches
         if (MinecraftForge.EVENT_BUS.post(new LauncherEvent.PreLaunch(missileLauncher, missileHolder)))
@@ -208,7 +213,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
             if (missileStack != null)
             {
-                final Vec3d target = applyInaccuracy(targetPos);
+                final Vec3d target = applyInaccuracy(targetPos, launcherCount);
 
                 //TODO add distance check? --- something seems to be missing
 
