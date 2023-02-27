@@ -6,6 +6,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,6 +22,7 @@ public class LauncherNetwork implements ICapabilityProvider {
     private final List<TileLauncherBase> launchers = new LinkedList(); // TODO move launcher to cap interface
 
     private final NetworkEnergyStorage energyStorage = new NetworkEnergyStorage(this);
+    private final NetworkInventory inventory = new NetworkInventory(this);
 
     public void invalidate(LauncherNode source) {
         final HashSet<LauncherNode> components = new HashSet(this.components);
@@ -36,6 +38,7 @@ public class LauncherNetwork implements ICapabilityProvider {
     protected void clearData() {
         launchers.clear();
         components.clear();
+        onNetworkUpdated();
     }
 
     public void mergeNetwork(LauncherNetwork otherNetwork) {
@@ -56,13 +59,18 @@ public class LauncherNetwork implements ICapabilityProvider {
             // Adding if launcher
             if (node.getSelf() instanceof TileLauncherBase) {
                 launchers.add((TileLauncherBase) node.getSelf());
+                onNetworkUpdated();
             }
         }
     }
 
+    public void onNetworkUpdated() {
+        inventory.buildInventory();
+    }
+
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityEnergy.ENERGY;
+        return capability == CapabilityEnergy.ENERGY || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
     }
 
     @Nullable
@@ -70,6 +78,9 @@ public class LauncherNetwork implements ICapabilityProvider {
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         if(capability == CapabilityEnergy.ENERGY) {
             return CapabilityEnergy.ENERGY.cast(energyStorage);
+        }
+        else if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
         }
         return null;
     }
