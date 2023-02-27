@@ -2,16 +2,20 @@ package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -48,9 +52,28 @@ public class BlockLauncherBase extends BlockContainer
         final TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileLauncherBase)
         {
+            if(playerIn.getHeldItem(hand).getItem() == Items.STONE_AXE) {
+                if(!worldIn.isRemote) {
+                    final LauncherNetwork network = ((TileLauncherBase) tile).getNetworkNode().getNetwork();
+                    playerIn.sendMessage(new TextComponentString("Network: " + network));
+                    playerIn.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
+                }
+                return true;
+            }
             return ((TileLauncherBase) tile).tryInsertMissile(playerIn, hand, playerIn.getHeldItem(hand));
         }
         return false;
+    }
+
+    @Override
+    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof ILauncherComponent)
+        {
+            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+        }
+        super.breakBlock(world, pos, state);
     }
 
     @Override

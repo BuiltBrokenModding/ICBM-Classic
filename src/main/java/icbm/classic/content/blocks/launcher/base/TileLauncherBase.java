@@ -3,6 +3,8 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
@@ -34,8 +36,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -48,7 +48,7 @@ import java.util.Optional;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TilePoweredMachine
+public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent
 {
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
 
@@ -70,10 +70,26 @@ public class TileLauncherBase extends TilePoweredMachine
     public final IMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
     public final IMissileLauncher missileLauncher = null; //TODO implement, screen will now only set data instead of being the launcher
 
-    /**
-     * Allows the entity to update its state. Overridden in most subclasses, e.g. the mob spawner
-     * uses this to count ticks and creates a new spawn inside its implementation.
-     */
+    private final LauncherNode launcherNode = new LauncherNode(this);
+
+    @Override
+    public void onLoad()
+    {
+        launcherNode.connectToTiles();
+    }
+
+    @Override
+    public void invalidate()
+    {
+        getNetworkNode().onTileRemoved();
+        super.invalidate();
+    }
+
+    @Override
+    public LauncherNode getNetworkNode() {
+        return launcherNode;
+    }
+
     @Override
     public void update()
     {

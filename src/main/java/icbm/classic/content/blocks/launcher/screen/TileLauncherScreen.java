@@ -1,15 +1,13 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.tile.IRadioWaveReceiver;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
-import icbm.classic.content.blocks.launcher.ILauncherComponent;
-import icbm.classic.content.blocks.launcher.LauncherReference;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
-import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -17,26 +15,21 @@ import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.prefab.tile.TileMachine;
-import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -65,11 +58,11 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
 
     public int clientEnergyBar = 0;
 
-    private final LauncherReference launcherReference = new LauncherReference(this);
+    private final LauncherNode launcherNode = new LauncherNode(this);
 
     @Override
-    public LauncherReference getReference() {
-        return launcherReference;
+    public LauncherNode getNetworkNode() {
+        return launcherNode;
     }
 
     @Override
@@ -81,7 +74,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
             //Only launch if redstone
             if (ticks % 3 == 0 && world.getStrongPower(getPos()) > 0)
             {
-                this.launch();
+                fireAllLaunchers();
             }
 
             //Update packet TODO see if this is needed
@@ -95,7 +88,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Override
     public PacketTile getDescPacket()
     {
-        final int energy = Optional.ofNullable(getLauncher()).map(TilePoweredMachine::getEnergy).orElse(0);
+        final int energy = 0; //Optional.ofNullable(getLauncher()).map(TilePoweredMachine::getEnergy).orElse(0);
         return new PacketTile("desc", 0, this).addData(energy, this.getFrequency(), this.lockHeight, this.getTarget().getX(), this.getTarget().getY(), this.getTarget().getZ());
     }
 
@@ -142,7 +135,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 }
                 case LAUNCH_PACKET_ID:
                 {
-                    launch(); //canLaunch is called by launch
+                    fireAllLaunchers();
                 }
             }
             return false;
@@ -151,9 +144,8 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     }
 
     // Checks if the missile is launchable
-    public boolean canLaunch()
+    public boolean canLaunch(TileLauncherBase launcher)
     {
-        final TileLauncherBase launcher = getLauncher();
         return launcher != null
             && launcher.getMissileStack() != null
             && launcher.checkExtract()
@@ -164,10 +156,20 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
      * Calls the missile launcher base to launch it's missile towards a targeted location
      * @return true if launched, false if not
      */
-    public boolean launch()
+    public boolean launch(TileLauncherBase launcher)
     {
-        final TileLauncherBase launcher = getLauncher();
-        return this.canLaunch() && launcher.launchMissile(this.getTarget(), this.lockHeight);
+        return this.canLaunch(launcher) && launcher.launchMissile(this.getTarget(), this.lockHeight); //TODO move lockHeight to launchPad
+    }
+
+    public boolean fireAllLaunchers() {
+        // TODO add chain fire delay settings to screen
+        boolean hasFired = false;
+        for(TileLauncherBase launcher : getLaunchers()) {
+            if(launch(launcher)) {
+                hasFired = true;
+            }
+        }
+        return hasFired;
     }
 
     /**
@@ -177,42 +179,37 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
      */
     public String getStatus()
     {
-        final TileLauncherBase launcher = getLauncher();
-
-        String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
-
-        if (launcher == null)
+        if (getNetworkNode().getNetwork() == null)
         {
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
+            return LanguageUtility.getLocal("gui.launcherscreen.noNetwork");
         }
-        else if (!launcher.checkExtract())
-        {
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusNoPower");
-        }
-        else if (launcher.getMissileStack().isEmpty())
-        {
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusEmpty");
-        }
-        else if (this.getTarget() == null)
-        {
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusInvalid");
-        }
-        else if (launcher.isTargetTooClose(this.getTarget()))
-        {
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusClose");
-        }
-        else if (launcher.isTargetTooFar(this.getTarget()))
-        {
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusFar");
-        }
-        else
-        {
-            color = "\u00a72";
-            status = LanguageUtility.getLocal("gui.launcherscreen.statusReady");
-        }
-
-        return color + status;
+        return getNetworkNode().getLaunchers().stream().map(launcher -> {
+            if (launcher == null)
+            {
+                return LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
+            }
+            else if (!launcher.checkExtract())
+            {
+                return LanguageUtility.getLocal("gui.launcherscreen.statusNoPower");
+            }
+            else if (launcher.getMissileStack().isEmpty())
+            {
+                return LanguageUtility.getLocal("gui.launcherscreen.statusEmpty");
+            }
+            else if (this.getTarget() == null)
+            {
+                return LanguageUtility.getLocal("gui.launcherscreen.statusInvalid");
+            }
+            else if (launcher.isTargetTooClose(this.getTarget()))
+            {
+                return LanguageUtility.getLocal("gui.launcherscreen.statusClose");
+            }
+            else if (launcher.isTargetTooFar(this.getTarget()))
+            {
+                return LanguageUtility.getLocal("gui.launcherscreen.statusFar");
+            }
+            return "";
+        }).filter(s -> !s.isEmpty()).findFirst().orElse(null);
     }
 
     @Override
@@ -233,11 +230,9 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         // TODO make sure other launchers don't trigger when a laser designator is used
         if (isServer())
         {
-            final TileLauncherBase launcher = getLauncher();
-
             //Floor frequency as we do not care about sub ranges
             final int frequency = (int) Math.floor(hz);
-            if (frequency == getFrequency() && launcher != null)
+            if (frequency == getFrequency())
             {
                 //Laser detonator signal
                 if (messageHeader.equals(RadioHeaders.FIRE_AT_TARGET.header))
@@ -253,15 +248,17 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                     if (new Pos((IPos3D) this).distance(pos) <= ConfigLauncher.RANGE)
                     {
                         setTarget(pos);
-                        launch();
-                        ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + pos)); //TODO translate
+                        if(fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
+                            ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + pos), true); //TODO translate
+                        }
                     }
                 }
                 //Remote detonator signal
                 else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
                 {
-                    ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget())); //TODO translate
-                    launch();
+                    if(fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
+                        ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + getTarget()), true); //TODO translate
+                    }
                 }
             }
         }
@@ -286,6 +283,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public void invalidate()
     {
         RadioRegistry.remove(this);
+        getNetworkNode().onTileRemoved();
         super.invalidate();
     }
 
@@ -333,16 +331,16 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return super.hasCapability(capability, facing) || Optional.ofNullable(getLauncher()).map(launcher -> launcher.hasCapability(capability, facing)).orElse(false);
+        return super.hasCapability(capability, facing) || Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.hasCapability(capability, facing)).orElse(false);
     }
 
     @Override
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (getLauncher() != null)
+        if (getNetworkNode().getNetwork() != null)
         {
-            final T cap = getLauncher().getCapability(capability, facing);
+            final T cap = getNetworkNode().getNetwork().getCapability(capability, facing);
             if(cap != null) {
                 return cap;
             }

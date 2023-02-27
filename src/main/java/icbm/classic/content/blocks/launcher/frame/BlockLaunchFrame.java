@@ -1,14 +1,21 @@
 package icbm.classic.content.blocks.launcher.frame;
 
+import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -51,6 +58,24 @@ public class BlockLaunchFrame extends BlockICBM
         return state.getBlock() == this || state.getBlock() == BlockReg.blockLaunchScreen;
     }
 
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    {
+        final TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile instanceof TileLauncherFrame)
+        {
+            if(playerIn.getHeldItem(hand).getItem() == Items.STONE_AXE) {
+                if(!worldIn.isRemote) {
+                    final LauncherNetwork network = ((TileLauncherFrame) tile).getNetworkNode().getNetwork();
+                    playerIn.sendMessage(new TextComponentString("Network: " + network));
+                    playerIn.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Deprecated
     public boolean isOpaqueCube(IBlockState state)
     {
@@ -81,5 +106,16 @@ public class BlockLaunchFrame extends BlockICBM
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
         return new TileLauncherFrame();
+    }
+
+    @Override
+    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof ILauncherComponent)
+        {
+            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+        }
+        super.breakBlock(world, pos, state);
     }
 }

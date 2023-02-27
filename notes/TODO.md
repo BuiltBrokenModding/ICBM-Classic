@@ -13,6 +13,8 @@ https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block
 
 Redmatter fluid in missile, have it move in circle for center tank and left-right inverse on lower tubes. 2 pixels left, 2 pixels right, repeat to give a centrifuge like visual.
 
+Render cable coming from frame to missile. Recycle rope render from minecraft and increase in size
+
 ## Multi-Block Rework
 
 - Multi-Block -> Place launcher frame
@@ -71,6 +73,15 @@ Redmatter fluid in missile, have it move in circle for center tank and left-righ
 # Explosive rework
 
 - Exothermic water handling -> should make steam instead of removing water
+
+# Radio System Rework
+
+- Antenna block to receive and send signals
+- Remove radio message handling from screen
+- Have radio message block to take signal from antenna and do action
+- Antenna range and signal loss chance
+
+Basically mimic ICBM 2's system
 
 # Next release
 

@@ -2,19 +2,15 @@ package icbm.classic.content.blocks.launcher.screen;
 
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
-import icbm.classic.config.ConfigLauncher;
+import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.items.ItemLaserDetonator;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.prefab.tile.BlockICBM;
-import icbm.classic.api.EnumTier;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -22,11 +18,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -59,18 +52,7 @@ public class BlockLaunchScreen extends BlockICBM
                 TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
 
                 ItemStack stack = player.getHeldItem(hand);
-                if (stack.getItem() == Items.REDSTONE)
-                {
-                    if (!screen.launch()) //canLaunch is called in launch and launch returns false if cannot launch
-                    {
-                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
-
-                        String translation = LanguageUtility.getLocal("chat.launcher.status");
-                        translation = translation.replace("%s", screen.getStatus()); //TODO remove status being a separate translation
-                        player.sendMessage(new TextComponentString(translation));
-                    }
-                }
-                else if (stack.getItem() instanceof ItemRemoteDetonator)
+                if (stack.getItem() instanceof ItemRemoteDetonator)
                 {
                     ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
                     player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.getFrequency())));
@@ -100,6 +82,11 @@ public class BlockLaunchScreen extends BlockICBM
                         player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
                     }
                 }
+                else if(stack.getItem() == Items.STONE_AXE) {
+                    final LauncherNetwork network = screen.getNetworkNode().getNetwork();
+                    player.sendMessage(new TextComponentString("Network: " + network));
+                    player.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
+                }
                 else
                 {
                     player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
@@ -109,25 +96,21 @@ public class BlockLaunchScreen extends BlockICBM
         return true;
     }
 
-    @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos)
-    {
-        if(!world.isRemote)
-        {
-            TileEntity tileEntity = world.getTileEntity(pos);
-
-            if(tileEntity instanceof TileLauncherScreen && world.isBlockPowered(pos))
-            {
-                TileLauncherScreen screen = (TileLauncherScreen)tileEntity;
-                screen.launch(); //canLaunch gets called by launch
-            }
-        }
-    }
-
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
         return new TileLauncherScreen();
+    }
+
+    @Override
+    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof ILauncherComponent)
+        {
+            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+        }
+        super.breakBlock(world, pos, state);
     }
 }
