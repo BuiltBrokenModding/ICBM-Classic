@@ -25,7 +25,7 @@ Render cable coming from frame to missile. Recycle rope render from minecraft an
 ## Blocks Model
 
 - ~~Silo (Pad)~~
-- Silo (Connector) -> goes under frame as a full block to provide wire connections to silo pad
+- ~~Silo (Connector)~~ -> goes under frame as a full block to provide wire connections to silo pad
 - ~~Silo Frame~~
 - ~~Silo Screen~~
 - Cruise Launcher -> static model, with upper animated model
@@ -37,6 +37,7 @@ Render cable coming from frame to missile. Recycle rope render from minecraft an
 - Reinforced Glass connected textures and new textures at 16x16
 - Concrete textures
 - Spikes
+- connected textures for launcher connector
 
 ## Items
 

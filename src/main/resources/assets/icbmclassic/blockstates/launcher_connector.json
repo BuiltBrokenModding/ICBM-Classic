@@ -1,0 +1,108 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "icbmclassic:launcher_connector"
+  },
+  "variants": {
+    "inventory": {
+      "model": "icbmclassic:launcher_connector"
+    },
+    "up": {
+      "true" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "up": "icbmclassic:blocks/silo_connector/connected"
+        }
+      },
+      "false" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "up": "icbmclassic:blocks/silo_connector/disconnected"
+        }
+      }
+    },
+    "down": {
+      "true" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "down": "icbmclassic:blocks/silo_connector/connected"
+        }
+      },
+      "false" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "down": "icbmclassic:blocks/silo_connector/disconnected"
+        }
+      }
+    },
+    "north": {
+      "true" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "north": "icbmclassic:blocks/silo_connector/connected"
+        }
+      },
+      "false" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "north": "icbmclassic:blocks/silo_connector/disconnected"
+        }
+      }
+    },
+    "east": {
+      "true" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "east": "icbmclassic:blocks/silo_connector/connected"
+        }
+      },
+      "false" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "east": "icbmclassic:blocks/silo_connector/disconnected"
+        }
+      }
+    },
+    "south": {
+      "true" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "south": "icbmclassic:blocks/silo_connector/connected"
+        }
+      },
+      "false" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "south": "icbmclassic:blocks/silo_connector/disconnected"
+        }
+      }
+    },
+    "west": {
+      "true" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "west": "icbmclassic:blocks/silo_connector/connected"
+        }
+      },
+      "false" :
+      {
+        "model": "icbmclassic:launcher_connector",
+        "textures": {
+          "west": "icbmclassic:blocks/silo_connector/disconnected"
+        }
+      }
+    }
+  }
+}
+

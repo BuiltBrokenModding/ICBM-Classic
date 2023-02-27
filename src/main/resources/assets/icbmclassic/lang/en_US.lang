@@ -117,18 +117,17 @@ item.icbmclassic:circuit.advanced.name=Advanced Circuit
 item.icbmclassic:circuit.elite.name=Elite Circuit
 
 ## ICBM Machines
-tile.icbmclassic:launcherbase.0.name=Launcher Platform T1
-tile.icbmclassic:launcherbase.1.name=Launcher Platform T2
-tile.icbmclassic:launcherbase.2.name=Launcher Platform T3
+tile.icbmclassic:launcherbase.name=Launcher Pad
 tile.icbmclassic:launcherbase.info=Hold missiles in place before launch
 
-tile.icbmclassic:launcherscreen.0.name=Launcher Control Panel T1
-tile.icbmclassic:launcherscreen.1.name=Launcher Control Panel T2
-tile.icbmclassic:launcherscreen.2.name=Launcher Control Panel T3
+tile.icbmclassic:launcherscreen.name=Launcher Screen
 tile.icbmclassic:launcherscreen.info=Used to fire missiles from launchers
 
-tile.icbmclassic:launcherframe.0.name=Launcher Frame
-tile.icbmclassic:launcherframe.info=Optional decoration block for launchers
+tile.icbmclassic:launcherframe.name=Launcher Frame
+tile.icbmclassic:launcherframe.info=Optional decorative launcher connection block
+
+tile.icbmclassic:launcher_connector.name=Launcher Connector
+tile.icbmclassic:launcher_connector.info=Optional decorative launcher connection block
 
 tile.icbmclassic:radarstation.name=Radar Station
 tile.icbmclassic:radarstation.info=Detects missiles in flight

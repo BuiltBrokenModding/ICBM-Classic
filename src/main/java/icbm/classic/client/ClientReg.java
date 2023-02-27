@@ -107,6 +107,7 @@ public class ClientReg
         newBlockModel(BlockReg.blockLaunchBase, 0, "inventory", "");
         newBlockModel(BlockReg.blockLaunchScreen, 0, "inventory", "");
         newBlockModel(BlockReg.blockLaunchSupport, 0, "inventory", "");
+        newBlockModel(BlockReg.blockLaunchConnector, 0, "inventory", "");
 
         //items
         newItemModel(ItemReg.itemPoisonPowder, 0, "inventory", "");
