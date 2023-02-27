@@ -273,6 +273,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public void onLoad()
     {
         super.onLoad();
+        getNetworkNode().connectToTiles();
         if (isServer())
         {
             RadioRegistry.add(this);
