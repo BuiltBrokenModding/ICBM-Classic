@@ -72,6 +72,8 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     private final LinkedList<Pos> clientLastSmokePos = new LinkedList<>();
 
+    private boolean flightUpAlways = false;
+
     public BallisticFlightLogic(int lockHeight) {
         this.lockHeight = lockHeight;
     }
@@ -115,25 +117,31 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         // Ground Displacement
         final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
 
-        //Path constants
-        final float ticksPerMeterFlat = 2f;
-        final float maxFlightTime = 100f;
-        final float heightToDistanceScale = flatDistance > 1000 ? 3f : 1f;
-        final float maxHeight = 1000f;
-        final float initialArcHeight = flatDistance > 100 ? 160f : 0;
+        if(flatDistance < 200) {
 
-        // Parabolic Height
-        // Ballistic flight vars
-        final float arcHeightMax = Math.min(maxHeight,  initialArcHeight + (flatDistance * heightToDistanceScale));
+            //Path constants
+            final float ticksPerMeterFlat = 2f;
+            final float heightToDistanceScale = flatDistance > 1000 ? 3f : 1f;
+            final float maxHeight = 1000f;
+            final float initialArcHeight = flatDistance > 100 ? 160f : 0;
 
-        // Flight time
-        missileFlightTime = (int)Math.ceil(ticksPerMeterFlat  * flatDistance);
+            // Parabolic Height
+            // Ballistic flight vars
+            final float arcHeightMax = Math.min(maxHeight, initialArcHeight + (flatDistance * heightToDistanceScale));
 
-        // Acceleration
-        double heightToDistance = arcHeightMax / flatDistance;
-        double heightToTime = arcHeightMax / missileFlightTime;
-        double timeToDistance = missileFlightTime  / flatDistance;
-        this.acceleration = (float)(((arcHeightMax - heightToDistance) * heightToDistance) / (missileFlightTime / timeToDistance) / (heightToTime * flatDistance));
+            // Flight time
+            missileFlightTime = (int) Math.ceil(ticksPerMeterFlat * flatDistance);
+
+            // Acceleration
+            double heightToDistance = arcHeightMax / flatDistance;
+            double heightToTime = arcHeightMax / missileFlightTime;
+            double timeToDistance = missileFlightTime / flatDistance;
+            this.acceleration = (float) (((arcHeightMax - heightToDistance) * heightToDistance) / (missileFlightTime / timeToDistance) / (heightToTime * flatDistance));
+        }
+        // If over 200 assume we will missile simulate rather than arc
+        else {
+            flightUpAlways = true;
+        }
     }
 
     @Override
@@ -165,10 +173,21 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
             calculatePath();
 
-            entity.motionY = this.acceleration * ((float)missileFlightTime / 2f);
+            if(!flightUpAlways) {
 
-            entity.motionX = this.deltaPathX / missileFlightTime;
-            entity.motionZ = this.deltaPathZ / missileFlightTime;
+                entity.motionY = this.acceleration * ((float) missileFlightTime / 2f);
+
+                entity.motionX = this.deltaPathX / missileFlightTime;
+                entity.motionZ = this.deltaPathZ / missileFlightTime;
+            }
+            else {
+                final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
+                final float hortSpeed = 0.05f;
+                final float vertSpeed = 0.05f;
+                entity.motionX = (this.deltaPathX / flatDistance) * hortSpeed;
+                entity.motionZ = (this.deltaPathZ / flatDistance) * hortSpeed;
+                entity.motionY = vertSpeed;
+            }
         }
         //Normal path logic
         else {
@@ -180,10 +199,15 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     {
         if (!entity.world.isRemote)
         {
-            //Apply arc acceleration logic
-            entity.motionY -= this.acceleration;
+            // Apply gravity
+            if(!flightUpAlways) {
+                entity.motionY -= this.acceleration;
+            }
+
+            // Update animate rotations
             alignWithMotion(entity);
 
+            // Sim system
             if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
             {
                 MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
@@ -246,13 +270,16 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         if (EntityMissile.hasPlayerRiding(entity))
         {
             return false;
-        } else if (entity.posY >= ConfigMissile.SIMULATION_START_HEIGHT)
+        }
+        else if (entity.posY >= ConfigMissile.SIMULATION_START_HEIGHT)
         {
             return true;
         }
 
+        final BlockPos futurePos = predictPosition(entity, BlockPos::new, 2);
+
         //About to enter an unloaded chunk
-        return !entity.world.isBlockLoaded(predictPosition(entity, BlockPos::new, 1));
+        return !entity.world.isAreaLoaded(entity.getPosition(), futurePos);
     }
 
     @Override
