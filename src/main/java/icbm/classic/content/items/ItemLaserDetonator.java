@@ -97,10 +97,11 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
             final int x = buf.readInt();
             final int y = buf.readInt();
             final int z = buf.readInt();
+            final BlockPos pos = new BlockPos(x, y, z);
 
             // Fire on main thread
             ((WorldServer) player.getEntityWorld()).addScheduledTask(() -> {
-                final BlockPos pos = new BlockPos(x, y, z);
+
 
                 final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, pos, player);
                 if (!MinecraftForge.EVENT_BUS.post(event)) {

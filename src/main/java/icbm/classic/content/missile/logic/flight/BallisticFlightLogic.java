@@ -120,21 +120,21 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         final float heightToDistanceScale = flatDistance > 1000 ? 3f : 1f;
         final float maxHeight = 1000f;
         final float initialArcHeight = flatDistance > 100 ? 160f : 0;
-        final float minHeight = flatDistance > 100 ? 100f : 0;
 
         // Parabolic Height
         // Ballistic flight vars
-        final float arcHeightMax = Math.min(maxHeight, Math.max(minHeight, initialArcHeight + (flatDistance * heightToDistanceScale)));
+        final float arcHeightMax = Math.min(maxHeight,  initialArcHeight + (flatDistance * heightToDistanceScale));
 
         // Flight time
-        final float time = (int)Math.floor(Math.max(maxFlightTime, ticksPerMeterFlat  * flatDistance));
-        missileFlightTime = (int)Math.floor(time);
+        missileFlightTime = (int)Math.ceil(ticksPerMeterFlat  * flatDistance);
 
         // Acceleration
         double heightToDistance = arcHeightMax / flatDistance;
-        double heightToTime = arcHeightMax / time;
-        double timeToDistance = time  / flatDistance;
-        this.acceleration = (float)(((arcHeightMax - heightToDistance) * heightToDistance) / (time / timeToDistance) / (heightToTime * flatDistance));
+        double heightToTime = arcHeightMax / missileFlightTime;
+        double timeToDistance = missileFlightTime  / flatDistance;
+        this.acceleration = (float)(((arcHeightMax - heightToDistance) * heightToDistance) / (missileFlightTime / timeToDistance) / (heightToTime * flatDistance));
+
+        this.acceleration = 0.05f;
     }
 
     @Override
@@ -151,12 +151,23 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         {
             doSlowClimb(entity, ticksInAir);
         }
+        else if (this.lockHeight > 0)
+        {
+            handleLockHeight(entity, ticksInAir);
+        }
         //Starts the missile into normal flight
         else if (!hasStartedFlight) {
 
             hasStartedFlight = true;
+
+            this.startX = entity.posX;
+            this.startY = entity.posY;
+            this.startZ = entity.posZ;
+
             calculatePath();
+
             entity.motionY = this.acceleration * ((float)missileFlightTime / 2f);
+
             entity.motionX = this.deltaPathX / missileFlightTime;
             entity.motionZ = this.deltaPathZ / missileFlightTime;
         }
@@ -170,16 +181,10 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     {
         if (!entity.world.isRemote)
         {
-            //Move up if we are still in lock height
-            if (this.lockHeight > 0)
-            {
-                handleLockHeight(entity, ticksInAir);
-            } else
-            {
-                //Apply arc acceleration logic
-                entity.motionY -= this.acceleration;
-                alignWithMotion(entity);
-            }
+            //Apply arc acceleration logic
+            entity.motionY -= this.acceleration;
+            alignWithMotion(entity);
+
 
             if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
             {
@@ -195,7 +200,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     protected void handleLockHeight(Entity entity, int ticksInAir)
     {
-        entity.motionY = ConfigMissile.LAUNCH_SPEED * ticksInAir * (ticksInAir / 2f);
+        entity.motionY += 0.1f;
         entity.motionX = 0;
         entity.motionZ = 0;
         this.lockHeight -= entity.motionY; //TODO fix to account for slow animation climb
@@ -318,7 +323,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         /* */.nodeDouble("start_x", (bl) -> bl.startX, (bl, i) -> bl.startX = i)
         /* */.nodeDouble("start_y", (bl) -> bl.startY, (bl, i) -> bl.startY = i)
         /* */.nodeDouble("start_z", (bl) -> bl.startZ, (bl, i) -> bl.startZ = i)
-        /* */.nodeDouble("end_x", (bl) -> bl.endZ, (bl, i) -> bl.endX = i)
+        /* */.nodeDouble("end_x", (bl) -> bl.endX, (bl, i) -> bl.endX = i)
         /* */.nodeDouble("end_y", (bl) -> bl.endY, (bl, i) -> bl.endY = i)
         /* */.nodeDouble("end_z", (bl) -> bl.endZ, (bl, i) -> bl.endZ = i)
         .base()
