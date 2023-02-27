@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -75,7 +76,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
        // TODO add config
        // TODO add random chance modifier
        if(source.isExplosion() || source.isFireDamage()) {
-           doExplosion();
+           doExplosion(this.getPositionVector());
        }
     }
 
@@ -141,12 +142,12 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     }
 
     @Override
-    protected void onImpact() {
-        super.onImpact();
-        doExplosion();
+    protected void onImpact(Vec3d impactLocation) {
+        super.onImpact(impactLocation);
+        doExplosion(impactLocation);
     }
 
-    public BlastResponse doExplosion() //TODO move to capability
+    public BlastResponse doExplosion(Vec3d impactLocation) //TODO move to capability
     {
         try
         {
@@ -158,7 +159,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
                 if (!this.world.isRemote)
                 {
-                    return ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY, this.posZ, explosive);
+                    return ExplosiveHandler.createExplosion(this, this.world, impactLocation.x, impactLocation.y, impactLocation.z, explosive);
                 }
                 return BlastState.TRIGGERED_CLIENT.genericResponse;
             }

@@ -336,27 +336,22 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      */
     protected void onImpactTile(RayTraceResult hit)
     {
-        onImpact();
+        onImpact(hit.hitVec);
     }
 
     /**
      * Handles entity being impacted by the projectile
      *
-     * @param movingobjectposition
+     * @param hit
      * @param entityHit
      */
-    protected void handleEntityCollision(RayTraceResult movingobjectposition, Entity entityHit)
+    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
     {
-        onImpactEntity(entityHit, (float) getVelocity().magnitude(), movingobjectposition);
+        onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
     }
 
 
     protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit)
-    {
-        onImpactEntity(entityHit, (float) getVelocity().magnitude());
-    }
-
-    protected void onImpactEntity(Entity entityHit, float velocity)
     {
         if (!world.isRemote)
         {
@@ -375,7 +370,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 }
 
             }
-           onImpact();
+           onImpact(hit.hitVec);
         }
     }
 
@@ -386,7 +381,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
      * better handling of impacts.
      */
-    protected void onImpact() {
+    protected void onImpact(Vec3d impactLocation) {
         this.setDead();
     }
 

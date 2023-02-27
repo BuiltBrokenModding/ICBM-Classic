@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileFlightLogic;
 import icbm.classic.api.missiles.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
+import icbm.classic.content.entity.EntitySmoke;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
@@ -133,8 +134,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         double heightToTime = arcHeightMax / missileFlightTime;
         double timeToDistance = missileFlightTime  / flatDistance;
         this.acceleration = (float)(((arcHeightMax - heightToDistance) * heightToDistance) / (missileFlightTime / timeToDistance) / (heightToTime * flatDistance));
-
-        this.acceleration = 0.05f;
     }
 
     @Override
@@ -184,7 +183,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             //Apply arc acceleration logic
             entity.motionY -= this.acceleration;
             alignWithMotion(entity);
-
 
             if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
             {

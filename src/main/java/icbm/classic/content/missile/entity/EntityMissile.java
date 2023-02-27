@@ -31,6 +31,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -247,12 +248,9 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void onImpactEntity(Entity entityHit, float velocity)
+    protected boolean shouldCollideWith(Entity entityHit)
     {
-        if (!world.isRemote && !isRider(entityHit) && entityHit != shootingEntity)
-        {
-            super.onImpactEntity(entityHit, velocity);
-        }
+        return super.shouldCollideWith(entityHit) && !isRider(entityHit) && entityHit != shootingEntity;
     }
 
     public boolean isRider(Entity entity) {
@@ -268,28 +266,31 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void onImpact() {
+    protected void onImpact(Vec3d impactLocation) {
         if(!hasImpacted) {
             this.hasImpacted = true;
-            logImpact();
+            logImpact(impactLocation);
             dismountRidingEntity();
             removePassengers();
             setDead();
         }
     }
 
-    protected void logImpact()
+    protected void logImpact(Vec3d impactLocation)
     {
         // TODO make optional via config
         // TODO log to ICBM file separated from main config
         // TODO offer hook for database logging
-        final String formatString = "Missile[%s] impacted at (%sx,%sy,%sz,%sd)";
+        final String formatString = "Missile[%s] (%sx, %sy, %sz, %sd) impacted at (%s, %s, %s)";
         final String formattedMessage = String.format(formatString,
             this.getEntityId(),
             xi(),
             yi(),
             zi(),
-            world().provider.getDimension()
+            world().provider.getDimension(),
+            impactLocation.x,
+            impactLocation.y,
+            impactLocation.z
         );
         ICBMClassic.logger().info(formattedMessage);
     }
