@@ -252,7 +252,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                     {
                         setTarget(pos);
                         if(fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
-                            ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + pos), true); //TODO translate
+                            ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + pos + " " + Math.floor(pos.getDistance(xi(), yi(), zi())) + "m"), true); //TODO translate
                         }
                     }
                 }
@@ -260,7 +260,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
                 {
                     if(fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
-                        ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + getTarget()), true); //TODO translate
+                        ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + getTarget() + " " + Math.floor(getTarget().getDistance(xi(), yi(), zi())) + "m"), true); //TODO translate
                     }
                 }
             }
