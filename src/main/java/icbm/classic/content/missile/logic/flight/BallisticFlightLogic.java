@@ -74,6 +74,8 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     private boolean flightUpAlways = false;
 
+    private int ticksFlight = 0;
+
     public BallisticFlightLogic(int lockHeight) {
         this.lockHeight = lockHeight;
     }
@@ -197,11 +199,19 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     protected void runFlightLogic(Entity entity, int ticksInAir)
     {
+        ticksFlight++;
+
         if (!entity.world.isRemote)
         {
             // Apply gravity
             if(!flightUpAlways) {
                 entity.motionY -= this.acceleration;
+            }
+
+            // Cut off x-z motion to prevent missing target
+            if(Math.abs(entity.posX - endX) <= 0.1f && Math.abs(entity.posZ - endZ) <= 0.1f) {
+                entity.motionX = 0;
+                entity.motionZ = 0;
             }
 
             // Update animate rotations
@@ -363,6 +373,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         /* */.nodeInteger("engine_warm_up", (bl) -> bl.padWarmUpTimer, (bl, data) -> bl.padWarmUpTimer = data)
         /* */.nodeDouble("climb_height", (bl) -> bl.climbHeight, (bl, data) -> bl.climbHeight = data)
         /* */.nodeDouble("lock_height", (bl) -> bl.lockHeight, (bl, i) -> bl.lockHeight = i)
+        /* */.nodeInteger("flight", (bl) -> bl.ticksFlight, (bl, i) -> bl.ticksFlight = i)
         .base();
 
 }
