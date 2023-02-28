@@ -182,7 +182,7 @@ public final class RadarRegistry
             if (RADAR_MAPS.containsKey(dim))
             {
                 RadarMap map = getRadarMapForDim(dim);
-                if (map.chunk_to_entities.isEmpty())
+                if (map.isEmpty())
                 {
                     RADAR_MAPS.remove(dim);
                 }

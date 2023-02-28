@@ -57,8 +57,13 @@ public class MissileTrackerWorld extends WorldSavedData
      */
     void simulateMissile(EntityExplosiveMissile missile)
     {
-        if(ConfigDebug.DEBUG_MISSILE_TRACKER)
-            ICBMClassic.logger().info("MissileTracker[" + missile.world.provider.getDimension() + "]: Simulating missile");
+        if(ConfigDebug.DEBUG_MISSILE_TRACKER) {
+            final String formatted = String.format("MissileTracker[%s]: Simulating missile: %s",
+                missile.world.provider.getDimension(),
+                missile
+            );
+            ICBMClassic.logger().info(formatted);
+        }
 
         //Only run on server
         if (!missile.world.isRemote && missile.getMissileCapability().getTargetData()  != null)
