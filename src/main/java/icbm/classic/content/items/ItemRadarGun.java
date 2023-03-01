@@ -112,41 +112,8 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
             player.inventoryContainer.detectAndSendChanges();
             return EnumActionResult.SUCCESS;
         }
-        else
-        {
-            Location storedLocation = getLocation(stack);
-
-
-            if (ICBMClassicHelpers.isLauncher(tile, facing))
-            {
-                if(storedLocation == null)
-                {
-                    LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.null.name");
-                    return EnumActionResult.SUCCESS;
-                }
-                else if (!storedLocation.isAboveBedrock())
-                {
-                    LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.name");
-                    return EnumActionResult.SUCCESS;
-                }
-                else if(storedLocation.world != world)
-                {
-                    LanguageUtility.addChatToPlayer(player, "gps.error.pos.invalid.world.name");
-                    return EnumActionResult.SUCCESS;
-                }
-                else
-                {
-                    final IMissileLauncher launcher = ICBMClassicHelpers.getLauncher(tile, facing);
-                    if (launcher != null)
-                    {
-                        launcher.setTarget(storedLocation.x(), storedLocation.y(), storedLocation.z());
-                        LanguageUtility.addChatToPlayer(player, "gps.data.transferred.name");
-                        return EnumActionResult.SUCCESS;
-                    }
-                }
-            }
-            else if(trace(pos, player)) // otherwise, save the currently clicked block as a location if the trace event has not been canceled
-                return EnumActionResult.SUCCESS;
+        else if(trace(pos, player)) {
+            return EnumActionResult.SUCCESS;
         }
         return EnumActionResult.PASS;
     }
