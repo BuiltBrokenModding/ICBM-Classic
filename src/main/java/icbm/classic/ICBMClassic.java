@@ -39,6 +39,7 @@ import icbm.classic.datafix.*;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.capability.launcher.CapabilityMissileLauncher;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
@@ -240,6 +241,7 @@ public class ICBMClassic
         CapabilityBlastVelocity.register();
         CapabilityMissileHolder.register();
         CapabilityMissileStack.register();
+        CapabilityMissileLauncher.register();
     }
 
     void handleMissileTargetRegistry()

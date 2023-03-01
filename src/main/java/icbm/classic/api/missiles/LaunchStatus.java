@@ -12,6 +12,8 @@ public enum LaunchStatus
     CAN_LAUNCH(false),
 
     //Error codes
+    /** Launcher is invalid */
+    ERROR_INVALID(true),
     /** Min range safety was triggered */
     ERROR_MIN_RANGE(true),
     /** Max range safety was triggered */

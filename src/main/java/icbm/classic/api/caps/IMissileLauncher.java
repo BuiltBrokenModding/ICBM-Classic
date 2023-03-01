@@ -2,61 +2,25 @@ package icbm.classic.api.caps;
 
 import icbm.classic.api.missiles.LaunchStatus;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Capability for accessing data about a launcher
- * Created by Dark(DarkGuardsman, Robert) on 1/9/19.
+ *
+ * Created by Dark(DarkGuardsman, Robin) on 1/9/19.
  */
 public interface IMissileLauncher
 {
 
     /**
-     * Wrapper to the missile holder
-     *
-     * @return
-     */
-    @Nonnull
-    IMissileHolder getMissileHolder();
-
-    /**
      * Tries to launch the missile
      *
-     * @param cause - entity that triggered the launch, can't always be accessed
+     * @param target to load into missile
+     * @param cause to note, optional
+     * @param simulate to do pre-flight checks and get current status
      * @return status of launch
      */
-    LaunchStatus launchMissile(@Nullable Entity cause); //TODO add object for trigger reason to wrapper more data
-
-    /**
-     * Status of the launcher
-     *
-     * @return
-     */
-    LaunchStatus getLauncherStatus();
-
-    /**
-     * Sets the target of the launcher
-     *
-     * @param x
-     * @param y
-     * @param z
-     */
-    void setTarget(double x, double y, double z);
-
-    /**
-     * Gets the target of the launcher as a block pos
-     *
-     * @return
-     */
-    @Nullable
-    BlockPos getTarget();
-
-    double getTargetX();
-
-    double getTargetY();
-
-    double getTargetZ();
+    LaunchStatus launch(Vec3d target, @Nullable Entity cause, boolean simulate); //TODO add object for trigger reason to wrapper more data
 }
