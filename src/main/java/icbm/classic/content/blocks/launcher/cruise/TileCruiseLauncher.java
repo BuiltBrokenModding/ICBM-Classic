@@ -60,6 +60,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     private static final int REDSTONE_CHECK_RATE = 40;
     private static final double ROTATION_SPEED = 10.0;
 
+    private static final double MISSILE__HOLDER_Y = 2.0;
+
     /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0); //TODO change UI to only have yaw and pitch, drop xyz but still allow tools to auto fill from xyz
 
@@ -153,7 +155,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         if (getTarget() != null && !getTarget().isZero())
         {
             Pos aimPoint = getTarget();
-            Pos center = new Pos((IPos3D) this).add(0.5);
+            Pos center = new Pos((IPos3D) this).add(0.5, MISSILE__HOLDER_Y, 0.5);
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
             aim.setYaw(EulerAngle.clampPos360(aim.yaw()));
         }
@@ -299,19 +301,19 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     protected boolean canSpawnMissileWithNoCollision()
     {
         //Make sure there is noting above us to hit when spawning the missile
-        for (int x = -1; x < 2; x++)
-        {
-            for (int z = -1; z < 2; z++)
-            {
-                BlockPos pos = getPos().add(x, 1, z);
-                IBlockState state = world.getBlockState(pos);
-                Block block = state.getBlock();
-                if (!block.isAir(state, world, pos))
-                {
-                    return false;
-                }
-            }
-        }
+        // TODO use raytrace to detect collision so we can fire out of holes
+         for (int y = 1; y <= 2; y++) {
+             for (int x = -1; x < 2; x++) {
+                 for (int z = -1; z < 2; z++) {
+                     final BlockPos pos = getPos().add(x, y, z);
+                     final IBlockState state = world.getBlockState(pos);
+                     Block block = state.getBlock();
+                     if (!block.isAir(state, world, pos)) {
+                         return false;
+                     }
+                 }
+             }
+         }
         return true;
     }
 
@@ -336,7 +338,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                     if(entity instanceof IMissileAiming) {
 
                         //Aim missile
-                        ((IMissileAiming) entity).initAimingPosition(xi() + 0.5, yi() + 1.5, zi() + 0.5,
+                        ((IMissileAiming) entity).initAimingPosition(xi() + 0.5, yi() + MISSILE__HOLDER_Y, zi() + 0.5,
                             -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
 
                         //Setup missile
@@ -416,12 +418,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        //Run before screen check to prevent looping
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && (facing == EnumFacing.DOWN || facing == null) || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
-        {
-            return true;
-        }
-        return super.hasCapability(capability, facing);
+        return super.hasCapability(capability, facing)
+            || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+            || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY;
     }
 
     @Override

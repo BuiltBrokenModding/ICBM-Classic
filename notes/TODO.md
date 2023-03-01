@@ -28,7 +28,7 @@ Render cable coming from frame to missile. Recycle rope render from minecraft an
 - ~~Silo (Connector)~~ -> goes under frame as a full block to provide wire connections to silo pad
 - ~~Silo Frame~~
 - ~~Silo Screen~~
-- Cruise Launcher -> static model, with upper animated model
+- ~~Cruise Launcher~~ -> static model, with upper animated model
 - Radar Controller -> static model no animation
 - EMP Tower -> static model with two state (charged, discharged) with charged having an animated electric creeper like texture
 
@@ -232,3 +232,8 @@ Basically mimic ICBM 2's system
 - [ ] Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - [ ] Balance recipes for IC2
 - [ ] Migrate BombCart to capability and have it store ItemStack used to place
+
+# Random ideas
+
+- Fishy Missile (Torpedo) -> 2 block long missile that moves through water like a fish
+- Torp launchers -> for the above to deal better with water builds
