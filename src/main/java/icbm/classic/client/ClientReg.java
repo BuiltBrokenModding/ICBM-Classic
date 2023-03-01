@@ -93,8 +93,6 @@ public class ClientReg
         newBlockModel(BlockReg.blockConcrete, 1, "inventory", "_compact");
         newBlockModel(BlockReg.blockConcrete, 2, "inventory", "_reinforced");
 
-        newBlockModel(BlockReg.blockCruiseLauncher, 0, "inventory", "");
-
         //Explosives
         registerExBlockRenders();
         registerGrenadeRenders();
@@ -108,6 +106,7 @@ public class ClientReg
         newBlockModel(BlockReg.blockLaunchScreen, 0, "inventory", "");
         newBlockModel(BlockReg.blockLaunchSupport, 0, "inventory", "");
         newBlockModel(BlockReg.blockLaunchConnector, 0, "inventory", "");
+        newBlockModel(BlockReg.blockCruiseLauncher, 0, "inventory", "");
 
         //items
         newItemModel(ItemReg.itemPoisonPowder, 0, "inventory", "");

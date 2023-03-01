@@ -9,6 +9,7 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEnchantmentTable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -52,7 +53,7 @@ public class BlockCruiseLauncher extends BlockICBM
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+        return EnumBlockRenderType.MODEL;
     }
 
     @Override
