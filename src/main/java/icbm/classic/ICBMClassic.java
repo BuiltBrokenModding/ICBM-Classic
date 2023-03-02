@@ -13,6 +13,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
+import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.entity.CapabilityMissile;
@@ -277,6 +278,7 @@ public class ICBMClassic
         // Register defaults
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(EntityCause.REG_NAME, EntityCause::new);
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(BlockCause.REG_NAME, BlockCause::new);
+        ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(BlockScreenCause.REG_NAME, BlockScreenCause::new);
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileCauseRegistryEvent(ICBMClassicAPI.MISSILE_CAUSE_REGISTRY));

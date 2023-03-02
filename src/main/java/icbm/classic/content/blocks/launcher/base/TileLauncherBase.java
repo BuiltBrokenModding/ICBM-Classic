@@ -48,7 +48,7 @@ import java.util.Optional;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent
+public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent //TODO move to cap
 {
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
 
@@ -57,7 +57,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
      */
     public EntityPlayerSeat seat;
 
-    private boolean checkMissileCollision = true;
+    protected boolean checkMissileCollision = true;
     private boolean hasMissileCollision = false;
 
     private final LauncherInventory inventory = new LauncherInventory(this);
@@ -68,9 +68,9 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public ItemStack cachedMissileStack;
 
     public final IMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
-    public final IMissileLauncher missileLauncher = null; //TODO implement, screen will now only set data instead of being the launcher
+    public final IMissileLauncher missileLauncher = new LauncherCapability(this);
 
-    private final LauncherNode launcherNode = new LauncherNode(this);
+    private final LauncherNode launcherNode = new LauncherNode(this, true);
 
     @Override
     public void onLoad()
@@ -129,6 +129,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     {
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
+            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
             || super.hasCapability(capability, facing);
     }
 
@@ -142,6 +143,9 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return (T) missileHolder;
+        }
+        else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
+            return (T) missileLauncher;
         }
         return super.getCapability(capability, facing);
     }
@@ -167,13 +171,13 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         return new TextComponentTranslation("gui.launcherBase.name");
     }
 
-    protected Vec3d applyInaccuracy(BlockPos target, int launcherCount)
+    protected Vec3d applyInaccuracy(Vec3d target, int launcherCount)
     {
         // Apply inaccuracy
         double inaccuracy = ConfigLauncher.MIN_INACCURACY;
 
         // Add inaccuracy based on range
-        double distance = getDistanceSq(target.getX(), target.getY(), target.getZ());
+        double distance = getDistanceSq(target.x, target.y, target.z);
         double scale = distance / ConfigLauncher.RANGE;
         inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY;
 
@@ -189,106 +193,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         angle.setYaw(getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
 
         //Apply inaccuracy to target position and return
-        return new Vec3d((target.getX() + 0.5) + angle.x() * inaccuracy, 0, (target.getZ() + 0.5) + angle.z() * inaccuracy);
-    }
-
-    /**
-     * Launches the missile
-     *
-     * @param targetPos     - The target in which the missile will land in
-     * @param lockHeight - height to wait before curving the missile
-     */
-    public boolean launchMissile(BlockPos targetPos, int lockHeight, int launcherCount)
-    {
-        //Allow canceling missile launches
-        if (MinecraftForge.EVENT_BUS.post(new LauncherEvent.PreLaunch(missileLauncher, missileHolder)))
-        {
-            return false;
-        }
-
-        final ItemStack stack = getMissileStack();
-        if (stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null))
-        {
-            final ICapabilityMissileStack missileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-
-            if (missileStack != null)
-            {
-                final Vec3d target = applyInaccuracy(targetPos, launcherCount);
-
-                //TODO add distance check? --- something seems to be missing
-
-                if (isServer())
-                {
-                    final IMissile missile = missileStack.newMissile(world());
-                    final Entity entity = missile.getMissileEntity();
-
-                    final double xOffset = 0.5f;
-                    final double yOffset = 3.1f;
-                    final double zOffset = 0.5f;
-
-                    // TODO raytrace to make sure we don't teleport through the ground
-                    // raytrace for missile spawn area
-                    // raytrace to check for blockage in silo path... players will be happy about this
-                    entity.setPosition(xi() + xOffset, yi() + yOffset , zi() + zOffset);  //TODO store offset as variable, sync with missile height
-
-                    //Trigger launch event
-                    missile.setTargetData(new BallisticTargetingData(target, 1));
-                    missile.setFlightLogic(new BallisticFlightLogic(lockHeight));
-                    missile.setMissileSource( new MissileSource(world, entity.getPositionVector(), new BlockCause(getPos(), getBlockState()))); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
-                    missile.launch();
-
-                    //Spawn entity
-                    ((WorldServer) getWorld()).addScheduledTask(() -> getWorld().spawnEntity(entity));
-
-                    //Grab rider
-                    if (seat != null && !seat.getPassengers().isEmpty()) //TODO add hook to disable riding some missiles
-                    {
-                        final List<Entity> riders = seat.getPassengers();
-                        riders.forEach(r -> {
-                            entity.dismountRidingEntity();
-                            r.startRiding(entity);
-                        });
-                    }
-
-                    //Remove item
-                    inventory.extractItem(0, 1, false);
-                    checkMissileCollision = true;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Checks if the missile target is in range
-    public boolean isInRange(BlockPos target)
-    {
-        if (target != null)
-        {
-            return !isTargetTooFar(target) && !isTargetTooClose(target);
-        }
-        return false;
-    }
-
-    /**
-     * Checks to see if the target is too close.
-     *
-     * @param target
-     * @return
-     */
-    public boolean isTargetTooClose(BlockPos target)
-    {
-        final int minDistance = 10;
-        final int deltaX = Math.abs(target.getX() - getPos().getX());
-        final int deltaZ = Math.abs(target.getZ() - getPos().getZ());
-        return deltaX < minDistance || deltaZ < minDistance;
-    }
-
-    public boolean isTargetTooFar(BlockPos target)
-    {
-        final int deltaX = Math.abs(target.getX() - getPos().getX());
-        final int deltaZ = Math.abs(target.getZ() - getPos().getZ());
-        return deltaX > ConfigLauncher.RANGE || deltaZ > ConfigLauncher.RANGE;
+        return new Vec3d(target.x + angle.x() * inaccuracy, 0, target.z + angle.z() * inaccuracy);
     }
 
     /**

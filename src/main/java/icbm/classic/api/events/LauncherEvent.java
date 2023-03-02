@@ -2,6 +2,11 @@ package icbm.classic.api.events;
 
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.launcher.IMissileLauncherStatus;
+import icbm.classic.api.missiles.cause.IMissileSource;
+import icbm.classic.api.missiles.parts.IMissileTarget;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
@@ -10,11 +15,16 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  */
 public abstract class LauncherEvent extends Event
 {
+    /** Starting point of the missile */
+    public final IMissileSource source;
+    /** Launcher capability, can be used to relaunch missile with edits */
     public final IMissileLauncher launcher;
+    /** Missile inventory */
     public final IMissileHolder holder;
 
-    public LauncherEvent(IMissileLauncher launcher, IMissileHolder holder)
+    public LauncherEvent(IMissileSource source, IMissileLauncher launcher, IMissileHolder holder)
     {
+        this.source = source;
         this.launcher = launcher;
         this.holder = holder;
     }
@@ -29,9 +39,20 @@ public abstract class LauncherEvent extends Event
     @Cancelable
     public static class PreLaunch extends LauncherEvent
     {
-        public PreLaunch(IMissileLauncher launcher, IMissileHolder holder)
+        /** Target of launcher, doesn't account for offsets or inaccuracy */
+        public final IMissileTarget target;
+
+        /** True if launch was simulated */
+        public final boolean simulate;
+
+        /** Optional reason for event being canceled, defaults to 'launcher.status.icbmclassic:message.canceled' */
+        public IMissileLauncherStatus cancelReason;
+
+        public PreLaunch(IMissileSource source, IMissileLauncher launcher, IMissileHolder holder, IMissileTarget target, boolean simulate)
         {
-            super(launcher, holder);
+            super(source, launcher, holder);
+            this.target = target;
+            this.simulate = simulate;
         }
     }
 }

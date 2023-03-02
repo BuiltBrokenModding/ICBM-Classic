@@ -2,21 +2,23 @@ package icbm.classic.lib.capability.launcher;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IMissileHolder;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nullable;
 
 public class CapabilityMissileHolder implements IMissileHolder
 {
-    private final IItemHandler inventory;
+    private final IItemHandlerModifiable inventory;
     private final int slot;
 
-    public CapabilityMissileHolder(IItemHandler inventory, int slot)
+    public CapabilityMissileHolder(IItemHandlerModifiable inventory, int slot)
     {
         this.inventory = inventory;
         this.slot = slot;
@@ -35,6 +37,18 @@ public class CapabilityMissileHolder implements IMissileHolder
             return inventory.insertItem(slot, stack, simulate);
         }
         return null;
+    }
+
+    @Override
+    public boolean consumeMissile() {
+        if(hasMissile()) {
+            final ICapabilityMissileStack missileStack = getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+            if(missileStack != null) {
+                inventory.setStackInSlot(slot, missileStack.consumeMissile());
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.network;
 
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.api.launcher.IMissileLauncher;
 import lombok.Data;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -17,8 +17,22 @@ public class LauncherNode {
 
     private final TileEntity self;
 
-    public LauncherNode(TileEntity self) {
+    /**
+     * True to allow external tiles to insert items into this tile using the network.
+     * Do not allow insertion into the network and accepting of items in the same tile.
+     * Other wise it will infinite loop
+     * */
+    private final boolean acceptsItems;
+
+    /**
+     * Creates a new node in the network
+     *
+     * @param self hosting the node
+     * @param acceptsItems to enable network to feed this tile items. If enabled this tile shouldn't dump back to the network.
+     */
+    public LauncherNode(TileEntity self, boolean acceptsItems) {
         this.self = self;
+        this.acceptsItems = acceptsItems;
     }
 
     /**
@@ -70,7 +84,7 @@ public class LauncherNode {
         }
     }
 
-    public List<TileLauncherBase> getLaunchers() {
+    public List<IMissileLauncher> getLaunchers() {
         return Optional.ofNullable(getNetwork()).map(LauncherNetwork::getLaunchers).orElse(Collections.EMPTY_LIST);
     }
 

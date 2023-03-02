@@ -11,20 +11,38 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 /**
  * General purpose block cause
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
 @NoArgsConstructor
 public class BlockCause extends MissileCause implements IMissileCause.IBlockCause {
 
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block");
 
+    private World world;
     private BlockPos blockPos;
     private IBlockState blockState;
+
+    private int worldId;
+
+    public BlockCause(World world, BlockPos pos, IBlockState state) {
+        this.world = world;
+        this.worldId = world.provider.getDimension();
+        this.blockPos = pos;
+        this.blockState = state;
+    }
+
+    public World getWorld() {
+        if(world == null) {
+            world = DimensionManager.getWorld(worldId);
+        }
+        return world;
+    }
 
     @Override
     public ResourceLocation getRegistryName() {
@@ -44,6 +62,7 @@ public class BlockCause extends MissileCause implements IMissileCause.IBlockCaus
 
     private static final NbtSaveHandler<BlockCause> SAVE_LOGIC = new NbtSaveHandler<BlockCause>()
         .mainRoot()
+        /* */.nodeInteger("level", BlockCause::getWorldId, BlockCause::setWorldId)
         /* */.nodeBlockPos("pos", BlockCause::getBlockPos, BlockCause::setBlockPos)
         /* */.nodeBlockState("state", BlockCause::getBlockState, BlockCause::setBlockState)
         .base();

@@ -1,5 +1,7 @@
 package icbm.classic.content.blocks.launcher.network;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import lombok.Getter;
 import net.minecraft.util.EnumFacing;
@@ -16,10 +18,11 @@ import java.util.List;
 
 public class LauncherNetwork implements ICapabilityProvider {
 
+    @Getter
     private final HashSet<LauncherNode> components = new HashSet<LauncherNode>();
 
     @Getter
-    private final List<TileLauncherBase> launchers = new LinkedList(); // TODO move launcher to cap interface
+    private final List<IMissileLauncher> launchers = new LinkedList(); // TODO move launcher to cap interface
 
     public final NetworkEnergyStorage energyStorage = new NetworkEnergyStorage(this);
     public final NetworkInventory inventory = new NetworkInventory(this);
@@ -57,9 +60,12 @@ public class LauncherNetwork implements ICapabilityProvider {
             node.setNetwork(this);
 
             // Adding if launcher
-            if (node.getSelf() instanceof TileLauncherBase) {
-                launchers.add((TileLauncherBase) node.getSelf());
-                onNetworkUpdated();
+            if (node.getSelf().hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null)) {
+                final IMissileLauncher launcher = node.getSelf().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null);
+                if(launcher != null) {
+                    launchers.add(launcher);
+                    onNetworkUpdated();
+                }
             }
         }
     }

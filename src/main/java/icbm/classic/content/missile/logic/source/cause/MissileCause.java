@@ -11,6 +11,11 @@ public abstract class MissileCause implements IMissileCause {
 
     private IMissileCause parent;
 
+    public IMissileCause setPreviousCause(IMissileCause parent) {
+        this.parent = parent;
+        return this;
+    }
+
     @Override
     public IMissileCause getPreviousCause() {
         return parent;

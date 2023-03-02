@@ -1,10 +1,11 @@
 package icbm.classic.content.blocks.launcher.network;
 
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.api.ICBMClassicAPI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -22,15 +23,15 @@ public class NetworkInventory implements IItemHandler {
     public void buildInventory() {
         slots.clear();
 
-        for(TileLauncherBase launcher : network.getLaunchers()) {
-            final IItemHandler handler = getHandler(launcher);
+        network.getComponents().stream().filter(LauncherNode::isAcceptsItems).forEach((node) -> {
+            final IItemHandler handler = getHandler(node.getSelf());
             if(handler != null) {
                 final int slotCount = handler.getSlots();
                 for(int i = 0; i < slotCount; i++) {
                     slots.add(new SlotHolder(handler, i));
                 }
             }
-        }
+        });
     }
 
     @Override
@@ -38,9 +39,9 @@ public class NetworkInventory implements IItemHandler {
         return slots.size();
     }
 
-    private IItemHandler getHandler(TileLauncherBase launcher) {
-        if(launcher.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-            final IItemHandler handler = launcher.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    private IItemHandler getHandler(TileEntity tile) {
+        if(tile.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null) && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+            final IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             if(handler != null) {
                 return handler;
             }

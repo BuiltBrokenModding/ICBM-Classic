@@ -2,12 +2,14 @@ package icbm.classic.content.blocks.launcher.screen;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.events.LauncherSetTargetEvent;
+import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.launcher.IMissileLauncherStatus;
 import icbm.classic.api.tile.IRadioWaveReceiver;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -59,7 +61,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public int clientEnergyStored = 0;
     public int clientEnergyCapacity = 0;
 
-    private final LauncherNode launcherNode = new LauncherNode(this);
+    private final LauncherNode launcherNode = new LauncherNode(this, false);
 
     @Override
     public LauncherNode getNetworkNode() {
@@ -146,29 +148,22 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         return true;
     }
 
-    // Checks if the missile is launchable
-    public boolean canLaunch(TileLauncherBase launcher)
-    {
-        return launcher != null
-            && launcher.getMissileStack() != null
-            && launcher.checkExtract()
-            && launcher.isInRange(this.getTarget());
-    }
-
     /**
      * Calls the missile launcher base to launch it's missile towards a targeted location
      * @return true if launched, false if not
      */
-    public boolean launch(TileLauncherBase launcher, int launcherCount)
+    public IMissileLauncherStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
     {
-        return this.canLaunch(launcher) && launcher.launchMissile(this.getTarget(), this.lockHeight, launcherCount); //TODO move lockHeight to launchPad
+        final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount, lockHeight);
+        return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
     }
 
     public boolean fireAllLaunchers() {
         // TODO add chain fire delay settings to screen
         boolean hasFired = false;
-        for(TileLauncherBase launcher : getLaunchers()) {
-            if(launch(launcher, getLaunchers().size())) {
+        for(IMissileLauncher launcher : getLaunchers()) {
+            final IMissileLauncherStatus status = launch(launcher, getLaunchers().size(), false); // TODO output status to users
+            if(!status.isError()) {
                 hasFired = true;
             }
         }
@@ -191,25 +186,10 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
             {
                 return LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
             }
-            else if (!launcher.checkExtract())
-            {
-                return LanguageUtility.getLocal("gui.launcherscreen.statusNoPower");
-            }
-            else if (launcher.getMissileStack().isEmpty())
-            {
-                return LanguageUtility.getLocal("gui.launcherscreen.statusEmpty");
-            }
-            else if (this.getTarget() == null)
-            {
-                return LanguageUtility.getLocal("gui.launcherscreen.statusInvalid");
-            }
-            else if (launcher.isTargetTooClose(this.getTarget()))
-            {
-                return LanguageUtility.getLocal("gui.launcherscreen.statusClose");
-            }
-            else if (launcher.isTargetTooFar(this.getTarget()))
-            {
-                return LanguageUtility.getLocal("gui.launcherscreen.statusFar");
+
+            final IMissileLauncherStatus status = launch(launcher, getNetworkNode().getLaunchers().size(), true);
+            if(status.isError()) {
+                return status.message();
             }
             return "";
         }).filter(s -> !s.isEmpty()).findFirst().orElse(LanguageUtility.getLocal("gui.launcherscreen.statusReady"));

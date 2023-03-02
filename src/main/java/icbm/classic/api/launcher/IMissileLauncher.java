@@ -2,7 +2,6 @@ package icbm.classic.api.launcher;
 
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import net.minecraft.entity.Entity;
 
 import javax.annotation.Nullable;
 

@@ -19,22 +19,8 @@ import net.minecraft.world.World;
 public final class MissileSource implements IMissileSource {
 
     private World world;
-    private Vec3d pos;
+    private Vec3d position;
     private IMissileCause cause;
-
-    public void setCause(IMissileCause cause) {
-        this.cause = cause;
-    }
-
-    @Override
-    public IMissileCause getCause() {
-        return cause;
-    }
-
-    @Override
-    public Vec3d getFiredPosition() {
-        return pos;
-    }
 
     @Override
     public NBTTagCompound serializeNBT() {
@@ -74,7 +60,7 @@ public final class MissileSource implements IMissileSource {
     private static final NbtSaveHandler<MissileSource> SAVE_LOGIC = new NbtSaveHandler<MissileSource>()
         .mainRoot()
         /* */.nodeWorldDim("dimension", MissileSource::getWorld, MissileSource::setWorld)
-        /* */.nodeVec3d("pos", MissileSource::getFiredPosition, MissileSource::setPos)
+        /* */.nodeVec3d("pos", MissileSource::getPosition, MissileSource::setPosition)
         /* */.node(CAUSE_SAVE)
         .base();
 }

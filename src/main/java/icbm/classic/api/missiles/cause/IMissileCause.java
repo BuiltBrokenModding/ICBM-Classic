@@ -4,6 +4,7 @@ import icbm.classic.api.missiles.parts.IMissilePart;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * Cause of a missile launch event. Stored as part of {@link IMissileSource}
@@ -35,6 +36,13 @@ public interface IMissileCause extends IMissilePart {
     IMissileCause getPreviousCause();
 
     /**
+     * Sets the missile cause
+     * @param parent to use
+     * @return self
+     */
+    IMissileCause setPreviousCause(IMissileCause parent);
+
+    /**
      * Cause containing entity information
      */
     interface IEntityCause extends IMissileCause {
@@ -45,6 +53,7 @@ public interface IMissileCause extends IMissilePart {
      * Cause containing block information
      */
     interface IBlockCause extends IMissileCause {
+        World getWorld();
         BlockPos getBlockPos();
         IBlockState getBlockState();
     }

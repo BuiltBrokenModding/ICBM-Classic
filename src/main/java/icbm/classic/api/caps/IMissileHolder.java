@@ -47,6 +47,13 @@ public interface IMissileHolder
     ItemStack insertMissileStack(ItemStack stack, boolean simulate);
 
     /**
+     * Called to consume the missile stack.
+     *
+     * @return true if missile was consumed
+     */
+    boolean consumeMissile();
+
+    /**
      * Is the missile supported by the holder.
      *
      * @param stack - stack

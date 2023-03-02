@@ -1,9 +1,6 @@
 package icbm.classic.api.missiles.cause;
 
-import icbm.classic.api.missiles.cause.IMissileCause;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -42,5 +39,5 @@ public interface IMissileSource extends INBTSerializable<NBTTagCompound>
      *
      * @retur position
      */
-    Vec3d getFiredPosition();
+    Vec3d getPosition();
 }

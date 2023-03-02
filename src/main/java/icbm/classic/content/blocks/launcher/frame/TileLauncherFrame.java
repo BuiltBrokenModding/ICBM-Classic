@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class TileLauncherFrame extends TileEntity implements ILauncherComponent {
 
-    private final LauncherNode launcherNode = new LauncherNode(this);
+    private final LauncherNode launcherNode = new LauncherNode(this, false);
 
     @Override
     public void onLoad()
