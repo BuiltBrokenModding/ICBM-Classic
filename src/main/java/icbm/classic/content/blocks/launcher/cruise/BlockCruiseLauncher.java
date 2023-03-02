@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.items.ItemLaserDetonator;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.lib.transform.vector.Pos;
@@ -22,6 +23,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -37,6 +39,12 @@ public class BlockCruiseLauncher extends BlockICBM
         super("cruiseLauncher");
         this.blockHardness = 10f;
         this.blockResistance = 10f;
+    }
+
+    @Override
+    public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side)
+    {
+        return true;
     }
 
     @Override

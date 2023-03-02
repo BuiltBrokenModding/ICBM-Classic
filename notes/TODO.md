@@ -84,7 +84,15 @@ Render cable coming from frame to missile. Recycle rope render from minecraft an
 
 Basically mimic ICBM 2's system
 
-# Next release
+# Current release v5.x.x
+
+- Redstone handling for launchers
+- Lock height to launch pad
+- GUI for launch pad to customize logic
+- Launch delay to launch pad
+- Launch index to launch pad -> used for fire order
+
+# Next release or so
 
 - Add handling for EMP effect on tiles
 - Add fuse disable chance for missiles when EMP hits 
@@ -146,6 +154,7 @@ Basically mimic ICBM 2's system
 - Wire block, 6 side handling with 4 connections per side... old RI wires basically.
 - inaccuracy to cruise launchers (random angle that at short distance is unnoticeable)
 - better status message handling
+- add back blast pressure (pushes entities behind the missile away from the missile, silo this will be horizontal)
 
 # Launcher controllers
 

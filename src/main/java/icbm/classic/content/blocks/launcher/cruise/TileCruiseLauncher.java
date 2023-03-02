@@ -153,7 +153,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         // Check redstone
         if(this.ticks % REDSTONE_CHECK_RATE == 0) {
             for(EnumFacing side : EnumFacing.VALUES) {
-                final int power = world.getStrongPower(getPos().offset(side), side);
+                final int power = world.getRedstonePower(getPos().offset(side), side);
                 if(power > 1) {
                     nextFireCause = new RedstoneCause(world(), getPos(), getBlockState(), side);
                     doLaunchNext = true;
