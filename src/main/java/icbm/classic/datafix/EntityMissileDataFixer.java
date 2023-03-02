@@ -6,12 +6,10 @@ import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.missile.source.MissileSourceEntity;
-import icbm.classic.content.missile.targeting.BallisticTargetingData;
-import icbm.classic.content.missile.targeting.BasicTargetData;
+import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.NBTConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -201,76 +199,36 @@ public class EntityMissileDataFixer implements IFixableData
 
     private void convertMissileSource(NBTTagCompound existingSave, NBTTagCompound missile, int missileType) {
 
-        // Ballistic and cruise missiles
+        // Ballistic
         if(missileType == 0) {
 
             final NBTTagCompound missileSource = new NBTTagCompound();
             missile.setTag("source", missileSource);
 
-            final NBTTagCompound data = new NBTTagCompound();
-            missileSource.setTag("data", data);
-
-            // Set id, old saves would have used missile type for this
-            missileSource.setString("id", MissileSourceBlock.REG_NAME.toString());
-
-            final NBTTagCompound blockPos = new NBTTagCompound();
-            data.setTag("block_pos", blockPos);
+            final NBTTagCompound pos = new NBTTagCompound();
+            missileSource.setTag("pos", pos);
 
             // launcherPos -> compound with x y z
-            blockPos.setInteger("x", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("x")));
-            blockPos.setInteger("y", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("y")));
-            blockPos.setInteger("z", (int)Math.floor(existingSave.getCompoundTag("launcherPos").getDouble("z")));
+            pos.setDouble("x", existingSave.getCompoundTag("launcherPos").getDouble("x"));
+            pos.setDouble("y", existingSave.getCompoundTag("launcherPos").getDouble("y"));
+            pos.setDouble("z", existingSave.getCompoundTag("launcherPos").getDouble("z"));
 
             // old save didn't store source dimension, this might cause odd event messages in the future
         }
-        // Ballistic and cruise missiles
-        else  if(missileType == 1) {
+        // cruise missiles || rpg missile
+        else  if(missileType == 1 || missileType == 2) {
             final NBTTagCompound missileSource = new NBTTagCompound();
             missile.setTag("source", missileSource);
-
-            final NBTTagCompound data = new NBTTagCompound();
-            missileSource.setTag("data", data);
-
-            // Set id, old saves would have used missile type for this
-            missileSource.setString("id", MissileSourceBlock.REG_NAME.toString());
-
-            final NBTTagCompound blockPos = new NBTTagCompound();
-            data.setTag("block_pos", blockPos);
-
-            // launcherPos -> compound with x y z
-            blockPos.setInteger("x", (int)Math.floor(existingSave.getCompoundTag("sourcePos").getDouble("x")));
-            blockPos.setInteger("y", (int)Math.floor(existingSave.getCompoundTag("sourcePos").getDouble("y")));
-            blockPos.setInteger("z", (int)Math.floor(existingSave.getCompoundTag("sourcePos").getDouble("z")));
-
-            // old save didn't store source dimension, this might cause odd event messages in the future
-        }
-        // RPG missiles
-        else if(missileType == 2) {
-
-            // sourcePos -> compound with x y z
-            // Shooter-UUID -> string
-
-            final NBTTagCompound missileSource = new NBTTagCompound();
-            missile.setTag("source", missileSource);
-
-            final NBTTagCompound data = new NBTTagCompound();
-            missileSource.setTag("data", data);
-
-            // Set id, old saves would have used missile type for this
-            missileSource.setString("id", MissileSourceEntity.REG_NAME.toString());
 
             final NBTTagCompound pos = new NBTTagCompound();
-            data.setTag("pos", pos);
+            missileSource.setTag("pos", pos);
 
             // launcherPos -> compound with x y z
             pos.setDouble("x", existingSave.getCompoundTag("sourcePos").getDouble("x"));
             pos.setDouble("y", existingSave.getCompoundTag("sourcePos").getDouble("y"));
             pos.setDouble("z", existingSave.getCompoundTag("sourcePos").getDouble("z"));
 
-            if(existingSave.hasKey("Shooter-UUID", 8)) {
-                final UUID uuid = UUID.fromString(existingSave.getString("Shooter-UUID"));
-                data.setTag("uuid", NBTUtil.createUUIDTag(uuid));
-            }
+            // old save didn't store source dimension, this might cause odd event messages in the future
         }
     }
 

@@ -8,8 +8,8 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.missile.source.EntitySourceData;
-import icbm.classic.content.missile.source.MissileSourceEntity;
+import icbm.classic.content.missile.logic.source.MissileSource;
+import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -72,11 +72,11 @@ public class EntityExplosiveMissileTest extends TestBase
         Assertions.assertTrue(missile.getMissileCapability().canRunFlightLogic());
         Assertions.assertNull(missile.getMissileCapability().getTargetData());
         Assertions.assertEquals(new DeadFlightLogic(135), missile.getMissileCapability().getFlightLogic());
-        final EntitySourceData entitySourceData = new EntitySourceData();
+        final EntityCause entitySourceData = new EntityCause();
         entitySourceData.setName("Player890");
         entitySourceData.setId(new UUID(2454671487114819752L, -8122821596986775482L));
         entitySourceData.setPlayer(true);
-        Assertions.assertEquals(new MissileSourceEntity(world, new Vec3d(59.06195460480209, 75.15145375534576, 257.2760022607643), entitySourceData),
+        Assertions.assertEquals(new MissileSource(world, new Vec3d(59.06195460480209, 75.15145375534576, 257.2760022607643), entitySourceData),
             missile.getMissileCapability().getMissileSource());
 
         // Projectile

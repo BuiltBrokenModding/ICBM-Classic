@@ -2,12 +2,10 @@ package icbm.classic.api.missiles;
 
 
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.api.missiles.cause.IMissileSource;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
 
 /**
  * Capability added to entities to define them as missiles

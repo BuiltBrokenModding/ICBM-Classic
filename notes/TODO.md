@@ -143,6 +143,7 @@ Basically mimic ICBM 2's system
 - ~~Change accuracy to be based on range? Forcing players to move closer to have a better hit chance~~
 - Implement IMissileLauncher capability
 - Move lock height to each launcher using a UI for adjustments
+- Wire block, 6 side handling with 4 connections per side... old RI wires basically.
 
 ## Hand Launcher
 
@@ -160,6 +161,8 @@ Basically mimic ICBM 2's system
 - Do a controlled translation line split for error text (can do this in general as well for better display of text)
 - Improve energy bar render UI
 - Improve energy bar tooltip format (add commas and metric increments to save space k FE, M FE)
+- laser pointer on new model to show aim
+- Sight package on side of launcher
 
 ## Cruise Launcher Model
 

@@ -1,8 +1,7 @@
-package icbm.classic.api.missiles;
+package icbm.classic.api.missiles.parts;
 
+import icbm.classic.api.missiles.IMissile;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 /**
@@ -15,7 +14,7 @@ import net.minecraft.world.World;
  * <p>
  * Created by Robin Seifert on 2/7/2022.
  */
-public interface IMissileFlightLogic
+public interface IMissileFlightLogic extends IMissilePart
 {
     /**
      * Called to set our path data based on start position and target
@@ -65,28 +64,6 @@ public interface IMissileFlightLogic
      * @return return of the builder function
      */
     <V> V predictPosition(final Entity entity, final VecBuilderFunc<V> builder, final int ticks);
-
-    /**
-     * Name used to register the builder for this type in {@link icbm.classic.api.reg.obj.IMissileFlightLogicReg}
-     * @return registry name
-     */
-    ResourceLocation getRegistryName();
-
-    /**
-     * Save callback
-     * @return save data, or null to save nothing
-     */
-    default NBTTagCompound save() {
-        return null;
-    }
-
-    /**
-     * Load callback
-     * @param save data used
-     */
-    default void load(NBTTagCompound save) {
-
-    }
 
     /**
      * Call back to see if the engine effects should run

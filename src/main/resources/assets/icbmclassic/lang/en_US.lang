@@ -362,18 +362,6 @@ gui.misc.missile=Missile[%d, %d]
 gui.misc.object=Object[%d, %d]
 
 gui.tracker.freq=Frequency
-gui.detector.name=Proximity Detector
-gui.detector.all=All
-gui.detector.players=Players
-gui.detector.mobs=Mobs
-gui.detector.range=Detection Range
-gui.detector.min=Min
-gui.detector.max=Max
-gui.detector.exclude=Exclude
-gui.detector.include=Include
-gui.detector.target=Target:
-gui.detector.on=On
-gui.detector.status=Status:
 
 gui.empTower.name=EMP Tower
 gui.empTower.missiles=Missiles

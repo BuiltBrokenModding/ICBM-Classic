@@ -5,20 +5,20 @@ import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
-import icbm.classic.content.missile.source.MissileSourceBlock;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
-import icbm.classic.content.missile.targeting.BallisticTargetingData;
+import icbm.classic.content.missile.logic.source.MissileSource;
+import icbm.classic.content.missile.logic.source.cause.BlockCause;
+import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
-import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.tile.TileMachine;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -221,12 +221,20 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
                 {
                     final IMissile missile = missileStack.newMissile(world());
                     final Entity entity = missile.getMissileEntity();
-                    entity.setPosition(xi() + 0.5, yi() + 3.1, zi() + 0.5);  //TODO store offset as variable, sync with missile height
+
+                    final double xOffset = 0.5f;
+                    final double yOffset = 3.1f;
+                    final double zOffset = 0.5f;
+
+                    // TODO raytrace to make sure we don't teleport through the ground
+                    // raytrace for missile spawn area
+                    // raytrace to check for blockage in silo path... players will be happy about this
+                    entity.setPosition(xi() + xOffset, yi() + yOffset , zi() + zOffset);  //TODO store offset as variable, sync with missile height
 
                     //Trigger launch event
                     missile.setTargetData(new BallisticTargetingData(target, 1));
                     missile.setFlightLogic(new BallisticFlightLogic(lockHeight));
-                    missile.setMissileSource( new MissileSourceBlock(world, getPos(), getBlockState(), null)); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
+                    missile.setMissileSource( new MissileSource(world, entity.getPositionVector(), new BlockCause(getPos(), getBlockState()))); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
                     missile.launch();
 
                     //Spawn entity

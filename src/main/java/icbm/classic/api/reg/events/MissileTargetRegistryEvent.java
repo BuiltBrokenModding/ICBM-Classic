@@ -1,6 +1,7 @@
 package icbm.classic.api.reg.events;
 
-import icbm.classic.api.reg.obj.IMissileTargetReg;
+import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.reg.obj.IMissilePartReg;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
@@ -8,9 +9,9 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  */
 public class MissileTargetRegistryEvent extends Event
 {
-    public final IMissileTargetReg registry;
+    public final IMissilePartReg<IMissileTarget> registry;
 
-    public MissileTargetRegistryEvent(IMissileTargetReg registry)
+    public MissileTargetRegistryEvent(IMissilePartReg<IMissileTarget> registry)
     {
         this.registry = registry;
     }

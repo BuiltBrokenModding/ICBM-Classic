@@ -1,7 +1,7 @@
 package icbm.classic.content.missile.logic.flight;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.content.missile.targeting.BasicTargetData;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.*;
 

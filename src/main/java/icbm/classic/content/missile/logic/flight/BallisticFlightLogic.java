@@ -3,17 +3,15 @@ package icbm.classic.content.missile.logic.flight;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.missiles.IMissileFlightLogic;
-import icbm.classic.api.missiles.IMissileTarget;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.entity.EntitySmoke;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -331,13 +329,13 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     }
 
     @Override
-    public NBTTagCompound save()
+    public NBTTagCompound serializeNBT()
     {
         return SAVE_LOGIC.save(this, new NBTTagCompound());
     }
 
     @Override
-    public void load(NBTTagCompound nbt)
+    public void deserializeNBT(NBTTagCompound nbt)
     {
         SAVE_LOGIC.load(this, nbt);
     }

@@ -1,7 +1,10 @@
 package icbm.classic.lib.capability.launcher;
 
-import icbm.classic.api.caps.IMissileLauncher;
-import icbm.classic.api.missiles.LaunchStatus;
+import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.launcher.IMissileLauncherStatus;
+import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
@@ -37,7 +40,7 @@ public class CapabilityMissileLauncher implements IMissileLauncher
     }
 
     @Override
-    public LaunchStatus launch(Vec3d target, @Nullable Entity cause, boolean simulate) {
-        return LaunchStatus.ERROR_INVALID;
+    public IMissileLauncherStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
+        return LauncherStatus.ERROR_GENERIC;
     }
 }

@@ -2,20 +2,20 @@ package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.missiles.*;
 import icbm.classic.api.caps.IMissileHolder;
-import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
+import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.content.IExBlockRegistry;
 import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.api.reg.content.IExMissileRegistry;
-import icbm.classic.api.reg.obj.IMissileFlightLogicReg;
-import icbm.classic.api.reg.obj.IMissileSourceReg;
-import icbm.classic.api.reg.obj.IMissileTargetReg;
+import icbm.classic.api.reg.obj.IMissilePartReg;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -44,12 +44,11 @@ public final class ICBMClassicAPI
     public static IExMinecartRegistry EX_MINECART_REGISTRY;
 
     /** Registry for target data save/load in missiles */
-    public static IMissileTargetReg MISSILE_TARGET_DATA_REGISTRY;
+    public static IMissilePartReg<IMissileTarget> MISSILE_TARGET_DATA_REGISTRY;
     /** Registry for flight logic save/load in missiles */
-    public static IMissileFlightLogicReg MISSILE_FLIGHT_LOGIC_REGISTRY;
-
-    /** Registry for missile source save/load in missiles */
-    public static IMissileSourceReg MISSILE_SOURCE_REGISTRY;
+    public static IMissilePartReg<IMissileFlightLogic> MISSILE_FLIGHT_LOGIC_REGISTRY;
+    /** Registry for missile cause save/load in missiles */
+    public static IMissilePartReg<IMissileCause> MISSILE_CAUSE_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 
@@ -71,7 +70,6 @@ public final class ICBMClassicAPI
     //=========================
     //=== Capabilities ========
     //=========================
-
     @CapabilityInject(IEMPReceiver.class)
     public static Capability<IEMPReceiver> EMP_CAPABILITY = null;
 

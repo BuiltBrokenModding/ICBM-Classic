@@ -4,7 +4,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.events.RadarGunTraceEvent;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.lib.LanguageUtility;

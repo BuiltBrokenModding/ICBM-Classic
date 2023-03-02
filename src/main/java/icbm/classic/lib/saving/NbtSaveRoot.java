@@ -2,7 +2,6 @@ package icbm.classic.lib.saving;
 
 import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.*;
 import net.minecraft.util.EnumFacing;
@@ -10,9 +9,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -168,6 +169,19 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
     {
         return node(new SaveNodeUUID<E>(name, save, load));
+    }
+
+    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> save, BiConsumer<E, C> load, Supplier<C> builder) {
+        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+            (source) -> Optional.ofNullable(save.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
+            (source, data) -> {
+                final C object = builder.get();
+                if(object != null) {
+                    object.deserializeNBT(data);
+                }
+                load.accept(source, object);
+            }
+        ));
     }
 
     /**

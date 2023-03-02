@@ -1,7 +1,7 @@
 package icbm.classic.api.events;
 
 import icbm.classic.api.caps.IMissileHolder;
-import icbm.classic.api.caps.IMissileLauncher;
+import icbm.classic.api.launcher.IMissileLauncher;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 

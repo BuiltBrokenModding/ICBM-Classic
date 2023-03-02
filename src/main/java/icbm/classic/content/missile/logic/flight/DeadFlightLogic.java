@@ -2,7 +2,7 @@ package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.missiles.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -43,7 +43,7 @@ public class DeadFlightLogic implements IMissileFlightLogic
     }
 
     @Override
-    public NBTTagCompound save()
+    public NBTTagCompound serializeNBT()
     {
         final NBTTagCompound tagCompound = new NBTTagCompound();
         tagCompound.setInteger("fuel", fuelTicks);
@@ -51,7 +51,7 @@ public class DeadFlightLogic implements IMissileFlightLogic
     }
 
     @Override
-    public void load(NBTTagCompound save)
+    public void deserializeNBT(NBTTagCompound save)
     {
         if(save.hasKey("fuel")) {
             fuelTicks = save.getInteger("fuel");

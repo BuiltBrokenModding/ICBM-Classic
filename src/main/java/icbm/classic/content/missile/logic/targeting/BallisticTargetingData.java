@@ -1,7 +1,6 @@
-package icbm.classic.content.missile.targeting;
+package icbm.classic.content.missile.logic.targeting;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;

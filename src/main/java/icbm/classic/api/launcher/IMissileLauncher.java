@@ -1,8 +1,8 @@
-package icbm.classic.api.caps;
+package icbm.classic.api.launcher;
 
-import icbm.classic.api.missiles.LaunchStatus;
+import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
@@ -18,9 +18,9 @@ public interface IMissileLauncher
      * Tries to launch the missile
      *
      * @param target to load into missile
-     * @param cause to note, optional
+     * @param cause to note, optional but recommended to create a history of firing reason
      * @param simulate to do pre-flight checks and get current status
      * @return status of launch
      */
-    LaunchStatus launch(Vec3d target, @Nullable Entity cause, boolean simulate); //TODO add object for trigger reason to wrapper more data
+    IMissileLauncherStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate); //TODO add object for trigger reason to wrapper more data
 }

@@ -3,11 +3,12 @@ package icbm.classic.content.missile.entity;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.missiles.IMissileFlightLogic;
-import icbm.classic.api.missiles.IMissileSource;
-import icbm.classic.api.missiles.IMissileTarget;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.missiles.cause.IMissileSource;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigDebug;
+import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -232,7 +233,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                 final IMissileFlightLogic logic = missile.getFlightLogic();
                 if(logic != null)
                 {
-                    final NBTTagCompound logicSave = logic.save();
+                    final NBTTagCompound logicSave = logic.serializeNBT();
                     if (logicSave != null && !logicSave.hasNoTags())
                     {
                         save.setTag("data", logicSave);
@@ -248,7 +249,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                 {
                     if (data.hasKey("data"))
                     {
-                        logic.load(data.getCompoundTag("data"));
+                        logic.deserializeNBT(data.getCompoundTag("data"));
                     }
                     missile.setFlightLogic(logic);
                 }
@@ -260,25 +261,18 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
                 final IMissileSource source = missile.getMissileSource();
                 if(source != null)
                 {
-                    final NBTTagCompound sourceSave = source.save();
-                    if (sourceSave != null && !sourceSave.hasNoTags())
-                    {
-                        save.setTag("data", sourceSave);
-                    }
-                    save.setString("id", source.getRegistryName().toString());
+                    return source.serializeNBT();
                 }
                 return save;
             },
             (missile, data) -> {
-                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
-                final IMissileSource source = ICBMClassicAPI.MISSILE_SOURCE_REGISTRY.build(saveId);
-                if (source != null)
+                final IMissileSource source = new MissileSource();
+                if (data.hasKey("data"))
                 {
-                    if (data.hasKey("data"))
-                    {
-                        source.load(data.getCompoundTag("data"));
-                    }
-                    missile.setMissileSource(source);
+                    source.deserializeNBT(data.getCompoundTag("data"));
+                }
+                else {
+                    source.deserializeNBT(data);
                 }
             }
         ))

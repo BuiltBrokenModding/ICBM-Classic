@@ -3,7 +3,7 @@ package icbm.classic.client;
 import com.builtbroken.jlib.data.vector.IPos3D;
 
 import icbm.classic.CommonProxy;
-import icbm.classic.api.missiles.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleLauncherSmoke;
 import icbm.classic.client.fx.ParticleSmokeICBM;

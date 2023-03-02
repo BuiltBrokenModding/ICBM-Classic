@@ -1,7 +1,7 @@
 package icbm.classic.content.missile.entity.anti;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.missiles.IMissileTarget;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -134,11 +134,6 @@ public class SAMTargetData implements IMissileTarget {
     @Override
     public ResourceLocation getRegistryName() {
         return REG_NAME;
-    }
-
-    @Override
-    public boolean shouldRestoreFromSave() {
-        return false;
     }
 
     @Override

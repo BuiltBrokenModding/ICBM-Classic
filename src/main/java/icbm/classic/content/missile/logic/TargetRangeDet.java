@@ -1,7 +1,7 @@
 package icbm.classic.content.missile.logic;
 
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import icbm.classic.content.missile.targeting.BallisticTargetingData;
+import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import net.minecraft.util.math.Vec3d;
 
 public class TargetRangeDet {

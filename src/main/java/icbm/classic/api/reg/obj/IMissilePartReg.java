@@ -1,27 +1,27 @@
 package icbm.classic.api.reg.obj;
 
-import icbm.classic.api.missiles.IMissileSource;
+import icbm.classic.api.missiles.parts.IMissilePart;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Supplier;
 
-public interface IMissileSourceReg
-{
+public interface IMissilePartReg<Part extends IMissilePart> {
+
     /**
-     * Registers a new factory for loading missile sources from save file
+     * Registers a new factory for loading the part
      *
      * @param name to register with
      * @param builder to create new instances
      *
      * @throws RuntimeException if registry is locked or name is already used
      */
-    void register(ResourceLocation name, Supplier<IMissileSource> builder);
+    void register(ResourceLocation name, Supplier<Part> builder);
 
     /**
-     * Builds a new missile source instance
+     * Builds a new target data instance
      *
      * @param name matching registry
      * @return new instance or null if not registered
      */
-    IMissileSource build(ResourceLocation name);
+    Part build(ResourceLocation name);
 }

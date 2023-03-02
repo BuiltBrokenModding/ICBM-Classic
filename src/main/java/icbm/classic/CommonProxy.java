@@ -1,6 +1,6 @@
 package icbm.classic;
 
-import icbm.classic.api.missiles.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import icbm.classic.prefab.tile.IGuiTile;
