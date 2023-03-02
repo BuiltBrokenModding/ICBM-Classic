@@ -109,6 +109,7 @@ Basically mimic ICBM 2's system
 - Marking Smoke (colored) -> improve marking smoke to customize color
 - Smoke -> Actual smoke cloud, reduce user render distance
 - Egg spawn -> Spawns mobs using existing spawn items
+- Spawn eggs on missiles
 
 # After MC update (likely after radar and launcher rewrites)
 
@@ -132,18 +133,26 @@ Basically mimic ICBM 2's system
 - Fuel for missiles (more visualized max range)
 - Track owner of launcher
 - Track launching method (redstone, remote, etc)
-- Passed tracked data into launcher source for better event handling
+- ~~Passed tracked data into launcher source for better event handling~~
 - Have missile spawn from PRG visually, ensure we raytrace for collisions to perevent shooting through walls
 - Add fuel item (coal + redstone), all missiles default with a little but range in silo will change fuel usage
 - Add fuel tank to silos, will use fuel item to add to level but other mods could add fluid support for automation
 - Make fuel config driven(on/off, fuel usage rate, electricity usage rates)
 - Simulated missiles are not taking with their entities attached
-- Spawn eggs on missiles
 - Mechanic to add entities to missile (leash?)
 - ~~Change accuracy to be based on range? Forcing players to move closer to have a better hit chance~~
 - Implement IMissileLauncher capability
 - Move lock height to each launcher using a UI for adjustments
 - Wire block, 6 side handling with 4 connections per side... old RI wires basically.
+- inaccuracy to cruise launchers (random angle that at short distance is unnoticeable)
+- better status message handling
+
+# Launcher controllers
+
+- CC support as block with proxy
+- OC support as block with proxy
+- redstone controller, takes xyz target and responds to redstone firing all missiles on network
+- silo wireless network controller (ICBM 2 radio system)
 
 ## Hand Launcher
 
@@ -163,6 +172,7 @@ Basically mimic ICBM 2's system
 - Improve energy bar tooltip format (add commas and metric increments to save space k FE, M FE)
 - laser pointer on new model to show aim
 - Sight package on side of launcher
+- Ability to use like launcher pad to fire ballistic missiles
 
 ## Cruise Launcher Model
 

@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.items.ItemLaserDetonator;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.lib.transform.vector.Pos;
@@ -85,15 +86,7 @@ public class BlockCruiseLauncher extends BlockICBM
             {
                 TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
                 ItemStack stack = player.getHeldItem(hand);
-                if (stack.getItem() == Items.REDSTONE)
-                {
-                    if (!launcher.launch()) //canLaunch is called in launch and launch returns false if cannot launch
-                    {
-                        player.sendMessage(new TextComponentTranslation("chat.launcher.failedToFire"));
-                        player.sendMessage(new TextComponentTranslation(launcher.getStatusTranslation()));
-                    }
-                }
-                else if (stack.getItem() instanceof ItemRemoteDetonator)
+                if (stack.getItem() instanceof ItemRemoteDetonator)
                 {
                     ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, launcher.getFrequency());
                     player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.getFrequency())));
@@ -133,14 +126,13 @@ public class BlockCruiseLauncher extends BlockICBM
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos)
+    public void breakBlock(World world, BlockPos pos, IBlockState state)
     {
-        if(!world.isRemote)
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof ILauncherComponent)
         {
-            TileEntity tileEntity = world.getTileEntity(pos);
-
-            if(tileEntity instanceof TileCruiseLauncher && world.isBlockPowered(pos))
-                ((TileCruiseLauncher)tileEntity).launch(); //canLaunch gets called by launch
+            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
+        super.breakBlock(world, pos, state);
     }
 }

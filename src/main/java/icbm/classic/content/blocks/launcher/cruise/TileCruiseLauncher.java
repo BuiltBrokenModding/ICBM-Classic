@@ -5,11 +5,18 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.IMissileAiming;
+import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
+import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.missile.logic.source.cause.BlockCause;
+import icbm.classic.content.missile.logic.source.cause.EntityCause;
+import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.network.IPacket;
@@ -42,7 +49,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile
+public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, ILauncherComponent
 {
     public static final String ERROR_TRANSLATION = "launcher.cruise.error";
     public static final String ERROR_NO_POWER = ERROR_TRANSLATION + ".power";
@@ -60,7 +67,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     private static final int REDSTONE_CHECK_RATE = 40;
     private static final double ROTATION_SPEED = 10.0;
 
-    private static final double MISSILE__HOLDER_Y = 2.0;
+    public static final double MISSILE__HOLDER_Y = 2.0;
 
     /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0); //TODO change UI to only have yaw and pitch, drop xyz but still allow tools to auto fill from xyz
@@ -77,9 +84,24 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
     public final CruiseInventory inventory = new CruiseInventory(this);
-    private final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, CruiseInventory.SLOT_MISSILE);
+    protected final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, CruiseInventory.SLOT_MISSILE);
+    protected final CLauncherCapability launcher = new CLauncherCapability(this);
 
-    private boolean doLaunchNext = false;
+    protected boolean doLaunchNext = false;
+    protected IMissileCause nextFireCause;
+
+    private final LauncherNode launcherNode = new LauncherNode(this, true);
+
+    @Override
+    public void onLoad()
+    {
+        launcherNode.connectToTiles();
+    }
+
+    @Override
+    public LauncherNode getNetworkNode() {
+        return launcherNode;
+    }
 
     /**
      * Gets the translation to use for showing status to the user. Should
@@ -129,14 +151,21 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
 
         // Check redstone
-        if (isServer() && isAimed() && shouldFire())
-        {
-            this.launch();
+        if(this.ticks % REDSTONE_CHECK_RATE == 0) {
+            for(EnumFacing side : EnumFacing.VALUES) {
+                final int power = world.getStrongPower(getPos().offset(side), side);
+                if(power > 1) {
+                    nextFireCause = new RedstoneCause(world(), getPos(), getBlockState(), side);
+                    doLaunchNext = true;
+                }
+            }
         }
-    }
 
-    private boolean shouldFire() {
-        return doLaunchNext || this.ticks % REDSTONE_CHECK_RATE == 0 && this.world.getStrongPower(getPos()) > 0;
+        // Check redstone
+        if (isServer() && isAimed() && doLaunchNext)
+        {
+            launcher.launch(new BasicTargetData(getTarget().toVec3d()), nextFireCause, false);
+        }
     }
 
     @Override
@@ -193,7 +222,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 //launch missile
                 case LAUNCH_PACKET_ID:
                 {
-                    launch();
+                    final EntityCause cause = new EntityCause(player); // TODO note was UI interaction
+                    launcher.launch(new BasicTargetData(getTarget().toVec3d()), cause, false);
                     return true;
                 }
                 case DESCRIPTION_PACKET_ID:
@@ -317,47 +347,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         return true;
     }
 
-    /**
-     * Launches the missile
-     *
-     * @return true if launched, false if not
-     */
-    //@Override
-    public boolean launch()
-    {
-        this.doLaunchNext = false;
-        if (this.canLaunch())
-        {
-            final ItemStack inventoryStack = missileHolder.getMissileStack();
-
-            if(inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
-                final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-                if(capabilityMissileStack != null) {
-                    final IMissile missile = capabilityMissileStack.newMissile(world);
-                    final Entity entity = missile.getMissileEntity();
-                    if(entity instanceof IMissileAiming) {
-
-                        //Aim missile
-                        ((IMissileAiming) entity).initAimingPosition(xi() + 0.5, yi() + MISSILE__HOLDER_Y, zi() + 0.5,
-                            -(float) currentAim.yaw() - 180, -(float) currentAim.pitch(), 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
-
-                        //Setup missile
-                        missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
-                        missile.launch();
-
-                        if(world.spawnEntity(entity)) {
-                            this.extractEnergy();
-                            inventory.setStackInSlot(0, capabilityMissileStack.consumeMissile());
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     // Is the target too close?
     public boolean isTooClose(Pos target)
     {
@@ -420,7 +409,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         return super.hasCapability(capability, facing)
             || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY;
+            || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
+            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY;
     }
 
     @Override
@@ -433,6 +423,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return (T) missileHolder;
+        }
+        else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
+            return (T) launcher;
         }
         return super.getCapability(capability, facing);
     }

@@ -23,6 +23,7 @@ import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import icbm.classic.content.missile.MissilePartRegistry;
+import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
@@ -279,6 +280,7 @@ public class ICBMClassic
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(EntityCause.REG_NAME, EntityCause::new);
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(BlockCause.REG_NAME, BlockCause::new);
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(BlockScreenCause.REG_NAME, BlockScreenCause::new);
+        ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(RedstoneCause.REG_NAME, RedstoneCause::new);
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileCauseRegistryEvent(ICBMClassicAPI.MISSILE_CAUSE_REGISTRY));
