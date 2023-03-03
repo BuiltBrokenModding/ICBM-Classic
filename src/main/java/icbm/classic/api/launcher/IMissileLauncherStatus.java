@@ -19,4 +19,6 @@ public interface IMissileLauncherStatus {
      * @return message
      */
     String message();
+
+    // TODO add a status callback for when 'status=aiming` or 'status=delay'
 }

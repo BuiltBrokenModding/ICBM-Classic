@@ -2,8 +2,8 @@ package icbm.classic.content.items;
 
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.RemoteTriggerEvent;
-import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.radio.messages.LaunchMessage;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,10 +15,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 /**
  * Remotely triggers missile launches on a set frequency, call back ID, and pass key. Will not funciton if any of those
@@ -46,7 +42,10 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         if (!world.isRemote)
         {
             if(!MinecraftForge.EVENT_BUS.post(new RemoteTriggerEvent(world, player, stack))) //event was not canceled
-                RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_LAUNCHER.header);
+            {
+                final String channel = getRadioChannel(stack);
+                RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, null), new LaunchMessage(channel));
+            }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
@@ -57,40 +56,41 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
-    {
-        list.add("Fires missiles remotely");
-        list.add("Right click launcher screen to encode");
-    }
-
     /**
      * Gets the frequency this item broadcasts information on
      *
      * @param stack - this item
      * @return frequency
      */
-    public float getBroadCastHz(ItemStack stack)
+    public String getRadioChannel(ItemStack stack) //TODO move to capability item
     {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBTConstants.HZ))
+        if (stack.getTagCompound() != null)
         {
-            return stack.getTagCompound().getFloat(NBTConstants.HZ);
+            if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
+                return Integer.toString((int)Math.floor(stack.getTagCompound().getFloat(NBTConstants.HZ)));
+            }
+            else if(stack.getTagCompound().hasKey("radio_channel")) {
+                return stack.getTagCompound().getString("radio_channel");
+            }
         }
-        return 0;
+        return RadioRegistry.EMPTY_HZ;
     }
 
     /**
      * Sets the frequency of this item
      *
      * @param stack - this item
-     * @param hz    - value to set
+     * @param channel    - value to set
      */
-    public void setBroadCastHz(ItemStack stack, float hz)
+    public void setRadioChannel(ItemStack stack, String channel)
     {
         if (stack.getTagCompound() == null)
         {
             stack.setTagCompound(new NBTTagCompound());
         }
-        stack.getTagCompound().setFloat(NBTConstants.HZ, hz);
+        if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
+            stack.getTagCompound().removeTag(NBTConstants.HZ);
+        }
+        stack.getTagCompound().setString("radio_channel", channel);
     }
 }

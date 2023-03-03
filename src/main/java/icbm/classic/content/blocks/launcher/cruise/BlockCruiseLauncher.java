@@ -3,18 +3,14 @@ package icbm.classic.content.blocks.launcher.cruise;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
-import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.items.ItemLaserDetonator;
 import icbm.classic.content.items.ItemRemoteDetonator;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.tile.BlockICBM;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEnchantmentTable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -22,7 +18,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -96,13 +91,13 @@ public class BlockCruiseLauncher extends BlockICBM
                 ItemStack stack = player.getHeldItem(hand);
                 if (stack.getItem() instanceof ItemRemoteDetonator)
                 {
-                    ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, launcher.getFrequency());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.getFrequency())));
+                    ((ItemRemoteDetonator) stack.getItem()).setRadioChannel(stack, launcher.radioCap.getChannel());
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.radioCap.getChannel())));
                 }
                 else if (stack.getItem() instanceof ItemLaserDetonator)
                 {
-                    ((ItemLaserDetonator) stack.getItem()).setBroadCastHz(stack, launcher.getFrequency());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.getFrequency())));
+                    ((ItemLaserDetonator) stack.getItem()).setRadioChannel(stack, launcher.radioCap.getChannel());
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.radioCap.getChannel())));
                 }
                 else if (stack.getItem() instanceof IWorldPosItem)
                 {

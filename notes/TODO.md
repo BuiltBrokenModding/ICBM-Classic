@@ -119,6 +119,10 @@ Basically mimic ICBM 2's system
 - Egg spawn -> Spawns mobs using existing spawn items
 - Spawn eggs on missiles
 
+## Visuals
+
+- Could use something like https://www.youtube.com/watch?v=D4l-soncsGY for doing shockwave
+
 # After MC update (likely after radar and launcher rewrites)
 
 - Missile module as it's own item (not using explosive ID, similar to what we did with AB missile)

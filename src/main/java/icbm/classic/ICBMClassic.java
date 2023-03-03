@@ -49,6 +49,7 @@ import icbm.classic.lib.explosive.reg.ExMissileContentReg;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
+import icbm.classic.lib.radio.CapabilityRadio;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.prefab.item.LootEntryItemStack;
@@ -236,6 +237,7 @@ public class ICBMClassic
         CapabilityMissileHolder.register();
         CapabilityMissileStack.register();
         CapabilityMissileLauncher.register();
+        CapabilityRadio.register();
     }
 
     void handleMissileTargetRegistry()

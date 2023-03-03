@@ -8,6 +8,8 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.lang.reflect.Array;
@@ -112,11 +114,18 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
         {
             buffer.writeInt(((Enum) object).ordinal());
         }
-        else if (object instanceof BlockPos)
+        else if (object instanceof Vec3i)
         {
-            buffer.writeInt(((BlockPos) object).getX());
-            buffer.writeInt(((BlockPos) object).getY());
-            buffer.writeInt(((BlockPos) object).getZ());
+            buffer.writeInt(((Vec3i) object).getX());
+            buffer.writeInt(((Vec3i) object).getY());
+            buffer.writeInt(((Vec3i) object).getZ());
+        }
+
+        else if (object instanceof Vec3d)
+        {
+            buffer.writeDouble(((Vec3d) object).x);
+            buffer.writeDouble(((Vec3d) object).y);
+            buffer.writeDouble(((Vec3d) object).z);
         }
         else
         {

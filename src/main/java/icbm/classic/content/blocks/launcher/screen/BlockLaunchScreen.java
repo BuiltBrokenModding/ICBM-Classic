@@ -2,7 +2,6 @@ package icbm.classic.content.blocks.launcher.screen;
 
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
-import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.items.ItemLaserDetonator;
@@ -54,13 +53,13 @@ public class BlockLaunchScreen extends BlockICBM
                 ItemStack stack = player.getHeldItem(hand);
                 if (stack.getItem() instanceof ItemRemoteDetonator)
                 {
-                    ((ItemRemoteDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.getFrequency())));
+                    ((ItemRemoteDetonator) stack.getItem()).setRadioChannel(stack, screen.radioCap.getChannel()); //TODO move to item
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.radioCap.getChannel())));
                 }
                 else if (stack.getItem() instanceof ItemLaserDetonator)
                 {
-                    ((ItemLaserDetonator) stack.getItem()).setBroadCastHz(stack, screen.getFrequency());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.getFrequency())));
+                    ((ItemLaserDetonator) stack.getItem()).setRadioChannel(stack, screen.radioCap.getChannel()); //TODO move to item
+                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.radioCap.getChannel())));
                 }
                 else if (stack.getItem() instanceof IWorldPosItem)
                 {

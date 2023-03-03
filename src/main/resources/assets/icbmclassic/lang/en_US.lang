@@ -465,3 +465,14 @@ gps.error.pos.invalid.world.name=Can't target another world
 gps.error.pos.invalid.null.name=No target set
 gps.data.transferred.name=Data transferred
 gps.cleared.name=GPS data cleared
+
+## Messages
+
+### Radio
+radio.icbmclassic:message.target.null=Target data missing
+radio.icbmclassic:message.target.set=Target set to (%1$f %2$f %3$f)
+radio.icbmclassic:message.launch.success=Firing missile(s) at (%1$f %2$f %3$f) with range %4$f
+radio.icbmclassic:message.launch.failed=Failed to fire missile(s)
+radio.icbmclassic:message.launch.triggered=Firing missile(s), aiming launcher(s)
+
+### Missile

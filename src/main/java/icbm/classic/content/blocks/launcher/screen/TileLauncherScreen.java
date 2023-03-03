@@ -1,12 +1,9 @@
 package icbm.classic.content.blocks.launcher.screen;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IMissileLauncherStatus;
-import icbm.classic.api.tile.IRadioWaveReceiver;
-import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -14,12 +11,8 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
-import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
@@ -27,12 +20,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -40,7 +32,7 @@ import java.util.Optional;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver, IRadioWaveReceiver, ILauncherComponent
+public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver, ILauncherComponent
 {
 
     public static final int DESCRIPTION_PACKET_ID = 0;
@@ -55,13 +47,11 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     /** Target position of the launcher */
     private BlockPos _targetPos = BlockPos.ORIGIN;
 
-    /** Frequency of the device */
-    private int frequency = 0;
-
     public int clientEnergyStored = 0;
     public int clientEnergyCapacity = 0;
 
     private final LauncherNode launcherNode = new LauncherNode(this, false);
+    public final RadioScreen radioCap = new RadioScreen(this);
 
     @Override
     public LauncherNode getNetworkNode() {
@@ -93,7 +83,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     {
         final int energy = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getEnergyStored()).orElse(0);
         final int energyCap = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getMaxEnergyStored()).orElse(0);
-        return new PacketTile("desc", 0, this).addData(energy, energyCap, this.getFrequency(), this.lockHeight, this.getTarget().getX(), this.getTarget().getY(), this.getTarget().getZ());
+        return new PacketTile("desc", 0, this).addData(energy, energyCap, radioCap.getChannel(), this.lockHeight, this.getTarget().getX(), this.getTarget().getY(), this.getTarget().getZ());
     }
 
     @Override
@@ -116,7 +106,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                         //this.tier = data.readInt();
                         this.clientEnergyStored = data.readInt();
                         this.clientEnergyCapacity = data.readInt();
-                        this.setFrequency(data.readInt());
+                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                         this.lockHeight = data.readInt();
                         this.setTarget(new BlockPos(data.readInt(), data.readInt(), data.readInt()));
                         return true;
@@ -125,7 +115,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 }
                 case SET_FREQUENCY_PACKET_ID:
                 {
-                    this.setFrequency(data.readInt());
+                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                     return true;
                 }
                 case SET_TARGET_PACKET_ID:
@@ -208,65 +198,20 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     }
 
     @Override
-    public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data) //TODO pack as message object
-    {
-        // TODO make sure other launchers don't trigger when a laser designator is used
-        if (isServer())
-        {
-            //Floor frequency as we do not care about sub ranges
-            final int frequency = (int) Math.floor(hz);
-            if (frequency == getFrequency())
-            {
-                //Laser detonator signal
-                if (messageHeader.equals(RadioHeaders.FIRE_AT_TARGET.header))
-                {
-                    // Validate data
-                    if(data == null || data.length == 0 || !(data[0] instanceof BlockPos)) {
-                        ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("BUG! Target Data: " + Arrays.toString(data)));
-                        return;
-                    }
-
-                    // Get data
-                    final BlockPos pos = (BlockPos) data[0];
-                    if (new Pos((IPos3D) this).distance(pos) <= ConfigLauncher.RANGE)
-                    {
-                        setTarget(pos);
-                        if(fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
-                            ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + pos + " " + Math.floor(pos.getDistance(xi(), yi(), zi())) + "m"), true); //TODO translate
-                        }
-                    }
-                }
-                //Remote detonator signal
-                else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
-                {
-                    if(fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
-                        ((FakeRadioSender) sender).player.sendStatusMessage(new TextComponentString("Firing missile at " + getTarget() + " " + Math.floor(getTarget().getDistance(xi(), yi(), zi())) + "m"), true); //TODO translate
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public Cube getRadioReceiverRange() {
-        return RadioRegistry.INFINITE;
-    }
-
-    @Override
     public void onLoad()
     {
         super.onLoad();
         getNetworkNode().connectToTiles();
         if (isServer())
         {
-            RadioRegistry.add(this);
+            RadioRegistry.add(radioCap);
         }
     }
 
     @Override
     public void invalidate()
     {
-        RadioRegistry.remove(this);
+        RadioRegistry.remove(radioCap);
         getNetworkNode().onTileRemoved();
         super.invalidate();
     }
@@ -292,37 +237,22 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         }
     }
 
-    /**
-     * What is the frequency of the device
-     *
-     * @return Hz value
-     */
-    public int getFrequency()
-    {
-        return this.frequency;
-    }
-
-    /**
-     * Called to se the frequency of the device
-     *
-     * @param frequency - Hz value
-     */
-    public void setFrequency(int frequency)
-    {
-        this.frequency = frequency;
-    }
-
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return super.hasCapability(capability, facing) || Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.hasCapability(capability, facing)).orElse(false);
+        return super.hasCapability(capability, facing)
+            || capability == ICBMClassicAPI.RADIO_CAPABILITY
+            || Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.hasCapability(capability, facing)).orElse(false);
     }
 
     @Override
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (getNetworkNode().getNetwork() != null)
+        if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
+            return (T) radioCap;
+        }
+        else if (getNetworkNode().getNetwork() != null)
         {
             final T cap = getNetworkNode().getNetwork().getCapability(capability, facing);
             if(cap != null) {
@@ -337,6 +267,11 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     {
         super.readFromNBT(nbt);
         SAVE_LOGIC.load(this, nbt);
+
+        // Legacy handling TODO data fixer
+        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
+            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+        }
     }
 
     @Override
@@ -349,7 +284,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     private static final NbtSaveHandler<TileLauncherScreen> SAVE_LOGIC = new NbtSaveHandler<TileLauncherScreen>()
         .mainRoot()
         /* */.nodeInteger(NBTConstants.TARGET_HEIGHT, launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
-        /* */.nodeInteger(NBTConstants.FREQUENCY, launcher -> launcher.frequency, (launcher, f) -> launcher.frequency = f)
+        /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
         /* */.nodeBlockPos(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         .base();
 }

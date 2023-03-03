@@ -1,0 +1,55 @@
+package icbm.classic.content.blocks.launcher.screen;
+
+import icbm.classic.api.radio.IRadioMessage;
+import icbm.classic.api.radio.IRadioReceiver;
+import icbm.classic.api.radio.IRadioSender;
+import icbm.classic.api.radio.messages.ILaunchMessage;
+import icbm.classic.api.radio.messages.ITargetMessage;
+import icbm.classic.lib.radio.imp.RadioTile;
+import icbm.classic.lib.radio.messages.RadioTranslations;
+import icbm.classic.lib.radio.messages.TextMessage;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+
+public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadioReceiver {
+
+    public RadioScreen(TileLauncherScreen host) {
+        super(host);
+    }
+
+    @Override
+    public void onMessage(IRadioSender sender, IRadioMessage packet) {
+        if (host.isServer() && getChannel() != null && getChannel().equals(packet.getChannel())) {
+
+            // Set target packet, run first as laser-det triggers both (set & fire) from the same packet
+            if(packet instanceof ITargetMessage) {
+                final Vec3d target = ((ITargetMessage) packet).getTarget();
+                if(target != null) {
+                    host.setTarget(new BlockPos(Math.floor(target.x), Math.floor(target.y), Math.floor(target.z)));
+
+                    // Don't show set message if we are going to fire right away
+                    if(!(packet instanceof ILaunchMessage)) {
+                        sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_TARGET_SET, target.x, target.y, target.z));
+                    }
+                }
+                else {
+                    sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_TARGET_NULL));
+                }
+            }
+
+            // Fire missile packet
+            if(packet instanceof ILaunchMessage) {
+                if (host.fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
+                    final Vec3d target = new Vec3d(host.getTarget());
+                    final double distance = target.squareDistanceTo(host.xi()+ 0.5, host.yi() + 0.5, host.zi()+ 0.5); // TODO base from launcher
+                    sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_LAUNCH_SUCCESS, target.x, target.y, target.z, distance));
+
+                    //((ILaunchMessage) packet).onLaunchCallback(); TODO implement
+                }
+                else {
+                    sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_LAUNCH_FAILED));
+                }
+            }
+        }
+    }
+}

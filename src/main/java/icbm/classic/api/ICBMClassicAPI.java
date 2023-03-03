@@ -10,6 +10,7 @@ import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.content.IExBlockRegistry;
 import icbm.classic.api.reg.content.IExGrenadeRegistry;
@@ -88,7 +89,10 @@ public final class ICBMClassicAPI
     public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;
 
     @CapabilityInject(IMissileLauncher.class)
-    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null; //TODO not implemented
+    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
+
+    @CapabilityInject(IRadio.class)
+    public static Capability<IRadio> RADIO_CAPABILITY = null;
 
     @CapabilityInject(IBlastVelocity.class)
     public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;

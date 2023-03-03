@@ -27,7 +27,6 @@ public class GuiCruiseLauncher extends GuiContainerBase
     private static final String LANG_ERROR = LANG_KEY + ".error";
     private static final String ERROR_NULL = LANG_ERROR + ".null";
     private static final String ERROR_FORMAT_TARGET = LANG_ERROR + ".format.target";
-    private static final String ERROR_FORMAT_HZ = LANG_ERROR + ".format.hz";
 
     //UV
     final int ENERGY_BAR_WIDTH = 16;
@@ -253,26 +252,14 @@ public class GuiCruiseLauncher extends GuiContainerBase
     }
 
     protected void updateHzText() {
-        this.fieldHz.setText(Integer.toString(this.tileEntity.getFrequency()));
+        this.fieldHz.setText(this.tileEntity.radioCap.getChannel());
     }
 
     protected void storeHzText() {
-        final String inputText = this.fieldHz.getText();
-        if(inputText != null) {
-            try {
-                final int value = Integer.parseInt(inputText.trim());
-                this.tileEntity.setFrequency(value);
-            }
-            catch (NumberFormatException e) {
-                hzError = ERROR_FORMAT_HZ;
-            }
-        }
-        else {
-            targetError = ERROR_NULL;
-        }
+        this.tileEntity.radioCap.setChannel(this.fieldHz.getText());
     }
 
     protected void sendHzPacket() {
-        ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileCruiseLauncher.SET_FREQUENCY_PACKET_ID, tileEntity).addData(tileEntity.getFrequency()));
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileCruiseLauncher.SET_FREQUENCY_PACKET_ID, tileEntity).addData(this.tileEntity.radioCap.getChannel()));
     }
 }

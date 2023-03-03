@@ -171,6 +171,18 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         return node(new SaveNodeUUID<E>(name, save, load));
     }
 
+    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> accessor) {
+        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+            (source) -> Optional.ofNullable(accessor.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
+            (source, data) -> {
+                final C object = accessor.apply(source);
+                if(object != null) {
+                    object.deserializeNBT(data);
+                }
+            }
+        ));
+    }
+
     public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> save, BiConsumer<E, C> load, Supplier<C> builder) {
         return node(new NbtSaveNode<E, NBTTagCompound>(name,
             (source) -> Optional.ofNullable(save.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),

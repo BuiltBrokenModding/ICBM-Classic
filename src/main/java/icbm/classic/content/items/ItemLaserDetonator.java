@@ -7,9 +7,8 @@ import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.radio.RadioHeaders;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.radio.messages.LaunchTargetMessage;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
@@ -24,7 +23,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -65,7 +64,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
                 TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
                 if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
                 {
-                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.hitVec));
                 }
             }// TODO else: add message stating that the raytrace failed
         }
@@ -94,22 +93,22 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         final ItemStack stack = player.inventory.getCurrentItem();
         if (stack.getItem() == this && !player.world.isRemote)
         {
-            final int x = buf.readInt();
-            final int y = buf.readInt();
-            final int z = buf.readInt();
-            final BlockPos pos = new BlockPos(x, y, z);
+            final double x = buf.readDouble();
+            final double y = buf.readDouble();
+            final double z = buf.readDouble();
+            final Vec3d target = new Vec3d(x, y, z);
 
             // Fire on main thread
             ((WorldServer) player.getEntityWorld()).addScheduledTask(() -> {
 
 
-                final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, pos, player);
+                final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, target, player);
                 if (!MinecraftForge.EVENT_BUS.post(event)) {
 
                     if (event.pos == null) //someone set the pos in the event to null, use original data
-                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, pos);
+                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new LaunchTargetMessage(getRadioChannel(stack), target));
                     else
-                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_AT_TARGET.header, event.pos);
+                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new LaunchTargetMessage(getRadioChannel(stack), event.pos));
                 }
             });
         }
@@ -122,40 +121,41 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
-    {
-        list.add("Fires missiles remotely");
-        list.add("Right click launcher screen to encode");
-    }
-
     /**
      * Gets the frequency this item broadcasts information on
      *
      * @param stack - this item
      * @return frequency
      */
-    public float getBroadCastHz(ItemStack stack)
+    public String getRadioChannel(ItemStack stack) //TODO move to capability item
     {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBTConstants.HZ))
+        if (stack.getTagCompound() != null)
         {
-            return stack.getTagCompound().getFloat(NBTConstants.HZ);
+            if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
+                return Integer.toString((int)Math.floor(stack.getTagCompound().getFloat(NBTConstants.HZ)));
+            }
+            else if(stack.getTagCompound().hasKey("radio_channel")) {
+                return stack.getTagCompound().getString("radio_channel");
+            }
         }
-        return 0;
+        return RadioRegistry.EMPTY_HZ;
     }
 
     /**
      * Sets the frequency of this item
      *
      * @param stack - this item
-     * @param hz    - value to set
+     * @param channel    - value to set
      */
-    public void setBroadCastHz(ItemStack stack, float hz)
+    public void setRadioChannel(ItemStack stack, String channel)
     {
         if (stack.getTagCompound() == null)
         {
             stack.setTagCompound(new NBTTagCompound());
         }
-        stack.getTagCompound().setFloat(NBTConstants.HZ, hz);
+        if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
+            stack.getTagCompound().removeTag(NBTConstants.HZ);
+        }
+        stack.getTagCompound().setString("radio_channel", channel);
     }
 }

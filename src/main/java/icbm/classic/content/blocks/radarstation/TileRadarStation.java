@@ -6,20 +6,19 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.lib.radio.RadioHeaders;
+import icbm.classic.lib.radio.messages.IncomingMissileMessage;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
-import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.TileFrequency;
+import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -30,12 +29,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TileFrequency implements IPacketIDReceiver, IRadioWaveSender, IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileRadarStation extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
 {
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
@@ -70,6 +69,8 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
     public boolean hasIncomingMissiles = false;
     public boolean hasDetectedEntities = false;
     public float rotation = 0;
+
+    public final RadioRadar radioCap = new RadioRadar(this);
 
     @Override
     public ExternalInventory getInventory()
@@ -109,7 +110,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 //Check for incoming and launch anti-missiles if
                 if (this.ticks % 20 == 0 && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
                 {
-                    RadioRegistry.popMessage(world, this, getFrequency(), RadioHeaders.SAM_TRIGGER.header, this.incomingThreats.get(0)); //TODO use static var for event name
+                    RadioRegistry.popMessage(world, radioCap, new IncomingMissileMessage(radioCap.getChannel(), this.incomingThreats.get(0))); //TODO use static var for event name
                 }
             }
             // No power, reset state
@@ -267,7 +268,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
         packet.write(detectionRange);
         packet.write(triggerRange);
-        packet.write(getFrequency());
+        packet.write(radioCap.getChannel());
         packet.write(detectedRadarEntities.size());
         if (detectedRadarEntities.size() > 0)
         {
@@ -322,7 +323,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 {
                     this.detectionRange = data.readInt();
                     this.triggerRange = data.readInt();
-                    this.setFrequency(data.readInt());
+                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
 
                     // Reset state
                     this.updateDrawList = true;
@@ -363,7 +364,7 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
                 }
                 else if (ID == SET_FREQUENCY_PACKET_ID)
                 {
-                    this.setFrequency(data.readInt());
+                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                     return true;
                 }
             }
@@ -403,18 +404,6 @@ public class TileRadarStation extends TileFrequency implements IPacketIDReceiver
         nbt.setInteger(NBTConstants.ALARM_RADIUS, this.detectionRange);
         nbt.setBoolean(NBTConstants.EMIT_ALL, this.enableRedstoneOutput);
         return super.writeToNBT(nbt);
-    }
-
-    @Override
-    public void sendRadioMessage(float hz, String header, Object... data)
-    {
-        RadioRegistry.popMessage(world, this, hz, header, data);
-    }
-
-    @Override
-    public Cube getRadioSenderRange()
-    {
-        return null;
     }
 
     @Override

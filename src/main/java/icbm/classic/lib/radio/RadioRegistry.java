@@ -1,9 +1,13 @@
 package icbm.classic.lib.radio;
 
-import icbm.classic.api.tile.IRadioWaveReceiver;
-import icbm.classic.api.tile.IRadioWaveSender;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.data.IBoundBox;
+import icbm.classic.api.radio.IRadioMessage;
+import icbm.classic.api.radio.IRadioReceiver;
+import icbm.classic.api.radio.IRadioSender;
+import icbm.classic.lib.data.BoundBlockPos;
 import icbm.classic.lib.transform.region.Cube;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
@@ -22,10 +26,12 @@ public final class RadioRegistry
     public static final RadioRegistry INSTANCE = new RadioRegistry();
 
     /** Used to indicate the object has full map radio range */
-    public static final Cube INFINITE = new Cube(-Integer.MAX_VALUE, -Integer.MAX_VALUE, -Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    public static final IBoundBox<BlockPos> INFINITE = new BoundBlockPos(-Integer.MAX_VALUE, -Integer.MAX_VALUE, -Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     /** World id to radio maps */
     private static final HashMap<Integer, RadioMap> RADIO_MAPS = new HashMap();
+
+    public static String EMPTY_HZ = "";
 
 
     /**
@@ -34,16 +40,16 @@ public final class RadioRegistry
      * @param tile - entity
      * @return true if added
      */
-    public static boolean add(IRadioWaveReceiver tile)
+    public static boolean add(IRadioReceiver tile)
     {
-        return getRadarMapForDim(tile.world().provider.getDimension()).add(tile);
+        return getRadarMapForDim(tile.getWorld().provider.getDimension()).add(tile);
     }
 
-    public static boolean addOrUpdate(IRadioWaveReceiver receiver)
+    public static boolean addOrUpdate(IRadioReceiver receiver)
     {
         if (!add(receiver))
         {
-            RadioMap map = getRadarMapForDim(receiver.world().provider.getDimension());
+            RadioMap map = getRadarMapForDim(receiver.getWorld().provider.getDimension());
             if (map.receive_to_chunks.containsKey(receiver))
             {
                 map.update(receiver);
@@ -60,11 +66,11 @@ public final class RadioRegistry
      * @param tile - entity
      * @return true if removed
      */
-    public static boolean remove(IRadioWaveReceiver tile)
+    public static boolean remove(IRadioReceiver tile)
     {
-        if (RADIO_MAPS.containsKey(tile.world().provider.getDimension()))
+        if (RADIO_MAPS.containsKey(tile.getWorld().provider.getDimension()))
         {
-            RadioMap map = getRadarMapForDim(tile.world().provider.getDimension());
+            RadioMap map = getRadarMapForDim(tile.getWorld().provider.getDimension());
             return map.remove(tile);
         }
         return false;
@@ -73,17 +79,19 @@ public final class RadioRegistry
     /**
      * Called to send a message over the network
      *
-     * @param sender - object that sent the message
-     * @param hz     - frequency of the message
-     * @param header - descriptive header of the message, mainly an ID system
-     * @param data   - data being sent in the message
+     * @param sender posting message
+     * @param packet containing message
      */
-    public static void popMessage(World world, IRadioWaveSender sender, float hz, String header, Object... data)
+    public static void popMessage(World world, IRadioSender sender, IRadioMessage packet)
     {
+        if(world == null || world.provider == null) {
+            ICBMClassic.logger().error("RadarRegistry: Invalid world : " + world, new RuntimeException());
+            return;
+        }
         if (RADIO_MAPS.containsKey(world.provider.getDimension()))
         {
             RadioMap map = getRadarMapForDim(world.provider.getDimension());
-            map.popMessage(sender, hz, header, data);
+            map.popMessage(sender, packet);
         }
     }
 

@@ -69,7 +69,7 @@ public class GuiRadarStation extends GuiContainerBase
 
         this.textFieldFrequency = new GuiTextField(2, fontRenderer, 210, 108, 30, 12);
         this.textFieldFrequency.setMaxStringLength(3);
-        this.textFieldFrequency.setText(this.tileEntity.getFrequency() + "");
+        this.textFieldFrequency.setText(this.tileEntity.radioCap.getChannel() + "");
 
         //Engine.instance.packetHandler.sendToServer(new PacketTile(this.tileEntity, -1, true));
     }
@@ -161,15 +161,8 @@ public class GuiRadarStation extends GuiContainerBase
         {
         }
 
-        try
-        {
-            this.tileEntity.setFrequency(Integer.parseInt(this.textFieldFrequency.getText()));
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileRadarStation.SET_FREQUENCY_PACKET_ID, this.tileEntity).addData(this.tileEntity.getFrequency()));
-        }
-        catch (NumberFormatException e)
-        {
-        }
-
+        this.tileEntity.radioCap.setChannel(this.textFieldFrequency.getText());
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileRadarStation.SET_FREQUENCY_PACKET_ID, this.tileEntity).addData(this.tileEntity.radioCap.getChannel()));
     }
 
     /** Args: x, y, buttonClicked */

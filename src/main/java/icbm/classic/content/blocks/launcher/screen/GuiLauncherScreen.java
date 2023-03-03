@@ -61,7 +61,7 @@ public class GuiLauncherScreen extends GuiContainerBase
         this.target_yCoord_field.setMaxStringLength(3);
         this.lock_height_field.setMaxStringLength(3);
 
-        this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
+        this.target_freq_field.setText(this.tileEntity.radioCap.getChannel() + "");
         this.lock_height_field.setText(this.tileEntity.lockHeight + "");
 
         launch_button = addButton(new GuiButton(0, guiLeft + (xSize / 2) - 55, guiTop + 140, 110, 20, LanguageUtility.getLocal("gui.launcherscreen.launch")));
@@ -103,17 +103,8 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         }
 
-        try
-        {
-            short newFrequency = (short) Math.max(Short.parseShort(this.target_freq_field.getText()), 0);
-
-            this.tileEntity.setFrequency(newFrequency);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileLauncherScreen.SET_FREQUENCY_PACKET_ID, this.tileEntity).addData(this.tileEntity.getFrequency()));
-        }
-        catch (NumberFormatException e)
-        {
-
-        }
+        this.tileEntity.radioCap.setChannel(target_freq_field.getText());
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileLauncherScreen.SET_FREQUENCY_PACKET_ID, this.tileEntity).addData(this.tileEntity.radioCap.getChannel()));
 
         try
         {
@@ -218,7 +209,7 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         if (!this.target_freq_field.isFocused())
         {
-            this.target_freq_field.setText(this.tileEntity.getFrequency() + "");
+            this.target_freq_field.setText(this.tileEntity.radioCap.getChannel() + "");
         }
     }
 }

@@ -2,18 +2,12 @@ package icbm.classic.content.blocks.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.missiles.IMissileAiming;
+import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.missiles.cause.IMissileCause;
-import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
-import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -22,16 +16,14 @@ import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
-import icbm.classic.lib.radio.RadioHeaders;
+import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.tile.IGuiTile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,7 +32,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -69,6 +61,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     public static final double MISSILE__HOLDER_Y = 2.0;
 
+    /** Target position of the launcher */
+    private Pos _targetPos = Pos.zero;
+
     /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0); //TODO change UI to only have yaw and pitch, drop xyz but still allow tools to auto fill from xyz
 
@@ -91,11 +86,24 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     protected IMissileCause nextFireCause;
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
+    public final RadioCruise radioCap = new RadioCruise(this);
 
     @Override
     public void onLoad()
     {
+        super.onLoad();
         launcherNode.connectToTiles();
+        if (isServer())
+        {
+            RadioRegistry.add(radioCap);
+        }
+    }
+
+    @Override
+    public void invalidate()
+    {
+        RadioRegistry.remove(radioCap);
+        super.invalidate();
     }
 
     @Override
@@ -168,10 +176,16 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
     }
 
-    @Override
+    @Deprecated
     public void setTarget(Pos target)
     {
-        super.setTarget(target);
+        LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, getPos(), target.toBlockPos());
+
+        if(!MinecraftForge.EVENT_BUS.post(event))
+        {
+            this._targetPos = event.target == null ? Pos.zero : new Pos(event.target);
+            updateClient = true;
+        }
         updateAimAngle();
     }
 
@@ -197,7 +211,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(getEnergy(), this.getFrequency(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(getEnergy(), this.radioCap.getChannel(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
     }
 
     @Override
@@ -210,7 +224,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 //set frequency packet from GUI
                 case SET_FREQUENCY_PACKET_ID:
                 {
-                    this.setFrequency(data.readInt());
+                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                     return true;
                 }
                 //Set target packet from GUI
@@ -231,7 +245,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                     if (isClient())
                     {
                         setEnergy(data.readInt());
-                        this.setFrequency(data.readInt());
+                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                         this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
                     }
                     return true;
@@ -278,6 +292,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         super.readFromNBT(nbt);
         inventory.deserializeNBT(nbt.getCompoundTag(NBTConstants.INVENTORY));
         currentAim.readFromNBT(nbt.getCompoundTag(NBTConstants.CURRENT_AIM));
+        this._targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
+
+        radioCap.deserializeNBT(nbt.getCompoundTag("radio"));
+        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
+            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+        }
         initFromLoad();
     }
 
@@ -289,6 +309,11 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         nbt.setTag(NBTConstants.INVENTORY, inventory.serializeNBT());
         nbt.setTag(NBTConstants.CURRENT_AIM, currentAim.writeNBT(new NBTTagCompound()));
+        nbt.setTag("radio", radioCap.serializeNBT());
+        if (this._targetPos != null)
+        {
+            nbt.setTag(NBTConstants.TARGET, this._targetPos.toNBT());
+        }
         return super.writeToNBT(nbt);
     }
 
@@ -354,39 +379,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     @Override
-    public void receiveRadioWave(float hz, IRadioWaveSender sender, String messageHeader, Object[] data) //TODO pack as message object
-    {
-        //Floor frequency as we do not care about sub ranges
-        final int frequency = (int) Math.floor(hz);
-        if (isServer() && frequency == this.getFrequency())
-        {
-            //Laser detonator signal
-            if (messageHeader.equals(RadioHeaders.FIRE_AT_TARGET.header))
-            {
-                final Pos pos = (Pos) data[0];
-                if (!isTooClose(pos))
-                {
-                    setTarget(pos);
-                    this.doLaunchNext = true;
-                    ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + pos));
-                }
-            }
-            //Remote detonator signal
-            else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
-            {
-                ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
-                this.doLaunchNext = true;
-            }
-        }
-    }
-
-    @Override
-    public boolean targetWithYValue()
-    {
-        return true;
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
         return new Cube(-2, 0, -2, 2, 3, 2).add(new Pos((IPos3D) this)).toAABB();
@@ -410,7 +402,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         return super.hasCapability(capability, facing)
             || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY;
+            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
+            || capability == ICBMClassicAPI.RADIO_CAPABILITY;
     }
 
     @Override
@@ -427,6 +420,19 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
             return (T) launcher;
         }
+        else if(capability == ICBMClassicAPI.RADIO_CAPABILITY)
+        {
+            return (T) radioCap;
+        }
         return super.getCapability(capability, facing);
+    }
+
+    public Pos getTarget()
+    {
+        if (this._targetPos == null)
+        {
+            this._targetPos = new Pos(getPos());
+        }
+        return this._targetPos;
     }
 }
