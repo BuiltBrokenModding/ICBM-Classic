@@ -1,6 +1,7 @@
 package icbm.classic.lib.saving;
 
 import icbm.classic.lib.saving.nodes.*;
+import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.*;
@@ -154,6 +155,24 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodePos(final String name, Function<E, Pos> save, BiConsumer<E, Pos> load)
     {
         return node(new SaveNodePos<E>(name, save, load));
+    }
+
+    @Deprecated
+    public NbtSaveRoot<E> nodeEulerAngle(final String name, Function<E, EulerAngle> save, BiConsumer<E, EulerAngle> load)
+    {
+        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+            (e) -> {
+                final EulerAngle angle = save.apply(e);
+                if (angle != null)
+                {
+                    return angle.toNBT();
+                }
+                return null;
+            },
+            (e, data) -> {
+                load.accept(e, new EulerAngle(data));
+            }
+        ));
     }
 
     public NbtSaveRoot<E> nodeFacing(final String name, Function<E, EnumFacing> save, BiConsumer<E, EnumFacing> load)

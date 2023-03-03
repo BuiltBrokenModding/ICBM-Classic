@@ -8,6 +8,7 @@ import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
+import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -17,6 +18,7 @@ import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
@@ -27,11 +29,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -62,7 +66,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public static final double MISSILE__HOLDER_Y = 2.0;
 
     /** Target position of the launcher */
-    private Pos _targetPos = Pos.zero;
+    private Vec3d _targetPos = Vec3d.ZERO;
 
     /** Desired aim angle, updated every tick if target != null */
     protected final EulerAngle aim = new EulerAngle(0, 0, 0); //TODO change UI to only have yaw and pitch, drop xyz but still allow tools to auto fill from xyz
@@ -172,21 +176,29 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         // Check redstone
         if (isServer() && isAimed() && doLaunchNext)
         {
-            launcher.launch(new BasicTargetData(getTarget().toVec3d()), nextFireCause, false);
+            launcher.launch(new BasicTargetData(getTarget()), nextFireCause, false);
         }
     }
 
-    @Deprecated
-    public void setTarget(Pos target)
-    {
-        LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, getPos(), target.toBlockPos());
 
-        if(!MinecraftForge.EVENT_BUS.post(event))
-        {
-            this._targetPos = event.target == null ? Pos.zero : new Pos(event.target);
-            updateClient = true;
+    public void setTarget(Vec3d target)
+    {
+        if(target != this._targetPos) {
+
+            // Only fire packet server side to avoid description packet triggering events
+            if(isServer()) {
+                final LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, getPos(), target);
+
+                if (!MinecraftForge.EVENT_BUS.post(event)) {
+                    this._targetPos = event.target == null ? Vec3d.ZERO : event.target;
+                    updateClient = true;
+                }
+            }
+            else {
+                this._targetPos = target;
+            }
+            updateAimAngle();
         }
-        updateAimAngle();
     }
 
     protected boolean isAimed() {
@@ -195,10 +207,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected void updateAimAngle()
     {
-        if (getTarget() != null && !getTarget().isZero())
+        if (hasTarget())
         {
-            Pos aimPoint = getTarget();
-            Pos center = new Pos((IPos3D) this).add(0.5, MISSILE__HOLDER_Y, 0.5);
+            final Vec3d aimPoint = getTarget();
+            final Pos center = new Pos((IPos3D) this).add(0.5, MISSILE__HOLDER_Y, 0.5);
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
             aim.setYaw(EulerAngle.clampPos360(aim.yaw()));
         }
@@ -211,7 +223,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(getEnergy(), this.radioCap.getChannel(), this.getTarget().xi(), this.getTarget().yi(), this.getTarget().zi());
+        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(getEnergy(), this.radioCap.getChannel(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
     }
 
     @Override
@@ -230,14 +242,14 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 //Set target packet from GUI
                 case SET_TARGET_PACKET_ID:
                 {
-                    this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                    this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     return true;
                 }
                 //launch missile
                 case LAUNCH_PACKET_ID:
                 {
                     final EntityCause cause = new EntityCause(player); // TODO note was UI interaction
-                    launcher.launch(new BasicTargetData(getTarget().toVec3d()), cause, false);
+                    launcher.launch(new BasicTargetData(getTarget()), cause, false);
                     return true;
                 }
                 case DESCRIPTION_PACKET_ID:
@@ -246,7 +258,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                     {
                         setEnergy(data.readInt());
                         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                        this.setTarget(new Pos(data.readInt(), data.readInt(), data.readInt()));
+                        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     }
                     return true;
                 }
@@ -263,9 +275,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         super.writeDescPacket(buf);
         ByteBufUtils.writeItemStack(buf, this.missileHolder.getMissileStack());
 
-        buf.writeInt(getTarget().xi());
-        buf.writeInt(getTarget().yi());
-        buf.writeInt(getTarget().zi());
+        buf.writeDouble(getTarget().x);
+        buf.writeDouble(getTarget().y);
+        buf.writeDouble(getTarget().z);
 
         buf.writeDouble(currentAim.yaw());
         buf.writeDouble(currentAim.pitch());
@@ -277,44 +289,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         super.readDescPacket(buf);
         cachedMissileStack = ByteBufUtils.readItemStack(buf);
 
-        setTarget(new Pos(buf.readInt(), buf.readInt(), buf.readInt()));
+        setTarget(new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()));
 
         currentAim.setYaw(buf.readDouble());
         currentAim.setPitch(buf.readDouble());
-    }
-
-    /**
-     * Reads a tile entity from NBT.
-     */
-    @Override
-    public void readFromNBT(NBTTagCompound nbt)
-    {
-        super.readFromNBT(nbt);
-        inventory.deserializeNBT(nbt.getCompoundTag(NBTConstants.INVENTORY));
-        currentAim.readFromNBT(nbt.getCompoundTag(NBTConstants.CURRENT_AIM));
-        this._targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
-
-        radioCap.deserializeNBT(nbt.getCompoundTag("radio"));
-        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
-            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
-        }
-        initFromLoad();
-    }
-
-    /**
-     * Writes a tile entity to NBT.
-     */
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-    {
-        nbt.setTag(NBTConstants.INVENTORY, inventory.serializeNBT());
-        nbt.setTag(NBTConstants.CURRENT_AIM, currentAim.writeNBT(new NBTTagCompound()));
-        nbt.setTag("radio", radioCap.serializeNBT());
-        if (this._targetPos != null)
-        {
-            nbt.setTag(NBTConstants.TARGET, this._targetPos.toNBT());
-        }
-        return super.writeToNBT(nbt);
     }
 
     protected void initFromLoad()
@@ -345,7 +323,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected boolean hasTarget()
     {
-        return getTarget() != null && !getTarget().isZero();
+        return getTarget() != null && getTarget() != Vec3d.ZERO;
     }
 
     protected boolean hasChargeToFire()
@@ -373,9 +351,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     }
 
     // Is the target too close?
-    public boolean isTooClose(Pos target)
+    public boolean isTooClose(Vec3d target)
     {
-        return new Pos(getPos()).add(0.5).distance(new Pos(target.x() + .5, target.y() + .5, target.z() + .5)) < 20;
+        return new Pos(getPos()).add(0.5).distance(target) < 20;
     }
 
     @Override
@@ -427,12 +405,37 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         return super.getCapability(capability, facing);
     }
 
-    public Pos getTarget()
+    public Vec3d getTarget()
     {
         if (this._targetPos == null)
         {
-            this._targetPos = new Pos(getPos());
+            this._targetPos = Vec3d.ZERO;
         }
         return this._targetPos;
     }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt)
+    {
+        super.readFromNBT(nbt);
+        SAVE_LOGIC.load(this, nbt);
+        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
+            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+        }
+        initFromLoad();
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+    {   SAVE_LOGIC.save(this, nbt);
+        return super.writeToNBT(nbt);
+    }
+
+    private static final NbtSaveHandler<TileCruiseLauncher> SAVE_LOGIC = new NbtSaveHandler<TileCruiseLauncher>()
+        .mainRoot()
+        /* */.nodeINBTSerializable(NBTConstants.INVENTORY, launcher -> launcher.inventory)
+        /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
+        /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
+        /* */.nodeEulerAngle(NBTConstants.CURRENT_AIM, launcher -> launcher.currentAim, (launcher, pos) -> launcher.currentAim.set(pos))
+        .base();
 }

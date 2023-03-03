@@ -29,7 +29,7 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
             if(packet instanceof ITargetMessage) {
                 final Vec3d target = ((ITargetMessage) packet).getTarget();
                 if(target != null) {
-                    host.setTarget(new Pos(target));
+                    host.setTarget(target);
 
                     // Don't show set message if we are going to fire right away
                     if(!(packet instanceof ILaunchMessage)) {

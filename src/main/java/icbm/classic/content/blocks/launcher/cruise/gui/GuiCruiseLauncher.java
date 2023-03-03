@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import java.io.IOException;
 
@@ -214,8 +215,8 @@ public class GuiCruiseLauncher extends GuiContainerBase
         }
         else
         {
-            final Pos pos = this.tileEntity.getTarget();
-            final String targetText = String.format("%s, %s, %s", pos.xi(), pos.yi(), pos.zi());
+            final Vec3d pos = this.tileEntity.getTarget();
+            final String targetText = String.format("%.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
             this.fieldTarget.setText(targetText);
         }
     }
@@ -228,10 +229,10 @@ public class GuiCruiseLauncher extends GuiContainerBase
             final String[] split = inputText.split(",");
             if(split.length == 3) {
                 try {
-                    final int x = parseInt(split[0].trim());
-                    final int y = parseInt(split[1].trim());
-                    final int z = parseInt(split[2].trim());
-                    final Pos newTarget = new Pos(x, y, z);
+                    final double x = Double.parseDouble(split[0].trim());
+                    final double y = Double.parseDouble(split[1].trim());
+                    final double z = Double.parseDouble(split[2].trim());
+                    final Vec3d newTarget = new Vec3d(x, y, z);
                     this.tileEntity.setTarget(newTarget);
                 }
                 catch (NumberFormatException e) {
@@ -248,7 +249,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
     }
 
     protected void sendTargetPacket() {
-        ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileCruiseLauncher.SET_TARGET_PACKET_ID, tileEntity).addData(tileEntity.getTarget().xi(), this.tileEntity.getTarget().yi(), this.tileEntity.getTarget().zi()));
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileCruiseLauncher.SET_TARGET_PACKET_ID, tileEntity).addData(tileEntity.getTarget().x, this.tileEntity.getTarget().y, this.tileEntity.getTarget().z));
     }
 
     protected void updateHzText() {

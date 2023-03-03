@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -229,10 +230,10 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Deprecated //TODO switch with blockPos
     public void setTarget(BlockPos target)
     {
-        final LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, pos, target);
+        final LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, pos, new Vec3d(target));
         if(!MinecraftForge.EVENT_BUS.post(event))
         {
-            this._targetPos = event.target == null ? target : event.target;
+            this._targetPos = event.target == null ? target : new BlockPos(event.target);
             updateClient = true;
         }
     }

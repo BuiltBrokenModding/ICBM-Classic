@@ -17,6 +17,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -106,7 +107,7 @@ public class BlockCruiseLauncher extends BlockICBM
                     {
                         if (location.world() == world)
                         {
-                            launcher.setTarget(new Pos(location.x(), location.y(), location.z()));
+                            launcher.setTarget(new Vec3d(location.x(), location.y(), location.z())); // TODO round to 2 places
                             player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
                         }
                         else

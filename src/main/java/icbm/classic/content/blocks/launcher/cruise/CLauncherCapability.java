@@ -37,7 +37,7 @@ public class CLauncherCapability implements IMissileLauncher {
         host.nextFireCause = null;
 
         // Set target so we can aim
-        host.setTarget(new Pos(target.getPosition())); // TODO store IMissileTarget
+        host.setTarget(target.getPosition()); // TODO store IMissileTarget
 
         // If not aimed, wait for aim and fire
         if(!host.isAimed()) {

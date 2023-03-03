@@ -1,6 +1,7 @@
 package icbm.classic.api.events;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -15,9 +16,9 @@ public class LauncherSetTargetEvent extends Event
 {
     public final World world;
     public final BlockPos pos;
-    public BlockPos target;
+    public Vec3d target;
 
-    public LauncherSetTargetEvent(World world, BlockPos pos, BlockPos target)
+    public LauncherSetTargetEvent(World world, BlockPos pos, Vec3d target)
     {
         this.world = world;
         this.pos = pos;
