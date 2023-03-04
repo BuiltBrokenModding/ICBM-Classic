@@ -18,6 +18,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -68,7 +69,7 @@ public class BlockLaunchScreen extends BlockICBM
                     {
                         if (location.world() == world)
                         {
-                            screen.setTarget(new BlockPos(location.xi(), location.yi(), location.zi()));
+                            screen.setTarget(new Vec3d(location.x(), location.y(), location.z()));
                             player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
                         }
                         else

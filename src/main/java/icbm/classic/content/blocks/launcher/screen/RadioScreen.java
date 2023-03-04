@@ -25,7 +25,7 @@ public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadio
             if(packet instanceof ITargetMessage) {
                 final Vec3d target = ((ITargetMessage) packet).getTarget();
                 if(target != null) {
-                    host.setTarget(new BlockPos(Math.floor(target.x), Math.floor(target.y), Math.floor(target.z)));
+                    host.setTarget(target);
 
                     // Don't show set message if we are going to fire right away
                     if(!(packet instanceof ILaunchMessage)) {
@@ -40,7 +40,7 @@ public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadio
             // Fire missile packet
             if(packet instanceof ILaunchMessage) {
                 if (host.fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
-                    final Vec3d target = new Vec3d(host.getTarget());
+                    final Vec3d target = host.getTarget();
                     final double distance = target.squareDistanceTo(host.xi()+ 0.5, host.yi() + 0.5, host.zi()+ 0.5); // TODO base from launcher
                     sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_LAUNCH_SUCCESS, target.x, target.y, target.z, distance));
 

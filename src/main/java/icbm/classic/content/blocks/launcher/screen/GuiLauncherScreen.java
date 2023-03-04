@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -74,9 +75,9 @@ public class GuiLauncherScreen extends GuiContainerBase
         }
         else
         {
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().getX()) + "");
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().getZ()) + "");
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().getY()) + "");
+            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().x) + "");
+            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().z) + "");
+            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().y) + "");
         }
     }
 
@@ -93,10 +94,14 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         try
         {
-            BlockPos newTarget = new BlockPos(parseInt(this.target_xCoord_field.getText()), max(parseInt(this.target_yCoord_field.getText()), 0), parseInt(this.target_zCoord_field.getText()));
+            Vec3d newTarget = new Vec3d(
+                Double.parseDouble(this.target_xCoord_field.getText()),
+                max(Double.parseDouble(this.target_yCoord_field.getText()), 0),
+                Double.parseDouble(this.target_zCoord_field.getText())
+            );
 
             this.tileEntity.setTarget(newTarget);
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileLauncherScreen.SET_TARGET_PACKET_ID, this.tileEntity).addData(this.tileEntity.getTarget().getX(), this.tileEntity.getTarget().getY(), this.tileEntity.getTarget().getZ()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileLauncherScreen.SET_TARGET_PACKET_ID, this.tileEntity).addData(this.tileEntity.getTarget().x, this.tileEntity.getTarget().y, this.tileEntity.getTarget().z));
         }
         catch (NumberFormatException e)
         {
@@ -191,15 +196,15 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         if (!this.target_xCoord_field.isFocused())
         {
-            this.target_xCoord_field.setText(Math.round(this.tileEntity.getTarget().getX()) + "");
+            this.target_xCoord_field.setText(this.tileEntity.getTarget().x + "");
         }
         if (!this.target_zCoord_field.isFocused())
         {
-            this.target_zCoord_field.setText(Math.round(this.tileEntity.getTarget().getZ()) + "");
+            this.target_zCoord_field.setText(this.tileEntity.getTarget().z + "");
         }
         if (!this.target_yCoord_field.isFocused())
         {
-            this.target_yCoord_field.setText(Math.round(this.tileEntity.getTarget().getY()) + "");
+            this.target_yCoord_field.setText(this.tileEntity.getTarget().y + "");
         }
 
         if (!this.lock_height_field.isFocused())

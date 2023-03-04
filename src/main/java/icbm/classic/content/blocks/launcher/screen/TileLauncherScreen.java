@@ -46,7 +46,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public int lockHeight = 3;
 
     /** Target position of the launcher */
-    private BlockPos _targetPos = BlockPos.ORIGIN;
+    private Vec3d _targetPos = Vec3d.ZERO;
 
     public int clientEnergyStored = 0;
     public int clientEnergyCapacity = 0;
@@ -84,7 +84,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     {
         final int energy = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getEnergyStored()).orElse(0);
         final int energyCap = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getMaxEnergyStored()).orElse(0);
-        return new PacketTile("desc", 0, this).addData(energy, energyCap, radioCap.getChannel(), this.lockHeight, this.getTarget().getX(), this.getTarget().getY(), this.getTarget().getZ());
+        return new PacketTile("desc", 0, this).addData(energy, energyCap, radioCap.getChannel(), this.lockHeight, this.getTarget().x, this.getTarget().y, this.getTarget().z);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                         this.clientEnergyCapacity = data.readInt();
                         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                         this.lockHeight = data.readInt();
-                        this.setTarget(new BlockPos(data.readInt(), data.readInt(), data.readInt()));
+                        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble())); //TODO compare before creating vec3 as we spam description packet
                         return true;
                     }
                     break;
@@ -121,7 +121,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 }
                 case SET_TARGET_PACKET_ID:
                 {
-                    this.setTarget(new BlockPos(data.readInt(), data.readInt(), data.readInt()));
+                    this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     return true;
                 }
                 case LOCK_HEIGHT_PACKET_ID:
@@ -217,7 +217,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         super.invalidate();
     }
 
-    public BlockPos getTarget()
+    public Vec3d getTarget()
     {
         return this._targetPos;
     }
@@ -227,14 +227,22 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
      *
      * @param target
      */
-    @Deprecated //TODO switch with blockPos
-    public void setTarget(BlockPos target)
+    public void setTarget(Vec3d target)
     {
-        final LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, pos, new Vec3d(target));
-        if(!MinecraftForge.EVENT_BUS.post(event))
-        {
-            this._targetPos = event.target == null ? target : new BlockPos(event.target);
-            updateClient = true;
+        if(target != this._targetPos) {
+
+            // Only fire packet server side to avoid description packet triggering events
+            if(isServer()) {
+                final LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, getPos(), target);
+
+                if (!MinecraftForge.EVENT_BUS.post(event)) {
+                    this._targetPos = event.target == null ? Vec3d.ZERO : event.target;
+                    updateClient = true;
+                }
+            }
+            else {
+                this._targetPos = target;
+            }
         }
     }
 
@@ -286,6 +294,6 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         .mainRoot()
         /* */.nodeInteger(NBTConstants.TARGET_HEIGHT, launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
         /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
-        /* */.nodeBlockPos(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
+        /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         .base();
 }
