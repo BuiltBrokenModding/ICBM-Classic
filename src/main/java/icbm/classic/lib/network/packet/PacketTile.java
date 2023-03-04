@@ -149,11 +149,13 @@ public class PacketTile extends PacketBase<PacketTile>
         final Location location = new Location(player.world, x, y, z);
         if (tile == null)
         {
-            ICBMClassic.logger().error(new PacketTileReadException(location, "Null tile"));
+            if(ICBMClassic.runningAsDev)
+                ICBMClassic.logger().error(new PacketTileReadException(location, "Null tile when handling Packet[" + name + "]"));
         }
         else if (tile.isInvalid())
         {
-            ICBMClassic.logger().error(new PacketTileReadException(location, "Invalidated tile"));
+            if(ICBMClassic.runningAsDev)
+                ICBMClassic.logger().error(new PacketTileReadException(location, "Invalidated tile when handling Packet[" + name + "]"));
         }
         else if (tile instanceof IPacketIDReceiver)
         {
