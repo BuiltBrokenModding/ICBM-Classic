@@ -37,12 +37,16 @@ public final class RadioRegistry
     /**
      * Adds an entity to the map
      *
-     * @param tile - entity
+     * @param receiver - entity
      * @return true if added
      */
-    public static boolean add(IRadioReceiver tile)
+    public static boolean add(IRadioReceiver receiver)
     {
-        return getRadarMapForDim(tile.getWorld().provider.getDimension()).add(tile);
+        if(receiver.getWorld() == null)
+        {
+            return false;
+        }
+        return getRadarMapForDim(receiver.getWorld().provider.getDimension()).add(receiver);
     }
 
     public static boolean addOrUpdate(IRadioReceiver receiver)
@@ -68,6 +72,10 @@ public final class RadioRegistry
      */
     public static boolean remove(IRadioReceiver tile)
     {
+        if(tile.getWorld() == null)
+        {
+            return false;
+        }
         if (RADIO_MAPS.containsKey(tile.getWorld().provider.getDimension()))
         {
             RadioMap map = getRadarMapForDim(tile.getWorld().provider.getDimension());
@@ -84,7 +92,7 @@ public final class RadioRegistry
      */
     public static void popMessage(World world, IRadioSender sender, IRadioMessage packet)
     {
-        if(world == null || world.provider == null) {
+        if(world == null || world.provider == null || world.isRemote) {
             ICBMClassic.logger().error("RadarRegistry: Invalid world : " + world, new RuntimeException());
             return;
         }

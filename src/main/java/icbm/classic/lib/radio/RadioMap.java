@@ -51,6 +51,10 @@ public class RadioMap
 
     public boolean add(IRadioReceiver receiver)
     {
+        if(receiver.getWorld() == null || receiver.getWorld().isRemote)
+        {
+            return false;
+        }
         final IBoundBox<BlockPos> range = receiver.getRange();
         if (range != null)
         {
@@ -167,6 +171,10 @@ public class RadioMap
 
     public boolean remove(IRadioReceiver receiver)
     {
+        if(receiver.getWorld() == null || receiver.getWorld().isRemote)
+        {
+            return false;
+        }
         if(fullMapRangeReceives.contains(receiver))
         {
             fullMapRangeReceives.remove(receiver);

@@ -212,7 +212,9 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Override
     public void invalidate()
     {
-        RadioRegistry.remove(radioCap);
+        if(isServer()) {
+            RadioRegistry.remove(radioCap);
+        }
         getNetworkNode().onTileRemoved();
         super.invalidate();
     }

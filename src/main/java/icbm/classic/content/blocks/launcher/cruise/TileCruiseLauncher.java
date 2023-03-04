@@ -106,7 +106,9 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public void invalidate()
     {
-        RadioRegistry.remove(radioCap);
+        if (isServer()) {
+            RadioRegistry.remove(radioCap);
+        }
         super.invalidate();
     }
 
