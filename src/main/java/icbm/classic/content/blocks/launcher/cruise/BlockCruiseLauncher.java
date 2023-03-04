@@ -90,17 +90,7 @@ public class BlockCruiseLauncher extends BlockICBM
             {
                 TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
                 ItemStack stack = player.getHeldItem(hand);
-                if (stack.getItem() instanceof ItemRemoteDetonator)
-                {
-                    ((ItemRemoteDetonator) stack.getItem()).setRadioChannel(stack, launcher.radioCap.getChannel());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.radioCap.getChannel())));
-                }
-                else if (stack.getItem() instanceof ItemLaserDetonator)
-                {
-                    ((ItemLaserDetonator) stack.getItem()).setRadioChannel(stack, launcher.radioCap.getChannel());
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + launcher.radioCap.getChannel())));
-                }
-                else if (stack.getItem() instanceof IWorldPosItem)
+                if (stack.getItem() instanceof IWorldPosItem)
                 {
                     IWorldPosition location = ((IWorldPosItem) stack.getItem()).getLocation(stack);
                     if (location != null)

@@ -52,17 +52,7 @@ public class BlockLaunchScreen extends BlockICBM
                 TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
 
                 ItemStack stack = player.getHeldItem(hand);
-                if (stack.getItem() instanceof ItemRemoteDetonator)
-                {
-                    ((ItemRemoteDetonator) stack.getItem()).setRadioChannel(stack, screen.radioCap.getChannel()); //TODO move to item
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.radioCap.getChannel())));
-                }
-                else if (stack.getItem() instanceof ItemLaserDetonator)
-                {
-                    ((ItemLaserDetonator) stack.getItem()).setRadioChannel(stack, screen.radioCap.getChannel()); //TODO move to item
-                    player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + screen.radioCap.getChannel())));
-                }
-                else if (stack.getItem() instanceof IWorldPosItem)
+                if (stack.getItem() instanceof IWorldPosItem)
                 {
                     IWorldPosition location = ((IWorldPosItem) stack.getItem()).getLocation(stack);
                     if (location != null)

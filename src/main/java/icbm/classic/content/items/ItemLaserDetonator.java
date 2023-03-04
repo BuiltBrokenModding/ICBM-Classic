@@ -1,9 +1,6 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.content.entity.EntitySmoke;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -11,15 +8,13 @@ import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.radio.messages.LaunchTargetMessage;
-import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.prefab.FakeRadioSender;
-import icbm.classic.prefab.item.ItemICBMElectrical;
+import icbm.classic.prefab.item.ItemRadio;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -31,10 +26,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 /**
  * Extended version of {@link ItemRemoteDetonator} that can target blocks in a line of sight.
@@ -42,26 +33,27 @@ import java.util.List;
  *
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDReceiver
+public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
 {
+    private static final int COOLDOWN = 20;
+    private int clientCooldownTicks = 0;
+
     public ItemLaserDetonator()
     {
-        super("laserDetonator");
+        this.setName("laserDetonator");
+        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
         this.setNoRepair();
     }
 
-    private final int maxCooldownTicks = 20;
-    private int cooldownRemaining = 0;
-
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
         final ItemStack stack = player.getHeldItem(handIn);
-        if (world.isRemote && cooldownRemaining <= 0)
+        if (world.isRemote && clientCooldownTicks <= 0)
         {
-            cooldownRemaining = maxCooldownTicks;
+            clientCooldownTicks = COOLDOWN;
             RayTraceResult objectMouseOver = player.rayTrace(200, 1);
             if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) // ignore failed raytraces
             {
@@ -79,14 +71,14 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entityLiving) {
 
         if (world.isRemote) // when releasing the right mouse button, reset the cooldown to allow immediate reuse of item
-            cooldownRemaining = 0;
+            clientCooldownTicks = 0;
         return super.onItemUseFinish(stack, world, entityLiving);
     }
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (world.isRemote && cooldownRemaining > 0) // when holding the right mouse button, trigger item use every second
-            cooldownRemaining--;
+        if (world.isRemote && clientCooldownTicks > 0) // when holding the right mouse button, trigger item use every second
+            clientCooldownTicks--;
 
         super.onUpdate(stack, world, entity, itemSlot, isSelected);
     }
@@ -135,43 +127,5 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
     {
         return true;
-    }
-
-    /**
-     * Gets the frequency this item broadcasts information on
-     *
-     * @param stack - this item
-     * @return frequency
-     */
-    public String getRadioChannel(ItemStack stack) //TODO move to capability item
-    {
-        if (stack.getTagCompound() != null)
-        {
-            if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
-                return Integer.toString((int)Math.floor(stack.getTagCompound().getFloat(NBTConstants.HZ)));
-            }
-            else if(stack.getTagCompound().hasKey("radio_channel")) {
-                return stack.getTagCompound().getString("radio_channel");
-            }
-        }
-        return RadioRegistry.EMPTY_HZ;
-    }
-
-    /**
-     * Sets the frequency of this item
-     *
-     * @param stack - this item
-     * @param channel    - value to set
-     */
-    public void setRadioChannel(ItemStack stack, String channel)
-    {
-        if (stack.getTagCompound() == null)
-        {
-            stack.setTagCompound(new NBTTagCompound());
-        }
-        if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
-            stack.getTagCompound().removeTag(NBTConstants.HZ);
-        }
-        stack.getTagCompound().setString("radio_channel", channel);
     }
 }
