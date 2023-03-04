@@ -478,3 +478,8 @@ radio.icbmclassic:message.launch.failed=Failed to fire missile(s)
 radio.icbmclassic:message.launch.triggered=Firing missile(s), aiming launcher(s)
 
 ### Missile
+
+
+# SubTitles
+subtitle.icbmclassic:missile.movement=Missile Engine
+subtitle.icbmclassic:missile.launch=Missile Launch
