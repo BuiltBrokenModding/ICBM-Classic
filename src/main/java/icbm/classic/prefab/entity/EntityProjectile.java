@@ -4,6 +4,7 @@ import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEndGateway;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -11,6 +12,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityEndGateway;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -314,11 +317,37 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         return entity.canBeCollidedWith();
     }
 
-    protected void handleBlockCollision(RayTraceResult movingobjectposition)
+    protected void handleBlockCollision(RayTraceResult hit)
     {
-        this.tilePos = movingobjectposition.getBlockPos();
-        this.sideTile = movingobjectposition.sideHit;
+        this.tilePos = hit.getBlockPos();
+        this.sideTile = hit.sideHit;
         this.blockInside = this.world.getBlockState(tilePos);
+
+        // Special handling for ender gateways TODO move to a registry of Block -> lambda
+        if(blockInside.getBlock() instanceof BlockEndGateway) {
+            final TileEntity tile = world.getTileEntity(tilePos);
+            if(tile instanceof TileEntityEndGateway) {
+                ((TileEntityEndGateway) tile).teleportEntity(this);
+                return;
+            }
+        }
+
+        // Move entity to collision location
+        final double deltaX = hit.hitVec.x - this.posX;
+        final double deltaY = hit.hitVec.y - this.posY;
+        final double deltaZ = hit.hitVec.z - this.posZ;
+
+        final float mag = MathHelper.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+        final double vecX = (deltaX / (double) mag) * (width / 2f);
+        final double vecY = (deltaX / (double) mag) * (width / 2f);
+        final double vecZ = (deltaZ / (double) mag) * (width / 2f);
+
+        this.posX = hit.hitVec.x + vecX;
+        this.posY = hit.hitVec.y + vecY;
+        this.posZ = hit.hitVec.z + vecZ;
+        setPosition(posX, posY, posZ);
+
+        //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 
         if (this.blockInside.getMaterial() != Material.AIR)
         {
@@ -331,31 +360,25 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         if(!changingDimensions && !isDead && !inPortal) {
 
             if(shouldImpactOnBlockInside()) {
+                this.motionX = 0;
+                this.motionY = 0;
+                this.motionZ = 0;
                 setInGround(true);
-                onImpactTile(movingobjectposition);
-            }
-
-            // Set position to just outside block
-            if(decreaseMotionOnBlockInside()) {
-                this.motionX = (double) ((float) (movingobjectposition.hitVec.x - this.posX));
-                this.motionY = (double) ((float) (movingobjectposition.hitVec.y - this.posY));
-                this.motionZ = (double) ((float) (movingobjectposition.hitVec.z - this.posZ));
-
-                float velocity = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-                this.posX -= this.motionX / (double) velocity * 0.05000000074505806D;
-                this.posY -= this.motionY / (double) velocity * 0.05000000074505806D;
-                this.posZ -= this.motionZ / (double) velocity * 0.05000000074505806D;
-                //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                onImpactTile(hit);
             }
         }
     }
 
     protected boolean shouldImpactOnBlockInside() {
-        return blockInside.getBlock() != Blocks.PORTAL;
+        return blockInside.getBlock() != Blocks.PORTAL
+            && blockInside.getBlock() != Blocks.END_PORTAL
+            && blockInside.getBlock() != Blocks.END_GATEWAY;
     }
 
     protected boolean decreaseMotionOnBlockInside() {
-        return blockInside.getBlock() != Blocks.PORTAL;
+        return blockInside.getBlock() != Blocks.PORTAL
+            && blockInside.getBlock() != Blocks.END_PORTAL
+            && blockInside.getBlock() != Blocks.END_GATEWAY;
     }
 
     @Override
