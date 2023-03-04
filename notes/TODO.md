@@ -8,6 +8,8 @@
 - UI scale
 - Frame scale
 - Silo rendering missiles as a block state
+- Portal Handling: https://github.com/TeamTwilight/twilightforest/blob/1.12.x/src/main/java/twilightforest/block/BlockTFPortal.java
+- Portal Handling: Mekanism, RF Dimensions
 
 https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
 
@@ -168,6 +170,8 @@ Basically mimic ICBM 2's system
 - Script: Move(xyz) -> Allows moving exact or relative
 - Script: Arc(xyz, ijk) -> Same as ballistic flight but only the arcing part
 - Script: Speed -> Sets the movement speed
+- Script: onDimChange -> jump to label
+- Script: label -> mark a spot in code
 
 Thinking something close to how AssemblyLine robotic arms worked. A quick UI that gave the user
 a scroll list to add commands to run.

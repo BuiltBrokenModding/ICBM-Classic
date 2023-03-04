@@ -9,7 +9,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
@@ -20,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -68,6 +68,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public IBlockState blockInside = Blocks.AIR.getDefaultState();
     /** Toggle to note we are stuck in a tile on the ground */
     public boolean inGround = false;
+    /** Entity is being teleported, causes it to ignore block impacts */
+    public boolean changingDimensions = false;
 
     //Timers
     public int ticksInGround;
@@ -179,7 +181,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
             if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ)))
             {
-                this.inGround = true;
+                setInGround(true);
             }
         }
 
@@ -195,7 +197,9 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 {
                     this.setDead();
                 }
-            } else
+            }
+            // if was in ground but block changes, fall slightly
+            else
             {
                 //TODO change to apply gravity
                 this.inGround = false;
@@ -216,6 +220,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             }
 
             //Do raytrace TODO move to prefab entity for reuse
+            // Portal block will always return as collision even though it lacks a bounding box
             Vec3d rayStart = new Vec3d(this.posX, this.posY, this.posZ);
             Vec3d rayEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
             RayTraceResult rayHit = this.world.rayTraceBlocks(rayStart, rayEnd, false, true, false);
@@ -280,6 +285,13 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         }
     }
 
+    protected void setInGround(boolean b) {
+        if(!this.inGround && b) {
+            this.ticksInGround = 0;
+        }
+        this.inGround = b;
+    }
+
     protected boolean ignoreImpact(RayTraceResult hit)
     {
         return false;
@@ -306,25 +318,63 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     {
         this.tilePos = movingobjectposition.getBlockPos();
         this.sideTile = movingobjectposition.sideHit;
-
         this.blockInside = this.world.getBlockState(tilePos);
 
-        this.motionX = (double) ((float) (movingobjectposition.hitVec.x - this.posX));
-        this.motionY = (double) ((float) (movingobjectposition.hitVec.y - this.posY));
-        this.motionZ = (double) ((float) (movingobjectposition.hitVec.z - this.posZ));
-
-        float velocity = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-        this.posX -= this.motionX / (double) velocity * 0.05000000074505806D;
-        this.posY -= this.motionY / (double) velocity * 0.05000000074505806D;
-        this.posZ -= this.motionZ / (double) velocity * 0.05000000074505806D;
-        //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-        this.inGround = true;
-
-        if (this.blockInside != null && this.blockInside.getMaterial() != Material.AIR)
+        if (this.blockInside.getMaterial() != Material.AIR)
         {
             this.blockInside.getBlock().onEntityCollidedWithBlock(this.world, tilePos, blockInside, this);
         }
-        onImpactTile(movingobjectposition);
+
+        // Collision with blocks can cause teleportation
+        //  some blocks can set missile to dead on impact (MFFS)
+        //  vanilla handles portals with `isPortal` and is only for Nether travel
+        if(!changingDimensions && !isDead && !inPortal) {
+
+            if(shouldImpactOnBlockInside()) {
+                setInGround(true);
+                onImpactTile(movingobjectposition);
+            }
+
+            // Set position to just outside block
+            if(decreaseMotionOnBlockInside()) {
+                this.motionX = (double) ((float) (movingobjectposition.hitVec.x - this.posX));
+                this.motionY = (double) ((float) (movingobjectposition.hitVec.y - this.posY));
+                this.motionZ = (double) ((float) (movingobjectposition.hitVec.z - this.posZ));
+
+                float velocity = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+                this.posX -= this.motionX / (double) velocity * 0.05000000074505806D;
+                this.posY -= this.motionY / (double) velocity * 0.05000000074505806D;
+                this.posZ -= this.motionZ / (double) velocity * 0.05000000074505806D;
+                //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+            }
+        }
+    }
+
+    protected boolean shouldImpactOnBlockInside() {
+        return blockInside.getBlock() != Blocks.PORTAL;
+    }
+
+    protected boolean decreaseMotionOnBlockInside() {
+        return blockInside.getBlock() != Blocks.PORTAL;
+    }
+
+    @Override
+    public Entity changeDimension(int dimensionIn, ITeleporter teleporter) {
+
+        this.changingDimensions = true;
+        return super.changeDimension(dimensionIn, teleporter);
+    }
+
+    @Override
+    public int getPortalCooldown()
+    {
+        return 10;
+    }
+
+    @Override
+    public int getMaxInPortalTime()
+    {
+        return -1;
     }
 
     /**
@@ -504,8 +554,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             float f = MathHelper.sqrt(xx * xx + zz * zz);
             this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(xx, zz) * 180.0D / Math.PI);
             this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(yy, (double) f) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch;
-            this.prevRotationYaw = this.rotationYaw;
             this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
             this.ticksInGround = 0;
         }
