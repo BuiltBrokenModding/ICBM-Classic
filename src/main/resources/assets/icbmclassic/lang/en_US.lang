@@ -84,6 +84,8 @@ item.icbmclassic:defuser.info=Remove explosives safely, even after they have gon
 
 item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
+item.icbmclassic:laserDetonator.laser.canceled=Laser event canceled
+item.icbmclassic:laserDetonator.target=Target set (%1$s, %2$s, %3$s)
 
 item.icbmclassic:tracker.name=Tracker
 item.icbmclassic:tracker.info=Not implemented, set for removal

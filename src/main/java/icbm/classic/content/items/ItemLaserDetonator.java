@@ -1,6 +1,8 @@
 package icbm.classic.content.items;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.entity.EntitySmoke;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
@@ -9,6 +11,7 @@ import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.radio.messages.LaunchTargetMessage;
+import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import io.netty.buffer.ByteBuf;
@@ -24,6 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,7 +58,7 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
     {
-        ItemStack stack = player.getHeldItem(handIn);
+        final ItemStack stack = player.getHeldItem(handIn);
         if (world.isRemote && cooldownRemaining <= 0)
         {
             cooldownRemaining = maxCooldownTicks;
@@ -101,18 +105,30 @@ public class ItemLaserDetonator extends ItemICBMElectrical implements IPacketIDR
             // Fire on main thread
             ((WorldServer) player.getEntityWorld()).addScheduledTask(() -> {
 
-
                 final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, target, player);
                 if (!MinecraftForge.EVENT_BUS.post(event)) {
+                    player.sendStatusMessage(new TextComponentTranslation(
+                        getUnlocalizedName(stack) + ".target",
+                        formatNumber(event.getPos().x),
+                        formatNumber(event.getPos().y),
+                        formatNumber(event.getPos().z)
+                    ), false);
 
-                    if (event.pos == null) //someone set the pos in the event to null, use original data
-                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new LaunchTargetMessage(getRadioChannel(stack), target));
-                    else
-                        RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new LaunchTargetMessage(getRadioChannel(stack), event.pos));
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new LaunchTargetMessage(getRadioChannel(stack), event.getPos()));
+                }
+                else if(event.cancelReason != null) {
+                    player.sendStatusMessage(new TextComponentTranslation(event.cancelReason), true);
+                }
+                else {
+                    player.sendStatusMessage(new TextComponentTranslation(getUnlocalizedName(stack) + ".laser.canceled"), false);
                 }
             });
         }
         return true;
+    }
+
+    private String formatNumber(double d) {
+        return String.format("%.2f", d);
     }
 
     @Override

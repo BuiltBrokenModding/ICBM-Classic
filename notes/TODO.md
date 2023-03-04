@@ -160,12 +160,29 @@ Basically mimic ICBM 2's system
 - better status message handling
 - add back blast pressure (pushes entities behind the missile away from the missile, silo this will be horizontal)
 
-# Launcher controllers
+## Custom missile paths
+
+- UI to control how a missile will fly when fired
+- Way to globally save these custom 'scripts'
+- Way to register new script parts
+- Script: Move(xyz) -> Allows moving exact or relative
+- Script: Arc(xyz, ijk) -> Same as ballistic flight but only the arcing part
+- Script: Speed -> Sets the movement speed
+
+Thinking something close to how AssemblyLine robotic arms worked. A quick UI that gave the user
+a scroll list to add commands to run.
+
+## Launcher controllers
 
 - CC support as block with proxy
 - OC support as block with proxy
 - redstone controller, takes xyz target and responds to redstone firing all missiles on network
 - silo wireless network controller (ICBM 2 radio system)
+
+## Laser Det
+
+- Show hit position on screen, recycle atomic science overlay
+- Show laser going from tool to player
 
 ## Hand Launcher
 
@@ -242,7 +259,6 @@ Basically mimic ICBM 2's system
 - tool textures
 - 3D model for laser
 - Fake missiles for decoration
-- Missiles point wrong direction in GUI, should match sword angle
 
 # TODO future +2
 
@@ -259,6 +275,13 @@ Basically mimic ICBM 2's system
 - Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - Balance recipes for IC2
 - Migrate BombCart to capability and have it store ItemStack used to place
+
+# Packet system
+
+- Use a lambda based function system to register packets per tile
+- Remove logic from tile itself
+
+Idea would be to clean up the code and make it as easy as possible to deal with packets. Can mimic how the SaveNode system works.
 
 # Random ideas
 
