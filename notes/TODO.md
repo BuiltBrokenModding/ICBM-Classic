@@ -8,8 +8,19 @@
 - UI scale
 - Frame scale
 - Silo rendering missiles as a block state
-- Portal Handling: https://github.com/TeamTwilight/twilightforest/blob/1.12.x/src/main/java/twilightforest/block/BlockTFPortal.java
-- Portal Handling: Mekanism, RF Dimensions
+- Portal Handling: TF https://github.com/TeamTwilight/twilightforest/blob/1.12.x/src/main/java/twilightforest/block/BlockTFPortal.java
+- Portal Handling: Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/tile/TileEntityTeleporter.java
+- Portal Handling: RF Tools - Dimensions
+
+TELEPORTER(MachineBlock.MACHINE_BLOCK_1, 11
+
+MekanismBlocks.MachineBlock
+
+"mekanism:MachineBlock"
+
+MekanismBlocks.BasicBlock && state.getBlock().getMetaFromState(state) == 7
+
+"mekanism:BasicBlock"
 
 https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
 

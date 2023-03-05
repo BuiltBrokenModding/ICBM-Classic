@@ -73,6 +73,16 @@ public interface IMissileFlightLogic extends IMissilePart
         return true;
     }
 
+    /**
+     * Call back to see if rotation should match motion directly. By default,
+     * this is disabled as it is assumed the logic system will handle rotation
+     * angles in addition to motion & position.
+     *
+     * @param entity to update
+     * @return true to allow alignment
+     */
+    default boolean shouldAlignWithMotion(Entity entity) { return false; }
+
     default float engineSmokeRed(Entity entity) {
         // TODO consider using an object for storing settings
         return 1;

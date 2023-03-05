@@ -3,6 +3,7 @@ package icbm.classic;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
+import icbm.classic.mods.ModInteraction;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.Entity;
@@ -28,17 +29,17 @@ public class CommonProxy implements IGuiHandler
 
     public void preInit()
     {
-
+        ModInteraction.preInit();
     }
 
     public void init()
     {
-
+        ModInteraction.init();
     }
 
     public void postInit()
     {
-
+        ModInteraction.postInit();
     }
 
     public void loadComplete()

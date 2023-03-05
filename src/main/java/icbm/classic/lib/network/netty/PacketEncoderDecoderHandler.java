@@ -24,6 +24,7 @@ public class PacketEncoderDecoderHandler extends FMLIndexedMessageToMessageCodec
         addPacket(PacketSpawnAirParticle.class);
         addPacket(PacketSpawnBlockExplosion.class);
         addPacket(PacketEntity.class);
+        addPacket(PacketEntityPos.class);
     }
 
     public void addPacket(Class<? extends IPacket> clazz)

@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
@@ -204,8 +205,9 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void rotateTowardsMotion() {
+    public boolean shouldAlignWithMotion() {
         //Clearing default logic to flight controllers can handle motion
+        return Optional.ofNullable(missileCapability.getFlightLogic()).map((logic) -> logic.shouldAlignWithMotion(this)).orElse(false);
     }
 
     @Override

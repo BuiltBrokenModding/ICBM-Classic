@@ -57,8 +57,7 @@ public final class ProjectileBlockInteraction {
         return IProjectileBlockInteraction.EnumHitReactions.CONTINUE;
     }
 
-
-    static {
+    public static void register() {
         addCollisionInteraction(Blocks.PORTAL);
         addCollisionInteraction(Blocks.END_PORTAL);
         addBlockInteraction(Blocks.END_GATEWAY, (world, pos, hit, side, state, entity) -> {

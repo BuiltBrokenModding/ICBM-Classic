@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Flight computer that does nothing, acts as a placeholder for when we fire missiles like an arrow or are using
@@ -40,6 +41,17 @@ public class DeadFlightLogic implements IMissileFlightLogic
     public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
         fuelTicks--;
+
+        if(hasFuel(entity)) {
+            float f3 = MathHelper.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
+            entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180.0D / Math.PI);
+            entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(entity.motionY, (double) f3) * 180.0D / Math.PI);
+        }
+    }
+
+    @Override
+    public boolean shouldAlignWithMotion(Entity entity) {
+        return false; //TODO allow alignment at a much slower rate once out of fuel
     }
 
     @Override
