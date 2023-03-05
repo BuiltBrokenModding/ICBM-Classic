@@ -324,12 +324,10 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.blockInside = this.world.getBlockState(tilePos);
 
         // Special handling for ender gateways TODO move to a registry of Block -> lambda
-        if(blockInside.getBlock() instanceof BlockEndGateway) {
-            final TileEntity tile = world.getTileEntity(tilePos);
-            if(tile instanceof TileEntityEndGateway) {
-                ((TileEntityEndGateway) tile).teleportEntity(this);
-                return;
-            }
+        final IProjectileBlockInteraction.EnumHitReactions reaction =
+            ProjectileBlockInteraction.handleSpecialInteraction(world, tilePos, hit.hitVec, sideTile, blockInside, this);
+        if(reaction.stop) {
+            return;
         }
 
         // Move entity to collision location
@@ -349,36 +347,17 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
         //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 
-        if (this.blockInside.getMaterial() != Material.AIR)
-        {
+        if (this.blockInside.getMaterial() != Material.AIR) {
             this.blockInside.getBlock().onEntityCollidedWithBlock(this.world, tilePos, blockInside, this);
         }
 
-        // Collision with blocks can cause teleportation
-        //  some blocks can set missile to dead on impact (MFFS)
-        //  vanilla handles portals with `isPortal` and is only for Nether travel
-        if(!changingDimensions && !isDead && !inPortal) {
-
-            if(shouldImpactOnBlockInside()) {
-                this.motionX = 0;
-                this.motionY = 0;
-                this.motionZ = 0;
-                setInGround(true);
-                onImpactTile(hit);
-            }
+        if(!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
+            this.motionX = 0;
+            this.motionY = 0;
+            this.motionZ = 0;
+            setInGround(true);
+            onImpactTile(hit);
         }
-    }
-
-    protected boolean shouldImpactOnBlockInside() {
-        return blockInside.getBlock() != Blocks.PORTAL
-            && blockInside.getBlock() != Blocks.END_PORTAL
-            && blockInside.getBlock() != Blocks.END_GATEWAY;
-    }
-
-    protected boolean decreaseMotionOnBlockInside() {
-        return blockInside.getBlock() != Blocks.PORTAL
-            && blockInside.getBlock() != Blocks.END_PORTAL
-            && blockInside.getBlock() != Blocks.END_GATEWAY;
     }
 
     @Override
