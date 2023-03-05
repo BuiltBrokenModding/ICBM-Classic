@@ -18,6 +18,15 @@ public class DirectFlightLogic extends DeadFlightLogic
     private double motionY;
     private double motionZ;
 
+    public DirectFlightLogic() {
+        super();
+    }
+
+    public DirectFlightLogic(int fuelTicks)
+    {
+        super(fuelTicks);
+    }
+
     @Override
     public void calculateFlightPath(World world, double startX, double startY, double startZ, IMissileTarget targetData)
     {

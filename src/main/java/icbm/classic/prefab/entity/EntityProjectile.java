@@ -222,10 +222,25 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 return;
             }
 
+            double rayEndVecX = motionX;
+            double rayEndVecY = motionY;
+            double rayEndVecZ = motionZ;
+
+            // Ensure we always raytrace 1 block ahead to allow early detection of collisions
+            double velocity = Math.sqrt(rayEndVecX * rayEndVecX + rayEndVecY * rayEndVecY + rayEndVecZ * rayEndVecZ);
+
+            rayEndVecX /= velocity;
+            rayEndVecY /= velocity;
+            rayEndVecZ /= velocity;
+
+            rayEndVecX *= (velocity + 1);
+            rayEndVecY *= (velocity + 1);
+            rayEndVecZ *= (velocity + 1);
+
             //Do raytrace TODO move to prefab entity for reuse
             // Portal block will always return as collision even though it lacks a bounding box
             Vec3d rayStart = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d rayEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+            Vec3d rayEnd = new Vec3d(this.posX + rayEndVecX, this.posY + rayEndVecY, this.posZ + rayEndVecZ);
             RayTraceResult rayHit = this.world.rayTraceBlocks(rayStart, rayEnd, false, true, false);
 
             //Reset data to do entity ray trace
@@ -271,40 +286,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 rayHit = new RayTraceResult(entity);
             }
 
-            // Special handling for predicting impact on unique tiles such as portals
-            if(rayHit == null || rayHit.typeOfHit == RayTraceResult.Type.MISS) {
 
-                double rayEndVecX = motionX;
-                double rayEndVecY = motionY;
-                double rayEndVecZ = motionZ;
-
-                // Ensure we always raytrace 2 block ahead to allow early detection of collisions
-                double velocity = Math.sqrt(rayEndVecX * rayEndVecX + rayEndVecY * rayEndVecY + rayEndVecZ * rayEndVecZ);
-
-                rayEndVecX /= velocity;
-                rayEndVecY /= velocity;
-                rayEndVecZ /= velocity;
-
-                rayEndVecX *= (velocity + 2);
-                rayEndVecY *= (velocity + 2);
-                rayEndVecZ *= (velocity + 2);
-
-                //Do raytrace TODO move to prefab entity for reuse
-                // Portal block will always return as collision even though it lacks a bounding box
-                rayStart = new Vec3d(this.posX, this.posY, this.posZ);
-                rayEnd = new Vec3d(this.posX + rayEndVecX, this.posY + rayEndVecY, this.posZ + rayEndVecZ);
-                rayHit = this.world.rayTraceBlocks(rayStart, rayEnd, false, true, false);
-
-                if(rayHit != null && rayHit.typeOfHit == RayTraceResult.Type.BLOCK) {
-                    this.tilePos = rayHit.getBlockPos();
-                    this.sideTile = rayHit.sideHit;
-                    this.blockInside = this.world.getBlockState(tilePos);
-
-                    ProjectileBlockInteraction.handleSpecialInteraction(world, tilePos, rayHit.hitVec, sideTile, blockInside, this);
-                }
-            }
-            // Normal collision
-            else if (!ignoreImpact(rayHit))
+            if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit))
             {
                 //Handle entity hit
                 if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY)
