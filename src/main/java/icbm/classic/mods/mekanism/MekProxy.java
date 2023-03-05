@@ -57,7 +57,7 @@ public class MekProxy extends ModProxy
                 final BlockPos possiblePortal = blockPos.offset(side);
                 final BlockPos teleporter = findTeleporter(world, possiblePortal);
                 if(teleporter != null) {
-                    teleport(world, teleporter, hit, side, entity);
+                    teleport(world, teleporter, hit, entity);
                     return IProjectileBlockInteraction.EnumHitReactions.TELEPORTED;
                 }
                 return IProjectileBlockInteraction.EnumHitReactions.CONTINUE;
@@ -67,23 +67,32 @@ public class MekProxy extends ModProxy
 
     protected BlockPos findTeleporter(World world, BlockPos possiblePortal) {
         final BlockPos optionA = possiblePortal.down();
-        final BlockPos optionB = optionA.down();
+
         if(isTeleporter(world.getBlockState(optionA))) {
             return optionA;
         }
-        else if(isTeleporter(world.getBlockState(optionB))) {
+
+        final BlockPos optionB = optionA.down();
+        if(isTeleporter(world.getBlockState(optionB))) {
            return optionB;
+        }
+
+        final BlockPos optionC = optionB.down();
+        if(isTeleporter(world.getBlockState(optionC))) {
+            return optionC;
         }
         return null;
     }
 
-    protected void teleport(World world, BlockPos telePos, Vec3d hit, EnumFacing sideHit, Entity entity) {
+    protected void teleport(World world, BlockPos telePos, Vec3d hit, Entity entity) {
         if(entity instanceof EntityProjectile) {
             ((EntityProjectile<?>) entity).moveTowards(hit, -0.5);
         }
         else {
             entity.setPosition(telePos.getX() + 0.5, telePos.getY() + 1.5, telePos.getZ() + 0.5);
         }
+
+        final EnumFacing facingDirection = entity.getHorizontalFacing();
 
         // Figure out how high above the top of the teleport block we are located
         // Once teleported mekanism will set the entity to +1 of the bottom of the teleporter block... which is not where we entered
@@ -114,11 +123,11 @@ public class MekProxy extends ModProxy
                             double motionX = entity.motionX;
                             double motionZ = entity.motionZ;
 
-                            if(sideHit.getAxis() == EnumFacing.Axis.X && openSide.getAxis() != EnumFacing.Axis.X) {
+                            if(facingDirection.getAxis() == EnumFacing.Axis.X && openSide.getAxis() != EnumFacing.Axis.X) {
                                 entity.motionX = openSide.getFrontOffsetX() * motionZ;
                                 entity.motionZ = motionX;
                             }
-                            else if(sideHit.getAxis() == EnumFacing.Axis.Z && openSide.getAxis() != EnumFacing.Axis.Z) {
+                            else if(facingDirection.getAxis() == EnumFacing.Axis.Z && openSide.getAxis() != EnumFacing.Axis.Z) {
                                 entity.motionX = motionZ;
                                 entity.motionZ = openSide.getFrontOffsetZ() * motionX;
                             }
