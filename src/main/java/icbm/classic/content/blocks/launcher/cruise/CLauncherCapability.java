@@ -11,6 +11,7 @@ import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
@@ -61,27 +62,23 @@ public class CLauncherCapability implements IMissileLauncher {
                     if(host.isServer() && !simulate) {
                         final IMissile missile = capabilityMissileStack.newMissile(host.world());
                         final Entity entity = missile.getMissileEntity();
-                        if (entity instanceof IMissileAiming) {
+                        entity.setPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);
 
-                            // Should always work but in rare cases capability might have failed
-                            if (!host.missileHolder.consumeMissile()) {
-                                return LauncherStatus.ERROR_INVALID_STACK;
-                            }
+                        // Should always work but in rare cases capability might have failed
+                        if (!host.missileHolder.consumeMissile()) {
+                            return LauncherStatus.ERROR_INVALID_STACK;
+                        }
 
-                            host.extractEnergy();
+                        host.extractEnergy();
 
-                            //Aim missile
-                            ((IMissileAiming) entity).initAimingPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z,
-                                -(float) host.currentAim.yaw() - 180, -(float) host.currentAim.pitch(), 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
+                        //Setup missile
+                        missile.setMissileSource(missileSource);
+                        missile.setTargetData(target);
+                        missile.setFlightLogic(new DirectFlightLogic(ConfigMissile.CRUISE_FUEL));
+                        missile.launch();
 
-                            //Setup missile
-                            missile.setMissileSource(missileSource);
-                            missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.CRUISE_FUEL));
-                            missile.launch();
-
-                            if (!host.world().spawnEntity(entity)) {
-                               return LauncherStatus.ERROR_SPAWN;
-                            }
+                        if (!host.world().spawnEntity(entity)) {
+                            return LauncherStatus.ERROR_SPAWN;
                         }
                     }
                     return LauncherStatus.LAUNCHED;
