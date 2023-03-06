@@ -9,14 +9,17 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.mods.ic2.IC2Proxy;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -31,13 +34,6 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 
     public static final int CHANGE_RADIUS_PACKET_ID = 1; //TODO migrate to its own handler
     public static final int CHANGE_MODE_PACKET_ID = 2; //TODO migrate to its own handler
-
-    public static List<BlockPos> tileMapCache = new ArrayList(); //TODO convert to something else
-
-    static
-    {
-        tileMapCache.add(new BlockPos(0, 1, 0)); //TODO convert to multi-block handler
-    }
 
     /** Tick synced rotation */
     public float rotation = 0;
@@ -57,6 +53,8 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 
     private ExternalInventory inventory;
 
+    private List<TileEmpTowerFake> subBlocks = new ArrayList();
+
     @Override
     public ExternalInventory getInventory()  //TODO remove
     {
@@ -68,9 +66,30 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     }
 
     @Override
+    public void invalidate()
+    {
+        super.invalidate();
+        subBlocks.forEach(tile -> tile.setHost(null));
+        subBlocks.clear();
+    }
+
+    @Override
     public void update()
     {
         super.update();
+        if (ticks % 3 == 0) {
+            //Find tower blocks TODO find a better solution
+            subBlocks.clear();
+            BlockPos above = getPos().up();
+            while(world.getBlockState(above).getBlock() == getBlockType()) {
+                final TileEntity tile = world.getTileEntity(above);
+                if(tile instanceof TileEmpTowerFake) {
+                    ((TileEmpTowerFake) tile).setHost(this);
+                    subBlocks.add((TileEmpTowerFake) tile);
+                }
+                above = above.up();
+            }
+        }
         if (isServer())
         {
             if (!isReady()) //TODO convert to timer object

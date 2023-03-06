@@ -4,6 +4,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.blocks.emptower.BlockEmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
+import icbm.classic.content.blocks.emptower.TileEmpTowerFake;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.blocks.explosive.TileEntityExplosive;
 import icbm.classic.content.blocks.launcher.base.BlockLauncherBase;
@@ -85,6 +86,7 @@ public class BlockReg
 
         GameRegistry.registerTileEntity(TileEntityExplosive.class, new ResourceLocation(ICBMConstants.DOMAIN, "explosive"));
         GameRegistry.registerTileEntity(TileEMPTower.class, new ResourceLocation(ICBMConstants.DOMAIN, "emptower"));
+        GameRegistry.registerTileEntity(TileEmpTowerFake.class, new ResourceLocation(ICBMConstants.DOMAIN, "emptower_fake"));
         GameRegistry.registerTileEntity(TileRadarStation.class, new ResourceLocation(ICBMConstants.DOMAIN, "radarstation"));
         GameRegistry.registerTileEntity(TileLauncherFrame.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherframe"));
         GameRegistry.registerTileEntity(TileLauncherConnector.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcher_connector"));

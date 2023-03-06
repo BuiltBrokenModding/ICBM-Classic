@@ -4,8 +4,11 @@
     "model": "icbmclassic:emp_tower"
   },
   "variants": {
-    "inventory": {
+    "inventory_0": {
       "model": "icbmclassic:emp_tower"
+    },
+    "inventory_1": {
+      "model": "icbmclassic:emp_tower_1"
     },
     "type": {
       "base": {

@@ -12,6 +12,7 @@ import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
+import icbm.classic.content.blocks.emptower.TileEmpTowerFake;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
@@ -101,7 +102,8 @@ public class ClientReg
         registerMissileRenders();
 
         //Machines
-        newBlockModel(BlockReg.blockEmpTower, 0, "inventory", "");
+        newBlockModel(BlockReg.blockEmpTower, 0, "inventory_0", "");
+        newBlockModel(BlockReg.blockEmpTower, 1, "inventory_1", "");
         newBlockModel(BlockReg.blockRadarStation, 0, "inventory", "");
         newBlockModel(BlockReg.blockLaunchBase, 0, "inventory", "");
         newBlockModel(BlockReg.blockLaunchScreen, 0, "inventory", "");
@@ -170,6 +172,7 @@ public class ClientReg
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREmpTower());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEmpTowerFake.class, new TESREmpTower());
     }
 
     protected static void registerExBlockRenders()

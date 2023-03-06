@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -20,19 +21,32 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.glu.Sphere;
 
-/**
- *
- * Created by Dark(DarkGuardsman, Robert) on 1/10/2017.
- */
-public class TESREmpTower extends TileEntitySpecialRenderer<TileEMPTower>
+public class TESREmpTower extends TileEntitySpecialRenderer<TileEntity>
 {
     @Override
     @SideOnly(Side.CLIENT)
-    public void render(TileEMPTower launcher, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+    public void render(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
         final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
-        float rotation = launcher.prevRotation + (launcher.rotation - launcher.prevRotation) * partialTicks;
+        float rotation = 0;
+        float prevRotation = 0;
+
+        if(tile instanceof TileEMPTower) {
+          rotation = ((TileEMPTower) tile).rotation;
+          prevRotation = ((TileEMPTower) tile).prevRotation;
+        }
+        else if(tile instanceof TileEmpTowerFake && ((TileEmpTowerFake) tile).getHost() != null) {
+            rotation = ((TileEmpTowerFake) tile).getHost().rotation;
+            prevRotation = ((TileEmpTowerFake) tile).getHost().prevRotation;
+
+            int height = tile.getPos().getY() - ((TileEmpTowerFake) tile).getHost().getPos().getY();
+            if(height % 2 == 1) {
+                rotation += 45;
+                prevRotation += 45;
+            }
+        }
+        rotation = prevRotation + (rotation - prevRotation) * partialTicks;
 
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) x + 0.5, (float) y + 0.5, (float) z + 0.5);
