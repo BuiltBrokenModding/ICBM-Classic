@@ -29,6 +29,7 @@ public class BlockEmpTower extends BlockContainer
 {
     public static final PropertyTowerStates TOWER_MODELS = new PropertyTowerStates();
     public static IBlockState COIL;
+    public static IBlockState ELECTRIC;
 
     public BlockEmpTower()
     {
@@ -40,6 +41,7 @@ public class BlockEmpTower extends BlockContainer
         setCreativeTab(ICBMClassic.CREATIVE_TAB);
 
         COIL = getDefaultState().withProperty(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.COIL);
+        ELECTRIC = getDefaultState().withProperty(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.ELECTRIC);
     }
 
     @Override
@@ -121,7 +123,10 @@ public class BlockEmpTower extends BlockContainer
     @Override
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
     {
-        return BlockRenderLayer.TRANSLUCENT == layer || BlockRenderLayer.SOLID == layer;
+        if(state == ELECTRIC) {
+            return BlockRenderLayer.TRANSLUCENT == layer;
+        }
+        return BlockRenderLayer.SOLID == layer;
     }
 
     @Nullable

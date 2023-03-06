@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
@@ -58,6 +59,7 @@ public class TESREmpTower extends TileEntitySpecialRenderer<TileEntity>
         GlStateManager.translate(-0.5F, -0.5F, 0.5F);
         blockrendererdispatcher.renderBlockBrightness(BlockEmpTower.COIL, 1f);
         GlStateManager.translate(0.0F, 0.0F, 1.0F);
+
 
         GlStateManager.enableLighting();
 
