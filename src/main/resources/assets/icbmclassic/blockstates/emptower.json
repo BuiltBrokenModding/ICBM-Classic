@@ -1,135 +1,25 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:machines/emp_tower.obj",
-    "transform": {
-      "thirdperson_lefthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          -0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "thirdperson_righthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "gui": {
-        "rotation": [
-          {
-            "x": 25
-          },
-          {
-            "y": 45
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.3,
-          -0.2,
-          0
-        ],
-        "scale": 0.4
-      },
-      "firstperson_righthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.3,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "firstperson_lefthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "ground": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.11,
-          0,
-          0.11
-        ],
-        "scale": 0.3
-      }
-    }
+    "model": "icbmclassic:emp_tower"
   },
   "variants": {
-    "inventory": [
-      {}
-    ],
-    "rotation": {
-      "up": {},
-      "down": {},
-      "north": {},
-      "south": {},
-      "east": {},
-      "west": {}
+    "inventory": {
+      "model": "icbmclassic:emp_tower"
+    },
+    "type": {
+      "base": {
+        "model": "icbmclassic:emp_tower_base"
+      },
+      "electric": {
+        "model": "icbmclassic:emp_tower_electric"
+      },
+      "coil": {
+        "model": "icbmclassic:emp_tower_coil"
+      },
+      "spin": {
+        "model": "icbmclassic:emp_tower_spin"
+      }
     }
   }
 }

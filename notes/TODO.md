@@ -9,20 +9,11 @@
 - Frame scale
 - Silo rendering missiles as a block state
 - Portal Handling: TF https://github.com/TeamTwilight/twilightforest/blob/1.12.x/src/main/java/twilightforest/block/BlockTFPortal.java
-- Portal Handling: Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/tile/TileEntityTeleporter.java
 - Portal Handling: RF Tools - Dimensions
 
-TELEPORTER(MachineBlock.MACHINE_BLOCK_1, 11
-
-MekanismBlocks.MachineBlock
-
-"mekanism:MachineBlock"
-
-MekanismBlocks.BasicBlock && state.getBlock().getMetaFromState(state) == 7
-
-"mekanism:BasicBlock"
-
 https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
+
+https://github.com/2sumango/Groundbaking/blob/32704010a1e3652ae977d70721944519b6b318b3/servers/groundbaking-1.12.2/files/resources/immersiveengineering/blockstates/metal_multiblock_bottling_machine.json
 
 Redmatter fluid in missile, have it move in circle for center tank and left-right inverse on lower tubes. 2 pixels left, 2 pixels right, repeat to give a centrifuge like visual.
 
@@ -31,9 +22,6 @@ Render cable coming from frame to missile. Recycle rope render from minecraft an
 ## Multi-Block Rework
 
 - Multi-Block -> Place launcher frame
-- EMP Tower -> Place multi-block self as a state
-- Replace old back frame with frame decoration blocks
-- tool interaction with multi-block (radar gun, laser det, tracker)
 
 ## Blocks Model
 
@@ -44,6 +32,7 @@ Render cable coming from frame to missile. Recycle rope render from minecraft an
 - ~~Cruise Launcher~~ -> static model, with upper animated model
 - Radar Controller -> static model no animation
 - EMP Tower -> static model with two state (charged, discharged) with charged having an animated electric creeper like texture
+- EMP Tower extender -> optional block to increase power of emp tower and give it an old multi-block feeling. Tower will check block count above it.
 
 ## Block Textures
 

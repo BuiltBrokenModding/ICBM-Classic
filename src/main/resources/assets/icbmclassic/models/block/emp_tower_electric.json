@@ -1,0 +1,56 @@
+{
+	"credit": "QueenOfMissiles",
+	"textures": {
+		"3": "icbmclassic:blocks/emp_tower/electric"
+	},
+	"elements": [
+		{
+			"name": "electric",
+			"from": [1.5, 0, 1.5],
+			"to": [14.5, 16, 14.5],
+			"faces": {
+				"north": {"uv": [0, 0, 13, 16], "texture": "#3", "cullface": "north"},
+				"east": {"uv": [0, 0, 13, 16], "texture": "#3", "cullface": "east"},
+				"south": {"uv": [0, 0, 13, 16], "texture": "#3", "cullface": "south"},
+				"west": {"uv": [0, 0, 13, 16], "texture": "#3", "cullface": "west"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 6.5, 0]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 6.5, 0]
+		},
+		"firstperson_righthand": {
+			"rotation": [-13, 44, 0],
+			"translation": [0, 3.25, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-13, 44, 0],
+			"translation": [0, 3.25, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"ground": {
+			"translation": [0, 6, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [0, -28, -45],
+			"translation": [0.75, 0.75, 0],
+			"scale": [0.39, 0.4, 0.4]
+		},
+		"head": {
+			"rotation": [-60, 0, 0],
+			"translation": [0, 6.75, -10.5],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"fixed": {
+			"rotation": [0, -1, 45],
+			"translation": [-1.5, 1.5, 0.25],
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

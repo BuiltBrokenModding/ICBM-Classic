@@ -14,6 +14,7 @@ import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -38,8 +39,11 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         tileMapCache.add(new BlockPos(0, 1, 0)); //TODO convert to multi-block handler
     }
 
+    /** Tick synced rotation */
     public float rotation = 0;
-    private float rotationDelta;
+
+    /** Client side use in render */
+    public float prevRotation = 0;
 
     public EMPMode empMode = EMPMode.ALL; //TODO remove modes
 
@@ -89,9 +93,24 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         }
         else
         {
-            rotationDelta = (float) (Math.pow(getChargePercentage(), 2) * 0.5); //TODO convert to a animation object
+            prevRotation = rotation;
+
+            float rotationDelta = (float) (Math.pow(getChargePercentage(), 2) *  10); //TODO convert to a animation object
             rotation += rotationDelta;
-            while (rotation > 360) rotation -= 360;
+
+            while(this.rotation > 180.0F) {
+                this.rotation -= 360F;
+            }
+
+            while (this.rotation - this.prevRotation< -180.0F)
+            {
+                this.prevRotation -= 360.0F;
+            }
+
+            while (this.rotation - this.prevRotation >= 180.0F)
+            {
+                this.prevRotation += 360.0F;
+            }
         }
     }
 

@@ -10,13 +10,12 @@ import icbm.classic.client.render.entity.*;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
-import icbm.classic.content.blocks.emptower.TESREMPTower;
+import icbm.classic.content.blocks.emptower.TESREmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.entity.*;
@@ -34,10 +33,12 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.MultiLayerModel;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -165,10 +166,10 @@ public class ClientReg
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, RenderZombieXmas::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, RenderCreeperXmas::new);
 
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREmpTower());
     }
 
     protected static void registerExBlockRenders()
