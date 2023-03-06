@@ -19,6 +19,21 @@ Redmatter fluid in missile, have it move in circle for center tank and left-righ
 
 Render cable coming from frame to missile. Recycle rope render from minecraft and increase in size
 
+
+## EMP tower 
+
+Render lightning-bolts coming from EMP tower coil to side panels. Simulating the side panels exist to absorb gap voltage discharge.
+
+Render lightning-bolts coming from EMP tower to random nearby blocks. Simulating energy energy storage.
+
+Allow overriding max range of EMP tower at the risk of the tower exploding. If overloaded increase lightning-bolts and start harming nearby blocks. Simulating risk of overload.
+
+Have emp tower have a spin up and downtime.
+
+When EMP tower is disabled have it discharge any stored power.
+
+Have emp tower submerge in water... mostly for visuals
+
 ## Multi-Block Rework
 
 - Multi-Block -> Place launcher frame
@@ -235,7 +250,7 @@ a scroll list to add commands to run.
 
 - Remove modes
 - Show power usage in UI
-- Scale power usage with range
+- ~~Scale power usage with range~~
 - Add cooldown with animation and UI feedback
 - Add focus area of effect allowing users to have EMP go towards sky only in a cone
 - Rework UI to be closer to vanilla UIs

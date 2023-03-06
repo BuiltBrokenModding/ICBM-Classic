@@ -40,6 +40,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -85,8 +86,22 @@ public class ClientReg
 
     @SubscribeEvent
     public static void registerBlockColor(ColorHandlerEvent.Block event) {
-        final int tint = ColorHelper.toRGB(0, 0, 255);
-        event.getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> tint,  BlockReg.blockEmpTower);
+        event.getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
+            if(worldIn != null && pos != null) {
+                final TileEntity tile = worldIn.getTileEntity(pos);
+                if (tile instanceof TileEMPTower) {
+                    //TODO cache as chargePercent(0 to 100 int) -> value
+                    int red = (int) Math.floor(Math.cos(((TileEMPTower) tile).getChargePercentage()) * 255);
+                    int blue = (int) Math.floor(Math.sin(((TileEMPTower) tile).getChargePercentage()) * 255);
+                    return ColorHelper.toRGB(red, 0, blue);
+                } else if (tile instanceof TileEmpTowerFake && ((TileEmpTowerFake) tile).getHost() != null) {
+                    int red = (int) Math.floor(Math.cos(((TileEmpTowerFake) tile).getHost().getChargePercentage()) * 255);
+                    int blue = (int) Math.floor(Math.sin(((TileEmpTowerFake) tile).getHost().getChargePercentage()) * 255);
+                    return ColorHelper.toRGB(red, 0, blue);
+                }
+            }
+            return 0;
+        },  BlockReg.blockEmpTower);
     }
 
     @SubscribeEvent

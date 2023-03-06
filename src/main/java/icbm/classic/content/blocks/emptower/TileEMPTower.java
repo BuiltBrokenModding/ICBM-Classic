@@ -31,6 +31,8 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150; //TODO move to config with a min & max
+    public static final int BONUS_RADIUS = 20;
+    public static final int ENERGY_COST_AREA = 100;
 
     public static final int CHANGE_RADIUS_PACKET_ID = 1; //TODO migrate to its own handler
     public static final int CHANGE_MODE_PACKET_ID = 2; //TODO migrate to its own handler
@@ -48,8 +50,6 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 
     /** Radius of the EMP tower */
     public int empRadius = 60; //TODO convert into a min-max limiter object
-
-    private boolean _destroyingStructure = false; //TODO Convert into a state handler
 
     private ExternalInventory inventory;
 
@@ -180,7 +180,17 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     @Override
     public int getEnergyBufferSize()
     {
-        return Math.max(3000000 * (this.empRadius / MAX_RADIUS), 1000000); //TODO add configs for min-max energy state
+        return getEnergyConsumption(); //TODO add configs for min-max energy state
+    }
+
+    @Override
+    public int getEnergyConsumption()
+    {
+        return empRadius * empRadius * ENERGY_COST_AREA;
+    }
+
+    public int getMaxRadius() {
+        return MAX_RADIUS + (subBlocks.size() * BONUS_RADIUS);
     }
 
     /**
