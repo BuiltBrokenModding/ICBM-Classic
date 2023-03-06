@@ -96,7 +96,7 @@ public class ItemBlockAbstract extends ItemBlock
     public void addInformation(ItemStack stack, @Nullable World world, List list, ITooltipFlag flag)
     {
         //Get player, don't run tool tips without
-        EntityPlayer player = Minecraft.getMinecraft().player;
+        final EntityPlayer player = Minecraft.getMinecraft().player;
         try
         {
             //Generic info
@@ -107,10 +107,7 @@ public class ItemBlockAbstract extends ItemBlock
                 list.add(translation);
             }
 
-            if (hasDetailedInfo(stack, player))
-            {
-                getDetailedInfo(stack, player, list);
-            }
+            getDetailedInfo(stack, player, list);
 
             if (hasShiftInfo(stack, player))
             {
@@ -142,7 +139,7 @@ public class ItemBlockAbstract extends ItemBlock
     protected void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info";
+        String translationKey = getUnlocalizedName(stack) + ".info.detailed";
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
@@ -163,26 +160,12 @@ public class ItemBlockAbstract extends ItemBlock
     protected void getShiftDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info.detailed";
+        String translationKey = getUnlocalizedName(stack) + ".info.shifted";
         String translation = LanguageUtility.getLocal(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
             list.addAll(LanguageUtility.splitByLine(translation));
         }
-    }
-
-    /**
-     * Does the item have detailed information to be shown
-     *
-     * @param stack
-     * @param player
-     * @return
-     */
-    protected boolean hasDetailedInfo(ItemStack stack, @Nullable EntityPlayer player)
-    {
-        String translationKey = getUnlocalizedName() + ".info";
-        String translationKey2 = getUnlocalizedName(stack) + ".info";
-        return !translationKey.equals(translationKey2);
     }
 
     /**

@@ -151,12 +151,6 @@ public class ItemBlockExplosive extends ItemBlockAbstract
     }
 
     @Override
-    protected boolean hasDetailedInfo(ItemStack stack, EntityPlayer player)
-    {
-        return true;
-    }
-
-    @Override
     public int getMetadata(int damage)
     {
         return damage;
