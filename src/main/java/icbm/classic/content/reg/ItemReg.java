@@ -3,6 +3,7 @@ package icbm.classic.content.reg;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigItems;
+import icbm.classic.content.blocks.emptower.ItemBlockEmpTower;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.items.ItemAntidote;
 import icbm.classic.content.items.ItemBattery;
@@ -131,7 +132,7 @@ public class ItemReg
         event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockConcrete));
         event.getRegistry().register(new ItemBlock(BlockReg.blockReinforcedGlass).setRegistryName(BlockReg.blockReinforcedGlass.getRegistryName()));
         event.getRegistry().register(new ItemBlockExplosive(BlockReg.blockExplosive).setRegistryName(BlockReg.blockExplosive.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockEmpTower));
+        event.getRegistry().register(new ItemBlockEmpTower(BlockReg.blockEmpTower));
         event.getRegistry().register(new ItemBlock(BlockReg.blockRadarStation).setRegistryName(BlockReg.blockRadarStation.getRegistryName()));
         event.getRegistry().register(new ItemBlock(BlockReg.blockLaunchSupport).setRegistryName(BlockReg.blockLaunchSupport.getRegistryName()));
         event.getRegistry().register(new ItemBlock(BlockReg.blockLaunchBase).setRegistryName(BlockReg.blockLaunchBase.getRegistryName()));

@@ -134,8 +134,10 @@ tile.icbmclassic:launcher_connector.info=Optional decorative launcher connection
 tile.icbmclassic:radarstation.name=Radar Station
 tile.icbmclassic:radarstation.info=Detects missiles in flight
 
-tile.icbmclassic:emptower.name=EMP Tower
-tile.icbmclassic:emptower.info=Drains energy from tiles, entities and devices
+tile.icbmclassic:emptower.0.name=EMP Tower
+tile.icbmclassic:emptower.0.info=Generates an emp blast using power
+tile.icbmclassic:emptower.1.name=EMP Tower Extender
+tile.icbmclassic:emptower.1.info=Increases max range of emp tower by %1$s
 
 tile.icbmclassic:cruiselauncher.name=Cruise Launcher
 tile.icbmclassic:cruiselauncher.info=Dummy-fires a missile without target data
