@@ -23,6 +23,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartEmpty;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemMinecart;
@@ -149,6 +150,20 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
         if (getMissileCapability().getFlightLogic() == null || getMissileCapability().getFlightLogic().shouldDecreaseMotion(this))
         {
             super.decreaseMotion();
+        }
+    }
+
+    @Override
+    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
+    {
+        if(entityHit instanceof EntityChicken) { //TODO baby zombie for lolz?
+            if(getRidingEntity() == null) {
+                entityHit.startRiding(this, true);
+            }
+        }
+        else
+        {
+            onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
         }
     }
 
