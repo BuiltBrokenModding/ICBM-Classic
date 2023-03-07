@@ -1,6 +1,15 @@
 MIT License, Applies to Code only
 
-Copyright (c) 2022 Built Broken Modding
+Copyright (c) 2023 Built Broken Modding
+
+# Definitions & Notes
+
+* Code: Any .java file, data not considered assets. Examples include, not limited to: recipes, configurations, 
+* Assets: Files including but not limited to: textures (.png), models (.obj, .json used as render data), audio (.ogg)
+* Exclusion(1): Some folders and files will define a different license as required. These licenses override the global license (this file). 
+* Exclusion(2): License does not apply to binaries created from the source nor to sections of code owned by Mojang.
+
+# License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
