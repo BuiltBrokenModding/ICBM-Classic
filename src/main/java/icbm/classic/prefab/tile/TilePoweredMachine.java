@@ -4,7 +4,6 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.energy.IEnergyBufferProvider;
-import icbm.classic.lib.energy.storage.EnergyActionType;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.IEnergySystem;
@@ -23,7 +22,7 @@ import javax.annotation.Nullable;
  */
 public class TilePoweredMachine extends TileMachine implements IEnergyBufferProvider
 {
-    EnergyBuffer buffer;
+    protected EnergyBuffer buffer;
 
     public int getEnergy()
     {
@@ -156,30 +155,6 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
             buffer = new PowerBuffer(this);
         }
         return buffer;
-    }
-
-    public static class PowerBuffer extends EnergyBuffer
-    {
-        TilePoweredMachine machine;
-
-        public PowerBuffer(TilePoweredMachine machine)
-        {
-            super(machine.getEnergyBufferSize());
-            this.machine = machine;
-        }
-
-        @Override
-        protected void onPowerChange(int prevEnergy, int current, EnergyActionType actionType)
-        {
-            super.onPowerChange(prevEnergy, current, actionType);
-            machine.updateClient = true;
-        }
-
-        @Override
-        public int getMaxBufferSize()
-        {
-            return machine.getEnergyBufferSize();
-        }
     }
 
     @SuppressWarnings("unchecked")

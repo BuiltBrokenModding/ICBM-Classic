@@ -16,13 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -183,7 +177,7 @@ public class TestTileEMPTower
         Assertions.assertEquals(world, emp.world());
 
         //Validate size
-        Assertions.assertEquals(tileEMPTower.empRadius, emp.getBlastRadius());
+        Assertions.assertEquals(tileEMPTower.range, emp.getBlastRadius());
     }
 
     @Test
@@ -227,7 +221,7 @@ public class TestTileEMPTower
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
         tileEMPTower.setEnergy(0);
-        tileEMPTower.firingCoolDown = 1;
+        tileEMPTower.cooldownTicks = 1;
 
         //Should have fired
         Assertions.assertFalse(tileEMPTower.fire());
@@ -240,7 +234,7 @@ public class TestTileEMPTower
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
         tileEMPTower.setEnergy(Integer.MAX_VALUE);
-        tileEMPTower.firingCoolDown = 1;
+        tileEMPTower.cooldownTicks = 1;
 
         //Should have fired
         Assertions.assertFalse(tileEMPTower.fire());

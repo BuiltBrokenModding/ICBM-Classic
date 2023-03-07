@@ -368,16 +368,10 @@ gui.misc.object=Object[%d, %d]
 gui.tracker.freq=Frequency
 
 gui.empTower.name=EMP Tower
-gui.empTower.missiles=Missiles
-gui.empTower.elec=Electricity
-gui.empTower.both=Both
-gui.empTower.radius=EMP Radius: %p blocks
-gui.empTower.effect=EMP Effect:
-gui.empTower.effectDebilitate=Debilitate Electronics
-gui.empTower.effectDisrupt=Disrupt Missiles
-gui.empTower.effectDeplete=Deplete Electricity
-gui.empTower.mode=Mode:
-gui.empTower.ready=Ready to blast!
+gui.empTower.error.format.range=Range must be a whole number
+gui.empTower.power=Charging... %1$s%
+gui.empTower.cooling=Cooling... %1$s%
+gui.empTower.ready=Ready to fire
 
 gui.launcherBase.name=Launcher Platform
 gui.launcherBase.place=Place Missile

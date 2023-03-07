@@ -2,14 +2,14 @@ package icbm.classic.content.blocks.emptower.gui;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.content.blocks.emptower.EMPMode;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
-import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
+import icbm.classic.content.blocks.launcher.cruise.gui.LaunchButton;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
+import icbm.classic.prefab.gui.TextInput;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -18,155 +18,182 @@ import java.io.IOException;
 
 public class GuiEMPTower extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_empty.png");
+    // Localizations
+    private static final String LANG_KEY = "gui.empTower";
+    private static final String GUI_NAME = LANG_KEY + ".name";
+    private static final String LANG_ERROR = LANG_KEY + ".error";
+    private static final String ERROR_FORMAT_RANGE = LANG_ERROR + ".format.range";
+    private static final String POWER_NEEDED = LANG_KEY + ".power";
+    private static final String COOLING_NEEDED = LANG_KEY + ".cooling";
+    private static final String READY = LANG_KEY + ".ready";
 
-    private TileEMPTower tileEntity;
-    private GuiTextField textFieldBanJing;
+    //UV
+    final int ENERGY_BAR_WIDTH = 16;
+    final int ENERGY_BAR_HEIGHT = 2;
 
-    private int containerWidth;
-    private int containerHeight;
+    // Texture
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_emp_tower.png");
+
+    private final TileEMPTower tileEntity;
+    private TextInput fieldRange;
+    private TextInput fieldHz;
+    private GuiButton firingButton;
+
+    // User feedback
+    private String targetError = null;
+    private String hzError = null;
 
     public GuiEMPTower(EntityPlayer player, TileEMPTower tileEntity)
     {
         super(new ContainerEMPTower(player, tileEntity));
         this.tileEntity = tileEntity;
         this.ySize = 166;
+        this.xSize = 175;
     }
 
-    /** Adds the buttons (and other controls) to the screen in question. */
     @Override
     public void initGui()
     {
         super.initGui();
 
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 77, this.height / 2 - 10, 50, 20, LanguageUtility.getLocal("gui.empTower.missiles")));
-        this.buttonList.add(new GuiButton(1, this.width / 2 - 25, this.height / 2 - 10, 65, 20, LanguageUtility.getLocal("gui.empTower.elec")));
-        this.buttonList.add(new GuiButton(2, this.width / 2 + 43, this.height / 2 - 10, 35, 20, LanguageUtility.getLocal("gui.empTower.both")));
+        int componentID = 0;
 
-        this.textFieldBanJing = new GuiTextField(0, fontRenderer, 72, 28, 30, 12);
-        this.textFieldBanJing.setMaxStringLength(3);
-        this.textFieldBanJing.setText(this.tileEntity.empRadius + "");
+        // Target field
+        this.fieldRange = new TextInput(componentID++, fontRenderer, 18, 17, 100, 12);
+        this.fieldRange.setFocusChangedCallback((state) -> {
+            if(!state) {
+
+                // Reset previous error state
+                this.targetError = null;
+
+                // Parse input from user and store into tile client side
+                storeRangeText();
+
+                // Don't send or store if we have broken input
+                if(targetError == null) {
+                    sendRangePacket();
+                    updateRangeText();
+                }
+
+                // Enable error rendering
+                this.fieldRange.isErrored(targetError != null);
+            }
+        });
+        this.tooltips.put(new Rectangle(18, 17, 18 + 100, 17 + 13), () -> targetError != null ? LanguageUtility.getLocal(targetError) : null);
+        //TODO add validator to only allow numeric and commas
+
+        // Frequency field
+        this.fieldHz = new TextInput(componentID++,fontRenderer, 135, 17, 34, 12);
+        this.fieldHz.setFocusChangedCallback((state) -> {
+            if(!state) {
+                // Reset previous error state
+                this.hzError = null;
+
+                // Parse input from user and store into tile client side
+                storeHzText();
+
+                // Don't send or store if we have broken input
+                if(hzError == null) {
+                    sendHzPacket();
+                    updateHzText();
+                }
+
+                // Enable error rendering
+                this.fieldHz.isErrored(hzError != null);
+            }
+        });
+        this.tooltips.put(new Rectangle(135, 17, 135 + 34, 17 + 13), () -> hzError != null ? LanguageUtility.getLocal(hzError) : null);
+        //TODO add validator for numeric only
+
+        // Launch button
+        this.firingButton = addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38));
+        this.tooltips.put(new Rectangle(24, 38, 24 + 28, 38 + 29), () -> {
+            if(!tileEntity.isReady()) {
+                if(tileEntity.getCooldown() > 0) {
+                    return LanguageUtility.getLocal(COOLING_NEEDED).replace("%1$s", String.format("%.2f",tileEntity.getCooldownPercentage() * 100));
+                }
+                else if(!tileEntity.checkExtract()) {
+                    return LanguageUtility.getLocal(POWER_NEEDED).replace("%1$s", String.format("%.2f",tileEntity.getChargePercentage() * 100));
+                }
+            }
+            return LanguageUtility.getLocal(READY);
+        });
+
+        // Energy bar
+        this.tooltips.put(new Rectangle(141, 66, 141 + ENERGY_BAR_WIDTH, 66 + ENERGY_BAR_HEIGHT), () -> String.format("%s / %s FE", tileEntity.getEnergy(), tileEntity.getEnergyBufferSize()));
     }
 
-    /**
-     * Fired when a control is clicked. This is the equivalent of
-     * ActionListener.actionPerformed(ActionEvent e).
-     */
-    @Override
-    protected void actionPerformed(GuiButton par1GuiButton)
-    {
-        switch (par1GuiButton.id)
-        {
-            case 0:
-                this.tileEntity.empMode = EMPMode.MISSILES_ONLY;
-                break;
-            case 1:
-                this.tileEntity.empMode = EMPMode.ELECTRICITY_ONLY;
-                break;
-            case 2:
-                this.tileEntity.empMode = EMPMode.ALL;
-                break;
-        }
-
-        ICBMClassic.packetHandler.sendToServer(new PacketTile("mode_C>S", TileEMPTower.CHANGE_MODE_PACKET_ID, this.tileEntity).addData((byte)this.tileEntity.empMode.ordinal()));
-    }
-
-    /** Call this method from you GuiScreen to process the keys into textbox. */
     @Override
     public void keyTyped(char par1, int par2) throws IOException
     {
         super.keyTyped(par1, par2);
-        this.textFieldBanJing.textboxKeyTyped(par1, par2);
-
-        try
-        {
-            int radius = Math.min(Math.max(Integer.parseInt(this.textFieldBanJing.getText()), 10), TileEMPTower.MAX_RADIUS);
-            this.tileEntity.empRadius = radius;
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", TileEMPTower.CHANGE_RADIUS_PACKET_ID, this.tileEntity).addData(this.tileEntity.empRadius));
-        }
-        catch (NumberFormatException e)
-        {
-
-        }
+        this.fieldRange.textboxKeyTyped(par1, par2);
+        this.fieldHz.textboxKeyTyped(par1, par2);
     }
 
     /** Args: x, y, buttonClicked */
     @Override
-    public void mouseClicked(int x, int y, int par3) throws IOException
+    public void mouseClicked(int par1, int par2, int par3) throws IOException
     {
-        super.mouseClicked(x, y, par3);
-        this.textFieldBanJing.mouseClicked(x - containerWidth, y - containerHeight, par3);
+        super.mouseClicked(par1, par2, par3);
+        this.fieldRange.mouseClicked(par1 - guiLeft, par2 - guiTop, par3);
+        this.fieldHz.mouseClicked(par1 - guiLeft, par2 - guiTop, par3);
     }
 
-    /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
+    @Override
+    protected void actionPerformed(GuiButton button)
+    {
+        if(button.id == firingButton.id)
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("fire_C>S", TileEMPTower.FIRE_PACKET_ID, this.tileEntity));
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.empTower.name"), 65, 6, 4210752);
+        // Draw text
+        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal(GUI_NAME), 52, 6, 4210752);
+        this.fontRenderer.drawString("/ " + tileEntity.getMaxRadius(), 62, 19, 4210752);
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.empTower.radius").replaceAll("%p", "        "), 12, 30, 4210752);
-        this.textFieldBanJing.drawTextBox();
+        // Draw components
+        this.fieldRange.drawTextBox();
+        this.fieldHz.drawTextBox();
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.empTower.effect"), 12, 55, 4210752);
-
-        // Shows the EMP mode of the EMP Tower
-        String mode = LanguageUtility.getLocal("gui.empTower.effectDebilitate");
-
-        if (this.tileEntity.empMode == EMPMode.MISSILES_ONLY)
-        {
-            mode = LanguageUtility.getLocal("gui.empTower.effectDisrupt");
-        }
-        else if (this.tileEntity.empMode == EMPMode.ELECTRICITY_ONLY)
-        {
-            mode = LanguageUtility.getLocal("gui.empTower.effectDeplete");
+        // Draw button cover
+        if(!firingButton.enabled) {
+            FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            // TODO add animation to opening glass
+            this.drawTexturedModalRect(20, 35, 220, 5, 36, 36);
         }
 
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.empTower.mode") + " " + mode, 12, 105, 4210752);
-
-        // Shows the status of the EMP Tower
-        String color = "\u00a74";
-        String status = LanguageUtility.getLocal("gui.misc.idle");
-
-        if (!this.tileEntity.hasPower())
-        {
-            status = LanguageUtility.getLocal("gui.misc.nopower");
-        }
-        else
-        {
-            color = "\u00a72";
-            status = LanguageUtility.getLocal("gui.empTower.ready");
-        }
-
-        this.fontRenderer.drawString(color + LanguageUtility.getLocal("gui.misc.status") + " " + status, 12, 120, 4210752);
-        this.fontRenderer.drawString("Energy: " + this.tileEntity.getEnergy() + "/" + this.tileEntity.getEnergyBufferSize(), 12, 150, 4210752);
+        // Goes last so tooltips render above our UI elements
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
 
-    /** Draw the background layer for the GuiContainer (everything behind the items) */
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
-        int containerPosX = (this.width - this.xSize) / 2;
-        int containerPosY = (this.height - this.ySize) / 2;
-
         //Draw background
         drawDefaultBackground();
+
+        // Set color and texture
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        containerWidth = (this.width - this.xSize) / 2;
-        containerHeight = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(containerWidth, containerHeight, 0, 0, this.xSize, this.ySize);
 
-        //Draw energy bar
-        if (tileEntity.getEnergy() > 0)
-        {
-            float energyScale = tileEntity.getEnergy() / (float) tileEntity.getEnergyBufferSize();
+        // Render background
+        this.drawTexturedModalRect(guiLeft, guiTop,0, 0, this.xSize, this.ySize);
 
-            final int textureX = 352 / 2;
-            final int textureWidth = 8;
-            final int textureHeight = 142 / 2;
-            final int height = (int) Math.min(textureHeight, Math.floor(textureHeight * energyScale));
-            this.drawTexturedModalRect(containerPosX + 168, containerPosY + 65 + (textureHeight - height), textureX, textureHeight - height, textureWidth, height);
-        }
+        // Draw features
+        drawEnergyBar();
+    }
+
+    protected void drawEnergyBar() {
+
+        float energyPercent = tileEntity.getEnergy() / (float)tileEntity.getEnergyBufferSize();
+        final float barRatio = (float)Math.floor(ENERGY_BAR_WIDTH * energyPercent);
+        final int minBar = tileEntity.getEnergy() > 0 ? 1 : 0;
+        int renderWidth = (int)Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
+        this.drawTexturedModalRect(guiLeft + 141, guiTop + 66, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
     }
 
     @Override
@@ -174,9 +201,45 @@ public class GuiEMPTower extends GuiContainerBase
     {
         super.updateScreen();
 
-        if (!this.textFieldBanJing.isFocused())
-        {
-            this.textFieldBanJing.setText(this.tileEntity.empRadius + "");
+        // Update from tile's data
+        if(!fieldRange.isFocused())
+            updateRangeText();
+        if(!fieldHz.isFocused())
+            updateHzText();
+
+        // only enable button if tile is ready to launch
+        this.firingButton.enabled = this.tileEntity.isReady();
+    }
+
+    protected void updateRangeText() {
+        this.fieldRange.setText(Integer.toString(tileEntity.range));
+    }
+
+
+
+    protected void storeRangeText() {
+        final String inputText = this.fieldRange.getText();
+        try {
+            this.tileEntity.range = Integer.parseInt(inputText);
         }
+        catch (NumberFormatException e) {
+            targetError = ERROR_FORMAT_RANGE;
+        }
+    }
+
+    protected void sendRangePacket() {
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", TileEMPTower.CHANGE_RADIUS_PACKET_ID, tileEntity).addData(tileEntity.range));
+    }
+
+    protected void updateHzText() {
+        this.fieldHz.setText(this.tileEntity.radioCap.getChannel());
+    }
+
+    protected void storeHzText() {
+        this.tileEntity.radioCap.setChannel(this.fieldHz.getText());
+    }
+
+    protected void sendHzPacket() {
+        ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileEMPTower.CHANGE_HZ_PACKET_ID, tileEntity).addData(this.tileEntity.radioCap.getChannel()));
     }
 }

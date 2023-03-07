@@ -56,8 +56,6 @@ public class NBTConstants
     public static final String DIMENSION = "dimension";
     public static final String DURATION = "duration";
     public static final String EMIT_ALL = "emitAll";
-    public static final String EMP_MODE = "empMode";
-    public static final String EMP_RADIUS = "empRadius";
     public static final String ENERGY = "energy";
     public static final String EXPLOSION_SIZE = "explosionSize";
     public static final String EXPLOSIVE = "explosive";

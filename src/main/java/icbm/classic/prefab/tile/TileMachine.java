@@ -59,12 +59,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
     @Override
     public void update()
     {
-        //Trigger first tick
-        if (ticks == -1)
-        {
-            onFirstTick();
-        }
-
         //Increase tick
         ticks++;
         if (ticks >= Integer.MAX_VALUE - 1)
@@ -90,10 +84,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
                 }
             }
         }
-    }
-
-    protected void onFirstTick()
-    {
     }
 
     @Override
