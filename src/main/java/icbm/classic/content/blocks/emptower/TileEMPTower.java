@@ -45,6 +45,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     public static final int ENERGY_COST_AREA = 100;
     public static final int COOLDOWN = 10  * 20;
     public static final int ENERGY_INPUT = 1000;
+    public static final int ROTATION_SPEED = 15;
 
     public static final int CHANGE_RADIUS_PACKET_ID = 1; //TODO migrate to its own handler
     public static final int CHANGE_HZ_PACKET_ID = 2;
@@ -152,7 +153,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         }
         else
         {
-            rotation += (float) (Math.pow(getChargePercentage(), 2) * 10);
+            rotation += getChargePercentage() * ROTATION_SPEED;
 
             clamp(rotation);
 
