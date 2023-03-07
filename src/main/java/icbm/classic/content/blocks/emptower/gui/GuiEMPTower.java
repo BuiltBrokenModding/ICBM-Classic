@@ -59,7 +59,7 @@ public class GuiEMPTower extends GuiContainerBase
         int componentID = 0;
 
         // Target field
-        this.fieldRange = new TextInput(componentID++, fontRenderer, 18, 17, 100, 12);
+        this.fieldRange = new TextInput(componentID++, fontRenderer, 18, 17, 40, 12);
         this.fieldRange.setFocusChangedCallback((state) -> {
             if(!state) {
 
