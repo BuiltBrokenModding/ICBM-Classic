@@ -20,9 +20,12 @@ import icbm.classic.prefab.tile.PowerBuffer;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
@@ -111,10 +114,12 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         {
             if (ticks % 20 == 0 && getEnergy() > 0 && getCooldown() <= 0) //TODO convert to a mix of a timer and/or event handler
             {
-                ICBMSounds.MACHINE_HUM.play(world, xi(), yi(), zi(), 0.5F, 0.85F * getChargePercentage(), true);
+                ICBMSounds.MACHINE_HUM.play(world, xi() + 0.5, yi() + 0.5, zi() + 0.5, 0.5F, 0.85F * getChargePercentage(), true);
             }
-
-            // TODO if in cooldown play pop sound of metal and smoke/steam particles
+            else if(getCooldown() > 0 && ticks % 10 == world.rand.nextInt(10)) {
+                //TODO add custom sound so sub-titles match
+                world.playSound(null, getPos(), SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.15F + 0.6F);
+            }
 
             // Sync every so often to keep clients matching on animations
             if(ticks % 3 == 0) {
@@ -131,14 +136,25 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 
         if(cooldownTicks > 0) {
             cooldownTicks--;
+
+            if (ticks % 5 == 0) {
+
+                // Spawn particles, do 1 for each height
+                for (int i = 0; i <= subBlocks.size(); i++) {
+
+                    // Randomly select one of the 4 sides
+                    float rotation = this.rotation;
+                    int side = world.rand.nextInt(4);
+                    rotation += side * 90f;
+                    spawnParticles(rotation + 45, i); // offset 45 for model being rotated
+                }
+            }
         }
         else
         {
             rotation += (float) (Math.pow(getChargePercentage(), 2) * 10);
 
-            while(this.rotation > 180.0F) {
-                this.rotation -= 360F;
-            }
+            clamp(rotation);
 
             while (this.rotation - this.prevRotation< -180.0F)
             {
@@ -150,6 +166,39 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
                 this.prevRotation += 360.0F;
             }
         }
+    }
+
+    private void spawnParticles(float rotation, int yOffset) {
+        final float faceWidth =  7.0F / 16.0F;
+        final float faceHeight = 9.0F / 16.0F;
+        final float faceYOffset = 5.0F / 16.0F;
+        final float faceWOffset = 3.5F / 16.0F;
+
+        double faceA = faceWidth * world.rand.nextFloat() - (faceWidth / 2);
+        double faceB = faceHeight * world.rand.nextFloat();
+
+        double rad = Math.toRadians(clamp(rotation));
+        double rad2 = Math.toRadians(clamp(rotation + 90));
+        double vecX = Math.sin(rad)  * faceWOffset;
+        double vecZ = Math.cos(rad)  * faceWOffset;
+        double faceX = Math.sin(rad2) * faceA;
+        double faceZ = Math.cos(rad2) * faceA;
+
+        double x = pos.getX() + 0.5;
+        double y = pos.getY() + yOffset + faceYOffset - 0.2f;
+        double z = pos.getZ() + 0.5;
+
+        double d0 = x + vecX + faceX;
+        double d1 = y + faceYOffset + faceB;
+        double d2 = z + vecZ + faceZ;
+        world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+    }
+
+    private float clamp(float rotation) {
+        while(rotation > 180.0F) {
+            rotation -= 360F;
+        }
+        return rotation;
     }
 
     @Override
