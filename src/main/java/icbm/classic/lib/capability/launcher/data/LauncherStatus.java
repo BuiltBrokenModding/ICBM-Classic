@@ -1,11 +1,11 @@
 package icbm.classic.lib.capability.launcher.data;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.launcher.IMissileLauncherStatus;
+import icbm.classic.api.launcher.IActionStatus;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class LauncherStatus implements IMissileLauncherStatus {
+public class LauncherStatus implements IActionStatus {
 
     private static final String ERROR_PREFIX = "launcher.error." + ICBMConstants.PREFIX + "message";
     public static final LauncherStatus ERROR_GENERIC = new LauncherStatus(true, ERROR_PREFIX + ".generic");

@@ -3,13 +3,12 @@ package icbm.classic.content.blocks.launcher.cruise;
 import icbm.classic.api.radio.IRadioMessage;
 import icbm.classic.api.radio.IRadioReceiver;
 import icbm.classic.api.radio.IRadioSender;
-import icbm.classic.api.radio.messages.ILaunchMessage;
+import icbm.classic.api.radio.messages.ITriggerActionMessage;
 import icbm.classic.api.radio.messages.ITargetMessage;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.lib.radio.messages.TextMessage;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.FakeRadioSender;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
@@ -32,7 +31,7 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
                     host.setTarget(target);
 
                     // Don't show set message if we are going to fire right away
-                    if(!(packet instanceof ILaunchMessage)) {
+                    if(!(packet instanceof ITriggerActionMessage)) {
                         sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_TARGET_SET, target.x, target.y, target.z));
                     }
                 }
@@ -42,7 +41,7 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
             }
 
             // Fire missile packet
-            if(packet instanceof ILaunchMessage) {
+            if(packet instanceof ITriggerActionMessage) {
                 host.doLaunchNext = true;
                 if(sender instanceof FakeRadioSender) {
                     host.nextFireCause = new EntityCause(((FakeRadioSender) sender).player); //TODO add radio cause before player, pass in item used

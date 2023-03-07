@@ -3,7 +3,7 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.launcher.IMissileLauncherStatus;
+import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
@@ -34,7 +34,7 @@ public class LauncherCapability implements IMissileLauncher {
 
 
     @Override
-    public IMissileLauncherStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
+    public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
 
         // Pre-flight checks TODO add a way to bypass in the launcher or cause settings
         if(targetData == null || targetData.getPosition() == null) {

@@ -21,5 +21,5 @@ public interface IMissileLauncher
      * @param simulate to do pre-flight checks and get current status
      * @return status of launch
      */
-    IMissileLauncherStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate); //TODO add object for trigger reason to wrapper more data
+    IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate); //TODO add object for trigger reason to wrapper more data
 }

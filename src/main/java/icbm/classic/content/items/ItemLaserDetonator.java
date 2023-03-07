@@ -7,7 +7,7 @@ import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.radio.RadioRegistry;
-import icbm.classic.lib.radio.messages.LaunchTargetMessage;
+import icbm.classic.lib.radio.messages.TriggerActionTargetMessage;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemRadio;
 import io.netty.buffer.ByteBuf;
@@ -106,7 +106,7 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
                         formatNumber(event.getPos().z)
                     ), false);
 
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new LaunchTargetMessage(getRadioChannel(stack), event.getPos()));
+                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new TriggerActionTargetMessage(getRadioChannel(stack), event.getPos()));
                 }
                 else if(event.cancelReason != null) {
                     player.sendStatusMessage(new TextComponentTranslation(event.cancelReason), true);

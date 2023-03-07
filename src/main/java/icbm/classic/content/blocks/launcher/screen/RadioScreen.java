@@ -3,12 +3,11 @@ package icbm.classic.content.blocks.launcher.screen;
 import icbm.classic.api.radio.IRadioMessage;
 import icbm.classic.api.radio.IRadioReceiver;
 import icbm.classic.api.radio.IRadioSender;
-import icbm.classic.api.radio.messages.ILaunchMessage;
+import icbm.classic.api.radio.messages.ITriggerActionMessage;
 import icbm.classic.api.radio.messages.ITargetMessage;
 import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.lib.radio.messages.TextMessage;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadioReceiver {
@@ -28,7 +27,7 @@ public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadio
                     host.setTarget(target);
 
                     // Don't show set message if we are going to fire right away
-                    if(!(packet instanceof ILaunchMessage)) {
+                    if(!(packet instanceof ITriggerActionMessage)) {
                         sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_TARGET_SET, target.x, target.y, target.z));
                     }
                 }
@@ -38,7 +37,7 @@ public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadio
             }
 
             // Fire missile packet
-            if(packet instanceof ILaunchMessage) {
+            if(packet instanceof ITriggerActionMessage) {
                 if (host.fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
                     final Vec3d target = host.getTarget();
                     final double distance = target.squareDistanceTo(host.xi()+ 0.5, host.yi() + 0.5, host.zi()+ 0.5); // TODO base from launcher

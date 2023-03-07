@@ -3,7 +3,7 @@ package icbm.classic.content.blocks.launcher.screen;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.launcher.IMissileLauncherStatus;
+import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -19,7 +19,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -143,7 +142,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
      * Calls the missile launcher base to launch it's missile towards a targeted location
      * @return true if launched, false if not
      */
-    public IMissileLauncherStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
+    public IActionStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
     {
         final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount, lockHeight);
         return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
@@ -153,7 +152,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         // TODO add chain fire delay settings to screen
         boolean hasFired = false;
         for(IMissileLauncher launcher : getLaunchers()) {
-            final IMissileLauncherStatus status = launch(launcher, getLaunchers().size(), false); // TODO output status to users
+            final IActionStatus status = launch(launcher, getLaunchers().size(), false); // TODO output status to users
             if(!status.isError()) {
                 hasFired = true;
             }
@@ -178,7 +177,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 return LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
             }
 
-            final IMissileLauncherStatus status = launch(launcher, getNetworkNode().getLaunchers().size(), true);
+            final IActionStatus status = launch(launcher, getNetworkNode().getLaunchers().size(), true);
             if(status.isError()) {
                 return status.message();
             }

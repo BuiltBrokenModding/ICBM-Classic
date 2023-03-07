@@ -2,11 +2,9 @@ package icbm.classic.api.events;
 
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.launcher.IMissileLauncherStatus;
+import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
@@ -46,7 +44,7 @@ public abstract class LauncherEvent extends Event
         public final boolean simulate;
 
         /** Optional reason for event being canceled, defaults to 'launcher.status.icbmclassic:message.canceled' */
-        public IMissileLauncherStatus cancelReason;
+        public IActionStatus cancelReason;
 
         public PreLaunch(IMissileSource source, IMissileLauncher launcher, IMissileHolder holder, IMissileTarget target, boolean simulate)
         {
