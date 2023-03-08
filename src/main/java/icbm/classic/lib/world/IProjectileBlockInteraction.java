@@ -1,4 +1,4 @@
-package icbm.classic.prefab.entity;
+package icbm.classic.lib.world;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -29,6 +29,8 @@ public interface IProjectileBlockInteraction {
 
 
     enum EnumHitReactions {
+        /** Continue collision interaction, but pass to next handler in list */
+        PASS(false),
         /** Continue collision interaction */
         CONTINUE(false),
         /** Continue but don't trigger impact */

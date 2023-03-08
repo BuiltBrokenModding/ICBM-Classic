@@ -53,7 +53,7 @@ import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.CapabilityRadio;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.thread.WorkerThreadManager;
-import icbm.classic.prefab.entity.ProjectileBlockInteraction;
+import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.prefab.item.LootEntryItemStack;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;

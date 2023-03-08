@@ -52,7 +52,7 @@ public class BlastShrapnel extends Blast
                     }
 
                     float rotationPitch = 0.0F + amountToRotate * ii;
-                    arrow.setLocationAndAngles(location.x(), location.y() + 0.5, location.z(), rotationYaw, rotationPitch);
+                    arrow.setLocationAndAngles(location.x(), Math.floor(location.y()) + 1.5, location.z(), rotationYaw, rotationPitch);
                     arrow.posX -= (MathHelper.cos(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);
                     arrow.posY -= 0.10000000149011612D;
                     arrow.posZ -= (MathHelper.sin(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);

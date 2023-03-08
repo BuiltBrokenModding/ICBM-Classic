@@ -1,3 +1,11 @@
+# General changes
+
+- Launcher -> Make det height it's own field that controls raytrace offset for triggering warhead
+- Missile -> Have it track distance to ground
+- Redmatter merge logic isn't working
+- Redmatter move logic isn't working
+- Audio needs updated on all files
+
 # Graphics Overhaul
 
 ## Missiles Work Left

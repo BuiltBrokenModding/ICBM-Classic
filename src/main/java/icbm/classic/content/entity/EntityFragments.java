@@ -2,6 +2,8 @@ package icbm.classic.content.entity;
 
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.content.entity.mobs.EntityXmasMob;
+import icbm.classic.lib.world.IProjectileBlockInteraction;
+import icbm.classic.lib.world.ProjectileBlockInteraction;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -22,6 +24,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import javax.annotation.Nullable;
 import java.util.List;
 
+@Deprecated //TODO recode to use projectile system and have a unique entity per type
 public class EntityFragments extends Entity implements IEntityAdditionalSpawnData
 {
     private BlockPos inTilePosition = new BlockPos(0, 0, 0);
@@ -414,8 +417,9 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
             this.inTilePosition = raytraceResultIn.getBlockPos();
             this.inTile = this.world.getBlockState(inTilePosition);
 
-            if(this.inTile.getMaterial() == Material.LEAVES) {
-                this.world.setBlockToAir(this.inTilePosition);
+            final IProjectileBlockInteraction.EnumHitReactions reaction =
+                ProjectileBlockInteraction.handleSpecialInteraction(world, inTilePosition, raytraceResultIn.hitVec, raytraceResultIn.sideHit, inTile, this);
+            if(reaction.stop) {
                 return;
             }
 

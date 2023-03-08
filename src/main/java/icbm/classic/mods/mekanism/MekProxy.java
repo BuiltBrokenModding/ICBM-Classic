@@ -1,13 +1,11 @@
 package icbm.classic.mods.mekanism;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
-import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.network.packet.PacketEntityPos;
 import icbm.classic.mods.ModProxy;
 import icbm.classic.prefab.entity.EntityProjectile;
-import icbm.classic.prefab.entity.IProjectileBlockInteraction;
-import icbm.classic.prefab.entity.ProjectileBlockInteraction;
+import icbm.classic.lib.world.IProjectileBlockInteraction;
+import icbm.classic.lib.world.ProjectileBlockInteraction;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -16,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
