@@ -413,14 +413,23 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         {
             this.inTilePosition = raytraceResultIn.getBlockPos();
             this.inTile = this.world.getBlockState(inTilePosition);
+
+            if(this.inTile.getMaterial() == Material.LEAVES) {
+                this.world.setBlockToAir(this.inTilePosition);
+                return;
+            }
+
             this.motionX = (double) ((float) (raytraceResultIn.hitVec.x - this.posX));
             this.motionY = (double) ((float) (raytraceResultIn.hitVec.y - this.posY));
             this.motionZ = (double) ((float) (raytraceResultIn.hitVec.z - this.posZ));
+
             float f2 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
             this.posX -= this.motionX / (double) f2 * 0.05000000074505806D;
             this.posY -= this.motionY / (double) f2 * 0.05000000074505806D;
             this.posZ -= this.motionZ / (double) f2 * 0.05000000074505806D;
+
             this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+
             this.inGround = true;
             this.arrowShake = 7;
 
