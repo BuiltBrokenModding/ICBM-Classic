@@ -108,7 +108,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                 }
 
                 //Check for incoming and launch anti-missiles if
-                if (this.ticks % 20 == 0 && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
+                if (this.ticks % 20 == 0 && !radioCap.getChannel().equals(RadioRegistry.EMPTY_HZ) && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
                 {
                     RadioRegistry.popMessage(world, radioCap, new IncomingMissileMessage(radioCap.getChannel(), this.incomingThreats.get(0))); //TODO use static var for event name
                 }
