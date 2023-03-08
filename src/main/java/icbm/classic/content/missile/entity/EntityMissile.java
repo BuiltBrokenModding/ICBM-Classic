@@ -158,6 +158,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     {
         if(entityHit instanceof EntityChicken) { //TODO baby zombie for lolz?
             if(getRidingEntity() == null) {
+                ICBMSounds.MEEP.play(entityHit, 2, 1, true);
                 entityHit.startRiding(this, true);
             }
         }

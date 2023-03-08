@@ -38,14 +38,23 @@ public enum ICBMSounds
     REDMATTER("redmatter"),
     SONICWAVE("sonicwave"),
     MISSILE_LAUNCH("missilelaunch"),
-    MISSILE_ENGINE("missileinair");
+    MISSILE_ENGINE("missileinair"),
+    MEEP("meep", SoundCategory.NEUTRAL);
 
     private final ResourceLocation location;
+    private final SoundCategory category;
     private SoundEvent sound;
+
 
 
     ICBMSounds(String path)
     {
+       this(path, SoundCategory.BLOCKS);
+    }
+
+    ICBMSounds(String path, SoundCategory category)
+    {
+        this.category = category;
         location = new ResourceLocation(ICBMConstants.DOMAIN, path);
     }
 
@@ -86,12 +95,12 @@ public enum ICBMSounds
      */
     public void play(World world, double x, double y, double z, float volume, float pitch, boolean distanceDelay)
     {
-        world.playSound(null, x, y, z, getSound(), SoundCategory.BLOCKS, volume, pitch);
+        world.playSound(null, x, y, z, getSound(), category, volume, pitch);
     }
 
     public void play(World world, IPos3D pos, float volume, float pitch, boolean distanceDelay)
     {
-        world.playSound(null, pos.x(), pos.y(), pos.z(), getSound(), SoundCategory.BLOCKS, volume, pitch);
+        world.playSound(null, pos.x(), pos.y(), pos.z(), getSound(), category, volume, pitch);
     }
 
     @SubscribeEvent
