@@ -11,7 +11,7 @@
     "particle": "icbmclassic:blocks/machine_green",
     "down": "icbmclassic:blocks/machine_green",
     "up": "icbmclassic:blocks/machine_green",
-    "north": "icbmclassic:blocks/screen/silo",
+    "north": "icbmclassic:blocks/screen/radar",
     "east": "icbmclassic:blocks/machine_green",
     "south": "icbmclassic:blocks/machine_green",
     "west": "icbmclassic:blocks/machine_green"

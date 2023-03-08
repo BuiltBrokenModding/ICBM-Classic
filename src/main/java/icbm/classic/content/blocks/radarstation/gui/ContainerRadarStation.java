@@ -1,5 +1,6 @@
-package icbm.classic.content.blocks.radarstation;
+package icbm.classic.content.blocks.radarstation.gui;
 
+import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 

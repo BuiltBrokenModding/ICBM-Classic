@@ -1,139 +1,53 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:machines/radar_station.obj",
-    "transform": {
-      "thirdperson_lefthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          -0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "thirdperson_righthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "gui": {
-        "rotation": [
-          {
-            "x": 25
-          },
-          {
-            "y": 225
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          -0.45,
-          0,
-          0
-        ],
-        "scale": 0.7
-      },
-      "firstperson_righthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.3,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "firstperson_lefthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "ground": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.11,
-          0,
-          0.11
-        ],
-        "scale": 0.3
-      }
-    }
+    "model": "icbmclassic:radar_screen"
   },
   "variants": {
-    "inventory": [
-      {}
-    ],
-    "rotation": {
-      "up": {},
-      "down": {},
-      "north": {},
-      "south": {},
-      "east": {},
-      "west": {}
+    "inventory": {
+      "model": "icbmclassic:radar_screen"
+    },
+    "type": {
+      "off": {
+        "textures": {
+          "north": "icbmclassic:blocks/screen/radar_off"
+        }
+      },
+      "on": {
+        "textures": {
+          "north": "icbmclassic:blocks/screen/radar"
+        }
+      },
+      "warning": {
+        "textures": {
+          "north": "icbmclassic:blocks/screen/radar_warning"
+        }
+      },
+      "danger": {
+        "textures": {
+          "north": "icbmclassic:blocks/screen/radar_danger"
+        }
+      }
     },
     "redstone": {
       "true": {},
       "false": {}
+    },
+    "rotation": {
+      "up": {},
+      "down": {},
+      "north": {
+        "y": 180
+      },
+      "south": {
+        "y": 0
+      },
+      "east": {
+        "y": 270
+      },
+      "west": {
+        "y": 90
+      }
     }
   }
 }

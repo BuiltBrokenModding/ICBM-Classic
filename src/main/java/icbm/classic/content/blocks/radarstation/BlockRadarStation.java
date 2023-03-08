@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.radarstation;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.blocks.launcher.frame.EnumFrameState;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -26,16 +27,27 @@ import javax.annotation.Nullable;
 public class BlockRadarStation extends BlockICBM
 {
     public static final PropertyBool REDSTONE_PROPERTY = PropertyBool.create("redstone");
+    public static final PropertyRadarState RADAR_STATE = new PropertyRadarState();
 
     public BlockRadarStation()
     {
-        super("radarStation");
+        super("radarStation"); //TODO rename to "radar_screen"
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    {
+        final TileEntity tile = worldIn.getTileEntity(pos);
+        if(tile instanceof TileRadarStation) {
+            return state.withProperty(RADAR_STATE, ((TileRadarStation) tile).getRadarState());
+        }
+        return state;
     }
 
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, ROTATION_PROP, REDSTONE_PROPERTY);
+        return new BlockStateContainer(this, ROTATION_PROP, REDSTONE_PROPERTY, RADAR_STATE);
     }
 
     @Override
@@ -99,21 +111,9 @@ public class BlockRadarStation extends BlockICBM
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+        return EnumBlockRenderType.MODEL;
     }
 
     @Nullable

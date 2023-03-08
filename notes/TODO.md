@@ -5,7 +5,12 @@
 - Redmatter merge logic isn't working
 - Redmatter move logic isn't working
 - Audio needs updated on all files
-
+- Remove fire effect from shrapnel or make it cause fire (if so make fire change random)
+- break apart fragment entity into different unique entities that extend projectile
+- break apart shrapnel blast into different types that take an entity contractor from a base class (for re-usability)
+- Portal Handling: TF https://github.com/TeamTwilight/twilightforest/blob/1.12.x/src/main/java/twilightforest/block/BlockTFPortal.java
+- Portal Handling: RF Tools - Dimensions
+- 
 # Graphics Overhaul
 
 ## Missiles Work Left
@@ -16,8 +21,7 @@
 - UI scale
 - Frame scale
 - Silo rendering missiles as a block state
-- Portal Handling: TF https://github.com/TeamTwilight/twilightforest/blob/1.12.x/src/main/java/twilightforest/block/BlockTFPortal.java
-- Portal Handling: RF Tools - Dimensions
+
 
 https://forums.minecraftforge.net/topic/95608-solved-1164-forgemulti-layer-block-rendering-issue/
 
@@ -45,17 +49,6 @@ Have emp tower submerge in water... mostly for visuals
 ## Multi-Block Rework
 
 - Multi-Block -> Place launcher frame
-
-## Blocks Model
-
-- ~~Silo (Pad)~~
-- ~~Silo (Connector)~~ -> goes under frame as a full block to provide wire connections to silo pad
-- ~~Silo Frame~~
-- ~~Silo Screen~~
-- ~~Cruise Launcher~~ -> static model, with upper animated model
-- Radar Controller -> static model no animation
-- EMP Tower -> static model with two state (charged, discharged) with charged having an animated electric creeper like texture
-- EMP Tower extender -> optional block to increase power of emp tower and give it an old multi-block feeling. Tower will check block count above it.
 
 ## Block Textures
 

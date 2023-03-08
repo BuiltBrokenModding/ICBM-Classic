@@ -1,7 +1,9 @@
-package icbm.classic.content.blocks.radarstation;
+package icbm.classic.content.blocks.radarstation.gui;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.radarstation.RadarObjectType;
+import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;

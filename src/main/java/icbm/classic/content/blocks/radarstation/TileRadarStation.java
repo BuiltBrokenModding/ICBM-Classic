@@ -3,6 +3,8 @@ package icbm.classic.content.blocks.radarstation;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;
+import icbm.classic.content.blocks.radarstation.gui.GuiRadarStation;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
@@ -17,7 +19,6 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.ExternalInventory;
 import icbm.classic.prefab.inventory.IInventoryProvider;
-import icbm.classic.prefab.tile.TileFrequency;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -63,14 +64,16 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     ExternalInventory inventory;
 
     // UI data
-    protected List<Pos> guiDrawPoints = new ArrayList();
-    protected RadarObjectType[] types;
-    protected boolean updateDrawList = true;
+    public List<Pos> guiDrawPoints = new ArrayList();
+    public RadarObjectType[] types;
+    public boolean updateDrawList = true;
     public boolean hasIncomingMissiles = false;
     public boolean hasDetectedEntities = false;
     public float rotation = 0;
 
     public final RadioRadar radioCap = new RadioRadar(this);
+
+    private EnumRadarState clientState;
 
     @Override
     public ExternalInventory getInventory()
@@ -164,6 +167,14 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
             {
                 guiDrawPoints.clear();
             }
+        }
+
+        // Force block re-render if our state has changed
+        final EnumRadarState state = getRadarState();
+        if(clientState != state) {
+            this.markDirty();
+            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, clientState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, state), 3);
+            clientState = state;
         }
     }
 
@@ -310,6 +321,19 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         super.writeDescPacket(buf);
         buf.writeBoolean(this.detectedThreats.size() > 0);
         buf.writeBoolean(this.incomingThreats.size() > 0);
+    }
+
+    public EnumRadarState getRadarState() {
+        if(!hasPower()) {
+            return EnumRadarState.OFF;
+        }
+        else if(hasIncomingMissiles) {
+            return EnumRadarState.DANGER;
+        }
+        else  if(hasDetectedEntities) {
+            return EnumRadarState.WARNING;
+        }
+        return EnumRadarState.ON;
     }
 
     @Override
