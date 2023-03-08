@@ -5,12 +5,12 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
-import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
+import icbm.classic.lib.capability.chicken.CapSpaceChicken;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -21,12 +21,8 @@ import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityMinecartEmpty;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemMinecart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -160,6 +156,12 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             if(getRidingEntity() == null) {
                 ICBMSounds.MEEP.play(entityHit, 2, 1, true);
                 entityHit.startRiding(this, true);
+                if(entityHit.hasCapability(CapSpaceChicken.INSTANCE, null)) {
+                    final CapSpaceChicken cap = entityHit.getCapability(CapSpaceChicken.INSTANCE, null);
+                    if(cap != null) {
+                        cap.setSpace(true);
+                    }
+                }
             }
         }
         else

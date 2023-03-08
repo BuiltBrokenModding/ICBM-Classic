@@ -7,14 +7,20 @@ import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleLauncherSmoke;
 import icbm.classic.client.fx.ParticleSmokeICBM;
+import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.mods.ModInteraction;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderChicken;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -23,6 +29,16 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy
 {
+    @Override
+    public void init()
+    {
+        super.init();
+        final Render render = Minecraft.getMinecraft().getRenderManager().getEntityClassRenderObject(EntityChicken.class);
+        if(render instanceof RenderChicken) {
+            ((RenderChicken) render).addLayer(new LayerChickenHelmet((RenderChicken) render));
+        }
+    }
+
     @Override
     public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {

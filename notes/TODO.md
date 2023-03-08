@@ -306,4 +306,3 @@ Idea would be to clean up the code and make it as easy as possible to deal with 
 
 - Fishy Missile (Torpedo) -> 2 block long missile that moves through water like a fish
 - Torp launchers -> for the above to deal better with water builds
-- Give chickens space helmets after they ride a missile
