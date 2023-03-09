@@ -26,7 +26,7 @@ public class GuiLauncherScreen extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_empty.png");
 
-    private TileLauncherScreen tileEntity;
+    private final TileLauncherScreen tileEntity;
     private GuiTextField target_xCoord_field;
     private GuiTextField target_yCoord_field;
     private GuiTextField target_zCoord_field;
@@ -42,6 +42,11 @@ public class GuiLauncherScreen extends GuiContainerBase
         super(new ContainerLaunchScreen(player, tileEntity));
         this.tileEntity = tileEntity;
         ySize = 166;
+    }
+
+    @Override
+    protected ResourceLocation getBackground() {
+        return TEXTURE;
     }
 
     /** Adds the buttons (and other controls) to the screen in question. */

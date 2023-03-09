@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.missiles.cause.IMissileCause;
@@ -310,6 +311,18 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         super.onDataPacket(net, pkt);
         initFromLoad();
+    }
+
+    public void sendHzPacket(String channel) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileCruiseLauncher.SET_FREQUENCY_PACKET_ID, this).addData(channel));
+        }
+    }
+
+    public void sendTargetPacket(Vec3d data) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileCruiseLauncher.SET_TARGET_PACKET_ID, this).addData(data));
+        }
     }
 
     //@Override

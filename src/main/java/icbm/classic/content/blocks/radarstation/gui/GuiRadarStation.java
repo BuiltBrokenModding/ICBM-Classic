@@ -57,6 +57,11 @@ public class GuiRadarStation extends GuiContainerBase
     }
 
     @Override
+    protected ResourceLocation getBackground() {
+        return TEXTURE;
+    }
+
+    @Override
     public void initGui()
     {
         super.initGui();

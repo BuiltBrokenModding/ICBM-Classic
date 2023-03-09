@@ -2,6 +2,8 @@ package icbm.classic.lib;
 
 import icbm.classic.ICBMClassic;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
@@ -193,5 +195,13 @@ public class LanguageUtility
     public static String decapitalizeFirst(String str)
     {
         return str.substring(0, 1).toLowerCase() + str.substring(1, str.length());
+    }
+
+    public static String posFormatted(Vec3d pos) {
+        return String.format("%.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
+    }
+
+    public static String posFormatted(BlockPos pos) {
+        return String.format("%d, %d, %d", pos.getX(), pos.getX(), pos.getZ());
     }
 }

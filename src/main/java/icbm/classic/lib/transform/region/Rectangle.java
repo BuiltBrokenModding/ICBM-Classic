@@ -45,7 +45,13 @@ public class Rectangle extends Shape2D
     /** Checks if the point is inside the shape */
     public boolean isWithin(IPos2D p)
     {
-        return p.y() >= this.min.y() && p.y() <= this.max.y() && p.x() >= this.min.x() && p.x() <= this.max.x();
+        return isWithin(p.x(), p.y());
+    }
+
+    /** Checks if the point is inside the shape */
+    public boolean isWithin(double x, double y)
+    {
+        return y >= this.min.y() && y <= this.max.y() && x >= this.min.x() && x <= this.max.x();
     }
 
     public boolean isWithin_rotated(IPos2D p)

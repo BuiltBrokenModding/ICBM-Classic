@@ -1,17 +1,37 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
+import icbm.classic.lib.transform.region.Rectangle;
+import icbm.classic.prefab.gui.IGuiComponent;
+import icbm.classic.prefab.gui.button.GuiButtonBase;
+import icbm.classic.prefab.gui.tooltip.IToolTip;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
-public class LaunchButton extends GuiButton {
+import java.util.function.Supplier;
 
-    protected boolean wasPressed;
+public class LaunchButton extends GuiButtonBase<LaunchButton> {
+
+    private boolean wasPressed;
+    private boolean doDrawGlass = false;
+    private Supplier<Boolean> enabledCheck;
 
     public LaunchButton(int buttonId, int x, int y) {
         super(buttonId, x, y, 28, 29, "");
+    }
+
+    public LaunchButton setEnabledCheck(Supplier<Boolean> supplier) {
+        this.enabledCheck = supplier;
+        return this;
+    }
+
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        if(enabledCheck != null) {
+            this.enabled = enabledCheck.get();
+        }
     }
 
     @Override
@@ -44,9 +64,19 @@ public class LaunchButton extends GuiButton {
                 this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 6, this.width, this.height);
             }
 
+            // Draw button cover
+            if(!enabled && doDrawGlass) {
+                this.drawTexturedModalRect(this.x - 4, this.y - 4, 220, 5, 36, 36);
+            }
+
             // Not sure why this is here
             this.mouseDragged(mc, mouseX, mouseY);
         }
+    }
+
+    public LaunchButton doDrawDisabledGlass() {
+        this.doDrawGlass = true;
+        return this;
     }
 
     @Override

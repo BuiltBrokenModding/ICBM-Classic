@@ -1,40 +1,30 @@
 package icbm.classic.prefab.gui;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.region.Rectangle;
-import icbm.classic.lib.transform.vector.Point;
+import icbm.classic.prefab.gui.button.GuiButtonBase;
+import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 
-public class GuiContainerBase extends GuiContainer
+public abstract class GuiContainerBase extends GuiContainer
 {
-    public static final ResourceLocation GUI_MC_BASE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "mc_base_empty.png");
-    public static final ResourceLocation GUI_COMPONENTS = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
-
-    public ResourceLocation baseTexture;
-
     public String currentTooltipText = "";
 
-    protected HashMap<Rectangle, Supplier<String>> tooltips = new HashMap();
-    protected ArrayList<GuiTextField> fields = new ArrayList();
+    protected ArrayList<IGuiComponent> components = new ArrayList();
 
 
     /** Debug toogle to render text for the ID and inventory ID for a slot */
@@ -43,16 +33,16 @@ public class GuiContainerBase extends GuiContainer
     public GuiContainerBase(Container container)
     {
         super(container);
-        this.baseTexture = GUI_MC_BASE;
     }
+
+    protected abstract ResourceLocation getBackground();
 
     @Override
     public void initGui()
     {
         super.initGui();
         this.buttonList.clear();
-        this.fields.clear();
-        this.tooltips.clear();
+        this.components.clear();
     }
 
     /**
@@ -64,6 +54,9 @@ public class GuiContainerBase extends GuiContainer
      */
     protected <E extends GuiButton> E addButton(E button)
     {
+        if(button instanceof IGuiComponent) {
+            addComponent((IGuiComponent) button);
+        }
         buttonList.add(button);
         return button;
     }
@@ -73,44 +66,15 @@ public class GuiContainerBase extends GuiContainer
         Minecraft.getMinecraft().fontRenderer.drawString(str, x, y, color);
     }
 
-    protected void drawString(String str, int x, int y)
-    {
-        drawString(str, x, y, 4210752);
-    }
-
-    protected void drawString(String str, int x, int y, Color color)
-    {
-        drawString(str, x, y, color.getRGB());
-    }
-
-    protected void drawStringCentered(String str, int x, int y)
-    {
-        drawStringCentered(str, x, y, 4210752);
-    }
-
-    protected void drawStringCentered(String str, int x, int y, Color color)
-    {
-        drawStringCentered(str, x, y, color.getRGB());
-    }
-
     protected void drawStringCentered(String str, int x, int y, int color)
     {
         drawString(str, x - (Minecraft.getMinecraft().fontRenderer.getStringWidth(str) / 2), y, color);
     }
 
-    protected GuiTextField newField(int id, int x, int y, int w, String msg)
-    {
-        return this.newField(id, x, y, w, 20, msg);
-    }
-
-    protected GuiTextField newField(int id, int x, int y, int w, int h, String msg)
-    {
-        GuiTextField x_field = new GuiTextField(id, Minecraft.getMinecraft().fontRenderer, x, y, w, h);
-        x_field.setText("" + msg);
-        x_field.setMaxStringLength(15);
-        x_field.setTextColor(16777215);
-        fields.add(x_field);
-        return x_field;
+    protected <T extends IGuiComponent> T addComponent(T field) {
+        components.add(field);
+        field.onAddedToHost(this);
+        return field;
     }
 
     @Override
@@ -121,20 +85,32 @@ public class GuiContainerBase extends GuiContainer
     }
 
     @Override
+    public void updateScreen() {
+        super.updateScreen();
+        components.forEach(IGuiComponent::onUpdate);
+    }
+
+    @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
-        // Figure out which tooltip to render
-        for (Entry<Rectangle, Supplier<String>> entry : this.tooltips.entrySet())
-        {
-            // First box with mouse wins
-            if (entry.getKey().isWithin(new Point(mouseX - this.guiLeft, mouseY - this.guiTop)))
-            {
-                this.currentTooltipText = entry.getValue().get();
-                break;
+        final int cursorX = mouseX - this.guiLeft;
+        final int cursorY = mouseY - this.guiTop;
+
+        components.forEach(field -> {
+
+            // Draw text
+            field.drawForegroundLayer(mouseX, mouseY);
+
+            // Detect if we need to display error feedback for the box
+            if(field instanceof IToolTip && ((IToolTip) field).isWithin(cursorX, cursorY)) {
+                final String tooltip = ((IToolTip) field).getTooltip();
+                if(!StringUtils.isEmpty(tooltip)) {
+                    this.currentTooltipText = LanguageUtility.getLocal(tooltip);
+                }
             }
-        }
+        });
 
         // Render current tooltip if not empty
         if (!StringUtils.isEmpty(this.currentTooltipText))
@@ -152,15 +128,6 @@ public class GuiContainerBase extends GuiContainer
     {
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
         renderHoveredToolTip(p_73863_1_, p_73863_2_); //TODO consider render tooltips in this step
-        if (fields != null && fields.size() > 0)
-        {
-            GlStateManager.disableLighting();
-            GlStateManager.disableBlend();
-            for (GuiTextField field : fields)
-            {
-                field.drawTextBox();
-            }
-        }
     }
 
     @Override
@@ -173,15 +140,7 @@ public class GuiContainerBase extends GuiContainer
         }
         else
         {
-            boolean f = false;
-            for (GuiTextField field : fields)
-            {
-                field.textboxKeyTyped(c, id);
-                if (field.isFocused())
-                {
-                    return;
-                }
-            }
+            boolean f = components.stream().anyMatch(component -> component.onKeyTyped(c, id));
             if (!f)
             {
                 super.keyTyped(c, id);
@@ -190,50 +149,39 @@ public class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    protected void mouseClicked(int p_73864_1_, int p_73864_2_, int p_73864_3_) throws IOException
-    {
-        super.mouseClicked(p_73864_1_, p_73864_2_, p_73864_3_);
-        for (GuiTextField field : fields)
-        {
-            field.mouseClicked(p_73864_1_, p_73864_2_, p_73864_3_);
-        }
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
     {
         drawDefaultBackground();
 
-        this.mc.renderEngine.bindTexture(this.baseTexture);
+        this.mc.renderEngine.bindTexture(this.getBackground());
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+
+        final int cursorX = mouseX - this.guiLeft;
+        final int cursorY = mouseY - this.guiTop;
+        components.forEach(component -> component.drawBackgroundLayer(f, cursorX, cursorY));
     }
 
-    //TODO update and docs
-    protected void drawSlot(Slot slot)
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        drawSlot(slot.xPos - 1, slot.yPos - 1); //TODO get slot type from slot
-        if (ICBMClassic.runningAsDev && renderSlotDebugIDs)
-        {
-            this.drawStringCentered("" + slot.getSlotIndex(), guiLeft + slot.xPos + 9, guiTop + slot.yPos + 9, Color.YELLOW);
-            this.drawStringCentered("" + slot.slotNumber, guiLeft + slot.xPos + 9, guiTop + slot.yPos + 1, Color.RED);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        final int cursorX = mouseX - this.guiLeft;
+        final int cursorY = mouseY - this.guiTop;
+        components.forEach(component -> {
+            if(!(component instanceof GuiButton)) {
+                component.onMouseClick(cursorX, cursorY, mouseButton);
+            }
+        });
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if(button instanceof GuiButtonBase) {
+            ((GuiButtonBase) button).triggerAction();
         }
-    }
-
-    //TODO update and docs
-    protected void drawSlot(int x, int y)
-    {
-        this.drawSlot(x, y, 1, 1, 1);
-    }
-
-    //TODO update and docs
-    protected void drawSlot(int x, int y, float r, float g, float b)
-    {
-        this.mc.renderEngine.bindTexture(GUI_COMPONENTS);
-        GlStateManager.color(r, g, b, 1.0F);
-
-        this.drawTexturedModalRect(this.guiLeft + x, this.guiTop + y, 0, 0, 18, 18);
     }
 
     /**
@@ -292,23 +240,6 @@ public class GuiContainerBase extends GuiContainer
                 //End cap of image rect
                 drawTexturedModalRect(x, y, u + width - 3, v, 3, height);
             }
-        }
-    }
-
-    /**
-     * Sets the render color for the GUI render
-     *
-     * @param color - color, null will force default
-     */
-    protected void setColor(Color color)
-    {
-        if (color == null)
-        {
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
-        else
-        {
-            GlStateManager.color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
         }
     }
 

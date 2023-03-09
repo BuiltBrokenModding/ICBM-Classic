@@ -19,6 +19,8 @@ import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.PowerBuffer;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
@@ -62,6 +64,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     protected int cooldownTicks = 0;
 
     /** Radius of the EMP tower */
+    @Setter @Getter
     public int range = 60;
 
     public final EmpTowerInventory inventory = new EmpTowerInventory();
@@ -216,6 +219,16 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         super.readDescPacket(buf);
         rotation = buf.readFloat();
         cooldownTicks = buf.readInt();
+    }
+
+    public void sendRangePacket(int range) {
+        if(isClient())
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", TileEMPTower.CHANGE_RADIUS_PACKET_ID, this).addData(range));
+    }
+
+    public void sendHzPacket(String channel) {
+        if(isClient())
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileEMPTower.CHANGE_HZ_PACKET_ID, this).addData(channel));
     }
 
     public float getChargePercentage()
