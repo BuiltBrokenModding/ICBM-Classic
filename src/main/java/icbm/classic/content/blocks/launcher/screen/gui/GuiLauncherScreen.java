@@ -45,7 +45,7 @@ public class GuiLauncherScreen extends GuiContainerBase
     }
 
     @Override
-    protected ResourceLocation getBackground() {
+    public ResourceLocation getBackground() {
         return TEXTURE;
     }
 

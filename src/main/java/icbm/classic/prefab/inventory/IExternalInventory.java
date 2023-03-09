@@ -12,6 +12,7 @@ import java.util.Collection;
  *
  * @author DarkGuardsman
  */
+@Deprecated
 public interface IExternalInventory extends IInventory
 {
     /**

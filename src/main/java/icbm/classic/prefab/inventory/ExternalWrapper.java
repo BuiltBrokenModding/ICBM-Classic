@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
  *
  * Created by Dark(DarkGuardsman, Robert) on 3/29/2018.
  */
+@Deprecated
 public class ExternalWrapper implements IItemHandlerModifiable
 {
     public final ExternalInventory inventory;

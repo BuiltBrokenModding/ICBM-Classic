@@ -14,6 +14,7 @@ import net.minecraft.util.EnumHand;
  *
  * @author Darkguardsman
  */
+@Deprecated
 public class ExternalInventory extends BasicInventory implements IExternalInventory, ISidedInventory
 {
     /**

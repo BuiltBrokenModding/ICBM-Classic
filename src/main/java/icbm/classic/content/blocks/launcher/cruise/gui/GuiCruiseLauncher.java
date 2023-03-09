@@ -9,6 +9,7 @@ import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.GuiFormatHelpers;
 import icbm.classic.prefab.gui.TextInput;
+import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -27,10 +28,6 @@ public class GuiCruiseLauncher extends GuiContainerBase
     private static final String LANG_KEY = "gui.launcher.cruise";
     private static final String GUI_NAME = LANG_KEY + ".name";
 
-    //UV
-    final int ENERGY_BAR_WIDTH = 16;
-    final int ENERGY_BAR_HEIGHT = 2;
-
     // Texture
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_cruise_launcher.png");
 
@@ -46,7 +43,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
     }
 
     @Override
-    protected ResourceLocation getBackground() {
+    public ResourceLocation getBackground() {
         return TEXTURE;
     }
 
@@ -71,8 +68,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
             .setEnabledCheck(tileEntity::canLaunch)
         ;
 
-        // Energy bar
-        addComponent(new Tooltip(new Rectangle(141, 66, 141 + ENERGY_BAR_WIDTH, 66 + ENERGY_BAR_HEIGHT), () -> new TextComponentTranslation(String.format("%s / %s FE", tileEntity.getEnergy(), tileEntity.getEnergyBufferSize())), 1));
+        addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
@@ -85,27 +81,5 @@ public class GuiCruiseLauncher extends GuiContainerBase
 
         // Goes last so tooltips render above our UI elements
         super.drawGuiContainerForegroundLayer(par1, par2);
-    }
-
-    /** Draw the background layer for the GuiContainer (everything behind the items) */
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
-    {
-        super.drawGuiContainerBackgroundLayer(par1, par2, par3);
-
-        // Draw features
-        drawEnergyBar();
-    }
-
-    protected void drawEnergyBar() {
-
-        this.mc.renderEngine.bindTexture(this.getBackground());
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-        float energyPercent = tileEntity.getEnergy() / (float)tileEntity.getEnergyBufferSize();
-        final float barRatio = (float)Math.floor(ENERGY_BAR_WIDTH * energyPercent);
-        final int minBar = tileEntity.getEnergy() > 0 ? 1 : 0;
-        int renderWidth = (int)Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
-        this.drawTexturedModalRect(guiLeft + 141, guiTop + 66, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
     }
 }

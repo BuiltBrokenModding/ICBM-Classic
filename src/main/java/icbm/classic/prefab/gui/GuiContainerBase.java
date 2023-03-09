@@ -35,7 +35,7 @@ public abstract class GuiContainerBase extends GuiContainer
         super(container);
     }
 
-    protected abstract ResourceLocation getBackground();
+    public abstract ResourceLocation getBackground();
 
     @Override
     public void initGui()

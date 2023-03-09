@@ -13,3 +13,8 @@ https://github.com/2sumango/Groundbaking/blob/32704010a1e3652ae977d70721944519b6
 ## Ticks
 
 Found `this.mc.getTickLength()` in EntityRenderer when doing GuiScreen work. Might be useful to reference in cases where we need the tick delta.
+
+
+## Unit tests
+
+`com.google.common.annotations.VisibleForTesting` seems this exists. Might want to try it for exposing functions for tests but not for everything.

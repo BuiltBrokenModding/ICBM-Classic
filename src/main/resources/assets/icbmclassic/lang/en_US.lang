@@ -374,10 +374,12 @@ gui.icbmclassic:error.format.number.float=Invalid format; Requires decimal numbe
 gui.icbmclassic:error.format.vector.3d=Invalid format; Requires 3 positional coordinates separated by commas. Example: 4567, 5678, 8974
 gui.icbmclassic:error.format.vector.2d=Invalid format; Requires 2 positional coordinates separated by commas. Example: 4567, 5678
 
+gui.icbmclassic:energy=Energy: %1$s / %2$s FE %3$s %%
+
 ## EMP Tower
 gui.icbmclassic:empTower.name=EMP Tower
-gui.icbmclassic:empTower.power=Charging... %1$s%
-gui.icbmclassic:empTower.cooling=Cooling... %1$s%
+gui.icbmclassic:empTower.power=Firing Safety; Charging... %1$s
+gui.icbmclassic:empTower.cooling=Firing Safety; Cooling... %1$s
 gui.icbmclassic:empTower.ready=Ready to fire
 
 ## Launcher Screen

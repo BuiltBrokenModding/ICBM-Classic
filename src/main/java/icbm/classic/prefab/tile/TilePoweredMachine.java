@@ -24,6 +24,10 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
 {
     protected EnergyBuffer buffer;
 
+    public float getEnergyPercent() {
+        return getEnergy() / (float) getEnergyBufferSize();
+    }
+
     public int getEnergy()
     {
         //override for no power mode
