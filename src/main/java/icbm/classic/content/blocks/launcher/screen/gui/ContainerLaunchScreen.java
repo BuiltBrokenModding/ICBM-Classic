@@ -1,5 +1,6 @@
-package icbm.classic.content.blocks.launcher.screen;
+package icbm.classic.content.blocks.launcher.screen.gui;
 
+import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 

@@ -4,6 +4,40 @@ Current objective for work on the project
 
 Objective: Graphics Overhaul for `v5.x.x` release
 
+## GUI
+
+### Radar
+
+- Convert radar dots to a object map
+- Sync map to client instead of dot list
+- Rescale map to match range
+- Show detection range on map
+- Show impact locations on map
+- Mimic layout of cruise launcher minus button
+- Add redstone toggle button
+- Move trigger and detection fields in place where xyz is at in cruise launcher
+- Move coordinate text to under radar map and include what is being hovered over (missile, ghast, etc)
+- Update to use actual entity icons instead of just dots
+
+### Silo Screen
+
+- Migrate to xyz as a single text box
+- Mimic layout of cruise launcher
+- Add detonation height as it's own field
+- Show inaccuracy better -  use real time data instead of fixed data
+- Show status of all launchers instead of first
+- sync status from server to client, don't calculate on client
+- add energy slot
+
+### Launch Pad
+
+- Mimic layout of cruise launcher
+- Add battery slot
+- Add missile slot
+- Add lock height
+- Add launch index - will be unused for now. Meant for use with controllers to cycle between launcher sets as a delay
+- Add launch delay
+
 ## Missiles/Launcher Work Left
 
 - Glass texture render
@@ -39,9 +73,3 @@ Objective: Graphics Overhaul for `v5.x.x` release
 - Wire Items
 - Steel clump
 - Bronze clump
-
-## GUI
-
-- ~~EMP Tower~~
-- Radar
-- Silo Screen

@@ -111,7 +111,7 @@ Basically mimic ICBM 2's system
 - Wire block, 6 side handling with 4 connections per side... old RI wires basically.
 - inaccuracy to cruise launchers (random angle that at short distance is unnoticeable)
 - better status message handling
-- add back blast pressure (pushes entities behind the missile away from the missile, silo this will be horizontal)
+- add back-blast pressure (pushes entities behind the missile away from the missile, silo this will be horizontal)
 
 ## Custom missile paths
 
@@ -198,14 +198,15 @@ a scroll list to add commands to run.
 - Line of sight (Only show radar areas not blocked by large objects)
 - Time in air before detection starts or height above ground?
 - Custom radar AABB (min xyz, max xyz, with max distance from radar)
-- Radar UI colorization for danager
-- Change scale of radar grid to show AABB and range
 - See if we can render an overlay of the area from a top down, can use pixel colors to save performance
 - Better redstone control (side, output min, output max, missile detection equation (missiles - minCount > detectionCount))
 - Way to see scan area outside of UI
 - Trigger delays on redstone and radio signal for AB missiles
 - radar classification system to give entities a shape, size, and threat level. Allowing an abstraction from just reporting explosive missiles
 - cleanup radar map to use consumer pattern so it stops wasting as much RAM making `arraylists` all the time
+- create CC multi-block style monitor to show real time radar detection on face of blocks. Handle all 6 sides and do connected textures
+- Allow screen to optionally render detected stuff on face
+- Add animated texture to radar screen
 
 # TODO future (Art update)
 
