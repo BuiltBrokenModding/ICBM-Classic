@@ -329,14 +329,6 @@ public class ICBMClassic
         MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
         explosiveRegistry.lockNewExplosives();
 
-        //Do default content types per explosive
-        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() != EnumTier.NONE).forEach(ex -> ICBMClassicAPI.EX_BLOCK_REGISTRY.enableContent(ex.getRegistryName()));
-        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() != EnumTier.NONE).forEach(ex -> ICBMClassicAPI.EX_MISSILE_REGISTRY.enableContent(ex.getRegistryName()));
-        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() != EnumTier.NONE).forEach(ex -> ICBMClassicAPI.EX_MINECART_REGISTRY.enableContent(ex.getRegistryName()));
-        explosiveRegistry.getExplosives().stream().filter(ex -> ex.getTier() == EnumTier.ONE).forEach(ex -> ICBMClassicAPI.EX_GRENADE_REGISTRY.enableContent(ex.getRegistryName()));
-        //TODO configs to disable types per explosive
-        //TODO mesh mapper to match model to state
-
         //Lock all registry, done to prevent errors in data generation for renders and content
         explosiveRegistry.completeLock();
 

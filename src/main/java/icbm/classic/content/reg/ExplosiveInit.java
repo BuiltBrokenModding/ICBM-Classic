@@ -218,12 +218,25 @@ public class ExplosiveInit
 
     private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)
     {
+        final ResourceLocation regName = new ResourceLocation(ICBMConstants.DOMAIN, name);
         if (id != -1)
         {
             //Setup old IDs so saves work
-            ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).forceID(new ResourceLocation(ICBMConstants.DOMAIN, name), id);
+            ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).forceID(regName, id);
         }
-        return ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(new ResourceLocation(ICBMConstants.DOMAIN, name), tier, factory);
+        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.register(regName, tier, factory);
+
+        //Do default content types per explosive
+        if(tier != EnumTier.NONE) {
+            ICBMClassicAPI.EX_BLOCK_REGISTRY.enableContent(regName);
+            ICBMClassicAPI.EX_MISSILE_REGISTRY.enableContent(regName);
+            ICBMClassicAPI.EX_MINECART_REGISTRY.enableContent(regName);
+        }
+        if(tier == EnumTier.ONE) {
+            ICBMClassicAPI.EX_GRENADE_REGISTRY.enableContent(regName);
+        }
+
+        return data;
     }
 
     private static boolean enderMissileCoordSet(Entity entity, EntityPlayer player, EnumHand hand)
