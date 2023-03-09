@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.function.Consumer;
 
@@ -71,7 +72,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         ;
 
         // Energy bar
-        addComponent(new Tooltip(new Rectangle(141, 66, 141 + ENERGY_BAR_WIDTH, 66 + ENERGY_BAR_HEIGHT), () -> String.format("%s / %s FE", tileEntity.getEnergy(), tileEntity.getEnergyBufferSize())));
+        addComponent(new Tooltip(new Rectangle(141, 66, 141 + ENERGY_BAR_WIDTH, 66 + ENERGY_BAR_HEIGHT), () -> new TextComponentTranslation(String.format("%s / %s FE", tileEntity.getEnergy(), tileEntity.getEnergyBufferSize())), 1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

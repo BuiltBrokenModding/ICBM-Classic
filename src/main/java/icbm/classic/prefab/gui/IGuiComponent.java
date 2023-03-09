@@ -19,10 +19,21 @@ public interface IGuiComponent {
     }
 
     /**
+     * Called by {@link GuiContainerBase#drawScreen(int, int, float)}
+     *
+     * @param mouseX position
+     * @param mouseY position
+     * @param partialTicks delta between frame renders
+     */
+    default void draw(int mouseX, int mouseY, float partialTicks) {
+
+    }
+
+    /**
      * Draws in the container's foreground layer
      *
-     * @param mouseX relative to left of the container
-     * @param mouseY relative to the top of the container
+     * @param mouseX position
+     * @param mouseY position
      */
     default void drawForegroundLayer(int mouseX, int mouseY) {
 
@@ -32,8 +43,8 @@ public interface IGuiComponent {
      * Draws in the container's foreground layer
      *
      * @param f ????
-     * @param mouseX relative to left of the container
-     * @param mouseY relative to the top of the container
+     * @param mouseX position
+     * @param mouseY position
      */
     default void drawBackgroundLayer(float f, int mouseX, int mouseY) {
 
@@ -53,8 +64,8 @@ public interface IGuiComponent {
     /**
      * Called when mouse is clicked
      *
-     * @param mouseX relative to left of the container
-     * @param mouseY relative to the top of the container
+     * @param mouseX position
+     * @param mouseY position
      * @param mouseButton pressed
      */
     default void onMouseClick(int mouseX, int mouseY, int mouseButton) {

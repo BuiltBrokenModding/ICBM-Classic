@@ -1,5 +1,7 @@
 package icbm.classic.prefab.gui.tooltip;
 
+import net.minecraft.util.text.ITextComponent;
+
 public interface IToolTip {
 
     /**
@@ -16,5 +18,5 @@ public interface IToolTip {
      *
      * @return tooltip or null to ignore
      */
-    String getTooltip();
+    ITextComponent getTooltip();
 }

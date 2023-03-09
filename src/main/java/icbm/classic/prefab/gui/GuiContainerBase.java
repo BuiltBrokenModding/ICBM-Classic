@@ -1,5 +1,6 @@
 package icbm.classic.prefab.gui;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.transform.region.Rectangle;
@@ -12,13 +13,12 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.function.Supplier;
 
 public abstract class GuiContainerBase extends GuiContainer
 {
@@ -95,19 +95,23 @@ public abstract class GuiContainerBase extends GuiContainer
     {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
-        final int cursorX = mouseX - this.guiLeft;
-        final int cursorY = mouseY - this.guiTop;
-
         components.forEach(field -> {
 
             // Draw text
             field.drawForegroundLayer(mouseX, mouseY);
 
             // Detect if we need to display error feedback for the box
-            if(field instanceof IToolTip && ((IToolTip) field).isWithin(cursorX, cursorY)) {
-                final String tooltip = ((IToolTip) field).getTooltip();
-                if(!StringUtils.isEmpty(tooltip)) {
-                    this.currentTooltipText = LanguageUtility.getLocal(tooltip);
+            if(field instanceof IToolTip && ((IToolTip) field).isWithin(mouseX, mouseY)) {
+                final ITextComponent tooltip = ((IToolTip) field).getTooltip();
+                if(tooltip != null) {
+                    try {
+                        this.currentTooltipText = tooltip.getFormattedText();
+                    }
+                    catch (Exception e) {
+                        if(ICBMClassic.runningAsDev) {
+                            ICBMClassic.logger().error("Failed to format text for display", e);
+                        }
+                    }
                 }
             }
         });
@@ -124,10 +128,11 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
-        renderHoveredToolTip(p_73863_1_, p_73863_2_); //TODO consider render tooltips in this step
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        renderHoveredToolTip(mouseX, mouseY); //TODO consider render tooltips in this step
+        components.forEach(component -> component.draw(mouseX, mouseY, partialTicks));
     }
 
     @Override
@@ -149,7 +154,7 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY)
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         drawDefaultBackground();
 
@@ -158,20 +163,16 @@ public abstract class GuiContainerBase extends GuiContainer
 
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
-        final int cursorX = mouseX - this.guiLeft;
-        final int cursorY = mouseY - this.guiTop;
-        components.forEach(component -> component.drawBackgroundLayer(f, cursorX, cursorY));
+        components.forEach(component -> component.drawBackgroundLayer(partialTicks, mouseX, mouseY));
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        final int cursorX = mouseX - this.guiLeft;
-        final int cursorY = mouseY - this.guiTop;
         components.forEach(component -> {
             if(!(component instanceof GuiButton)) {
-                component.onMouseClick(cursorX, cursorY, mouseButton);
+                component.onMouseClick(mouseX, mouseY, mouseButton);
             }
         });
     }

@@ -364,15 +364,23 @@ gui.misc.ZCoord=Z-Coord:
 gui.misc.status=Status:
 gui.misc.missile=Missile[%d, %d]
 gui.misc.object=Object[%d, %d]
-
 gui.tracker.freq=Frequency
 
-gui.empTower.name=EMP Tower
-gui.empTower.error.format.range=Range must be a whole number
-gui.empTower.power=Charging... %1$s%
-gui.empTower.cooling=Cooling... %1$s%
-gui.empTower.ready=Ready to fire
+## Format helper
+gui.icbmclassic:error=Unknown Error; Check console for more information.
+gui.icbmclassic:error.null=Invalid format; Input required
+gui.icbmclassic:error.format.number.int=Invalid format; Requires whole number. Example: 4578
+gui.icbmclassic:error.format.number.float=Invalid format; Requires decimal number. Example: 45.678
+gui.icbmclassic:error.format.vector.3d=Invalid format; Requires 3 positional coordinates separated by commas. Example: 4567, 5678, 8974
+gui.icbmclassic:error.format.vector.2d=Invalid format; Requires 2 positional coordinates separated by commas. Example: 4567, 5678
 
+## EMP Tower
+gui.icbmclassic:empTower.name=EMP Tower
+gui.icbmclassic:empTower.power=Charging... %1$s%
+gui.icbmclassic:empTower.cooling=Cooling... %1$s%
+gui.icbmclassic:empTower.ready=Ready to fire
+
+## Launcher Screen
 gui.launcherBase.name=Launcher Platform
 gui.launcherBase.place=Place Missile
 gui.launcherscreen.name=Launcher Control Panel
@@ -389,7 +397,6 @@ gui.launcherscreen.statusFar=Target too far!
 gui.launcherscreen.statusReady=Ready to launch!
 gui.launcherscreen.launch=Launch
 
-
 ## Cruise launcher status, used by GUI and block interaction
 launcher.cruise.error.power=Firing Safety; Not enough power
 launcher.cruise.error.fuel=Firing Safety; Not enough fuel
@@ -402,12 +409,6 @@ launcher.cruise.ready=Ready to fire
 
 ## Cruise launcher UI
 gui.launcher.cruise.name=Cruise Launcher
-
-### Text box feedback
-gui.launcher.cruise.error.null=Empty Input
-gui.launcher.cruise.error.format.target=Invalid format; Requires 3 positional coordinates separated by commas. Example: 4567, 5678, 8974
-gui.launcher.cruise.error.format.hz=Invalid format; Requires whole number. Example: 4578
-
 
 ## Chat warning if user tries to fire by hand, %s is status message from GUI
 chat.launcher.status=Status: %s

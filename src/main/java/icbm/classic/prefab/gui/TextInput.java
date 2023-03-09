@@ -4,11 +4,14 @@ import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.lib.transform.region.Rectangle;
+import icbm.classic.prefab.gui.textbox.GuiTextFieldBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import lombok.Setter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -16,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TextInput<Output> extends GuiTextField implements IToolTip, IGuiComponent {
+public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGuiComponent {
 
     private final static int ERROR_COLOR = ColorHelper.toARGB(255, 1, 1, 255);
 
@@ -29,7 +32,7 @@ public class TextInput<Output> extends GuiTextField implements IToolTip, IGuiCom
     private Function<Output, String> parseOutput;
 
     // Error handling
-    private String errorFeedback = null;
+    private ITextComponent errorFeedback = null;
 
     // Data watcher to know when we update our display text
     @Setter
@@ -81,11 +84,6 @@ public class TextInput<Output> extends GuiTextField implements IToolTip, IGuiCom
         }
     }
 
-    @Override
-    public void onMouseClick(int mouseX, int mouseY, int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-
     protected boolean detectForChange() {
         final Output output = sourceWatcher.get();
         if(!Objects.equals(output, previousData)) {
@@ -125,7 +123,10 @@ public class TextInput<Output> extends GuiTextField implements IToolTip, IGuiCom
         focusChangedCallback = (state) -> {
             if(!state) {
                 // Parse input from user and store into tile client side
-                errorFeedback = validator.apply(getText(), setter);
+                final String error = validator.apply(getText(), setter);
+                if(error != null) {
+                    errorFeedback = new TextComponentTranslation(error);
+                }
             }
         };
         return this;
@@ -142,19 +143,6 @@ public class TextInput<Output> extends GuiTextField implements IToolTip, IGuiCom
     }
 
     @Override
-    public void drawForegroundLayer(int mouseX, int mouseY) {
-        drawTextBox();
-    }
-
-    public boolean onKeyTyped(char key, int keyId) {
-        if(isFocused()) {
-            textboxKeyTyped(key, keyId);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public void drawTextBox() {
         super.drawTextBox();
         if (this.getVisible() && this.getEnableBackgroundDrawing() && isErrored()) {
@@ -164,19 +152,19 @@ public class TextInput<Output> extends GuiTextField implements IToolTip, IGuiCom
 
     @Override
     public boolean isWithin(int cursorX, int cursorY) {
-        return boundBox.isWithin(cursorX, cursorY);
+        return boundBox.isWithin(cursorX - container.getGuiLeft(), cursorY - container.getGuiTop());
     }
 
     @Override
-    public String getTooltip() {
+    public ITextComponent getTooltip() {
         return getErrorFeedback();
     }
 
-    public String getErrorFeedback() {
+    public ITextComponent getErrorFeedback() {
         return errorFeedback;
     }
 
-    public void setError(String error) {
+    public void setError(ITextComponent error) {
         this.errorFeedback = error;
     }
 

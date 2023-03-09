@@ -37,6 +37,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -124,31 +126,31 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
      *
      * @return The string to be displayed
      */
-    public String getStatusTranslation()
+    public ITextComponent getStatusTranslation()
     {
         if (!hasChargeToFire())
         {
-            return ERROR_NO_POWER;
+            return new TextComponentTranslation(ERROR_NO_POWER);
         }
         // Checks for empty slot
         else if (!missileHolder.hasMissile())
         {
-            return ERROR_NO_MISSILE;
+            return new TextComponentTranslation(ERROR_NO_MISSILE);
         }
         else if (!hasTarget())
         {
-            return ERROR_NO_TARGET;
+            return new TextComponentTranslation(ERROR_NO_TARGET);
         }
         else if (this.isTooClose(getTarget()))
         {
-           return ERROR_MIN_RANGE;
+           return new TextComponentTranslation(ERROR_MIN_RANGE);
         }
         else if (!canSpawnMissileWithNoCollision())
         {
-            return ERROR_MISSILE_SPACE;
+            return new TextComponentTranslation(ERROR_MISSILE_SPACE);
         }
 
-        return READY_TRANSLATION;
+        return new TextComponentTranslation(READY_TRANSLATION);
     }
 
     @Override

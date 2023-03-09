@@ -6,6 +6,7 @@ import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Supplier;
 
@@ -14,7 +15,7 @@ public class GuiButtonBase<B extends GuiButtonBase> extends GuiButton implements
     private ActionTrigger action;
 
     private final Rectangle bounds;
-    private Supplier<String> tooltip;
+    private Supplier<ITextComponent> tooltip;
 
     private GuiContainerBase container;
 
@@ -33,7 +34,7 @@ public class GuiButtonBase<B extends GuiButtonBase> extends GuiButton implements
         return (B) this;
     }
 
-    public B setTooltip(Supplier<String> tooltip) {
+    public B setTooltip(Supplier<ITextComponent> tooltip) {
         this.tooltip = tooltip;
         return (B) this;
     }
@@ -46,11 +47,11 @@ public class GuiButtonBase<B extends GuiButtonBase> extends GuiButton implements
 
     @Override
     public boolean isWithin(int x, int y) {
-        return bounds.isWithin(x + container.getGuiLeft(), y + container.getGuiTop());
+        return bounds.isWithin(x, y);
     }
 
     @Override
-    public String getTooltip() {
+    public ITextComponent getTooltip() {
         if(tooltip != null) {
             return tooltip.get();
         }
