@@ -22,7 +22,12 @@ public interface IExplosiveRegistry
      * @param blastFactory - factory to use to make the blast
      * @return data created
      */
+    @Deprecated
     IExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory);
+
+    default IExplosiveData register(ResourceLocation name, IBlastFactory blastFactory) {
+        return register(name, null, blastFactory);
+    }
 
     /**
      * Gets the explosive data for the registry name
