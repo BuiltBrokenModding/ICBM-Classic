@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
@@ -15,6 +16,7 @@ import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
@@ -23,6 +25,8 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.inventory.InventorySlot;
+import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -85,8 +89,11 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
-    public final CruiseInventory inventory = new CruiseInventory(this);
-    protected final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, CruiseInventory.SLOT_MISSILE);
+    public final InventoryWithSlots inventory = new InventoryWithSlots(2)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile).withChangeCallback((stack) -> this.sendDescPacket()))
+        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+    protected final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
     protected final CLauncherCapability launcher = new CLauncherCapability(this);
 
     protected boolean doLaunchNext = false;
@@ -161,8 +168,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
         lastRotationUpdate = System.nanoTime();
 
-        // Fill internal battery
-        this.dischargeItem(inventory.getEnergySlot());
+        // tick inventory
+        inventory.onTick();
 
         // Update current aim
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();

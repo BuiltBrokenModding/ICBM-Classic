@@ -72,7 +72,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
         }
     }
 
-    public void dischargeItem(ItemStack itemStack) {
+    public ItemStack dischargeItem(ItemStack itemStack) {
         final IEnergySystem system = EnergySystem.getSystem(itemStack, null);
         if(system != null) {
             final int energyLeftToStore = getEnergyBufferSize() - getEnergy();
@@ -81,6 +81,7 @@ public class TilePoweredMachine extends TileMachine implements IEnergyBufferProv
                 this.setEnergy(this.getEnergy() + removed);
             }
         }
+        return itemStack;
     }
 
     @Override

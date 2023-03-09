@@ -10,11 +10,14 @@ import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastEMP;
+import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.prefab.inventory.InventorySlot;
+import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.PowerBuffer;
 import icbm.classic.prefab.tile.TilePoweredMachine;
@@ -33,6 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -67,7 +71,9 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     @Setter @Getter
     public int range = 60;
 
-    public final EmpTowerInventory inventory = new EmpTowerInventory();
+    public final InventoryWithSlots inventory = new InventoryWithSlots(1)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
     public final RadioEmpTower radioCap = new RadioEmpTower(this);
 
     private List<TileEmpTowerFake> subBlocks = new ArrayList();
@@ -111,8 +117,8 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
             }
         }
 
-        // Fill internal battery
-        this.dischargeItem(inventory.getEnergySlot());
+        // Tick slots
+        inventory.onTick();
 
         if (isServer())
         {

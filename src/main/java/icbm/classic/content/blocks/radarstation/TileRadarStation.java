@@ -9,7 +9,10 @@ import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.radio.messages.IncomingMissileMessage;
+import icbm.classic.prefab.inventory.InventorySlot;
+import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -17,8 +20,6 @@ import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.inventory.ExternalInventory;
-import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
@@ -35,7 +36,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileRadarStation extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile, IInventoryProvider<ExternalInventory>
+public class TileRadarStation extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile
 {
     /** Max range the radar station will attempt to find targets inside */
     public final static int MAX_DETECTION_RANGE = 500;
@@ -61,7 +62,9 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     /** Threats that will cause harm to our protection area */
     private final List<IMissile> incomingThreats = new ArrayList(); //TODO decouple from missile so we can track other entities
 
-    ExternalInventory inventory;
+    public final InventoryWithSlots inventory = new InventoryWithSlots(1)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
 
     // UI data
     public List<Pos> guiDrawPoints = new ArrayList();
@@ -76,19 +79,12 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     private EnumRadarState prevRenderState = EnumRadarState.OFF;
 
     @Override
-    public ExternalInventory getInventory()
-    {
-        if (inventory == null)
-        {
-            inventory = new ExternalInventory(this, 2);
-        }
-        return inventory;
-    }
-
-    @Override
     public void update()
     {
         super.update();
+
+        // Tick inventory
+        inventory.onTick();
 
         if (isServer())
         {
@@ -101,9 +97,6 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
             //If we have energy
             if (checkExtract())
             {
-                //Remove energy
-                //this.extractEnergy(); TODO fix so only removes upkeep cost
-
                 // Do a radar scan
                 if (ticks % 3 == 0) //TODO make config to control scan rate to reduce lag
                 {

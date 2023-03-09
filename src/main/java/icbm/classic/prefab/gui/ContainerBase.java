@@ -1,11 +1,9 @@
 package icbm.classic.prefab.gui;
 
-import icbm.classic.prefab.inventory.IInventoryProvider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -40,10 +38,6 @@ public class ContainerBase<H extends Object> extends Container
         if (node instanceof IInventory)
         {
             inventory = (IInventory) node;
-        }
-        else if (node instanceof IInventoryProvider)
-        {
-            inventory = ((IInventoryProvider) node).getInventory();
         }
 
         this.player = player;

@@ -1,13 +1,18 @@
-package icbm.classic.prefab.inventory;
+package icbm.classic.lib;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +68,28 @@ public class InventoryUtility
     public static EntityItem dropItemStack(World world, IPos3D position, ItemStack itemStack, int delay, float randomAmount)
     {
         return dropItemStack(world, position.x(), position.y(), position.z(), itemStack, delay, randomAmount);
+    }
+
+    public static void dropInventory(World world, BlockPos pos) {
+        final TileEntity tile = world.getTileEntity(pos);
+        if (tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        {
+            final IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            if(handler != null) {
+
+                final double x = pos.getX() + 0.5;
+                final double y = pos.getY() + 0.5;
+                final double z = pos.getZ() + 0.5;
+
+                for(int slot = 0; slot < handler.getSlots(); slot++) {
+                    final ItemStack stack = handler.getStackInSlot(0);
+                    if(handler instanceof IItemHandlerModifiable) {
+                        ((IItemHandlerModifiable) handler).setStackInSlot(0, ItemStack.EMPTY);
+                    }
+                    dropItemStack(world, x, y, z, stack, 0, 0);
+                }
+            }
+        }
     }
 
     public static EntityItem dropItemStack(World world, double x, double y, double z, ItemStack itemStack, int delay, float randomAmount)

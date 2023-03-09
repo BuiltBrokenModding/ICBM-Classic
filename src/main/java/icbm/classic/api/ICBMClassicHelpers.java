@@ -79,6 +79,11 @@ public final class ICBMClassicHelpers
         return entity != null && entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
     }
 
+    public static boolean isMissile(ItemStack stack)
+    {
+        return !stack.isEmpty() && stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+    }
+
     /**
      * Helper to get the capability of {@link IMissile} from an entity
      *

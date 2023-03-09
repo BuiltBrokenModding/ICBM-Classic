@@ -5,7 +5,7 @@ import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.config.ConfigEMP;
 import icbm.classic.lib.energy.system.EnergySystem;
-import icbm.classic.prefab.inventory.InventoryUtility;
+import icbm.classic.lib.InventoryUtility;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;

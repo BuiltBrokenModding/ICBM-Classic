@@ -1,8 +1,8 @@
 package icbm.classic.prefab.tile;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.prefab.inventory.IInventoryProvider;
 import icbm.classic.ICBMClassic;
+import icbm.classic.lib.InventoryUtility;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -15,6 +15,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public abstract class BlockICBM extends BlockContainer
 {
@@ -62,11 +65,7 @@ public abstract class BlockICBM extends BlockContainer
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state)
     {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof IInventoryProvider && ((IInventoryProvider) tile).getInventory() != null)
-        {
-            InventoryHelper.dropInventoryItems(world, pos, ((IInventoryProvider) tile).getInventory());
-        }
+        InventoryUtility.dropInventory(world, pos);
         super.breakBlock(world, pos, state);
     }
 }
