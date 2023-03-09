@@ -73,7 +73,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
 
     public final RadioRadar radioCap = new RadioRadar(this);
 
-    private EnumRadarState clientState;
+    private EnumRadarState prevRenderState = EnumRadarState.OFF;
 
     @Override
     public ExternalInventory getInventory()
@@ -171,10 +171,10 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
 
         // Force block re-render if our state has changed
         final EnumRadarState state = getRadarState();
-        if(clientState != state) {
+        if(prevRenderState != state) {
             this.markDirty();
-            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, clientState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, state), 3);
-            clientState = state;
+            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, prevRenderState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, state), 3);
+            prevRenderState = state;
         }
     }
 
