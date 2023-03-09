@@ -1,8 +1,10 @@
 package icbm.classic.prefab.gui.components;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -33,6 +35,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
 
     private int prevEnergy = 0;
     private int prevMaxEnergy = 0;
+    private boolean prevShift = false;
 
     private ITextComponent tooltip;
 
@@ -49,14 +52,43 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         // Cached data to avoid redoing each frame render
         final int energy = energyGetter.get();
         final int maxEnergy = energyMaxGetter.get();
+        final boolean shift = GuiScreen.isShiftKeyDown();
 
-        if(energy != prevEnergy || maxEnergy != prevMaxEnergy) {
+        if(energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift) {
             prevEnergy = energy;
             prevMaxEnergy = maxEnergy;
+            prevShift = shift;
+
             energyPercent = energy / (float) maxEnergy;
 
-            tooltip = new TextComponentTranslation(TOOLTIP_FORMAT, energy, maxEnergy, String.format("%.2f", energyPercent * 100));
+            if(shift) {
+                tooltip = new TextComponentTranslation(TOOLTIP_FORMAT, energy, maxEnergy, String.format("%d", (int) Math.floor(energyPercent * 100)));
+            }
+            else {
+                tooltip = new TextComponentTranslation(TOOLTIP_FORMAT, formatEnergy(energy), formatEnergy(maxEnergy), String.format("%d", (int) Math.floor(energyPercent * 100)));
+            }
         }
+    }
+
+    private static String formatEnergy(int energy) {
+        int number = energy;
+        String type = "";
+        // Mega
+        if(energy > 1_000_000_000) {
+            number = energy / 1_000_000_000;
+            type = "G";
+        }
+        // Mega
+        else if(energy > 1_000_000) {
+            number = energy / 1_000_000;
+            type = "M";
+        }
+        // Kilo
+        else if(energy > 1_000) {
+            number = energy / 1_000;
+            type = "k";
+        }
+        return String.format("%d%s", number, type);
     }
 
     @Override

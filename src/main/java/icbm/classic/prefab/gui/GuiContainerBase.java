@@ -247,68 +247,65 @@ public abstract class GuiContainerBase extends GuiContainer
     //TODO update and docs
     public void drawTooltip(int x, int y, Collection<String> toolTips)
     {
-        if (!GuiScreen.isShiftKeyDown())
+        if (toolTips != null)
         {
-            if (toolTips != null)
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.disableDepth();
+
+            int textMaxWidth = 0;
+
+            // Render all my lines
+            for (String line : toolTips)
             {
-                GlStateManager.disableRescaleNormal();
-                GlStateManager.disableDepth();
+                final int lineWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(line);
 
-                int textMaxWidth = 0;
-
-                // Render all my lines
-                for (String line : toolTips)
+                // Tack longest line
+                if (lineWidth > textMaxWidth)
                 {
-                    final int lineWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(line);
-
-                    // Tack longest line
-                    if (lineWidth > textMaxWidth)
-                    {
-                        textMaxWidth = lineWidth;
-                    }
+                    textMaxWidth = lineWidth;
                 }
-
-                int backgroundX = x + 12;
-                int backgroundY = y - 12;
-
-                int var9 = 8;
-
-                if (toolTips.size() > 1)
-                {
-                    var9 += 2 + (toolTips.size()- 1) * 10;
-                }
-
-                if (this.guiTop + backgroundY + var9 + 6 > this.height)
-                {
-                    backgroundY = this.height - var9 - this.guiTop - 6;
-                }
-
-                this.zLevel = 300;
-                int var10 = -267386864;
-                this.drawGradientRect(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
-                this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
-                this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var10, var10);
-                this.drawGradientRect(backgroundX - 4, backgroundY - 3, backgroundX - 3, backgroundY + var9 + 3, var10, var10);
-                this.drawGradientRect(backgroundX + textMaxWidth + 3, backgroundY - 3, backgroundX + textMaxWidth + 4, backgroundY + var9 + 3, var10, var10);
-                int var11 = 1347420415;
-                int var12 = (var11 & 16711422) >> 1 | var11 & -16777216;
-                this.drawGradientRect(backgroundX - 3, backgroundY - 3 + 1, backgroundX - 3 + 1, backgroundY + var9 + 3 - 1, var11, var12);
-                this.drawGradientRect(backgroundX + textMaxWidth + 2, backgroundY - 3 + 1, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3 - 1, var11, var12);
-                this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY - 3 + 1, var11, var11);
-                this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
-
-                // Draw text shadows
-                for (String line : toolTips)
-                {
-                    Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line, backgroundX, backgroundY, -1);
-                    backgroundY += 10;
-                }
-
-                this.zLevel = 0;
-
-                GlStateManager.enableDepth();
-                GlStateManager.enableRescaleNormal();
             }
+
+            int backgroundX = x + 12;
+            int backgroundY = y - 12;
+
+            int var9 = 8;
+
+            if (toolTips.size() > 1)
+            {
+                var9 += 2 + (toolTips.size()- 1) * 10;
+            }
+
+            if (this.guiTop + backgroundY + var9 + 6 > this.height)
+            {
+                backgroundY = this.height - var9 - this.guiTop - 6;
+            }
+
+            this.zLevel = 300;
+            int var10 = -267386864;
+            this.drawGradientRect(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
+            this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
+            this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var10, var10);
+            this.drawGradientRect(backgroundX - 4, backgroundY - 3, backgroundX - 3, backgroundY + var9 + 3, var10, var10);
+            this.drawGradientRect(backgroundX + textMaxWidth + 3, backgroundY - 3, backgroundX + textMaxWidth + 4, backgroundY + var9 + 3, var10, var10);
+            int var11 = 1347420415;
+            int var12 = (var11 & 16711422) >> 1 | var11 & -16777216;
+            this.drawGradientRect(backgroundX - 3, backgroundY - 3 + 1, backgroundX - 3 + 1, backgroundY + var9 + 3 - 1, var11, var12);
+            this.drawGradientRect(backgroundX + textMaxWidth + 2, backgroundY - 3 + 1, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3 - 1, var11, var12);
+            this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY - 3 + 1, var11, var11);
+            this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
+
+            // Draw text shadows
+            for (String line : toolTips)
+            {
+                Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line, backgroundX, backgroundY, -1);
+                backgroundY += 10;
+            }
+
+            this.zLevel = 0;
+
+            GlStateManager.enableDepth();
+            GlStateManager.enableRescaleNormal();
         }
     }
 }
