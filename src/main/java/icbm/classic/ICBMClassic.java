@@ -387,7 +387,6 @@ public class ICBMClassic
         {
             BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ItemReg.itemBombCart, new BombCartDispenseBehavior());
         }
-        proxy.init();
     }
 
     @Mod.EventHandler
