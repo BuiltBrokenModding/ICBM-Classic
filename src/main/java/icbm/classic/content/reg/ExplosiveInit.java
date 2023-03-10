@@ -39,10 +39,6 @@ import net.minecraft.world.World;
  */
 public class ExplosiveInit
 {
-    //TODO use a datafixer to flatten missiles into (ex, homing, anti, cluster)
-    //https://github.com/RS485/LogisticsPipes/blob/dev-mc1122/common/logisticspipes/datafixer/DataFixerSolidBlockItems.java
-    //https://github.com/RS485/LogisticsPipes/blob/dev-mc1122/common/logisticspipes/datafixer/LPDataFixer.java#L17-L19
-
     //the fuse suppliers all return 100 (default in ExBlockContentReg#getFuseTime) when an unknown enum value is given as a type
     public static void init()
     {
