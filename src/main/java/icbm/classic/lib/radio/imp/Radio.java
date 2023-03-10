@@ -5,6 +5,7 @@ import icbm.classic.api.radio.IRadioChannelAccess;
 import icbm.classic.lib.radio.RadioRegistry;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.apache.commons.lang3.RandomStringUtils;
 
 
 public abstract class Radio implements IRadio, INBTSerializable<NBTTagCompound>, IRadioChannelAccess {
@@ -17,7 +18,7 @@ public abstract class Radio implements IRadio, INBTSerializable<NBTTagCompound>,
 
     public String getChannel() {
         if(channel == null) {
-            return RadioRegistry.EMPTY_HZ;
+            this.channel = RandomStringUtils.random(5, true, true);
         }
         return channel;
     }
