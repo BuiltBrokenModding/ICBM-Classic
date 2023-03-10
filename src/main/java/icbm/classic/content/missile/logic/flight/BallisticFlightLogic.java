@@ -183,7 +183,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
             else {
                 final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
                 final float hortSpeed = 0.05f;
-                final float vertSpeed = 0.05f;
+                final float vertSpeed = 2f;
                 entity.motionX = (this.deltaPathX / flatDistance) * hortSpeed;
                 entity.motionZ = (this.deltaPathZ / flatDistance) * hortSpeed;
                 entity.motionY = vertSpeed;
