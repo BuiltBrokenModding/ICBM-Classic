@@ -31,7 +31,7 @@ import static java.lang.Math.max;
 @SideOnly(Side.CLIENT)
 public class GuiLauncherScreen extends GuiContainerBase
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_silo_launcher.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_silo_screen.png");
 
     private final TileLauncherScreen tileEntity;
 
