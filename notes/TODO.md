@@ -48,6 +48,8 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - Spikes
 - connected textures for launcher connector
+- Glass button
+- Glass prexure plate
 
 ## Items
 
