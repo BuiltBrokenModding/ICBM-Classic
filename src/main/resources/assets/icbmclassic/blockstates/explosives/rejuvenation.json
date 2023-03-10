@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive_base_2",
-      "down": "icbmclassic:blocks/explosive_bottom_2",
-      "up": "icbmclassic:blocks/explosive_rejuvenation_top",
-      "north": "icbmclassic:blocks/explosive_rejuvenation_side",
-      "east": "icbmclassic:blocks/explosive_rejuvenation_side",
-      "south": "icbmclassic:blocks/explosive_rejuvenation_side",
-      "west": "icbmclassic:blocks/explosive_rejuvenation_side"
+      "particle": "icbmclassic:blocks/explosive/base_2",
+      "down": "icbmclassic:blocks/explosive/bottom_2",
+      "up": "icbmclassic:blocks/explosive/rejuvenation_top",
+      "north": "icbmclassic:blocks/explosive/rejuvenation_side",
+      "east": "icbmclassic:blocks/explosive/rejuvenation_side",
+      "south": "icbmclassic:blocks/explosive/rejuvenation_side",
+      "west": "icbmclassic:blocks/explosive/rejuvenation_side"
     }
   },
   "variants": {

@@ -53,7 +53,7 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - Use new explosive textures
 - Reinforced Glass connected textures and new textures at 16x16
-- Concrete textures
+- ~~Concrete textures~~
 - Spikes
 - connected textures for launcher connector
 

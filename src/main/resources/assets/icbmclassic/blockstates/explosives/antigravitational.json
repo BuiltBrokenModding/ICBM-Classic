@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive_anti_gravitational_side",
-      "down": "icbmclassic:blocks/explosive_anti_gravitational_bottom",
-      "up": "icbmclassic:blocks/explosive_anti_gravitational_top",
-      "north": "icbmclassic:blocks/explosive_anti_gravitational_side",
-      "east": "icbmclassic:blocks/explosive_anti_gravitational_side",
-      "south": "icbmclassic:blocks/explosive_anti_gravitational_side",
-      "west": "icbmclassic:blocks/explosive_anti_gravitational_side"
+      "particle": "icbmclassic:blocks/explosive/anti_gravitational_side",
+      "down": "icbmclassic:blocks/explosive/anti_gravitational_bottom",
+      "up": "icbmclassic:blocks/explosive/anti_gravitational_top",
+      "north": "icbmclassic:blocks/explosive/anti_gravitational_side",
+      "east": "icbmclassic:blocks/explosive/anti_gravitational_side",
+      "south": "icbmclassic:blocks/explosive/anti_gravitational_side",
+      "west": "icbmclassic:blocks/explosive/anti_gravitational_side"
     }
   },
   "variants": {
