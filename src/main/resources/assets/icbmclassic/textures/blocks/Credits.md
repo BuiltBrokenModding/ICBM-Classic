@@ -23,3 +23,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | cruise_launcher.png  | 2/28/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |
 | machine_green.png    | 2/28/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |
 | explosives/*         | 2/28/2023  | Woah (Commissioned) | ARR, Robin Seifert, Licensed to team for project   |
+| glass_reinforced.png | 3/10/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |

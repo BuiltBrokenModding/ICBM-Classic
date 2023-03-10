@@ -21,13 +21,8 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 ### Silo Screen
 
-- Migrate to xyz as a single text box
-- Mimic layout of cruise launcher
-- Add detonation height as it's own field
-- Show inaccuracy better -  use real time data instead of fixed data
 - Show status of all launchers instead of first
 - sync status from server to client, don't calculate on client
-- add energy slot
 
 ### Launch Pad
 
@@ -51,9 +46,6 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 ## Block Textures
 
-- Use new explosive textures
-- Reinforced Glass connected textures and new textures at 16x16
-- ~~Concrete textures~~
 - Spikes
 - connected textures for launcher connector
 
