@@ -3,8 +3,10 @@ package icbm.classic.lib.capability.launcher.data;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.launcher.IActionStatus;
 import lombok.AllArgsConstructor;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
-@AllArgsConstructor
+
 public class LauncherStatus implements IActionStatus {
 
     private static final String ERROR_PREFIX = "launcher.error." + ICBMConstants.PREFIX + "message";
@@ -22,7 +24,12 @@ public class LauncherStatus implements IActionStatus {
     public static final LauncherStatus CANCELED = new LauncherStatus(false, STATUS_PREFIX + ".canceled");
 
     private final boolean error;
-    private final String message;
+    private final ITextComponent message;
+
+    public LauncherStatus(boolean isError, String translationKey) {
+        this.error = isError;
+        this.message = new TextComponentTranslation(translationKey);
+    }
 
     @Override
     public boolean isError() {
@@ -30,7 +37,7 @@ public class LauncherStatus implements IActionStatus {
     }
 
     @Override
-    public String message() {
+    public ITextComponent message() {
         return message;
     }
 }

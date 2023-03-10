@@ -1,5 +1,7 @@
 package icbm.classic.api.launcher;
 
+import net.minecraft.util.text.ITextComponent;
+
 /**
  * Status response for triggering an action. This can be used
  * for various events that were triggered.
@@ -23,7 +25,7 @@ public interface IActionStatus {
      *
      * @return message
      */
-    String message();
+    ITextComponent message();
 
     // TODO add a status callback for when 'status=aiming` or 'status=delay'
 }
