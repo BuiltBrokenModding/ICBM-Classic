@@ -6,11 +6,11 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -34,7 +34,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
@@ -54,14 +53,6 @@ import javax.annotation.Nullable;
 
 public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, ILauncherComponent
 {
-    public static final String ERROR_TRANSLATION = "launcher.cruise.error";
-    public static final String ERROR_NO_POWER = ERROR_TRANSLATION + ".power";
-    public static final String ERROR_NO_MISSILE = ERROR_TRANSLATION + ".missile.none";
-    public static final String ERROR_MISSILE_SPACE = ERROR_TRANSLATION + ".missile.space";
-    public static final String ERROR_NO_TARGET = ERROR_TRANSLATION + ".target.none";
-    public static final String ERROR_MIN_RANGE = ERROR_TRANSLATION + ".target.min";
-    public static final String READY_TRANSLATION = "launcher.cruise.ready";
-
     public static final int DESCRIPTION_PACKET_ID = 0;
     public static final int SET_FREQUENCY_PACKET_ID = 1;
     public static final int SET_TARGET_PACKET_ID = 2;
@@ -137,27 +128,29 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     {
         if (!hasChargeToFire())
         {
-            return new TextComponentTranslation(ERROR_NO_POWER);
+            return new TextComponentTranslation(LauncherLangs.ERROR_NO_POWER);
         }
         // Checks for empty slot
         else if (!missileHolder.hasMissile())
         {
-            return new TextComponentTranslation(ERROR_NO_MISSILE);
+            return new TextComponentTranslation(LauncherLangs.ERROR_MISSILE_NONE);
         }
         else if (!hasTarget())
         {
-            return new TextComponentTranslation(ERROR_NO_TARGET);
+            return new TextComponentTranslation(LauncherLangs.ERROR_TARGET_NONE);
         }
         else if (this.isTooClose(getTarget()))
         {
-           return new TextComponentTranslation(ERROR_MIN_RANGE);
+           return new TextComponentTranslation(LauncherLangs.ERROR_TARGET_MIN);
         }
         else if (!canSpawnMissileWithNoCollision())
         {
-            return new TextComponentTranslation(ERROR_MISSILE_SPACE);
+            return new TextComponentTranslation(LauncherLangs.ERROR_MISSILE_SPACE);
         }
 
-        return new TextComponentTranslation(READY_TRANSLATION);
+        // TODO check angle limits
+
+        return new TextComponentTranslation(LauncherLangs.STATUS_READY);
     }
 
     @Override

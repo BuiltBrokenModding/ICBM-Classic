@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
@@ -159,7 +160,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
     public void sendLaunchPacket() {
         if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", SET_TARGET_PACKET_ID, this));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", LAUNCH_PACKET_ID, this));
         }
     }
 
@@ -198,12 +199,12 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     {
         if (getNetworkNode().getNetwork() == null)
         {
-            return new TextComponentTranslation("gui.icbmclassic:error.no_network");
+            return new TextComponentTranslation(LauncherLangs.ERROR_NO_NETWORK);
         }
         return getNetworkNode().getLaunchers().stream().map(launcher -> {
             if (launcher == null)
             {
-                return new TextComponentTranslation("gui.launcherscreen.statusMissing");
+                return new TextComponentTranslation(LauncherLangs.ERROR_NO_LAUNCHER);
             }
 
             final IActionStatus status = launch(launcher, getNetworkNode().getLaunchers().size(), true);
@@ -211,7 +212,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
                 return status.message();
             }
             return null;
-        }).filter(Objects::nonNull).findFirst().orElse(new TextComponentTranslation("gui.launcherscreen.statusReady"));
+        }).filter(Objects::nonNull).findFirst().orElse(new TextComponentTranslation(LauncherLangs.STATUS_READY));
     }
 
     @Override

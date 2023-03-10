@@ -388,17 +388,28 @@ gui.launcherBase.name=Launcher Platform
 gui.launcherscreen.name=Launcher Control Panel
 gui.launcherscreen.inaccuracy=Acc: %1$sm
 gui.launcherscreen.inaccuracy.info=Radius in meters from target the missile could land. Driven by a range of factors, such as: number of launchers, and distances.
-gui.launcherscreen.statusReady=Ready to launch!
 
-## Cruise launcher status, used by GUI and block interaction
-launcher.cruise.error.power=Firing Safety; Not enough power
-launcher.cruise.error.fuel=Firing Safety; Not enough fuel
-launcher.cruise.error.missile.none=Firing Safety; No missile
-launcher.cruise.error.target.none=Guidance safety; No target set
-launcher.cruise.error.target.min=Guidance safety; Target too close
-launcher.cruise.error.target.angle=Guidance safety; Aiming angle limits hit
-launcher.cruise.error.missile.space=Guidance safety; launcher collision detected. Clear area around missile required.
-launcher.cruise.ready=Ready to fire
+## General launcher feedback: used in GUIs tooltip, radio messages, and launcher status messages
+info.icbmclassic:launcher.error=Unknown Error
+info.icbmclassic:launcher.error.power=Firing Safety; Not enough power
+info.icbmclassic:launcher.error.fuel=Firing Safety; Not enough fuel
+info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
+
+info.icbmclassic:launcher.error.network=Self Check; No launcher network
+
+info.icbmclassic:launcher.error.target.none=Guidance Safety; No target set
+info.icbmclassic:launcher.error.target.min=Guidance safety; Target too close
+info.icbmclassic:launcher.error.target.max=Guidance safety; Target too far
+info.icbmclassic:launcher.error.target.angle=Guidance Safety; Aiming angle limits hit
+info.icbmclassic:launcher.error.missile.space=Guidance Safety; launcher collision detected.
+
+info.icbmclassic:launcher.error.launcher=Firing Failure; Null launcher detected
+info.icbmclassic:launcher.error.missile.spawn=Firing Failure; Missile Spawn Prevented
+
+info.icbmclassic:launcher.status=Unknown Status
+info.icbmclassic:launcher.status.ready=Ready to fire
+info.icbmclassic:launcher.status.launched=Launch Triggered
+info.icbmclassic:launcher.status.canceled=Launch Canceled
 
 ## Cruise launcher UI
 gui.launcher.cruise.name=Cruise Launcher
