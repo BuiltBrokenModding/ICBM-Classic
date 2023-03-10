@@ -38,7 +38,7 @@ public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadio
 
             // Fire missile packet
             if(packet instanceof ITriggerActionMessage) {
-                if (host.fireAllLaunchers()) { // TODO collect all screens and provide a single feedback message
+                if (host.fireAllLaunchers(false)) { // TODO collect all screens and provide a single feedback message
                     final Vec3d target = host.getTarget();
                     final double distance = target.squareDistanceTo(host.xi()+ 0.5, host.yi() + 0.5, host.zi()+ 0.5); // TODO base from launcher
                     sender.onMessageCallback(this, new TextMessage(getChannel(), RadioTranslations.RADIO_LAUNCH_SUCCESS, target.x, target.y, target.z, distance));

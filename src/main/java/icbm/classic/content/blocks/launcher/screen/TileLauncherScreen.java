@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
@@ -9,24 +10,31 @@ import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
-import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.prefab.tile.TileMachine;
+import icbm.classic.prefab.inventory.InventorySlot;
+import icbm.classic.prefab.inventory.InventoryWithSlots;
+import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -34,14 +42,11 @@ import java.util.Optional;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver, ILauncherComponent
+public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDReceiver, ILauncherComponent
 {
-
-    public static final int DESCRIPTION_PACKET_ID = 0;
-    public static final int SET_FREQUENCY_PACKET_ID = 1;
-    public static final int SET_TARGET_PACKET_ID = 2;
-    public static final int LOCK_HEIGHT_PACKET_ID = 3;
-    public static final int LAUNCH_PACKET_ID = 4;
+    public static final int SET_FREQUENCY_PACKET_ID = 0;
+    public static final int SET_TARGET_PACKET_ID = 1;
+    public static final int LAUNCH_PACKET_ID = 2;
 
     /** Height to wait before missile curves */
     public int lockHeight = 3;
@@ -49,11 +54,14 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     /** Target position of the launcher */
     private Vec3d _targetPos = Vec3d.ZERO;
 
-    public int clientEnergyStored = 0;
-    public int clientEnergyCapacity = 0;
-
+    public final InventoryWithSlots inventory = new InventoryWithSlots(1)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
     private final LauncherNode launcherNode = new LauncherNode(this, false);
     public final RadioScreen radioCap = new RadioScreen(this);
+
+    @Getter
+    private float launcherInaccuracy = 0;
 
     @Override
     public LauncherNode getNetworkNode() {
@@ -64,12 +72,21 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public void update()
     {
         super.update();
+
+        // Tick inventory
+        inventory.onTick();
+
         if (isServer())
         {
+            if(getNetworkNode().getNetwork() != null) {
+                final List<IMissileLauncher> launchers = getNetworkNode().getLaunchers();
+                launcherInaccuracy = launchers.stream().map(l -> l.getInaccuracy(getTarget(), launchers.size())).max(Float::compareTo).orElse(0f);
+            }
+
             //Only launch if redstone
             if (ticks % 3 == 0 && world.getStrongPower(getPos()) > 0)
             {
-                fireAllLaunchers();
+                fireAllLaunchers(false);
             }
 
             //Update packet TODO see if this is needed
@@ -81,40 +98,12 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     }
 
     @Override
-    public PacketTile getDescPacket()
-    {
-        final int energy = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getEnergyStored()).orElse(0);
-        final int energyCap = Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.energyStorage.getMaxEnergyStored()).orElse(0);
-        return new PacketTile("desc", 0, this).addData(energy, energyCap, radioCap.getChannel(), this.lockHeight, this.getTarget().x, this.getTarget().y, this.getTarget().z);
-    }
-
-    @Override
-    public PacketTile getGUIPacket()
-    {
-        return getDescPacket();
-    }
-
-    @Override
     public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
     {
         if (!super.read(data, id, player, packet))
         {
             switch (id)
             {
-                case DESCRIPTION_PACKET_ID:
-                {
-                    if (isClient())
-                    {
-                        //this.tier = data.readInt();
-                        this.clientEnergyStored = data.readInt();
-                        this.clientEnergyCapacity = data.readInt();
-                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                        this.lockHeight = data.readInt();
-                        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble())); //TODO compare before creating vec3 as we spam description packet
-                        return true;
-                    }
-                    break;
-                }
                 case SET_FREQUENCY_PACKET_ID:
                 {
                     this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
@@ -125,19 +114,53 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                     this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     return true;
                 }
-                case LOCK_HEIGHT_PACKET_ID:
-                {
-                    this.lockHeight = data.readInt();
-                    return true;
-                }
                 case LAUNCH_PACKET_ID:
                 {
-                    fireAllLaunchers();
+                    fireAllLaunchers(false);
+                    return true;
                 }
             }
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void writeDescPacket(ByteBuf data)
+    {
+        super.writeDescPacket(data);
+        ByteBufUtils.writeUTF8String(data, radioCap.getChannel());
+        data.writeFloat(launcherInaccuracy);
+        data.writeDouble(this.getTarget().x);
+        data.writeDouble(this.getTarget().y);
+        data.writeDouble(this.getTarget().z);
+    }
+
+    @Override
+    public void readDescPacket(ByteBuf data)
+    {
+        super.readDescPacket(data);
+        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+        this.launcherInaccuracy = data.readFloat();
+        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
+    }
+
+    public void sendHzPacket(String channel) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", SET_FREQUENCY_PACKET_ID, this).addData(channel));
+        }
+    }
+
+    public void sendTargetPacket(Vec3d data) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", SET_TARGET_PACKET_ID, this).addData(data));
+        }
+    }
+
+    public void sendLaunchPacket() {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", SET_TARGET_PACKET_ID, this));
+        }
     }
 
     /**
@@ -150,11 +173,11 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
     }
 
-    public boolean fireAllLaunchers() {
+    public boolean fireAllLaunchers(boolean simulate) {
         // TODO add chain fire delay settings to screen
         boolean hasFired = false;
         for(IMissileLauncher launcher : getLaunchers()) {
-            final IActionStatus status = launch(launcher, getLaunchers().size(), false); // TODO output status to users
+            final IActionStatus status = launch(launcher, getLaunchers().size(), simulate); // TODO output status to users
             if(!status.isError()) {
                 hasFired = true;
             }
@@ -162,29 +185,33 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         return hasFired;
     }
 
+    public boolean canLaunch() {
+        return fireAllLaunchers(true);
+    }
+
     /**
      * Gets the display status of the missile launcher
      *
      * @return The string to be displayed
      */
-    public String getStatus()
+    public ITextComponent getStatusTranslation()
     {
         if (getNetworkNode().getNetwork() == null)
         {
-            return LanguageUtility.getLocal("gui.launcherscreen.noNetwork");
+            return new TextComponentTranslation("gui.icbmclassic:error.no_network");
         }
         return getNetworkNode().getLaunchers().stream().map(launcher -> {
             if (launcher == null)
             {
-                return LanguageUtility.getLocal("gui.launcherscreen.statusMissing");
+                return new TextComponentTranslation("gui.launcherscreen.statusMissing");
             }
 
             final IActionStatus status = launch(launcher, getNetworkNode().getLaunchers().size(), true);
             if(status.isError()) {
                 return status.message();
             }
-            return "";
-        }).filter(s -> !s.isEmpty()).findFirst().orElse(LanguageUtility.getLocal("gui.launcherscreen.statusReady"));
+            return null;
+        }).filter(Objects::nonNull).findFirst().orElse(new TextComponentTranslation("gui.launcherscreen.statusReady"));
     }
 
     @Override

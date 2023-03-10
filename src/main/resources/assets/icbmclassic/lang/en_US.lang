@@ -375,6 +375,7 @@ gui.icbmclassic:error.format.vector.3d=Invalid format; Requires 3 positional coo
 gui.icbmclassic:error.format.vector.2d=Invalid format; Requires 2 positional coordinates separated by commas. Example: 4567, 5678
 
 gui.icbmclassic:energy=%1$s / %2$s FE %3$s%%
+gui.icbmclassic:error.no_network=Failed to connect to launcher network
 
 ## EMP Tower
 gui.icbmclassic:empTower.name=EMP Tower
@@ -384,20 +385,10 @@ gui.icbmclassic:empTower.ready=Ready to fire
 
 ## Launcher Screen
 gui.launcherBase.name=Launcher Platform
-gui.launcherBase.place=Place Missile
 gui.launcherscreen.name=Launcher Control Panel
-gui.launcherscreen.detHeight=Detonation Height:
-gui.launcherscreen.lockHeight=Lock Height:
-gui.launcherscreen.target=Missile Target
-gui.launcherscreen.inaccuracy=Inaccuracy: %p blocks
-gui.launcherscreen.statusMissing=Not connected!
-gui.launcherscreen.statusNoPower=Insufficient electricity!
-gui.launcherscreen.statusEmpty=Missile silo is empty!
-gui.launcherscreen.statusInvalid=Target is invalid!
-gui.launcherscreen.statusClose=Target too close!
-gui.launcherscreen.statusFar=Target too far!
+gui.launcherscreen.inaccuracy=Acc: %1$sm
+gui.launcherscreen.inaccuracy.info=Radius in meters from target the missile could land. Driven by a range of factors, such as: number of launchers, and distances.
 gui.launcherscreen.statusReady=Ready to launch!
-gui.launcherscreen.launch=Launch
 
 ## Cruise launcher status, used by GUI and block interaction
 launcher.cruise.error.power=Firing Safety; Not enough power
