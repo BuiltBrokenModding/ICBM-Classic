@@ -50,8 +50,6 @@ import java.util.Optional;
  */
 public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent //TODO move to cap
 {
-    private static final EulerAngle angle = new EulerAngle(0, 0, 0);
-
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
      */
@@ -171,30 +169,6 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         return new TextComponentTranslation("gui.launcherBase.name");
     }
 
-    protected Vec3d applyInaccuracy(Vec3d target, int launcherCount)
-    {
-        // Apply inaccuracy
-        double inaccuracy = ConfigLauncher.MIN_INACCURACY;
-
-        // Add inaccuracy based on range
-        double distance = getDistanceSq(target.x, target.y, target.z);
-        double scale = distance / ConfigLauncher.RANGE;
-        inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY;
-
-        // Add inaccuracy for each launcher fired in circuit
-        if(launcherCount > 1) {
-            inaccuracy += (launcherCount - 1) * ConfigLauncher.SCALED_LAUNCHER_COST;
-        }
-
-        //Randomize distance
-        inaccuracy = inaccuracy * getWorld().rand.nextFloat();
-
-        //Randomize radius drop
-        angle.setYaw(getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
-
-        //Apply inaccuracy to target position and return
-        return new Vec3d(target.x + angle.x() * inaccuracy, 0, target.z + angle.z() * inaccuracy);
-    }
 
     /**
      * Reads a tile entity from NBT.

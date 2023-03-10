@@ -15,6 +15,7 @@ import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
+import icbm.classic.lib.transform.rotation.EulerAngle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minecraft.entity.Entity;
@@ -29,9 +30,9 @@ import java.util.List;
 @AllArgsConstructor
 public class LauncherCapability implements IMissileLauncher {
 
+    private static final EulerAngle angle = new EulerAngle(0, 0, 0);
     private static final Vec3d SPAWN_OFFSET = new Vec3d(0.5f, 3.1f, 0.5f);
     private final TileLauncherBase host;
-
 
     @Override
     public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
@@ -76,7 +77,7 @@ public class LauncherCapability implements IMissileLauncher {
             if (missileStack != null)
             {
                 // TODO we may need to walk cause history to get correct launcher count info
-                final Vec3d target = host.applyInaccuracy(targetData.getPosition(), cause instanceof BlockScreenCause ? ((BlockScreenCause) cause).getLauncherCount() : 1);
+                final Vec3d target = applyInaccuracy(targetData.getPosition(), cause instanceof BlockScreenCause ? ((BlockScreenCause) cause).getLauncherCount() : 1);
 
                 //TODO add distance check? --- something seems to be missing
 
@@ -123,6 +124,36 @@ public class LauncherCapability implements IMissileLauncher {
             }
         }
         return LauncherStatus.ERROR_INVALID_STACK;
+    }
+
+    @Override
+    public float getInaccuracy(Vec3d target, int launcherCount) {
+        // Apply inaccuracy
+        float inaccuracy = (float)ConfigLauncher.MIN_INACCURACY;
+
+        // Add inaccuracy based on range
+        final double distance = host.getDistanceSq(target.x, target.y, target.z);
+        final double scale = distance / ConfigLauncher.RANGE;
+        inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY;
+
+        // Add inaccuracy for each launcher fired in circuit
+        if(launcherCount > 1) {
+            inaccuracy += (launcherCount - 1) * ConfigLauncher.SCALED_LAUNCHER_COST;
+        }
+        return inaccuracy;
+    }
+
+    protected Vec3d applyInaccuracy(Vec3d target, int launcherCount)
+    {
+
+        //Randomize distance
+        float inaccuracy = getInaccuracy(target, launcherCount) * host.world().rand.nextFloat();
+
+        //Randomize radius drop
+        angle.setYaw(host.world().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
+
+        //Apply inaccuracy to target position and return
+        return new Vec3d(target.x + angle.x() * inaccuracy, 0, target.z + angle.z() * inaccuracy);
     }
 
     /**
