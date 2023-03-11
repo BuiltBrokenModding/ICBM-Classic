@@ -1,10 +1,12 @@
 package icbm.classic.prefab.gui.tooltip;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Supplier;
@@ -16,29 +18,40 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class Tooltip implements IToolTip, IGuiComponent {
 
-    /** Bound box, relative to top-left of the container */
+    /**
+     * Bound box, relative to top-left of the container
+     */
     private final Rectangle bounds;
-    /** Supplier for getting tooltip in real time */
+    /**
+     * Supplier for getting tooltip in real time
+     */
     private final Supplier<ITextComponent> tooltip;
-    /** Delay in seconds to wait to show tooltip */
+    /**
+     * Delay in seconds to wait to show tooltip
+     */
     private final float hoverDelay;
 
     private GuiContainerBase container;
 
-    /** Is mouse over component */
+    /**
+     * Is mouse over component
+     */
     private boolean isHovering = false;
-    /** Current hover tick in seconds  */
+    /**
+     * Current hover tick in seconds
+     */
     private float hoveringTicks = 0;
 
     @Override
     public void draw(int mouseX, int mouseY, float partialTicks) {
         isHovering = isWithin(mouseX, mouseY);
-        if(isHovering) {
+        if (isHovering) {
             hoveringTicks += partialTicks;
-        }
-        else {
+        } else {
             hoveringTicks = 0;
         }
+
+        //Gui.drawRect(bounds.getMin().xi() + container.getGuiLeft(), bounds.getMin().yi() + container.getGuiTop(), bounds.getMax().xi() + container.getGuiLeft(), bounds.getMax().yi() + container.getGuiTop(), -6250336);
     }
 
     @Override
@@ -53,7 +66,7 @@ public class Tooltip implements IToolTip, IGuiComponent {
 
     @Override
     public ITextComponent getTooltip() {
-        if(hoveringTicks < hoverDelay) {
+        if (hoveringTicks < hoverDelay) {
             return null;
         }
         return tooltip.get();

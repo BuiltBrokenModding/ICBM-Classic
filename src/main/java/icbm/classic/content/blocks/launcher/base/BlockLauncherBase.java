@@ -50,19 +50,20 @@ public class BlockLauncherBase extends BlockContainer
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         final TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof TileLauncherBase)
+        if (tile instanceof TileLauncherBase && !worldIn.isRemote)
         {
             if(playerIn.getHeldItem(hand).getItem() == Items.STONE_AXE) {
-                if(!worldIn.isRemote) {
                     final LauncherNetwork network = ((TileLauncherBase) tile).getNetworkNode().getNetwork();
                     playerIn.sendMessage(new TextComponentString("Network: " + network));
                     playerIn.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
-                }
                 return true;
             }
-            return ((TileLauncherBase) tile).tryInsertMissile(playerIn, hand, playerIn.getHeldItem(hand));
+            if(!((TileLauncherBase) tile).tryInsertMissile(playerIn, hand, playerIn.getHeldItem(hand))) {
+                playerIn.openGui(ICBMClassic.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            }
+            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

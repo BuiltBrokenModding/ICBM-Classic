@@ -170,7 +170,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
      */
     public IActionStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
     {
-        final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount, lockHeight);
+        final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount);
         return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
     }
 
@@ -325,6 +325,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
         .mainRoot()
         /* */.nodeInteger(NBTConstants.TARGET_HEIGHT, launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
         /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
+        /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         .base();
 }

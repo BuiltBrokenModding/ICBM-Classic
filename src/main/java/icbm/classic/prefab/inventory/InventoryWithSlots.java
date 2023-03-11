@@ -24,6 +24,12 @@ public class InventoryWithSlots extends ItemStackHandler {
         slotHandlers = new InventorySlot[size];
     }
 
+    @Override
+    public void setSize(int size)
+    {
+        stacks = NonNullList.withSize(Math.max(size, stacks.size()), ItemStack.EMPTY);
+    }
+
     public void onTick() {
         for(InventorySlot slot : slotHandlers) {
             if(slot != null && slot.getOnTick() != null) {

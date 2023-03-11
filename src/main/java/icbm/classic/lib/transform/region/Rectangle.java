@@ -2,6 +2,8 @@ package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.vector.IPos2D;
 import icbm.classic.lib.transform.vector.Point;
+import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,10 +12,13 @@ import java.math.RoundingMode;
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/9/2018.
  */
+
 public class Rectangle extends Shape2D
 {
-    Point min;
-    Point max;
+    @Getter
+    private final Point min;
+    @Getter
+    private final Point max;
 
     public Rectangle(Point min, Point max)
     {

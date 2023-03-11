@@ -98,7 +98,7 @@ public class LauncherCapability implements IMissileLauncher {
 
                     //Trigger launch event
                     missile.setTargetData(new BallisticTargetingData(target, 1));
-                    missile.setFlightLogic(new BallisticFlightLogic(cause instanceof BlockScreenCause ? ((BlockScreenCause) cause).getLockHeight() : 10));
+                    missile.setFlightLogic(new BallisticFlightLogic(host.getLockHeight()));
                     missile.setMissileSource(source); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
                     missile.launch();
 

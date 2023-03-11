@@ -1,10 +1,17 @@
 package icbm.classic.content.blocks.launcher.base;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
+import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
+import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
+import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
+import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
+import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
@@ -17,10 +24,18 @@ import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.inventory.InventorySlot;
+import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -50,6 +65,11 @@ import java.util.Optional;
  */
 public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent //TODO move to cap
 {
+
+    public static final int PACKET_LOCK_HEIGHT = 0;
+    public static final int PACKET_GROUP_ID = 1;
+    public static final int PACKET_GROUP_INDEX = 2;
+
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
      */
@@ -58,7 +78,13 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     protected boolean checkMissileCollision = true;
     private boolean hasMissileCollision = false;
 
-    private final LauncherInventory inventory = new LauncherInventory(this);
+    public final InventoryWithSlots inventory = new InventoryWithSlots(2)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
+            .withInsertCheck((s) -> this.checkForMissileInBounds())
+            .withChangeCallback((stack) -> this.sendDescPacket())
+        )
+        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
 
     /**
      * Client's render cached object, used in place of inventory to avoid affecting GUIs
@@ -69,6 +95,13 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public final IMissileLauncher missileLauncher = new LauncherCapability(this);
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
+
+    @Getter @Setter
+    private int lockHeight = 3;
+    @Getter @Setter
+    private int group = -1;
+    @Getter @Setter
+    private int groupIndex = -1;
 
     @Override
     public void onLoad()
@@ -166,28 +199,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     @Override
     public ITextComponent getDisplayName()
     {
-        return new TextComponentTranslation("gui.launcherBase.name");
-    }
-
-
-    /**
-     * Reads a tile entity from NBT.
-     */
-    @Override
-    public void readFromNBT(NBTTagCompound nbt)
-    {
-        super.readFromNBT(nbt);
-        inventory.deserializeNBT(nbt.getCompoundTag(NBTConstants.INVENTORY));
-    }
-
-    /**
-     * Writes a tile entity to NBT.
-     */
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-    {
-        nbt.setTag(NBTConstants.INVENTORY, inventory.serializeNBT());
-        return super.writeToNBT(nbt);
+        return new TextComponentTranslation("gui.icbmclassic:launcherbase.name");
     }
 
     @Override
@@ -202,6 +214,52 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     {
         super.readDescPacket(buf);
         cachedMissileStack = ByteBufUtils.readItemStack(buf);
+    }
+
+    @Override
+    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
+    {
+        if (!super.read(data, id, player, packet))
+        {
+            switch (id)
+            {
+                case PACKET_LOCK_HEIGHT:
+                {
+                    lockHeight = data.readInt();
+                    return true;
+                }
+                case PACKET_GROUP_INDEX:
+                {
+                    groupIndex = data.readInt();
+                    return true;
+                }
+                case PACKET_GROUP_ID:
+                {
+                    group = data.readInt();
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public void sendLockHeightPacket(int lockHeight) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("lockHeight_C>S", PACKET_LOCK_HEIGHT, this).addData(lockHeight));
+        }
+    }
+
+    public void sendGroupIdPacket(int groupId) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupId_C>S", PACKET_LOCK_HEIGHT, this).addData(groupId));
+        }
+    }
+
+    public void sendGroupIndexPacket(int groupIndex) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_LOCK_HEIGHT, this).addData(groupIndex));
+        }
     }
 
     public ItemStack getMissileStack()
@@ -259,4 +317,38 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     {
         return ConfigLauncher.POWER_CAPACITY;
     }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player)
+    {
+        return new ContainerLaunchBase(player, this);
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player)
+    {
+        return new GuiLauncherBase(player, this);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt)
+    {
+        super.readFromNBT(nbt);
+        SAVE_LOGIC.load(this, nbt);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+    {
+        SAVE_LOGIC.save(this, nbt);
+        return super.writeToNBT(nbt);
+    }
+
+    private static final NbtSaveHandler<TileLauncherBase> SAVE_LOGIC = new NbtSaveHandler<TileLauncherBase>()
+        .mainRoot()
+        /* */.nodeInteger("lock_height", launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
+        /* */.nodeInteger("group_id", launcher -> launcher.group, (launcher, h) -> launcher.group = h)
+        /* */.nodeInteger("group_index", launcher -> launcher.groupIndex, (launcher, h) -> launcher.groupIndex = h)
+        /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
+        .base();
 }
