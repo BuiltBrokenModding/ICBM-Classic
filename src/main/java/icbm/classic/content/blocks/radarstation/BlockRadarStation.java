@@ -55,7 +55,7 @@ public class BlockRadarStation extends BlockICBM
     {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if(tileEntity instanceof TileRadarStation) {
-            return ((TileRadarStation) tileEntity).enableRedstoneOutput;
+            return ((TileRadarStation) tileEntity).isOutputRedstone();
         }
         return false;
     }
@@ -89,13 +89,13 @@ public class BlockRadarStation extends BlockICBM
         if (!world.isRemote)
         {
             //if (WrenchUtility.isUsableWrench(player, player.getHeldItem(hand), pos.getX(), pos.getY(), pos.getZ()))
-            if (player.getHeldItem(hand).getItem() == Items.REDSTONE)
+            if (player.getHeldItem(hand).getItem() == Items.REDSTONE) //TODO move to UI
             {
                 final TileEntity tile = world.getTileEntity(pos);
                 if (tile instanceof TileRadarStation)
                 {
-                    ((TileRadarStation) tile).enableRedstoneOutput = !((TileRadarStation) tile).enableRedstoneOutput;
-                    player.sendMessage(new TextComponentTranslation(((TileRadarStation) tile).enableRedstoneOutput ? "message.radar.redstone.on" : "message.radar.redstone.off"));
+                    ((TileRadarStation) tile).setOutputRedstone(!((TileRadarStation) tile).isOutputRedstone());
+                    player.sendMessage(new TextComponentTranslation(((TileRadarStation) tile).isOutputRedstone() ? "message.radar.redstone.on" : "message.radar.redstone.off"));
                 }
                 else
                 {

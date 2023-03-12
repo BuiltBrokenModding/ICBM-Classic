@@ -19,7 +19,7 @@ public class BlockScreenCause extends BlockCause {
 
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block.screen");
 
-    private int launcherCount;
+    private int launcherCount; //TODO expose through interface
 
     public BlockScreenCause(World world, BlockPos pos, IBlockState state, int launcherCount) {
         super(world, pos, state);

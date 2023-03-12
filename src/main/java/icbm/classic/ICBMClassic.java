@@ -104,6 +104,7 @@ import java.util.List;
 public class ICBMClassic
 {
     public static final String VERSION = "@VERSION@";
+    public static final int DATA_FIXER_VERSION = 5;
 
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
 
@@ -212,7 +213,7 @@ public class ICBMClassic
         registerCapabilities();
 
         //Register data fixers
-        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 2);
+        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, DATA_FIXER_VERSION);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityBombCartDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());

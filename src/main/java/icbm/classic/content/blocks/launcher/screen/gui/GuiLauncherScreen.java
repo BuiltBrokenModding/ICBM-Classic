@@ -12,12 +12,14 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.Tooltip;
+import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,6 +34,7 @@ import static java.lang.Math.max;
 public class GuiLauncherScreen extends GuiContainerBase
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_silo_screen.png");
+    public static final ITextComponent ACCURACY_TOOLTIP = new TextComponentTranslation("gui.launcherscreen.inaccuracy.info");
 
     private final TileLauncherScreen tileEntity;
 
@@ -39,7 +42,8 @@ public class GuiLauncherScreen extends GuiContainerBase
     {
         super(new ContainerLaunchScreen(player, tileEntity));
         this.tileEntity = tileEntity;
-        ySize = 166;
+        this.ySize = 166;
+        this.xSize = 175;
     }
 
     @Override
@@ -58,6 +62,8 @@ public class GuiLauncherScreen extends GuiContainerBase
         // Target field
         addComponent(TextInput.vec3dField(componentID++, fontRenderer, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, tileEntity::sendTargetPacket));
+
+        // Hz
         addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
             tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, tileEntity::sendHzPacket));
 
@@ -70,7 +76,7 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
 
-        addComponent(new Tooltip(new Rectangle(60, 32, 60 + 30, 32 + 12), () -> new TextComponentTranslation("gui.launcherscreen.inaccuracy.info"), 1));
+        addComponent(new TooltipTranslations(60, 32, 30, 12, ACCURACY_TOOLTIP).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

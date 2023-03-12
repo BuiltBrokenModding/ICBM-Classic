@@ -11,6 +11,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.radio.messages.IncomingMissileMessage;
+import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
@@ -22,6 +23,8 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,6 +33,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
@@ -42,18 +47,31 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     public final static int MAX_DETECTION_RANGE = 500;
 
     public static final int GUI_PACKET_ID = 1;
-    public static final int SET_SAFETY_RANGE_PACKET_ID = 2;
-    public static final int SET_ALARM_RANGE_PACKET_ID = 3;
+    public static final int SET_TRIGGER_RANGE_PACKET_ID = 2;
+    public static final int SET_DETECTION_RANGE_PACKET_ID = 3;
     public static final int SET_FREQUENCY_PACKET_ID = 4;
 
+    public static final ITextComponent TRANSLATION_GUI_NAME = new TextComponentTranslation("gui.icbmclassic:radar.name");
+    public static final ITextComponent TRANSLATION_TOOLTIP_RANGE = new TextComponentTranslation("gui.icbmclassic:radar.range");
+    public static final ITextComponent TRANSLATION_TOOLTIP_RANGE_SHIFT = new TextComponentTranslation("gui.icbmclassic:radar.range.shift");
+
+    public static final String NBT_DETECTION_RANGE = "detection_range"; //TODO fix name
+    public static final String NBT_TRIGGER_RANGE = "safetyRadius"; //TODO fix name
+    public static final String NBT_OUTPUT_REDSTONE = "emitAll"; //TODO fix name
+    public static final String NBT_INVENTORY = "inventory";
+    public static final String NBT_RADIO = "radio";
+
     /** Range to detect any radar contracts */
-    public int detectionRange = 100;
+    @Getter @Setter
+    private int detectionRange = 100;
 
     /** Range to trigger if a threat will land in the area */
-    public int triggerRange = 50;
+    @Getter @Setter
+    private int triggerRange = 50;
 
     /** True if we should output redstone */
-    public boolean enableRedstoneOutput = true;
+    @Getter @Setter
+    private boolean outputRedstone = true;
 
     /** All entities detected by the radar */
     private final List<Entity> detectedRadarEntities = new ArrayList();
@@ -62,9 +80,13 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     /** Threats that will cause harm to our protection area */
     private final List<IMissile> incomingThreats = new ArrayList(); //TODO decouple from missile so we can track other entities
 
-    public final InventoryWithSlots inventory = new InventoryWithSlots(1)
+    @Getter
+    private final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+
+    @Getter
+    private final RadioRadar radio = new RadioRadar(this);
 
     // UI data
     public List<Pos> guiDrawPoints = new ArrayList();
@@ -73,8 +95,6 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     public boolean hasIncomingMissiles = false;
     public boolean hasDetectedEntities = false;
     public float rotation = 0;
-
-    public final RadioRadar radioCap = new RadioRadar(this);
 
     private EnumRadarState prevRenderState = EnumRadarState.OFF;
 
@@ -104,9 +124,9 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                 }
 
                 //Check for incoming and launch anti-missiles if
-                if (this.ticks % 20 == 0 && !radioCap.getChannel().equals(RadioRegistry.EMPTY_HZ) && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
+                if (this.ticks % 20 == 0 && !radio.getChannel().equals(RadioRegistry.EMPTY_HZ) && this.incomingThreats.size() > 0) //TODO track if a anti-missile is already in air to hit target
                 {
-                    RadioRegistry.popMessage(world, radioCap, new IncomingMissileMessage(radioCap.getChannel(), this.incomingThreats.get(0))); //TODO use static var for event name
+                    RadioRegistry.popMessage(world, radio, new IncomingMissileMessage(radio.getChannel(), this.incomingThreats.get(0))); //TODO use static var for event name
                 }
             }
             // No power, reset state
@@ -272,7 +292,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
         packet.write(detectionRange);
         packet.write(triggerRange);
-        packet.write(radioCap.getChannel());
+        packet.write(radio.getChannel());
         packet.write(detectedRadarEntities.size());
         if (detectedRadarEntities.size() > 0)
         {
@@ -340,7 +360,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                 {
                     this.detectionRange = data.readInt();
                     this.triggerRange = data.readInt();
-                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                    this.radio.setChannel(ByteBufUtils.readUTF8String(data));
 
                     // Reset state
                     this.updateDrawList = true;
@@ -369,19 +389,19 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
             }
             else if (!this.world.isRemote)
             {
-                if (ID == SET_SAFETY_RANGE_PACKET_ID)
+                if (ID == SET_TRIGGER_RANGE_PACKET_ID)
                 {
                     this.triggerRange = data.readInt();
                     return true;
                 }
-                else if (ID == SET_ALARM_RANGE_PACKET_ID)
+                else if (ID == SET_DETECTION_RANGE_PACKET_ID)
                 {
                     this.detectionRange = data.readInt();
                     return true;
                 }
                 else if (ID == SET_FREQUENCY_PACKET_ID)
                 {
-                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                    this.radio.setChannel(ByteBufUtils.readUTF8String(data));
                     return true;
                 }
             }
@@ -390,9 +410,27 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         return true;
     }
 
+    public void sendHzPacket(String channel) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", SET_FREQUENCY_PACKET_ID, this).addData(channel));
+        }
+    }
+
+    public void sendTriggerRangePacket(int range) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("triggerRange_C>S", SET_TRIGGER_RANGE_PACKET_ID, this).addData(range));
+        }
+    }
+
+    public void sendDetectionRangePacket(int range) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("detectionRange_C>S", SET_DETECTION_RANGE_PACKET_ID, this).addData(range));
+        }
+    }
+
     public int getStrongRedstonePower(EnumFacing side)
     {
-        if (this.enableRedstoneOutput && incomingThreats.size() > 0) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
+        if (this.outputRedstone && incomingThreats.size() > 0) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
         {
             return Math.min(15, incomingThreats.size());
         }
@@ -403,25 +441,36 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         return incomingThreats.size() > 0;
     }
 
-    /** Reads a tile entity from NBT. */
+    @Override
+    public ITextComponent getDisplayName()
+    {
+        return TRANSLATION_GUI_NAME;
+    }
+
     @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        this.triggerRange = nbt.getInteger(NBTConstants.SAFETY_RADIUS);
-        this.detectionRange = nbt.getInteger(NBTConstants.ALARM_RADIUS);
-        this.enableRedstoneOutput = nbt.getBoolean(NBTConstants.EMIT_ALL);
+        SAVE_LOGIC.load(this, nbt);
+        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
+            this.radio.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+        }
     }
 
-    /** Writes a tile entity to NBT. */
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-    {
-        nbt.setInteger(NBTConstants.SAFETY_RADIUS, this.triggerRange);
-        nbt.setInteger(NBTConstants.ALARM_RADIUS, this.detectionRange);
-        nbt.setBoolean(NBTConstants.EMIT_ALL, this.enableRedstoneOutput);
+    {   SAVE_LOGIC.save(this, nbt);
         return super.writeToNBT(nbt);
     }
+
+    private static final NbtSaveHandler<TileRadarStation> SAVE_LOGIC = new NbtSaveHandler<TileRadarStation>()
+        .mainRoot()
+        /* */.nodeINBTSerializable(NBT_INVENTORY, TileRadarStation::getInventory)
+        /* */.nodeINBTSerializable(NBT_RADIO, TileRadarStation::getRadio)
+        /* */.nodeBoolean(NBT_OUTPUT_REDSTONE, TileRadarStation::isOutputRedstone, TileRadarStation::setOutputRedstone)
+        /* */.nodeInteger(NBT_DETECTION_RANGE, TileRadarStation::getDetectionRange, TileRadarStation::setDetectionRange)
+        /* */.nodeInteger(NBT_TRIGGER_RANGE, TileRadarStation::getTriggerRange, TileRadarStation::setTriggerRange)
+        .base();
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)

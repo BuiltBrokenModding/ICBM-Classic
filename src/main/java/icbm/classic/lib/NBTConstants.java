@@ -39,7 +39,7 @@ public class NBTConstants
 
     public static final String ACCELERATION = "acceleration";
     public static final String ADDITIONAL_MISSILE_DATA = "additionalMissileData";
-    public static final String ALARM_RADIUS = "alarmRadius";
+
     public static final String BLAST = "blast";
     public static final String BLAST_DATA = "blastData";
     public static final String BLAST_EXPLODER_ENT_ID = "blastExpEntId";
@@ -55,7 +55,6 @@ public class NBTConstants
     public static final String DESTROY_ITEM = "destroyItem";
     public static final String DIMENSION = "dimension";
     public static final String DURATION = "duration";
-    public static final String EMIT_ALL = "emitAll";
     public static final String ENERGY = "energy";
     public static final String EXPLOSION_SIZE = "explosionSize";
     public static final String EXPLOSIVE = "explosive";
@@ -90,7 +89,7 @@ public class NBTConstants
     public static final String PUSH_TYPE = "pushType";
     public static final String RED = "red";
     public static final String ROLL = "roll";
-    public static final String SAFETY_RADIUS = "safetyRadius";
+
     public static final String SHAKE = "shake";
     public static final String SLOT = "Slot";
     public static final String SPAWNS = "spawns";
