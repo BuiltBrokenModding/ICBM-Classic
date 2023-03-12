@@ -18,7 +18,7 @@ public abstract class Radio implements IRadio, INBTSerializable<NBTTagCompound>,
 
     public String getChannel() {
         if(channel == null) {
-            this.channel = RandomStringUtils.random(5, true, true);
+            this.channel = RandomStringUtils.random(4, true, true);
         }
         return channel;
     }
