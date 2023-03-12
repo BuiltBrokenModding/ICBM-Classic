@@ -48,6 +48,7 @@ public class GuiRadarStation extends GuiContainerBase
             tileEntity::getDetectionRange, tileEntity::setDetectionRange, tileEntity::sendDetectionRangePacket));
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
+        addComponent(new RadarComponent(tileEntity, 5, 18));
 
         addComponent(new TooltipTranslations(4, 76, 14, 14, TileRadarStation.TRANSLATION_TOOLTIP_RANGE).withShift(TileRadarStation.TRANSLATION_TOOLTIP_RANGE_SHIFT).withDelay(1));
 

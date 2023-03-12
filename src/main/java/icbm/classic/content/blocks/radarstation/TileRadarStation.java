@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.radarstation;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.blocks.radarstation.data.RadarRenderData;
 import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;
 import icbm.classic.content.blocks.radarstation.gui.GuiRadarStation;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
@@ -73,12 +74,15 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     @Getter @Setter
     private boolean outputRedstone = true;
 
-    /** All entities detected by the radar */
-    private final List<Entity> detectedRadarEntities = new ArrayList();
     /** All detected threats in our radar range*/
+    @Getter
     private final List<Entity> detectedThreats = new ArrayList<Entity>();
     /** Threats that will cause harm to our protection area */
+    @Getter
     private final List<IMissile> incomingThreats = new ArrayList(); //TODO decouple from missile so we can track other entities
+
+    @Getter
+    private final RadarRenderData radarRenderData = new RadarRenderData(this);
 
     @Getter
     private final InventoryWithSlots inventory = new InventoryWithSlots(1)
@@ -88,15 +92,8 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     @Getter
     private final RadioRadar radio = new RadioRadar(this);
 
-    // UI data
-    public List<Pos> guiDrawPoints = new ArrayList();
-    public RadarObjectType[] types;
-    public boolean updateDrawList = true;
-    public boolean hasIncomingMissiles = false;
-    public boolean hasDetectedEntities = false;
-    public float rotation = 0;
-
-    private EnumRadarState prevRenderState = EnumRadarState.OFF;
+    private EnumRadarState radarVisualState = EnumRadarState.OFF;
+    private EnumRadarState preRadarVisualState = EnumRadarState.OFF;
 
     @Override
     public void update()
@@ -152,42 +149,14 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                 }
             }
         }
-        else
-        {
-            if (checkExtract()) //TODO use a boolean on client for on/off state
-            {
-                if (updateDrawList)
-                {
-                    guiDrawPoints.clear();
-                    for (int i = 0; i < detectedThreats.size(); i++)
-                    {
-                        Entity entity = detectedThreats.get(i);
-                        if (entity != null)
-                        {
-                            guiDrawPoints.add(new Pos(entity.posX, entity.posZ, types[i].ordinal()));
-                        }
-                    }
-                }
-
-                //Animation
-                this.rotation += 0.08f;
-                if (this.rotation > 360)
-                {
-                    this.rotation = 0;
-                }
-            }
-            else
-            {
-                guiDrawPoints.clear();
-            }
-        }
 
         // Force block re-render if our state has changed
         final EnumRadarState state = getRadarState();
-        if(prevRenderState != state) {
+        if(preRadarVisualState != state) {
+            this.updateClient = true;
             this.markDirty();
-            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, prevRenderState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, state), 3);
-            prevRenderState = state;
+            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, radarVisualState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, state), 3);
+            preRadarVisualState = state;
         }
     }
 
@@ -199,26 +168,21 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
 
     private void doScan() //TODO document and thread
     {
-        this.detectedRadarEntities.clear();
         this.incomingThreats.clear();
         this.detectedThreats.clear();
         this.updateClient = true;
+        this.radarRenderData.clear();
 
-        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 1.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
-
-        // Store all radar contracts in range for nice visuals
-        this.detectedRadarEntities.addAll(entities);
+        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, xi() + 0.5, yi() + 0.5, zi() + 0.5, Math.min(detectionRange, MAX_DETECTION_RANGE));
 
         // Loop list of contacts to ID threats
-        for (Entity entity : detectedRadarEntities)
+        for (Entity entity : entities)
         {
             if (isThreat(entity))
             {
                 final IMissile newMissile = ICBMClassicHelpers.getMissile(entity);
                 if (newMissile != null && newMissile.getTicksInAir() > 1)
                 {
-                    this.detectedThreats.add(entity);
-
                     if (this.isMissileGoingToHit(newMissile))
                     {
                         if (this.incomingThreats.size() > 0)
@@ -247,8 +211,16 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                             this.incomingThreats.add(newMissile);
                         }
                     }
+                    else {
+                        this.detectedThreats.add(entity);
+                    }
                 }
             }
+        }
+
+        // Only update render data if we have players viewing the UI
+        if(this.getPlayersUsing().size() > 0) {
+            radarRenderData.update();
         }
     }
 
@@ -286,67 +258,36 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
     }
 
-    @Override
-    protected PacketTile getGUIPacket()
-    {
-        PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
-        packet.write(detectionRange);
-        packet.write(triggerRange);
-        packet.write(radio.getChannel());
-        packet.write(detectedRadarEntities.size());
-        if (detectedRadarEntities.size() > 0)
-        {
-            for (Entity entity : detectedRadarEntities)
-            {
-                if (entity != null && entity.isEntityAlive()) //TODO run filter before sending so we don't rewrite empty data
-                {
-                    packet.write(entity.getEntityId()); //TODO send 2D coords instead of entity info
+    public EnumRadarState getRadarState() {
 
-                    int type = RadarObjectType.OTHER.ordinal();
-                    if (isThreat(entity))
-                    {
-                        final IMissile missile = entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
-                        type = isMissileGoingToHit(missile) ? RadarObjectType.THREAT_IMPACT.ordinal() : RadarObjectType.THREAT.ordinal();
-                    }
-                    packet.write(type);
-                }
-                else
-                {
-                    packet.write(-1);
-                    packet.write(0);
-                }
-            }
+        if(isClient()) {
+            return radarVisualState;
         }
-        return packet;
+
+        if(!hasPower()) {
+            return EnumRadarState.OFF;
+        }
+        else if(this.incomingThreats.size() > 0) {
+            return EnumRadarState.DANGER;
+        }
+        else  if(this.detectedThreats.size() > 0) {
+            return EnumRadarState.WARNING;
+        }
+        return EnumRadarState.ON;
     }
 
     @Override
     public void readDescPacket(ByteBuf buf)
     {
         super.readDescPacket(buf);
-        this.hasDetectedEntities = buf.readBoolean(); //TODO sync counts if we display in UI
-        this.hasIncomingMissiles = buf.readBoolean();
+        this.radarVisualState = EnumRadarState.get(buf.readByte());
     }
 
     @Override
     public void writeDescPacket(ByteBuf buf)
     {
         super.writeDescPacket(buf);
-        buf.writeBoolean(this.detectedThreats.size() > 0);
-        buf.writeBoolean(this.incomingThreats.size() > 0);
-    }
-
-    public EnumRadarState getRadarState() {
-        if(!hasPower()) {
-            return EnumRadarState.OFF;
-        }
-        else if(hasIncomingMissiles) {
-            return EnumRadarState.DANGER;
-        }
-        else  if(hasDetectedEntities) {
-            return EnumRadarState.WARNING;
-        }
-        return EnumRadarState.ON;
+        buf.writeByte(radarVisualState.ordinal());
     }
 
     @Override
@@ -354,40 +295,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     {
         if (!super.read(data, ID, player, type))
         {
-            if (this.world.isRemote)
-            {
-                if (ID == GUI_PACKET_ID)
-                {
-                    this.detectionRange = data.readInt();
-                    this.triggerRange = data.readInt();
-                    this.radio.setChannel(ByteBufUtils.readUTF8String(data));
-
-                    // Reset state
-                    this.updateDrawList = true;
-                    types = null;
-                    detectedThreats.clear(); //TODO recode so we are not getting entities client side
-
-                    int entityListSize = data.readInt();
-                    types = new RadarObjectType[entityListSize];
-
-                    // Read incoming detection list data
-                    for (int i = 0; i < entityListSize; i++)
-                    {
-                        int id = data.readInt();
-                        if (id != -1)
-                        {
-                            Entity entity = world.getEntityByID(id);
-                            if (entity != null)
-                            {
-                                detectedThreats.add(entity);
-                            }
-                        }
-                        types[i] = RadarObjectType.get(data.readInt());
-                    }
-                    return true;
-                }
-            }
-            else if (!this.world.isRemote)
+            if (!this.world.isRemote)
             {
                 if (ID == SET_TRIGGER_RANGE_PACKET_ID)
                 {
@@ -405,9 +313,32 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                     return true;
                 }
             }
+            else if (ID == GUI_PACKET_ID) {
+
+                // Fields
+                this.detectionRange = data.readInt();
+                this.triggerRange = data.readInt();
+                this.radio.setChannel(ByteBufUtils.readUTF8String(data));
+
+                // radar data
+                this.radarRenderData.readBytes(data);
+
+                return true;
+            }
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected PacketTile getGUIPacket()
+    {
+        PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
+        packet.addData(detectionRange);
+        packet.addData(triggerRange);
+        packet.addData(radio.getChannel());
+        packet.addData(radarRenderData::writeBytes);
+        return packet;
     }
 
     public void sendHzPacket(String channel) {

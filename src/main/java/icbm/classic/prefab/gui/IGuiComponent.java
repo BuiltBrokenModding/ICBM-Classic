@@ -45,10 +45,10 @@ public interface IGuiComponent {
      * @param f ????
      * @param mouseX position
      * @param mouseY position
-     */
-    default void drawBackgroundLayer(float f, int mouseX, int mouseY) {
+     */default void drawBackgroundLayer(float f, int mouseX, int mouseY) {
 
     }
+
 
     /**
      * Called when a key is pressed

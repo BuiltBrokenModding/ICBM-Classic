@@ -155,6 +155,7 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
         return (P) this;
     }
 
+    @Deprecated
     public P write(Object object)
     {
         return addData(object);
