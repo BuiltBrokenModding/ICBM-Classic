@@ -23,8 +23,10 @@ import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -32,11 +34,12 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * This tile entity is for the screen of the missile launcher
@@ -48,6 +51,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     public static final int SET_FREQUENCY_PACKET_ID = 0;
     public static final int SET_TARGET_PACKET_ID = 1;
     public static final int LAUNCH_PACKET_ID = 2;
+    public static final int GUI_PACKET_ID = 3;
 
     /** Height to wait before missile curves */
     public int lockHeight = 3;
@@ -64,6 +68,9 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     @Getter
     private float launcherInaccuracy = 0;
 
+    private final List<IActionStatus> statusList = new ArrayList();
+    private boolean refreshStatus = false;
+
     @Override
     public LauncherNode getNetworkNode() {
         return launcherNode;
@@ -79,23 +86,38 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
         if (isServer())
         {
-            if(getNetworkNode().getNetwork() != null) {
-                final List<IMissileLauncher> launchers = getNetworkNode().getLaunchers();
-                launcherInaccuracy = launchers.stream().map(l -> l.getInaccuracy(getTarget(), launchers.size())).max(Float::compareTo).orElse(0f);
+            if(ticks % 5 == 0 || refreshStatus) {
+                refreshStatus = false;
+                statusList.clear();
+
+                final List<IMissileLauncher> launchers = getLaunchersInGroup();
+                if(!launchers.isEmpty()) {
+                    launcherInaccuracy = launchers.stream().map(l -> {
+
+                        // Collect status
+                        statusList.add(launch(l, launchers.size(), true));
+
+                        // Get accuracy for compare
+                        return l.getInaccuracy(getTarget(), launchers.size());
+
+                    }).max(Float::compareTo).orElse(0f);
+                }
             }
 
             //Only launch if redstone
-            if (ticks % 3 == 0 && world.getStrongPower(getPos()) > 0)
+            if (ticks % 3 == 0 && world.getStrongPower(getPos()) > 0) //TODO check for pulse instead of high only & add delay
             {
                 fireAllLaunchers(false);
             }
-
-            //Update packet TODO see if this is needed
-            if (ticks % 3 == 0)
-            {
-                sendDescPacket();
-            }
         }
+    }
+
+    @Nonnull
+    public List<IMissileLauncher> getLaunchersInGroup() {
+        if(getNetworkNode().getNetwork() != null) {
+            return getNetworkNode().getLaunchers();
+        }
+        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -103,47 +125,60 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     {
         if (!super.read(data, id, player, packet))
         {
-            switch (id)
-            {
-                case SET_FREQUENCY_PACKET_ID:
-                {
-                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                    return true;
+            if(isServer()) {
+                switch (id) {
+                    case SET_FREQUENCY_PACKET_ID: {
+                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                        return true;
+                    }
+                    case SET_TARGET_PACKET_ID: {
+                        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
+                        return true;
+                    }
+                    case LAUNCH_PACKET_ID: {
+                        fireAllLaunchers(false);
+                        return true;
+                    }
                 }
-                case SET_TARGET_PACKET_ID:
-                {
-                    this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
-                    return true;
-                }
-                case LAUNCH_PACKET_ID:
-                {
-                    fireAllLaunchers(false);
-                    return true;
-                }
+            }
+            else if(id == GUI_PACKET_ID){
+                readGuiPacket(data);
+                return true;
             }
             return false;
         }
         return true;
     }
 
-    @Override
-    public void writeDescPacket(ByteBuf data)
-    {
-        super.writeDescPacket(data);
-        ByteBufUtils.writeUTF8String(data, radioCap.getChannel());
-        data.writeFloat(launcherInaccuracy);
-        data.writeDouble(this.getTarget().x);
-        data.writeDouble(this.getTarget().y);
-        data.writeDouble(this.getTarget().z);
-    }
-
-    @Override
-    public void readDescPacket(ByteBuf data)
-    {
-        super.readDescPacket(data);
+    @SideOnly(Side.CLIENT)
+    public void readGuiPacket(ByteBuf data) {
         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
         this.launcherInaccuracy = data.readFloat();
         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
+
+        final NBTTagCompound compound = ByteBufUtils.readTag(data);
+        final NBTTagList list = compound.getTagList("p", 10);
+        final List<IActionStatus> status = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(list, new ArrayList<IActionStatus>());
+
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            this.statusList.clear();
+            this.statusList.addAll(status);
+        });
+    }
+
+    @Override
+    protected PacketTile getGUIPacket()
+    {
+        PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
+        packet.addData(radioCap.getChannel());
+        packet.addData(launcherInaccuracy);
+        packet.addData(this.getTarget());
+
+        final NBTTagCompound tag = new NBTTagCompound(); //TODO find a way to send bytes
+        tag.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(statusList));
+        packet.addData(tag);
+
+        return packet;
     }
 
     public void sendHzPacket(String channel) {
@@ -175,9 +210,10 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     }
 
     public boolean fireAllLaunchers(boolean simulate) {
+        refreshStatus = true;
         // TODO add chain fire delay settings to screen
         boolean hasFired = false;
-        for(IMissileLauncher launcher : getLaunchers()) {
+        for(IMissileLauncher launcher : getLaunchersInGroup()) {
             final IActionStatus status = launch(launcher, getLaunchers().size(), simulate); // TODO output status to users
             if(!status.isError()) {
                 hasFired = true;
@@ -187,6 +223,9 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     }
 
     public boolean canLaunch() {
+        if(isClient()) {
+            return !statusList.isEmpty() && statusList.stream().noneMatch(IActionStatus::isError);
+        }
         return fireAllLaunchers(true);
     }
 
@@ -197,22 +236,15 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
      */
     public ITextComponent getStatusTranslation()
     {
-        if (getNetworkNode().getNetwork() == null)
+        if (getNetworkNode().getNetwork() == null || statusList.isEmpty())
         {
-            return new TextComponentTranslation(LauncherLangs.ERROR_NO_NETWORK);
+            return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK;
         }
-        return getNetworkNode().getLaunchers().stream().map(launcher -> {
-            if (launcher == null)
-            {
-                return new TextComponentTranslation(LauncherLangs.ERROR_NO_LAUNCHER);
-            }
-
-            final IActionStatus status = launch(launcher, getNetworkNode().getLaunchers().size(), true);
-            if(status.isError()) {
-                return status.message();
-            }
-            return null;
-        }).filter(Objects::nonNull).findFirst().orElse(new TextComponentTranslation(LauncherLangs.STATUS_READY));
+        return statusList.stream()
+            .filter(IActionStatus::isError)
+            .map(IActionStatus::message)
+            .findFirst()
+            .orElse(LauncherLangs.TRANSLATION_READY);
     }
 
     @Override
