@@ -1,8 +1,8 @@
 package icbm.classic.content.missile;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.missiles.parts.IMissilePart;
-import icbm.classic.api.reg.obj.IMissilePartReg;
+import icbm.classic.api.missiles.parts.IBuildableObject;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class MissilePartRegistry<Part extends IMissilePart> implements IMissilePartReg<Part>
+public class MissilePartRegistry<Part extends IBuildableObject> implements IBuilderRegistry<Part>
 {
     private final Map<ResourceLocation, Supplier<Part>> builders = new HashMap();
     private boolean locked = false;

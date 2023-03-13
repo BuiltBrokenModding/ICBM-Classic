@@ -2,6 +2,7 @@ package icbm.classic;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.missiles.cause.IMissileCause;
@@ -40,6 +41,7 @@ import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.capability.launcher.CapabilityMissileLauncher;
+import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
@@ -229,6 +231,7 @@ public class ICBMClassic
         handleMissileTargetRegistry();
         handleMissileFlightRegistry();
         handleMissileCauseRegistry();
+        handleStatusRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
     }
 
@@ -294,6 +297,20 @@ public class ICBMClassic
 
         //Lock to prevent late registry
         ((MissilePartRegistry)ICBMClassicAPI.MISSILE_CAUSE_REGISTRY).lock();
+    }
+
+    void handleStatusRegistry()
+    {
+        ICBMClassicAPI.ACTION_STATUS_REGISTRY =  new MissilePartRegistry<IActionStatus>("ACTION_STATUS");
+
+        // Register defaults
+        LauncherStatus.registerTypes();
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new ActionStatusRegistryEvent(ICBMClassicAPI.ACTION_STATUS_REGISTRY));
+
+        //Lock to prevent late registry
+        ((MissilePartRegistry)ICBMClassicAPI.ACTION_STATUS_REGISTRY).lock();
     }
 
     void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls

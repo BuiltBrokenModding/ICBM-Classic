@@ -1,5 +1,6 @@
 package icbm.classic.api.launcher;
 
+import icbm.classic.api.missiles.parts.IBuildableObject;
 import net.minecraft.util.text.ITextComponent;
 
 /**
@@ -10,7 +11,7 @@ import net.minecraft.util.text.ITextComponent;
  * Both will respond with a status of what happened after they
  * were triggered by the player.
  */
-public interface IActionStatus {
+public interface IActionStatus extends IBuildableObject {
 
     /**
      * Is the status an error state

@@ -2,6 +2,7 @@ package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.*;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.launcher.IMissileLauncher;
@@ -16,7 +17,7 @@ import icbm.classic.api.reg.content.IExBlockRegistry;
 import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.api.reg.content.IExMissileRegistry;
-import icbm.classic.api.reg.obj.IMissilePartReg;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -45,11 +46,13 @@ public final class ICBMClassicAPI
     public static IExMinecartRegistry EX_MINECART_REGISTRY;
 
     /** Registry for target data save/load in missiles */
-    public static IMissilePartReg<IMissileTarget> MISSILE_TARGET_DATA_REGISTRY;
+    public static IBuilderRegistry<IMissileTarget> MISSILE_TARGET_DATA_REGISTRY;
     /** Registry for flight logic save/load in missiles */
-    public static IMissilePartReg<IMissileFlightLogic> MISSILE_FLIGHT_LOGIC_REGISTRY;
+    public static IBuilderRegistry<IMissileFlightLogic> MISSILE_FLIGHT_LOGIC_REGISTRY;
     /** Registry for missile cause save/load in missiles */
-    public static IMissilePartReg<IMissileCause> MISSILE_CAUSE_REGISTRY;
+    public static IBuilderRegistry<IMissileCause> MISSILE_CAUSE_REGISTRY;
+    /** Registry for status messages produced by machines, items, and entities in the mod */
+    public static IBuilderRegistry<IActionStatus> ACTION_STATUS_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 

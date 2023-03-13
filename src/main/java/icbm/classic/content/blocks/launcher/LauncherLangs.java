@@ -31,6 +31,9 @@ public final class LauncherLangs {
 
     // TODO consider caching translation components to save on memory
 
+    public static final ITextComponent TRANSLATION_READY = new TextComponentTranslation(LauncherLangs.STATUS_READY);
+    public static final ITextComponent TRANSLATION_ERROR_NO_NETWORK = new TextComponentTranslation(LauncherLangs.ERROR_NO_NETWORK);
+
     public static final ITextComponent TRANSLATION_TOOLTIP_RADIO = new TextComponentTranslation("gui.icbmclassic:tooltip.radio.channel");
     public static final ITextComponent TRANSLATION_TOOLTIP_TARGET = new TextComponentTranslation("gui.icbmclassic:tooltip.target");
 }
