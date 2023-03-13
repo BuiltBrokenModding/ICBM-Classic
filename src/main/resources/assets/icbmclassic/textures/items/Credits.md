@@ -37,3 +37,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | missiles/tier3.png             | 2/23/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
 | saltpeter.png                  | 2/19/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
 | saltpeter_ball.png             | 2/19/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
+| antidote.png                   | 3/12/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
