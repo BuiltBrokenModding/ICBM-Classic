@@ -13,3 +13,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | gui_emp_tower.png       | 3/06/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | gui_cruise_launcher.png | 2/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | gui_radar.png           | 3/10/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| gui_components.png      | 3/12/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |

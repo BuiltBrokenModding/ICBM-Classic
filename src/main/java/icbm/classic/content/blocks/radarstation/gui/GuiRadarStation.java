@@ -4,6 +4,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
+import icbm.classic.prefab.gui.button.RedstoneButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,6 +47,17 @@ public class GuiRadarStation extends GuiContainerBase
         // detection
         addComponent(TextInput.intField(componentID++, fontRenderer, 49, 77, 29, 12,
             tileEntity::getDetectionRange, tileEntity::setDetectionRange, tileEntity::sendDetectionRangePacket));
+
+        addComponent(
+            new RedstoneButton(0, 160 + guiLeft, 3 + guiTop, tileEntity::isOutputRedstone)
+            .setAction(tileEntity::sendOutputRedstonePacket)
+                .setTooltip(() -> {
+                    if(tileEntity.isOutputRedstone()) {
+                        return TileRadarStation.TRANSLATION_TOOLTIP_REDSTONE_ON;
+                    }
+                    return TileRadarStation.TRANSLATION_TOOLTIP_REDSTONE_OFF;
+                })
+        );
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
         addComponent(new RadarComponent(tileEntity, 5, 18));

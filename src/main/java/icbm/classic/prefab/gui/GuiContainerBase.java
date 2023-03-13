@@ -22,6 +22,8 @@ import java.util.Collection;
 
 public abstract class GuiContainerBase extends GuiContainer
 {
+    public static final ResourceLocation COMPONENTS_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
+
     public String currentTooltipText = "";
 
     protected ArrayList<IGuiComponent> components = new ArrayList();
@@ -52,12 +54,15 @@ public abstract class GuiContainerBase extends GuiContainer
      * @param <E>
      * @return
      */
+    @Deprecated
     protected <E extends GuiButton> E addButton(E button)
     {
         if(button instanceof IGuiComponent) {
             addComponent((IGuiComponent) button);
         }
-        buttonList.add(button);
+        else {
+            buttonList.add(button);
+        }
         return button;
     }
 
@@ -72,6 +77,9 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     protected <T extends IGuiComponent> T addComponent(T field) {
+        if(field instanceof GuiButton) {
+            buttonList.add((GuiButton) field);
+        }
         components.add(field);
         field.onAddedToHost(this);
         return field;

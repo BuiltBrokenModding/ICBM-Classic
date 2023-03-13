@@ -51,10 +51,13 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     public static final int SET_TRIGGER_RANGE_PACKET_ID = 2;
     public static final int SET_DETECTION_RANGE_PACKET_ID = 3;
     public static final int SET_FREQUENCY_PACKET_ID = 4;
+    public static final int SET_OUTPUT_REDSTONE_ID = 5;
 
     public static final ITextComponent TRANSLATION_GUI_NAME = new TextComponentTranslation("gui.icbmclassic:radar.name");
     public static final ITextComponent TRANSLATION_TOOLTIP_RANGE = new TextComponentTranslation("gui.icbmclassic:radar.range");
     public static final ITextComponent TRANSLATION_TOOLTIP_RANGE_SHIFT = new TextComponentTranslation("gui.icbmclassic:radar.range.shift");
+    public static final ITextComponent TRANSLATION_TOOLTIP_REDSTONE_OFF = new TextComponentTranslation("gui.icbmclassic:radar.redstone.off");
+    public static final ITextComponent TRANSLATION_TOOLTIP_REDSTONE_ON = new TextComponentTranslation("gui.icbmclassic:radar.redstone.on");
 
     public static final String NBT_DETECTION_RANGE = "detection_range"; //TODO fix name
     public static final String NBT_TRIGGER_RANGE = "safetyRadius"; //TODO fix name
@@ -312,6 +315,10 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                     this.radio.setChannel(ByteBufUtils.readUTF8String(data));
                     return true;
                 }
+                else if(ID == SET_OUTPUT_REDSTONE_ID) {
+                    this.outputRedstone = data.readBoolean();
+                    return true;
+                }
             }
             else if (ID == GUI_PACKET_ID) {
 
@@ -319,6 +326,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                 this.detectionRange = data.readInt();
                 this.triggerRange = data.readInt();
                 this.radio.setChannel(ByteBufUtils.readUTF8String(data));
+                this.outputRedstone = data.readBoolean();
 
                 // radar data
                 this.radarRenderData.readBytes(data);
@@ -337,6 +345,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         packet.addData(detectionRange);
         packet.addData(triggerRange);
         packet.addData(radio.getChannel());
+        packet.addData(this.outputRedstone);
         packet.addData(radarRenderData::writeBytes);
         return packet;
     }
@@ -356,6 +365,12 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     public void sendDetectionRangePacket(int range) {
         if(isClient()) {
             ICBMClassic.packetHandler.sendToServer(new PacketTile("detectionRange_C>S", SET_DETECTION_RANGE_PACKET_ID, this).addData(range));
+        }
+    }
+
+    public void sendOutputRedstonePacket() {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("outputRedstone_C>S", SET_OUTPUT_REDSTONE_ID, this).addData(!this.outputRedstone));
         }
     }
 

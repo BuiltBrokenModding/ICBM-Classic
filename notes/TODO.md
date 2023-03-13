@@ -8,15 +8,7 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 ### Radar
 
-- Convert radar dots to a object map
-- Sync map to client instead of dot list
-- Rescale map to match range
-- Show detection range on map
 - Show impact locations on map
-- Mimic layout of cruise launcher minus button
-- Add redstone toggle button
-- Move trigger and detection fields in place where xyz is at in cruise launcher
-- Move coordinate text to under radar map and include what is being hovered over (missile, ghast, etc)
 - Update to use actual entity icons instead of just dots
 
 ### Silo Screen
@@ -26,11 +18,6 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 ### Launch Pad
 
-- Mimic layout of cruise launcher
-- Add battery slot
-- Add missile slot
-- Add lock height
-- Add launch index - will be unused for now. Meant for use with controllers to cycle between launcher sets as a delay
 - Add launch delay
 
 ## Missiles/Launcher Work Left
@@ -48,8 +35,9 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - Spikes
 - connected textures for launcher connector
+- glass connected textures
 - Glass button
-- Glass prexure plate
+- Glass pressure plate
 
 ## Items
 

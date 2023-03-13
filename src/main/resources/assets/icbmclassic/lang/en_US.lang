@@ -383,6 +383,8 @@ gui.launcherscreen.inaccuracy.info=Radius in meters from target the missile coul
 gui.icbmclassic:radar.name=Radar Station
 gui.icbmclassic:radar.range=Range Settings; Trigger range & Detection range.. Shift for more info
 gui.icbmclassic:radar.range.shift=Trigger range will define threat area. Detection range will define radar max area of operation. Only detects flying entities of known type. Will trigger redstone and SAM missiles in response.
+gui.icbmclassic:radar.redstone.off=Redstone Off; Click to enable outputting redstone for incoming threats
+gui.icbmclassic:radar.redstone.on=Redstone On; Click to disable outputting redstone for incoming threats
 
 ## General launcher feedback: used in GUIs tooltip, radio messages, and launcher status messages
 info.icbmclassic:launcher.error=Unknown Error
