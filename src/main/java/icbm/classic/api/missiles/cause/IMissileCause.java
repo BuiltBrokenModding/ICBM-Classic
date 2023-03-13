@@ -1,6 +1,6 @@
 package icbm.classic.api.missiles.cause;
 
-import icbm.classic.api.missiles.parts.IMissilePart;
+import icbm.classic.api.missiles.parts.IBuildableObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -13,7 +13,7 @@ import net.minecraft.world.World;
  *
  * Example: player -> remote -> screen -> silo -> cluster missile -> missile
  */
-public interface IMissileCause extends IMissilePart {
+public interface IMissileCause extends IBuildableObject {
 
     /**
      * First cause in the history

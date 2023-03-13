@@ -5,7 +5,7 @@ import net.minecraft.util.math.Vec3d;
 /**
  * Abstracted targeting logic for missiles
  */
-public interface IMissileTarget extends IMissilePart {
+public interface IMissileTarget extends IBuildableObject {
 
     /**
      * Target position, assume this is not cached and can change

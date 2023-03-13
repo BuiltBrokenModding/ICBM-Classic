@@ -14,7 +14,7 @@ import net.minecraft.world.World;
  * <p>
  * Created by Robin Seifert on 2/7/2022.
  */
-public interface IMissileFlightLogic extends IMissilePart
+public interface IMissileFlightLogic extends IBuildableObject
 {
     /**
      * Called to set our path data based on start position and target
