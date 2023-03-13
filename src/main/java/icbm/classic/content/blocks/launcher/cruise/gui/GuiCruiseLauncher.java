@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.transform.region.Rectangle;
@@ -11,6 +12,7 @@ import icbm.classic.prefab.gui.GuiFormatHelpers;
 import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.Tooltip;
+import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -69,6 +71,9 @@ public class GuiCruiseLauncher extends GuiContainerBase
         ;
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
+
+        // Radio tooltip
+        addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

@@ -2,6 +2,8 @@ package icbm.classic.content.blocks.launcher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class LauncherLangs {
@@ -28,4 +30,6 @@ public final class LauncherLangs {
     public static final String STATUS_CANCELED = STATUS + ".canceled";
 
     // TODO consider caching translation components to save on memory
+
+    public static final ITextComponent TRANSLATION_TOOLTIP_RADIO = new TextComponentTranslation("gui.icbmclassic:radio.channel");
 }
