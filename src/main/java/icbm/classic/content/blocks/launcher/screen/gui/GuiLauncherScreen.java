@@ -81,6 +81,9 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         // Radio tooltip
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+
+        // Target tooltip
+        addComponent(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
