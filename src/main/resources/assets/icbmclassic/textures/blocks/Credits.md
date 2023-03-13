@@ -26,3 +26,6 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | glass_reinforced.png     | 3/10/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |
 | glass_pressure_plate.png |            |                     | Modified vanilla                                   |
 | glass_button.png         |            |                     | Modified vanilla                                   |
+| spike.png                | 3/13/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |
+| spike_fire.png           | 3/13/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |
+| spike_poison.png         | 3/13/2023  | Darkguardsman       | ARR, Robin Seifert, Licensed to team for project   |
