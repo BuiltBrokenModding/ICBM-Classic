@@ -244,3 +244,5 @@ Idea would be to clean up the code and make it as easy as possible to deal with 
 - Fishy Missile (Torpedo) -> 2 block long missile that moves through water like a fish
 - Torp launchers -> for the above to deal better with water builds
 - Missile analyser -> Shows information about the missile and explosive. Such as max range, fuel consumption, energy consumption, area of effect, and damage types.
+- Mechanical Deadman switch -> Hold to start, Release to setoff, alt-click to disarm
+- Deadman switch -> Heart beat version of the above, right click to start, right click to stop... on death triggers
