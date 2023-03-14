@@ -75,7 +75,9 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
      */
     public EntityPlayerSeat seat;
 
+    /** Toggle to check collision area above pad for missiles */
     protected boolean checkMissileCollision = true;
+    /** True to note a missile is above the launcher */
     private boolean hasMissileCollision = false;
 
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
