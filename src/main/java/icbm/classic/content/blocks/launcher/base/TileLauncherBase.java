@@ -81,7 +81,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
-            .withInsertCheck((s) -> this.checkForMissileInBounds())
+            .withInsertCheck((s) -> !this.checkForMissileInBounds())
             .withChangeCallback((stack) -> this.sendDescPacket())
         )
         .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
