@@ -58,7 +58,7 @@ potion.radiation=Radiation
 item.icbmclassic:battery.name=Battery
 item.icbmclassic:battery.info=Used to store and transport power
 
-item.icbmclassic:sulfurDust.name=Sulfur
+item.icbmclassic:sulfurDust.name=Organic Sulfur
 item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
 
 item.icbmclassic:saltpeter.name=Saltpeter
