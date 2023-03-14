@@ -48,13 +48,10 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - RPG Model
 - Render warhead from each model on RPG
-- Radar Gun
-- Remote Det
 - Laser Det
 - Tracker
 - Signal Disrupter
 - Defuser
-- Battery
 - Grenades
 - Carts
 - Wire Items

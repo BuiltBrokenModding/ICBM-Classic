@@ -41,3 +41,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | radar_gun.png                  | 3/13/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
 | remote_detonator.png           | 3/13/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
 | battery.png                    | 3/13/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
+| poison_powder.png              | 3/13/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
