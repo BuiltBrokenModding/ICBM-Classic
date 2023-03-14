@@ -4,6 +4,11 @@ Current objective for work on the project
 
 Objective: Graphics Overhaul for `v5.x.x` release
 
+## Issues
+
+- Screen is overriding cruise launcher target set actively (should only do this when remotely triggered)
+- Can offhand use radar gun, laser, or remote for various features
+
 ## GUI
 
 ### Radar

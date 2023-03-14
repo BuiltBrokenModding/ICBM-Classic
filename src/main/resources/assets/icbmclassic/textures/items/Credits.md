@@ -38,3 +38,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | saltpeter.png                  | 2/19/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
 | saltpeter_ball.png             | 2/19/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
 | antidote.png                   | 3/12/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
+| radar_gun.png                  | 3/13/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
