@@ -73,17 +73,17 @@ item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 item.icbmclassic:antidote.name=Antidote
 item.icbmclassic:antidote.info=Cures all effects
 
-item.icbmclassic:radarGun.name=Radar Gun
-item.icbmclassic:radarGun.info=Stores GPS data
+item.icbmclassic:radarGun.name=Laser Range Finder
+item.icbmclassic:radarGun.info=Traces up to 200m to calculate and store positional data. Can transfer data to machines.
 
 item.icbmclassic:remoteDetonator.name=Remote Detonator
-item.icbmclassic:remoteDetonator.info=Remotely fire a missile
+item.icbmclassic:remoteDetonator.info=Sends a radio signal to trigger devices
 
 item.icbmclassic:defuser.name=Defuser
 item.icbmclassic:defuser.info=Remove explosives safely, even after they have gone off
 
 item.icbmclassic:laserDetonator.name=Laser Designator
-item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
+item.icbmclassic:laserDetonator.info.info=Sends a radio signal to trigger devices with the target information
 item.icbmclassic:laserDetonator.laser.canceled=Laser event canceled
 item.icbmclassic:laserDetonator.target=Target set (%1$s, %2$s, %3$s)
 
