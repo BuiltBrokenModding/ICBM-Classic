@@ -8,6 +8,7 @@ import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleLauncherSmoke;
 import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
+import icbm.classic.config.ConfigClient;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.mods.ModInteraction;
@@ -100,7 +101,7 @@ public class ClientProxy extends CommonProxy
     @Override
     public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir)
     {
-        if (entity.world.isRemote)
+        if (entity.world.isRemote && ConfigClient.MISSILE_ENGINE_SMOKE)
         {
             if (flightLogic instanceof BallisticFlightLogic)
             {
@@ -181,30 +182,31 @@ public class ClientProxy extends CommonProxy
     @Override
     public void spawnPadSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir)
     {
-        final World world = entity.world;
-        final Random random = world.rand;
+        if(ConfigClient.MISSILE_LAUNCH_SMOKE) {
+            final World world = entity.world;
+            final Random random = world.rand;
 
-        double posX = entity.posX;
-        double posY = entity.posY - 1.2; //TODO get missile height from type
-        double posZ = entity.posZ;
+            double posX = entity.posX;
+            double posY = entity.posY - 1.2; //TODO get missile height from type
+            double posZ = entity.posZ;
 
-        //Spawn smoke TODO add config for smoke amount
-        for (int smokeCount = 0; smokeCount < 10; smokeCount++)
-        {
-            //Randomize flight direction down in a cone
-            final double velX = (random.nextFloat() - random.nextFloat()) * 0.3;
-            final double velY = 1 - (random.nextFloat() * 0.5);
-            final double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
+            //Spawn smoke TODO add config for smoke amount
+            for (int smokeCount = 0; smokeCount < 10; smokeCount++) {
+                //Randomize flight direction down in a cone
+                final double velX = (random.nextFloat() - random.nextFloat()) * 0.3;
+                final double velY = 1 - (random.nextFloat() * 0.5);
+                final double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
 
-            //spawn smoke
-            final ParticleLauncherSmoke particleAirParticleICBM = new ParticleLauncherSmoke(world,
-                posX, posY, posZ,
-                velX, -velY, velZ,
-                1 + 2 * random.nextFloat()
-            );
-            particleAirParticleICBM.setColor(1, 1, 1, true);
-            particleAirParticleICBM.setAge(180);
-            Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
+                //spawn smoke
+                final ParticleLauncherSmoke particleAirParticleICBM = new ParticleLauncherSmoke(world,
+                    posX, posY, posZ,
+                    velX, -velY, velZ,
+                    1 + 2 * random.nextFloat()
+                );
+                particleAirParticleICBM.setColor(1, 1, 1, true);
+                particleAirParticleICBM.setAge(180);
+                Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
+            }
         }
     }
 }

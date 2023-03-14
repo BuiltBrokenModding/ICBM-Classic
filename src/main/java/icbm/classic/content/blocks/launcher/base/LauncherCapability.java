@@ -92,8 +92,8 @@ public class LauncherCapability implements IMissileLauncher {
                     final Entity entity = missile.getMissileEntity();
 
                     // TODO raytrace to make sure we don't teleport through the ground
-                    // raytrace for missile spawn area
-                    // raytrace to check for blockage in silo path... players will be happy about this
+                    //  raytrace for missile spawn area
+                    //  raytrace to check for blockage in silo path... players will be happy about this
                     entity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
 
                     //Trigger launch event
