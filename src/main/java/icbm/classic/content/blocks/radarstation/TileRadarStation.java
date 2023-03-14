@@ -153,13 +153,17 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
             }
         }
 
+        // Track our state server side
+        if(isServer()) {
+            this.radarVisualState = getRadarState();
+        }
+
         // Force block re-render if our state has changed
-        final EnumRadarState state = getRadarState();
-        if(preRadarVisualState != state) {
+        if(preRadarVisualState != radarVisualState) {
             this.updateClient = true;
             this.markDirty();
-            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, radarVisualState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, state), 3);
-            preRadarVisualState = state;
+            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, preRadarVisualState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, radarVisualState), 3);
+            preRadarVisualState = radarVisualState;
         }
     }
 
