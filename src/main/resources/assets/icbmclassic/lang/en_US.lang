@@ -87,12 +87,6 @@ item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
 item.icbmclassic:laserDetonator.laser.canceled=Laser event canceled
 item.icbmclassic:laserDetonator.target=Target set (%1$s, %2$s, %3$s)
 
-item.icbmclassic:tracker.name=Tracker
-item.icbmclassic:tracker.info=Not implemented, set for removal
-
-item.icbmclassic:signalDisrupter.name=Signal Disrupter
-item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or missile launches
-
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s rockets
 item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
