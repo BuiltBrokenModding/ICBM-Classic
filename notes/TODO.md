@@ -19,7 +19,6 @@ Objective: Graphics Overhaul for `v5.x.x` release
 ### Silo Screen
 
 - Show status of all launchers instead of first
-- sync status from server to client, don't calculate on client
 
 ### Launch Pad
 
