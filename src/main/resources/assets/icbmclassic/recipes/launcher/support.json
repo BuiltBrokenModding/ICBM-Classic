@@ -6,8 +6,7 @@
   },
   "pattern": [
     "ibi",
-    "ibi",
-    "iii"
+    "ibi"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {

@@ -1,23 +1,30 @@
 {
   "result": {
-    "item": "icbmclassic:launcherbase",
+    "item": "icbmclassic:launcherscreen",
     "data": 0,
     "count": 1
   },
   "pattern": [
-    "i i",
-    "ici",
-    "iii"
+    "cg",
+    "sw"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
+    "g": {
+      "item": "minecraft:glass",
+      "data": 0
+    },
     "c": {
       "type": "forge:ore_dict",
       "ore": "circuitBasic"
     },
-    "i": {
+    "w": {
       "type": "forge:ore_dict",
-      "ore": "ingotCopper"
+      "ore": "wireCopper"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "ingotSteel"
     }
   }
 }

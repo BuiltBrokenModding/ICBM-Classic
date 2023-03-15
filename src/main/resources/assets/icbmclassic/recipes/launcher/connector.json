@@ -1,23 +1,23 @@
 {
   "result": {
-    "item": "icbmclassic:launcherscreen",
+    "item": "icbmclassic:launcher_connector",
     "data": 0,
-    "count": 1
+    "count": 4
   },
   "pattern": [
-    "ggg",
-    "gcg",
-    "gwg"
+    "iwi",
+    "whw",
+    "iwi"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "g": {
-      "item": "minecraft:glass",
+    "h": {
+      "item": "minecraft:hopper",
       "data": 0
     },
-    "c": {
+    "i": {
       "type": "forge:ore_dict",
-      "ore": "circuitBasic"
+      "ore": "ingotSteel"
     },
     "w": {
       "type": "forge:ore_dict",

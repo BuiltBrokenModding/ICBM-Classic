@@ -5,27 +5,26 @@
     "count": 1
   },
   "pattern": [
-    "grg",
-    " p ",
+    "gcs",
     "pcp"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
+    "s": {
+      "item": "icbmclassic:launcherscreen",
+      "data": 0
+    },
     "g": {
       "type": "forge:ore_dict",
       "ore": "ingotGold"
     },
     "c": {
       "type": "forge:ore_dict",
-      "ore": "circuitBasic"
+      "ore": "circuitAdvanced"
     },
     "p": {
       "type": "forge:ore_dict",
       "ore": "plateSteel"
-    },
-    "r": {
-      "item": "radarGun",
-      "data": 0
     }
   }
 }
