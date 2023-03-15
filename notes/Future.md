@@ -248,3 +248,4 @@ Idea would be to clean up the code and make it as easy as possible to deal with 
 - Deadman switch -> Heart beat version of the above, right click to start, right click to stop... on death triggers
 - Tracker item -> As an addon or standalone mod, place a physical entity on the player like an arrow. Then have it send a radio signal at short range that an item can listen for to find.
 - Diffuser kit -> have it open a mini-game to defuse explosives, pull from a customizable set of puzzles that have to be solved in a limited time.
+- Laser det block -> Block version of laser det tool that can be aimed and redstone triggered. Useful for traps that remotely signal a set of launchers.

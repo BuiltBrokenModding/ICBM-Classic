@@ -37,22 +37,16 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 ## Block Textures
 
-- Spikes
 - connected textures for launcher connector
 - glass connected textures
-- Glass button
-- Glass pressure plate
 
 ## Items
 
 - RPG Model
 - Render warhead from each model on RPG
 - Laser Det
-- Tracker
-- Signal Disrupter
 - Defuser
 - Grenades
 - Carts
-- Wire Items
 - Steel clump
 - Bronze clump
