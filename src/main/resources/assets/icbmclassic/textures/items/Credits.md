@@ -48,8 +48,8 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | circuit_elite.png              |            | Morton        | ARR, Built Broken Modding, Given to team by Morton |
 | plate_iron.png                 |            | Morton        | ARR, Built Broken Modding, Given to team by Morton |
 | plate_steel.png                |            | Morton        | ARR, Built Broken Modding, Given to team by Morton |
-| wire_copper.png                |            | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
-| wire_gold.png                  |            | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
-| ingot_bronze.png               |            |               | Modified vanilla, unknown author                   |
+| wire_copper.png                | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| wire_gold.png                  | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | ingot_copper.png               |            |               | Modified vanilla, unknown author                   |
 | ingot_steel.png                |            |               | Modified vanilla, unknown author                   |
+| laser_designator.png           | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
