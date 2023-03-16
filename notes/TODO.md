@@ -15,10 +15,3 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - connected textures for launcher connector
 - glass connected textures
-
-## Items
-
-- RPG Model
-- Render warhead from each model on RPG
-- Grenades
-- Carts
