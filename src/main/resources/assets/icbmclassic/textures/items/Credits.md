@@ -62,3 +62,5 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | grenade/chemical.png           | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | grenade/debilitation.png       | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | grenade/smoke.png              | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| grenade/attractive.png         | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| grenade/repulsive.png          | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
