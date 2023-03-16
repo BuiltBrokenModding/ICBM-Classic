@@ -231,6 +231,19 @@ a scroll list to add commands to run.
 - Balance recipes for Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/Mekanism.java
 - Balance recipes for IC2
 - Migrate BombCart to capability and have it store ItemStack used to place
+- Silo rendering missiles as a block state
+
+# GUI
+
+### Radar
+
+- Show impact locations on map
+- Update to use actual entity icons instead of just dots
+
+### Silo Screen
+
+- Show status of all launchers instead of first
+
 
 # Packet system
 
