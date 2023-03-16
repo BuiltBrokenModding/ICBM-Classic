@@ -79,8 +79,8 @@ item.icbmclassic:radarGun.info=Traces up to 200m to calculate and store position
 item.icbmclassic:remoteDetonator.name=Remote Detonator
 item.icbmclassic:remoteDetonator.info=Sends a radio signal to trigger devices
 
-item.icbmclassic:defuser.name=Defuser
-item.icbmclassic:defuser.info=Remove explosives safely, even after they have gone off
+item.icbmclassic:defuser.name=Defuse Kit
+item.icbmclassic:defuser.info=Used to disarm explosive devices (blocks, entities)
 
 item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Sends a radio signal to trigger devices with the target information
@@ -324,9 +324,6 @@ tile.icbmclassic:spikes.2.name=Flammable Spikes
 tile.icbmclassic:batterybox.0.name=Battery Box
 
 ## Chat messages
-
-message.defuser.nopower=Defuser out of electricity!
-
 message.designator.callTime=Calling air strike in:
 message.designator.blast=Incoming air strike!
 message.designator.setFreq=Laser Designator frequency set:
