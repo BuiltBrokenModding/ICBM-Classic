@@ -56,3 +56,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | defuser.png                    | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | clump_steel.png                | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | grenade/condensed.png          | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| grenade/shrapnel.png           | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
