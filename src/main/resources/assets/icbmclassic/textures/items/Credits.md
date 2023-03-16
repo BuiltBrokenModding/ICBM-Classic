@@ -54,3 +54,4 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 | ingot_steel.png                |            |               | Modified vanilla, unknown author                   |
 | laser_designator.png           | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
 | defuser.png                    | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| clump_steel.png                | 3/15/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |

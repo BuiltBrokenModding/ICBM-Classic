@@ -100,7 +100,8 @@ item.icbmclassic:surface_to_air_missile.info=Missile designed to fire from the g
 item.icbmclassic:ingot.steel.name=Steel Ingot
 item.icbmclassic:ingot.copper.name=Copper Ingot
 
-item.icbmclassic:clump.steel.name=Steel Clump
+item.icbmclassic:clump.steel.name=Coal Encased Iron
+item.icbmclassic:clump.steel.info=Old method for steel creation using coal casing to enrich the iron with carbon
 
 item.icbmclassic:plate.iron.name=Iron Plate
 item.icbmclassic:plate.steel.name=Steel Plate

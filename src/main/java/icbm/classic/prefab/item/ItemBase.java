@@ -38,7 +38,7 @@ public class ItemBase extends Item
         EntityPlayer player = Minecraft.getMinecraft().player;
 
         //Generic info, shared by item group
-        splitAdd(getUnlocalizedName() + ".info", list, false, true);
+        splitAdd(getUnlocalizedName(stack) + ".info", list, false, true);
 
         if (hasDetailedInfo(stack, player))
         {
