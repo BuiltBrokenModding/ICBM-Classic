@@ -145,6 +145,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
 
         //Assign texture
         this.bindTexture(TEXTURE_FILE);
+        GlStateManager.color(1, 0, 0, 1); // TODO pick color randomly and pulse the color using sin(angle)
 
         //top render
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
