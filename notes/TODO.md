@@ -15,3 +15,8 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - connected textures for launcher connector
 - glass connected textures
+
+## Entity Textures
+
+- Redmatter Spiral
+- Fragment

@@ -1,7 +1,6 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.content.entity.mobs.EntityXmasMob;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import io.netty.buffer.ByteBuf;
@@ -350,15 +349,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
 
     protected boolean canAttack(Entity entity)
     {
-        if (entity != null && entity.isEntityAlive())
-        {
-            if (isXmasBullet && entity instanceof EntityXmasMob)
-            {
-                return !((EntityXmasMob) entity).isOnTeam(shootingEntity);
-            }
-            return true;
-        }
-        return false;
+        return entity != null && entity.isEntityAlive();
     }
 
     /**

@@ -17,15 +17,8 @@ import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.entity.mobs.EntityXmasCreeper;
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
-import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
-import icbm.classic.content.entity.mobs.EntityXmasSnowman;
-import icbm.classic.content.entity.mobs.EntityXmasZombie;
-import icbm.classic.content.entity.mobs.EntityXmasZombieBoss;
 import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
@@ -179,14 +172,6 @@ public class ClientReg
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, RenderSeat::new);
         RenderingRegistry.registerEntityRenderingHandler(EntitySmoke.class, RenderSmoke::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
-
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, RenderSkeletonXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, RenderSnowmanXmas::new);
-
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, RenderZombieXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, RenderZombieXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, RenderCreeperXmas::new);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
