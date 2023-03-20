@@ -6,6 +6,7 @@ Any file not listed is assumed to be ARR of the author with limited usage non-tr
 
 ## Files
 
-| File name               | Date Added | Author        | License/Owner                                      |
-|-------------------------|------------|---------------|----------------------------------------------------|
-| cruise_launcher_top.png | 2/28/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project   |
+| File name               | Date Added | Author        | License/Owner                                    |
+|-------------------------|------------|---------------|--------------------------------------------------|
+| cruise_launcher_top.png | 2/28/2023  | Darkguardsman | ARR, Robin Seifert, Licensed to team for project |
+| grey.png                |            | N/A           | Its a grey texture, so CC0                       |

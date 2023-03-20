@@ -27,8 +27,9 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RenderRedmatter extends Render<EntityRedmatter>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "blackhole.png");
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "grey.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "entity/redmatter/blackhole.png");
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
+
     public static List<ColorB> randomColorsForBeams = new ArrayList();
 
     public ColorB colorIn = new ColorB(255, 255, 255); //TODO figure out how this works

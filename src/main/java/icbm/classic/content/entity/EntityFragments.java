@@ -34,9 +34,6 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     //Type settings
     public boolean isExplosive; //TODO replace with ENUM
     public boolean isAnvil; //TODO replace with ENUM
-    public boolean isIce; //TODO replace with ENUM
-    public boolean isFire; //TODO replace with ENUM
-    public boolean isXmasBullet;
 
     //Triggers
     private boolean inGround = false;
@@ -84,9 +81,6 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     {
         data.writeBoolean(this.isExplosive); //TODO replace with ENUM
         data.writeBoolean(this.isAnvil);
-        data.writeBoolean(this.isIce);
-        data.writeBoolean(this.isFire);
-        data.writeBoolean(this.isXmasBullet);
     }
 
     @Override
@@ -94,9 +88,6 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
     {
         this.isExplosive = data.readBoolean();
         this.isAnvil = data.readBoolean();
-        this.isIce = data.readBoolean();
-        this.isFire = data.readBoolean();
-        this.isXmasBullet = data.readBoolean();
     }
 
     @Override
@@ -309,28 +300,13 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                 this.extinguish();
             }
 
-            //Disable gravity for bullets
-            if (!isXmasBullet)
-            {
-                this.motionX *= (double) motionModifier;
-                this.motionY *= (double) motionModifier;
-                this.motionZ *= (double) motionModifier;
-
-                if (!this.hasNoGravity())
-                {
-                    this.motionY -= 0.05000000074505806D;
-                }
-            }
             //Kill off projectiles that are too slow so we do not see matrix bullets
-            else
-            {
-                final double speedMin = 0.5;
-                double speed = motionY * motionY + motionX * motionX + motionZ * motionZ;
+            final double speedMin = 0.5;
+            double speed = motionY * motionY + motionX * motionX + motionZ * motionZ;
 
-                if (speedMin * speedMin >= speed)
-                {
-                    setDead();
-                }
+            if (speedMin * speedMin >= speed)
+            {
+                setDead();
             }
 
             this.setPosition(this.posX, this.posY, this.posZ);
@@ -487,7 +463,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         {
             final Entity currentEntity = entityList.get(i);
 
-            if (!(currentEntity instanceof EntityFragments) && (this.isXmasBullet || this.ticksInAir >= 5))
+            if (!(currentEntity instanceof EntityFragments) && this.ticksInAir >= 5)
             {
                 AxisAlignedBB axisalignedbb = currentEntity.getEntityBoundingBox().grow(0.30000001192092896D);
                 RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(start, end);

@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 public class RenderFragments extends Render<EntityFragments>
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.png");
-    public static final ResourceLocation TEXTURE_XMAS_ICE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.xmas.ice.png");
-    public static final ResourceLocation TEXTURE_XMAS_FIRE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.xmas.fire.png");
 
     public RenderFragments(RenderManager renderManager)
     {
@@ -126,17 +124,6 @@ public class RenderFragments extends Render<EntityFragments>
     @Override
     protected ResourceLocation getEntityTexture(EntityFragments entity)
     {
-        if (entity.isXmasBullet)
-        {
-            if (entity.isIce)
-            {
-                return TEXTURE_XMAS_ICE;
-            }
-            else if (entity.isFire)
-            {
-                return TEXTURE_XMAS_FIRE;
-            }
-        }
         return TEXTURE;
     }
 }
