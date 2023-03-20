@@ -300,13 +300,15 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
                 this.extinguish();
             }
 
-            //Kill off projectiles that are too slow so we do not see matrix bullets
-            final double speedMin = 0.5;
-            double speed = motionY * motionY + motionX * motionX + motionZ * motionZ;
+            //Air friction
+            this.motionX *= (double) motionModifier;
+            this.motionY *= (double) motionModifier;
+            this.motionZ *= (double) motionModifier;
 
-            if (speedMin * speedMin >= speed)
+            //Gravity
+            if (!this.hasNoGravity())
             {
-                setDead();
+                this.motionY -= 0.05000000074505806D;
             }
 
             this.setPosition(this.posX, this.posY, this.posZ);
@@ -463,7 +465,7 @@ public class EntityFragments extends Entity implements IEntityAdditionalSpawnDat
         {
             final Entity currentEntity = entityList.get(i);
 
-            if (!(currentEntity instanceof EntityFragments) && this.ticksInAir >= 5)
+            if (!(currentEntity instanceof EntityFragments) && (this.ticksInAir >= 5))
             {
                 AxisAlignedBB axisalignedbb = currentEntity.getEntityBoundingBox().grow(0.30000001192092896D);
                 RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(start, end);
