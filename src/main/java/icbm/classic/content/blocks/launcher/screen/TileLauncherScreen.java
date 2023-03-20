@@ -9,6 +9,7 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
+import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.inventory.ExternalInventory;
@@ -211,7 +212,6 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
      *
      * @return The string to be displayed
      */
-    @Override
     public String getStatus()
     {
         String color = "\u00a74";
@@ -317,7 +317,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
             if (getTier() == EnumTier.THREE && frequency == getFrequency() && launcherBase != null)
             {
                 //Laser detonator signal
-                if (messageHeader.equals("activateLauncherWithTarget")) //TODO cache headers somewhere like API references
+                if (messageHeader.equals(RadioHeaders.FIRE_AT_TARGET.header))
                 {
                     Pos pos = (Pos) data[0];
                     if (new Pos((IPos3D) this).distance(pos) < this.launcherBase.getRange())
@@ -328,7 +328,7 @@ public class TileLauncherScreen extends TileLauncherPrefab implements IPacketIDR
                     }
                 }
                 //Remote detonator signal
-                else if (messageHeader.equals("activateLauncher"))
+                else if (messageHeader.equals(RadioHeaders.FIRE_LAUNCHER.header))
                 {
                     ((FakeRadioSender) sender).player.sendMessage(new TextComponentString("Firing missile at " + getTarget()));
                     launch();

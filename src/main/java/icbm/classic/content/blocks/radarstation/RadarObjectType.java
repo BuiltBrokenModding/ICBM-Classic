@@ -6,19 +6,19 @@ package icbm.classic.content.blocks.radarstation;
  */
 public enum RadarObjectType
 {
-    MISSILE,
-    MISSILE_IMPACT,
+    THREAT,
+    THREAT_IMPACT,
     OTHER;
 
     public static RadarObjectType get(int index)
     {
         if(index == 0)
         {
-            return MISSILE;
+            return THREAT;
         }
         else if(index == 1)
         {
-            return MISSILE_IMPACT;
+            return THREAT_IMPACT;
         }
         return OTHER;
     }

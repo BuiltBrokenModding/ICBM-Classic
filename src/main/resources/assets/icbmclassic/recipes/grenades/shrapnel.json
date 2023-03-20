@@ -1,0 +1,22 @@
+{
+  "type": "icbmclassic:explosive",
+  "result": {
+    "explosive": "icbmclassic:shrapnel",
+    "device": "icbmclassic:grenade",
+    "count": 1
+  },
+  "pattern": [
+    "s",
+    "x"
+  ],
+  "key": {
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "string"
+    },
+    "x": {
+      "type": "icbmclassic:explosive",
+      "explosive": "icbmclassic:shrapnel"
+    }
+  }
+}

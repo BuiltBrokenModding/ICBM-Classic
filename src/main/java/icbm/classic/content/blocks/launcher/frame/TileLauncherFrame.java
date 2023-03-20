@@ -45,7 +45,7 @@ public class TileLauncherFrame extends TileMachine implements IPacketIDReceiver,
         switch (getTier())
         {
             default:
-                return 15;
+                return 15; //TODO config
             case TWO:
                 return 7;
             case THREE:

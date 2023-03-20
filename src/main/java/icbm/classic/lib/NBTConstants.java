@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Level;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 
+@Deprecated //We don't want to have a master file for data that is not exposed as an API
 public class NBTConstants
 {
     /* Verifies that the nbt tag constants are distinct (only exist once).
@@ -72,11 +73,6 @@ public class NBTConstants
     public static final String HZ = "hz";
     public static final String ID = "id";
     public static final String INVENTORY = "inventory";
-    public static final String IN_DATA = "inData";
-    public static final String IN_GROUND = "inGround";
-    @Deprecated //legacy
-    public static final String IN_TILE = "inTile";
-    public static final String IN_TILE_STATE = "inTileState";
     public static final String IS_CONFUSE = "isConfuse";
     public static final String IS_CONTAGIOUS = "isContagious";
     public static final String IS_EXPLOSIVE = "isExplosive";
@@ -85,7 +81,6 @@ public class NBTConstants
     public static final String IS_VISIBLE = "isVisible";
     public static final String ITEMS = "Items";
     public static final String LAUNCHER_POS = "launcherPos";
-    public static final String LIFE = "life";
     public static final String LOCK_HEIGHT = "lockHeight";
     public static final String MISSILES = "missiles";
     public static final String MISSILE_TYPE = "missileType";
@@ -99,12 +94,7 @@ public class NBTConstants
     public static final String ROLL = "roll";
     public static final String SAFETY_RADIUS = "safetyRadius";
     public static final String SHAKE = "shake";
-    public static final String SHOOTER_UUID = "Shooter-UUID";
-    @Deprecated //legacy
-    public static final String SIDE_TILE = "sideTile";
-    public static final String SIDE_TILE_POS = "sideTilePos";
     public static final String SLOT = "Slot";
-    public static final String SOURCE_POS = "sourcePos";
     public static final String SPAWNS = "spawns";
     public static final String SPAWN_MORE_PARTICLES = "spawnMoreParticles";
     public static final String TARGET = "target";
@@ -117,16 +107,7 @@ public class NBTConstants
     public static final String TIER = "tier";
     public static final String TRACKING_ENTITY = "trackingEntity";
     public static final String X = "x";
-    @Deprecated //legacy
-    public static final String X_TILE = "xTile";
-    public static final String X_TILE_POS = "xTilePos";
     public static final String Y = "y";
     public static final String YAW  = "yaw";
-    @Deprecated //legacy
-    public static final String Y_TILE = "yTile";
-    public static final String Y_TILE_POS = "yTilePos";
     public static final String Z = "z";
-    @Deprecated //legacy
-    public static final String Z_TILE = "zTile";
-    public static final String Z_TILE_POS = "zTilePos";
 }

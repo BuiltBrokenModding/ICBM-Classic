@@ -1,0 +1,37 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 1,
+          "data": 1,
+          "key": "Count"
+        },
+        {
+          "type": 2,
+          "data": 1,
+          "key": "Damage"
+        },
+        {
+          "type": 10,
+          "data": [
+            {
+              "type": 10,
+              "data": [],
+              "key": "Parent"
+            }
+          ],
+          "key": "ForgeCaps"
+        },
+        {
+          "type": 8,
+          "data": "icbmclassic:grenade",
+          "key": "id"
+        }
+      ],
+      "key": "explosive"
+    }
+  ]
+}

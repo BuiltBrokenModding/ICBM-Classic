@@ -25,10 +25,10 @@ public interface IEnergySystem
      * @param object   - ItemStack/Entity/TileEntity
      * @param side     - side being accessed, can be null
      * @param energy   - new value
-     * @param doAction - true to apply changes, false to test data
+     * @param simulate - true to run logic without applying changes
      * @return energy previously contained
      */
-    int setEnergy(Object object, EnumFacing side, int energy, boolean doAction);
+    int setEnergy(Object object, EnumFacing side, int energy, boolean simulate);
 
     /**
      * Check to see if the energy system supports setting
@@ -65,10 +65,10 @@ public interface IEnergySystem
      * @param object      - ItemStack/Entity/TileEntity
      * @param side        - side being accessed, can be null
      * @param energyToAdd - energy to add
-     * @param doAction    - true to apply changes, false to test data
+     * @param simulate    - true to run logic without applying changes
      * @return energy added
      */
-    int addEnergy(Object object, EnumFacing side, int energyToAdd, boolean doAction);
+    int addEnergy(Object object, EnumFacing side, int energyToAdd, boolean simulate);
 
     /**
      * Attempts to remove energy from the object
@@ -76,8 +76,8 @@ public interface IEnergySystem
      * @param object         - ItemStack/Entity/TileEntity
      * @param side           - side being accessed, can be null
      * @param energyToRemove - energy to remove
-     * @param doAction       - true to apply changes, false to test data
+     * @param simulate       - true to run logic without applying changes
      * @return energy removed
      */
-    int removeEnergy(Object object, EnumFacing side, int energyToRemove, boolean doAction);
+    int removeEnergy(Object object, EnumFacing side, int energyToRemove, boolean simulate);
 }

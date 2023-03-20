@@ -7,18 +7,7 @@ import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.client.mapper.BlockModelMapperExplosive;
 import icbm.classic.client.mapper.ItemModelMapperExplosive;
-import icbm.classic.client.render.entity.RenderCreeperXmas;
-import icbm.classic.client.render.entity.RenderEntityBlock;
-import icbm.classic.client.render.entity.RenderExBlock;
-import icbm.classic.client.render.entity.RenderExplosion;
-import icbm.classic.client.render.entity.RenderFragments;
-import icbm.classic.client.render.entity.RenderGrenade;
-import icbm.classic.client.render.entity.RenderLightBeam;
-import icbm.classic.client.render.entity.RenderMissile;
-import icbm.classic.client.render.entity.RenderSeat;
-import icbm.classic.client.render.entity.RenderSkeletonXmas;
-import icbm.classic.client.render.entity.RenderSnowmanXmas;
-import icbm.classic.client.render.entity.RenderZombieXmas;
+import icbm.classic.client.render.entity.*;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
@@ -34,14 +23,8 @@ import icbm.classic.content.blocks.launcher.screen.TESRLauncherScreen;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TESRRadarStation;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
-import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.EntityFragments;
-import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.entity.EntityLightBeam;
-import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.entity.*;
+import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.entity.mobs.EntityXmasCreeper;
 import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
 import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
@@ -141,6 +124,7 @@ public class ClientReg
         newItemModel(ItemReg.itemPoisonPowder, 0, "inventory", "");
         newItemModel(ItemReg.itemSulfurDust, 0, "inventory", "");
         newItemModel(ItemReg.itemSaltpeterDust, 0, "inventory", "");
+        newItemModel(ItemReg.itemSaltpeterBall, 0, "inventory", "");
         newItemModel(ItemReg.itemAntidote, 0, "inventory", "");
         newItemModel(ItemReg.itemSignalDisrupter, 0, "inventory", "");
         newItemModel(ItemReg.itemTracker, 0, "inventory", "");
@@ -150,6 +134,7 @@ public class ClientReg
         newItemModel(ItemReg.itemLaserDetonator, 0, "inventory", "");
         newItemModel(ItemReg.itemRocketLauncher, 0, "inventory", "");
         newItemModel(ItemReg.itemBattery, 0, "inventory", "");
+        ModelLoader.setCustomModelResourceLocation(ItemReg.itemSAM, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/surface_to_air", "inventory"));
 
         //crafting parts
         if(ConfigItems.ENABLE_CRAFTING_ITEMS)
@@ -181,6 +166,7 @@ public class ClientReg
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, RenderLightBeam::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityFragments.class, RenderFragments::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayerSeat.class, RenderSeat::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntitySmoke.class, RenderSmoke::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
         RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
@@ -289,9 +275,17 @@ public class ClientReg
             final String resourcePath = data.getRegistryName().getResourceDomain() + ":missiles/" + data.getRegistryName().getResourcePath();
             missileModelMap.put(data, new ModelResourceLocation(resourcePath, "inventory"));
         }
-        ModelLoader.registerItemVariants(ItemReg.itemMissile, missileModelMap.values()
+
+        // Missile module, also used as fallback for all renders
+        final ModelResourceLocation fallback = new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/missile", "inventory");
+        missileModelMap.put(ICBMExplosives.MISSILEMODULE, fallback);
+
+        // Register variants to item so model files load
+        ModelLoader.registerItemVariants(ItemReg.itemExplosiveMissile, missileModelMap.values()
                 .stream().map(model -> new ResourceLocation(model.getResourceDomain() + ":" + model.getResourcePath())).toArray(ResourceLocation[]::new));
-        ModelLoader.setCustomMeshDefinition(ItemReg.itemMissile, new ItemModelMapperExplosive(missileModelMap, missileModelMap.get(ICBMExplosives.CONDENSED)));
+
+        // Custom def to handle fallback for missing models
+        ModelLoader.setCustomMeshDefinition(ItemReg.itemExplosiveMissile, new ItemModelMapperExplosive(missileModelMap, fallback));
     }
 
     protected static void registerCraftingRender(ItemCrafting itemCrafting)

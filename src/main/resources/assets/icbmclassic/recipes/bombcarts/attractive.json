@@ -1,0 +1,21 @@
+{
+  "type": "icbmclassic:explosive",
+  "result": {
+    "explosive": "icbmclassic:attractive",
+    "device": "icbmclassic:minecart",
+    "count": 1
+  },
+  "pattern": [
+    "a",
+    "c"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:minecart"
+    },
+    "a": {
+      "type": "icbmclassic:explosive",
+      "explosive": "icbmclassic:attractive"
+    }
+  }
+}

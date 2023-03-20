@@ -16,6 +16,7 @@ config.icbmclassic:thread.title=Thread
 config.icbmclassic:item.title=Item
 config.icbmclassic:ic2.title=Industrial Craft 2
 config.icbmclassic:debug.title=Debug
+config.icbmclassic:missile.sam.title=Surface to Air Missile
 
 ## Chat commands
 
@@ -63,6 +64,9 @@ item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
 item.icbmclassic:saltpeter.name=Saltpeter
 item.icbmclassic:saltpeter.info=Used in the creation of gunpowder
 
+item.icbmclassic:saltpeter_ball.name=Saltpeter Starter
+item.icbmclassic:saltpeter_ball.info=Use in furnace to extract saltpeter
+
 item.icbmclassic:poisonPowder.name=Poison Powder
 item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 
@@ -82,7 +86,7 @@ item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
 
 item.icbmclassic:tracker.name=Tracker
-item.icbmclassic:tracker.info=Track entities and set homing missiles
+item.icbmclassic:tracker.info=Not implemented, set for removal
 
 item.icbmclassic:signalDisrupter.name=Signal Disrupter
 item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or missile launches
@@ -90,6 +94,11 @@ item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or mi
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s rockets
 item.icbmclassic:rocketLauncher.info.creative=Creative: Bypasses tier restriction
+item.icbmclassic:rocketLauncher.error.IMissileAiming=Missile %1 doesn't implement IMissileAiming to allow for use in handheld launchers
+item.icbmclassic:rocketLauncher.error.spawning=Missile spawning was canceled by world
+
+item.icbmclassic:surface_to_air_missile.name=Surface to Air Missile
+item.icbmclassic:surface_to_air_missile.info=Missile designed to fire from the ground to attack flying targets
 
 ## Crafting items
 item.icbmclassic:ingot.steel.name=Steel Ingot
@@ -160,6 +169,8 @@ explosive.icbmclassic:anvil.name=Anvil Explosives
 explosive.icbmclassic:repulsive.name=Repulsive Explosives
 explosive.icbmclassic:attractive.name=Attractive Explosives
 explosive.icbmclassic:nightmare.name=Nightmare Explosives
+explosive.icbmclassic:colors.name=Colorful Explosives
+explosive.icbmclassic:smoke.name=Smoke Marking Explosives
 
 explosive.icbmclassic:fragmentation.name=Fragmentation Explosives
 explosive.icbmclassic:contagious.name=Contagious Explosives
@@ -179,6 +190,8 @@ explosive.icbmclassic:antimatter.name=Antimatter Explosives
 explosive.icbmclassic:redmatter.name=Red Matter Explosives
 
 ## Missile Form
+missile.icbmclassic:generic.name=Missile
+
 missile.icbmclassic:condensed.name=Conventional Missile
 missile.icbmclassic:shrapnel.name=Shrapnel Missile
 missile.icbmclassic:incendiary.name=Incendiary Missile
@@ -187,6 +200,8 @@ missile.icbmclassic:chemical.name=Chemical Missile
 missile.icbmclassic:anvil.name=Anvil Missile
 missile.icbmclassic:repulsive.name=Repulsive Missile
 missile.icbmclassic:attractive.name=Attractive Missile
+missile.icbmclassic:colors.name=Colorful Missile
+missile.icbmclassic:smoke.name=Smoke Marking Missile
 
 missile.icbmclassic:fragmentation.name=Fragmentation Missile
 missile.icbmclassic:contagious.name=Contagious Missile
@@ -215,6 +230,8 @@ bombcart.icbmclassic:anvil.name=Anvil Minecart
 bombcart.icbmclassic:repulsive.name=Repulsive Minecart
 bombcart.icbmclassic:attractive.name=Attractive Minecart
 bombcart.icbmclassic:nightmare.name=Nightmare Minecart
+bombcart.icbmclassic:colors.name=Colorful Minecart
+bombcart.icbmclassic:smoke.name=Smoke Marking Minecart
 
 bombcart.icbmclassic:fragmentation.name=Fragmentation Minecart
 bombcart.icbmclassic:contagious.name=Contagious Minecart
@@ -242,6 +259,8 @@ explosive.icbmclassic:chemical.info=Can't fight if you can't breathe
 explosive.icbmclassic:anvil.info=What's up doc
 explosive.icbmclassic:repulsive.info=Pushes everyone away
 explosive.icbmclassic:attractive.info=Pulls everyone in
+explosive.icbmclassic:colors.info=So many colors!!!
+explosive.icbmclassic:smoke.info=Short smoke signal for target testing
 
 explosive.icbmclassic:fragmentation.info=Devastates the landscape with high velocity fragments
 explosive.icbmclassic:contagious.info=Have you ever heard of the plague?
@@ -289,7 +308,8 @@ grenade.icbmclassic:chemical.name=Chemical Grenade
 grenade.icbmclassic:anvil.name=Anvil Grenade
 grenade.icbmclassic:repulsive.name=Repulsive Grenade
 grenade.icbmclassic:attractive.name=Attractive Grenade
-
+grenade.icbmclassic:colors.name=Colorful Grenade
+grenade.icbmclassic:smoke.name=Smoke Marking Grenade
 
 ## ICBM Misc Blocks
 tile.icbmclassic:concrete.0.name=Concrete
@@ -340,11 +360,7 @@ gui.misc.freq=Frequency:
 gui.misc.XCoord=X-Coord:
 gui.misc.YCoord=Y-Coord:
 gui.misc.ZCoord=Z-Coord:
-gui.misc.x=X:
-gui.misc.y=Y:
-gui.misc.z=Z:
 gui.misc.status=Status:
-gui.misc.voltage=Voltage:
 gui.misc.missile=Missile[%d, %d]
 gui.misc.object=Object[%d, %d]
 
@@ -391,17 +407,24 @@ gui.launcherscreen.statusReady=Ready to launch!
 gui.launcherscreen.launch=Launch
 
 
-gui.launcherCruise.name=Cruise Launcher
+## Cruise launcher status, used by GUI and block interaction
+launcher.cruise.error.power=Firing Safety; Not enough power
+launcher.cruise.error.fuel=Firing Safety; Not enough fuel
+launcher.cruise.error.missile.none=Firing Safety; No missile
+launcher.cruise.error.target.none=Guidance safety; No target set
+launcher.cruise.error.target.min=Guidance safety; Target too close
+launcher.cruise.error.target.angle=Guidance safety; Aiming angle limits hit
+launcher.cruise.error.missile.space=Guidance safety; launcher collision detected. Clear area around missile required.
+launcher.cruise.ready=Ready to fire
 
-gui.launcherCruise.statusNoPower=No Power!
-gui.launcherCruise.statusEmpty=No Missile!
-gui.launcherCruise.invalidMissile=Invalid Item!
-gui.launcherCruise.invalidMissileTier=Invalid Missile Tier!
-gui.launcherCruise.notCruiseMissile=Invalid Missile Type!
-gui.launcherCruise.statusInvalid=Invalid Target!
-gui.launcherCruise.targetToClose=Target to close!
-gui.launcherCruise.noRoom=3x3 not clear!
-gui.launcherCruise.statusReady=Ready!
+## Cruise launcher UI
+gui.launcher.cruise.name=Cruise Launcher
+
+### Text box feedback
+gui.launcher.cruise.error.null=Empty Input
+gui.launcher.cruise.error.format.target=Invalid format; Requires 3 positional coordinates separated by commas. Example: 4567, 5678, 8974
+gui.launcher.cruise.error.format.hz=Invalid format; Requires whole number. Example: 4578
+
 
 ## Chat warning if user tries to fire by hand, %s is status message from GUI
 chat.launcher.status=Status: %s

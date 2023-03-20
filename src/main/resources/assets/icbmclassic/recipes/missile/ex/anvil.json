@@ -1,0 +1,22 @@
+{
+  "type": "icbmclassic:explosive",
+  "result": {
+    "explosive": "icbmclassic:anvil",
+    "device": "icbmclassic:missile",
+    "count": 1
+  },
+  "pattern": [
+    "mx"
+  ],
+  "key": {
+    "m": {
+      "type": "icbmclassic:explosive",
+      "device": "icbmclassic:missile.module"
+    },
+    "x": {
+      "type": "icbmclassic:explosive",
+      "device": "icbmclassic:block",
+      "explosive": "icbmclassic:anvil"
+    }
+  }
+}

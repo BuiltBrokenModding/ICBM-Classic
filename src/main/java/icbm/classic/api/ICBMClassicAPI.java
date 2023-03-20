@@ -2,7 +2,8 @@ package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.caps.IMissileLauncher;
 import icbm.classic.api.explosion.IBlast;
@@ -12,6 +13,9 @@ import icbm.classic.api.reg.content.IExBlockRegistry;
 import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.api.reg.content.IExMissileRegistry;
+import icbm.classic.api.reg.obj.IMissileFlightLogicReg;
+import icbm.classic.api.reg.obj.IMissileSourceReg;
+import icbm.classic.api.reg.obj.IMissileTargetReg;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -38,6 +42,14 @@ public final class ICBMClassicAPI
     public static IExGrenadeRegistry EX_GRENADE_REGISTRY;
     public static IExBlockRegistry EX_BLOCK_REGISTRY;
     public static IExMinecartRegistry EX_MINECART_REGISTRY;
+
+    /** Registry for target data save/load in missiles */
+    public static IMissileTargetReg MISSILE_TARGET_DATA_REGISTRY;
+    /** Registry for flight logic save/load in missiles */
+    public static IMissileFlightLogicReg MISSILE_FLIGHT_LOGIC_REGISTRY;
+
+    /** Registry for missile source save/load in missiles */
+    public static IMissileSourceReg MISSILE_SOURCE_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 
@@ -66,14 +78,19 @@ public final class ICBMClassicAPI
     @CapabilityInject(IExplosive.class)
     public static Capability<IExplosive> EXPLOSIVE_CAPABILITY = null;
 
+    /** Only applies to entities */
     @CapabilityInject(IMissile.class)
     public static Capability<IMissile> MISSILE_CAPABILITY = null;
+
+    /** Only applies to ItemStack */
+    @CapabilityInject(ICapabilityMissileStack.class)
+    public static Capability<ICapabilityMissileStack> MISSILE_STACK_CAPABILITY = null;
 
     @CapabilityInject(IMissileHolder.class)
     public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;
 
     @CapabilityInject(IMissileLauncher.class)
-    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
+    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null; //TODO not implemented
 
     @CapabilityInject(IBlastVelocity.class)
     public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;

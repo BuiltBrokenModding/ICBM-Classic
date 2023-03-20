@@ -11,6 +11,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -57,12 +58,12 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(ItemReg.itemBattery);
 
         orderItem(BlockReg.blockExplosive);
-        orderItem(ItemReg.itemMissile);
+        orderItem(ItemReg.itemExplosiveMissile);
         orderItem(ItemReg.itemGrenade);
         orderItem(ItemReg.itemBombCart);
 
         //Collect any non-defined items
-        for (Item item : Item.REGISTRY) //registries are frozen during FMLInitializationEvent, can safely iterate
+        for (Item item : ForgeRegistries.ITEMS) //registries are frozen during FMLInitializationEvent, can safely iterate
         {
             if (item != null)
             {
@@ -97,6 +98,11 @@ public class ICBMCreativeTab extends CreativeTabs
 
     protected void collectSubItems(final Item item, final NonNullList<ItemStack> masterList)
     {
+        if (item == null)
+        {
+            return;
+        }
+
         //Collect stacks
         final NonNullList<ItemStack> collectedItemStacks = NonNullList.create();
         item.getSubItems(this, collectedItemStacks);
@@ -137,6 +143,6 @@ public class ICBMCreativeTab extends CreativeTabs
     @Override
     public ItemStack getTabIconItem()
     {
-        return new ItemStack(ItemReg.itemMissile);
+        return new ItemStack(ItemReg.itemExplosiveMissile);
     }
 }

@@ -380,7 +380,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      */
     public final double distanceYaw(double yaw)
     {
-        return Math.abs(this.yaw - yaw);
+        return delta(this.yaw, yaw);
     }
 
     /**
@@ -391,7 +391,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      */
     public final double distancePitch(double pitch)
     {
-        return Math.abs(this.pitch - pitch);
+        return delta(this.pitch, pitch);
     }
 
     /**
@@ -402,7 +402,11 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      */
     public final double distanceRoll(double roll)
     {
-        return Math.abs(this.roll - roll);
+        return delta(this.roll, roll);
+    }
+
+    private static double delta(final double a, final double b) {
+        return Math.abs(((a + 360) % 360) - ((b + 360) % 360)); //TODO check performance
     }
 
     @Override

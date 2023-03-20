@@ -1,0 +1,127 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 5,
+      "data": 1.0,
+      "key": "acceleration"
+    },
+    {
+      "type": 10,
+      "data": [],
+      "key": "additionalMissileData"
+    },
+    {
+      "type": 3,
+      "data": 10,
+      "key": "explosiveID"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:missile",
+      "key": "id"
+    },
+    {
+      "type": 1,
+      "data": 0,
+      "key": "inGround"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "inTileState"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "56.16156134984573",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "82.03906527357759",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "217.48522488804608",
+          "key": "z"
+        }
+      ],
+      "key": "launcherPos"
+    },
+    {
+      "type": 2,
+      "data": 0,
+      "key": "life"
+    },
+    {
+      "type": 6,
+      "data": "3.0",
+      "key": "lockHeight"
+    },
+    {
+      "type": 3,
+      "data": 2,
+      "key": "missileType"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "preLaunchSmokeTimer"
+    },
+    {
+      "type": 1,
+      "data": 1,
+      "key": "sideTilePos"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "59.06195460480209",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "75.15145375534576",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "257.2760022607643",
+          "key": "z"
+        }
+      ],
+      "key": "sourcePos"
+    },
+    {
+      "type": 3,
+      "data": -1,
+      "key": "targetHeight"
+    },
+    {
+      "type": 3,
+      "data": 117,
+      "key": "ticksInAir"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "xTilePos"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "yTilePos"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "zTilePos"
+    }
+  ]
+}

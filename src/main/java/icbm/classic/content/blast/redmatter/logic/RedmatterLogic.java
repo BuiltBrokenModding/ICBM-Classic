@@ -2,6 +2,7 @@ package icbm.classic.content.blast.redmatter.logic;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
@@ -11,10 +12,9 @@ import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 import icbm.classic.content.blast.redmatter.DamageSourceRedmatter;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.missile.EntityMissile;
 import icbm.classic.lib.CalculationHelpers;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -472,13 +472,10 @@ public class RedmatterLogic
                 //Kill the blast
                 blast.clearBlast();
             }
-            else if (entity instanceof EntityMissile) //TODO move to capability
+            else if (entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
             {
-                ((EntityMissile) entity).doExplosion(); //TODO should trigger the explosive capability
-            }
-            else if (entity instanceof EntityExplosive) //TODO move to capability
-            {
-                ((EntityExplosive) entity).explode(); //TODO should trigger the explosive capability
+                final IExplosive explosive = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+                ExplosiveHandler.createExplosion(host, entity.world, entity.posX, entity.posY, entity.posZ, explosive);
             }
             else if (entity instanceof EntityLiving || entity instanceof EntityPlayer)
             {

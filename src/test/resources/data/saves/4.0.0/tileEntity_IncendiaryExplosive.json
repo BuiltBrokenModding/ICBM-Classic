@@ -1,0 +1,57 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 1,
+          "data": 1,
+          "key": "Count"
+        },
+        {
+          "type": 2,
+          "data": 2,
+          "key": "Damage"
+        },
+        {
+          "type": 10,
+          "data": [
+            {
+              "type": 10,
+              "data": [],
+              "key": "Parent"
+            }
+          ],
+          "key": "ForgeCaps"
+        },
+        {
+          "type": 8,
+          "data": "icbmclassic:explosives",
+          "key": "id"
+        }
+      ],
+      "key": "explosive_stack"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:explosive",
+      "key": "id"
+    },
+    {
+      "type": 3,
+      "data": -38,
+      "key": "x"
+    },
+    {
+      "type": 3,
+      "data": 68,
+      "key": "y"
+    },
+    {
+      "type": 3,
+      "data": 44,
+      "key": "z"
+    }
+  ]
+}

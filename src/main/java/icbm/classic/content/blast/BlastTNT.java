@@ -1,6 +1,8 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
@@ -14,6 +16,8 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.Explosion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 
@@ -69,18 +73,16 @@ public class BlastTNT extends Blast
     {
         calculateDamage(); //TODO add listener(s) to control block break and placement
 
-        //TODO move effect to Effect handler
         this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
 
         //TODO collect entities before applying effects, this way event can override
-        switch (this.pushType)
+        if (this.pushType == PushType.NO_PUSH)
         {
-            case NO_PUSH:
-                this.doDamageEntities(this.getBlastRadius(), damageToEntities, this.destroyItem);
-                break;
-            default:
-                this.pushEntities(12, this.getBlastRadius() * 4, this.pushType);
-                break;
+            this.doDamageEntities(this.getBlastRadius(), damageToEntities, this.destroyItem);
+        }
+        else
+        {
+            this.pushEntities(12, this.getBlastRadius() * 4, this.pushType);
         }
 
         //Fire event to allow blocking explosion damage
@@ -96,6 +98,9 @@ public class BlastTNT extends Blast
      */
     protected void calculateDamage() //TODO thread
     {
+        //TODO fix, alg seems to be making non-semetric shapes in harder blocks.
+        //      TnT vanilla will do 3x3
+        //      Condensed will do a 2x4 shaft with a few offshoots but doesn't scale correctly
         if (!this.world().isRemote)
         {
             for (int xs = 0; xs < this.raysPerAxis; ++xs)
@@ -104,6 +109,7 @@ public class BlastTNT extends Blast
                 {
                     for (int zs = 0; zs < this.raysPerAxis; ++zs)
                     {
+                        //Only run on edges of the cube
                         if (xs == 0 || xs == this.raysPerAxis - 1 || ys == 0 || ys == this.raysPerAxis - 1 || zs == 0 || zs == this.raysPerAxis - 1)
                         {
                             //Delta distance
@@ -175,41 +181,13 @@ public class BlastTNT extends Blast
     {
         if (!this.world().isRemote)
         {
-            for (BlockPos blownPosition : getAffectedBlockPositions()) //TODO convert block positions to block edits to track prev and current blocks
+            for (BlockPos blockDestroyedPos : getAffectedBlockPositions()) //TODO convert block positions to block edits to track prev and current blocks
             {
-                //Get position
-                int xi = blownPosition.getX();
-                int yi = blownPosition.getY();
-                int zi = blownPosition.getZ();
-
                 //Get block
-                IBlockState blockState = world.getBlockState(blownPosition);
-                Block block = blockState.getBlock();
+                final IBlockState blockState = world().getBlockState(blockDestroyedPos);
 
-                ///Generate effect TODO move to effect handler
-                ///---------------------------------------------
-                double var9 = (xi + this.world().rand.nextFloat());
-                double var11 = (yi + this.world().rand.nextFloat());
-                double var13 = (zi + this.world().rand.nextFloat());
-
-                double var151 = var9 - this.location.y();
-                double var171 = var11 - this.location.y();
-                double var191 = var13 - this.location.z();
-
-                double var211 = MathHelper.sqrt(var151 * var151 + var171 * var171 + var191 * var191);
-                var151 /= var211;
-                var171 /= var211;
-                var191 /= var211;
-
-                double var23 = 0.5D / (var211 / this.getBlastRadius() + 0.1D);
-                var23 *= (this.world().rand.nextFloat() * this.world().rand.nextFloat() + 0.3F);
-                var151 *= var23;
-                var171 *= var23;
-                var191 *= var23;
-
-                this.world().spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (var9 + this.location.x() * 1.0D) / 2.0D, (var11 + this.location.y() * 1.0D) / 2.0D, (var13 + this.location.z() * 1.0D) / 2.0D, var151, var171, var191);
-                this.world().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, var9, var11, var13, var151, var171, var191);
-                ///---------------------------------------------
+                ///Generate effect TODO send a single packet with a list of block pos, this will do a 80% reduction in packet byte data
+                PacketSpawnBlockExplosion.sendToAllClients(world(), x(), y(), z(), getBlastRadius(), blockDestroyedPos);
 
                 //Only edit block if not air
                 if (blockState.getMaterial() != Material.AIR)
@@ -217,13 +195,13 @@ public class BlastTNT extends Blast
                     try
                     {
                         //Do drops
-                        if (block.canDropFromExplosion(this))
+                        if (blockState.getBlock().canDropFromExplosion(this))
                         {
-                            block.dropBlockAsItemWithChance(this.world(), blownPosition, blockState, 1F, 0);
+                            blockState.getBlock().dropBlockAsItemWithChance(this.world(), blockDestroyedPos, blockState, 1F, 0);
                         }
 
                         //Break block
-                        block.onBlockExploded(this.world(), blownPosition, this);
+                        blockState.getBlock().onBlockExploded(this.world(), blockDestroyedPos, this);
                     }
                     catch (Exception e)
                     {

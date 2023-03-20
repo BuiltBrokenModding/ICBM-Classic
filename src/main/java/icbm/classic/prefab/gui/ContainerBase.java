@@ -5,6 +5,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerBase<H extends Object> extends Container
 {
@@ -91,6 +93,13 @@ public class ContainerBase<H extends Object> extends Container
     @Override
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-        return this.inventory.isUsableByPlayer(entityplayer);
+        if(this.inventory != null) {
+            return this.inventory.isUsableByPlayer(entityplayer);
+        }
+        else if(this.host instanceof TileEntity) {
+            final BlockPos pos = ((TileEntity) this.host).getPos();
+            return entityplayer.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5) <= 4.0;
+        }
+        return true;
     }
 }

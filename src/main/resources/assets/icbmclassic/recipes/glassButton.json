@@ -12,8 +12,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "g": {
-      "item": "minecraft:glass",
-      "data": 0
+      "item": "minecraft:glass"
     }
   }
 }

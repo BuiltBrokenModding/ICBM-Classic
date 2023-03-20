@@ -27,7 +27,10 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
+    @Deprecated
     public int explosive = -1; //TODO move to capability
+
+    @Deprecated
     public NBTTagCompound data; //TODO move to capability
 
     public EntityBombCart(World par1World)

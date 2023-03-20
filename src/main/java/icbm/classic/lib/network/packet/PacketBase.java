@@ -14,6 +14,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -21,16 +22,13 @@ import java.util.List;
  */
 public class PacketBase<P extends PacketBase> implements IPacket<P>
 {
-    protected List<Object> dataToWrite = new ArrayList();
+    protected List<Consumer<ByteBuf>> writers = new ArrayList();
     protected ByteBuf dataToRead;
 
     @Override
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
     {
-        for (Object object : dataToWrite)
-        {
-            writeData(object, buffer);
-        }
+        writers.forEach((func) -> func.accept(buffer));
     }
 
     @Override
@@ -39,13 +37,14 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
         dataToRead = buffer.slice().copy();
     }
 
+
     /**
      * Called to write data without manually defining the write
      *
      * @param object - object to write
      * @param buffer - location to write to
      */
-    protected void writeData(Object object, ByteBuf buffer)
+    private void writeData(Object object, ByteBuf buffer)
     {
         if (object.getClass().isArray())
         {
@@ -136,8 +135,14 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
     {
         for (Object object : objects)
         {
-            dataToWrite.add(object);
+            addData((byteBuf) -> writeData(object, byteBuf));
         }
+        return (P) this;
+    }
+
+    @Override
+    public P addData(Consumer<ByteBuf> writer) {
+        writers.add(writer);
         return (P) this;
     }
 

@@ -85,7 +85,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         }
         else if (ConfigEMP.DRAIN_ENERGY_ITEMS)
         {
-            EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, true);
+            EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, false);
         }
 
         if (doInventory && itemStack.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))

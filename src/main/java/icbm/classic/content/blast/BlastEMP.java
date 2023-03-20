@@ -107,7 +107,7 @@ public class BlastEMP extends Blast
                                                 IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
                                                 if (energySystem.canSetEnergyDirectly(tileEntity, null))
                                                 {
-                                                    energySystem.setEnergy(tileEntity, null, 0, true);
+                                                    energySystem.setEnergy(tileEntity, null, 0, false);
                                                 }
                                                 else
                                                 {
@@ -163,7 +163,7 @@ public class BlastEMP extends Blast
                             IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
                             if (energySystem.canSetEnergyDirectly(entity, null))
                             {
-                                energySystem.setEnergy(entity, null, 0, true);
+                                energySystem.setEnergy(entity, null, 0, false);
                             }
                             else
                             {

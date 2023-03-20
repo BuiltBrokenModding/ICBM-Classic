@@ -1,9 +1,12 @@
 package icbm.classic;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.events.ExplosiveContentRegistryEvent;
-import icbm.classic.api.reg.events.ExplosiveRegistryEvent;
+import icbm.classic.api.reg.events.*;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.CommandEntryPoint;
@@ -11,7 +14,19 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
-import icbm.classic.content.entity.missile.CapabilityMissile;
+import icbm.classic.content.missile.source.MissileSourceBlock;
+import icbm.classic.content.missile.entity.CapabilityMissile;
+import icbm.classic.content.missile.entity.anti.SAMTargetData;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
+import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
+import icbm.classic.content.missile.logic.reg.MissileFlightLogicRegistry;
+import icbm.classic.content.missile.source.MissileSourceEntity;
+import icbm.classic.content.missile.source.reg.MissileSourceRegistry;
+import icbm.classic.content.missile.targeting.BallisticTargetingData;
+import icbm.classic.content.missile.targeting.BasicTargetData;
+import icbm.classic.content.missile.targeting.reg.MissileTargetRegistry;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
 import icbm.classic.content.potion.ContagiousPoison;
@@ -20,13 +35,11 @@ import icbm.classic.content.potion.PoisonFrostBite;
 import icbm.classic.content.potion.PoisonToxin;
 import icbm.classic.content.reg.ExplosiveInit;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.datafix.EntityExplosiveDataFixer;
-import icbm.classic.datafix.EntityGrenadeDataFixer;
-import icbm.classic.datafix.TileExplosivesDataFixer;
-import icbm.classic.datafix.TileRadarStationDataFixer;
-import icbm.classic.lib.NBTConstants;
+import icbm.classic.datafix.*;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
+import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.explosive.reg.ExBlockContentReg;
@@ -48,6 +61,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -72,8 +86,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mod class for ICBM Classic, contains all loading code and references to objects crated by the mod.
@@ -82,10 +100,11 @@ import java.util.List;
  * <p>
  * Orginal author and creator of the mod: Calclavia
  */
-@Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION, dependencies = ICBMClassic.DEPENDENCIES)
+@Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic", version = ICBMClassic.VERSION)
 @Mod.EventBusSubscriber
-public final class ICBMClassic
+public class ICBMClassic
 {
+    public static final String VERSION = "@VERSION@";
 
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
 
@@ -98,17 +117,9 @@ public final class ICBMClassic
     @SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.CommonProxy")
     public static CommonProxy proxy;
 
-    public static final String MAJOR_VERSION = "@MAJOR@";
-    public static final String MINOR_VERSION = "@MINOR@";
-    public static final String REVISION_VERSION = "@REVIS@";
-    public static final String BUILD_VERSION = "@BUILD@";
-    public static final String MC_VERSION = "@MC@";
-    public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
-    public static final String DEPENDENCIES = "";
-
     public static final int MAP_HEIGHT = 255;
 
-    protected static Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
+    private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
 
 
     public static final PacketManager packetHandler = new PacketManager(ICBMConstants.DOMAIN);
@@ -140,6 +151,8 @@ public final class ICBMClassic
                 GameRegistry.addSmelting(ItemReg.itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
             }
         }
+
+        GameRegistry.addSmelting(new ItemStack(ItemReg.itemSaltpeterBall, 1, 0), new ItemStack(ItemReg.itemSaltpeterDust, 1, 0), 0.1f);
     }
 
     @SubscribeEvent
@@ -176,8 +189,7 @@ public final class ICBMClassic
                     }
                 }
             }
-        }
-        else if (event.getName().equals(LootTableList.ENTITIES_CREEPER))
+        } else if (event.getName().equals(LootTableList.ENTITIES_CREEPER) || event.getName().equals(LootTableList.ENTITIES_BLAZE))
         {
             if (ConfigItems.ENABLE_SULFUR_LOOT_DROPS)
             {
@@ -194,34 +206,92 @@ public final class ICBMClassic
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        //Verify that our nbt tag strings are distinct. If this fails then this will crash Minecraft!
-        NBTConstants.ensureThatAllTagNamesAreDistinct();
-
         proxy.preInit();
         EnergySystem.register(new EnergySystemFE());
 
         //Register caps
-        CapabilityEMP.register();
-        CapabilityMissile.register();
-        CapabilityExplosive.register();
-        CapabilityBlast.register();
-        CapabilityBlastVelocity.register();
+        registerCapabilities();
 
         //Register data fixers
-        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 1);
+        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, 2);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, new EntityBombCartDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
+        modFixs.registerFix(FixTypes.ENTITY, EntityMissileDataFixer.INSTANCE);
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileExplosivesDataFixer());
         modFixs.registerFix(FixTypes.BLOCK_ENTITY, new TileRadarStationDataFixer());
+        modFixs.registerFix(FixTypes.ITEM_INSTANCE, new ItemStackDataFixer());
 
         MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 
+        handleMissileTargetRegistry();
+        handleMissileFlightRegistry();
+        handleMissileSourceRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
     }
 
-    private void handleExRegistry(File configMainFolder)
+    void registerCapabilities() {
+        CapabilityEMP.register();
+        CapabilityMissile.register();
+        CapabilityExplosive.register();
+        CapabilityBlast.register();
+        CapabilityBlastVelocity.register();
+        CapabilityMissileHolder.register();
+        CapabilityMissileStack.register();
+    }
+
+    void handleMissileTargetRegistry()
+    {
+        final MissileTargetRegistry registry = new MissileTargetRegistry();
+        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = registry;
+
+        registry.register(BasicTargetData.REG_NAME, BasicTargetData::new);
+        registry.register(BallisticTargetingData.REG_NAME, BallisticTargetingData::new);
+        registry.register(SAMTargetData.REG_NAME, () -> null); //Can't be restored from save but reserving name
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(registry));
+
+        //Lock to prevent late registry
+        registry.lock();
+    }
+
+    void handleMissileFlightRegistry()
+    {
+        final MissileFlightLogicRegistry registry = new MissileFlightLogicRegistry();
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = registry;
+
+        registry.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
+        registry.register(BallisticFlightLogic.REG_NAME, BallisticFlightLogic::new);
+        registry.register(DeadFlightLogic.REG_NAME, DeadFlightLogic::new);
+        registry.register(FollowTargetLogic.REG_NAME, FollowTargetLogic::new);
+
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(registry));
+
+        //Lock to prevent late registry
+        registry.lock();
+    }
+
+    void handleMissileSourceRegistry()
+    {
+        final MissileSourceRegistry registry = new MissileSourceRegistry();
+        ICBMClassicAPI.MISSILE_SOURCE_REGISTRY = registry;
+
+        registry.register(MissileSourceBlock.REG_NAME, MissileSourceBlock::new);
+        registry.register(MissileSourceEntity.REG_NAME, MissileSourceEntity::new);
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new MissileSourceRegistryEvent(registry));
+
+        //Lock to prevent late registry
+        registry.lock();
+    }
+
+    void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls
     {
         //Init registry
         final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
@@ -233,7 +303,9 @@ public final class ICBMClassic
         ICBMClassicAPI.EX_MISSILE_REGISTRY = new ExMissileContentReg();
 
         //Load data
-        explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
+        if(configMainFolder != null) {
+            explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
+        }
 
         //Register default content types
         explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_BLOCK_REGISTRY);
@@ -266,7 +338,9 @@ public final class ICBMClassic
         explosiveRegistry.completeLock();
 
         //Save registry, at this point everything should be registered
-        explosiveRegistry.saveReg();
+        if(configMainFolder != null) {
+            explosiveRegistry.saveReg();
+        }
     }
 
     @Mod.EventHandler
@@ -275,8 +349,6 @@ public final class ICBMClassic
         proxy.init();
         packetHandler.init();
         CREATIVE_TAB.init();
-
-        setModMetadata(ICBMConstants.DOMAIN, "ICBM-Classic", metadata);
 
         if (ConfigItems.ENABLE_CRAFTING_ITEMS)
         {
@@ -328,22 +400,6 @@ public final class ICBMClassic
         proxy.postInit();
     }
 
-
-    public void setModMetadata(String id, String name, ModMetadata metadata)
-    {
-        metadata.modId = id;
-        metadata.name = name;
-        metadata.description = "ICBM is a Minecraft Mod that introduces intercontinental ballistic missiles to Minecraft. " +
-                "But the fun doesn't end there! This mod also features many different explosives, missiles and machines " +
-                "classified in three different tiers. If strategic warfare, carefully coordinated airstrikes, messing " +
-                "with matter and general destruction are up your alley, then this mod is for you!";
-        metadata.url = "http://www.builtbroken.com/";
-        metadata.logoFile = "/icbm_logo.png";
-        metadata.version = ICBMClassic.VERSION;
-        metadata.authorList = Arrays.asList("Calclavia", "DarkGuardsman aka Darkcow");
-        metadata.credits = "Please visit the website.";
-        metadata.autogenerated = false;
-    }
 
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event)

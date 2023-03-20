@@ -58,10 +58,11 @@ public class ItemBlockExplosive extends ItemBlockAbstract
         {
             final EnumTier tierdata = data.getTier();
             if(tierdata != EnumTier.NONE) // only show the tier if its not NONE. Tier NONE is currently only assinged to the Missile Module
+            {
                 list.add(TextFormatting.DARK_RED + LanguageUtility.getLocal("info.misc.tier") + ": " + tierdata.getTooltipColor() + tierdata.getLocalizedName());
+            }
         }
-
-        if (stack.getItemDamage() == ICBMExplosives.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
+        else if (stack.getItemDamage() == ICBMExplosives.REDMATTER.getRegistryID()) //TODO add hook for any explosive via content reg
         {
             ///Shhh!!! tell no one this exists, tis a surprise
             boolean taunt = shouldTauntPlayer(player);

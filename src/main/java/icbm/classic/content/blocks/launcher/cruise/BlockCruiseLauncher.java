@@ -19,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -87,10 +88,8 @@ public class BlockCruiseLauncher extends BlockICBM
                 {
                     if (!launcher.launch()) //canLaunch is called in launch and launch returns false if cannot launch
                     {
-                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.failedToFire")));
-                        String translation = LanguageUtility.getLocal("chat.launcher.status");
-                        translation = translation.replace("%s", launcher.getStatus());
-                        player.sendMessage(new TextComponentString(translation));
+                        player.sendMessage(new TextComponentTranslation("chat.launcher.failedToFire"));
+                        player.sendMessage(new TextComponentTranslation(launcher.getStatusTranslation()));
                     }
                 }
                 else if (stack.getItem() instanceof ItemRemoteDetonator)

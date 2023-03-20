@@ -44,7 +44,7 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
         return ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(getExplosiveID());
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public NBTTagCompound getCustomBlastData()
     {
@@ -77,7 +77,7 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     public NBTTagCompound serializeNBT()
     {
         //Do not save the stack itself as we are saving to its NBT
-        NBTTagCompound save = new NBTTagCompound();
+        NBTTagCompound save = new NBTTagCompound(); //TODO do not create empty NBT if we have nothing to save
         if (!getCustomBlastData().hasNoTags())
         {
             save.setTag(NBTConstants.CUSTOM_EX_DATA, getCustomBlastData());
@@ -106,7 +106,7 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     {
         if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
         {
-            return (T) this;
+            return ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(this);
         }
         return null;
     }

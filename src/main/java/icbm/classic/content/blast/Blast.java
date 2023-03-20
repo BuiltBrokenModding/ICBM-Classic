@@ -5,7 +5,7 @@ import icbm.classic.api.explosion.responses.BlastForgeResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.api.caps.IMissile;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
@@ -357,12 +357,6 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
 
             if (this.onDamageEntity(entity))
             {
-                continue;
-            }
-
-            if (entity instanceof IMissile)
-            {
-                ((IMissile) entity).destroyMissile(true);
                 continue;
             }
 

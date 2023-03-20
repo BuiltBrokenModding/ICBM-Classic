@@ -2,7 +2,6 @@ package icbm.classic.content.blocks.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
@@ -20,6 +19,8 @@ import javax.annotation.Nullable;
 
 public class TileEntityExplosive extends TileEntity implements IRotatable
 {
+    public static final String NBT_EXPLOSIVE_STACK = "explosive_stack";
+
     /**
      * Is the tile currently exploding
      */
@@ -34,7 +35,10 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
-        capabilityExplosive = new CapabilityExplosiveStack(new ItemStack((NBTTagCompound)nbt.getTag(NBTConstants.EXPLOSIVE_STACK)));
+        if(nbt.hasKey(NBT_EXPLOSIVE_STACK, 10)) {
+            final NBTTagCompound itemStackTag = nbt.getCompoundTag(NBT_EXPLOSIVE_STACK);
+            capabilityExplosive = new CapabilityExplosiveStack(new ItemStack(itemStackTag));
+        }
     }
 
     /**
@@ -45,7 +49,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     {
         if (capabilityExplosive != null && capabilityExplosive.toStack() != null)
         {
-            nbt.setTag(NBTConstants.EXPLOSIVE_STACK, capabilityExplosive.toStack().serializeNBT());
+            nbt.setTag(NBT_EXPLOSIVE_STACK, capabilityExplosive.toStack().serializeNBT());
         }
         return super.writeToNBT(nbt);
     }
@@ -62,7 +66,7 @@ public class TileEntityExplosive extends TileEntity implements IRotatable
     {
         if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
         {
-            return (T) capabilityExplosive;
+            return ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(capabilityExplosive);
         }
         return super.getCapability(capability, facing);
     }

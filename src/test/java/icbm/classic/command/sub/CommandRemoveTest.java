@@ -4,7 +4,7 @@ import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.testers.DummyCommandSender;
 import icbm.classic.TestUtils;
 import icbm.classic.command.ICBMCommands;
-import icbm.classic.content.entity.missile.EntityMissile;
+import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntitySheep;
@@ -131,7 +131,7 @@ public class CommandRemoveTest
 
         //Validate start condition
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should start with 3 sheep");
-        Assertions.assertEquals(2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityMissile).count(), "Should start with 2 missiles");
+        Assertions.assertEquals(2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityExplosiveMissile).count(), "Should start with 2 missiles");
 
         //Trigger command
         Assertions.assertDoesNotThrow(() -> command.handleCommand(testManager.getServer(), dummyCommandSender, args));
@@ -142,6 +142,6 @@ public class CommandRemoveTest
 
         //Should still have 3 sheep
         Assertions.assertEquals(3, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntitySheep).count(), "Should end with 3 sheep");
-        Assertions.assertEquals(removeMissile ? 0 : 2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityMissile).filter(Entity::isEntityAlive).count(), "Should end with 0 missiles");
+        Assertions.assertEquals(removeMissile ? 0 : 2, testManager.getWorld().loadedEntityList.stream().filter(e -> e instanceof EntityExplosiveMissile).filter(Entity::isEntityAlive).count(), "Should end with 0 missiles");
     }
 }

@@ -1,7 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:missile",
-    "data": 26,
+    "item": "icbmclassic:surface_to_air_missile",
     "count": 1
   },
   "pattern": [
@@ -12,7 +11,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "m": {
-      "item": "icbmclassic:missile",
+      "item": "icbmclassic:explosive_missile",
       "data": 24
     },
     "e": {

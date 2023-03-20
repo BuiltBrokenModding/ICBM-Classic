@@ -2,7 +2,6 @@ package icbm.classic.lib.network.packet;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
@@ -102,15 +101,15 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     {
         if (Minecraft.getMinecraft().world != null && player.world.provider.getDimension() == dimId)
         {
-            ICBMClassic.proxy.spawnAirParticle(player.world, new Pos(posX, posY, posZ), v, v1, v2, red, green, blue, scale, ticksToLive);
+            ICBMClassic.proxy.spawnAirParticle(player.world, posX, posY, posZ, v, v1, v2, red, green, blue, scale, ticksToLive);
         }
     }
 
-    public static void sendToAllClients(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
+    public static void sendToAllClients(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         final int dimid = world.provider.getDimension();
-        final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, position.x(), position.y(), position.z(), v, v1, v2, red, green, blue, scale, ticksToLive);
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, position.x(), position.y(), position.z(), 256);
+        final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, x, y, z, 256);
         ICBMClassic.packetHandler.sendToAllAround(packet, point);
     }
 }

@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:missile",
+    "item": "icbmclassic:explosive_missile",
     "data": 24,
     "count": 1
   },
@@ -26,7 +26,7 @@
   },
   "conditions": [
     {
-      "type": "forge:or",
+      "type": "forge:and",
       "values": [
         {
           "type": "icbmclassic:ore_value",

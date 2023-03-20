@@ -3,7 +3,11 @@ package icbm.classic.content.entity;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityMinecartEmpty;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
@@ -61,6 +65,17 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         {
             if (!this.world.isRemote)
             {
+                if(player.isCreative()) {
+                    final ItemStack itemStack = player.getHeldItem(hand);
+                    if (itemStack.getItem() == Items.MINECART) {
+                        final EntityMinecart cart = new EntityMinecartEmpty(world);
+                        cart.setPosition(posX, posY, posZ);
+                        world.spawnEntity(cart);
+
+                        cart.startRiding(this);
+                        return true;
+                    }
+                }
                 player.startRiding(this);
             }
 

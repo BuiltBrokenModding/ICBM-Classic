@@ -1,0 +1,106 @@
+{
+  "type": 10,
+  "data": [
+    {
+      "type": 5,
+      "data": 0.1,
+      "key": "acceleration"
+    },
+    {
+      "type": 10,
+      "data": [],
+      "key": "additionalMissileData"
+    },
+    {
+      "type": 3,
+      "data": 4,
+      "key": "explosiveID"
+    },
+    {
+      "type": 8,
+      "data": "icbmclassic:missile",
+      "key": "id"
+    },
+    {
+      "type": 1,
+      "data": 0,
+      "key": "inGround"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "inTileState"
+    },
+    {
+      "type": 2,
+      "data": 0,
+      "key": "life"
+    },
+    {
+      "type": 6,
+      "data": "3.0",
+      "key": "lockHeight"
+    },
+    {
+      "type": 3,
+      "data": 1,
+      "key": "missileType"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "preLaunchSmokeTimer"
+    },
+    {
+      "type": 1,
+      "data": 1,
+      "key": "sideTilePos"
+    },
+    {
+      "type": 10,
+      "data": [
+        {
+          "type": 6,
+          "data": "55.62772297859192",
+          "key": "x"
+        },
+        {
+          "type": 6,
+          "data": "73.39999999850988",
+          "key": "y"
+        },
+        {
+          "type": 6,
+          "data": "99.59636824578047",
+          "key": "z"
+        }
+      ],
+      "key": "sourcePos"
+    },
+    {
+      "type": 3,
+      "data": -1,
+      "key": "targetHeight"
+    },
+    {
+      "type": 3,
+      "data": 84,
+      "key": "ticksInAir"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "xTilePos"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "yTilePos"
+    },
+    {
+      "type": 3,
+      "data": 0,
+      "key": "zTilePos"
+    }
+  ]
+}
