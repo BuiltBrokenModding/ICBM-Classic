@@ -35,6 +35,7 @@ Add visual emp effect to attacked tiles, entities, and items
 # Explosive rework
 
 - Exothermic water handling -> should make steam instead of removing water
+- Redmatter -> Sort blocks by gravity value, lighter blocks get pulled first (grass, dirt, leaves, trees) creating for a more freaky visual effect
 
 # Radio System Rework
 
