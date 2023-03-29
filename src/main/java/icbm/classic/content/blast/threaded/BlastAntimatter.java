@@ -1,6 +1,8 @@
 package icbm.classic.content.blast.threaded;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
@@ -45,12 +47,17 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
+        long time = System.currentTimeMillis();
         BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
             if (isInsideMap(y + yi()) && shouldEditPos(x, y, z))
             {
                 edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
             }
         });
+        time = System.currentTimeMillis() - time;
+        if(ConfigDebug.DEBUG_EXPLOSIVES) {
+            ICBMClassic.logger().info("Antimatter: thread calculations ran in " + time + "ms");
+        }
         return false;
     }
 
@@ -61,14 +68,28 @@ public class BlastAntimatter extends BlastThreaded
         //      OR replace thread system with an entity that ticks over time to collect data
         if (world instanceof WorldServer)
         {
+            long time = System.currentTimeMillis();
+
             //Sort distance
             edits.sort(buildSorter());
+
+            time = System.currentTimeMillis() - time;
+            if(ConfigDebug.DEBUG_EXPLOSIVES) {
+                ICBMClassic.logger().info("Antimatter: sorting blocks ran in " + time + "ms");
+            }
+
+            time = System.currentTimeMillis();
 
             //Pull out fluids and falling blocks to prevent lag issues
             final List<BlockPos> removeFirst = edits.stream()
                     .filter(blockPos -> world.isBlockLoaded(blockPos))
                     .filter(this::isFluid)
                     .collect(Collectors.toList());
+
+            time = System.currentTimeMillis() - time;
+            if(ConfigDebug.DEBUG_EXPLOSIVES) {
+                ICBMClassic.logger().info("Antimatter: filtering first edits ran in " + time + "ms");
+            }
 
             //Schedule edits to run in the world
             ((WorldServer) world).addScheduledTask(() -> scheduledTask(removeFirst, edits));
@@ -77,11 +98,25 @@ public class BlastAntimatter extends BlastThreaded
 
     private void scheduledTask(List<BlockPos> removeFirst, List<BlockPos> edits) {
 
+        long time = System.currentTimeMillis();
+
         //Remove any blocks that could cause issues when queued
         removeFirst.forEach(blockPos -> world.setBlockState(blockPos, replaceState, 2));
 
+        time = System.currentTimeMillis() - time;
+        if(ConfigDebug.DEBUG_EXPLOSIVES) {
+            ICBMClassic.logger().info("Antimatter: remove#first blocks ran in " + time + "ms,  edits:" + removeFirst.size());
+        }
+
+        time = System.currentTimeMillis();
+
         //Queue edits, even the ones from the previous
-        BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
+        BlockEditHandler.queue(world, edits, this::destroyBlock);
+
+        time = System.currentTimeMillis() - time;
+        if(ConfigDebug.DEBUG_EXPLOSIVES) {
+            ICBMClassic.logger().info("Antimatter: remove#second ran in " + time + "ms,  edits:" + edits.size());
+        }
 
         //Notify blast we have entered world again
         onPostThreadJoinWorld();

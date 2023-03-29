@@ -3,8 +3,9 @@ package com.builtbroken.jlib.data.network;
 import io.netty.buffer.ByteBuf;
 
 /** Applied to objects that can read data from a byte buf to
- * update there own contents.
- * Created by robert on 1/11/2015.
+ * update their own contents.
+ *
+ * Created by robin on 1/11/2015.
  */
 public interface IByteBufReader
 {

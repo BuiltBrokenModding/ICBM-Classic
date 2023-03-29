@@ -27,7 +27,7 @@ public abstract class BlastThreaded extends Blast
 
     protected IThreadWork getWorkerTask()
     {
-        return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
+        return new ThreadWorkBlast(this::doRun, this::onWorkerThreadComplete);
     }
 
     /**
