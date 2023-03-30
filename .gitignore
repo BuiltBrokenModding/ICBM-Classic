@@ -39,3 +39,4 @@ ops.json
 whitelist.json
 
 output_tests/
+/src/main/resources/assets/icbmclassic/_generated_credits.md.md
