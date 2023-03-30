@@ -44,7 +44,7 @@ public abstract class BlastThreaded extends Blast
      */
     protected Comparator<BlockPos> buildSorter()
     {
-        return new PosDistanceSorter(location, false);
+        return new PosDistanceSorter(location, false, PosDistanceSorter.Sort.SQ);
     }
 
     protected void onPostThreadJoinWorld()

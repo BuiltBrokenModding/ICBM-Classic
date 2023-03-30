@@ -72,7 +72,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
 
                         if (r == 0)
                         {
-                            Collections.sort(results, new PosDistanceSorter(location, true));
+                            Collections.sort(results, new PosDistanceSorter(location, true, PosDistanceSorter.Sort.MANHATTEN));
                         }
                         int blocksToTake = 20;
 

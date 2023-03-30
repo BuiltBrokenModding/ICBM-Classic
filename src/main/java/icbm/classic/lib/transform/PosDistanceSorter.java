@@ -14,11 +14,13 @@ public class PosDistanceSorter implements Comparator<BlockPos>
 {
     final IPos3D center;
     final boolean sortY;
+    final Sort method;
 
-    public PosDistanceSorter(IPos3D center, boolean sortY)
+    public PosDistanceSorter(IPos3D center, boolean sortY, Sort method)
     {
         this.center = center;
         this.sortY = sortY;
+        this.method = method;
     }
 
     @Override
@@ -35,6 +37,20 @@ public class PosDistanceSorter implements Comparator<BlockPos>
         final int deltaX = Math.abs(center.xi() - point.getX());
         final int deltaY = Math.abs(center.yi() - point.getY());
         final int deltaZ = Math.abs(center.zi() - point.getZ());
-        return deltaX + deltaY + deltaZ;
+
+        if(method == Sort.MANHATTEN) {
+            return deltaX + deltaY + deltaZ;
+        }
+        else if(method == Sort.SQRT) {
+            return (int) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+        }
+        return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+    }
+
+    public static enum Sort {
+        //https://en.wikipedia.org/wiki/Taxicab_geometry
+        MANHATTEN,
+        SQ,
+        SQRT
     }
 }
