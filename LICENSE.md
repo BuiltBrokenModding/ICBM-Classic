@@ -1,4 +1,4 @@
-MIT License, Applies to Code only
+MIT License, Applies to Code only; for Assets see [LICENSE.md](src/main/resources/assets/icbmclassic/LICENSE.md)
 
 Copyright (c) 2023 Built Broken Modding
 
