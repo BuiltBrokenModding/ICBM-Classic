@@ -49,7 +49,7 @@ public class BlastAntimatter extends BlastThreaded
     {
         long time = System.currentTimeMillis();
         BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
-            if (isInsideMap(y + yi()) && shouldEditPos(x, y, z))
+            if (shouldEditPos(x, y, z))
             {
                 edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
             }
@@ -126,11 +126,6 @@ public class BlastAntimatter extends BlastThreaded
     {
         IBlockState state = world.getBlockState(blockPos);
         return state.getMaterial() == Material.WATER || state.getBlock() instanceof BlockFalling;
-    }
-
-    protected boolean isInsideMap(int y)
-    {
-        return y >= 0 && y < 256;
     }
 
     protected boolean shouldEditPos(int x, int y, int z)
