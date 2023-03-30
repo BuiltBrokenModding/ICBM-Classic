@@ -26,10 +26,15 @@ public class PosDistanceSorter implements Comparator<BlockPos>
     {
         if (!sortY || o1.getY() == o2.getY())
         {
-            double d = new Pos(o1).distance(center);
-            double d2 = new Pos(o2).distance(center);
-            return d > d2 ? 1 : d == d2 ? 0 : -1;
+            return Integer.compare(distance(o1), distance(o2));
         }
         return Integer.compare(o1.getY(), o2.getY());
+    }
+
+    private int distance(BlockPos point) {
+        final int deltaX = Math.abs(center.xi() - point.getX());
+        final int deltaY = Math.abs(center.yi() - point.getY());
+        final int deltaZ = Math.abs(center.zi() - point.getZ());
+        return deltaX + deltaY + deltaZ;
     }
 }
