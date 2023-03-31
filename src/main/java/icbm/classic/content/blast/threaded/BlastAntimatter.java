@@ -139,7 +139,7 @@ public class BlastAntimatter extends BlastThreaded
         if (delta < featherEdge)
         {
             final double p2 = 1 - (delta / (double) featherEdge);
-            return world().rand.nextFloat() < p2;
+            return world().rand.nextFloat() > p2;
         }
         return true;
     }
