@@ -3,8 +3,8 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/base_3",
-      "down": "icbmclassic:blocks/explosive/bottom_4",
+      "particle": "icbmclassic:blocks/explosive/antimatter_side",
+      "down": "icbmclassic:blocks/explosive/antimatter_bottom",
       "up": "icbmclassic:blocks/explosive/antimatter_top",
       "north": "icbmclassic:blocks/explosive/antimatter_side",
       "east": "icbmclassic:blocks/explosive/antimatter_side",
@@ -26,21 +26,14 @@
     "rotation": {
       "up": {},
       "down": {
-        "x": 180
       },
       "north": {
-        "x": 90
       },
       "south": {
-        "x": 270
       },
       "east": {
-        "x": 90,
-        "y": 90
       },
       "west": {
-        "x": 90,
-        "y": 270
       }
     }
   }
