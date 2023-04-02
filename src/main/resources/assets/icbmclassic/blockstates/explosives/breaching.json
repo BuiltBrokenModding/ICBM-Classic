@@ -3,7 +3,7 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/base_2",
+      "particle": "icbmclassic:blocks/explosive/breaching_top",
       "down": "icbmclassic:blocks/explosive/bottom_2",
       "up": "icbmclassic:blocks/explosive/breaching_top",
       "north": "icbmclassic:blocks/explosive/breaching_side",
