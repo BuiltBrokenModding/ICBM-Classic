@@ -3,8 +3,8 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/base_3",
-      "down": "icbmclassic:blocks/explosive/bottom_4",
+      "particle": "icbmclassic:blocks/explosive/redmatter_side",
+      "down": "icbmclassic:blocks/explosive/redmatter_bottom",
       "up": "icbmclassic:blocks/explosive/redmatter_top",
       "north": "icbmclassic:blocks/explosive/redmatter_side",
       "east": "icbmclassic:blocks/explosive/redmatter_side",
