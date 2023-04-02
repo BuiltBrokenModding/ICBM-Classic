@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/base_3",
+      "particle": "icbmclassic:blocks/explosive/emp",
       "down": "icbmclassic:blocks/explosive/bottom_3",
-      "up": "icbmclassic:blocks/explosive/emp_top",
-      "north": "icbmclassic:blocks/explosive/emp_side",
-      "east": "icbmclassic:blocks/explosive/emp_side",
-      "south": "icbmclassic:blocks/explosive/emp_side",
-      "west": "icbmclassic:blocks/explosive/emp_side"
+      "up": "icbmclassic:blocks/explosive/bottom_3",
+      "north": "icbmclassic:blocks/explosive/emp",
+      "east": "icbmclassic:blocks/explosive/emp",
+      "south": "icbmclassic:blocks/explosive/emp",
+      "west": "icbmclassic:blocks/explosive/emp"
     }
   },
   "variants": {
