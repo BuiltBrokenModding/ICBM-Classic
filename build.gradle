@@ -9,7 +9,12 @@ import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import org.apache.tools.ant.filters.ReplaceTokens
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+        vendor = JvmVendorSpec.ADOPTOPENJDK
+    }
+}
 
 version = "${version_major}.${version_minor}.${version_revis}"
 archivesBaseName = "ICBM-classic-${version_mc}"
