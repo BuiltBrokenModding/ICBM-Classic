@@ -33,7 +33,14 @@ public class CapabilityExplosiveEntity implements IExplosive
 
     public void deserializeNBT(@Nonnull NBTTagCompound nbt)
     {
-        stack = new ItemStack(nbt);
+        if (nbt.getSize() == 0)
+        {
+            stack = ItemStack.EMPTY;
+        }
+        else
+        {
+            stack = new ItemStack(nbt);
+        }
     }
 
     @Nullable

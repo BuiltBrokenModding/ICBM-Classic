@@ -193,7 +193,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
         .mainRoot()
         /* */.node(new NbtSaveNode<>("explosive",
             (missile) -> missile.explosive.serializeNBT(),
-            (missile, data) -> missile.explosive.deserializeNBT(data))
+            (missile, data) -> missile.explosive.deserializeNBT(data instanceof NBTTagCompound ? (NBTTagCompound) data : new NBTTagCompound()))
         )
         .base();
 }
