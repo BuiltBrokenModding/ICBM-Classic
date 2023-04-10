@@ -10,7 +10,7 @@
 .settings/
 build/
 eclipse/
-
+*.launch
 
 *.iml
 *.iws
