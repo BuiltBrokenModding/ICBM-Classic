@@ -191,9 +191,9 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     private static final NbtSaveHandler<EntityExplosiveMissile> SAVE_LOGIC = new NbtSaveHandler<EntityExplosiveMissile>()
         .mainRoot()
-        /* */.node(new NbtSaveNode<>("explosive",
+        /* */.node(new NbtSaveNode<EntityExplosiveMissile, NBTTagCompound>("explosive",
             (missile) -> missile.explosive.serializeNBT(),
-            (missile, data) -> missile.explosive.deserializeNBT(data instanceof NBTTagCompound ? (NBTTagCompound) data : new NBTTagCompound()))
+            (missile, data) -> missile.explosive.deserializeNBT(data))
         )
         .base();
 }
