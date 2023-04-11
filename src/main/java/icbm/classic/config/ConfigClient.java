@@ -8,7 +8,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * Client only settings
  */
-@SideOnly(Side.CLIENT)
 @Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/client")
 @Config.LangKey("config.icbmclassic:client.title")
 public class ConfigClient
