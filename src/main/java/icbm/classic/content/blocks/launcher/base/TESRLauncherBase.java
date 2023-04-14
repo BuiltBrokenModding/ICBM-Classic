@@ -14,8 +14,6 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
     @Override
     public void render(TileLauncherBase launcher, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
-        super.render(launcher, x, y, z, partialTicks, destroyStage, alpha);
-
         final float blockHeight = 1f;
         final float blockCenter = 0.5f;
         final float missileCenter = 1.5f;
