@@ -111,7 +111,7 @@ public class BlockLaunchFrame extends BlockICBM
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state)
     {
-        TileEntity tile = world.getTileEntity(pos);
+        final TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ILauncherComponent)
         {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();

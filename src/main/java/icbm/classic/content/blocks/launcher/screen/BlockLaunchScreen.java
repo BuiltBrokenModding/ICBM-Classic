@@ -33,6 +33,7 @@ public class BlockLaunchScreen extends BlockICBM
     public BlockLaunchScreen()
     {
         super("launcherscreen");
+        this.dropInventory = true;
     }
 
     @Override

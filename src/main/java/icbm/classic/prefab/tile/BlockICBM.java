@@ -23,6 +23,8 @@ public abstract class BlockICBM extends BlockContainer
 {
     public static final PropertyDirection ROTATION_PROP = PropertyDirection.create("rotation");
 
+    protected boolean dropInventory = false;
+
     public BlockICBM(String name, Material mat)
     {
         super(mat);
@@ -65,7 +67,9 @@ public abstract class BlockICBM extends BlockContainer
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state)
     {
-        InventoryUtility.dropInventory(world, pos);
+        if(dropInventory) {
+            InventoryUtility.dropInventory(world, pos);
+        }
         super.breakBlock(world, pos, state);
     }
 }

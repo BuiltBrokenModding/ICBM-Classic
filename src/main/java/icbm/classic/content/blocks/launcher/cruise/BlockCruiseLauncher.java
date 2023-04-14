@@ -35,6 +35,7 @@ public class BlockCruiseLauncher extends BlockICBM
         super("cruiseLauncher");
         this.blockHardness = 10f;
         this.blockResistance = 10f;
+        this.dropInventory = true;
     }
 
     @Override

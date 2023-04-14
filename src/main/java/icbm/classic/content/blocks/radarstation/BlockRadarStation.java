@@ -32,6 +32,7 @@ public class BlockRadarStation extends BlockICBM
     public BlockRadarStation()
     {
         super("radarStation"); //TODO rename to "radar_screen"
+        this.dropInventory = true;
     }
 
     @Override
