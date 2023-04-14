@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
+import icbm.classic.lib.InventoryUtility;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -74,6 +75,7 @@ public class BlockLauncherBase extends BlockContainer
         {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
+        InventoryUtility.dropInventory(world, pos);
         super.breakBlock(world, pos, state);
     }
 
