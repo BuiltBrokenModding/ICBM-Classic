@@ -24,6 +24,8 @@ public class LauncherNode {
      * */
     private final boolean acceptsItems;
 
+    private boolean isInvalid = false;
+
     /**
      * Creates a new node in the network
      *
@@ -39,8 +41,11 @@ public class LauncherNode {
      * Invalidate reference to self and blocks around
      */
     public void onTileRemoved() {
-        if (network != null) {
-            network.invalidate(this);
+        final LauncherNetwork currentNetwork = network;
+        if (currentNetwork != null) {
+            network = null;
+            isInvalid = true;
+            currentNetwork.invalidate(this);
         }
     }
 
@@ -57,8 +62,13 @@ public class LauncherNode {
 
                 //Get next possible connection
                 final TileEntity tile = self.getWorld().getTileEntity(nextPos);
-                if (tile instanceof ILauncherComponent) {
+                if (tile instanceof ILauncherComponent && ((ILauncherComponent) tile).isValid()) {
                     final LauncherNode node = ((ILauncherComponent) tile).getNetworkNode();
+
+                    // Ignore dead nodes
+                    if(!node.isInvalid()) {
+                        continue;
+                    }
 
                     // Case: no network, found network
                     if (this.getNetwork() == null && node.getNetwork() != null) {
