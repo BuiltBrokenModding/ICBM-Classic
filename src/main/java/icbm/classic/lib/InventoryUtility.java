@@ -82,7 +82,7 @@ public class InventoryUtility
                 final double z = pos.getZ() + 0.5;
 
                 for(int slot = 0; slot < handler.getSlots(); slot++) {
-                    final ItemStack stack = handler.getStackInSlot(0);
+                    final ItemStack stack = handler.getStackInSlot(slot);
                     if(handler instanceof IItemHandlerModifiable) {
                         ((IItemHandlerModifiable) handler).setStackInSlot(slot, ItemStack.EMPTY);
                     }
