@@ -84,7 +84,7 @@ public class InventoryUtility
                 for(int slot = 0; slot < handler.getSlots(); slot++) {
                     final ItemStack stack = handler.getStackInSlot(0);
                     if(handler instanceof IItemHandlerModifiable) {
-                        ((IItemHandlerModifiable) handler).setStackInSlot(0, ItemStack.EMPTY);
+                        ((IItemHandlerModifiable) handler).setStackInSlot(slot, ItemStack.EMPTY);
                     }
                     dropItemStack(world, x, y, z, stack, 0, 0);
                 }
