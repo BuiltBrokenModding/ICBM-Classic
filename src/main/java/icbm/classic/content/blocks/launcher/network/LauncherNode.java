@@ -66,7 +66,7 @@ public class LauncherNode {
                     final LauncherNode node = ((ILauncherComponent) tile).getNetworkNode();
 
                     // Ignore dead nodes
-                    if(!node.isInvalid()) {
+                    if(node.isInvalid()) {
                         continue;
                     }
 

@@ -18,6 +18,9 @@ public interface ILauncherComponent {
      * @return false if invalid
      */
     default boolean isValid() {
+        if(getNetworkNode() != null) {
+            return !getNetworkNode().isInvalid();
+        }
         return true;
     }
 
