@@ -49,10 +49,13 @@ public class GuiLauncherBase extends GuiContainerBase
         int componentID = 0;
 
         // Target field
+        // Lock Height
         addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17, 30, 12,
             tileEntity::getLockHeight, tileEntity::setLockHeight, tileEntity::sendLockHeightPacket));
+        // Group ID
         addComponent(TextInput.intField(componentID++, fontRenderer, 82, 17, 30, 12,
             tileEntity::getGroup, tileEntity::setGroup, tileEntity::sendGroupIdPacket));
+        // Group idx
         addComponent(TextInput.intField(componentID++, fontRenderer, 127, 17, 30, 12,
             tileEntity::getGroupIndex, tileEntity::setGroupIndex, tileEntity::sendGroupIndexPacket));
 

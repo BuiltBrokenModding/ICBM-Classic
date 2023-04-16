@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
+import com.sun.jmx.remote.internal.ArrayQueue;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
@@ -20,6 +21,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
+import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
@@ -36,6 +38,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,7 +49,7 @@ import java.util.*;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDReceiver, ILauncherComponent
+public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile, ILauncherComponent
 {
     public static final int SET_FREQUENCY_PACKET_ID = 0;
     public static final int SET_TARGET_PACKET_ID = 1;
@@ -68,8 +71,22 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     @Getter
     private float launcherInaccuracy = 0;
 
-    private final List<IActionStatus> statusList = new ArrayList();
+    private final List<IActionStatus> statusList = new ArrayList<>();
     private boolean refreshStatus = false;
+
+    /**
+     * Are we currently firing a salvo?
+     */
+    private boolean isFiring = false;
+    /**
+     * thing which ticks up until next firing time
+     */
+    private int nextFireTick;
+    /**
+     * Array of launchers sorted based on their index
+     */
+    private ArrayQueue<IMissileLauncher> fireBucket = new ArrayQueue<>(1);
+    private boolean fireBucketSimulate = true;
 
     @Override
     public LauncherNode getNetworkNode() {
@@ -86,6 +103,20 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
         if (isServer())
         {
+            // salvo logic
+            if (isFiring) {
+                if (fireBucket.size() == 0) {
+                    isFiring = false;
+                    fireBucketSimulate = true;
+                    nextFireTick = 0;
+                }
+                // fire every 3 sec
+                nextFireTick++;
+                if (nextFireTick > 20*3) {
+                    launch(fireBucket.remove(0), getLaunchers().size(), fireBucketSimulate); // TODO output status to users
+                    nextFireTick = 0;
+                }
+            }
             if(ticks % 5 == 0 || refreshStatus) {
                 refreshStatus = false;
                 statusList.clear();
@@ -211,15 +242,20 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
     public boolean fireAllLaunchers(boolean simulate) {
         refreshStatus = true;
-        // TODO add chain fire delay settings to screen
-        boolean hasFired = false;
-        for(IMissileLauncher launcher : getLaunchersInGroup()) {
-            final IActionStatus status = launch(launcher, getLaunchers().size(), simulate); // TODO output status to users
-            if(!status.isError()) {
-                hasFired = true;
-            }
+        if (isFiring) {
+            return false;
         }
-        return hasFired;
+        isFiring = true;
+        fireBucketSimulate = simulate;
+        fillFireBucket();
+        return true;
+    }
+
+    public void fillFireBucket() {
+        fireBucket.resize(getLaunchersInGroup().size());
+        fireBucket.addAll(getLaunchersInGroup());
+        // OK. I do not know why but for some fucking reason this sort doesn't properly sort. values become [2, 3, 1, 4, 5, 6, 7] ????????
+        fireBucket.sort(Comparator.comparingInt(IMissileLauncher::getLaunchIndex));
     }
 
     public boolean canLaunch() {
@@ -313,6 +349,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
         return super.hasCapability(capability, facing)
+            || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.RADIO_CAPABILITY
             || Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.hasCapability(capability, facing)).orElse(false);
     }
@@ -321,10 +358,14 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            return (T) inventory;
+        }
         if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
             return (T) radioCap;
         }
-        else if (getNetworkNode().getNetwork() != null)
+        if (getNetworkNode().getNetwork() != null)
         {
             final T cap = getNetworkNode().getNetwork().getCapability(capability, facing);
             if(cap != null) {
@@ -359,5 +400,11 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
         /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
+        // TODO Please fix me! Currently fillFireBucket does work but it never fires the missile on load!
+        /* *///.nodeBoolean("was_simulating", launcher -> launcher.fireBucketSimulate, (launcher, wasSimulating) -> launcher.fireBucketSimulate = wasSimulating)
+        /* *///.nodeBoolean("was_firing", launcher -> launcher.isFiring, (launcher, wasFiring) -> {
+             //   launcher.fillFireBucket();
+             //   launcher.isFiring = wasFiring;
+            //})
         .base();
 }

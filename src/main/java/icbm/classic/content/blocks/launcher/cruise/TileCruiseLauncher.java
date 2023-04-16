@@ -28,6 +28,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
+import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -51,7 +52,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, ILauncherComponent
+public class TileCruiseLauncher extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile, ILauncherComponent
 {
     public static final int DESCRIPTION_PACKET_ID = 0;
     public static final int SET_FREQUENCY_PACKET_ID = 1;

@@ -143,6 +143,16 @@ public class LauncherCapability implements IMissileLauncher {
         return inaccuracy;
     }
 
+    @Override
+    public int getLauncherGroup() {
+        return host.getGroup();
+    }
+
+    @Override
+    public int getLaunchIndex() {
+        return host.getGroupIndex();
+    }
+
     protected Vec3d applyInaccuracy(Vec3d target, int launcherCount)
     {
 

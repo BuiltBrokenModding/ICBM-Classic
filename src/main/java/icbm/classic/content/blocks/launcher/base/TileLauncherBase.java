@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
@@ -32,15 +33,18 @@ import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
+import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -52,9 +56,12 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,12 +70,19 @@ import java.util.Optional;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent //TODO move to cap
+public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent, IGuiTile //TODO move to cap
 {
 
+    /**
+     * Client (GUI) -> Server
+     */
     public static final int PACKET_LOCK_HEIGHT = 0;
     public static final int PACKET_GROUP_ID = 1;
     public static final int PACKET_GROUP_INDEX = 2;
+    /**
+     * Server -> Client (GUI)
+     */
+    public static final int GUI_PACKET_ID = 3;
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
@@ -160,10 +174,10 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
+        return super.hasCapability(capability, facing)
+            || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
-            || super.hasCapability(capability, facing);
+            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY;
     }
 
     @Override
@@ -173,11 +187,12 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
             return (T) inventory;
-        } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
+        }
+        if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
             return (T) missileHolder;
         }
-        else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
+        if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
             return (T) missileLauncher;
         }
         return super.getCapability(capability, facing);
@@ -223,27 +238,50 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     {
         if (!super.read(data, id, player, packet))
         {
-            switch (id)
-            {
-                case PACKET_LOCK_HEIGHT:
+            if(isServer()) {
+                switch (id)
                 {
-                    lockHeight = data.readInt();
-                    return true;
+                    case PACKET_LOCK_HEIGHT:
+                    {
+                        lockHeight = data.readInt();
+                        return true;
+                    }
+                    case PACKET_GROUP_INDEX:
+                    {
+                        groupIndex = data.readInt();
+                        return true;
+                    }
+                    case PACKET_GROUP_ID:
+                    {
+                        group = data.readInt();
+                        return true;
+                    }
                 }
-                case PACKET_GROUP_INDEX:
-                {
-                    groupIndex = data.readInt();
-                    return true;
-                }
-                case PACKET_GROUP_ID:
-                {
-                    group = data.readInt();
-                    return true;
-                }
+            }
+            else if(id == GUI_PACKET_ID){
+                readGuiPacket(data);
+                return true;
             }
             return false;
         }
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void readGuiPacket(ByteBuf data) {
+        lockHeight = data.readInt();
+        groupIndex = data.readInt();
+        group = data.readInt();
+    }
+
+    @Override
+    protected PacketTile getGUIPacket()
+    {
+        PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
+        packet.addData(lockHeight);
+        packet.addData(groupIndex);
+        packet.addData(group);
+        return packet;
     }
 
     public void sendLockHeightPacket(int lockHeight) {
@@ -254,13 +292,13 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     public void sendGroupIdPacket(int groupId) {
         if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupId_C>S", PACKET_LOCK_HEIGHT, this).addData(groupId));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupId_C>S", PACKET_GROUP_ID, this).addData(groupId));
         }
     }
 
     public void sendGroupIndexPacket(int groupIndex) {
         if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_LOCK_HEIGHT, this).addData(groupIndex));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_GROUP_INDEX, this).addData(groupIndex));
         }
     }
 

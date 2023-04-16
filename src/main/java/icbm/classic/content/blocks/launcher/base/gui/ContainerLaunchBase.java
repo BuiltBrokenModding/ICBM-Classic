@@ -30,7 +30,7 @@ public class ContainerLaunchBase extends ContainerBase<TileLauncherBase>
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex)
     {
         ItemStack targetItemStackCopy = null;
-        Slot targetSlot = (Slot) this.inventorySlots.get(slotIndex);
+        Slot targetSlot = this.inventorySlots.get(slotIndex);
 
         if (targetSlot != null && targetSlot.getHasStack())
         {

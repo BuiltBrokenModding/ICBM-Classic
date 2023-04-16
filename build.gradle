@@ -53,6 +53,10 @@ dependencies {
     implementation files('libs/industrialcraft-2-2.8.170-ex112-api.jar')
     implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
 
+    // Optional mods
+    implementation "mezz.jei:jei_1.12.2:4.16.1.302"
+    implementation "mcjty.theoneprobe:TheOneProbe-1.12:1.12-1.4.28-17"
+
     //Junit 5
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
@@ -175,6 +179,13 @@ jar {
 }
 
 repositories {
+    maven { url = "https://www.cursemaven.com" }
+    // JEI
+    maven { url 'https://dvs1.progwml6.com/files/maven/' }
+    // CraftTweaker and JEI Backup
+    maven { url 'https://maven.blamejared.com' }
+    // The One Probe
+    maven { url 'https://maven.tterrag.com/'}
     mavenCentral()
 }
 jar.finalizedBy('reobfJar')
