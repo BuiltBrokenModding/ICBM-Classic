@@ -2,11 +2,9 @@ package icbm.classic.content.blast.redmatter;
 
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.responses.BlastForgeResponses;
-import icbm.classic.api.explosion.responses.BlastNullResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.imp.BlastBase;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
@@ -17,8 +15,6 @@ import javax.annotation.Nonnull;
  */
 public class BlastRedmatterSpawner extends BlastBase
 {
-    private float startingSize = 1f; //TODO config and expose to NBT
-    private final float maxSize = ConfigBlast.REDMATTER.MAX_SIZE; //TODO expose to NBT
 
     @Nonnull
     @Override
@@ -29,8 +25,8 @@ public class BlastRedmatterSpawner extends BlastBase
         entityRedmatter.posX = x();
         entityRedmatter.posY = y();
         entityRedmatter.posZ = z();
-        entityRedmatter.setBlastSize(startingSize);
-        entityRedmatter.setBlastMaxSize(maxSize);
+        entityRedmatter.setBlastSize(getBlastRadius());
+        entityRedmatter.setBlastMaxSize(ConfigBlast.redmatter.MAX_SIZE);
 
         //Attempt to spawn
         if (world().spawnEntity(entityRedmatter))

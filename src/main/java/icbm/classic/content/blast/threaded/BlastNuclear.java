@@ -22,13 +22,13 @@ import static java.lang.Math.sin;
 
 public class BlastNuclear extends BlastThreaded
 {
-    private float energy;
+    private double energy;
     private boolean spawnMoreParticles = false;
     private boolean isRadioactive = false;
 
     public BlastNuclear(){}
 
-    public BlastNuclear setEnergy(float energy)
+    public BlastNuclear setEnergy(double energy)
     {
         this.energy = energy;
         return this;
@@ -194,7 +194,7 @@ public class BlastNuclear extends BlastThreaded
                 }
             }
 
-            this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
+            this.doDamageEntities(this.getBlastRadius(), (float)this.energy * 1000);
 
             ICBMSounds.EXPLOSION.play(world, this.location.x(), this.location.y(), this.location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
@@ -240,7 +240,7 @@ public class BlastNuclear extends BlastThreaded
             try
             {
                 //Attack entities
-                this.doDamageEntities(this.getBlastRadius(), this.energy * 1000);
+                this.doDamageEntities(this.getBlastRadius(), (float)this.energy * 1000);
                 //TODO hook into AS and apply radiation damage or fire a damage event to allow AS/proxy to hook
 
                 //Place radio active blocks

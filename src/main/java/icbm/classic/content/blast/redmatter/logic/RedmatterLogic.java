@@ -70,7 +70,7 @@ public class RedmatterLogic
      */
     public int getBlocksPerTick()
     {
-        return ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK;
+        return ConfigBlast.redmatter.MAX_BLOCKS_EDITS_PER_TICK;
     }
 
     /** Invoked each tick by the controlling entity */
@@ -102,7 +102,7 @@ public class RedmatterLogic
         doEntityEffects();
 
         //Play effects
-        if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
+        if (ConfigBlast.redmatter.ENABLE_AUDIO)
         {
             //TODO collapse audio should play near blocks destroyed for better effect
             if (host.world.rand.nextInt(8) == 0)
@@ -139,7 +139,7 @@ public class RedmatterLogic
         {
             //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
             //TODO if we leave small redmatters allow players to remove them and/or capture in jars
-            if (size <= ConfigBlast.REDMATTER.MIN_SIZE)
+            if (size <= ConfigBlast.redmatter.MIN_SIZE)
             {
                 host.setBlastSize(0);
                 host.setDead();
@@ -153,7 +153,7 @@ public class RedmatterLogic
             else
             //Decrease mass
             {
-                final float newSize = size < 1 ? size * 0.9f : size * ConfigBlast.REDMATTER.STARVE_SCALE;
+                final float newSize = size < 1 ? size * 0.9f : size * ConfigBlast.redmatter.STARVE_SCALE;
                 host.setBlastSize(newSize);
             }
         }
@@ -254,7 +254,7 @@ public class RedmatterLogic
      */
     protected boolean shouldStopBreakingBlocks()
     {
-        return raytracesThisTick > ConfigBlast.REDMATTER.DEFAULT_BLOCK_RAYTRACE_PER_TICK
+        return raytracesThisTick > ConfigBlast.redmatter.DEFAULT_BLOCK_RAYTRACE_PER_TICK
                 || blockDestroyedThisTick > getBlocksPerTick()
                 || host.isDead;
     }
@@ -286,7 +286,7 @@ public class RedmatterLogic
                     }
 
                     //Convert a random amount of destroyed blocks into flying blocks for visuals
-                    if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
+                    if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.redmatter.CHANCE_FOR_FLYING_BLOCK)
                     {
                         spawnFlyingBlock(blockPos, blockState);
                     }
@@ -335,7 +335,7 @@ public class RedmatterLogic
 
     protected boolean canTurnIntoFlyingBlock(IBlockState blockState)
     {
-        return ConfigBlast.REDMATTER.SPAWN_FLYING_BLOCKS && !BlastBlockHelpers.isFluid(blockState);
+        return ConfigBlast.redmatter.SPAWN_FLYING_BLOCKS && !BlastBlockHelpers.isFluid(blockState);
     }
 
     protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
@@ -351,7 +351,7 @@ public class RedmatterLogic
 
     private float getEntityImpactRange()
     {
-        return host.getBlastSize() * ConfigBlast.REDMATTER.GRAVITY_SCALE;
+        return host.getBlastSize() * ConfigBlast.redmatter.GRAVITY_SCALE;
     }
 
     protected void doEntityEffects()
@@ -443,7 +443,7 @@ public class RedmatterLogic
         //TODO make config driven, break section out into its own method
 
         //Handle eating logic
-        final double attackRange = Math.max(1, ConfigBlast.REDMATTER.KILL_SCALE * host.getBlastSize());
+        final double attackRange = Math.max(1, ConfigBlast.redmatter.KILL_SCALE * host.getBlastSize());
         if (distance < attackRange)
         {
             if (entity instanceof EntityRedmatter && !entity.isDead)

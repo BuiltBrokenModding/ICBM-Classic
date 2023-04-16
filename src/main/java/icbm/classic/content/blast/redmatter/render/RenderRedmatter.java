@@ -16,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.glu.Sphere;
 
 import javax.annotation.Nullable;
@@ -60,7 +59,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
 
     public void renderSphere(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
-        final float radius = Math.max(ConfigBlast.REDMATTER.RENDER_SCALE * visualSize, 0.1f);
+        final float radius = Math.max(ConfigBlast.redmatter.RENDER_SCALE * visualSize, 0.1f);
 
         //--------------------------------------------------
         //Inside sphere
@@ -131,7 +130,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     public void renderDisk(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        float size = (float)Math.max(0.2, ConfigBlast.REDMATTER.RENDER_SCALE * visualSize * 3);
+        float size = (float)Math.max(0.2, ConfigBlast.redmatter.RENDER_SCALE * visualSize * 3);
 
         //Setup
         GlStateManager.pushMatrix();
@@ -238,7 +237,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
             //Get color based on state
             ColorB colorOut = this.colorOut;
             ColorB colorIn = this.colorIn;
-            if (ConfigBlast.REDMATTER.RENDER_COLORED_BEAMS)
+            if (ConfigBlast.redmatter.RENDER_COLORED_BEAMS)
             {
                 if (beamIndex < randomColorsForBeams.size())
                 {

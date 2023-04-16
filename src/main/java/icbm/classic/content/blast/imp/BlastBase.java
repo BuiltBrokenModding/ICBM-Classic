@@ -18,6 +18,13 @@ public abstract class BlastBase implements IBlastInit
     private World world;
     private double x, y, z;
     private boolean locked;
+    private double blastSize;
+
+    @Override
+    public IBlastInit setBlastSize(double size) {
+        this.blastSize = size;
+        return this;
+    }
 
     @Override
     public void clearBlast()

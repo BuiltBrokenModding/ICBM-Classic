@@ -57,8 +57,8 @@ public class EntityRedmatter extends Entity
     @Override
     protected void entityInit()
     {
-        this.dataManager.register(SIZE_DATA, ConfigBlast.REDMATTER.DEFAULT_SIZE);
-        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.REDMATTER.MAX_SIZE);
+        this.dataManager.register(SIZE_DATA, ConfigBlast.redmatter.DEFAULT_SIZE);
+        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.redmatter.MAX_SIZE);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class EntityRedmatter extends Entity
 
     public void setBlastSize(float size)
     {
-        final float limitedSize = Math.max(ConfigBlast.REDMATTER.MIN_SIZE, size);
+        final float limitedSize = Math.max(ConfigBlast.redmatter.MIN_SIZE, size);
         this.dataManager.set(SIZE_DATA, limitedSize);
     }
 

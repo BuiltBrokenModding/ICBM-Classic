@@ -1,4 +1,4 @@
-package icbm.classic.config.blast;
+package icbm.classic.config.blast.types;
 
 import net.minecraftforge.common.config.Config;
 
@@ -13,7 +13,7 @@ public class ConfigRedmatter
 
     @Config.Name("redmatter_default_size")
     @Config.Comment("Default spawning size for blocks/missiles/carts/etc")
-    public float DEFAULT_SIZE = 2f;
+    public float DEFAULT_SIZE = 1f;
 
     @Config.Name("redmatter_min_size")
     @Config.Comment("Smallest size of the redmatter before it dies")
