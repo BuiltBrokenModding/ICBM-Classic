@@ -140,7 +140,7 @@ public class ExplosiveInit
 
         //=================== Tier 3
         ICBMExplosives.NUCLEAR = newEx(15, "nuclear", EnumTier.THREE,
-                () -> new BlastNuclear().setNuclear().setEnergy(ConfigBlast.nuclear.energy).setBlastSize(ConfigBlast.nuclear.scale));
+                () -> new BlastNuclear().setEnergy(ConfigBlast.nuclear.energy).setBlastSize(ConfigBlast.nuclear.scale));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.NUCLEAR.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.NUCLEAR);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.NUCLEAR.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.NUCLEAR);
 

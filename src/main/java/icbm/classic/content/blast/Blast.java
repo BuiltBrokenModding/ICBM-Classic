@@ -329,7 +329,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         Location minCoord = location.add(-radius - 1);
         Location maxCoord = location.add(radius + 1);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
-        Vec3d var31 = new Vec3d(location.x(), location.y(), location.z());
+        Vec3d center = new Vec3d(location.x(), location.y(), location.z());
 
         if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter) //TODO why is this in here and not the antimatter ;(
         {
@@ -372,11 +372,14 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 double xDifference = entity.posX - location.x();
                 double yDifference = entity.posY - location.y();
                 double zDifference = entity.posZ - location.z();
-                double var35 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
-                xDifference /= var35;
-                yDifference /= var35;
-                zDifference /= var35;
-                double var34 = world().getBlockDensity(var31, entity.getEntityBoundingBox());
+
+                double mag = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+
+                xDifference /= mag;
+                yDifference /= mag;
+                zDifference /= mag;
+
+                double var34 = world().getBlockDensity(center, entity.getEntityBoundingBox());
                 double var36 = (1.0D - distance) * var34;
                 int damage = 0;
 

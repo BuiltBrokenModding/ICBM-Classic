@@ -68,7 +68,7 @@ public class ConfigBlast
 
     @Config.LangKey("config.icbmclassic:blast.nuclear.title")
     @Config.Comment("Settings for nuclear explosive")
-    public static ConfigNuclear nuclear = new ConfigNuclear(50, 80);
+    public static ConfigNuclear nuclear = new ConfigNuclear();
 
     @Config.LangKey("config.icbmclassic:blast.emp.title")
     @Config.Comment("Settings for emp explosive")

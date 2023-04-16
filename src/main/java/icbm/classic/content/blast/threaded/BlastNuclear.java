@@ -2,6 +2,7 @@ package icbm.classic.content.blast.threaded;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.refs.ICBMExplosives;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastMutation;
@@ -15,44 +16,32 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class BlastNuclear extends BlastThreaded
-{
+public class BlastNuclear extends BlastThreaded {
     private double energy;
-    private boolean spawnMoreParticles = false;
-    private boolean isRadioactive = false;
 
-    public BlastNuclear(){}
+    public BlastNuclear() {
+    }
 
-    public BlastNuclear setEnergy(double energy)
-    {
+    public BlastNuclear setEnergy(double energy) {
         this.energy = energy;
         return this;
     }
 
     @Override
-    public BlastNuclear scaleBlast(double scale)
-    {
+    public BlastNuclear scaleBlast(double scale) {
         super.scaleBlast(scale);
         this.energy *= scale;
         return this;
     }
 
-
-    public BlastNuclear setNuclear()
-    {
-        this.spawnMoreParticles = true;
-        this.isRadioactive = true;
-        return this;
-    }
-
     @Override
-    public boolean doRun(int loops, Consumer<BlockPos> edits)
-    {
+    public boolean doRun(int loops, Consumer<BlockPos> edits) {
         //How many steps to go per rotation
         final int steps = (int) Math.ceil(Math.PI * this.getBlastRadius());
 
@@ -70,10 +59,8 @@ public class BlastNuclear extends BlastThreaded
         double pitch;
 
         final int lineDensityScale = 2;
-        for (int yawSlices = 0; yawSlices < lineDensityScale * steps; yawSlices++)
-        {
-            for (int pitchSlice = 0; pitchSlice < steps; pitchSlice++)
-            {
+        for (int yawSlices = 0; yawSlices < lineDensityScale * steps; yawSlices++) {
+            for (int pitchSlice = 0; pitchSlice < steps; pitchSlice++) {
                 //Calculate power
                 power = this.energy - (this.energy * world.rand.nextFloat() / 2);
 
@@ -103,9 +90,8 @@ public class BlastNuclear extends BlastThreaded
                     final BlockPos blockPos = new BlockPos(Math.floor(x), Math.floor(y), Math.floor(z));
 
                     //Only do action one time per block (not a perfect solution, but solves double hit on the same block in the same line)
-                    if (prevPos != blockPos)
-                    {
-                        if(!world.isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
+                    if (!Objects.equals(prevPos, blockPos)) {
+                        if (!world.isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
                             continue;
 
                         //Get block state and block from position
@@ -113,14 +99,12 @@ public class BlastNuclear extends BlastThreaded
                         final Block block = state.getBlock();
 
                         //Ignore air blocks
-                        if (!block.isAir(state, world, blockPos))
-                        {
+                        if (!block.isAir(state, world, blockPos)) {
                             //Consume power based on block
                             power -= getResistance(blockPos, state);
 
                             //Only break block that can be broken && If we still have power. Then break the block
-                            if (state.getBlockHardness(world, blockPos) >= 0 && power > 0f)
-                            {
+                            if (state.getBlockHardness(world, blockPos) >= 0 && power > 0f) {
                                 edits.accept(blockPos);
                             }
                         }
@@ -139,62 +123,46 @@ public class BlastNuclear extends BlastThreaded
         return false;
     }
 
-    public float getResistance(BlockPos pos, IBlockState state)
-    {
+    public float getResistance(BlockPos pos, IBlockState state) {
         final Block block = state.getBlock();
-        if (state.getMaterial().isLiquid())
-        {
+        if (state.getMaterial().isLiquid()) {
             return 0.25f;
-        }
-        else
-        {
+        } else {
             return block.getExplosionResistance(world, pos, getExplosivePlacedBy(), this);
         }
     }
 
 
     @Override
-    public boolean setupBlast()
-    {
+    public boolean setupBlast() {
         super.setupBlast();
-        if (this.world() != null)
-        {
-            if (this.spawnMoreParticles)
-            {
-                // Spawn nuclear cloud.
-                for (int y = 0; y < 26; y++)
-                {
-                    int r = 4;
+        if (this.world() != null) {
+            // Spawn nuclear cloud.
+            for (int y = 0; y < 26; y++) {
+                int r = 4;
 
-                    if (y < 8)
-                    {
-                        r = Math.max(Math.min((8 - y) * 2, 10), 4);
-                    }
-                    else if (y > 15)
-                    {
-                        r = Math.max(Math.min((y - 15) * 2, 15), 5);
-                    }
+                if (y < 8) {
+                    r = Math.max(Math.min((8 - y) * 2, 10), 4);
+                } else if (y > 15) {
+                    r = Math.max(Math.min((y - 15) * 2, 15), 5);
+                }
 
-                    for (int x = -r; x < r; x++)
-                    {
-                        for (int z = -r; z < r; z++)
-                        {
-                            double distance = MathHelper.sqrt(x * x + z * z);
+                for (int x = -r; x < r; x++) {
+                    for (int z = -r; z < r; z++) {
+                        double distance = MathHelper.sqrt(x * x + z * z);
 
-                            if (r > distance && r - 3 < distance)
-                            {
-                                Location spawnPosition = location.add(new Pos(x * 2, (y - 2) * 2, z * 2));
-                                float xDiff = (float) (spawnPosition.x() - location.x());
-                                float zDiff = (float) (spawnPosition.z() - location.z());
-                                world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, spawnPosition.x(), spawnPosition.y(), spawnPosition.z(),
-                                        xDiff * 0.3 * world().rand.nextFloat(), -world().rand.nextFloat(), zDiff * 0.3 * world().rand.nextFloat()); //(float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, //0, 8F, 1.2F);
-                            }
+                        if (r > distance && r - 3 < distance) {
+                            Location spawnPosition = location.add(new Pos(x * 2, (y - 2) * 2, z * 2));
+                            float xDiff = (float) (spawnPosition.x() - location.x());
+                            float zDiff = (float) (spawnPosition.z() - location.z());
+                            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, spawnPosition.x(), spawnPosition.y(), spawnPosition.z(),
+                                xDiff * 0.3 * world().rand.nextFloat(), -world().rand.nextFloat(), zDiff * 0.3 * world().rand.nextFloat()); //(float) (distance / this.getRadius()) * oldWorld().rand.nextFloat(), 0, //0, 8F, 1.2F);
                         }
                     }
                 }
             }
 
-            this.doDamageEntities(this.getBlastRadius(), (float)this.energy * 1000);
+            this.doDamageEntities((float)ConfigBlast.nuclear.entityDamageScale, (float) (this.energy * ConfigBlast.nuclear.entityDamageMultiplier));
 
             ICBMSounds.EXPLOSION.play(world, this.location.x(), this.location.y(), this.location.z(), 7.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
@@ -203,25 +171,19 @@ public class BlastNuclear extends BlastThreaded
     }
 
     @Override
-    public boolean doExplode(int callCount)
-    {
+    public boolean doExplode(int callCount) {
         super.doExplode(callCount);
         int r = this.callCount;
 
-        if (this.world().isRemote)
-        {
-            for (int x = -r; x < r; x++)
-            {
-                for (int z = -r; z < r; z++)
-                {
+        if (this.world().isRemote) {
+            for (int x = -r; x < r; x++) {
+                for (int z = -r; z < r; z++) {
                     double distance = MathHelper.sqrt(x * x + z * z);
 
-                    if (distance < r && distance > r - 1)
-                    {
+                    if (distance < r && distance > r - 1) {
                         Location targetPosition = this.location.add(new Pos(x, 0, z));
 
-                        if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.05))
-                        {
+                        if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.05)) {
                             world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, targetPosition.x(), targetPosition.y(), targetPosition.z(), 0, 0, 0); //5F, 1F);
                         }
                     }
@@ -232,70 +194,47 @@ public class BlastNuclear extends BlastThreaded
     }
 
     @Override
-    public void onBlastCompleted()
-    {
+    public void onBlastCompleted() {
         super.onBlastCompleted();
-        if (world() != null && !world().isRemote)
-        {
-            try
-            {
+        if (world() != null && !world().isRemote) {
+            try {
                 //Attack entities
-                this.doDamageEntities(this.getBlastRadius(), (float)this.energy * 1000);
+                this.doDamageEntities((float)ConfigBlast.nuclear.entityDamageScale, (float) (this.energy * ConfigBlast.nuclear.entityDamageMultiplier));
                 //TODO hook into AS and apply radiation damage or fire a damage event to allow AS/proxy to hook
 
                 //Place radio active blocks
-                if (this.isRadioactive)
-                {
+                if(ConfigBlast.nuclear.useRotBlast) {
                     new BlastRot()
-                    .setBlastWorld(world())
-                    .setBlastSource(this.exploder)
-                    .setBlastPosition(location.x(), location.y(), location.z())
-                    .setBlastSize(this.getBlastRadius())
-                    .setExplosiveData(ICBMExplosives.ROT)
-                    .buildBlast().runBlast();  //TODO trigger from explosive handler
+                        .setBlastWorld(world())
+                        .setBlastSource(this.exploder)
+                        .setBlastPosition(location.x(), location.y(), location.z())
+                        .setBlastSize((float)ConfigBlast.nuclear.rotScale)
+                        .setExplosiveData(ICBMExplosives.ROT)
+                        .buildBlast().runBlast();  //TODO trigger from explosive handler
+                }
 
+                if(ConfigBlast.nuclear.useMutationBlast) {
                     new BlastMutation()
-                    .setBlastWorld(world())
-                    .setBlastSource(this.exploder)
-                    .setBlastPosition(location.x(), location.y(), location.z())
-                    .setBlastSize(this.getBlastRadius())
-                    .setExplosiveData(ICBMExplosives.MUTATION)
-                    .buildBlast().runBlast();  //TODO trigger from explosive handler
-
-                    if (this.world().rand.nextInt(3) == 0)
-                    {
-                        world().rainingStrength = 1f;
-                    }
+                        .setBlastWorld(world())
+                        .setBlastSource(this.exploder)
+                        .setBlastPosition(location.x(), location.y(), location.z())
+                        .setBlastSize((float)ConfigBlast.nuclear.mutationScale)
+                        .setExplosiveData(ICBMExplosives.MUTATION)
+                        .buildBlast().runBlast();  //TODO trigger from explosive handler
                 }
 
                 //Play audio
                 ICBMSounds.EXPLOSION.play(world, this.location.x(), this.location.y(), this.location.z(), 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 String msg = String.format("BlastNuclear#doPostExplode() ->  Unexpected error while running post detonation code " +
                         "\nWorld = %s " +
                         "\nThread = %s" +
                         "\nSize = %s" +
                         "\nPos = %s",
-                        world, getThread(), size, location);
+                    world, getThread(), size, location);
                 ICBMClassic.logger().error(msg, e);
             }
         }
-    }
-
-    @Override
-    public void load(NBTTagCompound nbt)
-    {
-        super.load(nbt);
-        this.spawnMoreParticles = nbt.getBoolean(NBTConstants.SPAWN_MORE_PARTICLES);
-    }
-
-    @Override
-    public void save(NBTTagCompound nbt)
-    {
-        super.save(nbt);
-        nbt.setBoolean(NBTConstants.SPAWN_MORE_PARTICLES, this.spawnMoreParticles);
     }
 }
