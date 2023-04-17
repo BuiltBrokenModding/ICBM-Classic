@@ -56,7 +56,7 @@ public interface IMissileHolder
     /**
      * Is the missile supported by the holder.
      *
-     * @param stack - stack
+     * @param stack ItemStack
      * @return true if supported
      */
     boolean canSupportMissile(ItemStack stack);

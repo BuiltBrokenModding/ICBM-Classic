@@ -32,7 +32,6 @@ public interface IMissileLauncher
      * @return index or -1 to ignore grouping
      */
     default int getLaunchIndex() {
-        // TODO future state
         return -1;
     }
 
@@ -44,7 +43,6 @@ public interface IMissileLauncher
      * @return index or -1 to ignore grouping
      */
     default int getLauncherGroup() {
-        // TODO future state
         return -1;
     }
 
