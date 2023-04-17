@@ -24,7 +24,9 @@ public class LauncherStatus implements IActionStatus {
     public static final LauncherStatus ERROR_POWER = new LauncherStatus().withRegName("error.power").asError().withTranslation(LauncherLangs.ERROR_NO_POWER);
     public static final LauncherStatus ERROR_INVALID_STACK = new LauncherStatus().withRegName("error.missile.invalid").asError().withTranslation(LauncherLangs.ERROR_MISSILE_INVALID);
     public static final LauncherStatus ERROR_EMPTY_STACK = new LauncherStatus().withRegName("error.missile.empty").asError().withTranslation(LauncherLangs.ERROR_MISSILE_NONE);
+    public static final LauncherStatus ERROR_LAUNCHING = new LauncherStatus().withRegName("error.missile.launching").asError().withTranslation(LauncherLangs.ERROR_MISSILE_LAUNCHING);
 
+    public static final LauncherStatus OK = new LauncherStatus().withRegName("success").withTranslation(LauncherLangs.STATUS_OK);
     public static final LauncherStatus LAUNCHED = new LauncherStatus().withRegName("launched").withTranslation(LauncherLangs.STATUS_LAUNCHED);
     public static final LauncherStatus CANCELED = new LauncherStatus().withRegName("canceled").withTranslation(LauncherLangs.STATUS_CANCELED);
 

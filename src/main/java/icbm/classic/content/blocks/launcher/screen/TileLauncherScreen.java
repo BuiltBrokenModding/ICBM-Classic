@@ -1,24 +1,34 @@
 package icbm.classic.content.blocks.launcher.screen;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.sun.jmx.remote.internal.ArrayQueue;
+
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
-import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
@@ -32,17 +42,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * This tile entity is for the screen of the missile launcher
@@ -56,17 +61,19 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     public static final int LAUNCH_PACKET_ID = 2;
     public static final int GUI_PACKET_ID = 3;
 
+    public final InventoryWithSlots inventoryCapability = new InventoryWithSlots(1)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+    public final RadioScreen radioCapability = new RadioScreen(this);
+
+    private final LauncherNode launcherNode = new LauncherNode(this, false);
+
     /** Height to wait before missile curves */
     public int lockHeight = 3;
 
     /** Target position of the launcher */
     private Vec3d _targetPos = Vec3d.ZERO;
 
-    public final InventoryWithSlots inventory = new InventoryWithSlots(1)
-        .withChangeCallback((s, i) -> markDirty())
-        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
-    private final LauncherNode launcherNode = new LauncherNode(this, false);
-    public final RadioScreen radioCap = new RadioScreen(this);
 
     @Getter
     private float launcherInaccuracy = 0;
@@ -99,7 +106,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
         super.update();
 
         // Tick inventory
-        inventory.onTick();
+        inventoryCapability.onTick();
 
         if (isServer())
         {
@@ -159,7 +166,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
             if(isServer()) {
                 switch (id) {
                     case SET_FREQUENCY_PACKET_ID: {
-                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                        this.radioCapability.setChannel(ByteBufUtils.readUTF8String(data));
                         return true;
                     }
                     case SET_TARGET_PACKET_ID: {
@@ -183,7 +190,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
     @SideOnly(Side.CLIENT)
     public void readGuiPacket(ByteBuf data) {
-        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+        this.radioCapability.setChannel(ByteBufUtils.readUTF8String(data));
         this.launcherInaccuracy = data.readFloat();
         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
 
@@ -201,7 +208,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     protected PacketTile getGUIPacket()
     {
         PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
-        packet.addData(radioCap.getChannel());
+        packet.addData(radioCapability.getChannel());
         packet.addData(launcherInaccuracy);
         packet.addData(this.getTarget());
 
@@ -302,7 +309,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
         getNetworkNode().connectToTiles();
         if (isServer())
         {
-            RadioRegistry.add(radioCap);
+            RadioRegistry.add(radioCapability);
         }
     }
 
@@ -310,7 +317,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     public void invalidate()
     {
         if(isServer()) {
-            RadioRegistry.remove(radioCap);
+            RadioRegistry.remove(radioCapability);
         }
         getNetworkNode().onTileRemoved();
         super.invalidate();
@@ -360,12 +367,12 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) inventory;
+            return (T) inventoryCapability;
         }
-        if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
-            return (T) radioCap;
+        else if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
+            return (T) radioCapability;
         }
-        if (getNetworkNode().getNetwork() != null)
+        else if (getNetworkNode().getNetwork() != null)
         {
             final T cap = getNetworkNode().getNetwork().getCapability(capability, facing);
             if(cap != null) {
@@ -383,7 +390,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
         // Legacy handling TODO data fixer
         if(nbt.hasKey(NBTConstants.FREQUENCY)) {
-            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+            this.radioCapability.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
         }
     }
 
@@ -397,14 +404,8 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     private static final NbtSaveHandler<TileLauncherScreen> SAVE_LOGIC = new NbtSaveHandler<TileLauncherScreen>()
         .mainRoot()
         /* */.nodeInteger(NBTConstants.TARGET_HEIGHT, launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
-        /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
-        /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
+        /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCapability)
+        /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventoryCapability)
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
-        // TODO Please fix me! Currently fillFireBucket does work but it never fires the missile on load!
-        /* *///.nodeBoolean("was_simulating", launcher -> launcher.fireBucketSimulate, (launcher, wasSimulating) -> launcher.fireBucketSimulate = wasSimulating)
-        /* *///.nodeBoolean("was_firing", launcher -> launcher.isFiring, (launcher, wasFiring) -> {
-             //   launcher.fillFireBucket();
-             //   launcher.isFiring = wasFiring;
-            //})
         .base();
 }

@@ -3,25 +3,13 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.launcher.IActionStatus;
-import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
-import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
-import icbm.classic.content.missile.logic.source.MissileSource;
-import icbm.classic.content.missile.logic.source.cause.BlockCause;
-import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
@@ -29,7 +17,6 @@ import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
@@ -38,22 +25,16 @@ import icbm.classic.prefab.tile.TilePoweredMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -61,7 +42,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +64,19 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
      */
     public static final int GUI_PACKET_ID = 3;
 
+    public final InventoryWithSlots inventoryCapability = new InventoryWithSlots(2)
+        .withChangeCallback((s, i) -> markDirty())
+        .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
+            .withInsertCheck((s) -> !this.checkForMissileInBounds())
+            .withChangeCallback((stack) -> this.sendDescPacket())
+        )
+        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+
+    public final IMissileHolder missileHolderCapability = new CapabilityMissileHolder(inventoryCapability, 0);
+    public final LauncherCapability launcherCapability = new LauncherCapability(this);
+
+    private final LauncherNode launcherNode = new LauncherNode(this, true);
+
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
      */
@@ -94,23 +87,10 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     /** True to note a missile is above the launcher */
     private boolean hasMissileCollision = false;
 
-    public final InventoryWithSlots inventory = new InventoryWithSlots(2)
-        .withChangeCallback((s, i) -> markDirty())
-        .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
-            .withInsertCheck((s) -> !this.checkForMissileInBounds())
-            .withChangeCallback((stack) -> this.sendDescPacket())
-        )
-        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
-
     /**
      * Client's render cached object, used in place of inventory to avoid affecting GUIs
      */
     public ItemStack cachedMissileStack;
-
-    public final IMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
-    public final IMissileLauncher missileLauncher = new LauncherCapability(this);
-
-    private final LauncherNode launcherNode = new LauncherNode(this, true);
 
     @Getter @Setter
     private int lockHeight = 3;
@@ -141,6 +121,11 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public void update()
     {
         super.update();
+        // Tick inventory
+        inventoryCapability.onTick();
+        // Tick launch timers, if any
+        launcherCapability.onTick();
+
         if (isServer())
         {
             if (ticks % 3 == 0)
@@ -186,14 +171,14 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) inventory;
+            return (T) inventoryCapability;
         }
-        if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
+        else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
-            return (T) missileHolder;
+            return (T) missileHolderCapability;
         }
-        if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
-            return (T) missileLauncher;
+        else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
+            return (T) launcherCapability;
         }
         return super.getCapability(capability, facing);
     }
@@ -308,16 +293,16 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         {
             return cachedMissileStack;
         }
-        return missileHolder.getMissileStack();
+        return missileHolderCapability.getMissileStack();
     }
 
     public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem)
     {
-        if (this.getMissileStack().isEmpty() && missileHolder.canSupportMissile(heldItem))
+        if (this.getMissileStack().isEmpty() && missileHolderCapability.canSupportMissile(heldItem))
         {
             if (isServer())
             {
-                final ItemStack stackLeft = inventory.insertItem(0, heldItem, false);
+                final ItemStack stackLeft = inventoryCapability.insertItem(0, heldItem, false);
                 if (!player.capabilities.isCreativeMode)
                 {
                     player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, stackLeft);
@@ -332,7 +317,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
             {
 
                 player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, this.getMissileStack());
-                inventory.extractItem(0, 1, false);
+                inventoryCapability.extractItem(0, 1, false);
                 player.inventoryContainer.detectAndSendChanges();
             }
             return true;
@@ -389,6 +374,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         /* */.nodeInteger("lock_height", launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
         /* */.nodeInteger("group_id", launcher -> launcher.group, (launcher, h) -> launcher.group = h)
         /* */.nodeInteger("group_index", launcher -> launcher.groupIndex, (launcher, h) -> launcher.groupIndex = h)
-        /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
+        /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventoryCapability)
+        /* */.nodeINBTSerializable("launcher", launcher -> launcher.launcherCapability)
         .base();
 }

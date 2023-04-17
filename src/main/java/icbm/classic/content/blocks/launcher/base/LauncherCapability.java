@@ -16,52 +16,73 @@ import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-public class LauncherCapability implements IMissileLauncher {
+@RequiredArgsConstructor
+public class LauncherCapability implements IMissileLauncher, INBTSerializable<NBTTagCompound> {
 
+    @Getter
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
+    @Getter
     private static final Vec3d SPAWN_OFFSET = new Vec3d(0.5f, 3.1f, 0.5f);
+    @Getter @NonNull
     private final TileLauncherBase host;
+
+    /**
+     * The internal delay the tile launcher has configured
+     * If the value is -1, it will be ignored
+     */
+    @Getter @Setter
+    private int delay = -1;
+    /**
+     * Tick delay when to fire. If the value is -1 then it's not firing
+     */
+    @Getter
+    private int firingTick = -1;
+    private int currentTick = 0;
+
+    private IMissileTarget targetDataStorage;
 
     @Override
     public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
+        // Pre-flight checks
+        // TODO add a way to bypass in the launcher or cause settings
+        var pfc = preflightCheck(targetData);
+        if (pfc.isError()) return pfc;
 
-        // Pre-flight checks TODO add a way to bypass in the launcher or cause settings
-        if(targetData == null || targetData.getPosition() == null) {
-            return LauncherStatus.ERROR_TARGET_NULL;
-        }
-        else if(isTargetTooClose(targetData.getPosition())) {
-            return LauncherStatus.ERROR_MIN_RANGE;
-        }
-        else if(isTargetTooFar(targetData.getPosition())) {
-            return LauncherStatus.ERROR_MAX_RANGE;
-        }
-        else if(!host.checkExtract()) {
-            return LauncherStatus.ERROR_POWER;
-        }
-        else if(host.missileHolder.getMissileStack().isEmpty()) {
-            return LauncherStatus.ERROR_EMPTY_STACK;
+        // TODO temp var
+        var controllerDelay = 20 * 3;
+        if (controllerDelay != 0) {
+            if (controllerDelay == -1) {
+                firingTick = delay;
+                return LauncherStatus.ERROR_LAUNCHING;
+            }
+            if (controllerDelay > 0) {
+                firingTick = controllerDelay;
+                return LauncherStatus.ERROR_LAUNCHING;
+            }
         }
 
         // Setup source and cause
-        final BlockCause selfCause = new BlockCause(host.world(), host.getPos(), host.getBlockState()); // TODO add more information about launcher
+        final BlockPos pos = host.getPos();
+        final BlockCause selfCause = new BlockCause(host.world(), pos, host.getBlockState()); // TODO add more information about launcher
         selfCause.setPreviousCause(cause);
 
-        final MissileSource source = new MissileSource(host.world(), SPAWN_OFFSET.addVector(host.getPos().getX(), host.getPos().getY(), host.getPos().getZ()), selfCause);
+        final MissileSource source = new MissileSource(host.world(), SPAWN_OFFSET.addVector(pos.getX(), pos.getY(), pos.getZ()), selfCause);
 
         //Allow canceling missile launches
-        final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolder, targetData, simulate);
+        // TODO prelaunch event?
+        final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolderCapability, targetData, simulate);
         if (MinecraftForge.EVENT_BUS.post(event))
         {
             if(event.cancelReason != null) {
@@ -70,7 +91,7 @@ public class LauncherCapability implements IMissileLauncher {
             return LauncherStatus.CANCELED;
         }
 
-        final ItemStack stack = host.missileHolder.getMissileStack();
+        final ItemStack stack = host.missileHolderCapability.getMissileStack();
         if (stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null))
         {
             final ICapabilityMissileStack missileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
@@ -84,7 +105,7 @@ public class LauncherCapability implements IMissileLauncher {
                 if (host.isServer() && !simulate)
                 {
                     // Should always work but in rare cases capability might have failed
-                    if(!host.missileHolder.consumeMissile()) {
+                    if(!host.missileHolderCapability.consumeMissile()) {
                         return LauncherStatus.ERROR_INVALID_STACK;
                     }
 
@@ -124,6 +145,112 @@ public class LauncherCapability implements IMissileLauncher {
             }
         }
         return LauncherStatus.ERROR_INVALID_STACK;
+    }
+
+    // TODO pass args same as launch on launchinternal instead?
+    private IActionStatus launchInternal() {
+        // always run pfc
+        var pfc = preflightCheck(targetDataStorage);
+        if (pfc.isError()) return pfc;
+
+        // TODO tempvars delet me
+        IMissileCause cause = null;
+        var simulate = false;
+
+        // Setup source and cause
+        final BlockPos pos = host.getPos();
+        final BlockCause selfCause = new BlockCause(host.world(), pos, host.getBlockState()); // TODO add more information about launcher
+        selfCause.setPreviousCause(cause);
+
+        final MissileSource source = new MissileSource(host.world(), SPAWN_OFFSET.addVector(pos.getX(), pos.getY(), pos.getZ()), selfCause);
+
+        //Allow canceling missile launches
+        // TODO prelaunch event?
+        // TODO fix the simulate being static tupid
+        final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolderCapability, targetDataStorage, simulate);
+        if (MinecraftForge.EVENT_BUS.post(event))
+        {
+            if(event.cancelReason != null) {
+                return event.cancelReason;
+            }
+            return LauncherStatus.CANCELED;
+        }
+
+        final ItemStack stack = host.missileHolderCapability.getMissileStack();
+        if (stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null))
+        {
+            final ICapabilityMissileStack missileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+            if (missileStack != null)
+            {
+                // TODO we may need to walk cause history to get correct launcher count info
+                final Vec3d target = applyInaccuracy(targetDataStorage.getPosition(), cause instanceof BlockScreenCause ? ((BlockScreenCause) cause).getLauncherCount() : 1);
+
+                //TODO add distance check? --- something seems to be missing
+
+                if (host.isServer() && !simulate)
+                {
+                    // Should always work but in rare cases capability might have failed
+                    if(!host.missileHolderCapability.consumeMissile()) {
+                        return LauncherStatus.ERROR_INVALID_STACK;
+                    }
+
+                    final IMissile missile = missileStack.newMissile(host.world());
+                    final Entity entity = missile.getMissileEntity();
+
+                    // TODO raytrace to make sure we don't teleport through the ground
+                    //  raytrace for missile spawn area
+                    //  raytrace to check for blockage in silo path... players will be happy about this
+                    entity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
+
+                    //Trigger launch event
+                    missile.setTargetData(new BallisticTargetingData(target, 1));
+                    missile.setFlightLogic(new BallisticFlightLogic(host.getLockHeight()));
+                    missile.setMissileSource(source); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
+                    missile.launch();
+
+                    //Spawn entity
+                    if(!host.world().spawnEntity(entity)) {
+                        return LauncherStatus.ERROR_SPAWN;
+                    }
+
+                    // consume power
+                    host.extractEnergy();
+
+                    //Grab rider
+                    if (host.seat != null && !host.seat.getPassengers().isEmpty()) //TODO add hook to disable riding some missiles
+                    {
+                        final List<Entity> riders = host.seat.getPassengers();
+                        riders.forEach(r -> {
+                            entity.dismountRidingEntity();
+                            r.startRiding(entity);
+                        });
+                    }
+                }
+                return LauncherStatus.LAUNCHED;
+            }
+        }
+        return LauncherStatus.ERROR_INVALID_STACK;
+    }
+
+    private IActionStatus preflightCheck(IMissileTarget targetData) {
+        if(targetData == null || targetData.getPosition() == null) {
+            return LauncherStatus.ERROR_TARGET_NULL;
+        }
+        else if(isTargetTooClose(targetData.getPosition())) {
+            return LauncherStatus.ERROR_MIN_RANGE;
+        }
+        else if(isTargetTooFar(targetData.getPosition())) {
+            return LauncherStatus.ERROR_MAX_RANGE;
+        }
+        else if(!host.checkExtract()) {
+            return LauncherStatus.ERROR_POWER;
+        }
+        else if(host.missileHolderCapability.getMissileStack().isEmpty()) {
+            return LauncherStatus.ERROR_EMPTY_STACK;
+        } else if (firingTick != -1) {
+            return LauncherStatus.ERROR_LAUNCHING;
+        }
+        return LauncherStatus.OK;
     }
 
     @Override
@@ -185,5 +312,37 @@ public class LauncherCapability implements IMissileLauncher {
         final double deltaX = Math.abs(target.x - (host.getPos().getX() + 0.5));
         final double  deltaZ = Math.abs(target.z - (host.getPos().getZ() + 0.5));
         return deltaX > ConfigLauncher.RANGE || deltaZ > ConfigLauncher.RANGE;
+    }
+
+    public void onTick() {
+        if (!host.isServer()) {
+            return;
+        }
+        if (firingTick != -1) {
+            currentTick++;
+            if (firingTick > currentTick) {
+                launchInternal();
+                currentTick = 0;
+                firingTick = -1;
+            }
+        }
+    }
+
+    @Override
+    public NBTTagCompound serializeNBT() {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setInteger("delay", delay);
+        nbt.setInteger("firingTick", firingTick);
+        nbt.setInteger("currentTick", currentTick);
+        nbt.setTag("targetData", targetDataStorage.serializeNBT());
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(NBTTagCompound nbt) {
+        delay = nbt.getInteger("delay");
+        firingTick = nbt.getInteger("firingTick");
+        currentTick = nbt.getInteger("currentTick");
+        //targetDataStorage = new IMissileTarget().deserializeNBT(nbt.getTag("targetData"));
     }
 }

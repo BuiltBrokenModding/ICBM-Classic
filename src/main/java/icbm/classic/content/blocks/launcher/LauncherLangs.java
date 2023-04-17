@@ -18,13 +18,16 @@ public final class LauncherLangs {
     public static final String ERROR_MISSILE_INVALID = ERROR + ".missile.invalid";
     public static final String ERROR_MISSILE_SPACE = ERROR + ".missile.space";
     public static final String ERROR_MISSILE_SPAWNING = ERROR + ".missile.spawn";
+    public static final String ERROR_MISSILE_LAUNCHING = ERROR + ".missile.launching";
 
     public static final String ERROR_TARGET_NONE = ERROR + ".target.none";
     public static final String ERROR_TARGET_MIN = ERROR + ".target.min";
     public static final String ERROR_TARGET_MAX = ERROR + ".target.max";
     public static final String ERROR_TARGET_ANGLE = ERROR + ".target.angle";
 
+
     public static final String STATUS = "info.icbmclassic:launcher.status";
+    public static final String STATUS_OK = STATUS + ".OK";
     public static final String STATUS_READY = STATUS + ".ready";
     public static final String STATUS_LAUNCHED = STATUS + ".launched";
     public static final String STATUS_CANCELED = STATUS + ".canceled";

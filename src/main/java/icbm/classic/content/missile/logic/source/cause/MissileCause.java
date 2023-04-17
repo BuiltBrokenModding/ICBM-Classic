@@ -7,11 +7,13 @@ import icbm.classic.lib.saving.NbtSaveNode;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 public abstract class MissileCause implements IMissileCause {
 
     private IMissileCause parent;
 
-    public IMissileCause setPreviousCause(IMissileCause parent) {
+    public IMissileCause setPreviousCause(@Nullable IMissileCause parent) {
         this.parent = parent;
         return this;
     }

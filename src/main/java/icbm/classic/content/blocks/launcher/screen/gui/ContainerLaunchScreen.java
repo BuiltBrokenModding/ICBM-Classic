@@ -18,7 +18,7 @@ public class ContainerLaunchScreen extends ContainerBase<TileLauncherScreen>
         super(player, node);
 
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(node.inventory, 0, 141, 47));
+        this.addSlotToContainer(new SlotItemHandler(node.inventoryCapability, 0, 141, 47));
         addPlayerInventory(player, 7, 84);
     }
 

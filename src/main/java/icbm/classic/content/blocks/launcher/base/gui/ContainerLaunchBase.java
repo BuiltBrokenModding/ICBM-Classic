@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.launcher.base.gui;
 
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -19,9 +18,9 @@ public class ContainerLaunchBase extends ContainerBase<TileLauncherBase>
         super(player, tileEntity);
 
         // Missile Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 0, 88, 47));
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventoryCapability, 0, 88, 47));
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 1, 141, 47));
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventoryCapability, 1, 141, 47));
 
         addPlayerInventory(player, 7, 84);
     }
