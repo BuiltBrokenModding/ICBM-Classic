@@ -371,5 +371,6 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         /* */.nodeInteger("group_id", launcher -> launcher.group, (launcher, h) -> launcher.group = h)
         /* */.nodeInteger("group_index", launcher -> launcher.groupIndex, (launcher, h) -> launcher.groupIndex = h)
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
+        /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         .base();
 }
