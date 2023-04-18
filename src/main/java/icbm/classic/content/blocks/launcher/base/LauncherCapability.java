@@ -67,6 +67,7 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         if (time > 0) {
             // TODO prelaunch event?
             firingTick = (20 * time);
+            targetDataStorage = targetData;
             return LauncherStatus.ERROR_LAUNCHING;
         }
 
@@ -146,6 +147,8 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
     // TODO pass args same as launch on launchinternal instead?
     private IActionStatus launchInternal() {
         // always run pfc
+        if (targetDataStorage == null) return LauncherStatus.ERROR_TARGET_NULL;
+
         var pfc = preflightCheck(targetDataStorage, true);
         if (pfc.isError()) return pfc;
 
