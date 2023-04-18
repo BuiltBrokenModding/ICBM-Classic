@@ -1,5 +1,7 @@
 package icbm.classic.lib.saving;
 
+import icbm.classic.api.missiles.parts.IBuildableObject;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -188,6 +191,11 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
     {
         return node(new SaveNodeUUID<E>(name, save, load));
+    }
+
+    public <C extends IBuildableObject> NbtSaveRoot<E> nodeBuildableObject(final String name, final IBuilderRegistry<C> reg, Function<E, C> getter, BiConsumer<E, C> setter)
+    {
+        return node(new SaveBuildableObject<E, C>(name, reg, getter, setter));
     }
 
     public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> accessor) {
