@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
@@ -98,12 +99,21 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
 
+    /** User defined: Time in ticks to wait before firing a missile */
+    @Getter @Setter
+    private int firingDelay = 0;
+    /** User defined: Height to move before changing direction */
     @Getter @Setter
     private int lockHeight = 3;
+    /** User defined: Group of missiles */
     @Getter @Setter
     private int group = -1;
+    /** User defined: Index in the group, can be shared and works more like priority */
     @Getter @Setter
     private int groupIndex = -1;
+
+    @Getter @Setter
+    private FiringPackage firingPackage;
 
     @Override
     public void onLoad()
@@ -129,6 +139,15 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         super.update();
         if (isServer())
         {
+            // Handle firing delay
+            if(firingPackage != null) {
+                firingPackage.setCountDown(firingPackage.getCountDown() - 1);
+                if(firingPackage.getCountDown() <= 0) {
+                    firingPackage.launch(missileLauncher);
+                    firingPackage = null;
+                }
+            }
+
             if (ticks % 3 == 0)
             {
                 checkMissileCollision = true;

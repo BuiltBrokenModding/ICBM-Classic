@@ -18,6 +18,7 @@ public final class LauncherLangs {
     public static final String ERROR_MISSILE_INVALID = ERROR + ".missile.invalid";
     public static final String ERROR_MISSILE_SPACE = ERROR + ".missile.space";
     public static final String ERROR_MISSILE_SPAWNING = ERROR + ".missile.spawn";
+    public static final String ERROR_MISSILE_QUEUED = ERROR + ".missile.queued";
 
     public static final String ERROR_TARGET_NONE = ERROR + ".target.none";
     public static final String ERROR_TARGET_MIN = ERROR + ".target.min";
@@ -28,6 +29,10 @@ public final class LauncherLangs {
     public static final String STATUS_READY = STATUS + ".ready";
     public static final String STATUS_LAUNCHED = STATUS + ".launched";
     public static final String STATUS_CANCELED = STATUS + ".canceled";
+
+    public static final String STATUS_FIRING = STATUS + ".firing";
+    public static final String STATUS_FIRING_AIMING = STATUS_FIRING + ".aiming";
+    public static final String STATUS_FIRING_DELAYED = STATUS_FIRING + ".delayed";
 
     // TODO consider caching translation components to save on memory
 

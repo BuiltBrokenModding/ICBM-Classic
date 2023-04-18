@@ -24,8 +24,11 @@ public class LauncherStatus implements IActionStatus {
     public static final LauncherStatus ERROR_POWER = new LauncherStatus().withRegName("error.power").asError().withTranslation(LauncherLangs.ERROR_NO_POWER);
     public static final LauncherStatus ERROR_INVALID_STACK = new LauncherStatus().withRegName("error.missile.invalid").asError().withTranslation(LauncherLangs.ERROR_MISSILE_INVALID);
     public static final LauncherStatus ERROR_EMPTY_STACK = new LauncherStatus().withRegName("error.missile.empty").asError().withTranslation(LauncherLangs.ERROR_MISSILE_NONE);
+    public static final LauncherStatus ERROR_QUEUED = new LauncherStatus().withRegName("error.missile.queued").asError().withTranslation(LauncherLangs.ERROR_MISSILE_QUEUED);
 
     public static final LauncherStatus LAUNCHED = new LauncherStatus().withRegName("launched").withTranslation(LauncherLangs.STATUS_LAUNCHED);
+    public static final LauncherStatus FIRING_AIMING = new LauncherStatus().withRegName("firing.aiming").withTranslation(LauncherLangs.STATUS_FIRING_AIMING);
+    public static final LauncherStatus FIRING_DELAYED = new LauncherStatus().withRegName("firing.delayed").withTranslation(LauncherLangs.STATUS_FIRING_AIMING);
     public static final LauncherStatus CANCELED = new LauncherStatus().withRegName("canceled").withTranslation(LauncherLangs.STATUS_CANCELED);
 
     private boolean error = false;

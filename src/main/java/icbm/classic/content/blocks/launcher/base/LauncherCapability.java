@@ -8,6 +8,7 @@ import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
@@ -37,21 +38,29 @@ public class LauncherCapability implements IMissileLauncher {
     @Override
     public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
 
-        // Pre-flight checks TODO add a way to bypass in the launcher or cause settings
+        // Pre-flight checks
         if(targetData == null || targetData.getPosition() == null) {
             return LauncherStatus.ERROR_TARGET_NULL;
         }
+        // User safety, yes they will shoot themselves
         else if(isTargetTooClose(targetData.getPosition())) {
             return LauncherStatus.ERROR_MIN_RANGE;
         }
+        // Max range
         else if(isTargetTooFar(targetData.getPosition())) {
             return LauncherStatus.ERROR_MAX_RANGE;
         }
+        // Min power check
         else if(!host.checkExtract()) {
             return LauncherStatus.ERROR_POWER;
         }
+        // No missile stack
         else if(host.missileHolder.getMissileStack().isEmpty()) {
             return LauncherStatus.ERROR_EMPTY_STACK;
+        }
+        // Missile already queued to fire
+        else if(host.getFiringPackage() != null) {
+            return LauncherStatus.ERROR_QUEUED;
         }
 
         // Setup source and cause
@@ -81,49 +90,71 @@ public class LauncherCapability implements IMissileLauncher {
 
                 //TODO add distance check? --- something seems to be missing
 
-                if (host.isServer() && !simulate)
-                {
-                    // Should always work but in rare cases capability might have failed
-                    if(!host.missileHolder.consumeMissile()) {
-                        return LauncherStatus.ERROR_INVALID_STACK;
-                    }
-
-                    final IMissile missile = missileStack.newMissile(host.world());
-                    final Entity entity = missile.getMissileEntity();
-
-                    // TODO raytrace to make sure we don't teleport through the ground
-                    //  raytrace for missile spawn area
-                    //  raytrace to check for blockage in silo path... players will be happy about this
-                    entity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
-
-                    //Trigger launch event
-                    missile.setTargetData(new BallisticTargetingData(target, 1));
-                    missile.setFlightLogic(new BallisticFlightLogic(host.getLockHeight()));
-                    missile.setMissileSource(source); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
-                    missile.launch();
-
-                    //Spawn entity
-                    if(!host.world().spawnEntity(entity)) {
-                        return LauncherStatus.ERROR_SPAWN;
-                    }
-
-                    // consume power
-                    host.extractEnergy();
-
-                    //Grab rider
-                    if (host.seat != null && !host.seat.getPassengers().isEmpty()) //TODO add hook to disable riding some missiles
-                    {
-                        final List<Entity> riders = host.seat.getPassengers();
-                        riders.forEach(r -> {
-                            entity.dismountRidingEntity();
-                            r.startRiding(entity);
-                        });
-                    }
+                // Should always work but in rare cases capability might have failed
+                if(!host.missileHolder.consumeMissile()) {
+                    return LauncherStatus.ERROR_INVALID_STACK;
                 }
-                return LauncherStatus.LAUNCHED;
+
+                // Check if we have a delay before firing
+                int delay = host.getFiringDelay();
+                if(targetData instanceof IMissileTargetDelayed) {
+                    delay += ((IMissileTargetDelayed) targetData).getFiringDelay();
+                }
+
+                // If delay, store firing information and return
+                if(delay > 0) {
+                    if(!simulate) {
+                        host.setFiringPackage(new FiringPackage(targetData, cause, delay));
+                    }
+                    return LauncherStatus.FIRING_DELAYED; //TODO provide callback for when missile finishes launching and delay information
+                }
+
+                // Return launched on client or if we are simulating
+                if(!getHost().isServer() || simulate) {
+                    return LauncherStatus.LAUNCHED;
+                }
+
+                final IMissile missile = missileStack.newMissile(host.world());
+                return fireMissile(missile, source, target);
             }
         }
         return LauncherStatus.ERROR_INVALID_STACK;
+    }
+
+    private IActionStatus fireMissile(IMissile missile, MissileSource source, Vec3d target) {
+
+        final Entity entity = missile.getMissileEntity();
+
+        // TODO raytrace to make sure we don't teleport through the ground
+        //  raytrace for missile spawn area
+        //  raytrace to check for blockage in silo path... players will be happy about this
+        entity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
+
+        //Trigger launch event
+        missile.setTargetData(new BallisticTargetingData(target, 1));
+        missile.setFlightLogic(new BallisticFlightLogic(host.getLockHeight()));
+        missile.setMissileSource(source); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
+        missile.launch();
+
+        //Spawn entity
+        if(!host.world().spawnEntity(entity)) {
+            return LauncherStatus.ERROR_SPAWN;
+        }
+
+        // consume power
+        host.extractEnergy();
+
+        //Grab rider
+        if (host.seat != null && !host.seat.getPassengers().isEmpty()) //TODO add hook to disable riding some missiles
+        {
+            final List<Entity> riders = host.seat.getPassengers();
+            riders.forEach(r -> {
+                entity.dismountRidingEntity();
+                r.startRiding(entity);
+            });
+        }
+
+        return LauncherStatus.LAUNCHED;
     }
 
     @Override

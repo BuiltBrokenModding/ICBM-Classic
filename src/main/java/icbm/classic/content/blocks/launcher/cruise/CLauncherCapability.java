@@ -41,7 +41,7 @@ public class CLauncherCapability implements IMissileLauncher {
         if(!host.isAimed()) {
             host.nextFireCause = cause;
             host.doLaunchNext = true;
-            return LauncherStatus.ERROR_GENERIC; // TODO return aiming status, with callback to check if did fire
+            return LauncherStatus.FIRING_AIMING; // TODO return aiming status, with callback to check if did fire
         }
 
         final BlockCause selfCause = new BlockCause(host.world(), host.getPos(), host.getBlockState());
