@@ -78,7 +78,7 @@ public class CLauncherCapability implements IMissileLauncher {
                             return LauncherStatus.ERROR_SPAWN;
                         }
                     }
-                    return LauncherStatus.LAUNCHED;
+                    return LauncherStatus.SUCCESS_LAUNCHED;
                 }
             }
         }

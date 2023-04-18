@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
  */
 public interface IMissileLauncher
 {
-
     /**
      * Tries to launch the missile
      *

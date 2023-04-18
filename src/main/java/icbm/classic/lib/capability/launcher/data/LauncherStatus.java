@@ -3,9 +3,7 @@ package icbm.classic.lib.capability.launcher.data;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.launcher.IActionStatus;
-import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -26,9 +24,9 @@ public class LauncherStatus implements IActionStatus {
     public static final LauncherStatus ERROR_EMPTY_STACK = new LauncherStatus().withRegName("error.missile.empty").asError().withTranslation(LauncherLangs.ERROR_MISSILE_NONE);
     public static final LauncherStatus ERROR_LAUNCHING = new LauncherStatus().withRegName("error.missile.launching").asError().withTranslation(LauncherLangs.ERROR_MISSILE_LAUNCHING);
 
-    public static final LauncherStatus OK = new LauncherStatus().withRegName("success").withTranslation(LauncherLangs.STATUS_OK);
-    public static final LauncherStatus LAUNCHED = new LauncherStatus().withRegName("launched").withTranslation(LauncherLangs.STATUS_LAUNCHED);
-    public static final LauncherStatus CANCELED = new LauncherStatus().withRegName("canceled").withTranslation(LauncherLangs.STATUS_CANCELED);
+    public static final LauncherStatus SUCCESS_GENERIC = new LauncherStatus().withRegName("success").withTranslation(LauncherLangs.STATUS_OK);
+    public static final LauncherStatus SUCCESS_LAUNCHED = new LauncherStatus().withRegName("launched").withTranslation(LauncherLangs.STATUS_LAUNCHED);
+    public static final LauncherStatus SUCCESS_CANCELED = new LauncherStatus().withRegName("canceled").withTranslation(LauncherLangs.STATUS_CANCELED);
 
     private boolean error = false;
     private String message;
@@ -92,8 +90,8 @@ public class LauncherStatus implements IActionStatus {
         register(ERROR_POWER);
         register(ERROR_INVALID_STACK);
         register(ERROR_EMPTY_STACK);
-        register(LAUNCHED);
-        register(CANCELED);
+        register(SUCCESS_LAUNCHED);
+        register(SUCCESS_CANCELED);
     }
 
     private static void register(LauncherStatus constantStatus) {

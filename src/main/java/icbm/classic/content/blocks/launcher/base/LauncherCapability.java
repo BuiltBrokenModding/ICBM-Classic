@@ -2,7 +2,7 @@ package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherEvent;
-import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.launcher.IDelayedLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
@@ -14,6 +14,7 @@ import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import lombok.*;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class LauncherCapability implements IMissileLauncher, INBTSerializable<NBTTagCompound> {
+public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NBTTagCompound> {
 
     @Getter
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
@@ -55,22 +56,21 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
 
     @Override
     public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
+        return launch(targetData, cause, simulate, -1);
+    }
+
+    @Override
+    public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate, int controllerDelay) {
         // Pre-flight checks
         // TODO add a way to bypass in the launcher or cause settings
         var pfc = preflightCheck(targetData);
         if (pfc.isError()) return pfc;
 
-        // TODO temp var
-        var controllerDelay = 20 * 3;
-        if (controllerDelay != 0) {
-            if (controllerDelay == -1) {
-                firingTick = delay;
-                return LauncherStatus.ERROR_LAUNCHING;
-            }
-            if (controllerDelay > 0) {
-                firingTick = controllerDelay;
-                return LauncherStatus.ERROR_LAUNCHING;
-            }
+        var time = Math.max(controllerDelay, 0) + Math.max(delay, 0);
+        if (time < 0) {
+            // TODO prelaunch event?
+            firingTick = time;
+            return LauncherStatus.ERROR_LAUNCHING;
         }
 
         // Setup source and cause
@@ -81,14 +81,13 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
         final MissileSource source = new MissileSource(host.world(), SPAWN_OFFSET.addVector(pos.getX(), pos.getY(), pos.getZ()), selfCause);
 
         //Allow canceling missile launches
-        // TODO prelaunch event?
         final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolderCapability, targetData, simulate);
         if (MinecraftForge.EVENT_BUS.post(event))
         {
             if(event.cancelReason != null) {
                 return event.cancelReason;
             }
-            return LauncherStatus.CANCELED;
+            return LauncherStatus.SUCCESS_CANCELED;
         }
 
         final ItemStack stack = host.missileHolderCapability.getMissileStack();
@@ -141,7 +140,7 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
                         });
                     }
                 }
-                return LauncherStatus.LAUNCHED;
+                return LauncherStatus.SUCCESS_LAUNCHED;
             }
         }
         return LauncherStatus.ERROR_INVALID_STACK;
@@ -157,23 +156,20 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
         IMissileCause cause = null;
         var simulate = false;
 
-        // Setup source and cause
+        // double check if the items still exist and check if someone wants to abort the launch
         final BlockPos pos = host.getPos();
         final BlockCause selfCause = new BlockCause(host.world(), pos, host.getBlockState()); // TODO add more information about launcher
         selfCause.setPreviousCause(cause);
 
         final MissileSource source = new MissileSource(host.world(), SPAWN_OFFSET.addVector(pos.getX(), pos.getY(), pos.getZ()), selfCause);
 
-        //Allow canceling missile launches
-        // TODO prelaunch event?
-        // TODO fix the simulate being static tupid
         final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolderCapability, targetDataStorage, simulate);
         if (MinecraftForge.EVENT_BUS.post(event))
         {
             if(event.cancelReason != null) {
                 return event.cancelReason;
             }
-            return LauncherStatus.CANCELED;
+            return LauncherStatus.SUCCESS_CANCELED;
         }
 
         final ItemStack stack = host.missileHolderCapability.getMissileStack();
@@ -226,7 +222,7 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
                         });
                     }
                 }
-                return LauncherStatus.LAUNCHED;
+                return LauncherStatus.SUCCESS_LAUNCHED;
             }
         }
         return LauncherStatus.ERROR_INVALID_STACK;
@@ -250,7 +246,7 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
         } else if (firingTick != -1) {
             return LauncherStatus.ERROR_LAUNCHING;
         }
-        return LauncherStatus.OK;
+        return LauncherStatus.SUCCESS_GENERIC;
     }
 
     @Override
@@ -340,9 +336,10 @@ public class LauncherCapability implements IMissileLauncher, INBTSerializable<NB
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        delay = nbt.getInteger("delay");
-        firingTick = nbt.getInteger("firingTick");
-        currentTick = nbt.getInteger("currentTick");
-        //targetDataStorage = new IMissileTarget().deserializeNBT(nbt.getTag("targetData"));
+        delay = Math.max(nbt.getInteger("delay"), -1);
+        firingTick = Math.max(nbt.getInteger("firingTick"), -1);
+        currentTick = Math.max(nbt.getInteger("currentTick"), 0);
+        targetDataStorage = new BasicTargetData();
+        targetDataStorage.deserializeNBT(nbt.getCompoundTag("targetData"));
     }
 }
