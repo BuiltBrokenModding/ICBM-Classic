@@ -1,10 +1,12 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,6 +17,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.launcher.IDelayedLauncher;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
@@ -81,20 +84,6 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     private final List<IActionStatus> statusList = new ArrayList<>();
     private boolean refreshStatus = false;
 
-    /**
-     * Are we currently firing a salvo?
-     */
-    private boolean isFiring = false;
-    /**
-     * thing which ticks up until next firing time
-     */
-    private int nextFireTick;
-    /**
-     * Array of launchers sorted based on their index
-     */
-    private ArrayQueue<IMissileLauncher> fireBucket = new ArrayQueue<>(1);
-    private boolean fireBucketSimulate = true;
-
     @Override
     public LauncherNode getNetworkNode() {
         return launcherNode;
@@ -110,20 +99,6 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
         if (isServer())
         {
-            // salvo logic
-            if (isFiring) {
-                if (fireBucket.size() == 0) {
-                    isFiring = false;
-                    fireBucketSimulate = true;
-                    nextFireTick = 0;
-                }
-                // fire every 3 sec
-                nextFireTick++;
-                if (nextFireTick > 20*3) {
-                    launch(fireBucket.remove(0), getLaunchers().size(), fireBucketSimulate); // TODO output status to users
-                    nextFireTick = 0;
-                }
-            }
             if(ticks % 5 == 0 || refreshStatus) {
                 refreshStatus = false;
                 statusList.clear();
@@ -133,7 +108,8 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
                     launcherInaccuracy = launchers.stream().map(l -> {
 
                         // Collect status
-                        statusList.add(launch(l, launchers.size(), true));
+                        // todo fix hard typecasting bad
+                        statusList.add(launch((IDelayedLauncher) l, launchers.size(), true));
 
                         // Get accuracy for compare
                         return l.getInaccuracy(getTarget(), launchers.size());
@@ -241,28 +217,33 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
      * Calls the missile launcher base to launch it's missile towards a targeted location
      * @return true if launched, false if not
      */
-    public IActionStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
+    public IActionStatus launch(IDelayedLauncher launcher, int launcherCount, boolean simulate)
+    {
+        return launch(launcher, launcherCount, simulate, -1);
+    }
+
+    /**
+     * Calls the missile launcher base to launch it's missile towards a targeted location
+     * @return true if launched, false if not
+     */
+    public IActionStatus launch(IDelayedLauncher launcher, int launcherCount, boolean simulate, int delay)
     {
         final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount);
-        return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
+        return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate, delay); //TODO move lockHeight to launchPad
     }
 
     public boolean fireAllLaunchers(boolean simulate) {
         refreshStatus = true;
-        if (isFiring) {
-            return false;
-        }
-        isFiring = true;
-        fireBucketSimulate = simulate;
-        fillFireBucket();
+        final int launcherSize = getLaunchers().size();
+        final ArrayQueue<IDelayedLauncher> fireBucket = new ArrayQueue<>(launcherSize);
+    
+        Collections.addAll(fireBucket, Arrays.copyOf(getLaunchers().toArray(), launcherSize, IDelayedLauncher[].class));
+        AtomicInteger bucket = new AtomicInteger(1);
+        fireBucket.stream().sorted(Comparator.comparingInt(IMissileLauncher::getLaunchIndex)).forEach(fire -> {
+            launch(fire, launcherSize, simulate, 3 * bucket.get());
+            bucket.getAndIncrement();
+        });
         return true;
-    }
-
-    public void fillFireBucket() {
-        fireBucket.resize(getLaunchersInGroup().size());
-        fireBucket.addAll(getLaunchersInGroup());
-        // OK. I do not know why but for some fucking reason this sort doesn't properly sort. values become [2, 3, 1, 4, 5, 6, 7] ????????
-        fireBucket.sort(Comparator.comparingInt(IMissileLauncher::getLaunchIndex));
     }
 
     public boolean canLaunch() {

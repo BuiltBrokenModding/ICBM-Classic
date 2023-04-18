@@ -21,6 +21,7 @@ import lombok.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
@@ -52,12 +53,8 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
     private int firingTick = -1;
     private int currentTick = 0;
 
+    @Nullable
     private IMissileTarget targetDataStorage;
-
-    @Override
-    public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
-        return launch(targetData, cause, simulate, -1);
-    }
 
     @Override
     public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate, int controllerDelay) {
@@ -67,9 +64,9 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         if (pfc.isError()) return pfc;
 
         var time = Math.max(controllerDelay, 0) + Math.max(delay, 0);
-        if (time < 0) {
+        if (time > 0) {
             // TODO prelaunch event?
-            firingTick = time;
+            firingTick = (20 * time);
             return LauncherStatus.ERROR_LAUNCHING;
         }
 
@@ -149,7 +146,7 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
     // TODO pass args same as launch on launchinternal instead?
     private IActionStatus launchInternal() {
         // always run pfc
-        var pfc = preflightCheck(targetDataStorage);
+        var pfc = preflightCheck(targetDataStorage, true);
         if (pfc.isError()) return pfc;
 
         // TODO tempvars delet me
@@ -228,7 +225,10 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         return LauncherStatus.ERROR_INVALID_STACK;
     }
 
-    private IActionStatus preflightCheck(IMissileTarget targetData) {
+    private IActionStatus preflightCheck(IMissileTarget targetData){
+        return preflightCheck(targetData, false);
+    }
+    private IActionStatus preflightCheck(IMissileTarget targetData, boolean ignoreIsLaunching) {
         if(targetData == null || targetData.getPosition() == null) {
             return LauncherStatus.ERROR_TARGET_NULL;
         }
@@ -243,7 +243,7 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         }
         else if(host.missileHolderCapability.getMissileStack().isEmpty()) {
             return LauncherStatus.ERROR_EMPTY_STACK;
-        } else if (firingTick != -1) {
+        } else if (firingTick != -1 && !ignoreIsLaunching) {
             return LauncherStatus.ERROR_LAUNCHING;
         }
         return LauncherStatus.SUCCESS_GENERIC;
@@ -316,7 +316,7 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         }
         if (firingTick != -1) {
             currentTick++;
-            if (firingTick > currentTick) {
+            if (firingTick < currentTick) {
                 launchInternal();
                 currentTick = 0;
                 firingTick = -1;
@@ -330,7 +330,9 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         nbt.setInteger("delay", delay);
         nbt.setInteger("firingTick", firingTick);
         nbt.setInteger("currentTick", currentTick);
-        nbt.setTag("targetData", targetDataStorage.serializeNBT());
+        if (targetDataStorage != null) {
+            nbt.setTag("targetData", targetDataStorage.serializeNBT());
+        }
         return nbt;
     }
 
@@ -339,7 +341,13 @@ public class LauncherCapability implements IDelayedLauncher, INBTSerializable<NB
         delay = Math.max(nbt.getInteger("delay"), -1);
         firingTick = Math.max(nbt.getInteger("firingTick"), -1);
         currentTick = Math.max(nbt.getInteger("currentTick"), 0);
-        targetDataStorage = new BasicTargetData();
-        targetDataStorage.deserializeNBT(nbt.getCompoundTag("targetData"));
+        try {
+            // if the data doesn't exist we do not want to create a new TargetData class
+            var targetDataNBT = nbt.getCompoundTag("targetData");
+            targetDataStorage = new BasicTargetData();
+            targetDataStorage.deserializeNBT(targetDataNBT);
+        } catch (ReportedException e) {
+            // noop
+        }
     }
 }

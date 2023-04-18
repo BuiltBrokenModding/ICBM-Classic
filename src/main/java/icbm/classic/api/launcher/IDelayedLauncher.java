@@ -12,8 +12,13 @@ public interface IDelayedLauncher extends IMissileLauncher {
      * @param target to load into missile
      * @param cause to note, optional but recommended to create a history of firing reason
      * @param simulate to do pre-flight checks and get current status
-     * @param delay Delay of the launch, -1 means launcher will use its own delay, higher than 1 it will launch based on the controller
+     * @param delay Delay of the launch, -1 means launcher will use its own delay, higher than 1 it will launch based on the controller (Unit is in Seconds)
      * @return status of launch
      */
     IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate, int delay);
+
+    @Override
+    default IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
+        return launch(target, cause, simulate, -1);
+    }
 }
