@@ -45,11 +45,6 @@ See git history for complete list. Following list is more specific contributions
 | LetterN   |                              | 1.12.2, launcher firing delay logic |
 | Vexatos   | https://github.com/Vexatos   | Translations                        |
 
-## Freesound.org 
-
-* primeval_polypod      https://freesound.org/people/primeval_polypod/sounds/158894/
-
-
 ## Development
 
 ### Tools
