@@ -382,9 +382,10 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     private static final NbtSaveHandler<TileLauncherBase> SAVE_LOGIC = new NbtSaveHandler<TileLauncherBase>()
         .mainRoot()
-        /* */.nodeInteger("lock_height", launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
-        /* */.nodeInteger("group_id", launcher -> launcher.groupId, (launcher, h) -> launcher.groupId = h)
-        /* */.nodeInteger("group_index", launcher -> launcher.groupIndex, (launcher, h) -> launcher.groupIndex = h)
+        /* */.nodeInteger("lock_height", TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight)
+        /* */.nodeInteger("group_id", TileLauncherBase::getGroupId, TileLauncherBase::setGroupIndex)
+        /* */.nodeInteger("group_index", TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex)
+        /* */.nodeInteger("firing_delay", TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         .base();
