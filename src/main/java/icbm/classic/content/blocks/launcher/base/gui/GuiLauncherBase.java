@@ -21,6 +21,7 @@ public class GuiLauncherBase extends GuiContainerBase
     public static final ITextComponent LOCK_HEIGHT_TOOLTIP = new TextComponentTranslation("gui.icbmclassic:launcherbase.lock_height");
     public static final ITextComponent GROUP_ID_TOOLTIP = new TextComponentTranslation("gui.icbmclassic:launcherbase.group_id");
     public static final ITextComponent GROUP_INDEX_TOOLTIP = new TextComponentTranslation("gui.icbmclassic:launcherbase.group_index");
+    public static final ITextComponent FIRING_DELAY_TOOLTIP = new TextComponentTranslation("gui.icbmclassic:launcherbase.firing_delay");
 
     private final TileLauncherBase tileEntity;
 
@@ -51,12 +52,15 @@ public class GuiLauncherBase extends GuiContainerBase
             tileEntity::getGroupId, tileEntity::setGroupId, tileEntity::sendGroupIdPacket));
         addComponent(TextInput.intField(componentID++, fontRenderer, 127, 17, 30, 12,
             tileEntity::getGroupIndex, tileEntity::setGroupIndex, tileEntity::sendGroupIndexPacket));
+        addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17 + 16, 30, 12,
+            tileEntity::getFiringDelay, tileEntity::setFiringDelay, tileEntity::sendFiringDelayPacket));
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
 
         addComponent(new TooltipTranslations(4, 16, 14, 14, LOCK_HEIGHT_TOOLTIP).withDelay(1));
         addComponent(new TooltipTranslations(68, 16, 14, 14, GROUP_ID_TOOLTIP).withDelay(1));
         addComponent(new TooltipTranslations(113, 16, 14, 14, GROUP_INDEX_TOOLTIP).withDelay(1));
+        addComponent(new TooltipTranslations(4, 16 + 16, 14, 14, FIRING_DELAY_TOOLTIP).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

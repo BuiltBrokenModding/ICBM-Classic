@@ -54,6 +54,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public static final int PACKET_GROUP_ID = 1;
     public static final int PACKET_GROUP_INDEX = 2;
     public static final int PACKET_GUI = 3;
+    public static final int PACKET_FIRING_DELAY = 4;
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
@@ -233,6 +234,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
                     lockHeight = data.readInt();
                     groupIndex = data.readInt();
                     groupId = data.readInt();
+                    firingDelay = data.readInt();
                     return true;
                 }
                 case PACKET_LOCK_HEIGHT:
@@ -250,6 +252,11 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
                     groupId = data.readInt();
                     return true;
                 }
+                case PACKET_FIRING_DELAY:
+                {
+                    firingDelay = data.readInt();
+                    return true;
+                }
             }
             return false;
         }
@@ -263,6 +270,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         packetTile.addData(lockHeight);
         packetTile.addData(groupIndex);
         packetTile.addData(groupId);
+        packetTile.addData(firingDelay);
         return packetTile;
     }
 
@@ -281,6 +289,12 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public void sendGroupIndexPacket(int groupIndex) {
         if(isClient()) {
             ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_GROUP_INDEX, this).addData(groupIndex));
+        }
+    }
+
+    public void sendFiringDelayPacket(int firingDelay) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("firingDelay_C>S", PACKET_FIRING_DELAY, this).addData(firingDelay));
         }
     }
 
