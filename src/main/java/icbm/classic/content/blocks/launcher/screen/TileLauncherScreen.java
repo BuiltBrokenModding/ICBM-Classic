@@ -30,7 +30,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -236,9 +235,18 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
      */
     public ITextComponent getStatusTranslation()
     {
-        if (getNetworkNode().getNetwork() == null || statusList.isEmpty())
+        // Network isn't setup
+        if (getNetworkNode().getNetwork() == null)
         {
             return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK;
+        }
+        // No launcher is connected yet
+        else if(getNetworkNode().getLaunchers().isEmpty()) {
+            return LauncherLangs.TRANSLATION_ERROR_NO_LAUNCHER;
+        }
+        // Generally only fails client side when status list is missing
+        else if(statusList.isEmpty()) {
+            return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK_STATUS;
         }
         return statusList.stream()
             .filter(IActionStatus::isError)

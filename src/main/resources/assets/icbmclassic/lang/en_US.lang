@@ -389,6 +389,8 @@ info.icbmclassic:launcher.error.fuel=Firing Safety; Not enough fuel
 info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
 
 info.icbmclassic:launcher.error.network=Self Check; No launcher network
+info.icbmclassic:launcher.error.network.status.missing=Dev Bug; No status data
+info.icbmclassic:launcher.error.network.launchers=Self Check; No launcher(s) connected
 
 info.icbmclassic:launcher.error.target.none=Guidance Safety; No target set
 info.icbmclassic:launcher.error.target.min=Guidance safety; Target too close
