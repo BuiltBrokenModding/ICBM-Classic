@@ -90,11 +90,6 @@ public class LauncherCapability implements IMissileLauncher {
 
                 //TODO add distance check? --- something seems to be missing
 
-                // Should always work but in rare cases capability might have failed
-                if(!host.missileHolder.consumeMissile()) {
-                    return LauncherStatus.ERROR_INVALID_STACK;
-                }
-
                 // Check if we have a delay before firing
                 int delay = host.getFiringDelay();
                 if(targetData instanceof IMissileTargetDelayed) {
@@ -122,6 +117,11 @@ public class LauncherCapability implements IMissileLauncher {
     }
 
     private IActionStatus fireMissile(IMissile missile, MissileSource source, Vec3d target) {
+
+        // Should always work but in rare cases capability might have failed
+        if(!host.missileHolder.consumeMissile()) {
+            return LauncherStatus.ERROR_INVALID_STACK;
+        }
 
         final Entity entity = missile.getMissileEntity();
 

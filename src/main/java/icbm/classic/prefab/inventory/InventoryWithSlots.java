@@ -60,7 +60,6 @@ public class InventoryWithSlots extends ItemStackHandler {
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
     {
-
         return isItemValid(slot, stack) &&  getSlot(slot).map(InventorySlot::getOnInsertStack).map(s -> s.apply(stack)).orElse(true) ? super.insertItem(slot, stack, simulate) : stack;
     }
 
