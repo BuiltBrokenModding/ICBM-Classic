@@ -83,6 +83,11 @@ public class LauncherStatus implements IActionStatus {
 
     }
 
+    @Override
+    public String toString() {
+        return "LauncherStatus[ '" + getRegistryName() + "' , '" + message + "' ]@" + hashCode();
+    }
+
     public static void registerTypes() {
 
         register(ERROR_GENERIC);
@@ -95,6 +100,8 @@ public class LauncherStatus implements IActionStatus {
         register(ERROR_EMPTY_STACK);
         register(LAUNCHED);
         register(CANCELED);
+        register(FIRING_AIMING);
+        register(FIRING_DELAYED);
     }
 
     private static void register(LauncherStatus constantStatus) {
