@@ -2,14 +2,10 @@ package icbm.classic.content.blocks.launcher.base.gui;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
-import icbm.classic.content.blocks.launcher.cruise.gui.LaunchButton;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
-import icbm.classic.prefab.gui.tooltip.Tooltip;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -52,7 +48,7 @@ public class GuiLauncherBase extends GuiContainerBase
         addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17, 30, 12,
             tileEntity::getLockHeight, tileEntity::setLockHeight, tileEntity::sendLockHeightPacket));
         addComponent(TextInput.intField(componentID++, fontRenderer, 82, 17, 30, 12,
-            tileEntity::getGroup, tileEntity::setGroup, tileEntity::sendGroupIdPacket));
+            tileEntity::getGroupId, tileEntity::setGroupId, tileEntity::sendGroupIdPacket));
         addComponent(TextInput.intField(componentID++, fontRenderer, 127, 17, 30, 12,
             tileEntity::getGroupIndex, tileEntity::setGroupIndex, tileEntity::sendGroupIndexPacket));
 
