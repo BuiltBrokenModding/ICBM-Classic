@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;

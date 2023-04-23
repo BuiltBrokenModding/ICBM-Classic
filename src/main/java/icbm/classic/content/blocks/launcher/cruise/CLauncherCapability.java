@@ -9,9 +9,11 @@ import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
+import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
+import icbm.classic.lib.capability.launcher.data.FiringWithDelay;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,12 +31,16 @@ public class CLauncherCapability implements IMissileLauncher {
 
     @Override
     public IActionStatus getStatus() {
-        if(getHost().doLaunchNext) {
+        if(host.getFiringPackage() != null && !getHost().isAimed()) {
             return LauncherStatus.FIRING_AIMING;
+        }
+        else if(host.getFiringPackage() != null && host.getFiringPackage().getCountDown() > 0) {
+            return new FiringWithDelay(host.getFiringPackage().getCountDown());
         }
         else if(!host.canLaunch()) { //TODO break down into detailed feedback and make consistent with base launcher
             return LauncherStatus.ERROR_GENERIC;
         }
+
         return LauncherStatus.READY;
     }
 
@@ -55,17 +61,12 @@ public class CLauncherCapability implements IMissileLauncher {
             return LauncherStatus.FIRING_AIMING;
         }
 
-        // Reset state
-        host.doLaunchNext = false;
-        host.nextFireCause = null;
-
         // Set target so we can aim
         host.setTarget(target.getPosition()); // TODO store IMissileTarget
 
         // If not aimed, wait for aim and fire
         if(!host.isAimed()) {
-            host.nextFireCause = cause;
-            host.doLaunchNext = true;
+            host.setFiringPackage(new FiringPackage(target, cause, 0));
             return LauncherStatus.FIRING_AIMING; // TODO return aiming status, with callback to check if did fire
         }
 
