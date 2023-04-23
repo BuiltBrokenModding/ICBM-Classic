@@ -47,7 +47,7 @@ public class LauncherCapability implements IMissileLauncher {
             return LauncherStatus.ERROR_EMPTY_STACK;
         }
         // Missile in process of firing, but is delayed
-        else if(host.getFiringPackage() != null) {
+        else if(host.getFiringPackage() != null && host.getFiringPackage().getCountDown() > 0) {
             return new FiringWithDelay(host.getFiringPackage().getCountDown());
         }
         return LauncherStatus.READY;
@@ -67,10 +67,7 @@ public class LauncherCapability implements IMissileLauncher {
         else if(isTargetTooFar(targetData.getPosition())) {
             return LauncherStatus.ERROR_MAX_RANGE;
         }
-        // Missile already queued to fire
-        else if(host.getFiringPackage() != null) {
-            return LauncherStatus.ERROR_QUEUED;
-        }
+        //TODO if firing package countdown finishes, validate it triggered the launch... if not return QUEUED
         return getStatus();
     }
 
@@ -110,18 +107,21 @@ public class LauncherCapability implements IMissileLauncher {
 
                 //TODO add distance check? --- something seems to be missing
 
-                // Check if we have a delay before firing
-                int delay = host.getFiringDelay();
-                if(targetData instanceof IMissileTargetDelayed) {
-                    delay += ((IMissileTargetDelayed) targetData).getFiringDelay();
-                }
-
-                // If delay, store firing information and return
-                if(delay > 0) {
-                    if(!simulate) {
-                        host.setFiringPackage(new FiringPackage(targetData, cause, delay));
+                // Ignore delay if we are currently using a firing package
+                if(host.getFiringPackage() == null) {
+                    // Check if we have a delay before firing
+                    int delay = host.getFiringDelay();
+                    if(targetData instanceof IMissileTargetDelayed) {
+                        delay += ((IMissileTargetDelayed) targetData).getFiringDelay();
                     }
-                    return new FiringWithDelay(delay); //TODO provide callback for when missile finishes launching
+
+                    // If delay, store firing information and return
+                    if(delay > 0) {
+                        if(!simulate) {
+                            host.setFiringPackage(new FiringPackage(targetData, cause, delay));
+                        }
+                        return new FiringWithDelay(delay); //TODO provide callback for when missile finishes launching
+                    }
                 }
 
                 // Return launched on client or if we are simulating
