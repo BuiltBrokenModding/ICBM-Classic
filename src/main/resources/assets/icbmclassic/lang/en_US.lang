@@ -406,6 +406,10 @@ info.icbmclassic:launcher.status.ready=Ready to fire
 info.icbmclassic:launcher.status.launched=Launch Triggered
 info.icbmclassic:launcher.status.canceled=Launch Canceled
 
+info.icbmclassic:launcher.status.firing=Launch Triggered; Starting process
+info.icbmclassic:launcher.status.firing.delayed=Launch Triggered; Firing in %s
+info.icbmclassic:launcher.status.firing.aiming=Launch Triggered; Aiming at target
+
 ## Cruise launcher UI
 gui.launcher.cruise.name=Cruise Launcher
 

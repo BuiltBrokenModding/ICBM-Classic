@@ -28,7 +28,32 @@ public class CLauncherCapability implements IMissileLauncher {
     private final TileCruiseLauncher host;
 
     @Override
+    public IActionStatus getStatus() {
+        if(getHost().doLaunchNext) {
+            return LauncherStatus.FIRING_AIMING;
+        }
+        else if(!host.canLaunch()) { //TODO break down into detailed feedback and make consistent with base launcher
+            return LauncherStatus.ERROR_GENERIC;
+        }
+        return LauncherStatus.READY;
+    }
+
+    @Override
+    public IActionStatus preCheckLaunch(IMissileTarget target, @Nullable IMissileCause cause) {
+        return getStatus();
+    }
+
+    @Override
     public IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
+
+        // Do pre-checks
+        final IActionStatus preCheck = preCheckLaunch(target, cause);
+        if(preCheck.shouldBlockInteraction()) {
+            return preCheck;
+        }
+        else if(simulate) { //TODO handle better by checking if we are already aimed
+            return LauncherStatus.FIRING_AIMING;
+        }
 
         // Reset state
         host.doLaunchNext = false;
@@ -56,7 +81,7 @@ public class CLauncherCapability implements IMissileLauncher {
                 final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
                 if(capabilityMissileStack != null) {
 
-                    if(host.isServer() && !simulate) {
+                    if(host.isServer()) {
                         final IMissile missile = capabilityMissileStack.newMissile(host.world());
                         final Entity entity = missile.getMissileEntity();
                         entity.setPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);

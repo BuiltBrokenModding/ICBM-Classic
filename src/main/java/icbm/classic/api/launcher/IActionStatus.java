@@ -21,6 +21,16 @@ public interface IActionStatus extends IBuildableObject {
     boolean isError();
 
     /**
+     * Should interaction be blocked while
+     * status is active.
+     *
+     * @return true to block interaction.
+     */
+    default boolean shouldBlockInteraction() {
+        return isError();
+    }
+
+    /**
      * Localization for error output. Assume this
      * will be displayed to a user.
      *

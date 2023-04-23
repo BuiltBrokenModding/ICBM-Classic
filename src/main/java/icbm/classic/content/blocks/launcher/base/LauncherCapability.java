@@ -15,6 +15,7 @@ import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
+import icbm.classic.lib.capability.launcher.data.FiringWithDelay;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import lombok.AllArgsConstructor;
@@ -36,9 +37,25 @@ public class LauncherCapability implements IMissileLauncher {
     private final TileLauncherBase host;
 
     @Override
-    public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
+    public IActionStatus getStatus() {
+        // Min power check
+        if(!host.checkExtract()) {
+            return LauncherStatus.ERROR_POWER;
+        }
+        // No missile stack
+        else if(host.missileHolder.getMissileStack().isEmpty()) {
+            return LauncherStatus.ERROR_EMPTY_STACK;
+        }
+        // Missile in process of firing, but is delayed
+        else if(host.getFiringPackage() != null) {
+            return new FiringWithDelay(host.getFiringPackage().getCountDown());
+        }
+        return LauncherStatus.READY;
+    }
 
-        // Pre-flight checks
+    @Override
+    public IActionStatus preCheckLaunch(IMissileTarget targetData, @Nullable IMissileCause cause) {
+        // Validate target data
         if(targetData == null || targetData.getPosition() == null) {
             return LauncherStatus.ERROR_TARGET_NULL;
         }
@@ -46,21 +63,24 @@ public class LauncherCapability implements IMissileLauncher {
         else if(isTargetTooClose(targetData.getPosition())) {
             return LauncherStatus.ERROR_MIN_RANGE;
         }
-        // Max range
+        // Max range TODO once fuel is added make this a warning that can be bypassed
         else if(isTargetTooFar(targetData.getPosition())) {
             return LauncherStatus.ERROR_MAX_RANGE;
-        }
-        // Min power check
-        else if(!host.checkExtract()) {
-            return LauncherStatus.ERROR_POWER;
-        }
-        // No missile stack
-        else if(host.missileHolder.getMissileStack().isEmpty()) {
-            return LauncherStatus.ERROR_EMPTY_STACK;
         }
         // Missile already queued to fire
         else if(host.getFiringPackage() != null) {
             return LauncherStatus.ERROR_QUEUED;
+        }
+        return getStatus();
+    }
+
+    @Override
+    public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
+
+        // Check current status, if blocking stop launch and return
+        final IActionStatus preCheck = preCheckLaunch(targetData, cause);
+        if(preCheck.shouldBlockInteraction()) {
+            return preCheck;
         }
 
         // Setup source and cause
@@ -101,7 +121,7 @@ public class LauncherCapability implements IMissileLauncher {
                     if(!simulate) {
                         host.setFiringPackage(new FiringPackage(targetData, cause, delay));
                     }
-                    return LauncherStatus.FIRING_DELAYED; //TODO provide callback for when missile finishes launching and delay information
+                    return new FiringWithDelay(delay); //TODO provide callback for when missile finishes launching
                 }
 
                 // Return launched on client or if we are simulating

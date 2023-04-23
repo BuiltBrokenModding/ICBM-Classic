@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
@@ -91,10 +92,11 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
                 final List<IMissileLauncher> launchers = getLaunchersInGroup();
                 if(!launchers.isEmpty()) {
+                    final int launcherCount = launchers.size();
                     launcherInaccuracy = launchers.stream().map(l -> {
 
                         // Collect status
-                        statusList.add(launch(l, launchers.size(), true));
+                        statusList.add(preCheck(l, launcherCount));
 
                         // Get accuracy for compare
                         return l.getInaccuracy(getTarget(), launchers.size());
@@ -199,13 +201,31 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     }
 
     /**
-     * Calls the missile launcher base to launch it's missile towards a targeted location
-     * @return true if launched, false if not
+     * Invokes launch process
+     *
+     * @param launcher to use
+     * @param launcherCount in current firing mission
+     * @return status
      */
     public IActionStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
     {
-        final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount);
-        return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
+        return launcher.launch(new BasicTargetData(this.getTarget()), createCause(launcherCount), simulate);
+    }
+
+    /**
+     * Pre-check of the launch process
+     *
+     * @param launcher to use
+     * @param launcherCount in current firing mission
+     * @return status
+     */
+    public IActionStatus preCheck(IMissileLauncher launcher, int launcherCount)
+    {
+        return launcher.preCheckLaunch(new BasicTargetData(this.getTarget()), createCause(launcherCount));
+    }
+
+    private IMissileCause createCause(int launcherCount) {
+        return new BlockScreenCause(world, pos, getBlockState(), launcherCount); //TODO cache?
     }
 
     public boolean fireAllLaunchers(boolean simulate) {
@@ -223,7 +243,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
     public boolean canLaunch() {
         if(isClient()) {
-            return !statusList.isEmpty() && statusList.stream().noneMatch(IActionStatus::isError);
+            return !statusList.isEmpty() && statusList.stream().noneMatch(IActionStatus::shouldBlockInteraction);
         }
         return fireAllLaunchers(true);
     }
@@ -249,7 +269,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
             return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK_STATUS;
         }
         return statusList.stream()
-            .filter(IActionStatus::isError)
+            .filter(IActionStatus::shouldBlockInteraction)
             .map(IActionStatus::message)
             .findFirst()
             .orElse(LauncherLangs.TRANSLATION_READY);
