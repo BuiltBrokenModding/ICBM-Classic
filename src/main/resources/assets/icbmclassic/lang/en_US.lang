@@ -387,6 +387,7 @@ info.icbmclassic:launcher.error=Unknown Error
 info.icbmclassic:launcher.error.power=Firing Safety; Not enough power
 info.icbmclassic:launcher.error.fuel=Firing Safety; Not enough fuel
 info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
+info.icbmclassic:launcher.error.missile.multi=Firing Safety; %s launchers not ready
 
 info.icbmclassic:launcher.error.network=Self Check; No launcher network
 info.icbmclassic:launcher.error.network.status.missing=Dev Bug; No status data
@@ -397,6 +398,7 @@ info.icbmclassic:launcher.error.target.min=Guidance safety; Target too close
 info.icbmclassic:launcher.error.target.max=Guidance safety; Target too far
 info.icbmclassic:launcher.error.target.angle=Guidance Safety; Aiming angle limits hit
 info.icbmclassic:launcher.error.missile.space=Guidance Safety; launcher collision detected.
+
 
 info.icbmclassic:launcher.error.launcher=Firing Failure; Null launcher detected
 info.icbmclassic:launcher.error.missile.spawn=Firing Failure; Missile Spawn Prevented
