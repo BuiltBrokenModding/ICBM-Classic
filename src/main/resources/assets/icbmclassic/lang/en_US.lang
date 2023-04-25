@@ -368,6 +368,7 @@ gui.icbmclassic:launcherbase.name=Launcher Platform
 gui.icbmclassic:launcherbase.lock_height=Lock Height; Distance the missile will travel up before changing course.
 gui.icbmclassic:launcherbase.group_id=Group ID; Used to group missiles for fire missions
 gui.icbmclassic:launcherbase.group_index=Group Index; Index of the missile in the group. Used for chain firing and other group firing features
+gui.icbmclassic:launcherbase.firing_delay=Firing Delay; Time in ticks before firing. Useful for chain firing delay. 20 ticks in a second.
 
 ## Launcher Screen
 gui.launcherscreen.name=Launcher Control Panel
@@ -386,14 +387,18 @@ info.icbmclassic:launcher.error=Unknown Error
 info.icbmclassic:launcher.error.power=Firing Safety; Not enough power
 info.icbmclassic:launcher.error.fuel=Firing Safety; Not enough fuel
 info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
+info.icbmclassic:launcher.error.missile.multi=Firing Safety; %s launchers not ready
 
 info.icbmclassic:launcher.error.network=Self Check; No launcher network
+info.icbmclassic:launcher.error.network.status.missing=Dev Bug; No status data
+info.icbmclassic:launcher.error.network.launchers=Self Check; No launcher(s) connected
 
 info.icbmclassic:launcher.error.target.none=Guidance Safety; No target set
 info.icbmclassic:launcher.error.target.min=Guidance safety; Target too close
 info.icbmclassic:launcher.error.target.max=Guidance safety; Target too far
 info.icbmclassic:launcher.error.target.angle=Guidance Safety; Aiming angle limits hit
 info.icbmclassic:launcher.error.missile.space=Guidance Safety; launcher collision detected.
+
 
 info.icbmclassic:launcher.error.launcher=Firing Failure; Null launcher detected
 info.icbmclassic:launcher.error.missile.spawn=Firing Failure; Missile Spawn Prevented
@@ -402,6 +407,10 @@ info.icbmclassic:launcher.status=Unknown Status
 info.icbmclassic:launcher.status.ready=Ready to fire
 info.icbmclassic:launcher.status.launched=Launch Triggered
 info.icbmclassic:launcher.status.canceled=Launch Canceled
+
+info.icbmclassic:launcher.status.firing=Launch Triggered; Starting process
+info.icbmclassic:launcher.status.firing.delayed=Launch Triggered; Firing in %s
+info.icbmclassic:launcher.status.firing.aiming=Launch Triggered; Aiming at target
 
 ## Cruise launcher UI
 gui.launcher.cruise.name=Cruise Launcher

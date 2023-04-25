@@ -12,4 +12,13 @@ public interface IMissileTargetDelayed extends IMissileTarget {
      * @return delay in ticks
      */
     int getFiringDelay();
+
+    /**
+     * Creates a copy of the target data without the delay.
+     * This is for use in feeding back into the missile during launch. It is recommended
+     * to create a new object and not to edit the existing.
+     *
+     * @return new copy with all settings but delay
+     */
+    IMissileTarget cloneWithoutDelay();
 }

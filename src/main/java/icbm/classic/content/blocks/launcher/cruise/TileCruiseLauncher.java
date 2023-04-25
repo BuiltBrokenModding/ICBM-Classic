@@ -6,6 +6,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
@@ -29,6 +30,8 @@ import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -87,8 +90,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     protected final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
     protected final CLauncherCapability launcher = new CLauncherCapability(this);
 
-    protected boolean doLaunchNext = false;
-    protected IMissileCause nextFireCause;
+    @Getter @Setter
+    protected FiringPackage firingPackage;
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
     public final RadioCruise radioCap = new RadioCruise(this);
@@ -167,21 +170,25 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         // Update current aim
         currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
 
-        // Check redstone
-        if(this.ticks % REDSTONE_CHECK_RATE == 0) {
-            for(EnumFacing side : EnumFacing.VALUES) {
-                final int power = world.getRedstonePower(getPos().offset(side), side);
-                if(power > 1) {
-                    nextFireCause = new RedstoneCause(world(), getPos(), getBlockState(), side);
-                    doLaunchNext = true;
+        if(isServer()) {
+
+            // Check redstone
+            if (this.ticks % REDSTONE_CHECK_RATE == 0) {
+                for (EnumFacing side : EnumFacing.VALUES) {
+                    final int power = world.getRedstonePower(getPos().offset(side), side);
+                    if (power > 1) {
+                        firingPackage = new FiringPackage(new BasicTargetData(getTarget()), new RedstoneCause(world(), getPos(), getBlockState(), side), 0);
+                    }
                 }
             }
-        }
 
-        // Check redstone
-        if (isServer() && isAimed() && doLaunchNext)
-        {
-            launcher.launch(new BasicTargetData(getTarget()), nextFireCause, false);
+            if(firingPackage != null && isAimed()) {
+                firingPackage.setCountDown(firingPackage.getCountDown() - 1);
+                if(firingPackage.getCountDown() <= 0) {
+                    firingPackage.launch(launcher);
+                    firingPackage = null;
+                }
+            }
         }
     }
 
@@ -454,5 +461,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         /* */.nodeEulerAngle(NBTConstants.CURRENT_AIM, launcher -> launcher.currentAim, (launcher, pos) -> launcher.currentAim.set(pos))
+        /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         .base();
 }

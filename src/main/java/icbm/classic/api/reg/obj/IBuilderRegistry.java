@@ -1,5 +1,6 @@
 package icbm.classic.api.reg.obj;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IBuildableObject;
 import net.minecraft.nbt.NBTTagCompound;
@@ -41,19 +42,25 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
     }
 
     default NBTTagCompound save(Part part) {
-        if(part != null && part.getRegistryName() != null) {
-            final NBTTagCompound save = new NBTTagCompound();
-            save.setString("id", part.getRegistryName().toString());
-
-            // Data is optional, only id is required as some objects are constants and need no save info
-            final NBTTagCompound additionalData = part.serializeNBT();
-            if (additionalData != null && !additionalData.hasNoTags()) {
-               save.setTag("data", additionalData);
-            }
-
-            return save;
+        if(part == null) {
+            ICBMClassic.logger().warn("Failed to save part due to null value", new RuntimeException());
+            return null;
         }
-        return null;
+        else if(part.getRegistryName() == null) {
+            ICBMClassic.logger().warn("Failed to save part due to missing registry name: " + part, new RuntimeException());
+            return null;
+        }
+
+        final NBTTagCompound save = new NBTTagCompound();
+        save.setString("id", part.getRegistryName().toString());
+
+        // Data is optional, only id is required as some objects are constants and need no save info
+        final NBTTagCompound additionalData = part.serializeNBT();
+        if (additionalData != null && !additionalData.hasNoTags()) {
+            save.setTag("data", additionalData);
+        }
+
+        return save;
     }
 
     default <C extends Collection<Part>> C load(NBTTagList save, C list) {

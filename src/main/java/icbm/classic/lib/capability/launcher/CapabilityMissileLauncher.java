@@ -38,6 +38,16 @@ public class CapabilityMissileLauncher implements IMissileLauncher
     }
 
     @Override
+    public IActionStatus getStatus() {
+        return LauncherStatus.ERROR_GENERIC;
+    }
+
+    @Override
+    public IActionStatus preCheckLaunch(IMissileTarget target, @Nullable IMissileCause cause) {
+        return LauncherStatus.ERROR_GENERIC;
+    }
+
+    @Override
     public IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
         return LauncherStatus.ERROR_GENERIC;
     }

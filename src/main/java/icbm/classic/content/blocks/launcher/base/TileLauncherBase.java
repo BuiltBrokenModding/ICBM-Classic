@@ -3,24 +3,14 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.api.missiles.IMissile;
+import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
-import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
-import icbm.classic.content.missile.logic.source.MissileSource;
-import icbm.classic.content.missile.logic.source.cause.BlockCause;
-import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.events.LauncherEvent;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
@@ -28,7 +18,6 @@ import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
@@ -44,12 +33,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -69,6 +54,8 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     public static final int PACKET_LOCK_HEIGHT = 0;
     public static final int PACKET_GROUP_ID = 1;
     public static final int PACKET_GROUP_INDEX = 2;
+    public static final int PACKET_GUI = 3;
+    public static final int PACKET_FIRING_DELAY = 4;
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
@@ -98,12 +85,21 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
 
+    /** User defined: Time in ticks to wait before firing a missile */
+    @Getter @Setter
+    private int firingDelay = 0;
+    /** User defined: Height to move before changing direction */
     @Getter @Setter
     private int lockHeight = 3;
+    /** User defined: Group of missiles */
     @Getter @Setter
-    private int group = -1;
+    private int groupId = -1;
+    /** User defined: Index in the group, can be shared and works more like priority */
     @Getter @Setter
     private int groupIndex = -1;
+
+    @Getter @Setter
+    private FiringPackage firingPackage;
 
     @Override
     public void onLoad()
@@ -129,6 +125,15 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         super.update();
         if (isServer())
         {
+            // Handle firing delay
+            if(firingPackage != null) {
+                firingPackage.setCountDown(firingPackage.getCountDown() - 1);
+                if(firingPackage.getCountDown() <= 0) {
+                    firingPackage.launch(missileLauncher);
+                    firingPackage = null;
+                }
+            }
+
             if (ticks % 3 == 0)
             {
                 checkMissileCollision = true;
@@ -225,6 +230,14 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         {
             switch (id)
             {
+                case PACKET_GUI:
+                {
+                    lockHeight = data.readInt();
+                    groupIndex = data.readInt();
+                    groupId = data.readInt();
+                    firingDelay = data.readInt();
+                    return true;
+                }
                 case PACKET_LOCK_HEIGHT:
                 {
                     lockHeight = data.readInt();
@@ -237,13 +250,29 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
                 }
                 case PACKET_GROUP_ID:
                 {
-                    group = data.readInt();
+                    groupId = data.readInt();
+                    return true;
+                }
+                case PACKET_FIRING_DELAY:
+                {
+                    firingDelay = data.readInt();
                     return true;
                 }
             }
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected PacketTile getGUIPacket()
+    {
+        PacketTile packetTile = new PacketTile("gui", PACKET_GUI, this);
+        packetTile.addData(lockHeight);
+        packetTile.addData(groupIndex);
+        packetTile.addData(groupId);
+        packetTile.addData(firingDelay);
+        return packetTile;
     }
 
     public void sendLockHeightPacket(int lockHeight) {
@@ -254,13 +283,19 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     public void sendGroupIdPacket(int groupId) {
         if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupId_C>S", PACKET_LOCK_HEIGHT, this).addData(groupId));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupId_C>S", PACKET_GROUP_ID, this).addData(groupId));
         }
     }
 
     public void sendGroupIndexPacket(int groupIndex) {
         if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_LOCK_HEIGHT, this).addData(groupIndex));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_GROUP_INDEX, this).addData(groupIndex));
+        }
+    }
+
+    public void sendFiringDelayPacket(int firingDelay) {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("firingDelay_C>S", PACKET_FIRING_DELAY, this).addData(firingDelay));
         }
     }
 
@@ -348,9 +383,11 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     private static final NbtSaveHandler<TileLauncherBase> SAVE_LOGIC = new NbtSaveHandler<TileLauncherBase>()
         .mainRoot()
-        /* */.nodeInteger("lock_height", launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
-        /* */.nodeInteger("group_id", launcher -> launcher.group, (launcher, h) -> launcher.group = h)
-        /* */.nodeInteger("group_index", launcher -> launcher.groupIndex, (launcher, h) -> launcher.groupIndex = h)
+        /* */.nodeInteger("lock_height", TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight)
+        /* */.nodeInteger("group_id", TileLauncherBase::getGroupId, TileLauncherBase::setGroupId)
+        /* */.nodeInteger("group_index", TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex)
+        /* */.nodeInteger("firing_delay", TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
+        /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         .base();
 }

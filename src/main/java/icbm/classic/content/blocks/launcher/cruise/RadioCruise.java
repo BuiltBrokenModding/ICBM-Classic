@@ -5,7 +5,11 @@ import icbm.classic.api.radio.IRadioReceiver;
 import icbm.classic.api.radio.IRadioSender;
 import icbm.classic.api.radio.messages.ITriggerActionMessage;
 import icbm.classic.api.radio.messages.ITargetMessage;
+import icbm.classic.content.blocks.launcher.FiringPackage;
+import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
+import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.lib.radio.messages.TextMessage;
@@ -42,9 +46,17 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
 
             // Fire missile packet
             if(packet instanceof ITriggerActionMessage) {
-                host.doLaunchNext = true;
+                if(host.getFiringPackage() != null) {
+                    sender.onMessageCallback(this, new TextMessage(getChannel(), LauncherLangs.ERROR_MISSILE_QUEUED));
+                    return;
+                }
                 if(sender instanceof FakeRadioSender) {
-                    host.nextFireCause = new EntityCause(((FakeRadioSender) sender).player); //TODO add radio cause before player, pass in item used
+                    //TODO add radio cause before player, pass in item used
+                    host.setFiringPackage(new FiringPackage(new BasicTargetData(host.getTarget()), new EntityCause(((FakeRadioSender) sender).player), 0));
+                }
+                else {
+                    // TODO set cause to radio
+                    host.setFiringPackage(new FiringPackage(new BasicTargetData(host.getTarget()), null, 0));
                 }
 
                 // TODO if we are aiming give status feedback

@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
@@ -30,16 +31,21 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.tuple.Pair;
+import scala.tools.nsc.doc.base.comment.Text;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This tile entity is for the screen of the missile launcher
@@ -68,7 +74,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     @Getter
     private float launcherInaccuracy = 0;
 
-    private final List<IActionStatus> statusList = new ArrayList();
+    private final List<LauncherPair> statusList = new ArrayList();
     private boolean refreshStatus = false;
 
     @Override
@@ -92,10 +98,12 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
                 final List<IMissileLauncher> launchers = getLaunchersInGroup();
                 if(!launchers.isEmpty()) {
+                    final int launcherCount = launchers.size();
                     launcherInaccuracy = launchers.stream().map(l -> {
 
                         // Collect status
-                        statusList.add(launch(l, launchers.size(), true));
+                        final IActionStatus status = preCheck(l, launcherCount);
+                        statusList.add(new LauncherPair(l.getLauncherGroup(), l.getLaunchIndex(), status));
 
                         // Get accuracy for compare
                         return l.getInaccuracy(getTarget(), launchers.size());
@@ -158,7 +166,17 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
         final NBTTagCompound compound = ByteBufUtils.readTag(data);
         final NBTTagList list = compound.getTagList("p", 10);
-        final List<IActionStatus> status = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(list, new ArrayList<IActionStatus>());
+        final List<LauncherPair> status = new ArrayList<>(list.tagCount());
+        for(int i = 0; i < list.tagCount(); i++) {
+            final NBTTagCompound save = (NBTTagCompound) list.get(i);
+            final int group = save.getInteger("g");
+            final int index = save.getInteger("i");
+            final NBTTagCompound partSave = save.getCompoundTag("p");
+            final IActionStatus part = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(partSave);
+            if(part != null) {
+                status.add(new LauncherPair(group, index, part));
+            }
+        }
 
         Minecraft.getMinecraft().addScheduledTask(() -> {
             this.statusList.clear();
@@ -175,7 +193,15 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
         packet.addData(this.getTarget());
 
         final NBTTagCompound tag = new NBTTagCompound(); //TODO find a way to send bytes
-        tag.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(statusList));
+        final NBTTagList list = new NBTTagList();
+        statusList.forEach((pair) -> {
+            final NBTTagCompound save = new NBTTagCompound();
+            save.setInteger("g", pair.getGroup());
+            save.setInteger("i", pair.getIndex());
+            save.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
+            list.appendTag(save);
+        });
+        tag.setTag("p", list);
         packet.addData(tag);
 
         return packet;
@@ -200,13 +226,31 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     }
 
     /**
-     * Calls the missile launcher base to launch it's missile towards a targeted location
-     * @return true if launched, false if not
+     * Invokes launch process
+     *
+     * @param launcher to use
+     * @param launcherCount in current firing mission
+     * @return status
      */
     public IActionStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
     {
-        final BlockScreenCause cause = new BlockScreenCause(world, pos, getBlockState(), launcherCount);
-        return launcher.launch(new BasicTargetData(this.getTarget()), cause, simulate); //TODO move lockHeight to launchPad
+        return launcher.launch(new BasicTargetData(this.getTarget()), createCause(launcherCount), simulate);
+    }
+
+    /**
+     * Pre-check of the launch process
+     *
+     * @param launcher to use
+     * @param launcherCount in current firing mission
+     * @return status
+     */
+    public IActionStatus preCheck(IMissileLauncher launcher, int launcherCount)
+    {
+        return launcher.preCheckLaunch(new BasicTargetData(this.getTarget()), createCause(launcherCount));
+    }
+
+    private IMissileCause createCause(int launcherCount) {
+        return new BlockScreenCause(world, pos, getBlockState(), launcherCount); //TODO cache?
     }
 
     public boolean fireAllLaunchers(boolean simulate) {
@@ -224,7 +268,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
     public boolean canLaunch() {
         if(isClient()) {
-            return !statusList.isEmpty() && statusList.stream().noneMatch(IActionStatus::isError);
+            return !statusList.isEmpty() && statusList.stream().map(LauncherPair::getStatus).noneMatch(IActionStatus::shouldBlockInteraction); //TODO add bypass in GUI if some can fire
         }
         return fireAllLaunchers(true);
     }
@@ -236,15 +280,27 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
      */
     public ITextComponent getStatusTranslation()
     {
-        if (getNetworkNode().getNetwork() == null || statusList.isEmpty())
+        // Network isn't setup
+        if (getNetworkNode().getNetwork() == null)
         {
             return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK;
         }
-        return statusList.stream()
-            .filter(IActionStatus::isError)
-            .map(IActionStatus::message)
-            .findFirst()
-            .orElse(LauncherLangs.TRANSLATION_READY);
+        // No launcher is connected yet
+        else if(getNetworkNode().getLaunchers().isEmpty()) {
+            return LauncherLangs.TRANSLATION_ERROR_NO_LAUNCHER;
+        }
+        // Generally only fails client side when status list is missing
+        else if(statusList.isEmpty()) {
+            return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK_STATUS;
+        }
+        final List<LauncherPair> errors = statusList.stream().filter(pair -> pair.getStatus().shouldBlockInteraction()).collect(Collectors.toList());
+        if(errors.isEmpty()) {
+            return LauncherLangs.TRANSLATION_READY;
+        }
+        else if(errors.size() == 1) {
+            return errors.get(0).getStatus().message();
+        }
+        return new TextComponentTranslation(LauncherLangs.ERROR_MISSILE_MULTI, errors.size()); //TODO show warning if some can fire
     }
 
     @Override

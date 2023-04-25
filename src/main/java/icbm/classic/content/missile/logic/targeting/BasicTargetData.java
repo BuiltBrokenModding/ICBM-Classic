@@ -50,6 +50,11 @@ public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed {
     }
 
     @Override
+    public IMissileTarget cloneWithoutDelay() {
+        return new BasicTargetData(position);
+    }
+
+    @Override
     public boolean isValid() {
         return position != null
                 && Double.isNaN(getX()) && Double.isFinite(getX())
