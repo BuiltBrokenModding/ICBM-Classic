@@ -3,16 +3,128 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
-## Next release
+## 5.2.0 - April 25th, 2023
 
 ### Runtime Changes
 
-* Changed: nuke and large blast step calculation to remove atan - small performance improvement
-* Fixed: Blocks with a hardness smaller than 0 (e.g. bedrock) are not included in thermobaric and nuclear blast power calculation
+* Added: User defined firing delay to launcher base. Allows users to define a delay in ticks in the UI. Useful for firing several missiles or handling redstone door interaction.
+* Added: Firing data delay to launcher base. Allows controllers to supply additional delay length on top of user defined.
+* Added: Better launcher screen feedback for when launchers are not ready to fire
+* Added: Error feedback when status system breaks client side. Shouldn't happen but now has an error so not to confuse users.
+* Added: blast scale config options
+* Added: several configs for nukes to handle sub-blasts of rot and mutation. Including ability to customize damage multiplier.
+* Fixed: Some issues of action status not syncing to clients causing launchers to act as not ready client side
 
 ### Dev Changes
 
-* Deprecated: IEnergyBuffer
+* Added: Way to define delays in firing data
+* Added: Warning spam to chat if status action is not registered for save/load
+* Added: interface for fuse delay, used with firing data
+* Added: interface for firing delay, used with firing data
+
+## 5.1.2 - April 14th, 2023
+
+* Fixed: inventory hardcoding drops to slot zero
+
+## 5.1.1 - April 14th, 2023
+
+* Fixed: inventory hardcoding issues
+* Fixed: launcher network connector blocks dropping launcher's inventory
+* Fixed: launcher network invalidation issues
+* Fixed: nameplate showing for launcher
+
+## 5.1.0
+
+* Fixed: redstone interaction issues with explosive blocks
+
+## 5.0.0
+
+* Added: launcher connector to pass power, data, and inventory
+* Added: launcher network system allowing any block to be part of the launcher setup and connect
+* Added: support for several launchers connect to a single or multi-screen setup. All the rockets \0/
+* Added: on/off redstone toggle to radar UI
+* Added: auto generation of radio ID to help users pick a unique ID
+* Added: UI to launcher base to handle lock height and later features such as grouping & delay fire
+* Added: logic to have fragments break blocks (glass, leaves) and pass through on impact (leaves)
+* Added: logic to have missiles break and pass through blocks as well
+* Added: easer egg for flying chickens on missiles
+* Added: ability to fire entities from offhand leash
+* Added: vanilla portal interaction for missiles
+* Added: collision override register for missiles. Allows other devs to add custom interaction, including portal support.
+* Added: mekanism portal interaction for missiles, requires portal frame block as backstop for detection to work
+* Added: missile subtitles, not all sounds are covered yet
+* Added: direct redstone support to cruise launchers
+* Added: xz motion feezing to missiles fixing over/under shooting targets are larger ranges
+* Added: distance based inaccuracy
+* Removed: tiers from launcher
+* Removed: multi-block from launcher
+* Reworked: Launcher heavily to be capability driven and decoupled from screen
+* Reworked: launcher frame/support to be primary decorative
+* Reworked: cruise launcher to work with launcher screen
+* Reworked: block visuals and models
+* Reworked: item visuals
+* Reworked: launcher base to no longer be 3D, simplifying visuals. Later updates/addons will add more visuals to make up for loss of tier visuals.
+* Reworked: launcher screen to no longer be 3D, simplifying visuals. Later updates will add more screens and controllers that may be 3D
+* Reworked: launcher GUIs to visually look nicer and be easier to use. Including adding tooltips for icons to understand what each component does.
+* Reworked: radar to no longer be 3D, simplifying visuals. Later radar rewrite will include 3D radar blocks that connect to this screen.
+* Reworked: credit tracking to better match artist/license to each asset we use. Future no asset will be added without known credit/license to avoid killing the project.
+* Reworked: emp tower to be optional multi-block. Each block added increases max range.
+* Reworked: emp tower to have spin up/down, cooldown, and animations
+* Reworked: radio system to use packets and provide two way feedback to users
+* Removed: old xmas content, still planning on making an addon for this but am lazy
+* Renamed: sulfur to organic sulfur to match that it is creeper dropped
+* Updated: localization
+* Updated: user feedback for tool usage and interaction
+* Updated: radio system to handle strings instead of just numbers. Allowing more complex IDs to be used.
+* Fixed: missile bound check for launcher base
+* Fixed: proxy being called twice on load
+* Fixed: missile flight path issues
+* Fixed: fragments spawning inside group depending on missile angle
+* Fixed: duplicate block information
+* Fixed: cruise launcher not consistently hitting target
+* Fixed: radar registry issues for missiles not showing on detectors
+* Fixed: radar registry crashing servers when chunks unload
+* Fixed: missiles not raytracing blocks correctly. Some cases missiles can still clip through at higher speeds due to MC bugs.
+* Fixed: lock height being used as det height
+* Fixed: laser det firing on network thread instead of main thread causing crashes at random
+
+## 4.4.0
+
+* Updated: all missile models and textures
+
+## 4.3.0
+
+* Removed: hypersonic missile, we already have sonic and don't need duplicate types with minimal size difference.
+
+## 4.2.1
+
+* Fixed: lwjgl being called server side
+* Fixed: cruise launcher text box selection issue
+* Fixed: antidote missing from creative tab
+
+## 4.2.0
+
+* Added: localizations for smoke ex types
+* Added: creative mode way to add minecarts to missiles
+* Added: inventory support to cruise launcher
+* Added: battery slot to cruise launcher
+* Added: color blast
+* Added: smoke blast
+* Added: recipe lookup for missile modules
+* Added: SAM missile
+* Reworked: missile logic and functionality
+* Reworked: direct fired missiles to have fuel
+* Reworked: missiles to be heavily capability driven for flight, targeting, and references
+* Reworked: launchers to view missiles as capabilities to allow more types to be added outside existing items/entities
+* Updated: recipe data and made improvements
+* Fixed: recipe issues
+* Fixed: item frame rendering for missiles
+* Fixed: rider issues with missile seat
+* Fixed: missiles simulating while being ridden by players, or by players riding another entity
+* Fixed: cruise launcher not aiming correctly with laser det
+* Fixed: cruise launcher min range detection
+* Changed: nuke and large blast step calculation to remove atan - small performance improvement
+* Fixed: Blocks with a hardness smaller than 0 (e.g. bedrock) are not included in thermobaric and nuclear blast power calculation
 
 ## 4.1.0 - November 3rd, 2021
 
