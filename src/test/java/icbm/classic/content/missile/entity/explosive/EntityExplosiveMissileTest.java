@@ -72,6 +72,7 @@ public class EntityExplosiveMissileTest extends TestBase
         Assertions.assertTrue(missile.getMissileCapability().canRunFlightLogic());
         Assertions.assertNull(missile.getMissileCapability().getTargetData());
         Assertions.assertEquals(new DeadFlightLogic(135), missile.getMissileCapability().getFlightLogic());
+
         final EntityCause entitySourceData = new EntityCause();
         entitySourceData.setName("Player890");
         entitySourceData.setId(new UUID(2454671487114819752L, -8122821596986775482L));

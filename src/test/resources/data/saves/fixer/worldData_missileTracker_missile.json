@@ -263,33 +263,22 @@
               "type": 10,
               "data": [
                 {
-                  "type": 10,
-                  "data": [
-                    {
-                      "type": 3,
-                      "data": 25,
-                      "key": "x"
-                    },
-                    {
-                      "type": 3,
-                      "data": 68,
-                      "key": "y"
-                    },
-                    {
-                      "type": 3,
-                      "data": 12,
-                      "key": "z"
-                    }
-                  ],
-                  "key": "block_pos"
+                  "type": 6,
+                  "data": "25.0",
+                  "key": "x"
+                },
+                {
+                  "type": 6,
+                  "data": "68.0",
+                  "key": "y"
+                },
+                {
+                  "type": 6,
+                  "data": "12.0",
+                  "key": "z"
                 }
               ],
-              "key": "data"
-            },
-            {
-              "type": 8,
-              "data": "icbmclassic:block",
-              "key": "id"
+              "key": "pos"
             }
           ],
           "key": "source"
