@@ -1,7 +1,13 @@
 # INFO
+
 This log contains changes made to the project. Each entry contains changed made after the last version but before the number was changed. Any changes made after a number change are considered part of the next release. This is regardless if versions are still being released with that version number attached. 
 
 # Versions
+
+## 5.2.1 - April 25th, 2023
+
+* Fixed: redmatter init not getting config scale due to unimplemented method
+
 
 ## 5.2.0 - April 25th, 2023
 
