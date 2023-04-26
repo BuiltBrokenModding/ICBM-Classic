@@ -1,22 +1,15 @@
 pluginManagement {
     repositories {
-        maven { url 'https://plugins.gradle.org/m2/' }
-        mavenCentral()
-        maven {
-            url "https://squiddev.cc/maven/"
-            content {
-                includeGroup("cc.tweaked")
-                includeModule("org.squiddev", "Cobalt")
-            }
-        }
+        maven {url 'https://plugins.gradle.org/m2/' }
+        mavenCentral();
         maven {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
-        }
+        };
         maven {
             name 'Garden of Fancy'
             url 'https://gitlab.com/api/v4/projects/26758973/packages/maven'
-        }
+        };
     }
 }
 
