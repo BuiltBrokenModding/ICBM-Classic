@@ -21,6 +21,12 @@ public abstract class BlastBase implements IBlastInit
     private double blastSize;
 
     @Override
+    public float getBlastRadius()
+    {
+        return (float) blastSize;
+    }
+
+    @Override
     public IBlastInit setBlastSize(double size) {
         this.blastSize = size;
         return this;
