@@ -1,8 +1,14 @@
 package icbm.classic.lib.capability.missile;
 
+import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
+import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
@@ -11,6 +17,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Applied to {@link ItemStack} that are missiles
@@ -21,6 +28,17 @@ public class CapabilityMissileStack implements ICapabilityMissileStack
 
     public CapabilityMissileStack(ItemStack stack) {
         this.stack = stack;
+    }
+
+    @Override
+    public String getMissileId() {
+        return ICBMConstants.PREFIX + "missile["
+            + Optional.ofNullable(ICBMClassicHelpers.getExplosive(stack))
+            .map(IExplosive::getExplosiveData)
+            .map(IExplosiveData::getRegistryName)
+            .map(Object::toString)
+            .orElse("unknown")
+            + "]";
     }
 
     @Override
