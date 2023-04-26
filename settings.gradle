@@ -3,6 +3,13 @@ pluginManagement {
         maven { url 'https://plugins.gradle.org/m2/' }
         mavenCentral()
         maven {
+            url "https://squiddev.cc/maven/"
+            content {
+                includeGroup("cc.tweaked")
+                includeModule("org.squiddev", "Cobalt")
+            }
+        }
+        maven {
             name 'MinecraftForge'
             url 'https://maven.minecraftforge.net/'
         }
