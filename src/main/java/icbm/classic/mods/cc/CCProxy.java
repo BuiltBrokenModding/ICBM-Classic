@@ -11,6 +11,8 @@ import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.mods.ModProxy;
 import icbm.classic.mods.cc.builder.PeripheralBuilder;
+import icbm.classic.mods.cc.methods.CommonMethods;
+import icbm.classic.mods.cc.methods.EnergyMethods;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +30,10 @@ public class CCProxy extends ModProxy implements IPeripheralProvider {
 
 
     private final PeripheralBuilder<TileRadarStation> radarBuilder = new PeripheralBuilder<TileRadarStation>(ICBMConstants.PREFIX + "radar.station")
-        .withMethod("getBattery", (radar -> new Object[]{radar.getTile().getEnergy(), radar.getTile().getEnergyBufferSize(), radar.getTile().getEnergyConsumption()}));
+        .withMethod("getEnergyData", EnergyMethods::getEnergyData)
+        .withMethod("getEnergy", EnergyMethods::getEnergy)
+        .withMethod("getEnergyLimit", EnergyMethods::getEnergyLimit)
+        .withMethod("getMachineInfo", CommonMethods::getMachineInfo);
 
     @Override
     public void init() {

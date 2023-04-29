@@ -1,14 +1,11 @@
 package icbm.classic.mods.cc.builder;
 
 
-import dan200.computercraft.api.lua.ILuaContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class PeripheralBuilder<T extends TileEntity> {
 
@@ -25,17 +22,17 @@ public class PeripheralBuilder<T extends TileEntity> {
         return this;
     }
 
-    public PeripheralBuilder<T> withMethod(String type, MethodFunc<T> method) {
+    public PeripheralBuilder<T> withMethod(String type, MethodFuncContext<T> method) {
         methods.add(new PeripheralMethodFunc<T>(type, method));
         return this;
     }
 
-    public PeripheralBuilder<T> withMethod(String type, BiFunction<Peripheral<T>, Object[], Object[]> method) {
+    public PeripheralBuilder<T> withMethod(String type, MethodFuncArgs<T> method) {
         methods.add(new PeripheralMethodFunc<T>(type, (peripheral, computer, context, args) -> method.apply(peripheral, args)));
         return this;
     }
 
-    public PeripheralBuilder<T> withMethod(String type, Function<Peripheral<T>, Object[]> method) {
+    public PeripheralBuilder<T> withMethod(String type, MethodFuncGet<T> method) {
         methods.add(new PeripheralMethodFunc<T>(type, (peripheral, computer, context, args) -> method.apply(peripheral)));
         return this;
     }

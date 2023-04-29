@@ -9,10 +9,10 @@ import javax.annotation.Nonnull;
 
 public class PeripheralMethodFunc<T extends TileEntity> extends PeripheralMethod<T> {
 
-    private final MethodFunc<T> methodFunc;
-    public PeripheralMethodFunc(String name, MethodFunc<T> methodFunc) {
+    private final MethodFuncContext<T> methodFunc;
+    public PeripheralMethodFunc(String name, MethodFuncContext<T> methodFuncContext) {
         super(name);
-        this.methodFunc = methodFunc;
+        this.methodFunc = methodFuncContext;
     }
 
     @Override
