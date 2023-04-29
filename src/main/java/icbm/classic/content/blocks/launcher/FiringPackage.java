@@ -15,7 +15,6 @@ import net.minecraftforge.common.util.INBTSerializable;
  * Used to store firing information when working with countdowns/delays
  */
 @Data
-@AllArgsConstructor
 public class FiringPackage implements INBTSerializable<NBTTagCompound> {
 
     /** Input: Target data */
@@ -25,15 +24,37 @@ public class FiringPackage implements INBTSerializable<NBTTagCompound> {
     private IMissileCause cause;
 
     /** Counter: Time to tick down before firing */
-    private int countDown;
+    private int countDown = -1;
+
+    private boolean hasFired = false;
+
+    public FiringPackage(IMissileTarget targetData, IMissileCause cause, int countDown) {
+        this.targetData = targetData;
+        this.cause = cause;
+        this.countDown = countDown;
+    }
+
+    public FiringPackage(IMissileTarget targetData, IMissileCause cause) {
+        this.targetData = targetData;
+        this.cause = cause;
+    }
 
     public void launch(IMissileLauncher missileLauncher) {
-        if(targetData instanceof IMissileTargetDelayed) {
-            targetData = ((IMissileTargetDelayed) targetData).cloneWithoutDelay();
-        }
 
-        // Invoke normal launch so we fire events and handle logic consistently
-        missileLauncher.launch(targetData, cause, false); //TODO add callback to firing source
+        if(!hasFired) {
+            hasFired = true;
+
+            if (targetData instanceof IMissileTargetDelayed) {
+                targetData = ((IMissileTargetDelayed) targetData).cloneWithoutDelay();
+            }
+
+            // Invoke normal launch so we fire events and handle logic consistently
+            missileLauncher.launch(targetData, cause, false); //TODO add callback to firing source
+        }
+    }
+
+    public boolean isReady() {
+        return !hasFired;
     }
 
     @Override

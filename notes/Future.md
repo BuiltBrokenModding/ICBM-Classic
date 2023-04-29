@@ -40,9 +40,13 @@ Add visual emp effect to attacked tiles, entities, and items
 # Radio System Rework
 
 - Antenna block to receive and send signals
+- Block to send pre-defined radio messages for redstone triggering
+- CC block to allow sending and receiving radio signals
 - Remove radio message handling from screen
 - Have radio message block to take signal from antenna and do action
 - Antenna range and signal loss chance
+- Ability to turn radio off in blocks
+- Ability to turn off radio event handling. Example: Ignoring firing commands but allow set target commands
 
 Basically mimic ICBM 2's system
 
