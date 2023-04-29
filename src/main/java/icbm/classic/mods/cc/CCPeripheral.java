@@ -3,6 +3,8 @@ package icbm.classic.mods.cc;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -10,13 +12,21 @@ import java.util.Map;
 public abstract class CCPeripheral<T extends TileEntity> implements IPeripheral {
 
     protected final T tile;
+    protected final EnumFacing side;
+    private final BlockPos computerPos;
 
-    protected CCPeripheral(T tile) {
+    protected CCPeripheral(T tile, EnumFacing side) {
         this.tile = tile;
+        this.side = side;
+        this.computerPos = tile.getPos().offset(side);
     }
 
     protected Object[] out(Object... args) {
         return args;
+    }
+
+    protected BlockPos getComputerBlockPos() {
+        return computerPos;
     }
 
     protected double getNumeric(Map<?, ?> table, String key, String errorPrefix) throws LuaException {
