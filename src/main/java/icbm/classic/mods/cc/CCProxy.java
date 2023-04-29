@@ -6,6 +6,7 @@ import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import dan200.computercraft.api.peripheral.IPeripheralTile;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.mods.ModProxy;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -39,6 +40,9 @@ public class CCProxy extends ModProxy implements IPeripheralProvider {
         }
         else if(tile instanceof TileLauncherBase) {
             return new LauncherBasePeripheral((TileLauncherBase) tile, ((TileLauncherBase) tile).missileLauncher, connectedSide);
+        }
+        else if(tile instanceof TileCruiseLauncher) {
+            return new LauncherCruisePeripheral((TileCruiseLauncher) tile, ((TileCruiseLauncher) tile).launcher, connectedSide);
         }
         else if (tile.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, connectedSide)) {
             return new LauncherPeripheral(tile, tile.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, connectedSide), connectedSide);

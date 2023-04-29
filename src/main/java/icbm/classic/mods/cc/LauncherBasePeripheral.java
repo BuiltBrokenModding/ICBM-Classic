@@ -70,6 +70,8 @@ public class LauncherBasePeripheral extends LauncherPeripheral<TileLauncherBase>
             final int firingCost = tile.getEnergyConsumption();
             return out(energy, maxEnergy, firingCost);
         }
+        //TODO add method for missile spawn point
+        //TODO add method to get launch timers and delays
         return super.callMethod(iComputerAccess, iLuaContext, method, objects);
     }
 }
