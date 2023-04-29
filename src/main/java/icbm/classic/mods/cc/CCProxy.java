@@ -4,10 +4,13 @@ import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import dan200.computercraft.api.peripheral.IPeripheralTile;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
+import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.mods.ModProxy;
+import icbm.classic.mods.cc.builder.PeripheralBuilder;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +24,11 @@ import javax.annotation.Nonnull;
 })
 public class CCProxy extends ModProxy implements IPeripheralProvider {
     public static final CCProxy INSTANCE = new CCProxy();
+
+
+
+    private final PeripheralBuilder<TileRadarStation> radarBuilder = new PeripheralBuilder<TileRadarStation>(ICBMConstants.PREFIX + "radar.station")
+        .withMethod("getBattery", (radar -> new Object[]{radar.getTile().getEnergy(), radar.getTile().getEnergyBufferSize(), radar.getTile().getEnergyConsumption()}));
 
     @Override
     public void init() {
@@ -37,6 +45,9 @@ public class CCProxy extends ModProxy implements IPeripheralProvider {
         }
         else if(tile instanceof IPeripheralTile) {
             return ((IPeripheralTile) tile).getPeripheral(side);
+        }
+        else if(tile instanceof TileRadarStation) {
+            return radarBuilder.build((TileRadarStation) tile, connectedSide);
         }
         else if(tile instanceof TileLauncherBase) {
             return new LauncherBasePeripheral((TileLauncherBase) tile, ((TileLauncherBase) tile).missileLauncher, connectedSide);
