@@ -208,6 +208,8 @@ a scroll list to add commands to run.
 - Way to see scan area outside of UI
 - Trigger delays on redstone and radio signal for AB missiles
 - radar classification system to give entities a shape, size, and threat level. Allowing an abstraction from just reporting explosive missiles
+- Have radar figure out the size, shape, rotation of non-missile entities. If it can ID the entity it can take a high level of guess... unknowns should be estimates with inaccuracy.
+- Add material system so radar can report back if an entity is squishy or reflective
 - cleanup radar map to use consumer pattern so it stops wasting as much RAM making `arraylists` all the time
 - create CC multi-block style monitor to show real time radar detection on face of blocks. Handle all 6 sides and do connected textures
 - Allow screen to optionally render detected stuff on face
