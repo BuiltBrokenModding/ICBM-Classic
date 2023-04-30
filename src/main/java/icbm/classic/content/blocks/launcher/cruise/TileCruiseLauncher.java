@@ -70,9 +70,11 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     private Vec3d _targetPos = Vec3d.ZERO;
 
     /** Desired aim angle, updated every tick if target != null */
+    @Getter
     protected final EulerAngle aim = new EulerAngle(0, 0, 0); //TODO change UI to only have yaw and pitch, drop xyz but still allow tools to auto fill from xyz
 
     /** Current aim angle, updated each tick */
+    @Getter
     protected final EulerAngle currentAim = new EulerAngle(0, 0, 0);
 
     /** Last time rotation was updated, used in {@link EulerAngle#lerp(EulerAngle, double)} function for smooth rotation */
@@ -217,7 +219,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         }
     }
 
-    protected boolean isAimed() {
+    public boolean isAimed() {
         return currentAim.isWithin(aim, 0.01);
     }
 

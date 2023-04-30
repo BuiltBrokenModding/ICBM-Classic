@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
  *
  * @author DarkGuardsman
  */
-public interface IMissile extends IWorldPosition
+public interface IMissile extends IWorldPosition // TODO add registry and require each missile (ex combinations included) to have a key
 {
     /**
      * The amount of ticks this missile has been flying for. Returns -1 if the missile is not

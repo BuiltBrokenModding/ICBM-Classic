@@ -42,6 +42,12 @@ idea {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
+    // Computer craft
+    //  https://squiddev.cc/maven/org/squiddev/cc-tweaked-1.12.2/1.89.2/
+    //  https://github.com/cc-tweaked/CC-Tweaked/releases/tag/v1.12.2-1.89.2
+    //  https://github.com/cc-tweaked/CC-Tweaked/tree/v1.12.2-1.89.2
+    implementation "org.squiddev:cc-tweaked-1.12.2:1.89.2"
+
     // https://projectlombok.org/setup/gradle
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -175,7 +181,11 @@ jar {
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral();
+    maven {
+        name 'SquidDev'
+        url 'https://squiddev.cc/maven/'
+    };
 }
 jar.finalizedBy('reobfJar')
 
