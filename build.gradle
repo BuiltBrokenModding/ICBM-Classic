@@ -1,32 +1,12 @@
-plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'net.minecraftforge.gradle' version '5.1.+'
-    id 'wtf.gofancy.fancygradle' version '1.1.+'
-}
-
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import org.apache.tools.ant.filters.ReplaceTokens
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-        vendor = JvmVendorSpec.ADOPTOPENJDK
-    }
-}
-
-version = "${version_major}.${version_minor}.${version_revis}"
-archivesBaseName = "ICBM-classic-${version_mc}"
-
-fancyGradle {
-    patches {
-        //https://gitlab.com/gofancy/fancygradle/-/wikis/IDE-Specific-Runs
-        resources
-        coremods
-        asm
-        mergetool
-    }
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
+    id 'wtf.gofancy.fancygradle' version "${fancy_gradle_version}"
 }
 
 idea {
@@ -39,39 +19,29 @@ idea {
     }
 }
 
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-
-    // https://projectlombok.org/setup/gradle
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-    //Mods
-    implementation files('libs/industrialcraft-2-2.8.170-ex112-api.jar')
-    implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
-
-    //Junit 5
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation files('libs/MinecraftJUnit-1.4.0-deobf.jar') //TODO use forge gradle to deobf for me testImplementation fg.deobf('whateveridc:MinecraftJUnit:1.4.0')
-    //TODO example  runtimeOnly(fg.deobf(group = "mezz.jei", name = "jei-1.16.5", version = "7.7.1.121"))
-
-    //Resource injector
-    // https://hosuaby.github.io/inject-resources/0.3.2/asciidoc/#inject-resources-junit-jupiter
-    // https://github.com/hosuaby/inject-resources
-    testImplementation 'io.hosuaby:inject-resources-junit-jupiter:0.3.2'
-
-    //Mockito
-    testImplementation 'org.mockito:mockito-inline:4.3.1'
-    testImplementation 'org.mockito:mockito-core:4.3.1'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+        vendor = JvmVendorSpec.ADOPTOPENJDK
+    }
 }
 
+version = "${project.version_major}.${project.version_minor}.${project.version_revis}"
+archivesBaseName = "ICBM-classic-${project.minecraft_version}"
+
+def final isCI = System.getenv("GITHUB_ACTION")
+def final ref = System.getenv("GITHUB_PR_NUMBER")
+if(isCI) {
+    version = version + "-CI" + (ref ? "-${ref}" : "")
+}
+
+println('[BUILD]: Project Version: ' + version)
+println('[BUILD]: Java: ' + System.getProperty('java.version'))
+println('[BUILD]: JVM: ' + System.getProperty('java.vm.version') + ' (' + System.getProperty('java.vendor') + ')')
+println('[BUILD]: Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
+    // mappings channel: 'stable', version: '39-1.12'
     mappings channel: 'snapshot', version: '20171003-1.12'
 
     accessTransformer = file('src/main/resources/META-INF/ICBMClassic_at.cfg')
@@ -91,6 +61,43 @@ minecraft {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft group: 'net.minecraftforge', name: 'forge', version: "${project.minecraft_version}-${project.forge_version}"
+
+    //Mods
+    implementation files('libs/industrialcraft-2-2.8.170-ex112-api.jar')
+    implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
+
+    // Test frameworks
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    //Junit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation files('libs/MinecraftJUnit-1.4.0-deobf.jar') //TODO use forge gradle to deobf for me testImplementation fg.deobf('whateveridc:MinecraftJUnit:1.4.0')
+    //TODO example  runtimeOnly(fg.deobf(group = "mezz.jei", name = "jei-1.16.5", version = "7.7.1.121"))
+
+    //Resource injector
+    // https://hosuaby.github.io/inject-resources/0.3.2/asciidoc/#inject-resources-junit-jupiter
+    // https://github.com/hosuaby/inject-resources
+    testImplementation 'io.hosuaby:inject-resources-junit-jupiter:0.3.2'
+
+    //Mockito
+    testImplementation 'org.mockito:mockito-inline:4.3.1'
+    testImplementation 'org.mockito:mockito-core:4.3.1'
+
+}
+
+
 task filterTokens(type: Sync) {
     duplicatesStrategy = 'include'
 
@@ -102,46 +109,82 @@ task filterTokens(type: Sync) {
     into "$buildDir/sources"
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
 /*compileJava {
     source = filterTokens.outputs
 }*/
 
-test {
-    useJUnitPlatform()
+fancyGradle {
+    patches {
+        resources
+        coremods
+        asm
+        mergetool
+    }
+}
 
-    maxHeapSize = '1G'
-    failFast = false
-    workingDir = './run/tests'
-    mkdir './run/tests'
+processJarTask(jar)
 
-    forkEvery = 1
+// Create deobf dev jars
+if (isCI || project.build_deobfJar.toBoolean()) {
+    tasks.register('deobfJar', Jar) {
+        archiveClassifier.set 'deobf'
+        from sourceSets.main.output
+    }
+    processJarTask(deobfJar)
+}
+// Create source jar
+if (isCI || project.build_sourceJar.toBoolean()) {
+    tasks.register('sourcesJar', Jar) {
+        archiveClassifier.set 'sources'
+        from sourceSets.main.allJava
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/api/java']
+        }
+
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+    main.output.setResourcesDir(main.java.classesDirectory)
 }
 
 processResources {
-
     // required to allow file expansion later
-    duplicatesStrategy = 'include'
-
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     // this will ensure that this task is redone when the versions change.
-    inputs.property 'version', version
-    inputs.property 'mcversion', version_mc
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft_version
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-
         // replace version and mcversion
-        expand 'version': version, 'mcversion': version_mc
+        expand 'version': project.version, 'mcversion': project.minecraft_version
     }
-
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 
     //Borrow from darkhax, thank you
+    // minify json data
     doLast {
-
         def jsonMinifyStart = System.currentTimeMillis()
         def jsonMinified = 0
         def jsonBytesSaved = 0
@@ -159,25 +202,45 @@ processResources {
     }
 }
 
-jar {
-    manifest.mainAttributes(
-            "Built-By": System.properties['user.name'],
-            "Created-By": "Gradle ${gradle.gradleVersion}",
-            'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-            'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
-            'Specification-Title': "ICBM-Classic",
-            'Specification-Vendor': "Built Broken Modding",
-            'Specification-Version': "${project.version}",
-            "Implementation-Title": project.archivesBaseName,
-            "Implementation-Version": "${project.version}",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "FMLAT": "ICBMClassic_at.cfg")
+test {
+    useJUnitPlatform()
+
+    maxHeapSize = '1G'
+    failFast = false
+    workingDir = './run/tests'
+    mkdir './run/tests'
+
+    forkEvery = 1
 }
 
-repositories {
-    mavenCentral()
+/**
+ * Applies required processing to jar tasks
+ * @param task the task to process
+ */
+private void processJarTask(task) {
+    task.configure {
+        manifest {
+            def attribute_map = [
+                "Built-By": System.properties['user.name'],
+                "Created-By": "Gradle ${gradle.gradleVersion}",
+                'Build-Jdk': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                'Build-OS': "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.version,
+                'Implementation-Commit': 'git rev-parse HEAD'.execute().text.trim(),
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "FMLAT": "ICBMClassic_at.cfg"
+            ]
+            attributes(attribute_map)
+        }
+        // exclude all files in src/api from being shipped in the jar
+        // this prevents crashes in obfuscated environments
+        // file('src/api/').eachDirRecurse { dir ->
+        //     exclude dir.name
+        // }
+    }
 }
-jar.finalizedBy('reobfJar')
+
 
 task installLocalGitHook(type: Copy){
     from new File(rootProject.rootDir, 'scripts/commit-msg')

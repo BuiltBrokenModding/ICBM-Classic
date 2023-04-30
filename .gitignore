@@ -1,42 +1,43 @@
-!*.*
-/bin
-/run
-/run_server
-/out
-
-*.classpath
-*.project
-.gradle/
-.settings/
-build/
-eclipse/
+# eclipse
+bin
 *.launch
+.settings
+.metadata
+.classpath
+.project
 
-*.iml
-*.iws
+# idea
+out
 *.ipr
-*.idea/
-*.ini
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+.vscode
+
+# Files from Forge MDK
+forge*changelog.txt
+
+# Misc ICBM stuff
 ICBM-classic.txt
 CompiledWith.txt
 output
 changelog.html
-.okhttpcache/
+.okhttpcache
 .DS_Store
-
-raw_audio/
-
-logs/
-
-run_tests/
-
+raw_audio
+logs
+run_tests
 banned-ips.json
-
 banned-players.json
-
 ops.json
-
 whitelist.json
-
-output_tests/
+output_tests
 /src/main/resources/assets/icbmclassic/_generated_credits.md.md
