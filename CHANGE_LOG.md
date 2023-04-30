@@ -4,6 +4,13 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 5.2.2 - April 29th, 2023
+
+Mostly dev changes for CC addon https://github.com/BuiltBrokenModding/ICBM-Classic-CC-Addon
+
+* Added: way to get missile unique key from builder capability
+* Added: getting for cruise launcher's capability, for use in CC addon
+
 ## 5.2.1 - April 25th, 2023
 
 * Fixed: redmatter init not getting config scale due to unimplemented method
