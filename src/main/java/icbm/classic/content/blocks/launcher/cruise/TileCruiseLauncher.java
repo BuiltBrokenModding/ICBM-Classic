@@ -87,7 +87,11 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile).withChangeCallback((stack) -> this.sendDescPacket()))
         .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+
+    @Getter
     protected final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
+
+    @Getter
     protected final CLauncherCapability launcher = new CLauncherCapability(this);
 
     @Getter @Setter
