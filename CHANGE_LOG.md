@@ -4,6 +4,10 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 5.2.3 - April 29th, 2023
+
+* Fixed: Incorrect version definition, leading to the CC addon not working
+
 ## 5.2.2 - April 29th, 2023
 
 Mostly dev changes for CC addon https://github.com/BuiltBrokenModding/ICBM-Classic-CC-Addon
