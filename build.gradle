@@ -72,7 +72,8 @@ dependencies {
     implementation files('libs/industrialcraft-2-2.8.170-ex112-api.jar')
     implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
 
-    // Test frameworks
+    // https://projectlombok.org/setup/gradle
+    // Utility annotations
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
