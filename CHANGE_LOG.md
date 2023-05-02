@@ -4,6 +4,31 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 5.3.0 -??
+
+Mostly cleanup and refactors for better addon support
+
+### Runtime Changes
+
+* Added: energy upkeep cost for EmpTower. firingCost = range^2 * configTickingCost
+* Added: config for emp tower max range
+* Added: config for emp tower bonus range
+* Added: config for emp tower cost per area scaling. tickingCost = range^2 * configValue
+* Added: config for emp tower cost ticking
+* Added: config for emp tower cooldown
+* Added: config for emp tower energy buffer size for cost ticking. energyBuffer = firingCost + (tickingCost * configValue)
+* Added: config for emp tower energy received limit
+
+### Dev Changes
+
+* Added: IMachineInfo interface for use with CC addon to access configs and settings
+* Added: machine info to empTower, radarStation, launcher, cruise launcher
+* Refactored: launcher network to store host tile, needed for CC support
+* Refactored: energy storage usage, dropped IEnergyBuffer in favor of IEnergyStorage as primary
+* Refactored: EnergyBuffer to be more lambda driven for easier reuse
+* Deleted: TilePoweredMachine, moved helpers to EnergyBuffer
+* Deleted: TileFrequency and TileLauncherPrefab, both were empty and only used by cruise launcher
+
 ## 5.2.3 - May 1st, 2023
 
 * Fixed: Incorrect version definition, leading to the CC addon not working
