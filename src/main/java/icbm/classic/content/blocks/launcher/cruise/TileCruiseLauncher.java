@@ -61,10 +61,11 @@ import java.util.function.BiConsumer;
 
 public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver, IGuiTile, ILauncherComponent
 {
-    public static final int DESCRIPTION_PACKET_ID = 0;
+    public static final int GUI_PACKET_ID = 0;
     public static final int SET_FREQUENCY_PACKET_ID = 1;
     public static final int SET_TARGET_PACKET_ID = 2;
     public static final int LAUNCH_PACKET_ID = 3;
+    public static final int RADIO_DISABLE_PACKET_ID = 4;
 
     private static final int REDSTONE_CHECK_RATE = 40;
     private static final double ROTATION_SPEED = 10.0;
@@ -257,7 +258,8 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
+        return new PacketTile("gui", GUI_PACKET_ID, this)
+            .addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.radioCap.isDisabled(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
     }
 
     @Override
@@ -271,12 +273,14 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
                 case SET_FREQUENCY_PACKET_ID:
                 {
                     this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                    updateClient = true;
                     return true;
                 }
                 //Set target packet from GUI
                 case SET_TARGET_PACKET_ID:
                 {
                     this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
+                    updateClient = true;
                     return true;
                 }
                 //launch missile
@@ -284,14 +288,21 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
                 {
                     final EntityCause cause = new EntityCause(player); // TODO note was UI interaction
                     launcher.launch(new BasicTargetData(getTarget()), cause, false);
+                    updateClient = true;
                     return true;
                 }
-                case DESCRIPTION_PACKET_ID:
+                case RADIO_DISABLE_PACKET_ID:
+                {
+                    radioCap.setDisabled(data.readBoolean());
+                    return true;
+                }
+                case GUI_PACKET_ID:
                 {
                     if (isClient())
                     {
                         this.energyStorage.setEnergyStored(data.readInt());
                         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                        this.radioCap.setDisabled(data.readBoolean());
                         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     }
                     return true;
@@ -353,6 +364,18 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     public void sendTargetPacket(Vec3d data) {
         if(isClient()) {
             ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", TileCruiseLauncher.SET_TARGET_PACKET_ID, this).addData(data));
+        }
+    }
+
+    public void sendFirePacket() {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", TileCruiseLauncher.LAUNCH_PACKET_ID, this));
+        }
+    }
+
+    public void sendRadioDisabled() {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("radioDisable_C>S", TileCruiseLauncher.RADIO_DISABLE_PACKET_ID, this).addData(!radioCap.isDisabled()));
         }
     }
 

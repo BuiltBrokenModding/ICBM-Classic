@@ -10,6 +10,7 @@ import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.GuiFormatHelpers;
 import icbm.classic.prefab.gui.TextInput;
+import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.Tooltip;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
@@ -66,7 +67,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
             .doDrawDisabledGlass()
             .setTooltip(this.tileEntity::getStatusTranslation))
-            .setAction(() -> ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", TileCruiseLauncher.LAUNCH_PACKET_ID, this.tileEntity)))
+            .setAction(this.tileEntity::sendFirePacket)
             .setEnabledCheck(tileEntity::canLaunch)
         ;
 
@@ -74,6 +75,9 @@ public class GuiCruiseLauncher extends GuiContainerBase
 
         // Radio tooltip
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
+            .setAction(tileEntity::sendRadioDisabled)
+        );
 
         // Target tooltip
         addComponent(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
