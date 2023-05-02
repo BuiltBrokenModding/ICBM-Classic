@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.emptower;
 
+import icbm.classic.config.machines.ConfigEmpTower;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.block.Block;
@@ -22,7 +23,7 @@ public class ItemBlockEmpTower extends ItemBlockSubTypes {
     public void addInformation(ItemStack stack, @Nullable World world, List list, ITooltipFlag flag)
     {
         if(stack.getMetadata() == 1){
-            list.add(LanguageUtility.getLocal(getUnlocalizedName(stack) + ".info").replace("%1$s", Integer.toString(TileEMPTower.BONUS_RADIUS)));
+            list.add(LanguageUtility.getLocal(getUnlocalizedName(stack) + ".info").replace("%1$s", Integer.toString(ConfigEmpTower.BONUS_RADIUS)));
         }
         else {
             list.add(LanguageUtility.getLocal(getUnlocalizedName(stack) + ".info"));

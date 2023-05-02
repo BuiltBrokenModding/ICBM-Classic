@@ -6,7 +6,7 @@ import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
-import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;

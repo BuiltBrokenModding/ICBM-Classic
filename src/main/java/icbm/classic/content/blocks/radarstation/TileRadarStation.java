@@ -3,7 +3,7 @@ package icbm.classic.content.blocks.radarstation;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.radarstation.data.RadarRenderData;
 import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;

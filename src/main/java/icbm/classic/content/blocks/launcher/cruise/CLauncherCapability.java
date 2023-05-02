@@ -8,7 +8,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;

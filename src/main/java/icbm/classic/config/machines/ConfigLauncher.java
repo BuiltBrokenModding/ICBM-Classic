@@ -1,4 +1,4 @@
-package icbm.classic.config;
+package icbm.classic.config.machines;
 
 import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;

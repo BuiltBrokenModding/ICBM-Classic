@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 /**
  * Basic implementation of energy buffer
+ *
  * Created by Dark on 8/15/2015.
  */
 public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>

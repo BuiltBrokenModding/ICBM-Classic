@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.config.ConfigMain;
+import icbm.classic.config.machines.ConfigEmpTower;
 import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.emptower.gui.GuiEMPTower;
 import icbm.classic.api.explosion.BlastState;
@@ -46,12 +47,6 @@ import java.util.function.BiConsumer;
 /** Logic side of the EMP tower block */
 public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGuiTile
 {
-    // The maximum possible radius for the EMP to strike
-    public static final int MAX_RADIUS = 150; //TODO move to config with a min & max
-    public static final int BONUS_RADIUS = 20;
-    public static final int ENERGY_COST_AREA = 100;
-    public static final int COOLDOWN = 10  * 20;
-    public static final int ENERGY_INPUT = 1000;
     public static final int ROTATION_SPEED = 15;
 
     public static final int CHANGE_RADIUS_PACKET_ID = 1; //TODO migrate to its own handler
@@ -72,11 +67,11 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     @Setter @Getter
     public int range = 60;
 
-    public final EnergyBuffer energyStorage = new EnergyBuffer(this::getFiringCost)
+    public final EnergyBuffer energyStorage = new EnergyBuffer(() -> this.getFiringCost() + (this.getTickingCost() * ConfigEmpTower.ENERGY_COST_TICKING_CAP))
         .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();})
         .withCanReceive(() -> this.getCooldown() <= 0)
         .withCanExtract(() -> false)
-        .withReceiveLimit(() -> ENERGY_INPUT);
+        .withReceiveLimit(() -> ConfigEmpTower.ENERGY_INPUT);
     public final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
@@ -88,9 +83,9 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
         consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER); //TODO create constant file and helpers for common keys
-        consumer.accept("ENERGY_COST_TICK", 0); //TODO implement a per tick upkeep
+        consumer.accept("ENERGY_COST_TICK", getTickingCost()); //TODO implement a per tick upkeep
         consumer.accept("ENERGY_COST_ACTION", getFiringCost());
-        consumer.accept("ENERGY_RECEIVE_LIMIT", ENERGY_INPUT);
+        consumer.accept("ENERGY_RECEIVE_LIMIT", ConfigEmpTower.ENERGY_INPUT);
         consumer.accept("EMP_COOLING_TICKS", getMaxCooldown());
         consumer.accept("EMP_MAX_RANGE", getMaxRadius());
     }
@@ -139,6 +134,9 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
 
         if (isServer())
         {
+            // Eat power
+            energyStorage.consumePower(getTickingCost(), false);
+
             if (ticks % 20 == 0 && isReady()) //TODO convert to a mix of a timer and/or event handler
             {
                 ICBMSounds.MACHINE_HUM.play(world, xi() + 0.5, yi() + 0.5, zi() + 0.5, 0.5F, 0.85F * getChargePercentage(), true);
@@ -256,7 +254,7 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
 
     public float getChargePercentage()
     {
-        return Math.min(1, energyStorage.getEnergyStored() / (float) getFiringCost());
+        return Math.max(0, Math.min(1, energyStorage.getEnergyStored() / (float) getFiringCost()));
     }
 
     @Override
@@ -289,11 +287,15 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
 
     public int getFiringCost()
     {
-        return range * range * ENERGY_COST_AREA;
+        return range * range * ConfigEmpTower.ENERGY_COST_AREA;
+    }
+
+    public int getTickingCost() {
+        return  range * range * ConfigEmpTower.ENERGY_COST_TICKING;
     }
 
     public int getMaxRadius() {
-        return MAX_RADIUS + (subBlocks.size() * BONUS_RADIUS);
+        return ConfigEmpTower.MAX_BASE_RANGE + (subBlocks.size() * ConfigEmpTower.BONUS_RADIUS);
     }
 
     protected IBlast buildBlast()
@@ -358,7 +360,7 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     //@Callback TODO add CC support
     public int getMaxCooldown()
     {
-        return COOLDOWN; //TODO add to config
+        return ConfigEmpTower.COOLDOWN; //TODO add to config
     }
 
     @Override

@@ -12,7 +12,7 @@ import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
