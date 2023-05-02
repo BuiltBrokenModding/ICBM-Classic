@@ -1,122 +1,142 @@
 package icbm.classic.lib.energy.storage;
 
-import icbm.classic.api.energy.IEnergyBuffer;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTPrimitive;
+import icbm.classic.config.ConfigMain;
+import icbm.classic.lib.energy.system.EnergySystem;
+import icbm.classic.lib.energy.system.IEnergySystem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.energy.IEnergyStorage;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Basic implementation of energy buffer
  * Created by Dark on 8/15/2015.
  */
-public class EnergyBuffer implements IEnergyBuffer, IEnergyStorage, INBTSerializable
+public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
 {
-    private int maxStorage;
+    private final Supplier<Integer> storageLimit;
+
+    private EnergyChangeCallback onEnergyChanged;
+    private Supplier<Boolean> canExtract;
+    private Supplier<Boolean> canReceive;
+    private Supplier<Integer> receiveLimit;
+    private Supplier<Integer> extractLimit;
+
     private int energyStorage;
 
-    public EnergyBuffer(int maxStorage)
+    public EnergyBuffer(Supplier<Integer> storageLimit)
     {
-        this.maxStorage = maxStorage;
+        this.storageLimit = storageLimit;
     }
 
-    @Override
-    public int addEnergyToStorage(int energy, boolean doAction)
-    {
-        int prev = getEnergyStored();
-        if (energy > 0)
-        {
-            int roomLeft = getMaxBufferSize() - getEnergyStored();
-            if (energy < roomLeft)
-            {
-                if (doAction)
-                {
-                    energyStorage += energy;
-                    if (prev != energyStorage)
-                    {
-                        onPowerChange(prev, getEnergyStored(), EnergyActionType.ADD);
-                    }
-                }
-                return energy;
-            }
-            else
-            {
-                if (doAction)
-                {
-                    energyStorage = getMaxBufferSize();
-                    if (prev != energyStorage)
-                    {
-                        onPowerChange(prev, getEnergyStored(), EnergyActionType.ADD);
-                    }
-                }
-                return roomLeft;
-            }
-        }
-        return 0;
+    public EnergyBuffer withOnChange(EnergyChangeCallback onEnergyChanged) {
+        this.onEnergyChanged = onEnergyChanged;
+        return this;
     }
 
-    @Override
-    public int removeEnergyFromStorage(int energy, boolean doAction)
-    {
-        int prev = getEnergyStored();
-        if (energy > 0 && getEnergyStored() > 0)
-        {
-            if (energy >= getEnergyStored())
-            {
-                if (doAction)
-                {
-                    energyStorage = 0;
-                    if (prev != getEnergyStored())
-                    {
-                        onPowerChange(prev, getEnergyStored(), EnergyActionType.REMOVE);
-                    }
-                }
-                return getMaxBufferSize();
-            }
-            else
-            {
-                if (doAction)
-                {
-                    energyStorage -= energy;
-                    if (prev != getEnergyStored())
-                    {
-                        onPowerChange(prev, getEnergyStored(), EnergyActionType.REMOVE);
-                    }
-                }
-                return energy;
-            }
-        }
-        return 0;
+    public EnergyBuffer withCanExtract(Supplier<Boolean> canExtract) {
+        this.canExtract = canExtract;
+        return this;
     }
 
-    /**
-     * Called when the power changes in the buffer
-     *
-     * @param prevEnergy - energy before action
-     * @param current    - energy after action
-     */
-    protected void onPowerChange(int prevEnergy, int current, EnergyActionType actionType)
-    {
-
+    public EnergyBuffer withCanReceive(Supplier<Boolean> canReceive) {
+        this.canReceive = canReceive;
+        return this;
     }
 
-    @Override
-    public int getMaxBufferSize()
-    {
-        return maxStorage;
+    public EnergyBuffer withExtractLimit(Supplier<Integer> extractLimit) {
+        this.extractLimit = extractLimit;
+        return this;
+    }
+
+    public EnergyBuffer withReceiveLimit(Supplier<Integer> receiveLimit) {
+        this.receiveLimit = receiveLimit;
+        return this;
     }
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate)
     {
-        return addEnergyToStorage(maxReceive, !simulate);
+        if (!canReceive())
+        {
+            return 0;
+        }
+        final int inputEnergy = Math.min(maxReceive, Optional.ofNullable(receiveLimit).map(Supplier::get).orElse(Integer.MAX_VALUE));
+        return receiveEnergyInternal(inputEnergy, simulate);
+    }
+
+    public int receiveEnergyInternal(int inputEnergy, boolean simulate)
+    {
+        final int maxEnergy = getMaxEnergyStored();
+        final int energyStored = getEnergyStored();
+        final int roomLeft = maxEnergy - energyStored;
+
+        if (inputEnergy <= 0 || roomLeft <= 0)
+        {
+            return 0;
+        }
+
+
+        final int toAdd = Math.min(roomLeft, inputEnergy);
+        if(!simulate) {
+            setEnergyInternal(energyStored + toAdd, EnergyActionType.ADD);
+        }
+        return toAdd;
     }
 
     @Override
     public int extractEnergy(int maxExtract, boolean simulate)
     {
-        return removeEnergyFromStorage(maxExtract, !simulate);
+        if(!canExtract()) {
+            return 0;
+        }
+        final int desiredEnergy = Math.min(maxExtract, Optional.ofNullable(extractLimit).map(Supplier::get).orElse(Integer.MAX_VALUE));
+        return extractEnergyInternal(desiredEnergy, simulate);
+    }
+
+    public int extractEnergyInternal(int desiredEnergy, boolean simulate)
+    {
+
+        final int maxEnergy = getMaxEnergyStored();
+        final int energyStored = getEnergyStored();
+
+        if(desiredEnergy <= 0 || energyStored <= 0) {
+            return 0;
+        }
+
+        final int toRemove = Math.min(maxEnergy, desiredEnergy);
+        if(!simulate) {
+            setEnergyInternal(energyStored - desiredEnergy, EnergyActionType.REMOVE);
+        }
+        return toRemove;
+    }
+
+    /**
+     * Called to consume power. Config overrides this and always returns true if REQUIRES_POWER=FALSE
+     *
+     * @param amount to remove
+     * @param simulate to check call
+     * @return true if amount was consumed
+     */
+    public boolean consumePower(int amount, boolean simulate) {
+        return !ConfigMain.REQUIRES_POWER || extractEnergyInternal(amount, simulate) >= amount;
+    }
+
+    public ItemStack dischargeItem(ItemStack itemStack) {
+        final IEnergySystem system = EnergySystem.getSystem(itemStack, null);
+        if(system != null && canReceive()) {
+            final int energyLeftToStore = getMaxEnergyStored() - getEnergyStored(); //TODO limit based on receive method
+            if(energyLeftToStore > 0) {
+                final int removed = system.removeEnergy(itemStack, null, energyLeftToStore, false);
+                if(removed > 0) {
+                    receiveEnergy(removed, false);
+                }
+            }
+        }
+        return itemStack;
     }
 
     @Override
@@ -128,44 +148,43 @@ public class EnergyBuffer implements IEnergyBuffer, IEnergyStorage, INBTSerializ
     @Override
     public int getMaxEnergyStored()
     {
-        return getMaxBufferSize();
+        return storageLimit.get();
     }
 
     @Override
     public boolean canExtract()
     {
-        return true;
+        return Optional.ofNullable(canExtract).map(Supplier::get).orElse(false);
     }
 
     @Override
     public boolean canReceive()
     {
-        return true;
+        return Optional.ofNullable(canReceive).map(Supplier::get).orElse(true);
     }
 
-    @Override
     public void setEnergyStored(int energy)
     {
-        int prev = getEnergyStored();
-        this.energyStorage = Math.min(getMaxBufferSize(), Math.max(0, energy));
-        if (prev != energyStorage)
-        {
-            onPowerChange(prev, getEnergyStored(), EnergyActionType.SET);
+       setEnergyInternal(energy, EnergyActionType.SET);
+    }
+
+    private void setEnergyInternal(int energy, EnergyActionType type) {
+        final int prev = this.energyStorage;
+        if(energy != prev) {
+            this.energyStorage = Math.min(getMaxEnergyStored(), Math.max(0, energy));
+            Optional.ofNullable(onEnergyChanged).ifPresent(f -> f.onChange(prev, energy, type));
         }
     }
 
     @Override
-    public NBTBase serializeNBT()
+    public NBTTagInt serializeNBT()
     {
         return new NBTTagInt(getEnergyStored());
     }
 
     @Override
-    public void deserializeNBT(NBTBase nbt)
+    public void deserializeNBT(NBTTagInt nbt)
     {
-        if (nbt instanceof NBTPrimitive)
-        {
-            setEnergyStored(((NBTPrimitive) nbt).getInt());
-        }
+        setEnergyStored(nbt.getInt());
     }
 }

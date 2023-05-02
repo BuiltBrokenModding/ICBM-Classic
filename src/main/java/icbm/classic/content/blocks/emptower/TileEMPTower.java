@@ -2,14 +2,15 @@ package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.energy.IEnergyBuffer;
 import icbm.classic.api.refs.ICBMExplosives;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.emptower.gui.GuiEMPTower;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.BlastEMP;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -19,8 +20,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
-import icbm.classic.prefab.tile.PowerBuffer;
-import icbm.classic.prefab.tile.TilePoweredMachine;
+import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,16 +34,17 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /** Logic side of the EMP tower block */
-public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile
+public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGuiTile
 {
     // The maximum possible radius for the EMP to strike
     public static final int MAX_RADIUS = 150; //TODO move to config with a min & max
@@ -71,12 +72,28 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     @Setter @Getter
     public int range = 60;
 
+    public final EnergyBuffer energyStorage = new EnergyBuffer(this::getFiringCost)
+        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();})
+        .withCanReceive(() -> this.getCooldown() <= 0)
+        .withCanExtract(() -> false)
+        .withReceiveLimit(() -> ENERGY_INPUT);
     public final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
-        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
     public final RadioEmpTower radioCap = new RadioEmpTower(this);
 
-    private List<TileEmpTowerFake> subBlocks = new ArrayList();
+    private final List<TileEmpTowerFake> subBlocks = new ArrayList<>();
+
+    @Override
+    public void provideInformation(BiConsumer<String, Object> consumer) {
+        super.provideInformation(consumer);
+        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER); //TODO create constant file and helpers for common keys
+        consumer.accept("ENERGY_COST_TICK", 0); //TODO implement a per tick upkeep
+        consumer.accept("ENERGY_COST_ACTION", getFiringCost());
+        consumer.accept("ENERGY_RECEIVE_LIMIT", ENERGY_INPUT);
+        consumer.accept("EMP_COOLING_TICKS", getMaxCooldown());
+        consumer.accept("EMP_MAX_RANGE", getMaxRadius());
+    }
 
     @Override
     public void onLoad()
@@ -122,7 +139,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 
         if (isServer())
         {
-            if (ticks % 20 == 0 && getEnergy() > 0 && getCooldown() <= 0) //TODO convert to a mix of a timer and/or event handler
+            if (ticks % 20 == 0 && isReady()) //TODO convert to a mix of a timer and/or event handler
             {
                 ICBMSounds.MACHINE_HUM.play(world, xi() + 0.5, yi() + 0.5, zi() + 0.5, 0.5F, 0.85F * getChargePercentage(), true);
             }
@@ -239,7 +256,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
 
     public float getChargePercentage()
     {
-        return Math.min(1, getEnergy() / (float) getEnergyConsumption());
+        return Math.min(1, energyStorage.getEnergyStored() / (float) getFiringCost());
     }
 
     @Override
@@ -260,7 +277,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
                 return true;
             }
             else if(id == GUI_PACKET_ID && isClient()) {
-                this.setEnergy(data.readInt());
+                this.energyStorage.setEnergyStored(data.readInt());
                 this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                 this.range = data.readInt();
                 return true;
@@ -270,14 +287,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         return true;
     }
 
-    @Override
-    public int getEnergyBufferSize()
-    {
-        return getEnergyConsumption(); //TODO add configs for min-max energy state
-    }
-
-    @Override
-    public int getEnergyConsumption()
+    public int getFiringCost()
     {
         return range * range * ENERGY_COST_AREA;
     }
@@ -306,7 +316,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
             if (buildBlast().runBlast().state == BlastState.TRIGGERED)
             {
                 //Consume energy
-                this.extractEnergy();
+                this.energyStorage.consumePower(getFiringCost(), false);
 
                 //Reset timer
                 this.cooldownTicks = getMaxCooldown();
@@ -331,7 +341,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     //@Callback TODO add CC support
     public boolean isReady()
     {
-        return getCooldown() <= 0 && this.checkExtract();
+        return getCooldown() <= 0 && this.energyStorage.consumePower(getFiringCost(), true);
     }
 
     //@Callback TODO add CC support
@@ -366,7 +376,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", GUI_PACKET_ID, this).addData(getEnergy(), this.radioCap.getChannel(), this.range);
+        return new PacketTile("gui", GUI_PACKET_ID, this).addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.range);
     }
 
 
@@ -374,6 +384,7 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
         return super.hasCapability(capability, facing)
+            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER
             || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.RADIO_CAPABILITY;
     }
@@ -382,7 +393,10 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if(capability == CapabilityEnergy.ENERGY) {
+            return (T) energyStorage;
+        }
+        else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
             return (T) inventory;
         }
@@ -391,26 +405,6 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
             return (T) radioCap;
         }
         return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public IEnergyBuffer getEnergyBuffer(EnumFacing side)
-    {
-        if (buffer == null)
-        {
-            buffer = new PowerBuffer<TileEMPTower>(this) {
-                @Override
-                public int receiveEnergy(int maxReceive, boolean simulate)
-                {
-                    // Can't take energy while in cooldown
-                    if(machine.cooldownTicks > 0) {
-                        return 0;
-                    }
-                    return addEnergyToStorage(Math.min(maxReceive, ENERGY_INPUT), !simulate);
-                }
-            };
-        }
-        return buffer;
     }
 
     @Override
@@ -430,10 +424,11 @@ public class TileEMPTower extends TilePoweredMachine implements IPacketIDReceive
         .mainRoot()
         /* */.nodeINBTSerializable("inventory", tile -> tile.inventory)
         /* */.nodeINBTSerializable("radio", tile -> tile.radioCap)
-        /* */.nodeInteger("range", tile -> tile.range, (launcher, pos) -> launcher.range = pos)
-        /* */.nodeInteger("cooldown", tile -> tile.cooldownTicks, (launcher, pos) -> launcher.cooldownTicks = pos)
-        /* */.nodeFloat("rotation", tile -> tile.rotation, (launcher, pos) -> launcher.rotation = pos)
-        /* */.nodeFloat("prev_rotation", tile -> tile.prevRotation, (launcher, pos) -> launcher.prevRotation = pos)
+        /* */.nodeInteger("range", tile -> tile.range, (tile, i) -> tile.range = i)
+        /* */.nodeInteger("cooldown", tile -> tile.cooldownTicks, (tile, i) -> tile.cooldownTicks = i)
+        /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i)) //TODO use INBTSerializable on storage instance
+        /* */.nodeFloat("rotation", tile -> tile.rotation, (tile, f) -> tile.rotation = f)
+        /* */.nodeFloat("prev_rotation", tile -> tile.prevRotation, (tile, f) -> tile.prevRotation = f)
         .base();
 
 }

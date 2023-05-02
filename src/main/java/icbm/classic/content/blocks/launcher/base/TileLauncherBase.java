@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
@@ -14,6 +15,7 @@ import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.config.ConfigLauncher;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.packet.PacketTile;
@@ -21,7 +23,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
-import icbm.classic.prefab.tile.TilePoweredMachine;
+import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,19 +38,21 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 /**
  * This tile entity is for the base of the missile launcher
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TilePoweredMachine implements ILauncherComponent //TODO move to cap
+public class TileLauncherBase extends TileMachine implements ILauncherComponent //TODO move to cap
 {
 
     public static final int PACKET_LOCK_HEIGHT = 0;
@@ -67,13 +71,15 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     /** True to note a missile is above the launcher */
     private boolean hasMissileCollision = false;
 
+    public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
+        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();});
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
             .withInsertCheck((s) -> !this.checkForMissileInBounds())
             .withChangeCallback((stack) -> this.sendDescPacket())
         )
-        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
 
     /**
      * Client's render cached object, used in place of inventory to avoid affecting GUIs
@@ -100,6 +106,13 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
 
     @Getter @Setter
     private FiringPackage firingPackage;
+
+    @Override
+    public void provideInformation(BiConsumer<String, Object> consumer) {
+        super.provideInformation(consumer);
+        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
+        consumer.accept("ENERGY_COST_ACTION", ConfigLauncher.POWER_COST);
+    }
 
     @Override
     public void onLoad()
@@ -168,6 +181,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
+            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER
             || super.hasCapability(capability, facing);
     }
 
@@ -175,7 +189,10 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if(capability == CapabilityEnergy.ENERGY) {
+            return (T) energyStorage;
+        }
+        else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
             return (T) inventory;
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
@@ -344,18 +361,6 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
     }
 
     @Override
-    public int getEnergyConsumption()
-    {
-        return ConfigLauncher.POWER_COST;
-    }
-
-    @Override
-    public int getEnergyBufferSize()
-    {
-        return ConfigLauncher.POWER_CAPACITY;
-    }
-
-    @Override
     public Object getServerGuiElement(int ID, EntityPlayer player)
     {
         return new ContainerLaunchBase(player, this);
@@ -387,6 +392,7 @@ public class TileLauncherBase extends TilePoweredMachine implements ILauncherCom
         /* */.nodeInteger("group_id", TileLauncherBase::getGroupId, TileLauncherBase::setGroupId)
         /* */.nodeInteger("group_index", TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex)
         /* */.nodeInteger("firing_delay", TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
+        /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         .base();

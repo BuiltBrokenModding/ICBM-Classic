@@ -3,6 +3,8 @@ package icbm.classic.content.blocks.radarstation;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.radarstation.data.RadarRenderData;
 import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;
 import icbm.classic.content.blocks.radarstation.gui.GuiRadarStation;
@@ -10,6 +12,7 @@ import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.radio.messages.IncomingMissileMessage;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -22,7 +25,7 @@ import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.tile.TilePoweredMachine;
+import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,15 +40,21 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
-public class TileRadarStation extends TilePoweredMachine implements IPacketIDReceiver, IGuiTile
+public class TileRadarStation extends TileMachine implements IPacketIDReceiver, IGuiTile
 {
     /** Max range the radar station will attempt to find targets inside */
-    public final static int MAX_DETECTION_RANGE = 500;
+    public final static int MAX_DETECTION_RANGE = 500; //TODO config
+    public final static int ENERGY_COST = 1000;
+    public final static int ENERGY_CAPACITY = 20000;
 
     public static final int GUI_PACKET_ID = 1;
     public static final int SET_TRIGGER_RANGE_PACKET_ID = 2;
@@ -87,16 +96,25 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     @Getter
     private final RadarRenderData radarRenderData = new RadarRenderData(this);
 
+    public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ENERGY_CAPACITY)
+        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();});
     @Getter
     private final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
-        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
 
     @Getter
     private final RadioRadar radio = new RadioRadar(this);
 
     private EnumRadarState radarVisualState = EnumRadarState.OFF;
     private EnumRadarState preRadarVisualState = EnumRadarState.OFF;
+
+    @Override
+    public void provideInformation(BiConsumer<String, Object> consumer) {
+        super.provideInformation(consumer);
+        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
+        consumer.accept("ENERGY_COST_ACTION", ConfigLauncher.POWER_COST);
+    }
 
     @Override
     public void update()
@@ -114,9 +132,13 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
                 sendDescPacket();
             }
 
+            final boolean hasPower = energyStorage.consumePower(ENERGY_COST, false);
+
             //If we have energy
-            if (checkExtract())
+            if (hasPower)
             {
+                energyStorage.consumePower(ENERGY_COST, true);
+
                 // Do a radar scan
                 if (ticks % 3 == 0) //TODO make config to control scan rate to reduce lag
                 {
@@ -137,7 +159,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
             }
 
             //Update redstone state
-            final boolean shouldBeOn = checkExtract() && hasIncomingMissiles();
+            final boolean shouldBeOn = hasPower && hasIncomingMissiles();
             if (world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
             {
                 final BlockPos selfPos = getPos();
@@ -271,7 +293,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
             return radarVisualState;
         }
 
-        if(!hasPower()) {
+        if(!this.energyStorage.consumePower(ENERGY_COST, false)) {
             return EnumRadarState.OFF;
         }
         else if(this.incomingThreats.size() > 0) {
@@ -398,6 +420,23 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
     }
 
     @Override
+    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        if (capability == CapabilityEnergy.ENERGY)
+        {
+            return (T) energyStorage;
+        }
+        return super.getCapability(capability, facing);
+    }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return super.hasCapability(capability, facing)
+            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER;
+    }
+
+    @Override
     public void readFromNBT(NBTTagCompound nbt)
     {
         super.readFromNBT(nbt);
@@ -420,6 +459,7 @@ public class TileRadarStation extends TilePoweredMachine implements IPacketIDRec
         /* */.nodeBoolean(NBT_OUTPUT_REDSTONE, TileRadarStation::isOutputRedstone, TileRadarStation::setOutputRedstone)
         /* */.nodeInteger(NBT_DETECTION_RANGE, TileRadarStation::getDetectionRange, TileRadarStation::setDetectionRange)
         /* */.nodeInteger(NBT_TRIGGER_RANGE, TileRadarStation::getTriggerRange, TileRadarStation::setTriggerRange)
+        /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         .base();
 
     @Override

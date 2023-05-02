@@ -6,6 +6,8 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
@@ -17,6 +19,7 @@ import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -29,6 +32,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
+import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,14 +51,16 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.function.BiConsumer;
 
-public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDReceiver, IGuiTile, ILauncherComponent
+public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver, IGuiTile, ILauncherComponent
 {
     public static final int DESCRIPTION_PACKET_ID = 0;
     public static final int SET_FREQUENCY_PACKET_ID = 1;
@@ -85,10 +91,12 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected ItemStack cachedMissileStack = ItemStack.EMPTY;
 
+    public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
+        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();});
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile).withChangeCallback((stack) -> this.sendDescPacket()))
-        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+        .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
 
     @Getter
     protected final CapabilityMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
@@ -101,6 +109,13 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
     public final RadioCruise radioCap = new RadioCruise(this);
+
+    @Override
+    public void provideInformation(BiConsumer<String, Object> consumer) {
+        super.provideInformation(consumer);
+        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
+        consumer.accept("ENERGY_COST_ACTION", ConfigLauncher.POWER_COST);
+    }
 
     @Override
     public void onLoad()
@@ -166,6 +181,8 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public void update()
     {
         super.update();
+
+        //TODO add a per tick energy consumption or at least while aiming
 
         deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
         lastRotationUpdate = System.nanoTime();
@@ -241,7 +258,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Override
     public PacketTile getGUIPacket()
     {
-        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(getEnergy(), this.radioCap.getChannel(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
+        return new PacketTile("gui", DESCRIPTION_PACKET_ID, this).addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
     }
 
     @Override
@@ -274,7 +291,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
                 {
                     if (isClient())
                     {
-                        setEnergy(data.readInt());
+                        this.energyStorage.setEnergyStored(data.readInt());
                         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     }
@@ -358,7 +375,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
 
     protected boolean hasChargeToFire()
     {
-        return this.checkExtract();
+        return this.energyStorage.consumePower(ConfigLauncher.POWER_COST, false);
     }
 
     protected boolean canSpawnMissileWithNoCollision()
@@ -408,6 +425,7 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
         return super.hasCapability(capability, facing)
+            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER
             || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
             || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
@@ -418,7 +436,10 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if(capability == CapabilityEnergy.ENERGY) {
+            return (T) energyStorage;
+        }
+        else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
             return (T) inventory;
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
@@ -468,5 +489,6 @@ public class TileCruiseLauncher extends TileLauncherPrefab implements IPacketIDR
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         /* */.nodeEulerAngle(NBTConstants.CURRENT_AIM, launcher -> launcher.currentAim, (launcher, pos) -> launcher.currentAim.set(pos))
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
+        /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         .base();
 }

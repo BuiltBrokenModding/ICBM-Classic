@@ -59,7 +59,7 @@ public class GuiEMPTower extends GuiContainerBase {
                 if (!tileEntity.isReady()) {
                     if (tileEntity.getCooldown() > 0) {
                         return new TextComponentTranslation(COOLING_NEEDED, String.format("%.2f", tileEntity.getCooldownPercentage() * 100));
-                    } else if (!tileEntity.checkExtract()) {
+                    } else if (!tileEntity.energyStorage.consumePower(tileEntity.getFiringCost(), false)) {
                         return new TextComponentTranslation(POWER_NEEDED, String.format("%.2f", tileEntity.getChargePercentage() * 100));
                     }
                 }
@@ -69,7 +69,7 @@ public class GuiEMPTower extends GuiContainerBase {
             .setEnabledCheck(tileEntity::isReady)
         );
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
+        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
     }
 
     @Override

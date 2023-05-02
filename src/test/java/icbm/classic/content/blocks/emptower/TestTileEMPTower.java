@@ -186,7 +186,8 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = spy(create());
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(Integer.MAX_VALUE);
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(Integer.MAX_VALUE);
 
         //Mock blast so we don't invoke world calls
         when(tileEMPTower.buildBlast()).thenReturn(new Blast()
@@ -208,7 +209,8 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(0);
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(0);
 
         //Should have fired
         Assertions.assertFalse(tileEMPTower.fire());
@@ -220,7 +222,8 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(0);
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(0);
         tileEMPTower.cooldownTicks = 1;
 
         //Should have fired
@@ -233,7 +236,8 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(Integer.MAX_VALUE);
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(Integer.MAX_VALUE);
         tileEMPTower.cooldownTicks = 1;
 
         //Should have fired

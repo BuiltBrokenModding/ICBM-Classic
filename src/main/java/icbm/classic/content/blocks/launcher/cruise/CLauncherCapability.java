@@ -8,6 +8,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.config.ConfigLauncher;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
@@ -31,7 +32,11 @@ public class CLauncherCapability implements IMissileLauncher {
 
     @Override
     public IActionStatus getStatus() {
-        if(host.getFiringPackage() != null && !getHost().isAimed()) {
+        // Min power check
+        if(!host.energyStorage.consumePower(ConfigLauncher.POWER_COST, true)) {
+            return LauncherStatus.ERROR_POWER;
+        }
+        else if(host.getFiringPackage() != null && !getHost().isAimed()) {
             return LauncherStatus.FIRING_AIMING;
         }
         else if(host.getFiringPackage() != null && host.getFiringPackage().getCountDown() > 0) {
@@ -92,7 +97,11 @@ public class CLauncherCapability implements IMissileLauncher {
                             return LauncherStatus.ERROR_INVALID_STACK;
                         }
 
-                        host.extractEnergy();
+                        // Check power again, with firing delay things could change
+                        if(!host.energyStorage.consumePower(ConfigLauncher.POWER_COST, true)) {
+                            return LauncherStatus.ERROR_POWER;
+                        }
+                        host.energyStorage.consumePower(ConfigLauncher.POWER_COST, false);
 
                         //Setup missile
                         missile.setMissileSource(missileSource);

@@ -6,6 +6,8 @@ import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.config.ConfigLauncher;
+import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherEntry;
@@ -13,6 +15,7 @@ import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
@@ -22,7 +25,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
-import icbm.classic.prefab.tile.TilePoweredMachine;
+import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -32,20 +35,17 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentBase;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.lang3.tuple.Pair;
-import scala.tools.nsc.doc.base.comment.Text;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDReceiver, ILauncherComponent
+public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver, ILauncherComponent
 {
     public static final int SET_FREQUENCY_PACKET_ID = 0;
     public static final int SET_TARGET_PACKET_ID = 1;
@@ -66,9 +66,11 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     /** Target position of the launcher */
     private Vec3d _targetPos = Vec3d.ZERO;
 
+    public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
+        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();});
     public final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
-        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this::dischargeItem));
+        .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
     private final LauncherNode launcherNode = new LauncherNode(this, false);
     public final RadioScreen radioCap = new RadioScreen(this);
 
@@ -77,6 +79,12 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
 
     private final List<LauncherPair> statusList = new ArrayList();
     private boolean refreshStatus = false;
+
+    @Override
+    public void provideInformation(BiConsumer<String, Object> consumer) {
+        super.provideInformation(consumer);
+        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
+    }
 
     @Override
     public LauncherNode getNetworkNode() {
@@ -378,6 +386,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     @Nullable
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
     {
+        //TODO add IEnergyStorage wrapper to ensure this tile and the network both get power
         if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
             return (T) radioCap;
         }

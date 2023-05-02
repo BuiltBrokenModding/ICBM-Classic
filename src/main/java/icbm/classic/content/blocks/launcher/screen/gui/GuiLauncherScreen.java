@@ -75,7 +75,7 @@ public class GuiLauncherScreen extends GuiContainerBase
             .setAction(tileEntity::sendLaunchPacket)
             .setEnabledCheck(tileEntity::canLaunch);
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
+        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
 
         addComponent(new TooltipTranslations(60, 32, 30, 12, ACCURACY_TOOLTIP).withDelay(1));
 

@@ -70,7 +70,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
             .setEnabledCheck(tileEntity::canLaunch)
         ;
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
+        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
 
         // Radio tooltip
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));

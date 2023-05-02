@@ -8,6 +8,7 @@ import icbm.classic.api.EnumTier;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.config.ConfigIC2;
+import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketTile;
@@ -34,6 +35,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
@@ -42,7 +44,7 @@ import java.util.List;
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
         @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
 })
-public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile, IEnergySink
+public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile, IEnergySink, IMachineInfo
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -339,5 +341,10 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
     {
         super.validate();
         IC2Proxy.INSTANCE.onTileValidate(this);
+    }
+
+    @Override
+    public void provideInformation(BiConsumer<String, Object> consumer) {
+
     }
 }

@@ -60,7 +60,7 @@ public class GuiRadarStation extends GuiContainerBase
                 })
         );
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity::getEnergy, tileEntity::getEnergyBufferSize));
+        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
         addComponent(new RadarComponent(tileEntity, 5, 18));
 
         // Range tooltip
