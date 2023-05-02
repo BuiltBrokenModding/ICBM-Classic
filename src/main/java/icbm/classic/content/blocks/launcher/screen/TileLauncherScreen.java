@@ -59,6 +59,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public static final int SET_TARGET_PACKET_ID = 1;
     public static final int LAUNCH_PACKET_ID = 2;
     public static final int GUI_PACKET_ID = 3;
+    public static final int RADIO_DISABLE_PACKET_ID = 4;
 
     /** Height to wait before missile curves */
     public int lockHeight = 3;
@@ -146,14 +147,22 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                 switch (id) {
                     case SET_FREQUENCY_PACKET_ID: {
                         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                        updateClient = true;
                         return true;
                     }
                     case SET_TARGET_PACKET_ID: {
                         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
+                        updateClient = true;
                         return true;
                     }
                     case LAUNCH_PACKET_ID: {
                         fireAllLaunchers(false);
+                        updateClient = true;
+                        return true;
+                    }
+                    case RADIO_DISABLE_PACKET_ID: {
+                        radioCap.setDisabled(data.readBoolean());
+                        updateClient = true;
                         return true;
                     }
                 }
@@ -170,6 +179,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @SideOnly(Side.CLIENT)
     public void readGuiPacket(ByteBuf data) {
         this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+        this.radioCap.setDisabled(data.readBoolean());
         this.launcherInaccuracy = data.readFloat();
         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
 
@@ -198,6 +208,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     {
         PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
         packet.addData(radioCap.getChannel());
+        packet.addData(radioCap.isDisabled());
         packet.addData(launcherInaccuracy);
         packet.addData(this.getTarget());
 
@@ -231,6 +242,12 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public void sendLaunchPacket() {
         if(isClient()) {
             ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", LAUNCH_PACKET_ID, this));
+        }
+    }
+
+    public void sendRadioDisabled() {
+        if(isClient()) {
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", RADIO_DISABLE_PACKET_ID, this).addData(!radioCap.isDisabled()));
         }
     }
 
