@@ -397,7 +397,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
 
     protected boolean hasChargeToFire()
     {
-        return this.energyStorage.consumePower(ConfigLauncher.POWER_COST, false);
+        return this.energyStorage.consumePower(ConfigLauncher.POWER_COST, true);
     }
 
     protected boolean canSpawnMissileWithNoCollision()
