@@ -354,7 +354,7 @@ gui.icbmclassic:error.format.vector.2d=Invalid format; Requires 2 positional coo
 gui.icbmclassic:energy=%1$s / %2$s FE %3$s%%
 gui.icbmclassic:error.no_network=Failed to connect to launcher network
 
-gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a unique alpha-numeric value to connect radio devices. \n \n Alt + Click to toggle active
+gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a shared alpha-numeric value to connect devices. \n \n Alt + Click to toggle active
 gui.icbmclassic:tooltip.target=Target; Current aim position. Can be set by tools or manually using format 'x, y, z'. Example: 56.5, 40, 89
 
 ## EMP Tower
