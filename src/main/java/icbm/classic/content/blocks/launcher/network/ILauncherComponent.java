@@ -24,7 +24,7 @@ public interface ILauncherComponent {
         return true;
     }
 
-    default List<IMissileLauncher> getLaunchers() {
+    default List<LauncherEntry> getLaunchers() {
         return getNetworkNode().getLaunchers();
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -94,8 +95,8 @@ public class LauncherNode {
         }
     }
 
-    public List<IMissileLauncher> getLaunchers() {
-        return Optional.ofNullable(getNetwork()).map(LauncherNetwork::getLaunchers).orElse(Collections.EMPTY_LIST);
+    public List<LauncherEntry> getLaunchers() {
+        return Optional.ofNullable(getNetwork()).map(LauncherNetwork::getLaunchers).orElseGet(ArrayList::new);
     }
 
     @Override

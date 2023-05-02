@@ -22,7 +22,7 @@ public class LauncherNetwork implements ICapabilityProvider {
     private final HashSet<LauncherNode> components = new HashSet<LauncherNode>();
 
     @Getter
-    private final List<IMissileLauncher> launchers = new LinkedList(); // TODO move launcher to cap interface
+    private final List<LauncherEntry> launchers = new LinkedList();
 
     public final NetworkEnergyStorage energyStorage = new NetworkEnergyStorage(this);
     public final NetworkInventory inventory = new NetworkInventory(this);
@@ -63,7 +63,7 @@ public class LauncherNetwork implements ICapabilityProvider {
             if (node.getSelf().hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null)) {
                 final IMissileLauncher launcher = node.getSelf().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null);
                 if(launcher != null) {
-                    launchers.add(launcher);
+                    launchers.add(new LauncherEntry(launcher, node.getSelf(), null));
                     onNetworkUpdated();
                 }
             }

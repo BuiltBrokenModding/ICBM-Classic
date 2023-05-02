@@ -8,6 +8,7 @@ import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.blocks.launcher.network.LauncherEntry;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
@@ -96,10 +97,10 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
                 refreshStatus = false;
                 statusList.clear();
 
-                final List<IMissileLauncher> launchers = getLaunchersInGroup();
+                final List<LauncherEntry> launchers = getLaunchersInGroup();
                 if(!launchers.isEmpty()) {
                     final int launcherCount = launchers.size();
-                    launcherInaccuracy = launchers.stream().map(l -> {
+                    launcherInaccuracy = launchers.stream().map(LauncherEntry::getLauncher).map(l -> {
 
                         // Collect status
                         final IActionStatus status = preCheck(l, launcherCount);
@@ -121,7 +122,7 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
     }
 
     @Nonnull
-    public List<IMissileLauncher> getLaunchersInGroup() {
+    public List<LauncherEntry> getLaunchersInGroup() {
         if(getNetworkNode().getNetwork() != null) {
             return getNetworkNode().getLaunchers();
         }
@@ -257,8 +258,8 @@ public class TileLauncherScreen extends TilePoweredMachine implements IPacketIDR
         refreshStatus = true;
         // TODO add chain fire delay settings to screen
         boolean hasFired = false;
-        for(IMissileLauncher launcher : getLaunchersInGroup()) {
-            final IActionStatus status = launch(launcher, getLaunchers().size(), simulate); // TODO output status to users
+        for(LauncherEntry launcher : getLaunchersInGroup()) {
+            final IActionStatus status = launch(launcher.getLauncher(), getLaunchers().size(), simulate); // TODO output status to users
             if(!status.isError()) {
                 hasFired = true;
             }
