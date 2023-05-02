@@ -171,20 +171,53 @@ public class LanguageUtility
         String[] words = string.split(" ");
         List<String> lines = new ArrayList(); //TODO predict size for faster runtime
         String line = "";
+        int indent = 0;
         for (String word : words)
         {
-            if (word.length() + line.length() <= charsPerLine)
+            // Indent logic
+            if(word.trim().startsWith("\\t")) {
+                indent += 2;
+            }
+            else if(word.trim().startsWith("-\\t")) {
+                indent -= 2;
+            }
+            // Line break logic
+            else if(word.contains("\\n")) {
+                if(word.trim().equals("\\n")) {
+                    lines.add(addSpacesLeft(line, indent));
+                    line = "";
+                }
+                // invalid format but insert anyways TODO process by splitting first
+                else {
+                    line += word.replace("\\n", "").trim();
+                }
+            }
+            // Continue building line
+            else if (word.length() + line.length() <= charsPerLine)
             {
                 line += word + " ";
             }
             else
             {
-                lines.add(line.trim());
+                // Add existing line
+                lines.add(addSpacesLeft(line, indent));
+
+                // Start next line
                 line = word + " ";
             }
         }
-        lines.add(line.trim());
+
+        // Add remaining
+        lines.add(addSpacesLeft(line.trim(), indent));
+
         return lines;
+    }
+
+    private static String addSpacesLeft(String line, int pad) {
+        if(pad <= 0) {
+            return line;
+        }
+        return String.format("%1$" + pad + "s", "") + line;
     }
 
     public static String capitalizeFirst(String str)
