@@ -18,7 +18,7 @@ public class RadioScreen extends RadioTile<TileLauncherScreen> implements IRadio
 
     @Override
     public void onMessage(IRadioSender sender, IRadioMessage packet) {
-        if (host.isServer() && getChannel() != null && getChannel().equals(packet.getChannel())) {
+        if (!isDisabled() && host.isServer() && getChannel() != null && getChannel().equals(packet.getChannel())) {
 
             // Set target packet, run first as laser-det triggers both (set & fire) from the same packet
             if(packet instanceof ITargetMessage) {

@@ -24,7 +24,7 @@ public class RadioEmpTower extends RadioTile<TileEMPTower> implements IRadioRece
 
     @Override
     public void onMessage(IRadioSender sender, IRadioMessage packet) {
-        if (host.isServer() && getChannel() != null && getChannel().equals(packet.getChannel())) {
+        if (!isDisabled() && host.isServer() && getChannel() != null && getChannel().equals(packet.getChannel())) {
 
             // Fire emp tower
             if(packet instanceof ITriggerActionMessage) {

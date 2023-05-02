@@ -21,6 +21,7 @@ Mostly cleanup and refactors for better addon support
 
 ### Dev Changes
 
+* Added: isDisabled flag to radio capability instance, not exposed to API calls
 * Added: IMachineInfo interface for use with CC addon to access configs and settings
 * Added: machine info to empTower, radarStation, launcher, cruise launcher
 * Refactored: launcher network to store host tile, needed for CC support
@@ -28,6 +29,7 @@ Mostly cleanup and refactors for better addon support
 * Refactored: EnergyBuffer to be more lambda driven for easier reuse
 * Deleted: TilePoweredMachine, moved helpers to EnergyBuffer
 * Deleted: TileFrequency and TileLauncherPrefab, both were empty and only used by cruise launcher
+* Deleted: EnergyBufferLimited and PowerBuffer subtypes of EnergyBuffer
 
 ## 5.2.3 - May 1st, 2023
 

@@ -345,6 +345,6 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
 
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
-
+        //TODO add mod version
     }
 }
