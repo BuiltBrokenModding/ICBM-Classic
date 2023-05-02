@@ -53,6 +53,7 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     public static final int CHANGE_HZ_PACKET_ID = 2;
     public static final int GUI_PACKET_ID = 3;
     public static final int FIRE_PACKET_ID = 4;
+    public static final int RADIO_DISABLE_ID = 5;
 
     /** Tick synced rotation */
     public float rotation = 0;
@@ -252,6 +253,22 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
             ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileEMPTower.CHANGE_HZ_PACKET_ID, this).addData(channel));
     }
 
+    public void sendFirePacket() {
+        if(isClient())
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("fire_C>S", TileEMPTower.FIRE_PACKET_ID, this));
+    }
+
+    public void sendRadioDisabled() {
+        if(isClient())
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("radioDisabled_C>S", TileEMPTower.RADIO_DISABLE_ID, this).addData(!radioCap.isDisabled()));
+    }
+
+    @Override
+    public PacketTile getGUIPacket()
+    {
+        return new PacketTile("gui", GUI_PACKET_ID, this).addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.range, this.radioCap.isDisabled());
+    }
+
     public float getChargePercentage()
     {
         return Math.max(0, Math.min(1, energyStorage.getEnergyStored() / (float) getFiringCost()));
@@ -264,20 +281,29 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
         {
             if (id == CHANGE_RADIUS_PACKET_ID) {
                 range = data.readInt();
+                updateClient = true;
                 return true;
             }
             else if(id == CHANGE_HZ_PACKET_ID) {
                 radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                updateClient = true;
                 return true;
             }
             else if(id == FIRE_PACKET_ID) {
                 fire();
+                updateClient = true;
+                return true;
+            }
+            else if(id == RADIO_DISABLE_ID) {
+                radioCap.setDisabled(data.readBoolean());
+                updateClient = true;
                 return true;
             }
             else if(id == GUI_PACKET_ID && isClient()) {
                 this.energyStorage.setEnergyStored(data.readInt());
                 this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
                 this.range = data.readInt();
+                this.radioCap.setDisabled(data.readBoolean());
                 return true;
             }
             return false;
@@ -374,13 +400,6 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     {
         return new GuiEMPTower(player, this);
     }
-
-    @Override
-    public PacketTile getGUIPacket()
-    {
-        return new PacketTile("gui", GUI_PACKET_ID, this).addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.range);
-    }
-
 
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)

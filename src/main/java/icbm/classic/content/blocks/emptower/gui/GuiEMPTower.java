@@ -3,14 +3,18 @@ package icbm.classic.content.blocks.emptower.gui;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
+import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.gui.LaunchButton;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
+import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
+import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class GuiEMPTower extends GuiContainerBase {
@@ -20,6 +24,8 @@ public class GuiEMPTower extends GuiContainerBase {
     private static final String POWER_NEEDED = LANG_KEY + ".power";
     private static final String COOLING_NEEDED = LANG_KEY + ".cooling";
     private static final String READY = LANG_KEY + ".ready";
+
+    public static final ITextComponent TRANSLATION_TOOLTIP_RANGE = new TextComponentTranslation(LANG_KEY + ".range");
 
     // Texture
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_emp_tower.png");
@@ -65,11 +71,20 @@ public class GuiEMPTower extends GuiContainerBase {
                 }
                 return new TextComponentTranslation(READY);
             })
-            .setAction(() -> ICBMClassic.packetHandler.sendToServer(new PacketTile("fire_C>S", TileEMPTower.FIRE_PACKET_ID, this.tileEntity)))
+            .setAction(tileEntity::sendFirePacket)
             .setEnabledCheck(tileEntity::isReady)
         );
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
+
+        // Radio tooltip
+        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
+            .setAction(tileEntity::sendRadioDisabled)
+        );
+        addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+
+        // Range tooltip
+        addComponent(new TooltipTranslations(2, 16, 14, 14, TRANSLATION_TOOLTIP_RANGE).withDelay(1));
     }
 
     @Override

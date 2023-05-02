@@ -18,12 +18,16 @@ Mostly cleanup and refactors for better addon support
 * Added: config for emp tower cooldown
 * Added: config for emp tower energy buffer size for cost ticking. energyBuffer = firingCost + (tickingCost * configValue)
 * Added: config for emp tower energy received limit
+* Added: disable radio interaction using `alt + click` over radio icon
 
 ### Dev Changes
 
 * Added: isDisabled flag to radio capability instance, not exposed to API calls
 * Added: IMachineInfo interface for use with CC addon to access configs and settings
 * Added: machine info to empTower, radarStation, launcher, cruise launcher
+* Added: disabled icon button, useful for disabling functionality and showing it as a 'canceled' style overlay
+* Added: line split functionality to lang utility, allows tooltips to next line using ` \\n `
+* Added: line indent functionality to lang utility, allows tooltips to prefix 2 spaces using ` \\t `
 * Refactored: launcher network to store host tile, needed for CC support
 * Refactored: energy storage usage, dropped IEnergyBuffer in favor of IEnergyStorage as primary
 * Refactored: EnergyBuffer to be more lambda driven for easier reuse
