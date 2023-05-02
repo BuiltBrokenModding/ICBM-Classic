@@ -11,6 +11,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public abstract class RadioTile<T extends TileEntity> extends Radio {
@@ -34,5 +36,15 @@ public abstract class RadioTile<T extends TileEntity> extends Radio {
     @Override
     public IBoundBox<BlockPos> getRange() {
         return RadioRegistry.INFINITE;
+    }
+
+    public boolean canReceive(IRadioSender sender, IRadioMessage packet) {
+        return !isDisabled()
+            // Usually sender isn't receive, but could happen in rare cases
+            && sender != this
+            // Only accept server side
+            && host.hasWorld() && !host.getWorld().isRemote
+            // Validate channel, this might create the channel string if null
+            && Objects.equals(getChannel(), packet.getChannel());
     }
 }

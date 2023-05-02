@@ -18,6 +18,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import java.util.Objects;
+
 public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadioReceiver, INBTSerializable<NBTTagCompound> {
 
     public RadioCruise(TileCruiseLauncher host) {
@@ -26,7 +28,7 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
 
     @Override
     public void onMessage(IRadioSender sender, IRadioMessage packet) {
-        if (!isDisabled() && host.isServer() && getChannel() != null && getChannel().equals(packet.getChannel())) {
+        if (canReceive(sender, packet)) {
 
             // Set target packet, run first as laser-det triggers both (set & fire) from the same packet
             if(packet instanceof ITargetMessage) {
