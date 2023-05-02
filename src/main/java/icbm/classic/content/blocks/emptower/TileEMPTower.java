@@ -287,7 +287,7 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
 
     public int getFiringCost()
     {
-        return range * range * ConfigEmpTower.ENERGY_COST_AREA;
+        return range * range * ConfigEmpTower.ENERGY_COST_AREA;// TODO change this to scale exponentially by area to discourage large area EMPs
     }
 
     public int getTickingCost() {
