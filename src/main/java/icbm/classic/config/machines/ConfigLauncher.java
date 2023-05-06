@@ -22,11 +22,11 @@ public class ConfigLauncher
 
     @Config.Name("scaled_inaccuracy_range")
     @Config.Comment("Inaccuracy offset to apply based on range (meters) with max range being full value. In addition to min inaccuracy already applied.")
-    public static double SCALED_INACCURACY = 10;
+    public static double SCALED_INACCURACY_DISTANCE = 10;
 
     @Config.Name("scaled_inaccuracy_per_launcher")
     @Config.Comment("Inaccuracy offset to apply per launcher fired in the same circuit.")
-    public static double SCALED_LAUNCHER_COST = 1f;
+    public static double SCALED_INACCURACY_LAUNCHERS = 1f;
 
     @Config.Name("tpower_capacity")
     @Config.Comment("Size of the energy buffer")
@@ -35,8 +35,4 @@ public class ConfigLauncher
     @Config.Name("power_per_launch")
     @Config.Comment("Energy consumed per launcher")
     public static int POWER_COST = 1200;
-
-    @Config.Name("launch_cooldown")
-    @Config.Comment("Time in ticks (20 ticks a second) before launcher can fire again")
-    public static int COOLDOWN = 20;
 }

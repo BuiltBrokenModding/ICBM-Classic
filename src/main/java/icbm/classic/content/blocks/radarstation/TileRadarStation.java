@@ -112,8 +112,9 @@ public class TileRadarStation extends TileMachine implements IPacketIDReceiver, 
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
-        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
-        consumer.accept("ENERGY_COST_TICK", getEnergyCost());
+        consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER);
+        consumer.accept(ENERGY_COST_TICK, getEnergyCost());
+        consumer.accept("MAX_RANGE", MAX_DETECTION_RANGE);
     }
 
     @Override

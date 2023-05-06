@@ -189,11 +189,11 @@ public class LauncherCapability implements IMissileLauncher {
         // Add inaccuracy based on range
         final double distance = host.getDistanceSq(target.x, target.y, target.z);
         final double scale = distance / ConfigLauncher.RANGE;
-        inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY;
+        inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY_DISTANCE;
 
         // Add inaccuracy for each launcher fired in circuit
         if(launcherCount > 1) {
-            inaccuracy += (launcherCount - 1) * ConfigLauncher.SCALED_LAUNCHER_COST;
+            inaccuracy += (launcherCount - 1) * ConfigLauncher.SCALED_INACCURACY_LAUNCHERS;
         }
         return inaccuracy;
     }

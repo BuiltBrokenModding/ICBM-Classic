@@ -83,12 +83,12 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
-        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER); //TODO create constant file and helpers for common keys
-        consumer.accept("ENERGY_COST_TICK", getTickingCost()); //TODO implement a per tick upkeep
-        consumer.accept("ENERGY_COST_ACTION", getFiringCost());
-        consumer.accept("ENERGY_RECEIVE_LIMIT", ConfigEmpTower.ENERGY_INPUT);
-        consumer.accept("EMP_COOLING_TICKS", getMaxCooldown());
-        consumer.accept("EMP_MAX_RANGE", getMaxRadius());
+        consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER); //TODO create constant file and helpers for common keys
+        consumer.accept(ENERGY_COST_TICK, getTickingCost()); //TODO implement a per tick upkeep
+        consumer.accept(ENERGY_COST_ACTION, getFiringCost());
+        consumer.accept(ENERGY_RECEIVE_LIMIT, ConfigEmpTower.ENERGY_INPUT);
+        consumer.accept("COOLING_TICKS", getMaxCooldown());
+        consumer.accept("MAX_RANGE", getMaxRadius());
     }
 
     @Override

@@ -61,9 +61,6 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public static final int GUI_PACKET_ID = 3;
     public static final int RADIO_DISABLE_PACKET_ID = 4;
 
-    /** Height to wait before missile curves */
-    public int lockHeight = 3;
-
     /** Target position of the launcher */
     private Vec3d _targetPos = Vec3d.ZERO;
 
@@ -84,7 +81,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
-        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
+        consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER);
     }
 
     @Override
@@ -438,7 +435,6 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
 
     private static final NbtSaveHandler<TileLauncherScreen> SAVE_LOGIC = new NbtSaveHandler<TileLauncherScreen>()
         .mainRoot()
-        /* */.nodeInteger(NBTConstants.TARGET_HEIGHT, launcher -> launcher.lockHeight, (launcher, h) -> launcher.lockHeight = h)
         /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)

@@ -5,6 +5,11 @@ import java.util.function.BiConsumer;
 
 public interface IMachineInfo {
 
+    // Constants
+    String NEEDS_POWER = "NEEDS_POWER";
+    String ENERGY_COST_ACTION = "ENERGY_COST_ACTION";
+    String ENERGY_COST_TICK = "ENERGY_COST_TICK";
+    String ENERGY_RECEIVE_LIMIT = "ENERGY_RECEIVE_LIMIT";
     /**
      * Provide information about the machine, settings related to the machine,
      * and useful facts. This will be used in mods like ComputerCraft to

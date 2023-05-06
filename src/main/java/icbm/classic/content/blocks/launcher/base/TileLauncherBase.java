@@ -110,8 +110,12 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
-        consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
-        consumer.accept("ENERGY_COST_ACTION", getFiringCost());
+        consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER);
+        consumer.accept(ENERGY_COST_ACTION, getFiringCost());
+        consumer.accept("MAX_RANGE", ConfigLauncher.RANGE); //TODO min range
+        consumer.accept("INACCURACY_BASE", ConfigLauncher.MIN_INACCURACY);
+        consumer.accept("INACCURACY_RANGE", ConfigLauncher.SCALED_INACCURACY_DISTANCE);
+        consumer.accept("INACCURACY_LAUNCHERS", ConfigLauncher.SCALED_INACCURACY_LAUNCHERS);
     }
 
     public int getFiringCost() {
