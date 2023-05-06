@@ -114,7 +114,11 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
         consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
-        consumer.accept("ENERGY_COST_ACTION", ConfigLauncher.POWER_COST);
+        consumer.accept("ENERGY_COST_ACTION", getFiringCost());
+    }
+
+    public int getFiringCost() {
+        return ConfigLauncher.POWER_COST;
     }
 
     @Override
@@ -397,7 +401,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
 
     protected boolean hasChargeToFire()
     {
-        return this.energyStorage.consumePower(ConfigLauncher.POWER_COST, true);
+        return this.energyStorage.consumePower(getFiringCost(), true);
     }
 
     protected boolean canSpawnMissileWithNoCollision()

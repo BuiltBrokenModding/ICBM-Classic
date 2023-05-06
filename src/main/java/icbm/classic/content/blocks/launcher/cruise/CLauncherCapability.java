@@ -33,7 +33,7 @@ public class CLauncherCapability implements IMissileLauncher {
     @Override
     public IActionStatus getStatus() {
         // Min power check
-        if(!host.energyStorage.consumePower(ConfigLauncher.POWER_COST, true)) {
+        if(!host.energyStorage.consumePower(host.getFiringCost(), true)) {
             return LauncherStatus.ERROR_POWER;
         }
         else if(host.getFiringPackage() != null && !getHost().isAimed()) {
@@ -98,10 +98,10 @@ public class CLauncherCapability implements IMissileLauncher {
                         }
 
                         // Check power again, with firing delay things could change
-                        if(!host.energyStorage.consumePower(ConfigLauncher.POWER_COST, true)) {
+                        if(!host.energyStorage.consumePower(host.getFiringCost(), true)) {
                             return LauncherStatus.ERROR_POWER;
                         }
-                        host.energyStorage.consumePower(ConfigLauncher.POWER_COST, false);
+                        host.energyStorage.consumePower(host.getFiringCost(), false);
 
                         //Setup missile
                         missile.setMissileSource(missileSource);

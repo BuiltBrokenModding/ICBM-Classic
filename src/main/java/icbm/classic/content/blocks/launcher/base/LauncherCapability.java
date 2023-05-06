@@ -40,7 +40,7 @@ public class LauncherCapability implements IMissileLauncher {
     @Override
     public IActionStatus getStatus() {
         // Min power check
-        if(!host.energyStorage.consumePower(ConfigLauncher.POWER_COST, true)) {
+        if(!host.energyStorage.consumePower(host.getFiringCost(), true)) {
             return LauncherStatus.ERROR_POWER;
         }
         // No missile stack
@@ -163,10 +163,10 @@ public class LauncherCapability implements IMissileLauncher {
         }
 
         // Check power again, with firing delay things could change
-        if(!host.energyStorage.consumePower(ConfigLauncher.POWER_COST, true)) {
+        if(!host.energyStorage.consumePower(host.getFiringCost(), true)) {
             return LauncherStatus.ERROR_POWER;
         }
-        host.energyStorage.consumePower(ConfigLauncher.POWER_COST, false);
+        host.energyStorage.consumePower(host.getFiringCost(), false);
 
         //Grab rider
         if (host.seat != null && !host.seat.getPassengers().isEmpty()) //TODO add hook to disable riding some missiles

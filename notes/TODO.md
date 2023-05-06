@@ -1,9 +1,5 @@
 # TODO
 
-Current objective for work on the project
-
-Objective: Graphics Overhaul for `v5.x.x` release
-
 ## Missiles/Launcher Work Left
 
 - Engine smoke position
@@ -20,3 +16,7 @@ Objective: Graphics Overhaul for `v5.x.x` release
 
 - Redmatter Spiral
 - Fragment 
+
+## Issues
+
+- Disabled icon for radio hover is too hard to tell apart from normal, consider color shift or hard boarder

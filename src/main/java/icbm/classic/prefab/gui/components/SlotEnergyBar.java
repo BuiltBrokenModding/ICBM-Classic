@@ -105,17 +105,17 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         int number = Math.abs(energy);
         String type = "";
         // Mega
-        if(number > 1_000_000_000) {
+        if(number >= 1_000_000_000) {
             number = number / 1_000_000_000;
             type = "G";
         }
         // Mega
-        else if(number > 1_000_000) {
+        else if(number >= 1_000_000) {
             number = number / 1_000_000;
             type = "M";
         }
         // Kilo
-        else if(number > 1_000) {
+        else if(number >= 1_000) {
             number = number / 1_000;
             type = "k";
         }

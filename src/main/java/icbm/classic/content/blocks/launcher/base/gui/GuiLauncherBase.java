@@ -55,7 +55,11 @@ public class GuiLauncherBase extends GuiContainerBase
         addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17 + 16, 30, 12,
             tileEntity::getFiringDelay, tileEntity::setFiringDelay, tileEntity::sendFiringDelayPacket));
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
+        addComponent(new SlotEnergyBar(141, 66,
+            tileEntity.energyStorage::getEnergyStored,
+            tileEntity.energyStorage::getMaxEnergyStored
+           ).withActionCost(tileEntity::getFiringCost)
+        );
 
         addComponent(new TooltipTranslations(4, 16, 14, 14, LOCK_HEIGHT_TOOLTIP).withDelay(1));
         addComponent(new TooltipTranslations(68, 16, 14, 14, GROUP_ID_TOOLTIP).withDelay(1));

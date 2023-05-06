@@ -113,7 +113,7 @@ public class TileRadarStation extends TileMachine implements IPacketIDReceiver, 
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
         consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
-        consumer.accept("ENERGY_COST_ACTION", ConfigLauncher.POWER_COST);
+        consumer.accept("ENERGY_COST_TICK", getEnergyCost());
     }
 
     @Override
@@ -132,12 +132,12 @@ public class TileRadarStation extends TileMachine implements IPacketIDReceiver, 
                 sendDescPacket();
             }
 
-            final boolean hasPower = energyStorage.consumePower(ENERGY_COST, false);
+            final boolean hasPower = energyStorage.consumePower(getEnergyCost(), false);
 
             //If we have energy
             if (hasPower)
             {
-                energyStorage.consumePower(ENERGY_COST, true);
+                energyStorage.consumePower(getEnergyCost(), true);
 
                 // Do a radar scan
                 if (ticks % 3 == 0) //TODO make config to control scan rate to reduce lag
@@ -293,7 +293,7 @@ public class TileRadarStation extends TileMachine implements IPacketIDReceiver, 
             return radarVisualState;
         }
 
-        if(!this.energyStorage.consumePower(ENERGY_COST, false)) {
+        if(!this.energyStorage.consumePower(getEnergyCost(), false)) {
             return EnumRadarState.OFF;
         }
         else if(this.incomingThreats.size() > 0) {
@@ -407,6 +407,10 @@ public class TileRadarStation extends TileMachine implements IPacketIDReceiver, 
             return Math.min(15, incomingThreats.size());
         }
         return 0;
+    }
+
+    public int getEnergyCost() {
+        return ENERGY_COST; //TODO scale cost by scan area... maybe scan duration?
     }
 
     public boolean hasIncomingMissiles() {

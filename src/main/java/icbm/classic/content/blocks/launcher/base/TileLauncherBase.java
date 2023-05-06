@@ -111,7 +111,11 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
     public void provideInformation(BiConsumer<String, Object> consumer) {
         super.provideInformation(consumer);
         consumer.accept("NEEDS_POWER", ConfigMain.REQUIRES_POWER);
-        consumer.accept("ENERGY_COST_ACTION", ConfigLauncher.POWER_COST);
+        consumer.accept("ENERGY_COST_ACTION", getFiringCost());
+    }
+
+    public int getFiringCost() {
+        return ConfigLauncher.POWER_COST;
     }
 
     @Override

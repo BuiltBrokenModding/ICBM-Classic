@@ -19,6 +19,7 @@ Mostly cleanup and refactors for better addon support
 * Added: config for emp tower energy buffer size for cost ticking. energyBuffer = firingCost + (tickingCost * configValue)
 * Added: config for emp tower energy received limit
 * Added: disable radio interaction using `alt + click` over radio icon
+* Added: energy cost and upkeep tooltips to energy bar hover tooltip
 * Updated: gui tooltips to improve readability
 
 ### Dev Changes
