@@ -34,4 +34,13 @@ public interface IRadio {
      * @return
      */
     IBoundBox<BlockPos> getRange();
+
+    /**
+     * Is this radio disabled
+     *
+     * @return true if disabled
+     */
+    default boolean isDisabled() {
+        return false;
+    }
 }
