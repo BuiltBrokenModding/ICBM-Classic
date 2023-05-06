@@ -14,9 +14,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -113,7 +116,7 @@ public abstract class GuiContainerBase extends GuiContainer
                 final ITextComponent tooltip = ((IToolTip) field).getTooltip();
                 if(tooltip != null) {
                     try {
-                        this.currentTooltipText = tooltip.getFormattedText();
+                        this.currentTooltipText = buildToolTipString(tooltip);
                     }
                     catch (Exception e) {
                         if(ICBMClassic.runningAsDev) {
@@ -250,6 +253,23 @@ public abstract class GuiContainerBase extends GuiContainer
                 drawTexturedModalRect(x, y, u + width - 3, v, 3, height);
             }
         }
+    }
+
+    public String buildToolTipString(ITextComponent textComponent) {
+        StringBuilder stringbuilder = new StringBuilder();
+
+        for (ITextComponent itextcomponent : textComponent)
+        {
+            String s = itextcomponent.getUnformattedComponentText();
+
+            if (!s.isEmpty())
+            {
+                stringbuilder.append(itextcomponent.getStyle().getFormattingCode());
+                stringbuilder.append(s);
+            }
+        }
+
+        return stringbuilder.toString();
     }
 
     //TODO update and docs
