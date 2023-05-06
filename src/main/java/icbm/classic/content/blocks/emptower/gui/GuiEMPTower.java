@@ -1,12 +1,10 @@
 package icbm.classic.content.blocks.emptower.gui;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.gui.LaunchButton;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.button.DisableButton;
@@ -75,7 +73,12 @@ public class GuiEMPTower extends GuiContainerBase {
             .setEnabledCheck(tileEntity::isReady)
         );
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
+        addComponent(new SlotEnergyBar(141, 66,
+            tileEntity.energyStorage::getEnergyStored,
+            tileEntity.energyStorage::getMaxEnergyStored)
+            .withTickingCost(tileEntity::getTickingCost)
+            .withActionCost(tileEntity::getFiringCost)
+        );
 
         // Radio tooltip
         addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
