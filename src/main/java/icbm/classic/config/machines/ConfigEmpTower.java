@@ -20,8 +20,8 @@ public class ConfigEmpTower {
     public static int ENERGY_COST_AREA = 100;
 
     @Config.Name("energy_upkeep")
-    @Config.Comment("Scaling energy cost (FE, ForgeEnergy) to keep the emp tower charged. Math: (range * range) * cost")
-    public static int ENERGY_COST_TICKING = 1;
+    @Config.Comment("Scaling energy cost (FE, ForgeEnergy) to keep the emp tower charged. Math: range * cost")
+    public static int ENERGY_COST_TICKING = 10;
 
     @Config.Name("energy_upkeep_capacity")
     @Config.Comment("Ticks (20 ticks a second) of energy to store to cover ticking cost")
