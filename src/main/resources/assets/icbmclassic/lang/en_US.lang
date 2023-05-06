@@ -357,7 +357,7 @@ gui.icbmclassic:energy.withCostAndAction=§aEnergy:§r %1$s / %2$s FE \n §dUpke
 gui.icbmclassic:energy.withAction=§aEnergy:§r %1$s / %2$s FE \n §cAction:§r %4$s FE
 gui.icbmclassic:error.no_network=Failed to connect to launcher network
 
-gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a shared alpha-numeric value to connect devices. \n \n Alt + Click to toggle active
+gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a shared alpha-numeric value to connect devices. \n \n §bAlt§r + Click to toggle active
 gui.icbmclassic:tooltip.target=Target: \n \t Current aim position. Can be set by tools or manually using format 'x, y, z'. \n Example: 56.5, 40, 89
 
 ## EMP Tower
@@ -380,7 +380,7 @@ gui.launcherscreen.inaccuracy.info=Radius in meters from target the missile coul
 
 ## Radar Station
 gui.icbmclassic:radar.name=Radar Station
-gui.icbmclassic:radar.range=Range Settings: \n \t  Trigger range & Detection range. \n \n Shift for more info
+gui.icbmclassic:radar.range=Range Settings: \n \t  Trigger range & Detection range. \n \n §bShift§r for more info
 gui.icbmclassic:radar.range.shift=Trigger range will define threat area. Detection range will define radar max area of operation. Only detects flying entities of known type. Will trigger redstone and SAM missiles in response.
 gui.icbmclassic:radar.redstone.off=Redstone Off: \n \t  Click to enable outputting redstone for incoming threats
 gui.icbmclassic:radar.redstone.on=Redstone On: \n \t  Click to disable outputting redstone for incoming threats
