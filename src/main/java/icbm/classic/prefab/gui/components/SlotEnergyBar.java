@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui.components;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
@@ -9,6 +8,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 
@@ -19,6 +19,9 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     private static final int ENERGY_BAR_HEIGHT = 2;
 
     private static final String TOOLTIP_FORMAT = "gui.icbmclassic:energy";
+    private static final String TOOLTIP_FORMAT_COST = "gui.icbmclassic:energy.withCost";
+    private static final String TOOLTIP_FORMAT_ACTION = "gui.icbmclassic:energy.withAction";
+    private static final String TOOLTIP_FORMAT_COST_ACTION = "gui.icbmclassic:energy.withCostAndAction";
 
     private final int x;
     private final int y;
@@ -27,6 +30,10 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     private final Supplier<Integer> energyGetter;
     /** Max energy getter */
     private final Supplier<Integer> energyMaxGetter;
+    /** Cost per tick getter */
+    private Supplier<Integer> tickingCostGetter;
+    /** Cost per action getter */
+    private Supplier<Integer> actionCostGetter;
 
     /** Parent */
     private GuiContainerBase container;
@@ -47,11 +54,23 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         this.energyMaxGetter = energyMaxGetter;
     }
 
+    public SlotEnergyBar withTickingCost(Supplier<Integer> getter) {
+        this.tickingCostGetter = getter;
+        return this;
+    }
+
+    public SlotEnergyBar withActionCost(Supplier<Integer> getter) {
+        this.actionCostGetter = getter;
+        return this;
+    }
+
     @Override
     public void onUpdate() {
         // Cached data to avoid redoing each frame render
         final int energy = energyGetter.get();
         final int maxEnergy = energyMaxGetter.get();
+        final int tickingCost = Optional.ofNullable(tickingCostGetter).map(Supplier::get).orElse(0);
+        final int actionCost = Optional.ofNullable(actionCostGetter).map(Supplier::get).orElse(0);
         final boolean shift = GuiScreen.isShiftKeyDown();
 
         if(energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift) {
@@ -61,34 +80,46 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
 
             energyPercent = energy / (float) maxEnergy;
 
+            String translationToUse = TOOLTIP_FORMAT;
+            if(tickingCost > 0) {
+                translationToUse = TOOLTIP_FORMAT_COST;
+                if(actionCost > 0) {
+                    translationToUse = TOOLTIP_FORMAT_COST_ACTION;
+                }
+            }
+            else if(actionCost > 0) {
+                translationToUse = TOOLTIP_FORMAT_ACTION;
+            }
+
             if(shift) {
-                tooltip = new TextComponentTranslation(TOOLTIP_FORMAT, energy, maxEnergy, String.format("%d", (int) Math.floor(energyPercent * 100)));
+                tooltip = new TextComponentTranslation(translationToUse, energy, maxEnergy, -tickingCost, -actionCost);
             }
             else {
-                tooltip = new TextComponentTranslation(TOOLTIP_FORMAT, formatEnergy(energy), formatEnergy(maxEnergy), String.format("%d", (int) Math.floor(energyPercent * 100)));
+                tooltip = new TextComponentTranslation(translationToUse, formatEnergy(energy), formatEnergy(maxEnergy), formatEnergy(-tickingCost),formatEnergy(-actionCost));
             }
         }
     }
 
-    private static String formatEnergy(int energy) {
-        int number = energy;
+    private static String formatEnergy(final int energy) {
+        boolean neg = energy < 0;
+        int number = Math.abs(energy);
         String type = "";
         // Mega
-        if(energy > 1_000_000_000) {
-            number = energy / 1_000_000_000;
+        if(number > 1_000_000_000) {
+            number = number / 1_000_000_000;
             type = "G";
         }
         // Mega
-        else if(energy > 1_000_000) {
-            number = energy / 1_000_000;
+        else if(number > 1_000_000) {
+            number = number / 1_000_000;
             type = "M";
         }
         // Kilo
-        else if(energy > 1_000) {
-            number = energy / 1_000;
+        else if(number > 1_000) {
+            number = number / 1_000;
             type = "k";
         }
-        return String.format("%d%s", number, type);
+        return String.format("%s%d%s", neg ? "-" :  "", number, type); //TODO add decimal place
     }
 
     @Override

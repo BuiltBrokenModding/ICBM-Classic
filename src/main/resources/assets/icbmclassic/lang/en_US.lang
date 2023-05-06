@@ -1,4 +1,4 @@
-## Master language file
+## Master language file https://htmlcolorcodes.com/minecraft-color-codes/
 itemGroup.icbmclassic=ICBM-Classic
 
 ## Config
@@ -351,7 +351,10 @@ gui.icbmclassic:error.format.number.float=Invalid format: \n \t  Requires decima
 gui.icbmclassic:error.format.vector.3d=Invalid format: \n \t  Requires 3 positional coordinates separated by commas. \n Example: 4567, 5678, 8974
 gui.icbmclassic:error.format.vector.2d=Invalid format: \n \t  Requires 2 positional coordinates separated by commas. \n Example: 4567, 5678
 
-gui.icbmclassic:energy=%1$s / %2$s FE %3$s%%
+gui.icbmclassic:energy=§a%1$s / %2$s FE
+gui.icbmclassic:energy.withCost=Energy: %1$s / %2$s FE \n Upkeep: %3$s FE/t
+gui.icbmclassic:energy.withCostAndAction=Energy: %1$s / %2$s FE \n Upkeep: %3$s FE/t \n Action: §c %4$s FE
+gui.icbmclassic:energy.withAction=Energy: %1$s / %2$s FE \n Action: \u00A7c %4$s FE
 gui.icbmclassic:error.no_network=Failed to connect to launcher network
 
 gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a shared alpha-numeric value to connect devices. \n \n Alt + Click to toggle active
