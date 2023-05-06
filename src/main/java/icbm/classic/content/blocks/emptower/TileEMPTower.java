@@ -317,7 +317,7 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     }
 
     public int getTickingCost() {
-        return  range * range * ConfigEmpTower.ENERGY_COST_TICKING;
+        return  range * ConfigEmpTower.ENERGY_COST_TICKING;
     }
 
     public int getMaxRadius() {
