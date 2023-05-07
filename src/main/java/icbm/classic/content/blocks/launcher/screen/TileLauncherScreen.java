@@ -320,10 +320,12 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         if(errors.isEmpty()) {
             return LauncherLangs.TRANSLATION_READY;
         }
-        else if(errors.size() == 1) {
-            return errors.get(0).getStatus().message();
+        final ITextComponent status = new TextComponentTranslation(LauncherLangs.ERROR_MISSILE_MULTI, errors.size(), statusList.size());
+        for(int i = 0; i < errors.size() && i < 5; i++) {
+            status.appendText(" \n \t ");
+            status.appendSibling(errors.get(i).getStatus().message());
         }
-        return new TextComponentTranslation(LauncherLangs.ERROR_MISSILE_MULTI, errors.size()); //TODO show warning if some can fire
+        return status;
     }
 
     @Override

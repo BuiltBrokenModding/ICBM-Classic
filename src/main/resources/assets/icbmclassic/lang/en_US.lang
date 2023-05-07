@@ -390,7 +390,7 @@ info.icbmclassic:launcher.error=Unknown Error
 info.icbmclassic:launcher.error.power=Firing Safety; Not enough power
 info.icbmclassic:launcher.error.fuel=Firing Safety; Not enough fuel
 info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
-info.icbmclassic:launcher.error.missile.multi=Firing Safety; %s launchers not ready
+info.icbmclassic:launcher.error.missile.multi=§c%1$s / %2$s not ready
 
 info.icbmclassic:launcher.error.network=Self Check; No launcher network
 info.icbmclassic:launcher.error.network.status.missing=Dev Bug; No status data
