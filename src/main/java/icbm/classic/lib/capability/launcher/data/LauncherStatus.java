@@ -26,6 +26,8 @@ public class LauncherStatus implements IActionStatus {
     public static final LauncherStatus ERROR_INVALID_STACK = new LauncherStatus().withRegName("error.missile.invalid").asError().withTranslation(LauncherLangs.ERROR_MISSILE_INVALID);
     public static final LauncherStatus ERROR_EMPTY_STACK = new LauncherStatus().withRegName("error.missile.empty").asError().withTranslation(LauncherLangs.ERROR_MISSILE_NONE);
     public static final LauncherStatus ERROR_QUEUED = new LauncherStatus().withRegName("error.missile.queued").asError().withTranslation(LauncherLangs.ERROR_MISSILE_QUEUED);
+    public static final LauncherStatus ERROR_EMPTY_GROUP = new LauncherStatus().withRegName("error.group.empty").asError().withTranslation(LauncherLangs.ERROR_GROUP_EMPTY);
+    public static final LauncherStatus ERROR_NO_NETWORK = new LauncherStatus().withRegName("error.network.none").asError().withTranslation(LauncherLangs.ERROR_NO_NETWORK);
 
     // Responses
     public static final LauncherStatus READY = new LauncherStatus().withRegName("ready").withTranslation(LauncherLangs.STATUS_READY);
