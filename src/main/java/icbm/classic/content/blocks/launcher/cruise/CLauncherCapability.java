@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
@@ -55,7 +56,9 @@ public class CLauncherCapability implements IMissileLauncher {
     }
 
     @Override
-    public IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
+    public IActionStatus launch(ILauncherSolution solution, @Nullable IMissileCause cause, boolean simulate) {
+
+        final IMissileTarget target = solution.getTarget(this);
 
         // Do pre-checks
         final IActionStatus preCheck = preCheckLaunch(target, cause);

@@ -4,7 +4,7 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
-## 5.3.0 -??
+## 5.3.0 - May 6th, 2023
 
 Mostly cleanup and refactors for better addon support
 

@@ -37,8 +37,6 @@ public interface IMissileLauncher
      */
     IActionStatus preCheckLaunch(IMissileTarget target, @Nullable IMissileCause cause);
 
-
-
     /**
      * Tries to launch the missile
      *
@@ -46,12 +44,21 @@ public interface IMissileLauncher
      * different systems will use simulate as a way to predict launcher behavior. Including
      * seeing what status the launcher will output. As well any issues with firing the missile.
      *
-     * @param target to load into missile
+     * @param firingSolution to drive how missiles are fired and what target they use
      * @param cause to note, optional but recommended to create a history of firing reason
      * @param simulate to do pre-flight checks and get current status
      * @return status of launch
      */
-    IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate);
+    IActionStatus launch(ILauncherSolution firingSolution, @Nullable IMissileCause cause, boolean simulate);
+
+
+    /**
+     * @Deprecated use {@link #launch(ILauncherSolution, IMissileCause, boolean)}
+     */
+    @Deprecated
+    default IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
+        return launch((launcher) -> target, cause, simulate);
+    }
 
     /**
      * Index of the launcher in the network. Used

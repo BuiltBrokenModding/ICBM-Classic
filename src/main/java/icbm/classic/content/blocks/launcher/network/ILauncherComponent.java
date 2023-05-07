@@ -23,8 +23,4 @@ public interface ILauncherComponent {
         }
         return true;
     }
-
-    default List<LauncherEntry> getLaunchers() {
-        return getNetworkNode().getLaunchers();
-    }
 }

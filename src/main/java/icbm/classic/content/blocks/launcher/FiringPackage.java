@@ -49,7 +49,7 @@ public class FiringPackage implements INBTSerializable<NBTTagCompound> {
             }
 
             // Invoke normal launch so we fire events and handle logic consistently
-            missileLauncher.launch(targetData, cause, false); //TODO add callback to firing source
+            missileLauncher.launch((launcher) -> targetData, cause, false); //TODO add callback to firing source
         }
     }
 

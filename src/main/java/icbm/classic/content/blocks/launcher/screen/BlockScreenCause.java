@@ -19,31 +19,12 @@ public class BlockScreenCause extends BlockCause {
 
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block.screen");
 
-    private int launcherCount; //TODO expose through interface
-
-    public BlockScreenCause(World world, BlockPos pos, IBlockState state, int launcherCount) {
+    public BlockScreenCause(World world, BlockPos pos, IBlockState state) {
         super(world, pos, state);
-        this.launcherCount = launcherCount;
     }
 
     @Override
     public ResourceLocation getRegistryName() {
         return REG_NAME;
     }
-
-    @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
-        SAVE_LOGIC.load(this, nbt);
-    }
-
-    private static final NbtSaveHandler<BlockScreenCause> SAVE_LOGIC = new NbtSaveHandler<BlockScreenCause>()
-        .mainRoot()
-        /* */.nodeInteger("launcher_count", BlockScreenCause::getLauncherCount, BlockScreenCause::setLauncherCount)
-        .base();
 }

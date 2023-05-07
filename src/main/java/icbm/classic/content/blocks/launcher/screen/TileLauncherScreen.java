@@ -3,12 +3,15 @@ package icbm.classic.content.blocks.launcher.screen;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
+import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
+import icbm.classic.content.blocks.launcher.LauncherSolution;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherEntry;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
@@ -109,11 +112,11 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
                     launcherInaccuracy = launchers.stream().map(LauncherEntry::getLauncher).map(l -> {
 
                         // Collect status
-                        final IActionStatus status = preCheck(l, launcherCount);
+                        final IActionStatus status = preCheck(l);
                         statusList.add(new LauncherPair(l.getLauncherGroup(), l.getLaunchIndex(), status));
 
                         // Get accuracy for compare
-                        return l.getInaccuracy(getTarget(), launchers.size());
+                        return l.getInaccuracy(getTarget(), launcherCount);
 
                     }).max(Float::compareTo).orElse(0f);
                 }
@@ -130,9 +133,13 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     @Nonnull
     public List<LauncherEntry> getLaunchersInGroup() {
         if(getNetworkNode().getNetwork() != null) {
-            return getNetworkNode().getLaunchers();
+            return getNetworkNode().getNetwork().getLaunchers(getFiringGroup());
         }
         return Collections.EMPTY_LIST;
+    }
+
+    public int getFiringGroup() {
+        return -1;
     }
 
     @Override
@@ -249,51 +256,46 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     }
 
     /**
-     * Invokes launch process
-     *
-     * @param launcher to use
-     * @param launcherCount in current firing mission
-     * @return status
-     */
-    public IActionStatus launch(IMissileLauncher launcher, int launcherCount, boolean simulate)
-    {
-        return launcher.launch(new BasicTargetData(this.getTarget()), createCause(launcherCount), simulate);
-    }
-
-    /**
      * Pre-check of the launch process
      *
      * @param launcher to use
-     * @param launcherCount in current firing mission
      * @return status
      */
-    public IActionStatus preCheck(IMissileLauncher launcher, int launcherCount)
+    public IActionStatus preCheck(IMissileLauncher launcher)
     {
-        return launcher.preCheckLaunch(new BasicTargetData(this.getTarget()), createCause(launcherCount));
+        return launcher.preCheckLaunch(new BasicTargetData(this.getTarget()), createCause());
     }
 
-    private IMissileCause createCause(int launcherCount) {
-        return new BlockScreenCause(world, pos, getBlockState(), launcherCount); //TODO cache?
+    private IMissileCause createCause() {
+        return new BlockScreenCause(world, pos, getBlockState()); //TODO cache?
     }
 
     public boolean fireAllLaunchers(boolean simulate) {
         refreshStatus = true;
-        // TODO add chain fire delay settings to screen
-        boolean hasFired = false;
-        for(LauncherEntry launcher : getLaunchersInGroup()) {
-            final IActionStatus status = launch(launcher.getLauncher(), getLaunchers().size(), simulate); // TODO output status to users
-            if(!status.isError()) {
-                hasFired = true;
-            }
+
+        if(getNetworkNode().getNetwork() == null) {
+            return false; //TODO return error status
         }
-        return hasFired;
+
+        final List<LauncherEntry> launchers = getLaunchersInGroup();
+
+        final IMissileCause cause = createCause();
+        final IMissileTarget target = new BasicTargetData(getTarget());
+        final ILauncherSolution solution = new LauncherSolution(target, getFiringGroup(), launchers.size());
+        return getNetworkNode().getNetwork()
+            .launch(solution, cause, simulate)
+            .filter(entry -> !entry.getLastFiringStatus().shouldBlockInteraction())
+            // count is required, as anyMatch() or similar will short-circuit before running all
+            .count() > 0;
     }
 
+    /**
+     * Client side check for canLaunch
+     *
+     * @return true if current status list contains no blocking
+     */
     public boolean canLaunch() {
-        if(isClient()) {
-            return !statusList.isEmpty() && statusList.stream().map(LauncherPair::getStatus).noneMatch(IActionStatus::shouldBlockInteraction); //TODO add bypass in GUI if some can fire
-        }
-        return fireAllLaunchers(true);
+        return !statusList.isEmpty() && statusList.stream().map(LauncherPair::getStatus).noneMatch(IActionStatus::shouldBlockInteraction);
     }
 
     /**
@@ -309,7 +311,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
             return LauncherLangs.TRANSLATION_ERROR_NO_NETWORK;
         }
         // No launcher is connected yet
-        else if(getNetworkNode().getLaunchers().isEmpty()) {
+        else if(getLaunchersInGroup().isEmpty()) {
             return LauncherLangs.TRANSLATION_ERROR_NO_LAUNCHER;
         }
         // Generally only fails client side when status list is missing

@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherEvent;
+import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
@@ -73,7 +74,9 @@ public class LauncherCapability implements IMissileLauncher {
     }
 
     @Override
-    public IActionStatus launch(IMissileTarget targetData, @Nullable IMissileCause cause, boolean simulate) {
+    public IActionStatus launch(ILauncherSolution solution, @Nullable IMissileCause cause, boolean simulate) {
+
+        final IMissileTarget targetData = solution.getTarget(this);
 
         // Check current status, if blocking stop launch and return
         final IActionStatus preCheck = preCheckLaunch(targetData, cause);
@@ -104,7 +107,7 @@ public class LauncherCapability implements IMissileLauncher {
             if (missileStack != null)
             {
                 // TODO we may need to walk cause history to get correct launcher count info
-                final Vec3d target = applyInaccuracy(targetData.getPosition(), cause instanceof BlockScreenCause ? ((BlockScreenCause) cause).getLauncherCount() : 1);
+                final Vec3d target = applyInaccuracy(targetData.getPosition(), Math.max(1, solution.getFiringCount()));
 
                 //TODO add distance check? --- something seems to be missing
 

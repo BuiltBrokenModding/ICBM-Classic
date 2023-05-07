@@ -95,10 +95,6 @@ public class LauncherNode {
         }
     }
 
-    public List<LauncherEntry> getLaunchers() {
-        return Optional.ofNullable(getNetwork()).map(LauncherNetwork::getLaunchers).orElseGet(ArrayList::new);
-    }
-
     @Override
     public int hashCode() {
         return self.getPos().hashCode();

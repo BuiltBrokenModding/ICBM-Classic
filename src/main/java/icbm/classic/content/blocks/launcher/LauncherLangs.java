@@ -22,6 +22,7 @@ public final class LauncherLangs {
     public static final String ERROR_MISSILE_SPAWNING = ERROR + ".missile.spawn";
     public static final String ERROR_MISSILE_QUEUED = ERROR + ".missile.queued";
     public static final String ERROR_MISSILE_MULTI = ERROR + ".missile.multi";
+    public static final String ERROR_GROUP_EMPTY = ERROR + ".group.empty";
 
     public static final String ERROR_TARGET_NONE = ERROR + ".target.none";
     public static final String ERROR_TARGET_MIN = ERROR + ".target.min";

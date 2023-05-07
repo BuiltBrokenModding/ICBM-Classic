@@ -1,7 +1,13 @@
 package icbm.classic.content.blocks.launcher.network;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.content.blocks.launcher.FiringPackage;
+import icbm.classic.content.blocks.launcher.LauncherSolution;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import lombok.Getter;
 import net.minecraft.util.EnumFacing;
@@ -15,6 +21,8 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LauncherNetwork implements ICapabilityProvider {
 
@@ -36,6 +44,25 @@ public class LauncherNetwork implements ICapabilityProvider {
 
         // Trigger new network state
         components.stream().filter(node -> node != source).forEach(LauncherNode::connectToTiles);
+    }
+
+    public List<LauncherEntry> getLaunchers(int group) {
+        return streamLaunchers(group).collect(Collectors.toList());
+    }
+
+    public Stream<LauncherEntry> streamLaunchers(int group) {
+        return launchers.stream().filter(l -> group < 0 || l.getLauncher().getLauncherGroup() == group);
+    }
+
+    public Stream<LauncherEntry> launch(ILauncherSolution solution, IMissileCause cause, boolean simulate) {
+        //TODO consider pre-checking launchers to calculate actual firing count rather than desired... for inaccuracy reasons
+        return streamLaunchers(solution.getFiringGroup()).map(entry -> {
+            entry.setLastFiringPackage(new FiringPackage(solution.getTarget(entry.getLauncher()), cause));
+            entry.setLastFiringTime(System.currentTimeMillis());
+            entry.setLastFiringStatus(entry.getLauncher().launch(solution, cause, simulate));
+            //TODO consider wrapping solution with a static version to prevent mutability problems
+            return entry;
+        });
     }
 
     protected void clearData() {

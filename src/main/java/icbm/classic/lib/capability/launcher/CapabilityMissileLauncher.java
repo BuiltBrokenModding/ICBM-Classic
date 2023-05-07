@@ -1,5 +1,6 @@
 package icbm.classic.lib.capability.launcher;
 
+import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
@@ -48,7 +49,7 @@ public class CapabilityMissileLauncher implements IMissileLauncher
     }
 
     @Override
-    public IActionStatus launch(IMissileTarget target, @Nullable IMissileCause cause, boolean simulate) {
+    public IActionStatus launch(ILauncherSolution firingSolution, @Nullable IMissileCause cause, boolean simulate) {
         return LauncherStatus.ERROR_GENERIC;
     }
 }
