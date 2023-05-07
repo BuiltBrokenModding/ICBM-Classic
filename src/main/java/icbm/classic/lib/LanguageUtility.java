@@ -175,21 +175,21 @@ public class LanguageUtility
         for (String word : words)
         {
             // Indent logic
-            if(word.trim().startsWith("\\t")) {
+            if(word.trim().startsWith("\\t") || word.trim().startsWith("\t")) {
                 indent += 2;
             }
-            else if(word.trim().startsWith("-\\t")) {
+            else if(word.trim().startsWith("-\\t") || word.trim().startsWith("-\t")) {
                 indent -= 2;
             }
             // Line break logic
-            else if(word.contains("\\n")) {
-                if(word.trim().equals("\\n")) {
+            else if(word.contains("\\n") || word.contains("\n")) {
+                if(word.equals("\\n") || word.equals("\n")) {
                     lines.add(addSpacesLeft(line, indent));
                     line = "";
                 }
                 // invalid format but insert anyways TODO process by splitting first
                 else {
-                    line += word.replace("\\n", "").trim();
+                    line += word.replace("\\n", "").replace("\n", "").trim();
                 }
             }
             // Continue building line
