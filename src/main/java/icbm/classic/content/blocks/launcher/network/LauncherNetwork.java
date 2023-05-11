@@ -56,12 +56,11 @@ public class LauncherNetwork implements ICapabilityProvider {
 
     public Stream<LauncherEntry> launch(ILauncherSolution solution, IMissileCause cause, boolean simulate) {
         //TODO consider pre-checking launchers to calculate actual firing count rather than desired... for inaccuracy reasons
-        return streamLaunchers(solution.getFiringGroup()).map(entry -> {
+        return streamLaunchers(solution.getFiringGroup()).peek(entry -> {
             entry.setLastFiringPackage(new FiringPackage(solution.getTarget(entry.getLauncher()), cause));
             entry.setLastFiringTime(System.currentTimeMillis());
             entry.setLastFiringStatus(entry.getLauncher().launch(solution, cause, simulate));
             //TODO consider wrapping solution with a static version to prevent mutability problems
-            return entry;
         });
     }
 

@@ -87,7 +87,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
     public ItemStack cachedMissileStack;
 
     public final IMissileHolder missileHolder = new CapabilityMissileHolder(inventory, 0);
-    public final IMissileLauncher missileLauncher = new LauncherCapability(this);
+    public final LauncherCapability missileLauncher = new LauncherCapability(this);
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
 
@@ -403,5 +403,6 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
         /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
+        /* */.nodeINBTSerializable("launcher", launcher -> launcher.missileLauncher)
         .base();
 }

@@ -67,6 +67,15 @@ public class NbtSaveHandler<E>
      * Called to save data
      *
      * @param objectToSave to pull data from
+     * @return save object
+     */
+    public NBTTagCompound save(E objectToSave) {
+        return save(objectToSave, new NBTTagCompound());
+    }
+    /**
+     * Called to save data
+     *
+     * @param objectToSave to pull data from
      * @param save to push data into
      * @return save object
      */

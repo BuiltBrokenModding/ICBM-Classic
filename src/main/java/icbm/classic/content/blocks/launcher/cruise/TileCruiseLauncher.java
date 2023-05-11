@@ -504,7 +504,8 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-    {   SAVE_LOGIC.save(this, nbt);
+    {
+        SAVE_LOGIC.save(this, nbt);
         return super.writeToNBT(nbt);
     }
 
@@ -516,5 +517,6 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
         /* */.nodeEulerAngle(NBTConstants.CURRENT_AIM, launcher -> launcher.currentAim, (launcher, pos) -> launcher.currentAim.set(pos))
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
+        /* */.nodeINBTSerializable("launcher", launcher -> launcher.launcher)
         .base();
 }

@@ -12,6 +12,7 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.FiringPackage;
+import icbm.classic.content.blocks.launcher.LauncherBaseCapability;
 import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
@@ -19,15 +20,17 @@ import icbm.classic.lib.capability.launcher.data.FiringWithDelay;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-public class CLauncherCapability implements IMissileLauncher {
+public class CLauncherCapability extends LauncherBaseCapability {
 
     private final TileCruiseLauncher host;
 

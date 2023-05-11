@@ -5,6 +5,7 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 /**
  * Capability for accessing data about a launcher
@@ -13,6 +14,14 @@ import javax.annotation.Nullable;
  */
 public interface IMissileLauncher
 {
+
+    /**
+     * Unique ID to reference this launcher. Used for a mix of logging, events,
+     * and mod interactions. This should be persisted and should never change.
+     *
+     * @return unique id
+     */
+    UUID getUniqueId();
 
     /**
      * Direct way to get launcher's current status

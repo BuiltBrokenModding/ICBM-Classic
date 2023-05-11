@@ -12,6 +12,7 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.FiringPackage;
+import icbm.classic.content.blocks.launcher.LauncherBaseCapability;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
@@ -22,6 +23,7 @@ import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
@@ -30,9 +32,10 @@ import net.minecraftforge.common.MinecraftForge;
 import javax.annotation.Nullable;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-public class LauncherCapability implements IMissileLauncher {
+public class LauncherCapability extends LauncherBaseCapability {
 
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
     private static final Vec3d SPAWN_OFFSET = new Vec3d(0.5f, 3.1f, 0.5f);

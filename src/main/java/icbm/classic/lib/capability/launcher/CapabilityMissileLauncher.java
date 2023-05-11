@@ -12,6 +12,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
@@ -36,6 +37,11 @@ public class CapabilityMissileLauncher implements IMissileLauncher
             }
         },
             CapabilityMissileLauncher::new);
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return null;
     }
 
     @Override
