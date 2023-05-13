@@ -1,13 +1,5 @@
 package icbm.classic.content.blocks.emptower;
 
-import icbm.classic.ICBMConstants;
-import icbm.classic.client.models.CruiseLauncherTopModel;
-import icbm.classic.client.render.entity.RenderMissile;
-import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
-import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.lib.transform.rotation.EulerAngle;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockBeacon;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelRenderer;
@@ -17,18 +9,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityBeacon;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.glu.Sphere;
 
 public class TESREmpTower extends TileEntitySpecialRenderer<TileEntity>
 {

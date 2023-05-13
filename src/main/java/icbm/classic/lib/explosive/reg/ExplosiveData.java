@@ -2,8 +2,8 @@ package icbm.classic.lib.explosive.reg;
 
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
-import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.reg.content.IExplosiveContentRegistry;
 import lombok.ToString;
 import net.minecraft.util.ResourceLocation;
 

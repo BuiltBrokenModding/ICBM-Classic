@@ -3,13 +3,12 @@ package icbm.classic.content.blocks.launcher.cruise;
 import icbm.classic.api.radio.IRadioMessage;
 import icbm.classic.api.radio.IRadioReceiver;
 import icbm.classic.api.radio.IRadioSender;
-import icbm.classic.api.radio.messages.ITriggerActionMessage;
 import icbm.classic.api.radio.messages.ITargetMessage;
+import icbm.classic.api.radio.messages.ITriggerActionMessage;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
-import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.lib.radio.messages.TextMessage;
@@ -17,8 +16,6 @@ import icbm.classic.prefab.FakeRadioSender;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.INBTSerializable;
-
-import java.util.Objects;
 
 public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadioReceiver, INBTSerializable<NBTTagCompound> {
 

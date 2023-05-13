@@ -1,6 +1,5 @@
 package icbm.classic.client.models;
 
-import icbm.classic.ICBMConstants;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;

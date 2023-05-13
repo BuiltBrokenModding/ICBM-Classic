@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui.tooltip;
 
-import icbm.classic.lib.transform.region.Rectangle;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Supplier;

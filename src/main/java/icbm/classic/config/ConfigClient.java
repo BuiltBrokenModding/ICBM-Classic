@@ -2,8 +2,6 @@ package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
 import net.minecraftforge.common.config.Config;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Client only settings

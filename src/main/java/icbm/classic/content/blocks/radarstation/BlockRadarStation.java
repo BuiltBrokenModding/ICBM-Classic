@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.radarstation;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.blocks.launcher.frame.EnumFrameState;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;

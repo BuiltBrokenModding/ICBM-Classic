@@ -1,7 +1,7 @@
 package icbm.classic.content.potion;
 
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.ICBMClassic;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;

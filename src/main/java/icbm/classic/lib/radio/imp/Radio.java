@@ -2,7 +2,6 @@ package icbm.classic.lib.radio.imp;
 
 import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.radio.IRadioChannelAccess;
-import icbm.classic.lib.radio.RadioRegistry;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,12 +1,9 @@
 package icbm.classic.lib.network.packet;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.lib.network.IPacketIDReceiver;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

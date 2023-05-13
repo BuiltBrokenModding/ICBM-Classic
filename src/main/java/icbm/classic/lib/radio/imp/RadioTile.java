@@ -6,7 +6,6 @@ import icbm.classic.api.radio.IRadioSender;
 import icbm.classic.lib.radio.RadioRegistry;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

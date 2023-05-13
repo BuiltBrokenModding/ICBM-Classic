@@ -1,14 +1,12 @@
 package icbm.classic.datafix;
 
-import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.refs.ICBMEntities;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
-import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;

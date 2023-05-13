@@ -1,6 +1,5 @@
 package icbm.classic.api.missiles;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 /**

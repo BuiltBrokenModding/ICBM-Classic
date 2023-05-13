@@ -1,8 +1,6 @@
 package icbm.classic.content.blocks.launcher.network;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import lombok.AllArgsConstructor;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;

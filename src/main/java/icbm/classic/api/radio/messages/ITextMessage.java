@@ -1,7 +1,6 @@
 package icbm.classic.api.radio.messages;
 
 import icbm.classic.api.radio.IRadioMessage;
-import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 

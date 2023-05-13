@@ -2,8 +2,8 @@ package icbm.classic.api;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.block.state.IBlockState;

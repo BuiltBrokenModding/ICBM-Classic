@@ -1,7 +1,7 @@
 package icbm.classic.lib.network.netty;
 
-import icbm.classic.lib.network.IPacket;
 import icbm.classic.ICBMClassic;
+import icbm.classic.lib.network.IPacket;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

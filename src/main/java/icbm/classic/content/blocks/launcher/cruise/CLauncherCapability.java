@@ -1,15 +1,13 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.launcher.ILauncherSolution;
-import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherBaseCapability;

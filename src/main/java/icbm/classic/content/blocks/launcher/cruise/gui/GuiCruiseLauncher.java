@@ -12,8 +12,6 @@ import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
-import static java.lang.Integer.parseInt;
-
 public class GuiCruiseLauncher extends GuiContainerBase
 {
     // Localizations

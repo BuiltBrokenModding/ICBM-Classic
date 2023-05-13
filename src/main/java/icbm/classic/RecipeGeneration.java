@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import icbm.classic.api.ICBMClassicAPI;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.io.File;
 import java.io.FileWriter;

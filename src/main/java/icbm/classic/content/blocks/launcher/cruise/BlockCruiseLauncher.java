@@ -1,13 +1,10 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
-import icbm.classic.content.items.ItemLaserDetonator;
-import icbm.classic.content.items.ItemRemoteDetonator;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1,7 +1,6 @@
 package icbm.classic.client;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-
 import icbm.classic.CommonProxy;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
@@ -11,7 +10,6 @@ import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
 import icbm.classic.config.ConfigClient;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.mods.ModInteraction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderChicken;
@@ -21,7 +19,6 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

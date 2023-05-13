@@ -3,7 +3,6 @@ package icbm.classic.content.missile.logic.source.cause;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,5 @@
 package icbm.classic.content.missile.entity.anti;
 
-import icbm.classic.config.missile.ConfigSAMMissile;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;

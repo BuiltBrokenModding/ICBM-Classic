@@ -7,9 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class SaveBuildableObject<E, C extends IBuildableObject> extends NbtSaveNode<E, NBTTagCompound>  {
     public SaveBuildableObject(String name, final IBuilderRegistry<C> reg, Function<E, C> getter, BiConsumer<E, C> setter) {

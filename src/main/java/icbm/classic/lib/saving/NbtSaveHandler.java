@@ -1,11 +1,9 @@
 package icbm.classic.lib.saving;
 
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Handles logic for saving/loading without needing to duplicate logic or checks

@@ -1,14 +1,12 @@
 package icbm.classic.lib.capability.missile;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;

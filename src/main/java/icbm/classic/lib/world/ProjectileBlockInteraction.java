@@ -4,7 +4,6 @@ import icbm.classic.ICBMClassic;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -17,7 +16,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * For internal use or direct mod addons, use events for external interaction

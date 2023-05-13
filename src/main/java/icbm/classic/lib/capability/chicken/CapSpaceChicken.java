@@ -1,6 +1,5 @@
 package icbm.classic.lib.capability.chicken;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -19,7 +18,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 

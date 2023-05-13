@@ -2,35 +2,20 @@ package icbm.classic.content.blocks.launcher.screen.gui;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
-import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.LaunchButton;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
-import icbm.classic.ICBMClassic;
 import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
-import icbm.classic.prefab.gui.tooltip.Tooltip;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.io.IOException;
-
-import static java.lang.Integer.parseInt;
-import static java.lang.Math.max;
 
 @SideOnly(Side.CLIENT)
 public class GuiLauncherScreen extends GuiContainerBase

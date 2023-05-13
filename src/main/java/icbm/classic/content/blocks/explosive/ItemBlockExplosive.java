@@ -1,9 +1,9 @@
 package icbm.classic.content.blocks.explosive;
 
 import icbm.classic.api.EnumTier;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;

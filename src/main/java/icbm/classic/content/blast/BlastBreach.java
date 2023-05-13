@@ -3,7 +3,6 @@ package icbm.classic.content.blast;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.tile.IRotatable;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

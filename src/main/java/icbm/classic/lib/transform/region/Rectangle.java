@@ -2,7 +2,6 @@ package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.vector.IPos2D;
 import icbm.classic.lib.transform.vector.Point;
-import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;

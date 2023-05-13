@@ -3,7 +3,6 @@ package icbm.classic.client.models;
 
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
 
 // Made with Blockbench 4.6.4
 public class CruiseLauncherTopModel extends ModelICBM {

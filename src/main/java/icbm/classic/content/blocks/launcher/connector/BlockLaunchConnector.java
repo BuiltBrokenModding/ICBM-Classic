@@ -2,13 +2,8 @@ package icbm.classic.content.blocks.launcher.connector;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.content.blocks.launcher.frame.EnumFrameState;
-import icbm.classic.content.blocks.launcher.frame.PropertyFrameState;
-import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
-import icbm.classic.content.reg.BlockReg;
-import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;

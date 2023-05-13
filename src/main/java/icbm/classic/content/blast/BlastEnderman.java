@@ -1,10 +1,10 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.ICBMClassic;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayerMP;

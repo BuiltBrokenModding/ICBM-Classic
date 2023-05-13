@@ -7,7 +7,6 @@ import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockTNT;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;

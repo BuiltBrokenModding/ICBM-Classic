@@ -2,10 +2,10 @@ package icbm.classic.mods.mekanism;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.packet.PacketEntityPos;
-import icbm.classic.mods.ModProxy;
-import icbm.classic.prefab.entity.EntityProjectile;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
+import icbm.classic.mods.ModProxy;
+import icbm.classic.prefab.entity.EntityProjectile;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;

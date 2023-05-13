@@ -2,12 +2,13 @@ package icbm.classic.api;
 
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.launcher.IActionStatus;
-import icbm.classic.api.missiles.*;
 import icbm.classic.api.caps.IMissileHolder;
-import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
+import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.launcher.IMissileLauncher;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;

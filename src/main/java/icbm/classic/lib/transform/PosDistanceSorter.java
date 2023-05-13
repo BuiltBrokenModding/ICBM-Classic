@@ -1,7 +1,6 @@
 package icbm.classic.lib.transform;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Comparator;

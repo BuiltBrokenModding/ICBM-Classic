@@ -3,13 +3,8 @@ package icbm.classic.prefab.gui.tooltip;
 import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
-import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.util.text.ITextComponent;
-
-import java.util.function.Supplier;
 
 /**
  * Simple tooltip component for showing users additional information

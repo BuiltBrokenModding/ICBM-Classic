@@ -1,8 +1,8 @@
 package icbm.classic.lib.network.packet;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.ex.PacketTileReadException;
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.vector.Location;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,6 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * @author tgame14
  * @since 26/05/14
  */
+@Deprecated
 public class PacketTile extends PacketBase<PacketTile>
 {
     public int x;

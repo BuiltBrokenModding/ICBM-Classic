@@ -1,8 +1,8 @@
 package icbm.classic.content.potion;
 
-import icbm.classic.lib.transform.vector.Pos;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;

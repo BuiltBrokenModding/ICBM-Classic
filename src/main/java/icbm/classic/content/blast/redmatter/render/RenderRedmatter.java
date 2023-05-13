@@ -1,10 +1,10 @@
 package icbm.classic.content.blast.redmatter.render;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.lib.colors.ColorB;
-import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.lib.colors.ColorB;
+import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;

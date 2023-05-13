@@ -1,11 +1,11 @@
 package icbm.classic.content.items;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.radio.messages.TriggerActionTargetMessage;
 import icbm.classic.prefab.FakeRadioSender;

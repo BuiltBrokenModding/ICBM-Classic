@@ -2,11 +2,7 @@ package icbm.classic.command;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
-import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.entity.EntityFlyingBlock;
-import icbm.classic.content.entity.EntityFragments;
-import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.entity.*;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;

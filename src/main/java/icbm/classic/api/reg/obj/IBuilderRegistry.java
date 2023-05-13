@@ -1,7 +1,6 @@
 package icbm.classic.api.reg.obj;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IBuildableObject;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;

@@ -1,9 +1,9 @@
 package icbm.classic.lib.capability.ex;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;

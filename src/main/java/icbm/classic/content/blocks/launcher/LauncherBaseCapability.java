@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.launcher;
 
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.AccessLevel;
 import lombok.Setter;

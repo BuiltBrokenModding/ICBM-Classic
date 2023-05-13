@@ -3,7 +3,6 @@ package icbm.classic.lib.saving.nodes;
 import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

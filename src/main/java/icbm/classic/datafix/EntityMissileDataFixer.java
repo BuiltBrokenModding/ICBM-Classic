@@ -18,8 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.datafix.IFixableData;
 
-import java.util.UUID;
-
 public class EntityMissileDataFixer implements IFixableData
 {
     private static final String ENTITY_ID = "id";

@@ -1,6 +1,5 @@
 package icbm.classic.content.blocks.launcher.frame;
 
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.reg.BlockReg;

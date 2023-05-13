@@ -2,15 +2,10 @@ package icbm.classic.lib.network.packet;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacketIDReceiver;
-import icbm.classic.lib.network.ex.PacketTileReadException;
-import icbm.classic.lib.transform.vector.Location;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui.button;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
