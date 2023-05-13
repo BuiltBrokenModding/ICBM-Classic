@@ -95,7 +95,7 @@ public class TileEMPTower extends TileMachine implements IGuiTile
     protected int cooldownTicks = 0;
 
     /** Radius of the EMP tower */
-    @Setter @Getter
+    @Getter
     public int range = 60;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> this.getFiringCost() + (this.getTickingCost() * ConfigEmpTower.ENERGY_COST_TICKING_CAP))
@@ -301,6 +301,10 @@ public class TileEMPTower extends TileMachine implements IGuiTile
 
     public int getMaxRadius() {
         return ConfigEmpTower.MAX_BASE_RANGE + (subBlocks.size() * ConfigEmpTower.BONUS_RADIUS);
+    }
+
+    public void setRange(int range) {
+        this.range = Math.min(range, getMaxRadius());
     }
 
     protected IBlast buildBlast()
