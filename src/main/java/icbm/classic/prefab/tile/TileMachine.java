@@ -44,7 +44,7 @@ import java.util.function.BiConsumer;
         @Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
         @Optional.Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "ic2")
 })
-public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IPlayerUsing, ITickable, IByteBufWriter, IGuiTile, IEnergySink, IMachineInfo
+public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorldPosition, IByteBufWriter, IPlayerUsing, ITickable, IGuiTile, IEnergySink, IMachineInfo
 {
     public static final int DESC_PACKET_ID = -1;
     /**
@@ -79,7 +79,7 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
             //Sync GUI data to client(s)
             if (ticks % 3 == 0 && getPlayersUsing().size() > 0)
             {
-                PacketTile packet = getGUIPacket();
+                final IPacket packet = getGUIPacket();
                 if (packet != null)
                 {
                     sendPacketToGuiUsers(packet);
@@ -96,7 +96,7 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
 
     public void sendDescPacket()
     {
-        PacketTile packetTile = getDescPacket();
+        final IPacket packetTile = getDescPacket();
         if (packetTile != null)
         {
             ICBMClassic.packetHandler.sendToAllAround(packetTile, this);
@@ -122,7 +122,7 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
         readFromNBT(pkt.getNbtCompound());
     }
 
-    public PacketTile getDescPacket()
+    public IPacket getDescPacket()
     {
         PacketTile packetTile = new PacketTile("desc", DESC_PACKET_ID, this);
         packetTile.addData(this); //Should call back to IByteBufWriter
@@ -195,7 +195,7 @@ public class TileMachine extends TileEntity implements IPacketIDReceiver, IWorld
      *
      * @return
      */
-    protected PacketTile getGUIPacket()
+    protected IPacket getGUIPacket()
     {
         return getDescPacket();
     }

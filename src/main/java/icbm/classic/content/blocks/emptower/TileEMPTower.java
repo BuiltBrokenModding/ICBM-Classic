@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.config.ConfigMain;
@@ -14,7 +15,9 @@ import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.network.lambda.PacketCodex;
+import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.network.lambda.PacketCodexTile;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -31,12 +34,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
@@ -45,15 +49,41 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 /** Logic side of the EMP tower block */
-public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGuiTile
+public class TileEMPTower extends TileMachine implements IGuiTile
 {
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "emptower");
+
     public static final int ROTATION_SPEED = 15;
 
-    public static final int CHANGE_RADIUS_PACKET_ID = 1; //TODO migrate to its own handler
-    public static final int CHANGE_HZ_PACKET_ID = 2;
-    public static final int GUI_PACKET_ID = 3;
-    public static final int FIRE_PACKET_ID = 4;
-    public static final int RADIO_DISABLE_ID = 5;
+    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_RADIUS = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "radius")
+        .fromClient()
+        .nodeInt(TileEMPTower::getRange, TileEMPTower::setRange)
+        .onFinished((tile, target) -> tile.updateClient = true);
+
+    public static final PacketCodex<TileEMPTower, RadioEmpTower> PACKET_RADIO_HZ = new PacketCodexTile<TileEMPTower, RadioEmpTower>(REGISTRY_NAME, "radio.frequency", (tile) -> tile.radioCap)
+        .fromClient()
+        .nodeString(RadioEmpTower::getChannel, RadioEmpTower::setChannel)
+        .onFinished((tile, target) -> tile.updateClient = true);
+
+    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_GUI = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "gui")
+        .fromServer()
+        .nodeInt((t) -> t.energyStorage.getEnergyStored(), (t, i) -> t.energyStorage.setEnergyStored(i))
+        .nodeString((t) -> t.radioCap.getChannel(), (t, s) -> t.radioCap.setChannel(s))
+        .nodeBoolean((t) -> t.radioCap.isDisabled(), (t, b) -> t.radioCap.setDisabled(b))
+        .nodeInt(TileEMPTower::getRange, TileEMPTower::setRange)
+        .onFinished((tile, target) -> tile.updateClient = true);
+
+    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_FIRE = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "fire")
+        .fromClient()
+        .onFinished((tile, target) -> {
+            tile.updateClient = true;
+            tile.fire();
+        });
+
+    public static final PacketCodex<TileEMPTower, RadioEmpTower> PACKET_RADIO_DISABLE = new PacketCodexTile<TileEMPTower, RadioEmpTower>(REGISTRY_NAME, "radio.disable", (tile) -> tile.radioCap)
+        .fromClient()
+        .toggleBoolean(RadioEmpTower::isDisabled, RadioEmpTower::setDisabled)
+        .onFinished((tile, target) -> tile.updateClient = true);
 
     /** Tick synced rotation */
     public float rotation = 0;
@@ -79,6 +109,12 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
     public final RadioEmpTower radioCap = new RadioEmpTower(this);
 
     private final List<TileEmpTowerFake> subBlocks = new ArrayList<>();
+
+    public static void register() {
+        GameRegistry.registerTileEntity(TileEMPTower.class, REGISTRY_NAME);
+        PacketCodexReg.register(PACKET_RADIUS, PACKET_RADIO_HZ, PACKET_GUI, PACKET_FIRE, PACKET_RADIO_DISABLE);
+
+    }
 
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
@@ -243,72 +279,15 @@ public class TileEMPTower extends TileMachine implements IPacketIDReceiver, IGui
         cooldownTicks = buf.readInt();
     }
 
-    public void sendRangePacket(int range) {
-        if(isClient())
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("range_C>S", TileEMPTower.CHANGE_RADIUS_PACKET_ID, this).addData(range));
-    }
-
-    public void sendHzPacket(String channel) {
-        if(isClient())
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", TileEMPTower.CHANGE_HZ_PACKET_ID, this).addData(channel));
-    }
-
-    public void sendFirePacket() {
-        if(isClient())
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("fire_C>S", TileEMPTower.FIRE_PACKET_ID, this));
-    }
-
-    public void sendRadioDisabled() {
-        if(isClient())
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("radioDisabled_C>S", TileEMPTower.RADIO_DISABLE_ID, this).addData(!radioCap.isDisabled()));
-    }
-
     @Override
-    public PacketTile getGUIPacket()
+    public IPacket getGUIPacket()
     {
-        return new PacketTile("gui", GUI_PACKET_ID, this).addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.range, this.radioCap.isDisabled());
+        return PACKET_GUI.build(this);
     }
 
     public float getChargePercentage()
     {
         return Math.max(0, Math.min(1, energyStorage.getEnergyStored() / (float) getFiringCost()));
-    }
-
-    @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket type) //TODO migrate to a packet handler
-    {
-        if (!super.read(data, id, player, type))
-        {
-            if (id == CHANGE_RADIUS_PACKET_ID) {
-                range = data.readInt();
-                updateClient = true;
-                return true;
-            }
-            else if(id == CHANGE_HZ_PACKET_ID) {
-                radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                updateClient = true;
-                return true;
-            }
-            else if(id == FIRE_PACKET_ID) {
-                fire();
-                updateClient = true;
-                return true;
-            }
-            else if(id == RADIO_DISABLE_ID) {
-                radioCap.setDisabled(data.readBoolean());
-                updateClient = true;
-                return true;
-            }
-            else if(id == GUI_PACKET_ID && isClient()) {
-                this.energyStorage.setEnergyStored(data.readInt());
-                this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                this.range = data.readInt();
-                this.radioCap.setDisabled(data.readBoolean());
-                return true;
-            }
-            return false;
-        }
-        return true;
     }
 
     public int getFiringCost()

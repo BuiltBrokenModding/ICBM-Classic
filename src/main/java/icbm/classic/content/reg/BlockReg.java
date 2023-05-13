@@ -85,7 +85,7 @@ public class BlockReg
         event.getRegistry().register(new BlockCruiseLauncher());
 
         GameRegistry.registerTileEntity(TileEntityExplosive.class, new ResourceLocation(ICBMConstants.DOMAIN, "explosive"));
-        GameRegistry.registerTileEntity(TileEMPTower.class, new ResourceLocation(ICBMConstants.DOMAIN, "emptower"));
+        TileEMPTower.register();
         GameRegistry.registerTileEntity(TileEmpTowerFake.class, new ResourceLocation(ICBMConstants.DOMAIN, "emptower_fake"));
         GameRegistry.registerTileEntity(TileRadarStation.class, new ResourceLocation(ICBMConstants.DOMAIN, "radarstation"));
         GameRegistry.registerTileEntity(TileLauncherFrame.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherframe"));

@@ -48,6 +48,7 @@ public interface IPacket<P extends IPacket>
         return (P) this;
     }
 
+    @Deprecated
     default P addData(Consumer<ByteBuf> writer) {
         return (P) this;
     }

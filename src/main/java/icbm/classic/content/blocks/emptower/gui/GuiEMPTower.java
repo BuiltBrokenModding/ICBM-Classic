@@ -50,11 +50,11 @@ public class GuiEMPTower extends GuiContainerBase {
 
         // Target field
         addComponent(TextInput.intField(componentID++, fontRenderer, 18, 17, 40, 12,
-            tileEntity::getRange, tileEntity::setRange, tileEntity::sendRangePacket));
+            tileEntity::getRange, tileEntity::setRange, (r) -> TileEMPTower.PACKET_RADIUS.sendToServer(tileEntity)));
 
         // Frequency field
         addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
-            tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, tileEntity::sendHzPacket));
+            tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, (r) -> TileEMPTower.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
         addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
@@ -69,7 +69,7 @@ public class GuiEMPTower extends GuiContainerBase {
                 }
                 return new TextComponentTranslation(READY);
             })
-            .setAction(tileEntity::sendFirePacket)
+            .setAction(() -> TileEMPTower.PACKET_FIRE.sendToServer(tileEntity))
             .setEnabledCheck(tileEntity::isReady)
         );
 
@@ -82,7 +82,7 @@ public class GuiEMPTower extends GuiContainerBase {
 
         // Radio tooltip
         addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
-            .setAction(tileEntity::sendRadioDisabled)
+            .setAction(() -> TileEMPTower.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
 

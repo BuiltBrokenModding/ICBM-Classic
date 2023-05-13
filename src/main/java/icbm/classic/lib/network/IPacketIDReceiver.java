@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
  * Applied to an object that received packet server or client side with an ID
  * Created by Darkguardsman on 8/5/2014.
  */
+@Deprecated
 public interface IPacketIDReceiver
 {
     /**

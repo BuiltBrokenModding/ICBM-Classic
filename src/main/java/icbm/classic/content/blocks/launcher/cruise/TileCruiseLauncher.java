@@ -108,7 +108,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     protected FiringPackage firingPackage;
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
-    public final RadioCruise radioCap = new RadioCruise(this);
+    public final RadioCruise radio = new RadioCruise(this);
 
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
@@ -128,7 +128,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
         launcherNode.connectToTiles();
         if (isServer())
         {
-            RadioRegistry.add(radioCap);
+            RadioRegistry.add(radio);
         }
     }
 
@@ -136,7 +136,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     public void invalidate()
     {
         if (isServer()) {
-            RadioRegistry.remove(radioCap);
+            RadioRegistry.remove(radio);
         }
         super.invalidate();
     }
@@ -263,7 +263,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     public PacketTile getGUIPacket()
     {
         return new PacketTile("gui", GUI_PACKET_ID, this)
-            .addData(energyStorage.getEnergyStored(), this.radioCap.getChannel(), this.radioCap.isDisabled(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
+            .addData(energyStorage.getEnergyStored(), this.radio.getChannel(), this.radio.isDisabled(), this.getTarget().x, this.getTarget().y, this.getTarget().z);
     }
 
     @Override
@@ -276,7 +276,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
                 //set frequency packet from GUI
                 case SET_FREQUENCY_PACKET_ID:
                 {
-                    this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
+                    this.radio.setChannel(ByteBufUtils.readUTF8String(data));
                     updateClient = true;
                     return true;
                 }
@@ -297,7 +297,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
                 }
                 case RADIO_DISABLE_PACKET_ID:
                 {
-                    radioCap.setDisabled(data.readBoolean());
+                    radio.setDisabled(data.readBoolean());
                     return true;
                 }
                 case GUI_PACKET_ID:
@@ -305,8 +305,8 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
                     if (isClient())
                     {
                         this.energyStorage.setEnergyStored(data.readInt());
-                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                        this.radioCap.setDisabled(data.readBoolean());
+                        this.radio.setChannel(ByteBufUtils.readUTF8String(data));
+                        this.radio.setDisabled(data.readBoolean());
                         this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
                     }
                     return true;
@@ -379,7 +379,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
 
     public void sendRadioDisabled() {
         if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("radioDisable_C>S", TileCruiseLauncher.RADIO_DISABLE_PACKET_ID, this).addData(!radioCap.isDisabled()));
+            ICBMClassic.packetHandler.sendToServer(new PacketTile("radioDisable_C>S", TileCruiseLauncher.RADIO_DISABLE_PACKET_ID, this).addData(!radio.isDisabled()));
         }
     }
 
@@ -477,7 +477,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
         }
         else if(capability == ICBMClassicAPI.RADIO_CAPABILITY)
         {
-            return (T) radioCap;
+            return (T) radio;
         }
         return super.getCapability(capability, facing);
     }
@@ -497,7 +497,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
         super.readFromNBT(nbt);
         SAVE_LOGIC.load(this, nbt);
         if(nbt.hasKey(NBTConstants.FREQUENCY)) {
-            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+            this.radio.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
         }
         initFromLoad();
     }
@@ -512,7 +512,7 @@ public class TileCruiseLauncher extends TileMachine implements IPacketIDReceiver
     private static final NbtSaveHandler<TileCruiseLauncher> SAVE_LOGIC = new NbtSaveHandler<TileCruiseLauncher>()
         .mainRoot()
         /* */.nodeINBTSerializable(NBTConstants.INVENTORY, launcher -> launcher.inventory)
-        /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
+        /* */.nodeINBTSerializable("radio", launcher -> launcher.radio)
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         /* */.nodeEulerAngle(NBTConstants.CURRENT_AIM, launcher -> launcher.currentAim, (launcher, pos) -> launcher.currentAim.set(pos))
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)

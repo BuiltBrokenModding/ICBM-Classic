@@ -3,25 +3,14 @@ package icbm.classic.content.blocks.launcher.cruise.gui;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.lib.network.packet.PacketTile;
-import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
-import icbm.classic.ICBMClassic;
-import icbm.classic.prefab.gui.GuiFormatHelpers;
 import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
-import icbm.classic.prefab.gui.tooltip.Tooltip;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentTranslation;
-
-import java.util.function.Consumer;
 
 import static java.lang.Integer.parseInt;
 
@@ -61,7 +50,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
         addComponent(TextInput.vec3dField(componentID++, fontRenderer, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, tileEntity::sendTargetPacket));
         addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
-            tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, tileEntity::sendHzPacket));
+            tileEntity.radio::getChannel, tileEntity.radio::setChannel, tileEntity::sendHzPacket));
 
         // Launch button
         addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
@@ -79,7 +68,7 @@ public class GuiCruiseLauncher extends GuiContainerBase
 
         // Radio tooltip
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
-        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
+        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radio::isDisabled)
             .setAction(tileEntity::sendRadioDisabled)
         );
 
