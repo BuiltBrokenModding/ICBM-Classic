@@ -33,9 +33,9 @@ public class ConfigEmpTower {
 
     @Config.Name("energy_receive_limit")
     @Config.Comment("Input energy limit (FE, ForgeEnergy) per energy received action (can receive several actions per tick).")
-    public static int ENERGY_INPUT = 1000;
+    public static int ENERGY_INPUT = 10000;
 
     @Config.Name("base_max_range")
     @Config.Comment("Max user configurable range of base emp tower (meters)")
-    public static int MAX_BASE_RANGE = 10000;
+    public static int MAX_BASE_RANGE = 150;
 }
