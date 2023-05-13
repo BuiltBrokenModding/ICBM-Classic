@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui;
 
-import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.lib.transform.region.Rectangle;
@@ -8,12 +7,12 @@ import icbm.classic.prefab.gui.textbox.GuiTextFieldBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import lombok.Setter;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -40,6 +39,8 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     @Setter
     private Consumer<Output> onSourceChange;
     private Output previousData;
+
+    private String previousText;
 
     @Deprecated
     private final Rectangle boundBox;
@@ -88,15 +89,20 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         final Output output = sourceWatcher.get();
         if(!Objects.equals(output, previousData)) {
             previousData = output;
-            if(parseOutput != null) {
-                setText(parseOutput.apply(output));
-            }
-            else {
-                setText(output.toString());
-            }
+            setTextFromWatcher();
             return true;
         }
         return false;
+    }
+
+    protected void setTextFromWatcher() {
+        if(parseOutput != null) {
+            previousText = parseOutput.apply(previousData);
+        }
+        else {
+            previousText = Optional.ofNullable(previousData).map(Object::toString).orElse("");
+        }
+        setText(previousText);
     }
 
     @Override
@@ -105,6 +111,9 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         // Reset error feedback when we de-select
         if(!isFocusedIn) {
             errorFeedback = null;
+            if(!Objects.equals(previousText, getText())) {
+                setTextFromWatcher();
+            }
         }
 
         // Handle focus change
