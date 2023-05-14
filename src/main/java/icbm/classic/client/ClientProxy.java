@@ -104,7 +104,7 @@ public class ClientProxy extends CommonProxy
             {
                 if (entity.motionY > -1)
                 {
-                    Pos position = new Pos((IPos3D) entity);
+                    Pos position = new Pos(entity.posX, entity.posY, entity.posZ);
                     // The distance of the smoke relative
                     // to the missile.
                     double distance = -1.2f;
@@ -149,7 +149,7 @@ public class ClientProxy extends CommonProxy
             }
             else
             {
-                Pos position = new Pos((IPos3D) entity);
+                Pos position = new Pos(entity);
                 // The distance of the smoke relative
                 // to the missile.
                 double distance = -1.2f;

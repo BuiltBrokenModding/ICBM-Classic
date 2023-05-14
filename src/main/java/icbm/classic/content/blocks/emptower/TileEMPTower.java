@@ -168,7 +168,7 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
 
             if (ticks % 20 == 0 && isReady()) //TODO convert to a mix of a timer and/or event handler
             {
-                ICBMSounds.MACHINE_HUM.play(world, xi() + 0.5, yi() + 0.5, zi() + 0.5, 0.5F, 0.85F * getChargePercentage(), true);
+                ICBMSounds.MACHINE_HUM.play(world, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, 0.5F, 0.85F * getChargePercentage(), true);
             }
             else if(getCooldown() > 0 && ticks % 10 == world.rand.nextInt(10)) {
                 //TODO add custom sound so sub-titles match
@@ -276,7 +276,7 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
     {
         return ((BlastEMP)ICBMExplosives.EMP.create()
                 .setBlastWorld(world)
-                .setBlastPosition(this.xi() + 0.5, this.yi() + 1.2, this.zi() + 0.5)
+                .setBlastPosition(getPos().getX() + 0.5, getPos().getY() + 1.2, getPos().getZ() + 0.5)
                 .setBlastSize(range))
                 .clearSetEffectBlocksAndEntities()
                 .setEffectBlocks().setEffectEntities()

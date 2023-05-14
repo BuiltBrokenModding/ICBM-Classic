@@ -5,6 +5,7 @@ package com.builtbroken.jlib.data.vector;
  *
  * @author DarkGuardsman
  */
+@Deprecated
 public interface IPos3D extends IPos2D
 {
     double z();

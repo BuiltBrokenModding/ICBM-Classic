@@ -235,7 +235,7 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
                 for (EnumFacing side : EnumFacing.VALUES) {
                     final int power = world.getRedstonePower(getPos().offset(side), side);
                     if (power > 1) {
-                        firingPackage = new FiringPackage(new BasicTargetData(getTarget()), new RedstoneCause(world(), getPos(), getBlockState(), side), 0);
+                        firingPackage = new FiringPackage(new BasicTargetData(getTarget()), new RedstoneCause(getWorld(), getPos(), getBlockState(), side), 0);
                     }
                 }
             }
@@ -280,7 +280,7 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         if (hasTarget())
         {
             final Vec3d aimPoint = getTarget();
-            final Pos center = new Pos((IPos3D) this).add(0.5, MISSILE__HOLDER_Y, 0.5);
+            final Pos center = new Pos(this).add(0.5, MISSILE__HOLDER_Y, 0.5);
             aim.set(center.toEulerAngle(aimPoint).clampTo360());
             aim.setYaw(EulerAngle.clampPos360(aim.yaw()));
         }
@@ -348,13 +348,13 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
     // Is the target too close?
     public boolean isTooClose(Vec3d target)
     {
-        return new Pos(getPos()).add(0.5).distance(target) < 20;
+        return new Pos(getPos()).add(0.5).distance(target) < 20; //TODO remove pos usage
     }
 
     @Override
     public AxisAlignedBB getRenderBoundingBox()
     {
-        return new Cube(-2, 0, -2, 2, 3, 2).add(new Pos((IPos3D) this)).toAABB();
+        return new AxisAlignedBB(getPos().add(-2, 0, -2), getPos().add(2, 3, 2));
     }
 
     @Override

@@ -79,9 +79,9 @@ public class CLauncherCapability extends LauncherBaseCapability {
             return LauncherStatus.FIRING_AIMING; // TODO return aiming status, with callback to check if did fire
         }
 
-        final BlockCause selfCause = new BlockCause(host.world(), host.getPos(), host.getBlockState());
+        final BlockCause selfCause = new BlockCause(host.getWorld(), host.getPos(), host.getBlockState());
         selfCause.setPreviousCause(cause);
-        final IMissileSource missileSource = new MissileSource(getHost().world(), new Vec3d(host.xi() + 0.5, host.yi() + TileCruiseLauncher.MISSILE__HOLDER_Y, host.zi() + 0.5), selfCause);
+        final IMissileSource missileSource = new MissileSource(getHost().getWorld(), new Vec3d(host.getPos().getX() + 0.5, host.getPos().getY() + TileCruiseLauncher.MISSILE__HOLDER_Y, host.getPos().getZ() + 0.5), selfCause);
 
         if (host.canLaunch()) //TODO update to mirror launch pad better
         {
@@ -92,7 +92,7 @@ public class CLauncherCapability extends LauncherBaseCapability {
                 if(capabilityMissileStack != null) {
 
                     if(host.isServer()) {
-                        final IMissile missile = capabilityMissileStack.newMissile(host.world());
+                        final IMissile missile = capabilityMissileStack.newMissile(host.getWorld());
                         final Entity entity = missile.getMissileEntity();
                         entity.setPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);
 
@@ -113,7 +113,7 @@ public class CLauncherCapability extends LauncherBaseCapability {
                         missile.setFlightLogic(new DirectFlightLogic(ConfigMissile.CRUISE_FUEL));
                         missile.launch();
 
-                        if (!host.world().spawnEntity(entity)) {
+                        if (!host.getWorld().spawnEntity(entity)) {
                             return LauncherStatus.ERROR_SPAWN;
                         }
                     }

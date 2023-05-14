@@ -86,10 +86,10 @@ public class LauncherCapability extends LauncherBaseCapability {
         }
 
         // Setup source and cause
-        final BlockCause selfCause = new BlockCause(host.world(), host.getPos(), host.getBlockState()); // TODO add more information about launcher
+        final BlockCause selfCause = new BlockCause(host.getWorld(), host.getPos(), host.getBlockState()); // TODO add more information about launcher
         selfCause.setPreviousCause(cause);
 
-        final MissileSource source = new MissileSource(host.world(), SPAWN_OFFSET.addVector(host.getPos().getX(), host.getPos().getY(), host.getPos().getZ()), selfCause);
+        final MissileSource source = new MissileSource(host.getWorld(), SPAWN_OFFSET.addVector(host.getPos().getX(), host.getPos().getY(), host.getPos().getZ()), selfCause);
 
         //Allow canceling missile launches
         final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolder, targetData, simulate);
@@ -134,7 +134,7 @@ public class LauncherCapability extends LauncherBaseCapability {
                     return LauncherStatus.LAUNCHED;
                 }
 
-                final IMissile missile = missileStack.newMissile(host.world());
+                final IMissile missile = missileStack.newMissile(host.getWorld());
                 return fireMissile(missile, source, target);
             }
         }
@@ -162,7 +162,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         missile.launch();
 
         //Spawn entity
-        if(!host.world().spawnEntity(entity)) {
+        if(!host.getWorld().spawnEntity(entity)) {
             return LauncherStatus.ERROR_SPAWN;
         }
 
@@ -206,10 +206,10 @@ public class LauncherCapability extends LauncherBaseCapability {
     {
 
         //Randomize distance
-        float inaccuracy = getInaccuracy(target, launcherCount) * host.world().rand.nextFloat();
+        float inaccuracy = getInaccuracy(target, launcherCount) * host.getWorld().rand.nextFloat();
 
         //Randomize radius drop
-        angle.setYaw(host.world().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
+        angle.setYaw(host.getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
 
         //Apply inaccuracy to target position and return
         return new Vec3d(target.x + angle.x() * inaccuracy, 0, target.z + angle.z() * inaccuracy);

@@ -191,7 +191,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
                 checkMissileCollision = true;
 
                 //Update seat position
-                Optional.ofNullable(seat).ifPresent(seat -> seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5));
+                Optional.ofNullable(seat).ifPresent(seat -> seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5));
 
                 //Create seat if missile
                 if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
@@ -199,7 +199,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
                     seat = new EntityPlayerSeat(world);
                     seat.host = this;
                     seat.rideOffset = new Pos(getRotation()).multiply(0.5, 1, 0.5);
-                    seat.setPosition(x() + 0.5, y() + 0.5, z() + 0.5);
+                    seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
                     seat.setSize(0.5f, 2.5f);
                     world.spawnEntity(seat);
                 }
@@ -252,7 +252,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
             checkMissileCollision = false;
 
             //Validate the space above the launcher is free of entities, mostly for smooth reload visuals
-            final AxisAlignedBB collisionCheck = new AxisAlignedBB(xi(), yi(), zi(), xi() + 1, yi() + 5, zi() + 1);
+            final AxisAlignedBB collisionCheck = new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 5, getPos().getZ() + 1); //TODO magic numbers
             final List<EntityMissile> entities = world.getEntitiesWithinAABB(EntityMissile.class, collisionCheck);
             hasMissileCollision = entities.size() > 0;
         }

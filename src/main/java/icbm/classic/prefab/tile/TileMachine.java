@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/9/2017.
  */
-public class TileMachine extends TileEntity implements IWorldPosition, ITickable, IGuiTile
+public class TileMachine extends TileEntity implements ITickable
 {
     protected int ticks = -1;
 
@@ -78,6 +78,7 @@ public class TileMachine extends TileEntity implements IWorldPosition, ITickable
         return world != null && world.isRemote;
     }
 
+    @Deprecated
     public EnumFacing getRotation()
     {
         IBlockState state = getBlockState();
@@ -88,53 +89,8 @@ public class TileMachine extends TileEntity implements IWorldPosition, ITickable
         return EnumFacing.NORTH;
     }
 
-    public void setRotation(EnumFacing facingDirection)
-    {
-        //Only update if state has changed
-        if (facingDirection != getRotation())
-        {
-            //Update block state
-            IBlockState state = getBlockState();
-            if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
-            {
-                world.setBlockState(pos, getBlockState().withProperty(BlockICBM.ROTATION_PROP, facingDirection));
-            }
-        }
-    }
-
     public IBlockState getBlockState()
     {
         return world.getBlockState(getPos());
-    }
-
-    @Override
-    public World world()
-    {
-        return getWorld();
-    }
-
-    @Override
-    public double z()
-    {
-        return getPos().getZ();
-    }
-
-    @Override
-    public double x()
-    {
-        return getPos().getX();
-    }
-
-    @Override
-    public double y()
-    {
-        return getPos().getY();
-    }
-
-    @Override
-    public boolean openGui(EntityPlayer player, int requestedID)
-    {
-        player.openGui(ICBMClassic.INSTANCE, requestedID, world, xi(), yi(), zi());
-        return true;
     }
 }

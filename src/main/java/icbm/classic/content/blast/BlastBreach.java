@@ -97,7 +97,7 @@ public class BlastBreach extends BlastTNT
                         }
 
                         //Translate by center
-                        p = new Pos((IPos3D) this).add(p); //TODO replace with BlockPos
+                        p = new Pos(this).add(p); //TODO replace with BlockPos
 
                         //Get block
                         IBlockState state = p.getBlockState(world());

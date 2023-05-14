@@ -124,6 +124,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
         return null;
     }
 
+    @Deprecated
     public EulerAngle toEulerAngle(IPos3D target)
     {
         return sub(target).toEulerAngle();
