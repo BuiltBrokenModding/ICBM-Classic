@@ -192,7 +192,7 @@ public class LauncherCapability extends LauncherBaseCapability {
 
         // Add inaccuracy based on range
         final double distance = host.getDistanceSq(target.x, target.y, target.z);
-        final double scale = distance / ConfigLauncher.RANGE;
+        final double scale = distance / (ConfigLauncher.RANGE * ConfigLauncher.RANGE);
         inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY_DISTANCE;
 
         // Add inaccuracy for each launcher fired in circuit
