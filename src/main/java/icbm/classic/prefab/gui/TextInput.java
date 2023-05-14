@@ -82,6 +82,13 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     public void onUpdate() {
         if(!isFocused() && sourceWatcher != null) {
             detectForChange();
+
+            // Handle string changes, but source didn't change... reset to source
+            //  this likely happens when user inputs data but the source didn't take it
+            //  examples of this could be numeric values greater than allowed
+            if(!Objects.equals(previousText, getText())) {
+                setTextFromWatcher();
+            }
         }
     }
 
@@ -89,7 +96,6 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         final Output output = sourceWatcher.get();
         if(!Objects.equals(output, previousData)) {
             previousData = output;
-            setTextFromWatcher();
             return true;
         }
         return false;
@@ -108,21 +114,22 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     @Override
     public void setFocused(boolean isFocusedIn) {
         super.setFocused(isFocusedIn);
+
         // Reset error feedback when we de-select
         if(!isFocusedIn) {
             errorFeedback = null;
-            if(!Objects.equals(previousText, getText())) {
-                setTextFromWatcher();
-            }
         }
 
         // Handle focus change
+        //  often used for setting value from user input into host
+        //  can set error feedback
         if (focusChangedCallback != null) {
             focusChangedCallback.accept(isFocusedIn);
         }
 
         // Handle source change caused by user
         if(!isFocusedIn && detectForChange() && onSourceChange != null) {
+            // Notify systems of the change, this often triggers network calls
             onSourceChange.accept(previousData);
         }
     }
