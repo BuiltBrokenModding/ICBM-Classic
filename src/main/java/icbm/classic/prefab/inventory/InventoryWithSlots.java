@@ -1,5 +1,6 @@
 package icbm.classic.prefab.inventory;
 
+import icbm.classic.lib.tile.ITick;
 import lombok.Getter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -9,7 +10,7 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-public class InventoryWithSlots extends ItemStackHandler {
+public class InventoryWithSlots extends ItemStackHandler implements ITick {
 
     private final InventorySlot[] slotHandlers;
 
@@ -26,14 +27,6 @@ public class InventoryWithSlots extends ItemStackHandler {
     public void setSize(int size)
     {
         stacks = NonNullList.withSize(Math.max(size, stacks.size()), ItemStack.EMPTY);
-    }
-
-    public void onTick() {
-        for(InventorySlot slot : slotHandlers) {
-            if(slot != null && slot.getOnTick() != null) {
-                setStackInSlot(slot.getSlot(), slot.getOnTick().apply(getStackInSlot(slot.getSlot())));
-            }
-        }
     }
 
     @Override
@@ -73,5 +66,16 @@ public class InventoryWithSlots extends ItemStackHandler {
             return Optional.ofNullable(slotHandlers[slot]);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void update(int tick, boolean isServer) {
+        if(isServer) {
+            for (InventorySlot slot : slotHandlers) {
+                if (slot != null && slot.getOnTick() != null) {
+                    setStackInSlot(slot.getSlot(), slot.getOnTick().apply(getStackInSlot(slot.getSlot())));
+                }
+            }
+        }
     }
 }

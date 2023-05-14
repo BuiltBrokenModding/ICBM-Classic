@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.radarstation.gui;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
+import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
@@ -39,19 +40,19 @@ public class GuiRadarStation extends GuiContainerBase
 
         // Hz
         addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
-            tileEntity.getRadio()::getChannel, tileEntity.getRadio()::setChannel, tileEntity::sendHzPacket));
+            tileEntity.getRadio()::getChannel, tileEntity.getRadio()::setChannel, (o) -> TileRadarStation.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // trigger
         addComponent(TextInput.intField(componentID++, fontRenderer, 18, 77, 29, 12,
-            tileEntity::getTriggerRange, tileEntity::setTriggerRange, tileEntity::sendTriggerRangePacket));
+            tileEntity::getTriggerRange, tileEntity::setTriggerRange, (o) -> TileRadarStation.PACKET_TRIGGER_RANGE.sendToServer(tileEntity)));
 
         // detection
         addComponent(TextInput.intField(componentID++, fontRenderer, 49, 77, 29, 12,
-            tileEntity::getDetectionRange, tileEntity::setDetectionRange, tileEntity::sendDetectionRangePacket));
+            tileEntity::getDetectionRange, tileEntity::setDetectionRange, (o) -> TileRadarStation.PACKET_DETECTION_RANGE.sendToServer(tileEntity)));
 
         addComponent(
             new RedstoneButton(0, 160 + guiLeft, 3 + guiTop, tileEntity::isOutputRedstone)
-            .setAction(tileEntity::sendOutputRedstonePacket)
+            .setAction(() -> TileRadarStation.PACKET_REDSTONE_OUTPUT.sendToServer(tileEntity))
                 .setTooltip(() -> {
                     if(tileEntity.isOutputRedstone()) {
                         return TileRadarStation.TRANSLATION_TOOLTIP_REDSTONE_ON;

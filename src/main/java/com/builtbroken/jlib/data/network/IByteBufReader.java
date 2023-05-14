@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
  *
  * Created by robin on 1/11/2015.
  */
+@Deprecated
 public interface IByteBufReader
 {
     /** Called to read an object from byte buf

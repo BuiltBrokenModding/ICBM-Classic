@@ -1,11 +1,14 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigLauncher;
+import icbm.classic.content.blocks.emptower.TileEMPTower;
+import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
@@ -14,14 +17,22 @@ import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
+import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.lambda.PacketCodex;
+import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.network.lambda.PacketCodexTile;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.tile.TickAction;
+import icbm.classic.lib.tile.TickDoOnce;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
+import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
@@ -33,15 +44,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -51,14 +65,10 @@ import java.util.function.BiConsumer;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine implements ILauncherComponent //TODO move to cap
+public class TileLauncherBase extends TileMachine implements ILauncherComponent, IMachineInfo, IGuiTile, IPlayerUsing
 {
 
-    public static final int PACKET_LOCK_HEIGHT = 0;
-    public static final int PACKET_GROUP_ID = 1;
-    public static final int PACKET_GROUP_INDEX = 2;
-    public static final int PACKET_GUI = 3;
-    public static final int PACKET_FIRING_DELAY = 4;
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherbase");
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
@@ -71,12 +81,12 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
     private boolean hasMissileCollision = false;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
-        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();});
+        .withOnChange((p,c,s) -> {this.markDirty();});
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
             .withInsertCheck((s) -> !this.checkForMissileInBounds())
-            .withChangeCallback((stack) -> this.sendDescPacket())
+            .withChangeCallback((stack) -> this.markDirty())
         )
         .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
 
@@ -106,9 +116,31 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
     @Getter @Setter
     private FiringPackage firingPackage;
 
+    private final TickDoOnce descriptionPacketSender = new TickDoOnce((t) -> PACKET_DESCRIPTION.sendToAllAround(this));
+
+    @Getter
+    private final List<EntityPlayer> playersUsing = new LinkedList<>();
+
+    public TileLauncherBase() {
+        tickActions.add(descriptionPacketSender);
+        tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
+        tickActions.add(new TickAction(20,true,  (t) -> {
+            playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchBase));
+        }));
+        tickActions.add(inventory);
+    }
+
+    @Override
+    public void markDirty()
+    {
+        super.markDirty();
+        if(isServer()) {
+            descriptionPacketSender.doNext();
+        }
+    }
+
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
-        super.provideInformation(consumer);
         consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER);
         consumer.accept(ENERGY_COST_ACTION, getFiringCost());
         consumer.accept("MAX_RANGE", ConfigLauncher.RANGE); //TODO min range
@@ -233,96 +265,6 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
         return new TextComponentTranslation("gui.icbmclassic:launcherbase.name");
     }
 
-    @Override
-    public void writeDescPacket(ByteBuf buf)
-    {
-        super.writeDescPacket(buf);
-        ByteBufUtils.writeItemStack(buf, getMissileStack());
-    }
-
-    @Override
-    public void readDescPacket(ByteBuf buf)
-    {
-        super.readDescPacket(buf);
-        cachedMissileStack = ByteBufUtils.readItemStack(buf);
-    }
-
-    @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
-    {
-        if (!super.read(data, id, player, packet))
-        {
-            switch (id)
-            {
-                case PACKET_GUI:
-                {
-                    lockHeight = data.readInt();
-                    groupIndex = data.readInt();
-                    groupId = data.readInt();
-                    firingDelay = data.readInt();
-                    return true;
-                }
-                case PACKET_LOCK_HEIGHT:
-                {
-                    lockHeight = data.readInt();
-                    return true;
-                }
-                case PACKET_GROUP_INDEX:
-                {
-                    groupIndex = data.readInt();
-                    return true;
-                }
-                case PACKET_GROUP_ID:
-                {
-                    groupId = data.readInt();
-                    return true;
-                }
-                case PACKET_FIRING_DELAY:
-                {
-                    firingDelay = data.readInt();
-                    return true;
-                }
-            }
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    protected PacketTile getGUIPacket()
-    {
-        PacketTile packetTile = new PacketTile("gui", PACKET_GUI, this);
-        packetTile.addData(lockHeight);
-        packetTile.addData(groupIndex);
-        packetTile.addData(groupId);
-        packetTile.addData(firingDelay);
-        return packetTile;
-    }
-
-    public void sendLockHeightPacket(int lockHeight) {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("lockHeight_C>S", PACKET_LOCK_HEIGHT, this).addData(lockHeight));
-        }
-    }
-
-    public void sendGroupIdPacket(int groupId) {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupId_C>S", PACKET_GROUP_ID, this).addData(groupId));
-        }
-    }
-
-    public void sendGroupIndexPacket(int groupIndex) {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("groupIndex_C>S", PACKET_GROUP_INDEX, this).addData(groupIndex));
-        }
-    }
-
-    public void sendFiringDelayPacket(int firingDelay) {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("firingDelay_C>S", PACKET_FIRING_DELAY, this).addData(firingDelay));
-        }
-    }
-
     public ItemStack getMissileStack()
     {
         if (isClient() && cachedMissileStack != null)
@@ -404,4 +346,36 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent 
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         /* */.nodeINBTSerializable("launcher", launcher -> launcher.missileLauncher)
         .base();
+
+    public static void register() {
+        GameRegistry.registerTileEntity(TileLauncherBase.class, REGISTRY_NAME);
+        PacketCodexReg.register(PACKET_DESCRIPTION, PACKET_GUI, PACKET_LOCK_HEIGHT, PACKET_GROUP_ID, PACKET_GROUP_INDEX, PACKET_FIRING_DELAY);
+    }
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_DESCRIPTION = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "description")
+        .fromServer()
+        .nodeItemStack(TileLauncherBase::getMissileStack, (t, f) -> t.cachedMissileStack = f);
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GUI = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "gui")
+        .fromServer()
+        .nodeInt(TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex)
+        .nodeInt(TileLauncherBase::getGroupId, TileLauncherBase::setGroupId)
+        .nodeInt(TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
+        .nodeInt(TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight);
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_LOCK_HEIGHT = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "lock_height")
+        .fromClient()
+        .nodeInt(TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight);
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GROUP_INDEX = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "group.index")
+        .fromClient()
+        .nodeInt(TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex);
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GROUP_ID = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "group.id")
+        .fromClient()
+        .nodeInt(TileLauncherBase::getGroupId, TileLauncherBase::setGroupId);
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_FIRING_DELAY = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "firing.delay")
+        .fromClient()
+        .nodeInt(TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay);
 }

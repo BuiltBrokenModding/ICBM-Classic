@@ -128,7 +128,7 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
 
         Minecraft.getMinecraft().addScheduledTask(() -> {
             final TileEntity tile = player.world.getTileEntity(pos);
-            loadDataIntoTile(tile);
+            loadDataIntoTile(tile, player);
         });
     }
 
@@ -154,11 +154,11 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
 
         world.addScheduledTask(() -> {
             final TileEntity tile = player.world.getTileEntity(pos);
-            loadDataIntoTile(tile);
+            loadDataIntoTile(tile, player);
         });
     }
 
-    private void loadDataIntoTile(TileEntity tile) {
+    private void loadDataIntoTile(TileEntity tile, EntityPlayer player) {
         PacketCodex<TileEntity, TARGET> builder = null;
         try {
             builder = (PacketCodex<TileEntity, TARGET>) PacketCodexReg.get(id);
@@ -167,7 +167,9 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
                 if(target != null) {
                     setters.forEach(c -> c.accept(target));
                 }
-                builder.onFinished().accept(tile, target);
+                if(builder.onFinished() != null) {
+                    builder.onFinished().accept(tile, target, player);
+                }
             }
         }
         catch (Exception e) {

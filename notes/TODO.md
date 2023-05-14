@@ -20,3 +20,7 @@
 ## Issues
 
 - Disabled icon for radio hover is too hard to tell apart from normal, consider color shift or hard boarder
+- emp hitbox
+- radar gui is missing disable radio feature
+- emp tower structure doesn't disconnect on block break
+- screen doesn't connect to power on it's own

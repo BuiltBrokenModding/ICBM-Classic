@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
 import icbm.classic.api.launcher.IActionStatus;
@@ -12,6 +13,7 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.LauncherSolution;
+import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherEntry;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
@@ -19,15 +21,22 @@ import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
+import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.network.lambda.PacketCodexTile;
 import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.tile.TickAction;
+import icbm.classic.lib.tile.TickDoOnce;
+import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
+import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
@@ -36,21 +45,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -59,19 +67,15 @@ import java.util.stream.Collectors;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver, ILauncherComponent
+public class TileLauncherScreen extends TileMachine implements ILauncherComponent, IMachineInfo, IPlayerUsing, IGuiTile
 {
-    public static final int SET_FREQUENCY_PACKET_ID = 0;
-    public static final int SET_TARGET_PACKET_ID = 1;
-    public static final int LAUNCH_PACKET_ID = 2;
-    public static final int GUI_PACKET_ID = 3;
-    public static final int RADIO_DISABLE_PACKET_ID = 4;
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherscreen");
 
     /** Target position of the launcher */
     private Vec3d _targetPos = Vec3d.ZERO;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
-        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();});
+        .withOnChange((p,c,s) -> this.markDirty());
     public final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
@@ -84,9 +88,19 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     private final List<LauncherPair> statusList = new ArrayList();
     private boolean refreshStatus = false;
 
+    @Getter
+    private final List<EntityPlayer> playersUsing = new LinkedList<>();
+
+    public TileLauncherScreen() {
+        tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
+        tickActions.add(new TickAction(20,true,  (t) -> {
+            playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchScreen));
+        }));
+        tickActions.add(inventory);
+    }
+
     @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
-        super.provideInformation(consumer);
         consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER);
     }
 
@@ -99,9 +113,6 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
     public void update()
     {
         super.update();
-
-        // Tick inventory
-        inventory.onTick();
 
         if (isServer())
         {
@@ -145,118 +156,69 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
         return -1;
     }
 
-    @Override
-    public boolean read(ByteBuf data, int id, EntityPlayer player, IPacket packet)
-    {
-        if (!super.read(data, id, player, packet))
-        {
-            if(isServer()) {
-                switch (id) {
-                    case SET_FREQUENCY_PACKET_ID: {
-                        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-                        updateClient = true;
-                        return true;
-                    }
-                    case SET_TARGET_PACKET_ID: {
-                        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
-                        updateClient = true;
-                        return true;
-                    }
-                    case LAUNCH_PACKET_ID: {
-                        fireAllLaunchers(false);
-                        updateClient = true;
-                        return true;
-                    }
-                    case RADIO_DISABLE_PACKET_ID: {
-                        radioCap.setDisabled(data.readBoolean());
-                        updateClient = true;
-                        return true;
-                    }
+    public static void register() {
+        GameRegistry.registerTileEntity(TileLauncherScreen.class, REGISTRY_NAME);
+        PacketCodexReg.register(PACKET_RADIO_HZ, PACKET_RADIO_DISABLE, PACKET_TARGET, PACKET_GUI, PACKET_LAUNCH);
+    }
+
+    public static final PacketCodexTile<TileLauncherScreen, TileLauncherScreen> PACKET_GUI = (PacketCodexTile<TileLauncherScreen, TileLauncherScreen>) new PacketCodexTile<TileLauncherScreen, TileLauncherScreen>(REGISTRY_NAME, "description")
+        .fromServer()
+        .nodeVec3d(TileLauncherScreen::getTarget, TileLauncherScreen::setTarget)
+        .nodeString(t -> t.radioCap.getChannel(), (t, f) -> t.radioCap.setChannel(f))
+        .nodeBoolean(t -> t.radioCap.isDisabled(), (t, f) -> t.radioCap.setDisabled(f))
+        .nodeFloat(t -> t.launcherInaccuracy, (t, f) -> t.launcherInaccuracy = f)
+        .nodeVec3d(TileLauncherScreen::getTarget, TileLauncherScreen::setTarget)
+        .nodeNbtCompound(t -> {
+            final NBTTagCompound tag = new NBTTagCompound(); //TODO find a way to send bytes
+            final NBTTagList list = new NBTTagList();
+            t.statusList.forEach((pair) -> {
+                final NBTTagCompound save = new NBTTagCompound();
+                save.setInteger("g", pair.getGroup());
+                save.setInteger("i", pair.getIndex());
+                save.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
+                list.appendTag(save);
+            });
+            tag.setTag("p", list);
+            return tag;
+        }, (t, tag) -> {
+            final NBTTagList list = tag.getTagList("p", 10);
+            final List<LauncherPair> status = new ArrayList<>(list.tagCount());
+            for(int i = 0; i < list.tagCount(); i++) {
+                final NBTTagCompound save = (NBTTagCompound) list.get(i);
+                final int group = save.getInteger("g");
+                final int index = save.getInteger("i");
+                final NBTTagCompound partSave = save.getCompoundTag("p");
+                final IActionStatus part = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(partSave);
+                if(part != null) {
+                    status.add(new LauncherPair(group, index, part));
                 }
             }
-            else if(id == GUI_PACKET_ID){
-                readGuiPacket(data);
-                return true;
-            }
-            return false;
-        }
-        return true;
-    }
 
-    @SideOnly(Side.CLIENT)
-    public void readGuiPacket(ByteBuf data) {
-        this.radioCap.setChannel(ByteBufUtils.readUTF8String(data));
-        this.radioCap.setDisabled(data.readBoolean());
-        this.launcherInaccuracy = data.readFloat();
-        this.setTarget(new Vec3d(data.readDouble(), data.readDouble(), data.readDouble()));
-
-        final NBTTagCompound compound = ByteBufUtils.readTag(data);
-        final NBTTagList list = compound.getTagList("p", 10);
-        final List<LauncherPair> status = new ArrayList<>(list.tagCount());
-        for(int i = 0; i < list.tagCount(); i++) {
-            final NBTTagCompound save = (NBTTagCompound) list.get(i);
-            final int group = save.getInteger("g");
-            final int index = save.getInteger("i");
-            final NBTTagCompound partSave = save.getCompoundTag("p");
-            final IActionStatus part = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(partSave);
-            if(part != null) {
-                status.add(new LauncherPair(group, index, part));
-            }
-        }
-
-        Minecraft.getMinecraft().addScheduledTask(() -> {
-            this.statusList.clear();
-            this.statusList.addAll(status);
+            t.statusList.clear();
+            t.statusList.addAll(status);
         });
-    }
 
-    @Override
-    protected PacketTile getGUIPacket()
-    {
-        PacketTile packet = new PacketTile("gui", GUI_PACKET_ID, this);
-        packet.addData(radioCap.getChannel());
-        packet.addData(radioCap.isDisabled());
-        packet.addData(launcherInaccuracy);
-        packet.addData(this.getTarget());
+    public static final PacketCodexTile<TileLauncherScreen, RadioScreen> PACKET_RADIO_HZ = (PacketCodexTile<TileLauncherScreen, RadioScreen>) new PacketCodexTile<TileLauncherScreen, RadioScreen>(REGISTRY_NAME, "radio.frequency", (t) -> t.radioCap)
+        .fromClient()
+        .nodeString(RadioScreen::getChannel, RadioScreen::setChannel)
+        .onFinished((r, t, p) -> r.markDirty());
 
-        final NBTTagCompound tag = new NBTTagCompound(); //TODO find a way to send bytes
-        final NBTTagList list = new NBTTagList();
-        statusList.forEach((pair) -> {
-            final NBTTagCompound save = new NBTTagCompound();
-            save.setInteger("g", pair.getGroup());
-            save.setInteger("i", pair.getIndex());
-            save.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
-            list.appendTag(save);
+    public static final PacketCodexTile<TileLauncherScreen, RadioScreen> PACKET_RADIO_DISABLE = (PacketCodexTile<TileLauncherScreen, RadioScreen>) new PacketCodexTile<TileLauncherScreen, RadioScreen>(REGISTRY_NAME, "radio.disable", (t) -> t.radioCap)
+        .fromClient()
+        .toggleBoolean(RadioScreen::isDisabled, RadioScreen::setDisabled)
+        .onFinished((r, t, p) -> r.markDirty());
+
+    public static final PacketCodexTile<TileLauncherScreen, TileLauncherScreen> PACKET_TARGET = (PacketCodexTile<TileLauncherScreen, TileLauncherScreen>) new PacketCodexTile<TileLauncherScreen, TileLauncherScreen>(REGISTRY_NAME, "target")
+        .fromClient()
+        .nodeVec3d(TileLauncherScreen::getTarget, TileLauncherScreen::setTarget)
+        .onFinished((r, t, p) -> r.markDirty());;
+
+    public static final PacketCodexTile<TileLauncherScreen, TileLauncherScreen> PACKET_LAUNCH = (PacketCodexTile<TileLauncherScreen, TileLauncherScreen>) new PacketCodexTile<TileLauncherScreen, TileLauncherScreen>(REGISTRY_NAME, "launch")
+        .fromClient()
+        .onFinished((r, t, p) -> {
+            r.fireAllLaunchers(false);
+            r.markDirty();
         });
-        tag.setTag("p", list);
-        packet.addData(tag);
-
-        return packet;
-    }
-
-    public void sendHzPacket(String channel) {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("frequency_C>S", SET_FREQUENCY_PACKET_ID, this).addData(channel));
-        }
-    }
-
-    public void sendTargetPacket(Vec3d data) {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("target_C>S", SET_TARGET_PACKET_ID, this).addData(data));
-        }
-    }
-
-    public void sendLaunchPacket() {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", LAUNCH_PACKET_ID, this));
-        }
-    }
-
-    public void sendRadioDisabled() {
-        if(isClient()) {
-            ICBMClassic.packetHandler.sendToServer(new PacketTile("launch_C>S", RADIO_DISABLE_PACKET_ID, this).addData(!radioCap.isDisabled()));
-        }
-    }
 
     /**
      * Pre-check of the launch process
@@ -386,7 +348,7 @@ public class TileLauncherScreen extends TileMachine implements IPacketIDReceiver
 
                 if (!MinecraftForge.EVENT_BUS.post(event)) {
                     this._targetPos = event.target == null ? Vec3d.ZERO : event.target;
-                    updateClient = true;
+                    this.markDirty();
                 }
             }
             else {

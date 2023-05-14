@@ -47,13 +47,13 @@ public class GuiLauncherBase extends GuiContainerBase
 
         // Target field
         addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17, 30, 12,
-            tileEntity::getLockHeight, tileEntity::setLockHeight, tileEntity::sendLockHeightPacket));
+            tileEntity::getLockHeight, tileEntity::setLockHeight, (o) -> TileLauncherBase.PACKET_LOCK_HEIGHT.sendToServer(tileEntity)));
         addComponent(TextInput.intField(componentID++, fontRenderer, 82, 17, 30, 12,
-            tileEntity::getGroupId, tileEntity::setGroupId, tileEntity::sendGroupIdPacket));
+            tileEntity::getGroupId, tileEntity::setGroupId, (o) -> TileLauncherBase.PACKET_GROUP_ID.sendToServer(tileEntity)));
         addComponent(TextInput.intField(componentID++, fontRenderer, 127, 17, 30, 12,
-            tileEntity::getGroupIndex, tileEntity::setGroupIndex, tileEntity::sendGroupIndexPacket));
+            tileEntity::getGroupIndex, tileEntity::setGroupIndex, (o) -> TileLauncherBase.PACKET_GROUP_INDEX.sendToServer(tileEntity)));
         addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17 + 16, 30, 12,
-            tileEntity::getFiringDelay, tileEntity::setFiringDelay, tileEntity::sendFiringDelayPacket));
+            tileEntity::getFiringDelay, tileEntity::setFiringDelay, (o) -> TileLauncherBase.PACKET_FIRING_DELAY.sendToServer(tileEntity)));
 
         addComponent(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,

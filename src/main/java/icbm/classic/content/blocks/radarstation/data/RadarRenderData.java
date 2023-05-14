@@ -1,5 +1,7 @@
 package icbm.classic.content.blocks.radarstation.data;
 
+import com.builtbroken.jlib.data.network.IByteBufReader;
+import com.builtbroken.jlib.data.network.IByteBufWriter;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
@@ -15,7 +17,7 @@ public class RadarRenderData {
     private final TileRadarStation host;
 
     @Getter
-    private final List<RadarRenderDot> dots = new LinkedList();
+    private final List<RadarRenderDot> dots = new LinkedList<>();
 
     public RadarRenderData(TileRadarStation host) {
         this.host = host;
@@ -59,7 +61,12 @@ public class RadarRenderData {
         dots.clear();
     }
 
-    public void readBytes(ByteBuf buf) {
+    public void setDots(List<RadarRenderDot> dots) {
+        this.dots.clear();
+        this.dots.addAll(dots);
+    }
+
+    public static List<RadarRenderDot> decodeDots(ByteBuf buf) {
 
         final List<RadarRenderDot> dots = new LinkedList();
 
@@ -67,14 +74,10 @@ public class RadarRenderData {
         for(int i = 0; i < dotCount; i++) {
             dots.add(new RadarRenderDot(buf.readInt(), buf.readInt(), RadarDotType.get(buf.readByte())));
         }
-
-        Minecraft.getMinecraft().addScheduledTask(() -> {
-            this.dots.clear();
-            this.dots.addAll(dots);
-        });
+        return dots;
     }
 
-    public void writeBytes(ByteBuf buf) {
+    public static void encodeDots(ByteBuf buf, List<RadarRenderDot> dots) {
         buf.writeInt(dots.size());
         dots.forEach(dot -> {
             buf.writeInt(dot.getX());

@@ -1,9 +1,15 @@
 package icbm.classic.lib.network.lambda;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -28,6 +34,29 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
         this(parent, new ResourceLocation(ICBMConstants.DOMAIN, name));
     }
 
+    public void sendToAllAround(R tile){
+        double range = 64;
+        // TODO consider getting player's chunk map instead
+        if(tile.getWorld() instanceof WorldServer) {
+            final WorldServer worldServer = (WorldServer) tile.getWorld();
+            range = Optional.ofNullable(worldServer.getMinecraftServer())
+                .map(MinecraftServer::getPlayerList)
+                .map(PlayerList::getViewDistance)
+                .map(d -> d * 16 + 1.0)
+                .orElse(range);
+        }
+        this.sendToAllAround(tile, range);
+    }
+
+    public void sendToAllAround(R tile, double range){
+        super.sendToAllAround(tile, new NetworkRegistry.TargetPoint(
+            tile.getWorld().provider.getDimension(),
+            tile.getPos().getX(),
+            tile.getPos().getY(),
+            tile.getPos().getZ(),
+            range
+        ));
+    }
 
     @Override
     public boolean isValid(TileEntity tile) {

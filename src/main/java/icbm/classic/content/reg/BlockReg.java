@@ -87,12 +87,12 @@ public class BlockReg
         GameRegistry.registerTileEntity(TileEntityExplosive.class, new ResourceLocation(ICBMConstants.DOMAIN, "explosive"));
         TileEMPTower.register();
         GameRegistry.registerTileEntity(TileEmpTowerFake.class, new ResourceLocation(ICBMConstants.DOMAIN, "emptower_fake"));
-        GameRegistry.registerTileEntity(TileRadarStation.class, new ResourceLocation(ICBMConstants.DOMAIN, "radarstation"));
+        TileRadarStation.register();
         GameRegistry.registerTileEntity(TileLauncherFrame.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherframe"));
         GameRegistry.registerTileEntity(TileLauncherConnector.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcher_connector"));
-        GameRegistry.registerTileEntity(TileLauncherBase.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherbase"));
-        GameRegistry.registerTileEntity(TileLauncherScreen.class, new ResourceLocation(ICBMConstants.DOMAIN, "launcherscreen"));
+        TileLauncherBase.register();
+        TileLauncherScreen.register();
         GameRegistry.registerTileEntity(TileMulti.class, new ResourceLocation(ICBMConstants.DOMAIN, "multiblock"));
-        GameRegistry.registerTileEntity(TileCruiseLauncher.class, new ResourceLocation(ICBMConstants.DOMAIN, "cruiseLauncher"));
+        TileCruiseLauncher.register();
     }
 }

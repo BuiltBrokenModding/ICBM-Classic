@@ -12,6 +12,7 @@ import icbm.classic.config.machines.ConfigEmpTower;
 import icbm.classic.content.blast.BlastEMP;
 import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.emptower.gui.GuiEMPTower;
+import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.IPacket;
@@ -20,6 +21,9 @@ import icbm.classic.lib.network.lambda.PacketCodexReg;
 import icbm.classic.lib.network.lambda.PacketCodexTile;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.tile.TickAction;
+import icbm.classic.lib.tile.TickDoOnce;
+import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
@@ -43,45 +47,17 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
 /** Logic side of the EMP tower block */
-public class TileEMPTower extends TileMachine implements IGuiTile
+public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo, IPlayerUsing
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "emptower");
 
     public static final int ROTATION_SPEED = 15;
-
-    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_RADIUS = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "radius")
-        .fromClient()
-        .nodeInt(TileEMPTower::getRange, TileEMPTower::setRange)
-        .onFinished((tile, target) -> tile.updateClient = true);
-
-    public static final PacketCodex<TileEMPTower, RadioEmpTower> PACKET_RADIO_HZ = new PacketCodexTile<TileEMPTower, RadioEmpTower>(REGISTRY_NAME, "radio.frequency", (tile) -> tile.radioCap)
-        .fromClient()
-        .nodeString(RadioEmpTower::getChannel, RadioEmpTower::setChannel)
-        .onFinished((tile, target) -> tile.updateClient = true);
-
-    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_GUI = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "gui")
-        .fromServer()
-        .nodeInt((t) -> t.energyStorage.getEnergyStored(), (t, i) -> t.energyStorage.setEnergyStored(i))
-        .nodeString((t) -> t.radioCap.getChannel(), (t, s) -> t.radioCap.setChannel(s))
-        .nodeBoolean((t) -> t.radioCap.isDisabled(), (t, b) -> t.radioCap.setDisabled(b))
-        .nodeInt(TileEMPTower::getRange, TileEMPTower::setRange)
-        .onFinished((tile, target) -> tile.updateClient = true);
-
-    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_FIRE = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "fire")
-        .fromClient()
-        .onFinished((tile, target) -> {
-            tile.updateClient = true;
-            tile.fire();
-        });
-
-    public static final PacketCodex<TileEMPTower, RadioEmpTower> PACKET_RADIO_DISABLE = new PacketCodexTile<TileEMPTower, RadioEmpTower>(REGISTRY_NAME, "radio.disable", (tile) -> tile.radioCap)
-        .fromClient()
-        .toggleBoolean(RadioEmpTower::isDisabled, RadioEmpTower::setDisabled)
-        .onFinished((tile, target) -> tile.updateClient = true);
 
     /** Tick synced rotation */
     public float rotation = 0;
@@ -97,26 +73,46 @@ public class TileEMPTower extends TileMachine implements IGuiTile
     public int range = 60;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> this.getFiringCost() + (this.getTickingCost() * ConfigEmpTower.ENERGY_COST_TICKING_CAP))
-        .withOnChange((p,c,s) -> {this.updateClient = true; this.markDirty();})
+        .withOnChange((p,c,s) -> {this.markDirty();})
         .withCanReceive(() -> this.getCooldown() <= 0)
         .withCanExtract(() -> false)
         .withReceiveLimit(() -> ConfigEmpTower.ENERGY_INPUT);
+
     public final InventoryWithSlots inventory = new InventoryWithSlots(1)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
+
     public final RadioEmpTower radioCap = new RadioEmpTower(this);
 
     private final List<TileEmpTowerFake> subBlocks = new ArrayList<>();
 
-    public static void register() {
-        GameRegistry.registerTileEntity(TileEMPTower.class, REGISTRY_NAME);
-        PacketCodexReg.register(PACKET_RADIUS, PACKET_RADIO_HZ, PACKET_GUI, PACKET_FIRE, PACKET_RADIO_DISABLE);
+    private final TickDoOnce descriptionPacketSender = new TickDoOnce((t) -> PACKET_DESCRIPTION.sendToAllAround(this));
 
+    @Getter
+    private final List<EntityPlayer> playersUsing = new LinkedList<>();
+
+    public TileEMPTower() {
+        tickActions.add(descriptionPacketSender);
+        tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
+        tickActions.add(new TickAction(20,true,  (t) -> {
+            playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerEMPTower));
+        }));
+        tickActions.add(inventory);
+        tickActions.add(new TickAction(5, (t) -> updateStructure()));
     }
 
     @Override
+    public void markDirty()
+    {
+        super.markDirty();
+        if(isServer()) {
+            descriptionPacketSender.doNext();
+        }
+    }
+
+
+    @Override
     public void provideInformation(BiConsumer<String, Object> consumer) {
-        super.provideInformation(consumer);
         consumer.accept(NEEDS_POWER, ConfigMain.REQUIRES_POWER); //TODO create constant file and helpers for common keys
         consumer.accept(ENERGY_COST_TICK, getTickingCost()); //TODO implement a per tick upkeep
         consumer.accept(ENERGY_COST_ACTION, getFiringCost());
@@ -146,26 +142,24 @@ public class TileEMPTower extends TileMachine implements IGuiTile
         }
     }
 
+    protected void updateStructure() {
+        //Find tower blocks TODO find a better solution
+        subBlocks.clear();
+        BlockPos above = getPos().up();
+        while(world.getBlockState(above).getBlock() == getBlockType()) {
+            final TileEntity tile = world.getTileEntity(above);
+            if(tile instanceof TileEmpTowerFake) {
+                ((TileEmpTowerFake) tile).setHost(this);
+                subBlocks.add((TileEmpTowerFake) tile);
+            }
+            above = above.up();
+        }
+    }
+
     @Override
     public void update()
     {
         super.update();
-        if (ticks % 3 == 0) {
-            //Find tower blocks TODO find a better solution
-            subBlocks.clear();
-            BlockPos above = getPos().up();
-            while(world.getBlockState(above).getBlock() == getBlockType()) {
-                final TileEntity tile = world.getTileEntity(above);
-                if(tile instanceof TileEmpTowerFake) {
-                    ((TileEmpTowerFake) tile).setHost(this);
-                    subBlocks.add((TileEmpTowerFake) tile);
-                }
-                above = above.up();
-            }
-        }
-
-        // Tick slots
-        inventory.onTick();
 
         if (isServer())
         {
@@ -179,11 +173,6 @@ public class TileEMPTower extends TileMachine implements IGuiTile
             else if(getCooldown() > 0 && ticks % 10 == world.rand.nextInt(10)) {
                 //TODO add custom sound so sub-titles match
                 world.playSound(null, getPos(), SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.15F + 0.6F);
-            }
-
-            // Sync every so often to keep clients matching on animations
-            if(ticks % 3 == 0) {
-                sendDescPacket();
             }
 
             if (isReady() && world.getStrongPower(getPos()) > 0) //TODO convert to a state handler
@@ -259,28 +248,6 @@ public class TileEMPTower extends TileMachine implements IGuiTile
             rotation -= 360F;
         }
         return rotation;
-    }
-
-    @Override
-    public void writeDescPacket(ByteBuf buf)
-    {
-        super.writeDescPacket(buf);
-        buf.writeFloat(rotation);
-        buf.writeInt(cooldownTicks);
-    }
-
-    @Override
-    public void readDescPacket(ByteBuf buf)
-    {
-        super.readDescPacket(buf);
-        rotation = buf.readFloat();
-        cooldownTicks = buf.readInt();
-    }
-
-    @Override
-    public IPacket getGUIPacket()
-    {
-        return PACKET_GUI.build(this);
     }
 
     public float getChargePercentage()
@@ -418,7 +385,8 @@ public class TileEMPTower extends TileMachine implements IGuiTile
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-    {   SAVE_LOGIC.save(this, nbt);
+    {
+        SAVE_LOGIC.save(this, nbt);
         return super.writeToNBT(nbt);
     }
 
@@ -433,4 +401,44 @@ public class TileEMPTower extends TileMachine implements IGuiTile
         /* */.nodeFloat("prev_rotation", tile -> tile.prevRotation, (tile, f) -> tile.prevRotation = f)
         .base();
 
+
+
+    public static void register() {
+        GameRegistry.registerTileEntity(TileEMPTower.class, REGISTRY_NAME);
+        PacketCodexReg.register(PACKET_RADIUS, PACKET_RADIO_HZ, PACKET_GUI, PACKET_FIRE, PACKET_RADIO_DISABLE, PACKET_DESCRIPTION);
+    }
+
+    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_RADIUS = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "radius")
+        .fromClient()
+        .nodeInt(TileEMPTower::getRange, TileEMPTower::setRange)
+        .onFinished((tile, target, player) -> tile.markDirty());
+
+    public static final PacketCodex<TileEMPTower, RadioEmpTower> PACKET_RADIO_HZ = new PacketCodexTile<TileEMPTower, RadioEmpTower>(REGISTRY_NAME, "radio.frequency", (tile) -> tile.radioCap)
+        .fromClient()
+        .nodeString(RadioEmpTower::getChannel, RadioEmpTower::setChannel)
+        .onFinished((tile, target, player) -> tile.markDirty());
+
+    public static final PacketCodex<TileEMPTower, RadioEmpTower> PACKET_RADIO_DISABLE = new PacketCodexTile<TileEMPTower, RadioEmpTower>(REGISTRY_NAME, "radio.disable", (tile) -> tile.radioCap)
+        .fromClient()
+        .toggleBoolean(RadioEmpTower::isDisabled, RadioEmpTower::setDisabled)
+        .onFinished((tile, target, player) -> tile.markDirty());
+
+    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_GUI = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "gui")
+        .fromServer()
+        .nodeInt((t) -> t.energyStorage.getEnergyStored(), (t, i) -> t.energyStorage.setEnergyStored(i))
+        .nodeString((t) -> t.radioCap.getChannel(), (t, s) -> t.radioCap.setChannel(s))
+        .nodeBoolean((t) -> t.radioCap.isDisabled(), (t, b) -> t.radioCap.setDisabled(b))
+        .nodeInt(TileEMPTower::getRange, TileEMPTower::setRange);
+
+    public static final PacketCodex<TileEMPTower, TileEMPTower> PACKET_FIRE = new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "fire")
+        .fromClient()
+        .onFinished((tile, target, player) -> {
+            tile.fire();
+            tile.markDirty();
+        });
+
+    public static final PacketCodexTile<TileEMPTower, TileEMPTower> PACKET_DESCRIPTION = (PacketCodexTile<TileEMPTower, TileEMPTower>) new PacketCodexTile<TileEMPTower, TileEMPTower>(REGISTRY_NAME, "description")
+        .fromServer()
+        .nodeFloat((t) -> t.rotation, (t, f) -> t.rotation = f)
+        .nodeInt((t) -> t.cooldownTicks, (t, f) -> t.cooldownTicks = f);
 }

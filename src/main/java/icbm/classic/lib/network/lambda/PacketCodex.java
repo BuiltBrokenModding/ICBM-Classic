@@ -8,10 +8,19 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -45,7 +54,7 @@ public abstract class PacketCodex<RAW, TARGET> {
 
     /** Called when decoding is finished and all data is written to the target */
     @Accessors(chain = true, fluent = true)
-    private BiConsumer<RAW, TARGET> onFinished;
+    private TriConsumer<RAW, TARGET, EntityPlayer> onFinished;
 
     public PacketCodex<RAW, TARGET> asClientOnly() {
         this.allowClient = true;
@@ -68,27 +77,71 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeInt(Function<TARGET, Integer> getter, BiConsumer<TARGET, Integer> setter) {
-        entries.add(new PacketCodexEntry<TARGET, Integer>(Integer.class, getter, setter, ByteBuf::writeInt, ByteBuf::readInt));
+        return node(Integer.class,false,  getter, setter, ByteBuf::writeInt, ByteBuf::readInt);
+    }
+
+    public PacketCodex<RAW, TARGET> nodeByte(Function<TARGET, Byte> getter, BiConsumer<TARGET, Byte> setter) {
+        entries.add(new PacketCodexEntry<TARGET, Byte>(Byte.class,false,  getter, setter, ByteBuf::writeByte, ByteBuf::readByte));
         return this;
+    }
+
+    public <E extends Enum<E>> PacketCodex<RAW, TARGET> nodeEnum(Class<E> e, Function<TARGET, E> getter, BiConsumer<TARGET, E> setter) {
+        if(e.getEnumConstants().length > 255) {
+            return nodeInt((t) -> getter.apply(t).ordinal(), (t, v) -> setter.accept(t, e.getEnumConstants()[v]));
+        }
+        return nodeByte((t) -> (byte) getter.apply(t).ordinal(), (t, v) -> setter.accept(t, e.getEnumConstants()[v]));
     }
 
     public PacketCodex<RAW, TARGET> nodeDouble(Function<TARGET, Double> getter, BiConsumer<TARGET, Double> setter) {
-        entries.add(new PacketCodexEntry<TARGET, Double>(Double.class, getter, setter, ByteBuf::writeDouble, ByteBuf::readDouble));
-        return this;
+        return node(Double.class,false,  getter, setter, ByteBuf::writeDouble, ByteBuf::readDouble);
+    }
+
+    public PacketCodex<RAW, TARGET> nodeFloat(Function<TARGET, Float> getter, BiConsumer<TARGET, Float> setter) {
+        return node(Float.class,false,  getter, setter, ByteBuf::writeFloat, ByteBuf::readFloat);
     }
 
     public PacketCodex<RAW, TARGET> nodeString(Function<TARGET, String> getter, BiConsumer<TARGET, String> setter) {
-        entries.add(new PacketCodexEntry<TARGET, String>(String.class, getter, setter, ByteBufUtils::writeUTF8String, ByteBufUtils::readUTF8String));
+        return node(String.class,false,  getter, setter, ByteBufUtils::writeUTF8String, ByteBufUtils::readUTF8String);
+    }
+
+    public PacketCodex<RAW, TARGET> nodeItemStack(Function<TARGET, ItemStack> getter, BiConsumer<TARGET, ItemStack> setter) {
+        return node(ItemStack.class,false,  getter, setter, ByteBufUtils::writeItemStack, ByteBufUtils::readItemStack);
+    }
+
+    public PacketCodex<RAW, TARGET> nodeVec3d(Function<TARGET, Vec3d> getter, BiConsumer<TARGET, Vec3d> setter) {
+        entries.add(new PacketCodexEntry<TARGET, Vec3d>(Vec3d.class,false,  getter, setter,
+            (byteBuf, vec3d) -> {
+                byteBuf.writeDouble(vec3d.x);
+                byteBuf.writeDouble(vec3d.y);
+                byteBuf.writeDouble(vec3d.z);
+            },
+            (byteBuf) -> new Vec3d(byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble())
+        ));
         return this;
     }
 
+    public PacketCodex<RAW, TARGET> nodeNbtCompound(Function<TARGET, NBTTagCompound> getter, BiConsumer<TARGET, NBTTagCompound> setter) {
+        return node(NBTTagCompound.class,false,  getter, setter,ByteBufUtils::writeTag, ByteBufUtils::readTag);
+    }
+
     public PacketCodex<RAW, TARGET> nodeBoolean(Function<TARGET, Boolean> getter, BiConsumer<TARGET, Boolean> setter) {
-        entries.add(new PacketCodexEntry<TARGET, Boolean>(Boolean.class, getter, setter, ByteBuf::writeBoolean, ByteBuf::readBoolean));
-        return this;
+        return node(Boolean.class, false, getter, setter, ByteBuf::writeBoolean, ByteBuf::readBoolean);
     }
 
     public PacketCodex<RAW, TARGET> toggleBoolean(Function<TARGET, Boolean> getter, BiConsumer<TARGET, Boolean> setter) {
         return nodeBoolean(getter, (t, b) -> setter.accept(t, !b));
+    }
+    public <DATA> PacketCodex<RAW, TARGET> node(Class<DATA> clazz, boolean isArray, Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<ByteBuf, DATA> encoder, Function<ByteBuf, DATA> decoder) {
+        return node(new PacketCodexEntry<>(clazz, isArray, getter, setter, encoder, decoder));
+    }
+
+    public <DATA> PacketCodex<RAW, TARGET> node(Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<ByteBuf, DATA> encoder, Function<ByteBuf, DATA> decoder) {
+        return node(new PacketCodexEntry<>(null, false, getter, setter, encoder, decoder));
+    }
+
+    public <DATA> PacketCodex<RAW, TARGET> node(PacketCodexEntry<TARGET, DATA> entry) {
+        entries.add(entry);
+        return this;
     }
 
     public abstract boolean isValid(RAW tile);
@@ -98,6 +151,28 @@ public abstract class PacketCodex<RAW, TARGET> {
     public void sendToServer(RAW raw) {
         try {
             ICBMClassic.packetHandler.sendToServer(build(raw));
+        }
+        catch (Exception e) {
+            ICBMClassic.logger().error("Failed to send packet(" + parent + ", " + name + ") to server for " + raw, e);
+        }
+    }
+
+    public void sendPacketToGuiUsers(RAW raw, Collection<EntityPlayer> players)
+    {
+        try {
+            final IPacket packet = build(raw);
+            players.stream().filter(player -> player instanceof EntityPlayerMP).forEach((player) -> {
+                ICBMClassic.packetHandler.sendToPlayer(packet, (EntityPlayerMP) player);
+            });
+        }
+        catch (Exception e) {
+            ICBMClassic.logger().error("Failed to send packet(" + parent + ", " + name + ") to gui users for " + raw, e);
+        }
+    }
+
+    public void sendToAllAround(RAW raw, NetworkRegistry.TargetPoint point){
+        try {
+            ICBMClassic.packetHandler.sendToAllAround(build(raw), point);
         }
         catch (Exception e) {
             ICBMClassic.logger().error("Failed to send packet(" + parent + ", " + name + ") to server for " + raw, e);
