@@ -12,7 +12,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
-        vendor = JvmVendorSpec.ADOPTOPENJDK
+        vendor = JvmVendorSpec.AMAZON
     }
 }
 
