@@ -42,6 +42,16 @@ public interface IMissile extends IWorldPosition // TODO add registry and requir
      */
     void setFlightLogic(IMissileFlightLogic logic);
 
+    /**
+     * Called to switch the flight logic to a new logic or next step
+     * in a flight path
+     *
+     * @param logic to use
+     */
+    default void switchFlightLogic(IMissileFlightLogic logic) {
+        setFlightLogic(logic);
+    }
+
     IMissileFlightLogic getFlightLogic();
 
     /**

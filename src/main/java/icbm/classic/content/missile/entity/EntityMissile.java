@@ -7,7 +7,7 @@ import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
@@ -244,7 +244,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     public double getMountedYOffset()
     {
-        if (this.ticksInAir <= 0 && getMissileCapability().getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
+        if (this.ticksInAir <= 0 && getMissileCapability().getFlightLogic() instanceof BallisticFlightLogicOld) //TODO abstract or find better way to handle seat position
         {
             return height;
         } else if (getMissileCapability().getFlightLogic() instanceof DeadFlightLogic)

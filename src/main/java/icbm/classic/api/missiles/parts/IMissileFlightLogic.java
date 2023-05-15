@@ -4,6 +4,8 @@ import icbm.classic.api.missiles.IMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * Handles motion update logic for missiles
  * <p>
@@ -29,8 +31,9 @@ public interface IMissileFlightLogic extends IBuildableObject
      * Called to start the flight logic
      *
      * @param entity running the logic
+     * @param missile running the logic
      */
-    default void start(Entity entity) {
+    default void start(Entity entity, IMissile missile) {
 
     }
 
@@ -61,8 +64,9 @@ public interface IMissileFlightLogic extends IBuildableObject
      *
      * @param builder - function to build position, {@link net.minecraft.util.math.Vec3d#Vec3d(double, double, double)}
      * @param <V>     - return type of the builder
-     * @return return of the builder function
+     * @return return of the builder function or null if feature is not supported, not all flight logics move the missile
      */
+    @Nullable
     <V> V predictPosition(final Entity entity, final VecBuilderFunc<V> builder, final int ticks);
 
     /**

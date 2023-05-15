@@ -7,12 +7,17 @@ import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileFlightLogicStep;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherBaseCapability;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.ArcFlightLogic;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
+import icbm.classic.content.missile.logic.flight.WarmupFlightLogic;
+import icbm.classic.content.missile.logic.flight.move.MoveByFacingLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
@@ -24,6 +29,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -34,6 +40,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class LauncherCapability extends LauncherBaseCapability {
+
+    public static final int PAD_WARM_UP_TIME = 20 * 2; //TODO add config
+    public static final double MISSILE_CLIMB_HEIGHT = 2; //TODO add config
 
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
     private static final Vec3d SPAWN_OFFSET = new Vec3d(0.5f, 3.1f, 0.5f);
@@ -149,6 +158,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         }
 
         final Entity entity = missile.getMissileEntity();
+        entity.rotationPitch = entity.prevRotationPitch = 90; // TODO rotation by direction
 
         // TODO raytrace to make sure we don't teleport through the ground
         //  raytrace for missile spawn area
@@ -157,7 +167,7 @@ public class LauncherCapability extends LauncherBaseCapability {
 
         //Trigger launch event
         missile.setTargetData(new BallisticTargetingData(target, 1));
-        missile.setFlightLogic(new BallisticFlightLogic(host.getLockHeight()));
+        missile.setFlightLogic(buildFLightPath());
         missile.setMissileSource(source); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
         missile.launch();
 
@@ -183,6 +193,29 @@ public class LauncherCapability extends LauncherBaseCapability {
         }
 
         return LauncherStatus.LAUNCHED;
+    }
+
+    public IMissileFlightLogic buildFLightPath() {
+
+        IMissileFlightLogicStep stepSlowClimb = new MoveByFacingLogic()
+            .setDistance(MISSILE_CLIMB_HEIGHT)
+            .setRelative(false)
+            .setDirection(EnumFacing.UP)
+            .setAcceleration(0.005);
+
+        IMissileFlightLogicStep stepLockHeight = new MoveByFacingLogic()
+            .setDistance(host.getLockHeight() - MISSILE_CLIMB_HEIGHT)
+            .setRelative(false)
+            .setDirection(EnumFacing.UP)
+            .setAcceleration(0.1);
+
+        IMissileFlightLogic arcFlight = new ArcFlightLogic();
+
+        return new WarmupFlightLogic()
+            .setTimer(PAD_WARM_UP_TIME)
+            .addStep(stepSlowClimb)
+            .addStep(stepLockHeight)
+            .addStep(arcFlight);
     }
 
     @Override

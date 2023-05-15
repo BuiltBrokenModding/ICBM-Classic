@@ -19,28 +19,15 @@ import net.minecraft.world.World;
 
 import java.util.LinkedList;
 
-public class BallisticFlightLogic implements IMissileFlightLogic
+/**
+ * Flight path that moves in a ballistic arc from start position to target position
+ */
+public class ArcFlightLogic implements IMissileFlightLogic
 {
-    //TODO recode to break apart movement into sub-logic
-    //  Change silo startup to act as a delayed launch
-    //  Have it switch to lock height flight logic next
-    //  Then have it switch to the actual ballistic flight logic next
-    //  Idea will be to cleanup the code and allow for better control in each version
+    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "path.arc");
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ballistic");
-
-    /**
-     * Ticks to animate slowly rising from the launcher
-     */
-    public static final int PAD_WARM_UP_TIME = 20 * 2; //TODO add config
-    public static final double MISSILE_CLIMB_HEIGHT = 2; //TODO add config
 
     public boolean hasStartedFlight = false;
-
-    /**
-     * Height Y to wait before starting arc
-     */
-    public double lockHeight = 0;
     /**
      * Tick runtime of flight arc
      */
@@ -50,17 +37,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
      */
     private float acceleration;
 
-
-    /**
-     * Timer for missile to wait on pad before climbing
-     */
-    private int padWarmUpTimer = PAD_WARM_UP_TIME;
-
-    /**
-     * Distance to slowly climb before starting normal path
-     */
-    private double climbHeight = MISSILE_CLIMB_HEIGHT;
-
     /**
      * Difference in distance from target, used as acceleration
      */
@@ -68,19 +44,9 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     private double startX, startY, startZ;
     private double endX, endY, endZ;
 
-    private final LinkedList<Pos> clientLastSmokePos = new LinkedList<>();
-
     private boolean flightUpAlways = false;
 
     private int ticksFlight = 0;
-
-    public BallisticFlightLogic(int lockHeight) {
-        this.lockHeight = lockHeight;
-    }
-
-    public BallisticFlightLogic() {
-
-    }
 
     @Override
     public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
@@ -147,23 +113,8 @@ public class BallisticFlightLogic implements IMissileFlightLogic
     @Override
     public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
-        //Warm up on pad for nice animation
-        if (padWarmUpTimer > 0) //TODO have launcher control warmup time for better animation
-        {
-            padWarmUpTimer--;
-            idleMissileOnPad(entity, ticksInAir);
-        }
-        //Slowly climb out of the launcher TODO get climb height from launcher
-        else if (climbHeight > 0)
-        {
-            doSlowClimb(entity, ticksInAir);
-        }
-        else if (this.lockHeight > 0)
-        {
-            handleLockHeight(entity, ticksInAir);
-        }
         //Starts the missile into normal flight
-        else if (!hasStartedFlight) {
+        if (!hasStartedFlight) {
 
             hasStartedFlight = true;
 
@@ -228,32 +179,11 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         return hasStartedFlight;
     }
 
-    protected void handleLockHeight(Entity entity, int ticksInAir)
-    {
-        entity.motionY += 0.1f;
-        entity.motionX = 0;
-        entity.motionZ = 0;
-        this.lockHeight -= entity.motionY; //TODO fix to account for slow animation climb
-    }
-
     protected void alignWithMotion(Entity entity)
     {
         entity.rotationPitch = (float) (Math.atan(entity.motionY / (Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ))) * 180 / Math.PI);
         // Look at the next point
         entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180 / Math.PI);
-    }
-
-    /**
-     * Has the missile slow climb up before start full motion
-     *
-     * @param entity     representing the missile
-     * @param ticksInAir the missile has been in the air
-     */
-    protected void doSlowClimb(Entity entity, int ticksInAir)
-    {
-        entity.motionY += 0.005f; //TODO add config
-        lockHeight -= entity.motionY;
-        climbHeight -= entity.motionY;
     }
 
     /**
@@ -270,7 +200,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
 
     @Override
     public boolean shouldRunEngineEffects(Entity entity) {
-        return padWarmUpTimer <= 0;
+        return hasStartedFlight;
     }
 
     protected boolean shouldSimulate(Entity entity)
@@ -317,17 +247,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         return REG_NAME;
     }
 
-    @Deprecated
-    public int getPadWarmUpTimer()
-    {
-        return padWarmUpTimer;
-    }
-
-    public LinkedList<Pos> getLastSmokePos()
-    {
-        return clientLastSmokePos;
-    }
-
     @Override
     public NBTTagCompound serializeNBT()
     {
@@ -347,7 +266,7 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         return false;
     }
 
-    private static final NbtSaveHandler<BallisticFlightLogic> SAVE_LOGIC = new NbtSaveHandler<BallisticFlightLogic>()
+    private static final NbtSaveHandler<ArcFlightLogic> SAVE_LOGIC = new NbtSaveHandler<ArcFlightLogic>()
         //Stuck in ground data
         .addRoot("flags")
         /* */.nodeBoolean("flight_started", (bl) -> bl.hasStartedFlight, (bl, data) -> bl.hasStartedFlight = data)
@@ -368,9 +287,6 @@ public class BallisticFlightLogic implements IMissileFlightLogic
         /* */.nodeDouble("delta_z", (bl) -> bl.deltaPathZ, (bl, data) -> bl.deltaPathZ = data)
         .base()
         .addRoot("timers")
-        /* */.nodeInteger("engine_warm_up", (bl) -> bl.padWarmUpTimer, (bl, data) -> bl.padWarmUpTimer = data)
-        /* */.nodeDouble("climb_height", (bl) -> bl.climbHeight, (bl, data) -> bl.climbHeight = data)
-        /* */.nodeDouble("lock_height", (bl) -> bl.lockHeight, (bl, i) -> bl.lockHeight = i)
         /* */.nodeInteger("flight", (bl) -> bl.ticksFlight, (bl, i) -> bl.ticksFlight = i)
         .base();
 

@@ -54,7 +54,7 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
                 this.getMissileCapability().setTargetData(scanLogic);
 
                 // Update out flight logic to follow our sam target
-                this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigMissile.SAM_MISSILE.FUEL));
+                this.getMissileCapability().switchFlightLogic(new FollowTargetLogic(ConfigMissile.SAM_MISSILE.FUEL));
             }
 
             //TODO move to object that gets a tick() invoke `ProximityKillHandler`

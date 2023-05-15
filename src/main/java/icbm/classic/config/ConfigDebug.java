@@ -23,6 +23,10 @@ public class ConfigDebug
     @Config.Comment("When enabled, all missile launches are logged, including target and origin coordinates.")
     public static boolean DEBUG_MISSILE_LAUNCHES = false;
 
+    @Config.Name("debug_missile_logic")
+    @Config.Comment("When enabled, missile logic will be logged, including flight steps and target changes.")
+    public static boolean DEBUG_MISSILE_LOGIC = false;
+
     @Config.Name("debug_missile_tracker")
     @Config.Comment("When enabled, additional debug output is written to the console regarding the missile tracker.")
     public static boolean DEBUG_MISSILE_TRACKER = false;

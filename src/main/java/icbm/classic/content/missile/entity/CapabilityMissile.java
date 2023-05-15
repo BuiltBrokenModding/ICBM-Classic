@@ -76,6 +76,22 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     }
 
     @Override
+    public void switchFlightLogic(IMissileFlightLogic logic) {
+        if(ConfigDebug.DEBUG_MISSILE_LOGIC) {
+            ICBMClassic.logger().info(this + ": Switching flight logic from '" + getFlightLogic() + "' to '" + logic + "'");
+        }
+        setFlightLogic(logic);
+        triggerFlightLogic();
+    }
+
+    protected void triggerFlightLogic() {
+        if(flightLogic != null) {
+            flightLogic.calculateFlightPath(world(), x(), y(), z(), getTargetData()); //TODO show in launcher screen with predicted path and time
+            flightLogic.start(missile, this);
+        }
+    }
+
+    @Override
     public IMissileFlightLogic getFlightLogic()
     {
         return this.flightLogic;
@@ -98,10 +114,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     {
         //Tell missile to start moving
         this.doFlight = true;
-        Optional.ofNullable(getFlightLogic()).ifPresent(logic -> {
-            logic.calculateFlightPath(world(), x(), y(), z(), getTargetData() ); //TODO show in launcher screen with predicted path and time
-            logic.start(missile);
-        });
+        triggerFlightLogic();
 
         //Trigger events
         //TODO add generic event

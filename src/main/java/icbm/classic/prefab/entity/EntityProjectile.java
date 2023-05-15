@@ -162,15 +162,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     {
         super.onUpdate();
 
-        //Update rotation to match motion
-        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
-        {
-            float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(this.motionY, (double) f) * 180.0D / Math.PI);
-        }
-
-
         //Check if we hit the ground
         IBlockState state = this.world.getBlockState(tilePos);
         if (!state.getBlock().isAir(state, world, tilePos))
@@ -573,15 +564,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.motionX = xx;
         this.motionY = yy;
         this.motionZ = zz;
-
-        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
-        {
-            float f = MathHelper.sqrt(xx * xx + zz * zz);
-            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(xx, zz) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(yy, (double) f) * 180.0D / Math.PI);
-            this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
-            this.ticksInGround = 0;
-        }
     }
 
     @Override

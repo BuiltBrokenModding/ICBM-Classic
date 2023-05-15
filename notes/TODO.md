@@ -27,6 +27,7 @@
 - launcher base doesn't store rotation but uses it for missile seat & rendering
 - missile seat offset is aligned to booster and not center of rocket... may need to implement a custom renderer to show player on missile and not seated next to missile
 - launchers don't pass inventory to other launchers
+- launcher collision check is not working
 
 ## Features
 

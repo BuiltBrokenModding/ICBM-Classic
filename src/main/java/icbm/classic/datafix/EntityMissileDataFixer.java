@@ -6,7 +6,7 @@ import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -150,7 +150,7 @@ public class EntityMissileDataFixer implements IFixableData
         targetData.setTag("data", data);
 
         // Set id, old saves would have used missile type for this
-        targetData.setString("id", missileType == 0 ? BallisticFlightLogic.REG_NAME.toString() : DeadFlightLogic.REG_NAME.toString()); //TODO verify for cruise and hand held
+        targetData.setString("id", missileType == 0 ? BallisticFlightLogicOld.REG_NAME.toString() : DeadFlightLogic.REG_NAME.toString()); //TODO verify for cruise and hand held
 
         // Ballistic missile
         if(missileType == 0) {

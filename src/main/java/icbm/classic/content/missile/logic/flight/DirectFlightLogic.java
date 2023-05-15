@@ -1,6 +1,7 @@
 package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
 import net.minecraft.entity.Entity;
@@ -50,7 +51,7 @@ public class DirectFlightLogic extends DeadFlightLogic
     }
 
     @Override
-    public void start(Entity entity)
+    public void start(Entity entity, IMissile missile)
     {
         //Set motion
         entity.motionX = motionX;

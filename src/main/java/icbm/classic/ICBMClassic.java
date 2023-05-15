@@ -19,10 +19,9 @@ import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
 import icbm.classic.content.missile.MissilePartRegistry;
 import icbm.classic.content.missile.entity.CapabilityMissile;
 import icbm.classic.content.missile.entity.anti.SAMTargetData;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
-import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.missile.logic.flight.DirectFlightLogic;
-import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
+import icbm.classic.content.missile.logic.flight.*;
+import icbm.classic.content.missile.logic.flight.move.MoveByFacingLogic;
+import icbm.classic.content.missile.logic.flight.move.MoveForTicksLogic;
 import icbm.classic.content.missile.logic.source.cause.BlockCause;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
@@ -259,7 +258,11 @@ public class ICBMClassic
 
         // Register defaults
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(BallisticFlightLogic.REG_NAME, BallisticFlightLogic::new);
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(BallisticFlightLogicOld.REG_NAME, BallisticFlightLogicOld::new);
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(ArcFlightLogic.REG_NAME, ArcFlightLogic::new);
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(WarmupFlightLogic.REG_NAME, WarmupFlightLogic::new);
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveByFacingLogic.REG_NAME, MoveByFacingLogic::new);
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveForTicksLogic.REG_NAME, MoveForTicksLogic::new);
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DeadFlightLogic.REG_NAME, DeadFlightLogic::new);
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(FollowTargetLogic.REG_NAME, FollowTargetLogic::new);
 

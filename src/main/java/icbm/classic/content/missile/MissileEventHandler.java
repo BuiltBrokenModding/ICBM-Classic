@@ -5,7 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
@@ -62,7 +62,7 @@ public class MissileEventHandler
                 }));
 
                 unloading.stream()
-                    .filter(missile -> missile.getMissileCapability().getFlightLogic() instanceof BallisticFlightLogic)
+                    .filter(missile -> missile.getMissileCapability().getFlightLogic() instanceof BallisticFlightLogicOld)
                     .forEach(MissileTrackerHandler::simulateMissile);
             }
         }
