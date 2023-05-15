@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -90,6 +91,10 @@ public abstract class PacketCodex<RAW, TARGET> {
             return nodeInt((t) -> getter.apply(t).ordinal(), (t, v) -> setter.accept(t, e.getEnumConstants()[v]));
         }
         return nodeByte((t) -> (byte) getter.apply(t).ordinal(), (t, v) -> setter.accept(t, e.getEnumConstants()[v]));
+    }
+
+    public PacketCodex<RAW, TARGET> nodeFacing(Function<TARGET, EnumFacing> getter, BiConsumer<TARGET, EnumFacing> setter) {
+        return node(EnumFacing.class, false, getter, setter, (byteBuf, face) -> byteBuf.writeByte((byte)face.ordinal()), (byteBuf) -> EnumFacing.getFront(byteBuf.readByte()));
     }
 
     public PacketCodex<RAW, TARGET> nodeDouble(Function<TARGET, Double> getter, BiConsumer<TARGET, Double> setter) {
