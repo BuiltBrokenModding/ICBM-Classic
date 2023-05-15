@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.tile.ITick;
 import lombok.Data;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -14,7 +15,7 @@ import net.minecraftforge.common.util.INBTSerializable;
  * Used to store firing information when working with countdowns/delays
  */
 @Data
-public class FiringPackage implements INBTSerializable<NBTTagCompound> {
+public class FiringPackage implements INBTSerializable<NBTTagCompound>, ITick {
 
     /** Input: Target data */
     private IMissileTarget targetData;
@@ -72,4 +73,14 @@ public class FiringPackage implements INBTSerializable<NBTTagCompound> {
         /* */.nodeBuildableObject("target", ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY, FiringPackage::getTargetData, FiringPackage::setTargetData)
         /* */.nodeBuildableObject("cause", ICBMClassicAPI.MISSILE_CAUSE_REGISTRY, FiringPackage::getCause, FiringPackage::setCause)
         .base();
+
+    @Override
+    public void update(int tick, boolean isServer) {
+        if(isServer && !hasFired) {
+            this.countDown--;
+            if(countDown <= 0) {
+                // TODO launch();
+            }
+        }
+    }
 }

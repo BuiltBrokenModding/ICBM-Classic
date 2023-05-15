@@ -67,7 +67,6 @@ import java.util.function.BiConsumer;
  */
 public class TileLauncherBase extends TileMachine implements ILauncherComponent, IMachineInfo, IGuiTile, IPlayerUsing
 {
-
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherbase");
 
     /**
@@ -81,7 +80,8 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     private boolean hasMissileCollision = false;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
-        .withOnChange((p,c,s) -> {this.markDirty();});
+        .withOnChange((p,c,s) -> this.markDirty());
+
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
@@ -127,6 +127,8 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         tickActions.add(new TickAction(20,true,  (t) -> {
             playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchBase));
         }));
+        tickActions.add(new TickAction(() -> isServer() && this.firingPackage != null, this::handleFirePackage));
+        tickActions.add(new TickAction(3, true, this::updateSeat));
         tickActions.add(inventory);
     }
 
@@ -171,46 +173,36 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         return launcherNode;
     }
 
-    @Override
-    public void update()
-    {
-        super.update();
-        if (isServer())
+    private void handleFirePackage() {
+        firingPackage.setCountDown(firingPackage.getCountDown() - 1);
+        if(firingPackage.getCountDown() <= 0) {
+            firingPackage.launch(missileLauncher);
+            firingPackage = null;
+        }
+    }
+
+    private void updateSeat() {
+        checkMissileCollision = true;
+
+        //Update seat position
+        Optional.ofNullable(seat).ifPresent(seat -> seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5));
+
+        //Create seat if missile
+        if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
         {
-            // Handle firing delay
-            if(firingPackage != null) {
-                firingPackage.setCountDown(firingPackage.getCountDown() - 1);
-                if(firingPackage.getCountDown() <= 0) {
-                    firingPackage.launch(missileLauncher);
-                    firingPackage = null;
-                }
-            }
-
-            if (ticks % 3 == 0)
-            {
-                checkMissileCollision = true;
-
-                //Update seat position
-                Optional.ofNullable(seat).ifPresent(seat -> seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5));
-
-                //Create seat if missile
-                if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
-                {
-                    seat = new EntityPlayerSeat(world);
-                    seat.host = this;
-                    seat.rideOffset = new Pos(getRotation()).multiply(0.5, 1, 0.5);
-                    seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
-                    seat.setSize(0.5f, 2.5f);
-                    world.spawnEntity(seat);
-                }
-                //Destroy seat if no missile
-                else if (getMissileStack().isEmpty() && seat != null)
-                {
-                    Optional.ofNullable(seat.getRidingEntity()).ifPresent(Entity::removePassengers);
-                    seat.setDead();
-                    seat = null;
-                }
-            }
+            seat = new EntityPlayerSeat(world);
+            seat.host = this;
+            seat.rideOffset = new Pos(getRotation()).multiply(0.5, 1, 0.5);
+            seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+            seat.setSize(0.5f, 2.5f);
+            world.spawnEntity(seat);
+        }
+        //Destroy seat if no missile
+        else if (getMissileStack().isEmpty() && seat != null)
+        {
+            Optional.ofNullable(seat.getRidingEntity()).ifPresent(Entity::removePassengers);
+            seat.setDead();
+            seat = null;
         }
     }
 
@@ -274,8 +266,9 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         return missileHolder.getMissileStack();
     }
 
-    public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem)
+    public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem) // TODO consider moving to inventory code as a generic insert/extract slot logic
     {
+        // Add missile
         if (this.getMissileStack().isEmpty() && missileHolder.canSupportMissile(heldItem))
         {
             if (isServer())
@@ -289,6 +282,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
             }
             return true;
         }
+        // Remove missile
         else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
         {
             if (isServer())
