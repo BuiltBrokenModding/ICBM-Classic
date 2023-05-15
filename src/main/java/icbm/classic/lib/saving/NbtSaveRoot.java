@@ -31,6 +31,8 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     private final NbtSaveRoot<E> parent;
     public final List<INbtSaveNode> nodes = new LinkedList();
 
+    private boolean shouldSave = true;
+
     public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent)
     {
         if (name == null)
@@ -42,6 +44,11 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         this.parent = parent;
     }
 
+    public NbtSaveRoot<E> disableSave() {
+        shouldSave = false;
+        return this;
+    }
+
     @Override
     public String getSaveKey()
     {
@@ -51,6 +58,9 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     @Override
     public NBTTagCompound save(E objectToSave)
     {
+        if(!shouldSave) {
+            return null;
+        }
         return save(objectToSave, new NBTTagCompound());
     }
 

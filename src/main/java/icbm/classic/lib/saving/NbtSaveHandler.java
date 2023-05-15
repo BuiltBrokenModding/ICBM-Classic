@@ -79,7 +79,12 @@ public class NbtSaveHandler<E>
      */
     public NBTTagCompound save(E objectToSave, NBTTagCompound save)
     {
-        roots.forEach(root -> save.setTag(root.getSaveKey(), root.save(objectToSave)));
+        roots.forEach(root -> {
+            final NBTTagCompound saveData = root.save(objectToSave);
+            if(saveData != null && !saveData.hasNoTags()) {
+                save.setTag(root.getSaveKey(), saveData);
+            }
+        });
         mainRoot.save(objectToSave, save);
         return save;
     }
