@@ -85,6 +85,7 @@ item.icbmclassic:defuser.info=Used to disarm explosive devices (blocks, entities
 item.icbmclassic:laserDetonator.name=Laser Designator
 item.icbmclassic:laserDetonator.info.info=Sends a radio signal to trigger devices with the target information
 item.icbmclassic:laserDetonator.laser.canceled=Laser event canceled
+item.icbmclassic:laserDetonator.laser.missed=Laser Error; Nothing on path within %1$sm
 item.icbmclassic:laserDetonator.target=Target set (%1$s, %2$s, %3$s)
 
 item.icbmclassic:rocketLauncher.name=Rocket Launcher

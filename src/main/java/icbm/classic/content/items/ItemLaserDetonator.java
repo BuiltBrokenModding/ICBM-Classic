@@ -38,6 +38,8 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
     private static final int COOLDOWN = 20;
     private int clientCooldownTicks = 0;
 
+    public static final int RANGE = 200;
+
     public ItemLaserDetonator()
     {
         this.setName("laserDetonator");
@@ -54,7 +56,7 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
         if (world.isRemote && clientCooldownTicks <= 0)
         {
             clientCooldownTicks = COOLDOWN;
-            RayTraceResult objectMouseOver = player.rayTrace(200, 1);
+            RayTraceResult objectMouseOver = player.rayTrace(RANGE, 1);
             if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) // ignore failed raytraces
             {
                 TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
@@ -63,6 +65,9 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
                     ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.hitVec));
                 }
             }// TODO else: add message stating that the raytrace failed
+            else {
+                player.sendStatusMessage(new TextComponentTranslation(getUnlocalizedName(stack) + ".laser.missed", RANGE), true);
+            }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
