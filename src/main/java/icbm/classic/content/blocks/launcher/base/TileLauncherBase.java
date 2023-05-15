@@ -161,9 +161,9 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
      */
     public EnumFacing getLaunchDirection() {
         IBlockState state = getBlockState();
-        if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
+        if (state.getProperties().containsKey(BlockLauncherBase.ROTATION_PROP))
         {
-            return state.getValue(BlockICBM.ROTATION_PROP);
+            return state.getValue(BlockLauncherBase.ROTATION_PROP);
         }
         return EnumFacing.UP;
     }

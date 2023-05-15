@@ -5,9 +5,13 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.lib.InventoryUtility;
+import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
@@ -29,6 +33,8 @@ import javax.annotation.Nullable;
  */
 public class BlockLauncherBase extends BlockContainer
 {
+    public static final PropertyDirection ROTATION_PROP = PropertyDirection.create("facing");
+
     public BlockLauncherBase()
     {
         super(Material.IRON);
@@ -97,5 +103,33 @@ public class BlockLauncherBase extends BlockContainer
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
         return new TileLauncherBase();
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, ROTATION_PROP);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta)
+    {
+        if(meta == 0) {
+            return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.UP);
+        }
+        return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.getFront(meta - 1));
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        // Shifting by one due to older tiles not having rotation, default should be UP
+        return state.getValue(ROTATION_PROP).ordinal() + 1;
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
+    {
+        return getDefaultState().withProperty(ROTATION_PROP, facing);
     }
 }

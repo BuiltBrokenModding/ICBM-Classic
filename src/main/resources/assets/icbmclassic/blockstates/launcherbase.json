@@ -9,6 +9,30 @@
     },
     "inventory": {
       "model": "icbmclassic:silo_pad"
+    },
+    "facing": {
+      "up": {
+        "x": 0
+      },
+      "down": {
+        "x": 180
+      },
+      "north": {
+        "y": 180,
+        "x": -90
+      },
+      "south": {
+        "y": 0,
+        "x": -90
+      },
+      "east": {
+        "y": 270,
+        "x": -90
+      },
+      "west": {
+        "y": 90,
+        "x": -90
+      }
     }
   }
 }
