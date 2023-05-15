@@ -14,19 +14,20 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
     @Override
     public void render(TileLauncherBase launcher, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
-        final float blockHeight = 1f;
         final float blockCenter = 0.5f;
-        final float missileCenter = 1.5f;
+        final float missileOffset = 2f;
 
         //Render missile
         if (!launcher.getMissileStack().isEmpty())
         {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x + blockCenter, y + blockHeight + missileCenter, z + blockCenter);
-            if (launcher.getRotation() == EnumFacing.NORTH || launcher.getRotation() == EnumFacing.SOUTH)
-            {
-                GlStateManager.rotate(90F, 0F, 1F, 0F);
-            }
+            GlStateManager.translate(
+                x + blockCenter + (launcher.getLaunchDirection().getFrontOffsetX() * missileOffset),
+                y + blockCenter + (launcher.getLaunchDirection().getFrontOffsetY() * missileOffset),
+                z + blockCenter + (launcher.getLaunchDirection().getFrontOffsetZ() * missileOffset)
+            );
+            GlStateManager.rotate(launcher.getMissileYaw() , 0F, 1F, 0F);
+            GlStateManager.rotate(launcher.getMissilePitch() - 90, 1F, 0F, 0F);
 
             RenderMissile.INSTANCE.renderMissile(launcher.getMissileStack(), launcher, 0, 0, 0, 0, 0);
             GlStateManager.popMatrix();

@@ -45,7 +45,14 @@ public class LauncherCapability extends LauncherBaseCapability {
     public static final double MISSILE_CLIMB_HEIGHT = 2; //TODO add config
 
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
-    private static final Vec3d SPAWN_OFFSET = new Vec3d(0.5f, 3.1f, 0.5f);
+    private static final Vec3d[] SPAWN_OFFSETS = new Vec3d[] {
+        new Vec3d(0.5f, 3.1f, 0.5f),
+        new Vec3d(0.5f, -3.1f, 0.5f),
+        new Vec3d(0.5f, 0.5f, -3.1f),
+        new Vec3d(0.5f, 0.5f, 3.1f),
+        new Vec3d(-3.1f, 0.5f, 0.5f),
+        new Vec3d(3.1f, 0.5f, 0.5f)
+    };
     private final TileLauncherBase host;
 
     @Override
@@ -98,7 +105,8 @@ public class LauncherCapability extends LauncherBaseCapability {
         final BlockCause selfCause = new BlockCause(host.getWorld(), host.getPos(), host.getBlockState()); // TODO add more information about launcher
         selfCause.setPreviousCause(cause);
 
-        final MissileSource source = new MissileSource(host.getWorld(), SPAWN_OFFSET.addVector(host.getPos().getX(), host.getPos().getY(), host.getPos().getZ()), selfCause);
+        final Vec3d spawnPosition = SPAWN_OFFSETS[host.getLaunchDirection().ordinal()].addVector(host.getPos().getX(), host.getPos().getY(), host.getPos().getZ());
+        final MissileSource source = new MissileSource(host.getWorld(), spawnPosition, selfCause);
 
         //Allow canceling missile launches
         final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolder, targetData, simulate);
@@ -158,7 +166,8 @@ public class LauncherCapability extends LauncherBaseCapability {
         }
 
         final Entity entity = missile.getMissileEntity();
-        entity.rotationPitch = entity.prevRotationPitch = 90; // TODO rotation by direction
+        entity.rotationPitch = entity.prevRotationPitch = host.getMissilePitch();
+        entity.rotationYaw = entity.prevRotationYaw = host.getMissileYaw();
 
         // TODO raytrace to make sure we don't teleport through the ground
         //  raytrace for missile spawn area
@@ -197,16 +206,32 @@ public class LauncherCapability extends LauncherBaseCapability {
 
     public IMissileFlightLogic buildFLightPath() {
 
+        if(host.getLaunchDirection() != EnumFacing.UP) {
+
+            IMissileFlightLogicStep stepLockHeight = new MoveByFacingLogic()
+                .setDistance(host.getLockHeight())
+                .setRelative(false)
+                .setDirection(host.getLaunchDirection())
+                .setAcceleration(0.2);
+
+            IMissileFlightLogic arcFlight = new ArcFlightLogic();
+
+            return new WarmupFlightLogic()
+                .setTimer(PAD_WARM_UP_TIME)
+                .addStep(stepLockHeight)
+                .addStep(arcFlight);
+        }
+
         IMissileFlightLogicStep stepSlowClimb = new MoveByFacingLogic()
             .setDistance(MISSILE_CLIMB_HEIGHT)
             .setRelative(false)
-            .setDirection(EnumFacing.UP)
+            .setDirection(host.getLaunchDirection())
             .setAcceleration(0.005);
 
         IMissileFlightLogicStep stepLockHeight = new MoveByFacingLogic()
             .setDistance(host.getLockHeight() - MISSILE_CLIMB_HEIGHT)
             .setRelative(false)
-            .setDirection(EnumFacing.UP)
+            .setDirection(host.getLaunchDirection())
             .setAcceleration(0.1);
 
         IMissileFlightLogic arcFlight = new ArcFlightLogic();

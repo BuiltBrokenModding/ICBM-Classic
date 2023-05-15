@@ -32,11 +32,13 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
+import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -149,6 +151,39 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         consumer.accept("INACCURACY_BASE", ConfigLauncher.MIN_INACCURACY);
         consumer.accept("INACCURACY_RANGE", ConfigLauncher.SCALED_INACCURACY_DISTANCE);
         consumer.accept("INACCURACY_LAUNCHERS", ConfigLauncher.SCALED_INACCURACY_LAUNCHERS);
+    }
+
+
+    /**
+     * Direction the launcher is facing to deploy missiles
+     *
+     * @return direction
+     */
+    public EnumFacing getLaunchDirection() {
+        IBlockState state = getBlockState();
+        if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
+        {
+            return state.getValue(BlockICBM.ROTATION_PROP);
+        }
+        return EnumFacing.UP;
+    }
+
+    public float getMissileYaw() {
+        switch (getLaunchDirection()) {
+            case NORTH: return 0;
+            case SOUTH: return -180;
+            case WEST: return 90;
+            case EAST: return -90;
+            default: return 0;
+        }
+    }
+
+    public float getMissilePitch() {
+        switch (getLaunchDirection()) {
+            case UP: return 90;
+            case DOWN: return -90;
+            default: return 0;
+        }
     }
 
     public int getFiringCost() {
