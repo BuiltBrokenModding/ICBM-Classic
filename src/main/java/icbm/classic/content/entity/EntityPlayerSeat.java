@@ -4,14 +4,17 @@ import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
+import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartEmpty;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -32,7 +35,8 @@ import javax.annotation.Nullable;
  */
 public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnData
 {
-    public TileLauncherBase host; //TODO save host position so we can restore from save
+    private TileLauncherBase host; //TODO save host position so we can restore from save
+    private BlockPos hostPos;
 
     public float offsetX = 0;
     public float offsetY = 0;
@@ -45,6 +49,16 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         super(world);
     }
 
+    public void setHost(TileLauncherBase host) {
+        this.host = host;
+        if(host != null) {
+            this.hostPos = host.getPos();
+        }
+        else {
+            this.hostPos = null;
+        }
+    }
+
     @Override
     public float getEyeHeight()
     {
@@ -54,14 +68,47 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     protected void entityInit()
     {
+    }
 
+    @Override
+    public void onRemovedFromWorld() {
+        super.onRemovedFromWorld();
+        //removePassengers();
+    }
+
+    @Override
+    public void removePassengers()
+    {
+        for (int i = this.getPassengers().size() - 1; i >= 0; --i)
+        {
+            final Entity entity = this.getPassengers().get(i);
+            double prevX = entity.posX;
+            double prevY = entity.posY;
+            double prevZ = entity.posZ;
+
+            entity.dismountRidingEntity();
+
+            // Player will sometimes warp to bottom of map when dismounting
+            if(Math.abs(prevX - entity.posX) > 2 || Math.abs(prevY - entity.posZ) > 2 || Math.abs(prevZ - entity.posZ) > 2) {
+                entity.setPosition(prevX, prevY, prevZ);
+            }
+        }
     }
 
     @Override
     public void onEntityUpdate()
     {
+        if(host == null && hostPos != null) {
+            final TileEntity tile = world.getTileEntity(hostPos);
+            if(tile instanceof TileLauncherBase) {
+                host = (TileLauncherBase) tile;
+                host.seat = this;
+            }
+        }
+
         if (!world.isRemote && (host == null || host.isInvalid() || this.posY < -64.0D))
         {
+            this.removePassengers();
             this.setDead();
         }
 
@@ -274,7 +321,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     public void updatePassenger(Entity passenger)
     {
-        if (this.isPassenger(passenger))
+        if (this.isPassenger(passenger) && host != null)
         {
             double x = this.posX + offsetX + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetX() : 0);
             double y = this.posY + offsetY + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetY() : 0);
@@ -296,15 +343,20 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound p_70037_1_)
+    protected void readEntityFromNBT(NBTTagCompound save)
     {
+        if(save.hasKey("pos")) {
+            this.hostPos = NBTUtil.getPosFromTag(save.getCompoundTag("pos"));
+        }
 
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound p_70014_1_)
+    protected void writeEntityToNBT(NBTTagCompound save)
     {
-
+        if(hostPos != null) {
+            save.setTag("pos", NBTUtil.createPosTag(hostPos));
+        }
     }
 
     @Override

@@ -232,7 +232,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         {
             seat = new EntityPlayerSeat(world);
             seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
-            seat.host = this;
+            seat.setHost(this);
             world.spawnEntity(seat);
         }
         //Destroy seat if no missile
