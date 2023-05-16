@@ -5,6 +5,7 @@ import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
+import icbm.classic.prefab.gui.button.FaceRotationButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,6 +55,9 @@ public class GuiLauncherBase extends GuiContainerBase
             tileEntity::getGroupIndex, tileEntity::setGroupIndex, (o) -> TileLauncherBase.PACKET_GROUP_INDEX.sendToServer(tileEntity)));
         addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17 + 16, 30, 12,
             tileEntity::getFiringDelay, tileEntity::setFiringDelay, (o) -> TileLauncherBase.PACKET_FIRING_DELAY.sendToServer(tileEntity)));
+
+        addComponent(new FaceRotationButton(0, guiLeft + 157, guiTop + 3,  tileEntity::getLaunchDirection, tileEntity::getSeatSide, tileEntity::setSeatSide,
+            () -> TileLauncherBase.PACKET_SEAT_ROTATION.sendToServer(tileEntity)));
 
         addComponent(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,

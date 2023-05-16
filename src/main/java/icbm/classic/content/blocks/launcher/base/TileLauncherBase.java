@@ -1,14 +1,11 @@
 package icbm.classic.content.blocks.launcher.base;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigLauncher;
-import icbm.classic.content.blocks.emptower.TileEMPTower;
-import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
 import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
@@ -20,11 +17,8 @@ import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.lib.energy.system.EnergySystem;
-import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
 import icbm.classic.lib.network.lambda.PacketCodexTile;
-import icbm.classic.lib.network.packet.PacketTile;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.tile.TickAction;
 import icbm.classic.lib.tile.TickDoOnce;
@@ -32,10 +26,8 @@ import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
-import icbm.classic.prefab.tile.BlockICBM;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
@@ -52,7 +44,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -115,6 +106,9 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     @Getter @Setter
     private int groupIndex = -1;
 
+    @Setter
+    private EnumFacing seatSide = null;
+
     @Getter @Setter
     private FiringPackage firingPackage;
 
@@ -166,6 +160,20 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
             return state.getValue(BlockLauncherBase.ROTATION_PROP);
         }
         return EnumFacing.UP;
+    }
+
+    public EnumFacing getSeatSide() {
+        if(seatSide == null) {
+            switch (getLaunchDirection()) {
+                case UP: seatSide = EnumFacing.NORTH; break;
+                case DOWN: seatSide = EnumFacing.NORTH; break;
+                case EAST: seatSide = EnumFacing.UP; break;
+                case WEST: seatSide = EnumFacing.UP; break;
+                case NORTH: seatSide = EnumFacing.UP; break;
+                case SOUTH: seatSide = EnumFacing.UP; break;
+            }
+        }
+        return seatSide;
     }
 
     public float getMissileYaw() {
@@ -374,16 +382,18 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
         /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
         /* */.nodeINBTSerializable("launcher", launcher -> launcher.missileLauncher)
+        /* */.nodeFacing("seat_side", TileLauncherBase::getSeatSide, TileLauncherBase::setSeatSide)
         .base();
 
     public static void register() {
         GameRegistry.registerTileEntity(TileLauncherBase.class, REGISTRY_NAME);
-        PacketCodexReg.register(PACKET_DESCRIPTION, PACKET_GUI, PACKET_LOCK_HEIGHT, PACKET_GROUP_ID, PACKET_GROUP_INDEX, PACKET_FIRING_DELAY);
+        PacketCodexReg.register(PACKET_DESCRIPTION, PACKET_GUI, PACKET_LOCK_HEIGHT, PACKET_GROUP_ID, PACKET_GROUP_INDEX, PACKET_FIRING_DELAY, PACKET_SEAT_ROTATION);
     }
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_DESCRIPTION = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "description")
         .fromServer()
-        .nodeItemStack(TileLauncherBase::getMissileStack, (t, f) -> t.cachedMissileStack = f);
+        .nodeItemStack(TileLauncherBase::getMissileStack, (t, f) -> t.cachedMissileStack = f)
+        .nodeFacing(TileLauncherBase::getSeatSide, TileLauncherBase::setSeatSide);
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GUI = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "gui")
         .fromServer()
@@ -403,6 +413,10 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GROUP_ID = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "group.id")
         .fromClient()
         .nodeInt(TileLauncherBase::getGroupId, TileLauncherBase::setGroupId);
+
+    public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_SEAT_ROTATION = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "rotation.seat")
+        .fromClient()
+        .nodeFacing(TileLauncherBase::getSeatSide, TileLauncherBase::setSeatSide);
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_FIRING_DELAY = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "firing.delay")
         .fromClient()
