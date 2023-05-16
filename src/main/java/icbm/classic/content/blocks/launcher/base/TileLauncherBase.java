@@ -176,17 +176,33 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         return seatSide;
     }
 
-    public float getMissileYaw() {
+    public float getMissileYaw(boolean render) {
+        if(render) {
+            switch (getLaunchDirection()) {
+                case NORTH: return 0;
+                case SOUTH: return -180;
+                case WEST: return 90;
+                case EAST: return -90;
+                default: return 0;
+            }
+        }
         switch (getLaunchDirection()) {
-            case NORTH: return 0;
-            case SOUTH: return -180;
-            case WEST: return 90;
-            case EAST: return -90;
+            case NORTH: return -180;
+            case SOUTH: return 0;
+            case WEST: return -90;
+            case EAST: return 90;
             default: return 0;
         }
     }
 
-    public float getMissilePitch() {
+    public float getMissilePitch(boolean render) {
+        if(render) {
+            switch (getLaunchDirection()) {
+                case UP: return 0;
+                case DOWN: return -180;
+                default: return -90;
+            }
+        }
         switch (getLaunchDirection()) {
             case UP: return 90;
             case DOWN: return -90;

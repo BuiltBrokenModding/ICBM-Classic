@@ -26,8 +26,8 @@ public class TESRLauncherBase extends TileEntitySpecialRenderer<TileLauncherBase
                 y + blockCenter + (launcher.getLaunchDirection().getFrontOffsetY() * missileOffset),
                 z + blockCenter + (launcher.getLaunchDirection().getFrontOffsetZ() * missileOffset)
             );
-            GlStateManager.rotate(launcher.getMissileYaw() , 0F, 1F, 0F);
-            GlStateManager.rotate(launcher.getMissilePitch() - 90, 1F, 0F, 0F);
+            GlStateManager.rotate(launcher.getMissileYaw(true) , 0F, 1F, 0F);
+            GlStateManager.rotate(launcher.getMissilePitch(true), 1F, 0F, 0F);
 
             RenderMissile.INSTANCE.renderMissile(launcher.getMissileStack(), launcher, 0, 0, 0, 0, 0);
             GlStateManager.popMatrix();

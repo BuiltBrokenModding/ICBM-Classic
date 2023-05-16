@@ -46,12 +46,18 @@ public class LauncherCapability extends LauncherBaseCapability {
 
     private static final EulerAngle angle = new EulerAngle(0, 0, 0);
     private static final Vec3d[] SPAWN_OFFSETS = new Vec3d[] {
-        new Vec3d(0.5f, 3.1f, 0.5f),
-        new Vec3d(0.5f, -3.1f, 0.5f),
-        new Vec3d(0.5f, 0.5f, -3.1f),
-        new Vec3d(0.5f, 0.5f, 3.1f),
-        new Vec3d(-3.1f, 0.5f, 0.5f),
-        new Vec3d(3.1f, 0.5f, 0.5f)
+        //DOWN
+        new Vec3d(0, -3.1f, 0),
+        //UP
+        new Vec3d(0, 2.6f, 0),
+        //NORTH
+        new Vec3d(0, -0.2f, -2.8f),
+        //SOUTH
+        new Vec3d(0, -0.2f, 2.8f),
+        //WEST
+        new Vec3d(-2.8f, -0.2f, 0),
+        //EAST
+        new Vec3d(2.8f, -0.2f, 0)
     };
     private final TileLauncherBase host;
 
@@ -105,7 +111,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         final BlockCause selfCause = new BlockCause(host.getWorld(), host.getPos(), host.getBlockState()); // TODO add more information about launcher
         selfCause.setPreviousCause(cause);
 
-        final Vec3d spawnPosition = SPAWN_OFFSETS[host.getLaunchDirection().ordinal()].addVector(host.getPos().getX(), host.getPos().getY(), host.getPos().getZ());
+        final Vec3d spawnPosition = SPAWN_OFFSETS[host.getLaunchDirection().ordinal()].addVector(host.getPos().getX() + 0.5, host.getPos().getY() + 0.5, host.getPos().getZ() + 0.5);
         final MissileSource source = new MissileSource(host.getWorld(), spawnPosition, selfCause);
 
         //Allow canceling missile launches
@@ -166,8 +172,8 @@ public class LauncherCapability extends LauncherBaseCapability {
         }
 
         final Entity entity = missile.getMissileEntity();
-        entity.rotationPitch = entity.prevRotationPitch = host.getMissilePitch();
-        entity.rotationYaw = entity.prevRotationYaw = host.getMissileYaw();
+        entity.rotationPitch = entity.prevRotationPitch = host.getMissilePitch(false);
+        entity.rotationYaw = entity.prevRotationYaw = host.getMissileYaw(false);
 
         // TODO raytrace to make sure we don't teleport through the ground
         //  raytrace for missile spawn area
