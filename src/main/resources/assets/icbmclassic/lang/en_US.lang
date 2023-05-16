@@ -361,6 +361,9 @@ gui.icbmclassic:error.no_network=Failed to connect to launcher network
 gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a shared alpha-numeric value to connect devices. \n \n §bAlt§r + Click to toggle active
 gui.icbmclassic:tooltip.target=Target: \n \t Current aim position. Can be set by tools or manually using format 'x, y, z'. \n Example: 56.5, 40, 89
 
+## Components
+gui.icbmclassic:button.face.tooltip=Missile Rotation: \n \t Sets the visual rotation and missile seat position. \n \n §bAlt§r + Click to rotate clockwise \n §bShift§r + Click to rotate counter-clockwise
+
 ## EMP Tower
 gui.icbmclassic:empTower.name=EMP Tower
 gui.icbmclassic:empTower.power=Firing Safety: \n \t  Charging... %1$s
@@ -436,13 +439,6 @@ gui.coordinator.arc=Arc: %p meters
 gui.coordinator.time=Time: %p seconds
 gui.coordinator.direction=Direction:
 gui.coordinator.wip=More features coming soon!
-
-
-gui.terminal.name=Terminal
-gui.platform.ammo=Ammunition
-gui.platform.upgrades=Upgrades
-gui.platform.joules=of %j
-gui.platform.access=User Access
 
 ## Tooltips
 info.misc.freq=Frequency:
