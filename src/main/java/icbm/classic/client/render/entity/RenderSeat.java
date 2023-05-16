@@ -1,7 +1,9 @@
 package icbm.classic.client.render.entity;
 
 import icbm.classic.content.entity.EntityPlayerSeat;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,6 +22,9 @@ public class RenderSeat extends Render<EntityPlayerSeat>
     public void doRender(EntityPlayerSeat seat, double x, double y, double z, float entityYaw, float partialTicks)
     {
         super.doRender(seat, x, y, z, entityYaw, partialTicks);
+        //GlStateManager.pushMatrix();
+        //renderOffsetAABB(seat.getEntityBoundingBox(), x - seat.lastTickPosX, y - seat.lastTickPosY, z - seat.lastTickPosZ);
+        //GlStateManager.popMatrix();
     }
 
     @Override

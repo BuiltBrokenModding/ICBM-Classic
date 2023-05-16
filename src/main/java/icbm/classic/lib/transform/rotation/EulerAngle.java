@@ -86,10 +86,10 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
                 pitch = 90;
                 break;
             case NORTH:
-                yaw = 0;
+                yaw = 180;
                 break;
             case SOUTH:
-                yaw = 180;
+                yaw = 0;
                 break;
             case EAST:
                 yaw = -90;

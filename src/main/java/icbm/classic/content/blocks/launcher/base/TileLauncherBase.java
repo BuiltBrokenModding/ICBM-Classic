@@ -227,17 +227,12 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     private void updateSeat() {
         checkMissileCollision = true;
 
-        //Update seat position
-        Optional.ofNullable(seat).ifPresent(seat -> seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5));
-
         //Create seat if missile
         if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
         {
             seat = new EntityPlayerSeat(world);
-            seat.host = this;
-            seat.rideOffset = new Pos(getRotation()).multiply(0.5, 1, 0.5);
             seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
-            seat.setSize(0.5f, 2.5f);
+            seat.host = this;
             world.spawnEntity(seat);
         }
         //Destroy seat if no missile
