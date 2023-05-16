@@ -28,6 +28,7 @@
 - missile seat offset is aligned to booster and not center of rocket... may need to implement a custom renderer to show player on missile and not seated next to missile
 - launchers don't pass inventory to other launchers
 - launcher collision check is not working
+- missile is rendering based on launcher's light level. Should take into account open space's light level to avoid a dark/shadowy render
 
 ## Features
 
