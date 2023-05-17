@@ -3,10 +3,11 @@ package icbm.classic.content.reg;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.explosion.IBlastFactory;
-import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.blast.ConfigBlast;
@@ -19,6 +20,8 @@ import icbm.classic.content.blast.gas.BlastContagious;
 import icbm.classic.content.blast.redmatter.BlastRedmatterSpawner;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
+import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
@@ -31,6 +34,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -239,64 +243,46 @@ public class ExplosiveInit
     {
         if (entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
         {
-            final IExplosive provider = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            final NBTTagCompound tag = provider.getCustomBlastData();
-            if (tag != null)
-            {
-                final ItemStack heldItem = player.getHeldItem(hand);
-                if (heldItem.getItem() instanceof IWorldPosItem)
-                {
-                    final IWorldPosItem posItem = ((IWorldPosItem) heldItem.getItem());
-                    final IWorldPosition link = posItem.getLocation(heldItem);
+            return encodeEnderCoordSet(entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null), player, hand);
+        }
+        return false;
+    }
 
-                    if (link instanceof Location)
-                    {
-                        ((Location) link).writeIntNBT(tag);
-                        if (!entity.world.isRemote)
-                        {
-                            player.sendMessage(new TextComponentString("Coordinates encoded into entity")); //TODO translate
-                        }
-                        return true;
-                    }
-                }
-            }
+    private static boolean enderBlockCoordSet(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    {
+        final TileEntity tileEntity = world.getTileEntity(pos);
+
+        if (tileEntity != null && tileEntity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing))
+        {
+            return encodeEnderCoordSet(tileEntity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null), player, hand);
         }
 
         return false;
     }
 
-    private static boolean enderBlockCoordSet(World world, BlockPos pos, EntityPlayer entityPlayer, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        final ItemStack heldItem = entityPlayer.getHeldItem(hand);
-        if (heldItem.getItem() instanceof IWorldPosItem)
-        {
-            final IWorldPosItem posItem = ((IWorldPosItem) heldItem.getItem());
-            final IWorldPosition link = posItem.getLocation(heldItem);
-
-            if (link instanceof Location)
-            {
-                TileEntity tileEntity = world.getTileEntity(pos);
-
-                if (tileEntity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing))
-                {
-                    IExplosive explosive = tileEntity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing);
-                    if (explosive != null)
-                    {
-                        NBTTagCompound tag = new NBTTagCompound();
-                        ((Location) link).writeIntNBT(tag);
-                        explosive.getCustomBlastData().setTag("", tag);
-
-                        if (!world.isRemote)
-                        {
-                            //entityPlayer.sendMessage(new TextComponentString("Synced coordinate with " + this.getExplosiveName())); //TODO translate
-                        }
-
-                        return true;
-                    }
-                }
-            }
+    private static boolean encodeEnderCoordSet(IExplosive provider, EntityPlayer player, EnumHand hand) {
+        if(provider == null || provider.getCustomBlastData() == null) {
+            return false;
         }
-
+        final NBTTagCompound tag = provider.getCustomBlastData();
+        final ItemStack stack = player.getHeldItem(hand);
+        final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
+        if (gpsData != null)
+        {
+            final Vec3d position = gpsData.getPosition();
+            if (position != null)
+            {
+                tag.setInteger(NBTConstants.X, (int)Math.floor(position.x));
+                tag.setInteger(NBTConstants.Y, (int)Math.floor(position.y));
+                tag.setInteger(NBTConstants.Z, (int)Math.floor(position.z));
+                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
+            }
+            else
+            {
+                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
+            }
+            return true;
+        }
         return false;
     }
 }

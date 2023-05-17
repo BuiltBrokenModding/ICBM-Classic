@@ -1,11 +1,13 @@
 package icbm.classic.content.blocks.launcher.screen;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,31 +47,15 @@ public class BlockLaunchScreen extends BlockICBM
     {
         if (!world.isRemote)
         {
-            TileEntity tileEntity = world.getTileEntity(pos);
+            final TileEntity tileEntity = world.getTileEntity(pos);
             if(tileEntity instanceof TileLauncherScreen)
             {
-                TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
-
-                ItemStack stack = player.getHeldItem(hand);
-                if (stack.getItem() instanceof IWorldPosItem)
+                final TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
+                final ItemStack stack = player.getHeldItem(hand);
+                final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
+                if (GPSDataHelpers.handlePlayerInteraction(gpsData, player, screen::setTarget))
                 {
-                    IWorldPosition location = ((IWorldPosItem) stack.getItem()).getLocation(stack);
-                    if (location != null)
-                    {
-                        if (location.world() == world)
-                        {
-                            screen.setTarget(new Vec3d(location.x(), location.y(), location.z()));
-                            player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
-                        }
-                        else
-                        {
-                            player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
-                        }
-                    }
-                    else
-                    {
-                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
-                    }
+                    return true;
                 }
                 else if(stack.getItem() == Items.STONE_AXE) {
                     final LauncherNetwork network = screen.getNetworkNode().getNetwork();

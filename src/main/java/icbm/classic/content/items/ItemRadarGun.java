@@ -2,16 +2,20 @@ package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.data.IWorldPosition;
+import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.events.RadarGunTraceEvent;
-import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.capability.gps.CapabilityGPSData;
+import icbm.classic.lib.capability.gps.CapabilityGPSDataItem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.lib.transform.vector.Location;
+import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.item.ItemBase;
+import icbm.classic.prefab.item.ItemStackCapProvider;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,20 +28,26 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 6/13/2016.
  */
-public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDReceiver
+public class ItemRadarGun extends ItemBase implements IPacketIDReceiver
 {
-    public static final String NBT_LINK_POS = "linkPos";
+    public static final double MAX_RANGE = 200; //TODO config
 
     public ItemRadarGun()
     {
@@ -48,19 +58,57 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
         this.setRegistryName(ICBMConstants.DOMAIN, "radarGun");
     }
 
+    @Override
+    @Nullable
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
+    {
+        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
+
+        final IGPSData data = new CapabilityGPSDataItem(stack);
+        provider.add("gps_data", ICBMClassicAPI.GPS_CAPABILITY, data);
+
+        // Legacy logic from before IGPSData, v5.3.x
+        if(nbt != null && nbt.hasKey("linkPos")) {
+            final NBTTagCompound save = nbt.getCompoundTag("linkPos");
+            data.setWorld(save.getInteger("dimension"));
+            data.setPosition(new Vec3d(save.getDouble("x"), save.getDouble("y"), save.getDouble("z")));
+            nbt.removeTag("linkPos");
+        }
+        return provider;
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> lines, ITooltipFlag flagIn)
     {
-        String localization = LanguageUtility.getLocal(getUnlocalizedName() + ".info");
-        if (localization != null && !localization.isEmpty())
-        {
-            String[] split = localization.split(",");
-            for (String line : split)
-            {
-                lines.add(line.trim());
+        // Stored data
+        final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
+        if(gpsData != null && gpsData.getPosition() != null) {
+            final Vec3d pos = gpsData.getPosition();
+            final World world = gpsData.getWorld();
+
+            final String x = String.format("%.1f", pos.x);
+            final String y = String.format("%.1f", pos.y);
+            final String z = String.format("%.1f", pos.z);
+
+            if(world != null) {
+                final String name = Optional.of(world.getWorldInfo()).map(WorldInfo::getWorldName).orElse("--");
+                final String worldName = String.format("(%s)%s", world.provider.getDimension(), name);
+                final ITextComponent output = new TextComponentTranslation(getUnlocalizedName() + ".data.all", x, y, z, worldName);
+                LanguageUtility.outputLines(output, lines::add);
+            }
+            else {
+                final ITextComponent output = new TextComponentTranslation(getUnlocalizedName() + ".data.pos", x, y, z);
+                LanguageUtility.outputLines(output, lines::add);
             }
         }
+        else {
+            LanguageUtility.outputLines(new TextComponentTranslation(getUnlocalizedName() + ".data.empty"), lines::add);
+        }
+
+        // General information
+        final ITextComponent output = new TextComponentTranslation(getUnlocalizedName() + ".info", MAX_RANGE);
+        LanguageUtility.outputLines(output, lines::add);
     }
 
     @Override
@@ -84,7 +132,7 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
             if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) { // TODO add message saying that the gps target is out of range.
                 final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
                 if (!(ICBMClassicHelpers.isLauncher(tileEntity, null))) {
-                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getBlockPos()));
+                    sendToServer(player, handIn, objectMouseOver.hitVec);
                 }
             }
         }
@@ -94,14 +142,11 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        ItemStack stack = player.getHeldItem(hand);
+        final ItemStack stack = player.getHeldItem(hand);
         if (world.isRemote)
         {
             return EnumActionResult.SUCCESS;
         }
-
-        Location location = new Location(world, pos);
-        TileEntity tile = location.getTileEntity();
 
         if (player.isSneaking())
         {
@@ -111,84 +156,48 @@ public class ItemRadarGun extends ItemBase implements IWorldPosItem, IPacketIDRe
             player.inventoryContainer.detectAndSendChanges();
             return EnumActionResult.SUCCESS;
         }
-        else if(trace(pos, player)) {
+        else if(onTrace(new Vec3d(pos.getX() + hitX, pos.getY() + hitX, pos.getZ() + hitZ), player, stack)) {
             return EnumActionResult.SUCCESS;
         }
         return EnumActionResult.PASS;
     }
 
+    public void sendToServer(EntityPlayer player, EnumHand hand, Vec3d hit) {
+        ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(hand == EnumHand.MAIN_HAND).addData(hit));
+    }
+
     @Override
     public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
     {
-        return trace(buf.readInt(), buf.readInt(), buf.readInt(), player);
-    }
-
-    public boolean trace(int x, int y, int z, EntityPlayer player)
-    {
-        return trace(new BlockPos(x, y, z), player);
-    }
-
-    public boolean trace(BlockPos pos, EntityPlayer player)
-    {
-        ItemStack stack = player.inventory.getCurrentItem();
-        if (stack != null && stack.getItem() == this)
-        {
-            RadarGunTraceEvent event = new RadarGunTraceEvent(player.world, pos, player);
-
-            if(MinecraftForge.EVENT_BUS.post(event)) //event was canceled
-                return false;
-
-            if(event.pos == null) //someone set the pos in the event to null, use original data
-                setLocation(stack, new Location(player.world, pos.getX(), pos.getY(), pos.getZ()));
-            else
-                setLocation(stack, new Location(player.world, event.pos.getX(), event.pos.getY(), event.pos.getZ()));
-
-            LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
-            System.out.println(getLocation(stack));
+        final EnumHand hand = buf.readBoolean() ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
+        final Vec3d pos = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        if(player.world instanceof WorldServer) {
+            ((WorldServer) player.world).addScheduledTask(() -> {
+                onTrace(pos, player, player.getHeldItem(hand));
+            });
         }
         return true;
     }
 
-    @Override
-    public Location getLocation(ItemStack stack)
+    public boolean onTrace(final Vec3d posIn, EntityPlayer player, ItemStack stack)
     {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBT_LINK_POS))
+        if (stack.getItem() == this)
         {
-            return new Location(stack.getTagCompound().getCompoundTag(NBT_LINK_POS));
-        }
-        return null;
-    }
+            final RadarGunTraceEvent event = new RadarGunTraceEvent(player.world, posIn, player);
 
-    @Override
-    public void setLocation(ItemStack stack, IWorldPosition loc)
-    {
-        if (loc != null)
-        {
-            if (stack.getTagCompound() == null)
-            {
-                stack.setTagCompound(new NBTTagCompound());
+            if(MinecraftForge.EVENT_BUS.post(event) || event.pos == null) {
+                //event was canceled
+                return false; // TODO give user feedback
             }
 
-            NBTTagCompound save = new NBTTagCompound();
-            if (loc instanceof Location)
-            {
-                ((Location) loc).writeNBT(save);
+            final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
+            if(gpsData != null) {
+                gpsData.setPosition(posIn);
+                gpsData.setWorld(player.world);
+                LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
             }
-            else
-            {
-                new Location(loc).writeNBT(save);
-            }
-            stack.getTagCompound().setTag(NBT_LINK_POS, save);
+            // TODO give user feedback that something broke
         }
-        else if (stack.getTagCompound() != null)
-        {
-            stack.getTagCompound().removeTag(NBT_LINK_POS);
-        }
-    }
-
-    @Override
-    public boolean canAccessLocation(ItemStack stack, Object obj)
-    {
-        return false;
+        return true;
     }
 }

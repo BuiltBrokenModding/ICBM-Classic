@@ -112,7 +112,7 @@ public abstract class GuiContainerBase extends GuiContainer
                 final ITextComponent tooltip = ((IToolTip) field).getTooltip();
                 if(tooltip != null) {
                     try {
-                        this.currentTooltipText = buildToolTipString(tooltip);
+                        this.currentTooltipText = LanguageUtility.buildToolTipString(tooltip);
                     }
                     catch (Exception e) {
                         if(ICBMClassic.runningAsDev) {
@@ -249,23 +249,6 @@ public abstract class GuiContainerBase extends GuiContainer
                 drawTexturedModalRect(x, y, u + width - 3, v, 3, height);
             }
         }
-    }
-
-    public String buildToolTipString(ITextComponent textComponent) {
-        StringBuilder stringbuilder = new StringBuilder();
-
-        for (ITextComponent itextcomponent : textComponent)
-        {
-            String s = itextcomponent.getUnformattedComponentText();
-
-            if (!s.isEmpty())
-            {
-                stringbuilder.append(itextcomponent.getStyle().getFormattingCode());
-                stringbuilder.append(s);
-            }
-        }
-
-        return stringbuilder.toString();
     }
 
     //TODO update and docs

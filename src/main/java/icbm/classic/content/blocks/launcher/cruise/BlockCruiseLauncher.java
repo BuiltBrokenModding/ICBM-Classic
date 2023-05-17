@@ -1,10 +1,12 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.api.items.IWorldPosItem;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -83,32 +85,13 @@ public class BlockCruiseLauncher extends BlockICBM
     {
         if (!world.isRemote)
         {
-            TileEntity tileEntity = world.getTileEntity(pos);
+            final TileEntity tileEntity = world.getTileEntity(pos);
             if (tileEntity instanceof TileCruiseLauncher)
             {
-                TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
-                ItemStack stack = player.getHeldItem(hand);
-                if (stack.getItem() instanceof IWorldPosItem)
-                {
-                    IWorldPosition location = ((IWorldPosItem) stack.getItem()).getLocation(stack);
-                    if (location != null)
-                    {
-                        if (location.world() == world)
-                        {
-                            launcher.setTarget(new Vec3d(location.x(), location.y(), location.z())); // TODO round to 2 places
-                            player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
-                        }
-                        else
-                        {
-                            player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolWorldNotMatch")));
-                        }
-                    }
-                    else
-                    {
-                        player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
-                    }
-                }
-                else
+                final TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
+                final ItemStack stack = player.getHeldItem(hand);
+                final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
+                if (!GPSDataHelpers.handlePlayerInteraction(gpsData, player, launcher::setTarget))
                 {
                     player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
                 }

@@ -73,9 +73,14 @@ item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 item.icbmclassic:antidote.name=Antidote
 item.icbmclassic:antidote.info=Cures all effects
 
+# Radar Gun
 item.icbmclassic:radarGun.name=Laser Range Finder
-item.icbmclassic:radarGun.info=Traces up to 200m to calculate and store positional data. Can transfer data to machines.
+item.icbmclassic:radarGun.info=Stores GPS data of targetted position \n Max range of %1$sm
+item.icbmclassic:radarGun.data.pos=Target: %1$sx, %2$sy, %3$sz
+item.icbmclassic:radarGun.data.all=Target: (%1$sx, %2$sy, %3$sz) W: %4$s
+item.icbmclassic:radarGun.data.empty=Target: empty
 
+# Laser Det
 item.icbmclassic:remoteDetonator.name=Remote Detonator
 item.icbmclassic:remoteDetonator.info=Sends a radio signal to trigger devices
 
@@ -422,12 +427,11 @@ info.icbmclassic:launcher.status.firing.aiming=Launch Triggered; Aiming at targe
 ## Cruise launcher UI
 gui.launcher.cruise.name=Cruise Launcher
 
-## Chat warning if user tries to fire by hand, %s is status message from GUI
-chat.launcher.status=Status: %s
-chat.launcher.failedToFire=Warning: Cannot fire missile due to status error!
-chat.launcher.toolTargetSet=Target data transferred from tool.
-chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
-chat.launcher.noTargetInTool=Tool does not contain any target data!
+## IGPSData usage
+info.icbmclassic:gps.set.all=Transfered data: (%1$sx, %2$sy, %3$sz) W: %3$s
+info.icbmclassic:gps.set.pos=Transfered data: %1$sx %2$sy %3$sz
+info.icbmclassic:gps.set.empty=Error: No data to transfer
+
 chat.launcher.toolFrequencySet=Frequency set to %s
 
 gui.coordinator.name=Missile Coordinator
@@ -444,8 +448,6 @@ gui.coordinator.wip=More features coming soon!
 info.misc.freq=Frequency:
 info.tracker.tracking=Tracking:
 info.designator.noFreq=Frequency: Not set
-info.radarGun.savedCoords=Saved coordinates:
-info.radarGun.meters=Meters
 info.detonator.linked=Linked explosive:
 info.detonator.noLink=No Linked explosive
 info.misc.tier=Explosive tier

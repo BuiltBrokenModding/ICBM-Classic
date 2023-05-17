@@ -2,6 +2,7 @@ package icbm.classic.api;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.refs.ICBMExplosives;
@@ -128,5 +129,17 @@ public final class ICBMClassicHelpers
     public static boolean hasEmpHandler(IBlockState iBlockState)
     {
         return false; //TODO implement
+    }
+
+    /**
+     * Gets the {@link IGPSData} capability from an {@link ItemStack}
+     * @param stack to access
+     * @return data if present, or null otherwise
+     */
+    public static IGPSData getGPSData(ItemStack stack) {
+        if(stack.hasCapability(ICBMClassicAPI.GPS_CAPABILITY, null)) {
+            return stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY, null);
+        }
+        return null;
     }
 }

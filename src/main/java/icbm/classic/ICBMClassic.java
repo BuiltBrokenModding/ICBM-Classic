@@ -34,6 +34,7 @@ import icbm.classic.content.potion.PoisonToxin;
 import icbm.classic.content.reg.ExplosiveInit;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.datafix.*;
+import icbm.classic.lib.capability.gps.CapabilityGPSData;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
@@ -234,6 +235,7 @@ public class ICBMClassic
         CapabilityMissileLauncher.register();
         CapabilityRadio.register();
         CapSpaceChicken.register();
+        CapabilityGPSData.register();
     }
 
     void handleMissileTargetRegistry()
