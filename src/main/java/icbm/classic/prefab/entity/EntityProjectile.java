@@ -1,6 +1,7 @@
 package icbm.classic.prefab.entity;
 
 import icbm.classic.api.missiles.IMissileAiming;
+import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
@@ -316,7 +317,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     protected boolean shouldCollideWith(Entity entity)
     {
         //TODO add listener support
-        return entity.canBeCollidedWith();
+        return entity.canBeCollidedWith() && !(entity instanceof EntityPlayerSeat);
     }
 
     protected void handleBlockCollision(RayTraceResult hit)
