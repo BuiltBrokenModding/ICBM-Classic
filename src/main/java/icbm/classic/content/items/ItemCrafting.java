@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.prefab.item.ItemICBMBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,7 @@ public class ItemCrafting extends ItemICBMBase
         this.oreName = oreName;
         subItems = items;
         setHasSubtypes(true);
+        registerOreNames();
     }
 
     public void registerOreNames(String... exceptions)

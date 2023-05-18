@@ -359,32 +359,6 @@ public class ICBMClassic
         CREATIVE_TAB.init();
         ProjectileBlockInteraction.register();
 
-        if (ConfigItems.ENABLE_CRAFTING_ITEMS)
-        {
-            if (ConfigItems.ENABLE_INGOTS_ITEMS)
-            {
-                ItemReg.itemIngot.registerOreNames();
-            }
-
-            if (ConfigItems.ENABLE_PLATES_ITEMS)
-            {
-                ItemReg.itemPlate.registerOreNames("iron");
-            }
-
-            if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
-            {
-                ItemReg.itemCircuit.registerOreNames();
-            }
-
-            if (ConfigItems.ENABLE_WIRES_ITEMS)
-            {
-                ItemReg.itemWire.registerOreNames();
-            }
-        }
-
-        OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
-        OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
-
         /** Potion Effects */ //TODO move to effect system
         PoisonToxin.INSTANCE = MobEffects.POISON;//new PoisonToxin(true, 5149489, "toxin");
         PoisonContagion.INSTANCE = MobEffects.POISON;//new PoisonContagion(false, 5149489, "virus");

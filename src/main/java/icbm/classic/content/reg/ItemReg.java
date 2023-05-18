@@ -11,6 +11,7 @@ import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -154,5 +155,7 @@ public class ItemReg
             event.getRegistry().register(new ItemBattery());
         }
 
+        OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
+        OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
     }
 }
