@@ -15,7 +15,6 @@ import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherBaseCapability;
 import icbm.classic.content.missile.logic.flight.ArcFlightLogic;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.logic.flight.WarmupFlightLogic;
 import icbm.classic.content.missile.logic.flight.move.MoveByFacingLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;

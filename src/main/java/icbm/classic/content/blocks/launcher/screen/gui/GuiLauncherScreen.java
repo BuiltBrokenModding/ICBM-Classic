@@ -2,7 +2,6 @@ package icbm.classic.content.blocks.launcher.screen.gui;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
-import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.gui.LaunchButton;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.lib.LanguageUtility;

@@ -1,6 +1,5 @@
 package icbm.classic.lib.network.lambda;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;

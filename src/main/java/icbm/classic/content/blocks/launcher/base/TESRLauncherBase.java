@@ -3,7 +3,6 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.client.render.entity.RenderMissile;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.EnumFacing;
 
 /**
  *

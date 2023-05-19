@@ -3,10 +3,8 @@ package icbm.classic.content.blocks.launcher.screen;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IGPSData;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +16,6 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 

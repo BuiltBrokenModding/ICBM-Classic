@@ -1,11 +1,8 @@
 package icbm.classic.content.blocks.radarstation.data;
 
-import com.builtbroken.jlib.data.network.IByteBufReader;
-import com.builtbroken.jlib.data.network.IByteBufWriter;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -11,7 +11,6 @@ import net.minecraft.world.storage.WorldInfo;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class GPSDataHelpers {

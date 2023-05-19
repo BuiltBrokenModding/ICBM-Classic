@@ -2,7 +2,6 @@ package icbm.classic.content.blocks.radarstation.gui;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;

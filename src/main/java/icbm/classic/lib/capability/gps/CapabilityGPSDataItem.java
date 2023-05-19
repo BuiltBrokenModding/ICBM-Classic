@@ -1,15 +1,10 @@
 package icbm.classic.lib.capability.gps;
 
 import icbm.classic.api.caps.IGPSData;
-import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nullable;
 

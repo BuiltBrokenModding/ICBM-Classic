@@ -20,7 +20,6 @@ public class PacketEncoderDecoderHandler extends FMLIndexedMessageToMessageCodec
 
     public PacketEncoderDecoderHandler()
     {
-        addPacket(PacketTile.class);
         addPacket(PacketLambdaTile.class);
         addPacket(PacketPlayerItem.class);
         addPacket(PacketSpawnAirParticle.class);

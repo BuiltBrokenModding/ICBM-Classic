@@ -1,6 +1,5 @@
 package icbm.classic.content.missile.logic.flight.move;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.missile.logic.flight.prefab.AccelerateByFacingLogic;

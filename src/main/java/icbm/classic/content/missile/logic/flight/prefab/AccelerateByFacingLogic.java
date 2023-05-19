@@ -1,7 +1,5 @@
 package icbm.classic.content.missile.logic.flight.prefab;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
@@ -10,7 +8,6 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Consumer;
 

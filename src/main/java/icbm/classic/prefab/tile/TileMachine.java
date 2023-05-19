@@ -1,10 +1,7 @@
 package icbm.classic.prefab.tile;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.tile.ITick;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;

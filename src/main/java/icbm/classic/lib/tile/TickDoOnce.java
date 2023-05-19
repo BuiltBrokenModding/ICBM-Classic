@@ -3,7 +3,6 @@ package icbm.classic.lib.tile;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 @Data
