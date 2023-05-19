@@ -1,6 +1,5 @@
 package icbm.classic.mods;
 
-import icbm.classic.mods.ic2.IC2Proxy;
 import icbm.classic.mods.mekanism.MekProxy;
 
 public class ModInteraction {

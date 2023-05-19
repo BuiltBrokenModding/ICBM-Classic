@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks.launcher.network;
 
-public interface ILauncherComponent {
+public interface ILauncherComponent { //TODO move to capability system
 
     LauncherNode getNetworkNode();
 
