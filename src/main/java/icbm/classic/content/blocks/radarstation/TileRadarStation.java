@@ -19,7 +19,7 @@ import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.network.lambda.GeneralCodexs;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
-import icbm.classic.lib.network.lambda.PacketCodexTile;
+import icbm.classic.lib.network.lambda.tile.PacketCodexTile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.radio.imp.Radio;

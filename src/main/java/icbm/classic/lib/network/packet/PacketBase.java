@@ -21,6 +21,7 @@ import java.util.function.Consumer;
  *
  * Created by Dark(DarkGuardsman, Robert) on 1/27/2018.
  */
+@Deprecated
 public class PacketBase<P extends PacketBase> implements IPacket<P>
 {
     protected List<Consumer<ByteBuf>> writers = new ArrayList();

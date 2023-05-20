@@ -2,7 +2,8 @@ package icbm.classic.lib.network.netty;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
-import icbm.classic.lib.network.lambda.PacketLambdaTile;
+import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
+import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
 import icbm.classic.lib.network.packet.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,10 +22,11 @@ public class PacketEncoderDecoderHandler extends FMLIndexedMessageToMessageCodec
     public PacketEncoderDecoderHandler()
     {
         addPacket(PacketLambdaTile.class);
+        addPacket(PacketLambdaEntity.class);
+
         addPacket(PacketPlayerItem.class);
         addPacket(PacketSpawnAirParticle.class);
         addPacket(PacketSpawnBlockExplosion.class);
-        addPacket(PacketEntity.class);
         addPacket(PacketEntityPos.class);
     }
 

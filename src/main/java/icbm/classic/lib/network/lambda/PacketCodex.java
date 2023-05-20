@@ -12,18 +12,29 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.util.TriConsumer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Codex for creating packets to read/write data using lambda accessors
@@ -34,6 +45,9 @@ import java.util.function.Function;
 @Data
 @RequiredArgsConstructor
 public abstract class PacketCodex<RAW, TARGET> {
+
+    public static final String LOGGER_TEMPLATE = "Packet(%s): %s\n\tWorld:%s\n\tPos: %sx %sy %sz\n\n\tCodex: %s\n\tParent: %s\n\tName: %s";
+
     @Setter(value = AccessLevel.PACKAGE)
     private int id = -1;
 
@@ -148,6 +162,42 @@ public abstract class PacketCodex<RAW, TARGET> {
         return this;
     }
 
+    /**
+     * Pulls the data from the targets and prepares writers for each.
+     *
+     * Purpose of this is to exact field data at time of packet creation. This
+     * way any changes on main thread do not impact the packet writing process.
+     *
+     * @param target to encode
+     * @return list of consumers to run for each field
+     */
+    public List<Consumer<ByteBuf>> encodeAsWriters(TARGET target) {
+        return getEntries().stream()
+            .map(entry -> {
+                final Object o = entry.getGetter().apply(target);
+                final BiConsumer<ByteBuf, Object> encoder = (BiConsumer<ByteBuf, Object>) entry.getEncoder();
+                return (Consumer<ByteBuf>) (byteBuf) -> encoder.accept(byteBuf, o);
+            })
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Decodes packet data into fields
+     *
+     * @param byteBuf
+     * @return
+     */
+    public List<Consumer<TARGET>> decodeAsSetters(ByteBuf byteBuf) {
+        return getEntries().stream()
+            .map(entry -> {
+                final Function<ByteBuf, Object> decoder = (Function<ByteBuf, Object>) entry.getDecoder();
+                final Object data = decoder.apply(byteBuf);
+                final BiConsumer<TARGET, Object> setter = (BiConsumer<TARGET, Object>) entry.getSetter();
+                return (Consumer<TARGET>) (target) -> setter.accept(target, data);
+            })
+            .collect(Collectors.toList());
+    }
+
     public abstract boolean isValid(RAW tile);
 
     public abstract IPacket build(RAW tile);
@@ -186,5 +236,34 @@ public abstract class PacketCodex<RAW, TARGET> {
     @Override
     public String toString() {
         return String.format("%s(%s,%s,%s)", getClass().getName(), id, parent, name);
+    }
+
+    public String generateLogMessage(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message) {
+        return String.format(
+            LOGGER_TEMPLATE,
+            getId(),
+            message,
+            Optional.ofNullable(world).map(World::getWorldInfo).map(WorldInfo::getWorldName).orElse("--"),
+            Optional.ofNullable(pos).map(BlockPos::getX).map(Object::toString).orElse("-"),
+            Optional.ofNullable(pos).map(BlockPos::getY).map(Object::toString).orElse("-"),
+            Optional.ofNullable(pos).map(BlockPos::getZ).map(Object::toString).orElse("-"),
+            this.getClass(),
+            this.getParent(),
+            this.getName()
+        );
+    }
+
+    public void logDebug(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message) {
+        if(ICBMClassic.logger().isDebugEnabled()) {
+            ICBMClassic.logger().debug(generateLogMessage(world, pos, message));
+        }
+    }
+
+    public void logError(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message) { //TODO consider custom exceptions with doTrace() logic
+        ICBMClassic.logger().error(generateLogMessage(world, pos, message));
+    }
+
+    public void logError(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message, Exception e) { //TODO consider custom exceptions with doTrace() logic
+        ICBMClassic.logger().error(generateLogMessage(world, pos, message), e);
     }
 }

@@ -1,6 +1,7 @@
 package icbm.classic.lib.network.lambda;
 
 import icbm.classic.api.radio.IRadioChannelAccess;
+import icbm.classic.lib.network.lambda.tile.PacketCodexTile;
 import icbm.classic.lib.radio.imp.Radio;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

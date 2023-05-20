@@ -1,6 +1,7 @@
-package icbm.classic.lib.network.lambda;
+package icbm.classic.lib.network.lambda.tile;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.lib.network.lambda.PacketCodex;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;

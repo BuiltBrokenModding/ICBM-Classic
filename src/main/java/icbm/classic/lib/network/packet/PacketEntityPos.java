@@ -12,6 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Usually after teleporting server side.
  *
  */
+@Deprecated
 public class PacketEntityPos extends PacketBase<PacketEntityPos>
 {
     public int entityId;

@@ -15,9 +15,14 @@ public class PacketCodexReg {
         }
     }
     public static void register(PacketCodex builder) {
-        final int id = nextId++;
-        builder.setId(id);
-        builders.put(id, builder);
+        if(builder.getId() == -1) {
+            final int id = nextId++;
+            builder.setId(id);
+            builders.put(id, builder);
+        }
+        else {
+            throw new RuntimeException("Codex already registered for " + builder);
+        }
     }
 
     public static PacketCodex get(int id) {
