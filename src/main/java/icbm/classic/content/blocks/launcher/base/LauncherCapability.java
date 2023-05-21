@@ -286,7 +286,7 @@ public class LauncherCapability extends LauncherBaseCapability {
      */
     public boolean isTargetTooClose(Vec3d target)
     {
-        final int minDistance = 10;
+        final int minDistance = 10; //TODO config driven and user driven
         final double deltaX = Math.abs(target.x - (host.getPos().getX() + 0.5));
         final double  deltaZ = Math.abs(target.z - (host.getPos().getZ() + 0.5));
         return deltaX < minDistance && deltaZ < minDistance;

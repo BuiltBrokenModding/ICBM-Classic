@@ -29,7 +29,6 @@
 - launchers don't pass inventory to other launchers
 - launcher collision check is not working
 - missile is rendering based on launcher's light level. Should take into account open space's light level to avoid a dark/shadowy render
-- missile min-distance check seems to be failing on exact x or z
 
 ## Features
 
@@ -42,6 +41,8 @@
 - launcher screen show distance
 - launcher screen show firing countdown
 - launcher pad show effect when countdown has started... maybe flashing lights? Such as warning hazards
+- launcher min distance check config
+- launcher min distance check user setting in tile
 
 ## Chores
 
