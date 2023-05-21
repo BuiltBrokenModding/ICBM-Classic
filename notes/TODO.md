@@ -29,6 +29,7 @@
 - launchers don't pass inventory to other launchers
 - launcher collision check is not working
 - missile is rendering based on launcher's light level. Should take into account open space's light level to avoid a dark/shadowy render
+- missile min-distance check seems to be failing on exact x or z
 
 ## Features
 
@@ -38,6 +39,14 @@
 - Internal support rails to place above launcher?
 - Redstone output from launcher... think I already documented this one but really want to add it
 - have some missiles place a missile module placeholder sticking out of ground after use (chemical types, ender, any non-explosive)
+- launcher screen show distance
+- launcher screen show firing countdown
+- launcher pad show effect when countdown has started... maybe flashing lights? Such as warning hazards
+
+## Chores
+
+- entity logs switched over to event system
+- missile logs switched over to event systems
 
 ## Unit testing
 

@@ -78,6 +78,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     @Override
     public void switchFlightLogic(IMissileFlightLogic logic) {
         if(ConfigDebug.DEBUG_MISSILE_LOGIC) {
+            // TODO move to event system
             ICBMClassic.logger().info(this + ": Switching flight logic from '" + getFlightLogic() + "' to '" + logic + "'");
         }
         setFlightLogic(logic);

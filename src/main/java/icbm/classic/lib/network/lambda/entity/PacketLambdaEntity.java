@@ -37,6 +37,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
     private List<Consumer<TARGET>> setters;
     public PacketLambdaEntity(PacketCodex<Entity, TARGET> codex, Entity entity, TARGET target) {
         this.codex = codex;
+        this.entityId = entity.getEntityId();
         this.dimensionId = entity.world.provider.getDimension();
         this.writers = codex.encodeAsWriters(target);
     }
@@ -45,6 +46,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
         // Write general data
         buffer.writeInt(codex.getId());
+        buffer.writeInt(entityId);
         buffer.writeInt(dimensionId);
 
         // Write data from builder
@@ -62,6 +64,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
             return;
         }
 
+        entityId = buffer.readInt();
         dimensionId = buffer.readInt();
 
         // Read data for builder
