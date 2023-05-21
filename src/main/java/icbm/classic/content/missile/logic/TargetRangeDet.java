@@ -13,12 +13,17 @@ public class TargetRangeDet {
     }
 
     public void update() {
+
+        if(missile.world.isRemote || missile.getMissileCapability().getTargetData() == null) {
+            return;
+        }
+
         double offset = 0;
         if (missile.getMissileCapability().getTargetData() instanceof BallisticTargetingData) {
             offset = ((BallisticTargetingData) missile.getMissileCapability().getTargetData() ).getImpactHeightOffset();
         }
         else if(missile.explosive.getExplosiveData() == ICBMExplosives.CLUSTER) {
-            offset = 10;
+            offset = 10; //TODO handle as fuse settings
         }
 
         if(offset > 0)
