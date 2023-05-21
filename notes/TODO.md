@@ -29,6 +29,7 @@
 - launchers don't pass inventory to other launchers
 - launcher collision check is not working
 - missile is rendering based on launcher's light level. Should take into account open space's light level to avoid a dark/shadowy render
+- missile needs to fly up until it matches y level of target if under target
 
 ## Features
 
@@ -44,8 +45,18 @@
 - launcher min distance check config
 - launcher min distance check user setting in tile
 
+## Blast system rework
+
+- Decouple explosive from blast
+- Decouple builder from blast
+- Have BlastTNT invoke vanilla logic
+- replace blast response with action system used by launchers
+- fragment should carry motion and angle of source entity. can recycle cluster logic but without the discs?
+
 ## Chores
 
+- update curse forge page description and images
+- update wiki with different version information, show old vs new
 - entity logs switched over to event system
 - missile logs switched over to event systems
 

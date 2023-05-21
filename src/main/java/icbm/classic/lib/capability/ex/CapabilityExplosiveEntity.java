@@ -3,12 +3,17 @@ package icbm.classic.lib.capability.ex;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.explosion.BlastState;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +25,8 @@ public class CapabilityExplosiveEntity implements IExplosive
 {
     public final Entity entity;
     private ItemStack stack = ItemStack.EMPTY;
+
+    private boolean isExploding = false;
 
     public CapabilityExplosiveEntity(@Nonnull Entity entity)
     {
@@ -40,6 +47,31 @@ public class CapabilityExplosiveEntity implements IExplosive
         else
         {
             stack = new ItemStack(nbt);
+        }
+    }
+
+    public BlastResponse doExplosion(Vec3d impactLocation)
+    {
+        try
+        {
+            // Make sure the missile is not already exploding
+            if (!this.isExploding)
+            {
+                //Make sure to note we are currently exploding
+                this.isExploding = true;
+
+                if (!this.entity.world.isRemote)
+                {
+                    return ExplosiveHandler.createExplosion(this.entity, this.entity.world, impactLocation.x, impactLocation.y, impactLocation.z, this);
+                }
+                return BlastState.TRIGGERED_CLIENT.genericResponse;
+            }
+            return BlastState.ALREADY_TRIGGERED.genericResponse;
+        }
+        catch (Exception e)
+        {
+            //TODO fire on EventTracker system
+            return new BlastResponse(BlastState.ERROR, e.getMessage(), e);
         }
     }
 

@@ -193,7 +193,7 @@ public class BlastTNT extends Blast
                         //Do drops
                         if (blockState.getBlock().canDropFromExplosion(this))
                         {
-                            blockState.getBlock().dropBlockAsItemWithChance(this.world(), blockDestroyedPos, blockState, 1F, 0);
+                            blockState.getBlock().dropBlockAsItemWithChance(this.world(), blockDestroyedPos, blockState, 1.0F / this.getBlastRadius(), 0);
                         }
 
                         //Break block

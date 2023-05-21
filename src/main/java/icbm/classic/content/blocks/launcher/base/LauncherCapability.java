@@ -180,7 +180,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         entity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
 
         //Trigger launch event
-        missile.setTargetData(new BallisticTargetingData(target, 1));
+        missile.setTargetData(new BallisticTargetingData(target, 2)); //TODO pull from targeting data
         missile.setFlightLogic(buildFLightPath());
         missile.setMissileSource(source); //TODO encode player that built launcher, firing method (laser, remote, redstone), and other useful data
         missile.launch();
@@ -275,7 +275,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         angle.setYaw(host.getWorld().rand.nextFloat() * 360); //TODO fix to use a normal distribution from ICBM 2
 
         //Apply inaccuracy to target position and return
-        return new Vec3d(target.x + angle.x() * inaccuracy, 0, target.z + angle.z() * inaccuracy);
+        return new Vec3d(target.x + angle.x() * inaccuracy, target.y, target.z + angle.z() * inaccuracy);
     }
 
     /**

@@ -48,4 +48,5 @@ public final class ICBMExplosives
     public static IExplosiveData MISSILEMODULE;
     public static IExplosiveData MUTATION;
     public static IExplosiveData ROT;
+    public static IExplosiveData CLUSTER;
 }

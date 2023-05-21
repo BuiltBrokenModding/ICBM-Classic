@@ -343,11 +343,11 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         }
 
         if(!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
+            setInGround(true);
+            onImpactTile(hit);
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
-            setInGround(true);
-            onImpactTile(hit);
         }
     }
 

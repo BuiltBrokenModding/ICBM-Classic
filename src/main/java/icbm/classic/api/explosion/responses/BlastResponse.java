@@ -5,6 +5,7 @@ import icbm.classic.api.explosion.BlastState;
 /**
  * Created by Robin Seifert on 5/21/2021.
  */
+@Deprecated
 public final class BlastResponse
 {
 

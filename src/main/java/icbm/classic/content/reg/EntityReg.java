@@ -2,6 +2,7 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
+import icbm.classic.content.blast.cluster.EntityBombDroplet;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
@@ -49,6 +50,7 @@ public final class EntityReg
         event.getRegistry().register(buildEntityEntry(EntityRedmatter.class, ICBMEntities.REDMATTER, 500, 1));
         event.getRegistry().register(buildEntityEntry(EntitySmoke.class, ICBMEntities.SMOKE, 100, 15));
         event.getRegistry().register(buildEntityEntry(EntitySurfaceToAirMissile.class, ICBMEntities.MISSILE_SAM, 500, 1));
+        event.getRegistry().register(buildEntityEntry(EntityBombDroplet.class, ICBMEntities.BOMB_DROPLET, 500, 1));
 
         /*
         //Green team TODO move to addon

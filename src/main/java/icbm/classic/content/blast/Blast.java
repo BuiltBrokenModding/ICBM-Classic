@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Prefab for any Explosion/Blast object created
  */
+@Deprecated
 public abstract class Blast extends Explosion implements IBlastInit, IBlastRestore
 {
     //Thread stuff

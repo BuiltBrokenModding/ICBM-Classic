@@ -16,17 +16,21 @@ public abstract class BlastBase implements IBlastInit
     private World world;
     private double x, y, z;
     private boolean locked;
+
+    @Deprecated //TODO remove from base, not all explosives have a size
     private double blastSize;
 
     @Override
     public float getBlastRadius()
     {
-        return (float) blastSize;
+        return (float) Math.min(blastSize, 1);
     }
 
     @Override
     public IBlastInit setBlastSize(double size) {
-        this.blastSize = size;
+        if(!locked) {
+            this.blastSize = size;
+        }
         return this;
     }
 

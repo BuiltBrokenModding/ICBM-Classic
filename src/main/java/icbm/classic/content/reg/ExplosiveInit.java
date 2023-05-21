@@ -12,6 +12,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.*;
 import icbm.classic.content.blast.BlastTNT.PushType;
+import icbm.classic.content.blast.cluster.BlastCluster;
 import icbm.classic.content.blast.gas.BlastChemical;
 import icbm.classic.content.blast.gas.BlastColor;
 import icbm.classic.content.blast.gas.BlastConfusion;
@@ -195,16 +196,21 @@ public class ExplosiveInit
         //=================== No content, only blast
 
         // originally "mutation" had the id 24, but to keep metadata consistent, the missile module now has metadata 24
-        ICBMExplosives.MISSILEMODULE = newEx(24, "missile",  EnumTier.NONE, null);
+        ICBMExplosives.MISSILEMODULE = newEx(24, "missile",  EnumTier.NONE, null); //TODO remove need
 
-        ICBMExplosives.ROT = newEx(25, "rot", EnumTier.NONE, BlastRot::new);
-        ICBMExplosives.MUTATION = newEx(26, "mutation", EnumTier.NONE, BlastMutation::new);
+        ICBMExplosives.ROT = newEx(25, "rot", EnumTier.NONE, BlastRot::new); //TODO add item version
+        ICBMExplosives.MUTATION = newEx(26, "mutation", EnumTier.NONE, BlastMutation::new); //TODO add item version
 
-        //New Explosives not part of classic original
+        //=================== New Explosives not part of classic original
         ICBMExplosives.COLOR = newEx(-1, "colors", EnumTier.ONE, () -> new BlastColor().setBlastSize(ConfigBlast.colorful.scale));
         ICBMExplosives.SMOKE = newEx(-1, "smoke", EnumTier.ONE, BlastSmoke::new); //TODO add scale for smoke count, and ticks alive as NBT var
 
+        ICBMExplosives.CLUSTER = newEx(-1, "cluster", EnumTier.NONE, BlastCluster::new);
+        ICBMClassicAPI.EX_MISSILE_REGISTRY.enableContent(ICBMExplosives.CLUSTER.getRegistryName());
+
+
         ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
+
 
         //=================== Missiles
         ///* 24 */MISSILE(new MissileModule());

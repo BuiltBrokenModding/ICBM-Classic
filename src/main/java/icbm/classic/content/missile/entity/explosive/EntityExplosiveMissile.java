@@ -39,7 +39,6 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     /** Explosive data and settings */
     public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
-    public boolean isExploding = false; //TODO see if this should be in cap
 
     public EntityExplosiveMissile(World w)
     {
@@ -76,7 +75,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
        // TODO add config
        // TODO add random chance modifier
        if(source.isExplosion() || source.isFireDamage()) {
-           doExplosion(this.getPositionVector());
+           explosive.doExplosion(this.getPositionVector());
        }
     }
 
@@ -144,30 +143,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     @Override
     protected void onImpact(Vec3d impactLocation) {
         super.onImpact(impactLocation);
-        doExplosion(impactLocation);
-    }
-
-    public BlastResponse doExplosion(Vec3d impactLocation) //TODO move to capability
-    {
-        try
-        {
-            // Make sure the missile is not already exploding
-            if (!this.isExploding)
-            {
-                //Make sure to note we are currently exploding
-                this.isExploding = true;
-
-                if (!this.world.isRemote)
-                {
-                    return ExplosiveHandler.createExplosion(this, this.world, impactLocation.x, impactLocation.y, impactLocation.z, explosive);
-                }
-                return BlastState.TRIGGERED_CLIENT.genericResponse;
-            }
-            return BlastState.ALREADY_TRIGGERED.genericResponse;
-        } catch (Exception e)
-        {
-            return new BlastResponse(BlastState.ERROR, e.getMessage(), e);
-        }
+        explosive.doExplosion(impactLocation);
     }
 
     @Override

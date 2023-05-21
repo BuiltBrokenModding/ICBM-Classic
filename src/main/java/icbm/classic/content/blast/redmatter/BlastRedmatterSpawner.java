@@ -15,7 +15,6 @@ import javax.annotation.Nonnull;
  */
 public class BlastRedmatterSpawner extends BlastBase
 {
-
     @Nonnull
     @Override
     public BlastResponse triggerBlast()
