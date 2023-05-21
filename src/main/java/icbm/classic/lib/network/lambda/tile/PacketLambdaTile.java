@@ -1,9 +1,10 @@
 package icbm.classic.lib.network.lambda.tile;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.PacketEvents;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.tracker.EventTrackerHelpers;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
@@ -14,59 +15,47 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET>> {
 
-    public static final String ERROR_HANDLING = "Packet(%s): unexpected error writing to tile.\n\tWorld:%s\n\tPos: %sx %sy %sz";
-    public static final String DEBUG_INVALID_TILE = "Packet(%s): invalid tile for packet.\n\tWorld:%s\n\tPos: %sx %sy %sz";
-
-    private int id;
-    private int dimensionId;
-    private int x;
-    private int y;
-    private int z;
+    private PacketCodex codex;
+    private Integer dimensionId;
+    private Integer x;
+    private Integer y;
+    private Integer z;
     private List<Consumer<ByteBuf>> writers;
     private List<Consumer<TARGET>> setters;
 
-    public PacketLambdaTile(int id, TileEntity tile, TARGET target) {
-        this(id, tile.getWorld(), tile.getPos(), target);
+    public PacketLambdaTile(PacketCodexTile codex, TileEntity tile, TARGET target) {
+        this(codex, tile.getWorld(), tile.getPos(), target);
     }
 
-    public PacketLambdaTile(int id, World dimensionId, BlockPos pos, TARGET target) {
-      this(id, dimensionId, pos.getX(), pos.getY(), pos.getZ(), target);
+    public PacketLambdaTile(PacketCodexTile codex, World dimensionId, BlockPos pos, TARGET target) {
+      this(codex, dimensionId, pos.getX(), pos.getY(), pos.getZ(), target);
     }
 
-    public PacketLambdaTile(int id, World dimensionId, int x, int y, int z, TARGET target) {
-        setId(id);
+    public PacketLambdaTile(PacketCodexTile codex, World dimensionId, int x, int y, int z, TARGET target) {
+        this.codex = getCodex();
 
-        // Error if isn't tile
-        assert target instanceof TileEntity;
-
-        // Assuming tileEntity set init data
         setDimensionId(dimensionId.provider.getDimension());
         setX(x);
         setY(y);
         setZ(z);
 
-        writers = getBuilder().encodeAsWriters(target);
+        writers = codex.encodeAsWriters(target);
     }
 
     @Override
     public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
         // Write general data
-        buffer.writeInt(id);
+        buffer.writeInt(codex.getId());
         buffer.writeInt(dimensionId);
         buffer.writeInt(x);
         buffer.writeInt(y);
@@ -80,23 +69,14 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
     public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
 
         // Read general data
-        id = buffer.readInt();
+        codex = PacketCodexReg.get(buffer.readInt());
         dimensionId = buffer.readInt();
         x = buffer.readInt();
         y = buffer.readInt();
         z = buffer.readInt();
 
         // Read data for builder
-        setters = getBuilder().decodeAsSetters(buffer);
-
-    }
-
-    public PacketCodex<TileEntity, TARGET> getBuilder() {
-        final PacketCodex<TileEntity, TARGET> builder = (PacketCodex<TileEntity, TARGET>) PacketCodexReg.get(id);
-        if(builder == null) {
-            throw new RuntimeException("Failed to get packet builder for id " + id);
-        }
-        return builder;
+        setters = codex.decodeAsSetters(buffer);
     }
 
     @Override
@@ -107,7 +87,7 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
 
         // Normal, player may have changed dim between network calls
         if (playerDim != getDimensionId()) {
-            ICBMClassic.logger().debug(String.format("Received packet client side for world(%s) but got world(%s)... ignoring.", getDimensionId(), playerDim));
+            PacketEvents.onWrongWorld(codex, EventTrackerHelpers.SIDE_CLIENT, getDimensionId(), playerDim);
             return;
         }
 
@@ -124,13 +104,13 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
 
         // Normal, player may have changed dim between network calls
         if (playerDim != getDimensionId()) {
-            ICBMClassic.logger().debug(String.format("Packet(%s): Received packet server side for world(%s) but got world(%s)... ignoring.", getId(), getDimensionId(), playerDim));
+            PacketEvents.onWrongWorld(codex, EventTrackerHelpers.SIDE_SERVER, getDimensionId(), playerDim);
             return;
         }
 
         // Issue, should never happen
         if(!(player.world instanceof WorldServer)) {
-            ICBMClassic.logger().error(String.format("Packet(%s): Received packet server side but world(%s) is not WorldServer", getId(), getDimensionId()));
+            PacketEvents.onNotServerWorld(codex, getDimensionId());
             return;
         }
 
@@ -146,34 +126,25 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
             return;
         }
 
-        PacketCodex<TileEntity, TARGET> builder = null;
         try {
-            builder = (PacketCodex<TileEntity, TARGET>) PacketCodexReg.get(id);
-
             final TileEntity tile = player.world.getTileEntity(pos);
-            if(tile != null && builder.isValid(tile)) {
-                final TARGET target = builder.getConverter().apply(tile);
-                if(target != null) {
-                    setters.forEach(c -> c.accept(target));
-                }
-                if(builder.onFinished() != null) {
-                    builder.onFinished().accept(tile, target, player);
-                }
+
+            // Could be normal, as data changes in main thread... especially given latency
+            if(tile == null || !codex.isValid(tile)) {
+                PacketTileEvents.onInvalidTile(codex, world, pos);
+                return;
             }
-            // This may be valid, as the tile could have changed or may have become invalid.
-            // Average ping is same as tick rate so changes on main-thread are expected
-            else if(ICBMClassic.logger().isDebugEnabled()) {
-                ICBMClassic.logger().debug(buildPacketLog(builder, world, pos, DEBUG_INVALID_TILE));
+
+            final TARGET target = (TARGET) codex.getConverter().apply(tile);
+            if(target != null) {
+                setters.forEach(c -> c.accept(target));
+            }
+            if(codex.onFinished() != null) {
+                codex.onFinished().accept(tile, target, player);
             }
         }
         catch (Exception e) {
-            ICBMClassic.logger().error(buildPacketLog(builder, world, pos, ERROR_HANDLING), e); //TODO add more details
+           PacketTileEvents.onHandlingError(codex, world, pos, e);
         }
-    }
-
-    private String buildPacketLog(PacketCodex builder, World world, BlockPos pos, String template) {
-        final String packetName = Optional.ofNullable(builder).map(Object::toString).orElse(null);
-        final String worldName = Optional.of(world.getWorldInfo()).map(WorldInfo::getWorldName).orElse("--");
-        return String.format(template, packetName, worldName, pos.getX(), pos.getY(), pos.getZ());
     }
 }

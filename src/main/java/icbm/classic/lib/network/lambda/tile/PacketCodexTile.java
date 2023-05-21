@@ -64,6 +64,6 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
     }
 
     public PacketLambdaTile<T> build(R tile) {
-        return new PacketLambdaTile<T>(getId(), tile, getConverter().apply(tile));
+        return new PacketLambdaTile<T>(this, tile, getConverter().apply(tile));
     }
 }

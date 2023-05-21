@@ -50,6 +50,7 @@ import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.CapabilityRadio;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.thread.WorkerThreadManager;
+import icbm.classic.lib.tracker.EventTracker;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.prefab.item.LootEntryItemStack;
 import net.minecraft.block.Block;
@@ -109,6 +110,7 @@ public class ICBMClassic
 
     public static final int MAP_HEIGHT = 255;
 
+    @Deprecated
     private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
 
 
@@ -123,6 +125,8 @@ public class ICBMClassic
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(ICBMConstants.DOMAIN);
 
     public static ModFixs modFixs;
+
+    public static final EventTracker MAIN_TRACKER = new EventTracker();
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
