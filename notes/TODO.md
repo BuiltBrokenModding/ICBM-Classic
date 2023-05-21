@@ -39,6 +39,10 @@
 - Redstone output from launcher... think I already documented this one but really want to add it
 - have some missiles place a missile module placeholder sticking out of ground after use (chemical types, ender, any non-explosive)
 
+## Unit testing
+
+- MinecraftJUnit - add world id to test manager
+
 ## Cluster missiles (prototype)
 
 - this will eventually be moved to an addon to better control the feature set... maybe?

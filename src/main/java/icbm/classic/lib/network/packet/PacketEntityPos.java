@@ -2,6 +2,7 @@ package icbm.classic.lib.network.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -74,7 +75,7 @@ public class PacketEntityPos extends PacketBase<PacketEntityPos>
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
     {
         if (player != null && player.world.provider.getDimension() == world)
         {

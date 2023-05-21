@@ -69,9 +69,9 @@ public class PacketSpawnBlockExplosion implements IPacket<PacketSpawnBlockExplos
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
     {
-        if (Minecraft.getMinecraft().world != null && player.world.provider.getDimension() == dimId)
+        if (minecraft.world != null && player.world.provider.getDimension() == dimId)
         {
             ICBMClassic.proxy.spawnExplosionParticles(player.world, sourceX, sourceY, sourceZ, blastScale, blockPos);
         }

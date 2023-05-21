@@ -31,7 +31,7 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
         this(parent, name, (tile) -> (T) tile);
     }
     public PacketCodexTile(ResourceLocation parent, String name) {
-        this(parent, new ResourceLocation(ICBMConstants.DOMAIN, name));
+        this(parent, new ResourceLocation(parent.getResourceDomain(), name));
     }
 
     public void sendToAllAround(R tile){

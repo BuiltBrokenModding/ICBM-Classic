@@ -5,10 +5,13 @@ import icbm.classic.lib.network.IPacket;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author tgame14
@@ -27,7 +30,7 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<IPacket>
             switch (FMLCommonHandler.instance().getEffectiveSide())
             {
                 case CLIENT:
-                    packet.handleClientSide();
+                    handleClientSide(packet);
                     break;
                 case SERVER:
                     packet.handleServerSide(((NetHandlerPlayServer) netHandler).player);
@@ -42,4 +45,8 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<IPacket>
         }
     }
 
+    @SideOnly(Side.CLIENT)
+    private void handleClientSide(IPacket packet) {
+        packet.handleClientSide(Minecraft.getMinecraft(), Minecraft.getMinecraft().player);
+    }
 }

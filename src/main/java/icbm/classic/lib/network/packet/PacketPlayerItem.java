@@ -3,9 +3,12 @@ package icbm.classic.lib.network.packet;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author tgame14
@@ -48,8 +51,9 @@ public class PacketPlayerItem extends PacketBase<PacketPlayerItem>
         super.decodeInto(ctx, buffer);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
     {
         handleServerSide(player);
     }

@@ -70,7 +70,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
     {
         final int playerDim = player.world.provider.getDimension();
 
@@ -83,7 +83,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
 
         final World world = player.world;
 
-        Minecraft.getMinecraft().addScheduledTask(() -> loadDataIntoTile(world, player));
+        minecraft.addScheduledTask(() -> loadDataIntoTile(world, player));
     }
 
     @Override

@@ -27,9 +27,7 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
 
     private PacketCodex codex;
     private Integer dimensionId;
-    private Integer x;
-    private Integer y;
-    private Integer z;
+    private BlockPos pos;
     private List<Consumer<ByteBuf>> writers;
     private List<Consumer<TARGET>> setters;
 
@@ -42,12 +40,10 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
     }
 
     public PacketLambdaTile(PacketCodexTile codex, World dimensionId, int x, int y, int z, TARGET target) {
-        this.codex = getCodex();
+        this.codex = codex;
 
         setDimensionId(dimensionId.provider.getDimension());
-        setX(x);
-        setY(y);
-        setZ(z);
+        setPos(new BlockPos(x, y, z));
 
         writers = codex.encodeAsWriters(target);
     }
@@ -57,9 +53,9 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         // Write general data
         buffer.writeInt(codex.getId());
         buffer.writeInt(dimensionId);
-        buffer.writeInt(x);
-        buffer.writeInt(y);
-        buffer.writeInt(z);
+        buffer.writeInt(pos.getX());
+        buffer.writeInt(pos.getY());
+        buffer.writeInt(pos.getZ());
 
         // Write data from builder
         writers.forEach(c -> c.accept(buffer));
@@ -71,9 +67,7 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         // Read general data
         codex = PacketCodexReg.get(buffer.readInt());
         dimensionId = buffer.readInt();
-        x = buffer.readInt();
-        y = buffer.readInt();
-        z = buffer.readInt();
+        pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
 
         // Read data for builder
         setters = codex.decodeAsSetters(buffer);
@@ -81,7 +75,7 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide(final Minecraft minecraft, final EntityPlayer player)
     {
         final int playerDim = player.world.provider.getDimension();
 
@@ -92,9 +86,8 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         }
 
         final World world = player.world;
-        final BlockPos pos = new BlockPos(x, y, z);
 
-        Minecraft.getMinecraft().addScheduledTask(() -> loadDataIntoTile(world, pos, player));
+        minecraft.addScheduledTask(() -> loadDataIntoTile(world, player));
     }
 
     @Override
@@ -115,11 +108,10 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         }
 
         final WorldServer world = (WorldServer) player.world;
-        final BlockPos pos = new BlockPos(x, y, z);
-        world.addScheduledTask(() -> loadDataIntoTile(world, pos, player));
+        world.addScheduledTask(() -> loadDataIntoTile(world, player));
     }
 
-    private void loadDataIntoTile(World world, BlockPos pos, EntityPlayer player) {
+    private void loadDataIntoTile(World world, EntityPlayer player) {
 
         // Area is no longer loaded, this is normal in most cases
         if(!world.isBlockLoaded(pos)) {
