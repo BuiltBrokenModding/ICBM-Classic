@@ -460,6 +460,7 @@ public class RedmatterLogic
                 host.motionZ = 0;
 
                 //TODO fire an event when combined (non-cancelable to allow acting on combined result)
+                entity.setDead();
             }
             else if (entity instanceof EntityExplosion)
             {
@@ -472,6 +473,7 @@ public class RedmatterLogic
             {
                 final IExplosive explosive = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
                 ExplosiveHandler.createExplosion(host, entity.world, entity.posX, entity.posY, entity.posZ, explosive);
+                entity.setDead();
             }
             else if (entity instanceof EntityLiving || entity instanceof EntityPlayer)
             {
