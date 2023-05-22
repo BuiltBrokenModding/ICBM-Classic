@@ -22,9 +22,7 @@ public class BlastRedmatterSpawner extends BlastBase
     {
         //Build entity
         final EntityRedmatter entityRedmatter = new EntityRedmatter(world());
-        entityRedmatter.posX = x();
-        entityRedmatter.posY = y();
-        entityRedmatter.posZ = z();
+        entityRedmatter.setPosition(x(), y(), z());
         entityRedmatter.setBlastSize(getBlastRadius());
         entityRedmatter.setBlastMaxSize(ConfigBlast.redmatter.MAX_SIZE);
 
