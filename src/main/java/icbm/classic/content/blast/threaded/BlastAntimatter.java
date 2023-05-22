@@ -7,12 +7,15 @@ import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.transform.BlockEditHandler;
+import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 
 import java.util.List;
@@ -149,6 +152,21 @@ public class BlastAntimatter extends BlastThreaded
     {
         super.onBlastCompleted();
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
+    }
+
+    @Override
+    protected boolean doDamageEntities(float radius, float power, boolean destroyItem) {
+
+        if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER)
+        {
+            final List<Entity> allEntities = getEntities(radius * 2);
+            final long killed = allEntities.stream().filter(e -> e instanceof EntityRedmatter).peek(this::onDamageEntity).count();
+            if(killed > 0) {
+                return false;
+            }
+            return doDamageEntities(allEntities, radius, power, destroyItem);
+        }
+        return super.doDamageEntities(radius, power, destroyItem);
     }
 
     @Override
