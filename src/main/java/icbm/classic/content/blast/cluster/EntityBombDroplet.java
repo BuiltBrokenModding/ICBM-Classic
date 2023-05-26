@@ -14,6 +14,7 @@ import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
@@ -125,4 +126,8 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
             (missile, data) -> missile.explosive.deserializeNBT(data))
         )
         .base();
+
+    public ItemStack toStack() {
+        return explosive.toStack();
+    }
 }

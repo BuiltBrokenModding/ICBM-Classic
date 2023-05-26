@@ -9,6 +9,7 @@ import icbm.classic.client.mapper.ItemModelMapperExplosive;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blast.cluster.EntityBombDroplet;
+import icbm.classic.content.blast.cluster.RenderBombDroplet;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREmpTower;
@@ -139,6 +140,7 @@ public class ClientReg
         newItemModel(ItemReg.itemLaserDetonator, 0, "inventory", "");
         newItemModel(ItemReg.itemRocketLauncher, 0, "inventory", "");
         newItemModel(ItemReg.itemBattery, 0, "inventory", "");
+        newItemModel(ItemReg.itemBomblet, 0, "inventory", "");
         ModelLoader.setCustomModelResourceLocation(ItemReg.itemSAM, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/surface_to_air", "inventory"));
 
         //crafting parts

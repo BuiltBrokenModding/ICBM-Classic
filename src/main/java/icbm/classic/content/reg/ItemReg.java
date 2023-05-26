@@ -47,6 +47,8 @@ public class ItemReg
     public static Item itemGrenade;
     @ObjectHolder(ICBMConstants.PREFIX + "bombcart")
     public static Item itemBombCart;
+    @ObjectHolder(ICBMConstants.PREFIX + "bomblet")
+    public static Item itemBomblet;
 
     @ObjectHolder(ICBMConstants.PREFIX + "sulfurDust")
     public static Item itemSulfurDust;
@@ -110,6 +112,7 @@ public class ItemReg
         event.getRegistry().register(new ItemLaserDetonator());
         event.getRegistry().register(new ItemRocketLauncher());
         event.getRegistry().register(new ItemMissile().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemBomblet().setName("bomblet").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemSurfaceToAirMissile());
 
         //Block items

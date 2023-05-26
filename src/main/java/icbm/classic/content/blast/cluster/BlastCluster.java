@@ -9,11 +9,13 @@ import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.blast.imp.BlastBase;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 public class BlastCluster extends BlastBase {
@@ -56,6 +58,12 @@ public class BlastCluster extends BlastBase {
         {
             final EulerAngle startingAngles = new EulerAngle(yaw, pitch);
 
+            // Convert motion into a vector so we can offset position on spawn
+            final double velocity = Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+            final double mx = motionX / velocity;
+            final double my = motionY / velocity;
+            final double mz = motionZ / velocity;
+
             final float yawAmount = 360.0f / discSize;
             int bombsToFire = this.count;
             int discIndex = 0;
@@ -69,10 +77,16 @@ public class BlastCluster extends BlastBase {
 
                     //TODO convert to factory
                     final EntityBombDroplet bomblet = new EntityBombDroplet(world());
-                    bomblet.explosive.setStack(ICBMClassicAPI.EX_BLOCK_REGISTRY.getDeviceStack(ICBMExplosives.CONDENSED));
+                    bomblet.explosive.setStack(new ItemStack(ItemReg.itemBomblet));
 
-                    final EulerAngle angle = new EulerAngle((yawAmount * bombIndex) + (discIndex % 2 == 1 ? 45 : 0), 110).add(startingAngles);
-                    bomblet.initAimingPosition(x(), y(), z(), (float) angle.yaw(), (float) angle.pitch(), 0.3f, 0.3f + discIndex * 0.1f);
+                    final EulerAngle angle = new EulerAngle((yawAmount * bombIndex) + (discIndex % 2 == 1 ? 90 : 0), 110).add(startingAngles);
+                    bomblet.initAimingPosition(
+                        x() + (-mx * 0.5 * discIndex),
+                        y() + (-my * 0.5 * discIndex),
+                        z() + (-mz * 0.5 * discIndex),
+                        (float) angle.yaw(),
+                        (float) angle.pitch(),
+                        0.3f, 0.3f + discIndex * 0.1f);
 
                     world().spawnEntity(bomblet); //TODO confirm we spawned at least 1
                 }
