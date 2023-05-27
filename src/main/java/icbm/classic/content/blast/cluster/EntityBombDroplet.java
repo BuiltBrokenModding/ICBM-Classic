@@ -24,6 +24,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -89,6 +91,21 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
             return I18n.translateToLocal("bomb.droplet." + data.getRegistryName().toString() + ".name");
         }
         return I18n.translateToLocal("bomb.droplet.icbmclassic:generic.name");
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isInRangeToRenderDist(double distance)
+    {
+        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
+
+        if (Double.isNaN(d0))
+        {
+            d0 = 1.0D;
+        }
+
+        d0 = d0 * 64.0D * getRenderDistanceWeight();
+        return distance < d0 * d0;
     }
 
     @Override
