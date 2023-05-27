@@ -474,7 +474,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public void rotateTowardsMotion() {
         //Get rotation from motion
         float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
+        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI); //TODO update to catch atan for better performance on repeat calls
         this.rotationPitch = (float) (Math.atan2(this.motionY, (double) speed) * 180.0D / Math.PI);
 
         //-------------------------------------
