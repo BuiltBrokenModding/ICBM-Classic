@@ -93,6 +93,7 @@ public class BlastCluster extends BlastBase {
             final float offsetPitch = pitch - 90; // we want to be 90 above default
             final float motionPitch = offsetPitch;  // want to fire backwards to improve spread
             final float motionScale = 0.3f;
+            final float motionScaleLayer = 0.1f;
             final float stackScale = 0.1f;
             final float offsetScale = 0.25f;
 
@@ -115,9 +116,9 @@ public class BlastCluster extends BlastBase {
 
                     // set motion to be away from missile body
                     final Vec3d moveVector = RotationHelper.rotateX(offsetYaw, motionPitch);
-                    bomblet.motionX = moveVector.x * motionScale;
-                    bomblet.motionY = moveVector.y * motionScale;
-                    bomblet.motionZ = moveVector.z * motionScale;
+                    bomblet.motionX = moveVector.x * motionScale + moveVector.x * motionScaleLayer * discIndex;
+                    bomblet.motionY = moveVector.y * motionScale + moveVector.y * motionScaleLayer * discIndex;
+                    bomblet.motionZ = moveVector.z * motionScale + moveVector.z * motionScaleLayer * discIndex;
 
                     // set position to slightly next to missile body
                     final Vec3d offsetVector = RotationHelper.rotateX(offsetYaw, offsetPitch); //offset for ejection
