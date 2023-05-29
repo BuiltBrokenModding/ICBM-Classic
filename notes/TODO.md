@@ -106,3 +106,23 @@ Strike-through means completed
 - ~~settings should include droplet count~~
 - settings should allow for mixed droplet types, making it possible to have different explosives and settings
 - limits on settings should be controlled via crafting, core explosive should just take input data
+
+## Better understand Rotation math
+
+https://stackoverflow.com/questions/31225062/rotating-a-vector-by-angle-and-axis-in-java
+
+https://mathworld.wolfram.com/RotationMatrix.html
+
+https://kennycason.com/posts/2008-12-25-graph3d-java-project-3d-points-to-2d.html
+
+https://www.youtube.com/watch?v=gAbadNuQEjI
+
+https://www.youtube.com/watch?v=4LKZw2_SUpA
+
+https://medium.com/swlh/understanding-3d-matrix-transforms-with-pixijs-c76da3f8bd8
+
+https://www.mathsisfun.com/algebra/matrix-multiplying.html
+
+https://msl.cs.uiuc.edu/planning/node102.html
+
+https://tutorial.math.lamar.edu/pdf/trig_cheat_sheet.pdf

@@ -1,6 +1,7 @@
 package icbm.classic.command;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.content.blast.cluster.EntityBombDroplet;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.*;
 import net.minecraft.command.ICommandSender;
@@ -48,6 +49,7 @@ public class CommandUtils
         return entity instanceof EntityFragments
                 || entity instanceof EntityFlyingBlock
                 || isMissile(entity)
+                || entity instanceof EntityBombDroplet
                 || entity instanceof EntityExplosive
                 || entity instanceof EntityExplosion
                 || entity instanceof EntityGrenade

@@ -11,6 +11,7 @@ import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
+import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -42,6 +43,19 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     protected void onImpact(Vec3d impactLocation) {
        super.onImpact(impactLocation);
        explosive.doExplosion(impactLocation);
+    }
+
+    @Override
+    protected void updateMotion()
+    {
+      super.updateMotion();
+    }
+
+    @Override
+    public Vec3d getLook(float partialTicks)
+    {
+        double mag = Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+        return new Vec3d(motionX / mag, motionY / mag, motionZ / mag);
     }
 
     @Override

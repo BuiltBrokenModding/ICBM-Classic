@@ -123,21 +123,18 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     {
         //this.renderDistanceWeight = 10.0D;
         this.sourceOfProjectile = new Pos(x, y, z);
-
-        this.setSize(0.5F, 0.5F);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
 
         //TODO figure out why we are updating position by rotation after spawning
-        this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
-        this.posY -= 0.10000000149011612D;
-        this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
-        this.setPosition(this.posX, this.posY, this.posZ);
-        //this.yOffset = 0.0F;
+        //this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
+        //this.posY -= 0.10000000149011612D;
+        //this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
+        //this.setPosition(this.posX, this.posY, this.posZ);
 
         this.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * (float) Math.PI));
-        this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 1.0F);
+        this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 0);
 
         return (E) this;
     }
