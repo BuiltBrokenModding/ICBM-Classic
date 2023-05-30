@@ -126,3 +126,5 @@ https://www.mathsisfun.com/algebra/matrix-multiplying.html
 https://msl.cs.uiuc.edu/planning/node102.html
 
 https://tutorial.math.lamar.edu/pdf/trig_cheat_sheet.pdf
+
+https://www.youtube.com/watch?v=mhd9FXYdf4s

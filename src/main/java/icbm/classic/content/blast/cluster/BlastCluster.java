@@ -111,7 +111,7 @@ public class BlastCluster extends BlastBase {
                     bomblet.explosive.setStack(new ItemStack(ItemReg.itemBomblet));
 
                     // calculate yaw TODO consider inverting loop so we spawn a row, as that should be less calculations for rotation
-                    final double yaw = MathHelper.wrapDegrees(yawAmount * bombIndex + (discIndex % 2 == 1 ? 90 : 0));
+                    final double yaw = MathHelper.wrapDegrees(yawAmount * bombIndex + (discIndex * 22.5));
                     final Vec3d offsetYaw = RotationHelper.rotateY(DEFAULT_FACE, yaw);
 
                     // set motion to be away from missile body
