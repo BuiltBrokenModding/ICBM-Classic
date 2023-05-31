@@ -4,7 +4,9 @@ import icbm.classic.content.missile.entity.EntityMissile;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,6 +26,7 @@ class EventTrackerDataTest {
             Arguments.of(NBTTagCompound.class, false),
             Arguments.of(BlockPos.MutableBlockPos.class, false),
 
+            Arguments.of(Object.class, true),
             Arguments.of(Integer.class, true),
             Arguments.of(RuntimeException.class, true),
             Arguments.of(NullPointerException.class, true)
@@ -33,6 +36,32 @@ class EventTrackerDataTest {
     @ParameterizedTest
     @MethodSource("testData_isImmutable")
     void isImmutable(Class clzz, boolean expect) {
-        Assertions.assertEquals(expect, EventTrackerData.isValidType(clzz), "Failed on " + clzz);
+
+        // This is intentionally testing defaults
+        final EventTrackerData eventTrackerData = new EventTrackerData();
+        eventTrackerData.initDefaults();
+
+        Assertions.assertEquals(expect, eventTrackerData.isValidType(clzz), "Failed on " + clzz);
+    }
+
+    static Stream<Arguments> testData_scanClass() {
+        return Stream.of(
+            Arguments.of(World.class, false),
+            Arguments.of(EntityPlayer.class, false),
+            Arguments.of(EntityZombie.class, false),
+            Arguments.of(EntityMissile.class, false),
+            Arguments.of(NBTTagCompound.class, false),
+            Arguments.of(BlockPos.MutableBlockPos.class, false),
+
+            Arguments.of(ResourceLocation.class, true),
+            Arguments.of(Vec3d.class, true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("testData_scanClass")
+    void scanClass(Class clzz, boolean expect) {
+        final EventTrackerData eventTrackerData = new EventTrackerData();
+        Assertions.assertEquals(expect, eventTrackerData.scanClass(clzz, 0), "Failed on " + clzz);
     }
 }

@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 public class EventTracker {
 
     private final List<ListenerEntry> listeners = new ArrayList();
+    private final EventTrackerData eventTrackerData = new EventTrackerData().initDefaults();
 
     /**
      * Adds a listener for events. Events can come from different threads. So
@@ -110,7 +111,7 @@ public class EventTracker {
     protected final boolean isDataReadOnly(EventTrackerType type, Object[] data) {
         boolean good = true;
         for(Object object: data) {
-            if(object != null && !EventTrackerData.isValidType(object.getClass())) {
+            if(object != null && !eventTrackerData.isValidType(object.getClass())) {
                 good = false;
                 ICBMClassic.logger().warn(String.format("EventTracker(%s): Class['%s'] is not supported for use with events.", type.getName(), object.getClass()));
             }
