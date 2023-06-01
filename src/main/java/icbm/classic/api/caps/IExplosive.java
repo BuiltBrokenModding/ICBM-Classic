@@ -4,12 +4,14 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Used in capabilities to provide an explosive for usage
@@ -43,6 +45,18 @@ public interface IExplosive
      * @param customization to apply during blast spawning
      */
     void addCustomization(IExplosiveCustomization customization);
+
+    /**
+     * Callback to allow explosives to add more information to items
+     * and user interfaces. This is meant to show information
+     * that can't easily be seen from the item itself. Such as
+     * scale settings or customizations applied dynamically.
+     *
+     * @param collector to pass information into
+     */
+    default void collectInformation(Consumer<String> collector) {
+
+    }
 
     /**
      * Gets the stack version of the explosive

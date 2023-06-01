@@ -2,7 +2,7 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
-import icbm.classic.content.blast.cluster.EntityBombDroplet;
+import icbm.classic.content.blast.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;

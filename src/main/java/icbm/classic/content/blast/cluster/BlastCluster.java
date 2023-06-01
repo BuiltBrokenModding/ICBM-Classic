@@ -4,6 +4,7 @@ import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.responses.BlastForgeResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.content.blast.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.blast.imp.BlastBase;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.RotationHelper;
@@ -13,23 +14,20 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class BlastCluster extends BlastBase {
 
     private static final Vec3d SOUTH_VEC = new Vec3d(0, 0, 1);
     private static final Vec3d UP_VEC = new Vec3d(0, 1, 0);
-    private static final float stackScale = 1f;//0.1f;
-    private static final float offsetScale = 2f;//0.25f;
+    private static final float stackScale = 0.1f;
+    private static final float offsetScale = 0.25f;
 
     @Getter
     @Setter
-    private Function<Integer, Entity> projectileBuilder = (i) -> {
-        final EntityBombDroplet bomblet = new EntityBombDroplet(world());
-        bomblet.explosive.setStack(new ItemStack(ItemReg.itemBomblet));
-        return bomblet;
-    };
+    private BiFunction<Integer, World, Entity> projectileBuilder;
 
     @Getter
     @Setter
@@ -40,7 +38,7 @@ public class BlastCluster extends BlastBase {
      */
     @Getter
     @Setter
-    private int projectilesToSpawn = 100;
+    private int projectilesToSpawn = 0;
 
     /**
      * Number of droplets per ejection disc
@@ -152,20 +150,23 @@ public class BlastCluster extends BlastBase {
     }
 
     private boolean spawnProjectile(int index, double x, double y, double z, double mx, double my, double mz) {
-        final Entity bomblet = projectileBuilder.apply(index);
+        final Entity entity = projectileBuilder != null ? projectileBuilder.apply(index, world()) : null;
+        if(entity != null) {
 
-        bomblet.setPosition(x() + x, y() + y, z() + z);
+            entity.setPosition(x() + x, y() + y, z() + z);
 
-        bomblet.motionX = mx;
-        bomblet.motionY = my;
-        bomblet.motionZ = mz;
+            entity.motionX = mx;
+            entity.motionY = my;
+            entity.motionZ = mz;
 
-        // set rotation to match motion
-        final float f3 = MathHelper.sqrt(bomblet.motionX * bomblet.motionX + bomblet.motionZ * bomblet.motionZ);
-        bomblet.prevRotationYaw = bomblet.rotationYaw = (float) (Math.atan2(bomblet.motionX, bomblet.motionZ) * 180.0D / Math.PI);
-        bomblet.prevRotationPitch = bomblet.rotationPitch = (float) (Math.atan2(bomblet.motionY, f3) * 180.0D / Math.PI);
+            // set rotation to match motion
+            final float f3 = MathHelper.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
+            entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180.0D / Math.PI);
+            entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(entity.motionY, f3) * 180.0D / Math.PI);
 
-        return  world().spawnEntity(bomblet);
+            return world().spawnEntity(entity);
+        }
+        return false;
     }
 
     private boolean spawnEmptyMissile() {
@@ -182,5 +183,4 @@ public class BlastCluster extends BlastBase {
             0f, 0.03f);
         return world().spawnEntity(bomblet);
     }
-
 }

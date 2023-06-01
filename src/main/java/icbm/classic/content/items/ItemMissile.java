@@ -1,16 +1,21 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.blast.cluster.ClusterCustomization;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +23,8 @@ import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ItemMissile extends ItemBase
 {
@@ -78,6 +85,29 @@ public class ItemMissile extends ItemBase
                 items.add(new ItemStack(this, 1, id));
             }
             items.add(new ItemStack(this, 1, 24)); //TODO fix work around for missile module not counting as a missile
+
+            // Customized cluster type TODO remove after testing
+            final ItemStack clusterArrows = new ItemStack(this, 1, ICBMExplosives.CLUSTER.getRegistryID());
+            Optional.ofNullable(ICBMClassicHelpers.getExplosive(clusterArrows)).ifPresent(e -> {
+                e.addCustomization(new ClusterCustomization()
+                    .setProjectilesToSpawn(100)
+                    .setProjectilesPerLayer(20)
+                    .setProjectileStack(new ItemStack(Items.ARROW))
+                    .setAllowPickupItems(false)
+                );
+            });
+            items.add(clusterArrows);
+
+            final ItemStack clusterBomblets = new ItemStack(this, 1, ICBMExplosives.CLUSTER.getRegistryID());
+            Optional.ofNullable(ICBMClassicHelpers.getExplosive(clusterBomblets)).ifPresent(e -> {
+                e.addCustomization(new ClusterCustomization()
+                    .setProjectilesToSpawn(100)
+                    .setProjectilesPerLayer(10)
+                    .setProjectileStack(new ItemStack(ItemReg.itemBomblet))
+                    .setAllowPickupItems(false)
+                );
+            });
+            items.add(clusterBomblets);
         }
     }
 
@@ -92,5 +122,9 @@ public class ItemMissile extends ItemBase
     {
         //TODO add hook
         ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
+        final IExplosive explosive = ICBMClassicHelpers.getExplosive(stack);
+        if(explosive != null) { //TODO make shift-key display?
+            explosive.collectInformation(list::add);
+        }
     }
 }

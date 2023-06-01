@@ -3,6 +3,7 @@ package icbm.classic.content.reg;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigItems;
+import icbm.classic.content.blast.cluster.bomblet.ItemBomblet;
 import icbm.classic.content.blocks.emptower.ItemBlockEmpTower;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.items.*;

@@ -4,13 +4,21 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.transform.vector.Pos;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
+import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Data
 @NoArgsConstructor
@@ -21,10 +29,45 @@ public class EnderBlastCustomization implements IExplosiveCustomization {
     private Integer dim;
     private Vec3d pos;
 
+    private String posTooltip;
+    private String dimTooltip;
+
     public EnderBlastCustomization(Integer dim, Vec3d pos) {
         this.dim = dim;
         this.pos = pos;
     }
+
+    public void setPos(Vec3d pos) {
+        if(!Objects.equals(pos, this.pos)) {
+            posTooltip = null;
+        }
+        this.pos = pos;
+    }
+
+    public void setDim(Integer dim) {
+        if(!Objects.equals(dim, this.dim)) {
+            dimTooltip = null;
+        }
+        this.dim = dim;
+    }
+
+    @Override
+    public void collectCustomizationInformation(Consumer<String> collector) {
+        if(pos != null) {
+            if(posTooltip == null) {
+                posTooltip = LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:ender.pos", pos.x, pos.y, pos.z));
+            }
+            collector.accept(posTooltip);
+        }
+        if(dim != null) {
+            if(dimTooltip == null) {
+                final String worldName = Optional.ofNullable(DimensionManager.getWorld(dim)).map(World::getWorldInfo).map(WorldInfo::getWorldName).orElse("???");
+                dimTooltip = LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:ender.world", dim, worldName));
+            }
+            collector.accept(dimTooltip);
+        }
+    }
+
     @Override
     public ResourceLocation getRegistryName() {
         return NAME;

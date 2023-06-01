@@ -6,6 +6,7 @@ import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -232,6 +233,10 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
                 load.accept(source, object);
             }
         ));
+    }
+
+    public NbtSaveRoot<E> nodeItemStack(String name, Function<E, ItemStack> save, BiConsumer<E, ItemStack> load) {
+        return node(new SaveNodeItemStack<>(name, save, load));
     }
 
     /**

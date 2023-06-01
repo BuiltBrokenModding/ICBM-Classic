@@ -8,7 +8,7 @@ import icbm.classic.client.mapper.BlockModelMapperExplosive;
 import icbm.classic.client.mapper.ItemModelMapperExplosive;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.config.ConfigItems;
-import icbm.classic.content.blast.cluster.EntityBombDroplet;
+import icbm.classic.content.blast.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.blast.cluster.RenderBombDroplet;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;

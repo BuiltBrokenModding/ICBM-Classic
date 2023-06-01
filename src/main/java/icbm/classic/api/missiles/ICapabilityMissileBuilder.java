@@ -8,6 +8,7 @@ import net.minecraft.world.World;
  * Can be applied {@link net.minecraft.item.ItemStack} to create missile items
  * or containers of missiles.
  */
+@Deprecated
 public interface ICapabilityMissileBuilder
 {
     /**

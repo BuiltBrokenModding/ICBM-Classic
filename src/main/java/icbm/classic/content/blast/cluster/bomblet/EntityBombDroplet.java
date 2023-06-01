@@ -1,17 +1,10 @@
-package icbm.classic.content.blast.cluster;
+package icbm.classic.content.blast.cluster.bomblet;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.explosion.BlastState;
-import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.entity.EntityPlayerSeat;
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
-import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
-import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;

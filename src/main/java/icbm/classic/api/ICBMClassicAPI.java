@@ -13,6 +13,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveRegistry;
@@ -90,6 +91,7 @@ public final class ICBMClassicAPI
     public static Capability<IMissile> MISSILE_CAPABILITY = null;
 
     /** Only applies to ItemStack */
+    @Deprecated
     @CapabilityInject(ICapabilityMissileStack.class)
     public static Capability<ICapabilityMissileStack> MISSILE_STACK_CAPABILITY = null;
 
@@ -110,6 +112,9 @@ public final class ICBMClassicAPI
 
     @CapabilityInject(IGPSData.class)
     public static Capability<IGPSData> GPS_CAPABILITY = null;
+
+    @CapabilityInject(IProjectileStack.class)
+    public static Capability<IProjectileStack> PROJECTILE_STACK_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}

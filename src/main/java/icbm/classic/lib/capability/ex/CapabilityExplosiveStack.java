@@ -7,6 +7,7 @@ import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.NBTConstants;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -18,6 +19,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Used by any item that has an explosive capability
@@ -26,7 +28,7 @@ import java.util.List;
 public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializable<NBTTagCompound>
 {
     private final ItemStack stack;
-    private List<IExplosiveCustomization> customizationList = new ArrayList();
+    private final List<IExplosiveCustomization> customizationList = new ArrayList();
 
     public CapabilityExplosiveStack(ItemStack stack)
     {
@@ -57,6 +59,12 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     @Override
     public void addCustomization(IExplosiveCustomization customization) {
         customizationList.add(customization);
+    }
+
+    @Override
+    public void collectInformation(Consumer<String> collector){
+        //TODO debug explosive id and name if F3+something keybind is enabled
+        customizationList.forEach(c -> c.collectCustomizationInformation(collector));
     }
 
     @Nullable

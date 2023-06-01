@@ -185,11 +185,18 @@ explosive.icbmclassic:emp.name=EMP Explosives
 explosive.icbmclassic:exothermic.name=Exothermic Explosives
 explosive.icbmclassic:endothermic.name=Endothermic Explosives
 explosive.icbmclassic:antigravitational.name=Anti-Gravitational Explosives
-explosive.icbmclassic:ender.name=Ender Explosives
-explosive.icbmclassic:hypersonic.name=Hypersonic Explosives
 
+explosive.icbmclassic:hypersonic.name=Hypersonic Explosives
 explosive.icbmclassic:antimatter.name=Antimatter Explosives
 explosive.icbmclassic:redmatter.name=Red Matter Explosives
+
+## Ender
+explosive.icbmclassic:ender.name=Ender Explosives
+missile.icbmclassic:ender.name=Ender Missile
+bombcart.icbmclassic:ender.name=Ender Minecart
+explosive.icbmclassic:ender.info=Let's relocate that base of yours
+explosive.icbmclassic:ender.pos=Target: %1$sx, %2$sy, %3$sz
+explosive.icbmclassic:ender.world=World: [%1$s] %2$s
 
 ## Missile Form
 missile.icbmclassic:generic.name=Missile
@@ -216,7 +223,7 @@ missile.icbmclassic:emp.name=EMP Missile
 missile.icbmclassic:exothermic.name=Exothermic Missile
 missile.icbmclassic:endothermic.name=Endothermic Missile
 missile.icbmclassic:antigravitational.name=Anti-Gravitational Missile
-missile.icbmclassic:ender.name=Ender Missile
+
 missile.icbmclassic:hypersonic.name=Hypersonic Missile
 
 missile.icbmclassic:antimatter.name=Antimatter Missile
@@ -246,7 +253,7 @@ bombcart.icbmclassic:emp.name=EMP Minecart
 bombcart.icbmclassic:exothermic.name=Exothermic Minecart
 bombcart.icbmclassic:endothermic.name=Endothermic Minecart
 bombcart.icbmclassic:antigravitational.name=Anti-Gravitational Minecart
-bombcart.icbmclassic:ender.name=Ender Minecart
+
 bombcart.icbmclassic:hypersonic.name=Hypersonic Minecart
 
 bombcart.icbmclassic:antimatter.name=Antimatter Minecart
@@ -275,7 +282,7 @@ explosive.icbmclassic:emp.info=Over 9000? Not anymore
 explosive.icbmclassic:exothermic.info=You thought the sun was hot
 explosive.icbmclassic:endothermic.info=They call me Mr. Freeze
 explosive.icbmclassic:antigravitational.info=I think your base looks better floating
-explosive.icbmclassic:ender.info=Let's relocate that base of yours
+
 explosive.icbmclassic:hypersonic.info=I feel bad for your ears
 
 explosive.icbmclassic:antimatter.info=Matter + antimatter = No matter
@@ -294,10 +301,17 @@ explosive.icbmclassic:redMatter.info.8=Into the void
 explosive.icbmclassic:redMatter.info.9=Oh? You think you can escape
 explosive.icbmclassic:redMatter.info.10=Oh baby come back
 
+## Cluster Explosive
+missile.icbmclassic:cluster.name=Cluster Missile
+explosive.icbmclassic:cluster.name=Cluster Explosives
+explosive.icbmclassic:cluster.projectile.name=Projectile: %1$s
+explosive.icbmclassic:cluster.projectile.count=Count: %1$s
+explosive.icbmclassic:cluster.projectile.layer=Per Layer: %1$s
+
+
 ## Special Missiles
 missile.icbmclassic:missile.name=Missile Module
 missile.icbmclassic:antiBallistic.name=Anti-ballistic Missile
-missile.icbmclassic:cluster.name=Cluster Missile
 missile.icbmclassic:nuclearCluster.name=Nuclear Cluster Missile
 missile.icbmclassic:homing.name=Homing Missile
 

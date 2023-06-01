@@ -14,6 +14,7 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
+import icbm.classic.content.blast.cluster.ClusterCustomization;
 import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
@@ -44,6 +45,7 @@ import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.capability.launcher.CapabilityMissileLauncher;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
+import icbm.classic.lib.capability.missile.CapabilityProjectileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.explosive.reg.*;
@@ -238,6 +240,7 @@ public class ICBMClassic
         CapabilityBlastVelocity.register();
         CapabilityMissileHolder.register();
         CapabilityMissileStack.register();
+        CapabilityProjectileStack.register();
         CapabilityMissileLauncher.register();
         CapabilityRadio.register();
         CapSpaceChicken.register();
@@ -319,6 +322,7 @@ public class ICBMClassic
 
         // Register defaults
         ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.register(EnderBlastCustomization.NAME, EnderBlastCustomization::new);
+        ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.register(ClusterCustomization.NAME, ClusterCustomization::new);
 
         //Fire registry event
         MinecraftForge.EVENT_BUS.post(new ExplosiveCustomizationRegistryEvent(ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY));

@@ -44,6 +44,9 @@
 - launcher pad show effect when countdown has started... maybe flashing lights? Such as warning hazards
 - launcher min distance check config
 - launcher min distance check user setting in tile
+- drill missile, basic version should work by breaking blocks slowly over time. Think matrix movies with the drones. It's an old idea I had for artillects to use... as it would be scary to hear an AI drill down. Never did work on it much but was reminded by drill charges in one of the COD games, warzone?, I saw on youtube shorts
+- drill seeker, advanced version of drill missile... can no-clip through soft blocks to seek out targets. 
+- drill seeker sensors, ways to customize how the drill missile navigates... such as detecting electronics via energy waves, vibrations via movement, heat spikes, radiation, etc.
 
 ## Blast system rework
 
@@ -61,10 +64,15 @@
 - update wiki with different version information, show old vs new
 - entity logs switched over to event system
 - missile logs switched over to event systems
+- remove old missile stack system
+- finish implementing customizations on explosive capabilities, not all of them save/load
+- add automation to test customizations
+- add projectile spawning defaults for all vanilla content and some mods
+- figure out a way to support ItemArrow having a entity spawning method... it requires EntityLivingBase but missiles/blocks are not living... will need fake source, or forge PR?
 
 ## Unit testing
 
-- MinecraftJUnit - add world id to test manager
+- MinecraftJUnit - finish adding world id to test manager
 
 ## Cluster missiles (prototype)
 
