@@ -79,9 +79,9 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
     }
 
     @Override
-    public void tickFuse(Entity entity, int ticksExisted, int explosiveID)
+    public void tickFuse(Entity entity, IExplosiveData data, int ticksExisted)
     {
-        final EntityTickFunction function = fuseTickCallback.lookup(explosiveID);
+        final EntityTickFunction function = fuseTickCallback.lookup(data != null ? data.getRegistryID() : 0);
         if (function != null)
         {
             function.onTick(entity, ticksExisted);
@@ -89,9 +89,9 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
     }
 
     @Override
-    public int getFuseTime(Entity entity, int explosiveID)
+    public int getFuseTime(Entity entity, IExplosiveData data)
     {
-        final WorldEntityIntSupplier function = fuseSetSupplier.lookup(explosiveID);
+        final WorldEntityIntSupplier function = fuseSetSupplier.lookup(data != null ? data.getRegistryID() : 0);
         if (function != null)
         {
             return function.get(entity);

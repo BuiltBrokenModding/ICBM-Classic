@@ -2,12 +2,14 @@ package icbm.classic.api.reg.content;
 
 import icbm.classic.api.data.EntityTickFunction;
 import icbm.classic.api.data.WorldEntityIntSupplier;
+import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 9/7/2019.
  */
+@Deprecated //Will replace at some point with settings reference from IExplosiveData or IExplosive
 public interface IExFuseEntityRegistry
 {
     /**
@@ -38,17 +40,17 @@ public interface IExFuseEntityRegistry
      * Called by objects to tick the fuse for the explosive
      *
      * @param entity       - entity that is the explosive
-     * @param explosiveID  - explosive id
+     * @param explosiveData  - explosive id
      * @param fuseTimeLeft - ticks existed
      */
-    void tickFuse(Entity entity, int explosiveID, int fuseTimeLeft);
+    void tickFuse(Entity entity, IExplosiveData explosiveData, int fuseTimeLeft);
 
     /**
      * Gets the starting fuse time
      *
      * @param entity      - entity that is the explosive
-     * @param explosiveID - explosive id
+     * @param explosiveData - explosive id
      * @return ticks
      */
-    int getFuseTime(Entity entity, int explosiveID);
+    int getFuseTime(Entity entity, IExplosiveData explosiveData);
 }
