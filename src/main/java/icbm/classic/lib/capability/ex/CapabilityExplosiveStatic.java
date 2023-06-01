@@ -2,6 +2,8 @@ package icbm.classic.lib.capability.ex;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.NBTConstants;
@@ -38,20 +40,14 @@ public class CapabilityExplosiveStatic implements IExplosive, INBTSerializable<N
         return data;
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound getCustomBlastData()
-    {
-        if (custom_ex_data == null)
-        {
-            custom_ex_data = new NBTTagCompound();
-        }
-        return custom_ex_data;
+    public void applyCustomizations(IBlast blast) {
+
     }
 
-    public void setCustomData(NBTTagCompound data)
-    {
-        this.custom_ex_data = data;
+    @Override
+    public void addCustomization(IExplosiveCustomization customization) {
+
     }
 
     @Nullable
@@ -64,21 +60,13 @@ public class CapabilityExplosiveStatic implements IExplosive, INBTSerializable<N
     @Override
     public NBTTagCompound serializeNBT()
     {
-        //Do not save the stack itself as we are saving to its NBT
-        NBTTagCompound save = new NBTTagCompound(); //TODO do not create empty NBT if we have nothing to save
-        if (!getCustomBlastData().hasNoTags())
-        {
-            save.setTag(NBTConstants.CUSTOM_EX_DATA, getCustomBlastData());
-        }
-        return save;
+        //TODO save customizations
+        return new NBTTagCompound();
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey(NBTConstants.CUSTOM_EX_DATA))
-        {
-            custom_ex_data = nbt.getCompoundTag(NBTConstants.CUSTOM_EX_DATA);
-        }
+
     }
 }

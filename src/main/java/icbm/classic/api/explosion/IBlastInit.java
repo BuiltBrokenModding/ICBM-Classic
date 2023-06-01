@@ -31,6 +31,7 @@ public interface IBlastInit extends IBlast
      * @param scale - multiplier to apply
      * @return this
      */
+    @Deprecated
     default IBlastInit scaleBlast(double scale) {
         return this;
     }
@@ -77,6 +78,7 @@ public interface IBlastInit extends IBlast
      * @param customData - nbt save data
      * @return this
      */
+    @Deprecated
     default IBlastInit setCustomData(@Nonnull NBTTagCompound customData) {
         return this;
     }

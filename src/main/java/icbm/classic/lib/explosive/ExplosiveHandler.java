@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -89,10 +90,10 @@ public class ExplosiveHandler
         {
             return logEventThenRespond(cause, world, x, y, z, null, 1, BlastNullResponses.EXPLOSIVE_CAPABILITY.get());
         }
-        return createExplosion(cause, world, x, y, z, capabilityExplosive.getExplosiveData(), 1, capabilityExplosive.getCustomBlastData());
+        return createExplosion(cause, world, x, y, z, capabilityExplosive.getExplosiveData(), 1, capabilityExplosive::applyCustomizations);
     }
 
-    public static BlastResponse createExplosion(Entity cause, World world, double x, double y, double z, int blastID, float scale, NBTTagCompound customData)
+    public static BlastResponse createExplosion(Entity cause, World world, double x, double y, double z, int blastID, float scale, Consumer<IBlast> customizer)
     {
         final IExplosiveData explosiveData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(blastID);
         if (explosiveData == null)
@@ -102,10 +103,10 @@ public class ExplosiveHandler
 
             return logEventThenRespond(cause, world, x, y, z, null, 1, BlastErrorResponses.MISSING_BLAST_REGISTRY.get());
         }
-        return createExplosion(cause, world, x, y, z, explosiveData, scale, customData);
+        return createExplosion(cause, world, x, y, z, explosiveData, scale, customizer);
     }
 
-    public static BlastResponse createExplosion(Entity cause, World world, double x, double y, double z, IExplosiveData explosiveData, float scale, NBTTagCompound customData)
+    public static BlastResponse createExplosion(Entity cause, World world, double x, double y, double z, IExplosiveData explosiveData, float scale, Consumer<IBlast> customizer)
     {
         BlastResponse response = BlastNullResponses.BLAST_CREATION.get();
         if (explosiveData == null)
@@ -125,7 +126,7 @@ public class ExplosiveHandler
                 factoryBlast.scaleBlast(scale);
                 factoryBlast.setBlastSource(cause);
                 factoryBlast.setExplosiveData(explosiveData);
-                factoryBlast.setCustomData(customData);
+                customizer.accept(factoryBlast);
                 factoryBlast.buildBlast();
 
                 //run blast

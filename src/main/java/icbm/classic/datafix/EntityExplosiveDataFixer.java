@@ -48,16 +48,6 @@ public class EntityExplosiveDataFixer implements IFixableData
                 //Generate stack so we can serialize off it
                 final ItemStack stack = new ItemStack(BlockReg.blockExplosive, 1, id);
 
-                //Handle custom explosive data
-                final IExplosive ex = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-                if(ex instanceof CapabilityExplosiveStack)
-                {
-                    if (existingSave.hasKey(DATA))
-                    {
-                        ((CapabilityExplosiveStack)ex).setCustomData(existingSave.getCompoundTag(DATA));
-                    }
-                }
-
                 //Remove old tags
                 existingSave.removeTag(EXPLOSIVE_ID);
                 existingSave.removeTag(DATA);

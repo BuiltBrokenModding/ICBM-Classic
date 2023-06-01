@@ -14,12 +14,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.function.Function;
+
 public class BlastCluster extends BlastBase {
 
     private static final Vec3d SOUTH_VEC = new Vec3d(0, 0, 1);
     private static final Vec3d UP_VEC = new Vec3d(0, 1, 0);
     private static final float stackScale = 1f;//0.1f;
     private static final float offsetScale = 2f;//0.25f;
+
+    @Getter
+    @Setter
+    private Function<Integer, Entity> projectileBuilder = (i) -> {
+        final EntityBombDroplet bomblet = new EntityBombDroplet(world());
+        bomblet.explosive.setStack(new ItemStack(ItemReg.itemBomblet));
+        return bomblet;
+    };
 
     @Getter
     @Setter
@@ -129,7 +139,7 @@ public class BlastCluster extends BlastBase {
 
 
                     //TODO confirm we spawned at least 1
-                    spawnedSomething = spawnProjectile(x, y, z, motionX, motionY, motionZ) || spawnedSomething;
+                    spawnedSomething = spawnProjectile(bombsToFire, x, y, z, motionX, motionY, motionZ) || spawnedSomething;
                 }
 
                 // Move to next layer
@@ -141,9 +151,8 @@ public class BlastCluster extends BlastBase {
         return BlastState.TRIGGERED.genericResponse;
     }
 
-    private boolean spawnProjectile(double x, double y, double z, double mx, double my, double mz) {
-        final EntityBombDroplet bomblet = new EntityBombDroplet(world());
-        bomblet.explosive.setStack(new ItemStack(ItemReg.itemBomblet));
+    private boolean spawnProjectile(int index, double x, double y, double z, double mx, double my, double mz) {
+        final Entity bomblet = projectileBuilder.apply(index);
 
         bomblet.setPosition(x() + x, y() + y, z() + z);
 

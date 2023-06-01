@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class MissilePartRegistry<Part extends IBuildableObject> implements IBuilderRegistry<Part>
+public class BuildableObjectRegistry<Part extends IBuildableObject> implements IBuilderRegistry<Part>
 {
     private final Map<ResourceLocation, Supplier<Part>> builders = new HashMap();
     private boolean locked = false;

@@ -5,6 +5,7 @@ import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.events.*;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.command.ICBMCommands;
@@ -13,10 +14,11 @@ import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
+import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
-import icbm.classic.content.missile.MissilePartRegistry;
+import icbm.classic.content.missile.BuildableObjectRegistry;
 import icbm.classic.content.missile.entity.CapabilityMissile;
 import icbm.classic.content.missile.entity.anti.SAMTargetData;
 import icbm.classic.content.missile.logic.flight.*;
@@ -224,6 +226,7 @@ public class ICBMClassic
         handleMissileFlightRegistry();
         handleMissileCauseRegistry();
         handleStatusRegistry();
+        handleExplosiveCustomizationRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
     }
 
@@ -243,7 +246,7 @@ public class ICBMClassic
 
     void handleMissileTargetRegistry()
     {
-        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = new MissilePartRegistry<IMissileTarget>("TARGET_DATA");
+        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = new BuildableObjectRegistry<IMissileTarget>("TARGET_DATA");
 
         // Default types
         ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(BasicTargetData.REG_NAME, BasicTargetData::new);
@@ -254,12 +257,12 @@ public class ICBMClassic
         MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY).lock();
+        ((BuildableObjectRegistry)ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY).lock();
     }
 
     void handleMissileFlightRegistry()
     {
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = new MissilePartRegistry<IMissileFlightLogic>("FLIGHT_LOGIC");
+        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = new BuildableObjectRegistry<IMissileFlightLogic>("FLIGHT_LOGIC");
 
         // Register defaults
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
@@ -276,12 +279,12 @@ public class ICBMClassic
         MinecraftForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY).lock();
+        ((BuildableObjectRegistry)ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY).lock();
     }
 
     void handleMissileCauseRegistry()
     {
-        ICBMClassicAPI.MISSILE_CAUSE_REGISTRY =  new MissilePartRegistry<IMissileCause>("CAUSE_DATA");;
+        ICBMClassicAPI.MISSILE_CAUSE_REGISTRY =  new BuildableObjectRegistry<IMissileCause>("CAUSE_DATA");;
 
         // Register defaults
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(EntityCause.REG_NAME, EntityCause::new);
@@ -293,12 +296,12 @@ public class ICBMClassic
         MinecraftForge.EVENT_BUS.post(new MissileCauseRegistryEvent(ICBMClassicAPI.MISSILE_CAUSE_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.MISSILE_CAUSE_REGISTRY).lock();
+        ((BuildableObjectRegistry)ICBMClassicAPI.MISSILE_CAUSE_REGISTRY).lock();
     }
 
     void handleStatusRegistry()
     {
-        ICBMClassicAPI.ACTION_STATUS_REGISTRY =  new MissilePartRegistry<IActionStatus>("ACTION_STATUS");
+        ICBMClassicAPI.ACTION_STATUS_REGISTRY =  new BuildableObjectRegistry<IActionStatus>("ACTION_STATUS");
 
         // Register defaults
         LauncherStatus.registerTypes();
@@ -307,7 +310,21 @@ public class ICBMClassic
         MinecraftForge.EVENT_BUS.post(new ActionStatusRegistryEvent(ICBMClassicAPI.ACTION_STATUS_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.ACTION_STATUS_REGISTRY).lock();
+        ((BuildableObjectRegistry)ICBMClassicAPI.ACTION_STATUS_REGISTRY).lock();
+    }
+
+    void handleExplosiveCustomizationRegistry()
+    {
+        ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY =  new BuildableObjectRegistry<IExplosiveCustomization>("EXPLOSIVE_CUSTOMIZATION");
+
+        // Register defaults
+        ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.register(EnderBlastCustomization.NAME, EnderBlastCustomization::new);
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new ExplosiveCustomizationRegistryEvent(ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY));
+
+        //Lock to prevent late registry
+        ((BuildableObjectRegistry) ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY).lock();
     }
 
     void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls

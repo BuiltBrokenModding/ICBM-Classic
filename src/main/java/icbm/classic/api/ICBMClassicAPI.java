@@ -14,6 +14,7 @@ import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.radio.IRadio;
+import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.content.IExBlockRegistry;
 import icbm.classic.api.reg.content.IExGrenadeRegistry;
@@ -55,6 +56,8 @@ public final class ICBMClassicAPI
     public static IBuilderRegistry<IMissileCause> MISSILE_CAUSE_REGISTRY;
     /** Registry for status messages produced by machines, items, and entities in the mod */
     public static IBuilderRegistry<IActionStatus> ACTION_STATUS_REGISTRY;
+    /** Registry for explosive customizations */
+    public static IBuilderRegistry<IExplosiveCustomization> EXPLOSIVE_CUSTOMIZATION_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 

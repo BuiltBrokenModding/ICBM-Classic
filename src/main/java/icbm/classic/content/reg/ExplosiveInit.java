@@ -13,6 +13,8 @@ import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.*;
 import icbm.classic.content.blast.BlastTNT.PushType;
 import icbm.classic.content.blast.cluster.BlastCluster;
+import icbm.classic.content.blast.ender.BlastEnder;
+import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.blast.gas.BlastChemical;
 import icbm.classic.content.blast.gas.BlastColor;
 import icbm.classic.content.blast.gas.BlastConfusion;
@@ -172,7 +174,7 @@ public class ExplosiveInit
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.ANTI_GRAVITATIONAL.getRegistryName(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.ANTI_GRAVITATIONAL);
 
 
-        ICBMExplosives.ENDER = newEx(20, "ender", EnumTier.THREE, () -> new BlastEnderman().setBlastSize(ConfigBlast.ender.scale));
+        ICBMExplosives.ENDER = newEx(20, "ender", EnumTier.THREE, () -> new BlastEnder().setBlastSize(ConfigBlast.ender.scale));
         ICBMClassicAPI.EX_MISSILE_REGISTRY.setInteractionListener(ICBMExplosives.ENDER.getRegistryName(), ExplosiveInit::enderMissileCoordSet);
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setActivationListener(ICBMExplosives.ENDER.getRegistryName(), ExplosiveInit::enderBlockCoordSet);
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.ENDER.getRegistryName(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.ENDER);
@@ -265,10 +267,9 @@ public class ExplosiveInit
     }
 
     private static boolean encodeEnderCoordSet(IExplosive provider, EntityPlayer player, EnumHand hand) {
-        if(provider == null || provider.getCustomBlastData() == null) {
+        if(provider == null) {
             return false;
         }
-        final NBTTagCompound tag = provider.getCustomBlastData();
         final ItemStack stack = player.getHeldItem(hand);
         final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
         if (gpsData != null)
@@ -276,9 +277,7 @@ public class ExplosiveInit
             final Vec3d position = gpsData.getPosition();
             if (position != null)
             {
-                tag.setInteger(NBTConstants.X, (int)Math.floor(position.x));
-                tag.setInteger(NBTConstants.Y, (int)Math.floor(position.y));
-                tag.setInteger(NBTConstants.Z, (int)Math.floor(position.z));
+                provider.addCustomization(new EnderBlastCustomization(gpsData.getWorldId(), position));
                 player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
             }
             else

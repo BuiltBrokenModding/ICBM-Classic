@@ -105,16 +105,8 @@ public class EntityMissileDataFixer implements IFixableData
         //additionalMissileData -> compound
         //explosiveID -> int
         final int explosiveId = existingSave.getInteger("explosiveID");
-        final NBTTagCompound explosiveData = existingSave.getCompoundTag("additionalMissileData");
-
         final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(explosiveId);
         final ItemStack stack = ICBMClassicAPI.EX_MISSILE_REGISTRY.getDeviceStack(data);
-        if(stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null)) {
-            final IExplosive explosive = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if(explosive != null) {
-                explosive.getCustomBlastData().merge(explosiveData);
-            }
-        }
 
         existingSave.setTag("explosive", stack.serializeNBT());
     }

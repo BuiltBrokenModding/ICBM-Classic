@@ -2,17 +2,22 @@ package icbm.classic.lib.capability.ex;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.NBTConstants;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used by any item that has an explosive capability
@@ -21,7 +26,7 @@ import javax.annotation.Nullable;
 public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializable<NBTTagCompound>
 {
     private final ItemStack stack;
-    private NBTTagCompound custom_ex_data;
+    private List<IExplosiveCustomization> customizationList = new ArrayList();
 
     public CapabilityExplosiveStack(ItemStack stack)
     {
@@ -44,20 +49,14 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
         return ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(getExplosiveID());
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound getCustomBlastData()
-    {
-        if (custom_ex_data == null)
-        {
-            custom_ex_data = new NBTTagCompound();
-        }
-        return custom_ex_data;
+    public void applyCustomizations(IBlast blast) {
+        customizationList.forEach(c -> c.apply(getExplosiveData(), blast));
     }
 
-    public void setCustomData(NBTTagCompound data)
-    {
-        this.custom_ex_data = data;
+    @Override
+    public void addCustomization(IExplosiveCustomization customization) {
+        customizationList.add(customization);
     }
 
     @Nullable
@@ -66,9 +65,11 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     {
         if (stack == null)
         {
-            return new ItemStack(BlockReg.blockExplosive, 1, 0);
+            return ItemStack.EMPTY;
         }
+
         final ItemStack re = stack.copy();
+        //TODO save customizations
         re.setCount(1);
         return re;
     }
@@ -76,21 +77,16 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     @Override
     public NBTTagCompound serializeNBT()
     {
-        //Do not save the stack itself as we are saving to its NBT
-        NBTTagCompound save = new NBTTagCompound(); //TODO do not create empty NBT if we have nothing to save
-        if (!getCustomBlastData().hasNoTags())
-        {
-            save.setTag(NBTConstants.CUSTOM_EX_DATA, getCustomBlastData());
-        }
+        final NBTTagCompound save = new NBTTagCompound();
+        save.setTag("customizations", ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.save(customizationList));
         return save;
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey(NBTConstants.CUSTOM_EX_DATA))
-        {
-            custom_ex_data = nbt.getCompoundTag(NBTConstants.CUSTOM_EX_DATA);
+        if(nbt.hasKey("customizations")) {
+            ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.load(nbt.getTagList("customizations", 10), customizationList);
         }
     }
 

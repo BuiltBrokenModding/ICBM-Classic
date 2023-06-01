@@ -1,10 +1,13 @@
-package icbm.classic.content.blast;
+package icbm.classic.content.blast.ender;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastTickable;
+import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,31 +17,21 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class BlastEnderman extends Blast implements IBlastTickable
+public class BlastEnder extends Blast implements IBlastTickable //TODO handle save/load
 {
-
-    public static final String NBT_LOCATION = "teleport_target";
     public int duration = 20 * 8;
-    private Pos teleportTarget;
+
+    @Getter
+    @Setter
+    private Vec3d teleportTarget;
 
     @Override
-    public IBlastInit setCustomData(@Nonnull NBTTagCompound customData)
-    {
-        if (customData != null && customData.hasKey(NBT_LOCATION))
-        {
-            teleportTarget = new Pos(customData.getCompoundTag(NBT_LOCATION));
-            //TODO load world ID
-            //TODO data fixer, previous data was store raw as xyz
-        }
-        return this;
-    }
-
-    @Override
-    public boolean doExplode(int callCount)
+    public boolean doExplode(int callCount) //TODO break into smaller methods
     {
         if (this.world().isRemote)
         {
@@ -122,8 +115,7 @@ public class BlastEnderman extends Blast implements IBlastTickable
 
                     try
                     {
-                        /** If a target doesn't exist, search for a random one within 100 block
-                         * range. */
+                        // If a target doesn't exist, search for a random one within 100 block range
                         if (this.teleportTarget == null)
                         {
                             int checkY = (int) Math.floor(this.controller.posY);
@@ -141,18 +133,18 @@ public class BlastEnderman extends Blast implements IBlastTickable
                             }
                             while (this.world().isAirBlock(pos) && !this.world().isAirBlock(pos2) && checkY < 254);
 
-                            this.teleportTarget = new Pos(checkX, checkY, checkZ);
+                            this.teleportTarget = new Vec3d(checkX + 0.5, checkY + 0.5, checkZ + 0.5);
                         }
 
                         this.world().playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                         if (entity instanceof EntityPlayerMP)
                         {
-                            ((EntityPlayerMP) entity).connection.setPlayerLocation(this.teleportTarget.x() + 0.5, this.teleportTarget.y() + 0.5, this.teleportTarget.z() + 0.5, entity.rotationYaw, entity.rotationPitch);
+                            ((EntityPlayerMP) entity).connection.setPlayerLocation(this.teleportTarget.x, this.teleportTarget.y, this.teleportTarget.z, entity.rotationYaw, entity.rotationPitch);
                         }
                         else
                         {
-                            entity.setPosition(this.teleportTarget.x() + 0.5, this.teleportTarget.y() + 0.5, this.teleportTarget.z() + 0.5);
+                            entity.setPosition(this.teleportTarget.x, this.teleportTarget.y, this.teleportTarget.z);
                         }
 
                     } catch (Exception e)

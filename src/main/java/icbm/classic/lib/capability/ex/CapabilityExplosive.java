@@ -3,6 +3,8 @@ package icbm.classic.lib.capability.ex;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
+import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.NBTConstants;
 import net.minecraft.item.ItemStack;
@@ -22,7 +24,6 @@ import javax.annotation.Nullable;
 public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<NBTTagCompound>
 {
     public int explosiveID; //TODO change over to resource location or include in save to check for issues using ID only for in memory
-    public NBTTagCompound blastNBT;
 
     public CapabilityExplosive()
     {
@@ -40,20 +41,14 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
         return ICBMClassicHelpers.getExplosive(explosiveID, false);
     }
 
-    @Nonnull
     @Override
-    public NBTTagCompound getCustomBlastData()
-    {
-        if (blastNBT == null)
-        {
-            blastNBT = new NBTTagCompound();
-        }
-        return blastNBT;
+    public void applyCustomizations(IBlast blast) {
+
     }
 
-    public void setCustomData(NBTTagCompound data)
-    {
-        blastNBT = data;
+    @Override
+    public void addCustomization(IExplosiveCustomization customization) {
+
     }
 
     @Nullable
@@ -87,7 +82,6 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
         serializeNBT(tagCompound);
 
         tagCompound.setInteger(NBTConstants.EXPLOSIVE_ID, explosiveID);
-        tagCompound.setTag(NBTConstants.BLAST_DATA, getCustomBlastData());
         return tagCompound;
     }
 
@@ -102,10 +96,6 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
         if (nbt.hasKey(NBTConstants.EXPLOSIVE_ID))
         {
             explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
-        }
-        if (blastNBT == null || nbt.hasKey(NBTConstants.BLAST_DATA))
-        {
-            blastNBT = nbt.getCompoundTag(NBTConstants.BLAST_DATA);
         }
     }
 
