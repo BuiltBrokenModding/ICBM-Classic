@@ -2,10 +2,12 @@ package icbm.classic.content.entity;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.prefab.tile.BlockICBM;
 import io.netty.buffer.ByteBuf;
@@ -23,37 +25,36 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+
+import java.util.Optional;
 
 public class EntityBombCart extends EntityMinecartTNT implements IEntityAdditionalSpawnData
 {
-    @Deprecated
-    public int explosive = -1; //TODO move to capability
-
-    @Deprecated
-    public NBTTagCompound data; //TODO move to capability
+    public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
 
     public EntityBombCart(World par1World)
     {
         super(par1World);
     }
 
-    public EntityBombCart(World par1World, double x, double y, double z, int explosive) //TODO change to pass in itemstack for capability
+    public EntityBombCart(World par1World, double x, double y, double z, ItemStack itemStack) //TODO change to pass in itemstack for capability
     {
         super(par1World, x, y, z);
-        this.explosive = explosive;
+        this.explosive.setStack(itemStack);
     }
 
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(explosive);
+        ByteBufUtils.writeItemStack(data, explosive.toStack());
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        explosive = data.readInt();
+        explosive.setStack(ByteBufUtils.readItemStack(data));
     }
 
     @Override
@@ -61,7 +62,7 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     {
         // TODO add event
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        ExplosiveHandler.createExplosion(this, world, posX, posY, posZ, explosive, 1, data);
+        explosive.doExplosion(this.posX, this.posY, this.posZ); //TODO handle output
         this.setDead();
     }
 
@@ -91,14 +92,14 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
         super.onUpdate();
         if (isIgnited())
         {
-            ICBMClassicAPI.EX_MINECART_REGISTRY.tickFuse(this, explosive, minecartTNTFuse);
+            ICBMClassicAPI.EX_MINECART_REGISTRY.tickFuse(this, explosive.getExplosiveData(), minecartTNTFuse);
         }
     }
 
     @Override
     public void ignite()
     {
-        this.minecartTNTFuse = ICBMClassicAPI.EX_MINECART_REGISTRY.getFuseTime(this, explosive);
+        this.minecartTNTFuse = ICBMClassicAPI.EX_MINECART_REGISTRY.getFuseTime(this, explosive.getExplosiveData());
 
         if (!this.world.isRemote)
         {
@@ -124,28 +125,35 @@ public class EntityBombCart extends EntityMinecartTNT implements IEntityAddition
     @Override
     public ItemStack getCartItem()
     {
-        return new ItemStack(ItemReg.itemBombCart, 1, explosive);
+        return explosive.toStack();
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt)
     {
         super.writeEntityToNBT(nbt);
-        nbt.setInteger(NBTConstants.EXPLOSIVE, explosive);
+        nbt.setTag("explosive", explosive.serializeNBT());
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound nbt)
     {
         super.readEntityFromNBT(nbt);
-        explosive = nbt.getInteger(NBTConstants.EXPLOSIVE);
+
+        //Legacy
+        if(nbt.hasKey(NBTConstants.EXPLOSIVE, 99)) {
+            explosive.setStack(new ItemStack(ItemReg.itemBombCart, 1, nbt.getInteger(NBTConstants.EXPLOSIVE)));
+        }
+        else {
+            explosive.deserializeNBT(nbt.getCompoundTag("explosive"));
+        }
     }
 
     @Override
     public IBlockState getDefaultDisplayTile()
     {
         return BlockReg.blockExplosive.getDefaultState()
-                .withProperty(BlockExplosive.EX_PROP, ICBMClassicHelpers.getExplosive(explosive, false))
+                .withProperty(BlockExplosive.EX_PROP, Optional.ofNullable(explosive.getExplosiveData()).orElse(ICBMExplosives.CONDENSED))
                 .withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
     }
 }

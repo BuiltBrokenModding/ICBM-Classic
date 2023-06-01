@@ -74,7 +74,7 @@ public class ItemBombCart extends ItemBase
                     d0 = 0.5D;
                 }
 
-                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.0625D + d0, (double) pos.getZ() + 0.5D, itemstack.getItemDamage());
+                EntityMinecart entityminecart = new EntityBombCart(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.0625D + d0, (double) pos.getZ() + 0.5D, itemstack);
 
                 if (itemstack.hasDisplayName())
                 {

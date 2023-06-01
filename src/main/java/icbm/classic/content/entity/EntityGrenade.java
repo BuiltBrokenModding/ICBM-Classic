@@ -264,13 +264,13 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Ticks the fuse */
     protected void tickFuse()
     {
-        if (this.ticksExisted > ICBMClassicAPI.EX_GRENADE_REGISTRY.getFuseTime(this, explosive.getExplosiveData().getRegistryID()))
+        if (this.ticksExisted > ICBMClassicAPI.EX_GRENADE_REGISTRY.getFuseTime(this, explosive.getExplosiveData()))
         {
             triggerExplosion();
         }
         else
         {
-            ICBMClassicAPI.EX_GRENADE_REGISTRY.tickFuse(this, explosive.getExplosiveData().getRegistryID(), ticksExisted);
+            ICBMClassicAPI.EX_GRENADE_REGISTRY.tickFuse(this, explosive.getExplosiveData(), ticksExisted);
         }
     }
 
@@ -278,7 +278,10 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     protected void triggerExplosion()
     {
         this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
-        ExplosiveHandler.createExplosion(this, this.world, this.posX, this.posY + 0.3f, this.posZ, explosive.getExplosiveData().getRegistryID(), 1, explosive.getCustomBlastData());
+
+        // TODO handle output and record results in event system
+        explosive.doExplosion(this.posX, this.posY + 0.3f, this.posZ);
+
         this.setDead();
     }
 

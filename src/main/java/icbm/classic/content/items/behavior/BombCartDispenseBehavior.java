@@ -67,7 +67,7 @@ public class BombCartDispenseBehavior extends BehaviorDefaultDispenseItem
             }
         }
 
-        EntityBombCart cart = new EntityBombCart(world, x, y + heightDelta, z, stack.getItemDamage());
+        EntityBombCart cart = new EntityBombCart(world, x, y + heightDelta, z, stack);
 
         if (stack.hasDisplayName())
         {
