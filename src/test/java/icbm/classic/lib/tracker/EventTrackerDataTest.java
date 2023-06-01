@@ -36,11 +36,8 @@ class EventTrackerDataTest {
     @ParameterizedTest
     @MethodSource("testData_isImmutable")
     void isImmutable(Class clzz, boolean expect) {
-
         // This is intentionally testing defaults
-        final EventTrackerData eventTrackerData = new EventTrackerData();
-        eventTrackerData.initDefaults();
-
+        final EventTrackerData eventTrackerData = new EventTrackerData().initDefaults();
         Assertions.assertEquals(expect, eventTrackerData.isValidType(clzz), "Failed on " + clzz);
     }
 
@@ -61,7 +58,8 @@ class EventTrackerDataTest {
     @ParameterizedTest
     @MethodSource("testData_scanClass")
     void scanClass(Class clzz, boolean expect) {
-        final EventTrackerData eventTrackerData = new EventTrackerData();
+        // Leaving java defaults on as String has a mutable field for hash
+        final EventTrackerData eventTrackerData = new EventTrackerData().initJavaDefaults();
         Assertions.assertEquals(expect, eventTrackerData.scanClass(clzz, 0), "Failed on " + clzz);
     }
 }

@@ -34,16 +34,7 @@ final class EventTrackerData {
     public EventTrackerData initDefaults() {
         // Left as a different method for unit testing
 
-        // Java
-        VALID_OBJECTS.add(Integer.class);
-        VALID_OBJECTS.add(Double.class);
-        VALID_OBJECTS.add(Float.class);
-        VALID_OBJECTS.add(Long.class);
-        VALID_OBJECTS.add(String.class);
-        VALID_OBJECTS.add(Byte.class);
-        VALID_OBJECTS.add(Short.class);
-        VALID_OBJECTS.add(Date.class);
-        VALID_OBJECTS.add(Object.class);
+        initJavaDefaults();
 
         // Minecraft
         VALID_OBJECTS.add(BlockPos.class);
@@ -54,6 +45,22 @@ final class EventTrackerData {
         INVALID_OBJECTS.add(World.class);
         INVALID_OBJECTS.add(NBTBase.class);
 
+        return this;
+    }
+
+    public EventTrackerData initJavaDefaults() {
+        // Left as a different method for unit testing
+
+        // Java
+        VALID_OBJECTS.add(Integer.class);
+        VALID_OBJECTS.add(Double.class);
+        VALID_OBJECTS.add(Float.class);
+        VALID_OBJECTS.add(Long.class);
+        VALID_OBJECTS.add(String.class);
+        VALID_OBJECTS.add(Byte.class);
+        VALID_OBJECTS.add(Short.class);
+        VALID_OBJECTS.add(Date.class);
+        VALID_OBJECTS.add(Object.class);
         return this;
     }
 
