@@ -214,7 +214,7 @@ public class MissileTrackerWorld extends WorldSavedData
         missile.motionY = -2; //TODO get speed it would have been at the given time
         missile.motionZ = 0;
         missile.motionX = 0;
-        missile.rotateTowardsMotion();
+        missile.rotateTowardsMotion(1);
 
         // Change over to dead aim if we have no custom flight system
         if(missile.getMissileCapability().getFlightLogic() == null) {

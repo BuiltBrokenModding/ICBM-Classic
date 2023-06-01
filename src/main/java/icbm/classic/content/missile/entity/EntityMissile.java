@@ -330,6 +330,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
+        super.writeSpawnData(additionalMissileData);
         final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
         ByteBufUtils.writeTag(additionalMissileData, saveData);
     }
@@ -337,6 +338,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     public void readSpawnData(ByteBuf additionalMissileData)
     {
+        super.readSpawnData(additionalMissileData);
         final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
         SAVE_LOGIC.load(this, saveData);
     }

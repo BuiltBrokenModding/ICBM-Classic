@@ -130,7 +130,7 @@ public class MekProxy extends ModProxy
                             }
 
                             if(entity instanceof EntityProjectile) {
-                                ((EntityProjectile)entity).rotateTowardsMotion();
+                                ((EntityProjectile)entity).rotateTowardsMotion(1);
                                 //TODO manually calculate rotation based on directly
                                 //  As some flight logic systems will not allow rotation towards motion
                             }

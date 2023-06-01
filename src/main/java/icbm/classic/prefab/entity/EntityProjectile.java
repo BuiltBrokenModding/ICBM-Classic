@@ -6,6 +6,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -19,6 +20,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,8 +32,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming
-{
+public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming, IEntityAdditionalSpawnData {
     /**
      * The entity who shot this projectile and can be used for damage calculations
      * As well useful for causing argo on the shooter
@@ -59,27 +60,47 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     protected DamageSource impact_damageSource = DamageSource.ANVIL;
 
     //In ground data
-    /** Block position projectile is stuck inside */
+    /**
+     * Block position projectile is stuck inside
+     */
     public BlockPos tilePos = new BlockPos(0, 0, 0);
-    /** Face of tile we are stuck inside */
+    /**
+     * Face of tile we are stuck inside
+     */
     public EnumFacing sideTile = EnumFacing.UP;
-    /** Block state we are stuck inside */
+    /**
+     * Block state we are stuck inside
+     */
     public IBlockState blockInside = Blocks.AIR.getDefaultState();
-    /** Toggle to note we are stuck in a tile on the ground */
+    /**
+     * Toggle to note we are stuck in a tile on the ground
+     */
     public boolean inGround = false;
-    /** Entity is being teleported, causes it to ignore block impacts */
+    /**
+     * Entity is being teleported, causes it to ignore block impacts
+     */
     public boolean changingDimensions = false;
 
     //Timers
     public int ticksInGround;
     public int ticksInAir;
 
+    public boolean freezeMotion = false;
 
-    public EntityProjectile(World world)
-    {
+    public EntityProjectile(World world) {
         super(world);
         //this.renderDistanceWeight = 10.0D;
         this.setSize(0.5F, 0.5F);
+    }
+
+    @Override
+    public void writeSpawnData(ByteBuf buffer) {
+        buffer.writeBoolean(freezeMotion);
+    }
+
+    @Override
+    public void readSpawnData(ByteBuf additionalData) {
+        freezeMotion = additionalData.readBoolean();
     }
 
     /**
@@ -92,8 +113,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * @return this
      */
     @Deprecated
-    public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random)
-    {
+    public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random) {
         this.shootingEntity = shooter;
         this.sourceOfProjectile = new Pos(shooter);
 
@@ -119,17 +139,16 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     @Deprecated
-    public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale)
-    {
+    public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale) {
         //this.renderDistanceWeight = 10.0D;
         this.sourceOfProjectile = new Pos(x, y, z);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
 
         //TODO figure out why we are updating position by rotation after spawning
-        //this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
-        //this.posY -= 0.10000000149011612D;
-        //this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
-        //this.setPosition(this.posX, this.posY, this.posZ);
+        this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
+        this.posY -= 0.10000000149011612D;
+        this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
+        this.setPosition(this.posX, this.posY, this.posZ);
 
         this.motionX = (double) (-MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
         this.motionZ = (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float) Math.PI));
@@ -140,8 +159,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     @Override
-    public void initAimingPosition(double x, double y, double z, float yaw, float pitch, float offsetMultiplier, float forceMultiplier)
-    {
+    public void initAimingPosition(double x, double y, double z, float yaw, float pitch, float offsetMultiplier, float forceMultiplier) {
         init(x, y, z, yaw, pitch, forceMultiplier, offsetMultiplier);
     }
 
@@ -156,38 +174,31 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     @Override
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
 
         //Check if we hit the ground
         IBlockState state = this.world.getBlockState(tilePos);
-        if (!state.getBlock().isAir(state, world, tilePos))
-        {
+        if (!state.getBlock().isAir(state, world, tilePos)) {
             //Check if what we hit can be collided with
             AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
-            if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ)))
-            {
+            if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
                 setInGround(true);
             }
         }
 
         //Handle stuck in ground
-        if (this.inGround)
-        {
+        if (this.inGround) {
             //TODO allow this to be disabled
-            if (state == blockInside)
-            {
+            if (state == blockInside) {
                 ++this.ticksInGround;
 
-                if (this.ticksInGround == inGroundKillTime)
-                {
+                if (this.ticksInGround == inGroundKillTime) {
                     this.setDead();
                 }
             }
             // if was in ground but block changes, fall slightly
-            else
-            {
+            else {
                 //TODO change to apply gravity
                 this.inGround = false;
                 this.motionX *= (double) (this.rand.nextFloat() * 0.2F);
@@ -196,12 +207,10 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 this.ticksInGround = 0;
                 this.ticksInAir = 0;
             }
-        } else
-        {
+        } else {
             //Kills the projectile if it moves forever into space
             ++this.ticksInAir;
-            if (ticksInAir >= inAirKillTime)
-            {
+            if (ticksInAir >= inAirKillTime) {
                 this.setDead();
                 return;
             }
@@ -230,8 +239,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             //Reset data to do entity ray trace
             rayStart = new Vec3d(this.posX, this.posY, this.posZ);
             rayEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            if (rayHit != null)
-            {
+            if (rayHit != null) {
                 rayEnd = new Vec3d(rayHit.hitVec.x, rayHit.hitVec.y, rayHit.hitVec.z);
             }
 
@@ -241,22 +249,18 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             double distanceToHit = 0.0D;
             float hitBoxSizeScale;
 
-            for (int i = 0; i < list.size(); ++i)
-            {
+            for (int i = 0; i < list.size(); ++i) {
                 Entity checkEntity = (Entity) list.get(i);
 
-                if (shouldCollideWith(checkEntity) && (checkEntity != this.shootingEntity || this.ticksInAir >= 5))
-                {
+                if (shouldCollideWith(checkEntity) && (checkEntity != this.shootingEntity || this.ticksInAir >= 5)) {
                     hitBoxSizeScale = 0.3F;
                     AxisAlignedBB hitBox = checkEntity.getEntityBoundingBox().expand((double) hitBoxSizeScale, (double) hitBoxSizeScale, (double) hitBoxSizeScale);
                     RayTraceResult entityRayHit = hitBox.calculateIntercept(rayStart, rayEnd);
 
-                    if (entityRayHit != null)
-                    {
+                    if (entityRayHit != null) {
                         double distance = rayStart.distanceTo(entityRayHit.hitVec);
 
-                        if (distance < distanceToHit || distanceToHit == 0.0D)
-                        {
+                        if (distance < distanceToHit || distanceToHit == 0.0D) {
                             entity = checkEntity;
                             distanceToHit = distance;
                         }
@@ -265,17 +269,14 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             }
 
             //If we collided with an entity, set hit to entity
-            if (entity != null)
-            {
+            if (entity != null) {
                 rayHit = new RayTraceResult(entity);
             }
 
 
-            if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit))
-            {
+            if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit)) {
                 //Handle entity hit
-                if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY)
-                {
+                if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY) {
                     handleEntityCollision(rayHit, rayHit.entityHit);
                 } else //Handle block hit
                 {
@@ -289,19 +290,17 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     protected void setInGround(boolean b) {
-        if(!this.inGround && b) {
+        if (!this.inGround && b) {
             this.ticksInGround = 0;
         }
         this.inGround = b;
     }
 
-    protected boolean ignoreImpact(RayTraceResult hit)
-    {
+    protected boolean ignoreImpact(RayTraceResult hit) {
         return false;
     }
 
-    protected void postImpact(RayTraceResult hit)
-    {
+    protected void postImpact(RayTraceResult hit) {
     }
 
     /**
@@ -311,14 +310,12 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * @param entity
      * @return true to collide, false to ignore
      */
-    protected boolean shouldCollideWith(Entity entity)
-    {
+    protected boolean shouldCollideWith(Entity entity) {
         //TODO add listener support
         return entity.canBeCollidedWith() && !(entity instanceof EntityPlayerSeat);
     }
 
-    protected void handleBlockCollision(RayTraceResult hit)
-    {
+    protected void handleBlockCollision(RayTraceResult hit) {
         this.tilePos = hit.getBlockPos();
         this.sideTile = hit.sideHit;
         this.blockInside = this.world.getBlockState(tilePos);
@@ -326,7 +323,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         // Special handling for ender gateways TODO move to a registry of Block -> lambda
         final IProjectileBlockInteraction.EnumHitReactions reaction =
             ProjectileBlockInteraction.handleSpecialInteraction(world, tilePos, hit.hitVec, sideTile, blockInside, this);
-        if(reaction.stop) {
+        if (reaction.stop) {
             return;
         }
 
@@ -339,7 +336,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             this.blockInside.getBlock().onEntityCollidedWithBlock(this.world, tilePos, blockInside, this);
         }
 
-        if(!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
+        if (!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
             setInGround(true);
             onImpactTile(hit);
             this.motionX = 0;
@@ -374,14 +371,12 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     @Override
-    public int getPortalCooldown()
-    {
+    public int getPortalCooldown() {
         return 10;
     }
 
     @Override
-    public int getMaxInPortalTime()
-    {
+    public int getMaxInPortalTime() {
         return -1;
     }
 
@@ -392,8 +387,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      *
      * @param hit - exact hit position
      */
-    protected void onImpactTile(RayTraceResult hit)
-    {
+    protected void onImpactTile(RayTraceResult hit) {
         onImpact(hit.hitVec);
     }
 
@@ -403,39 +397,33 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * @param hit
      * @param entityHit
      */
-    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
-    {
+    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit) {
         onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
     }
 
 
-    protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit)
-    {
-        if (!world.isRemote)
-        {
+    protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
+        if (!world.isRemote) {
             int damage = MathHelper.ceil((double) velocity * 2);
 
             //If entity takes damage add velocity to entity
-            if (impact_damageSource != null && entityHit.attackEntityFrom(impact_damageSource, (float) damage))
-            {
-                if (entityHit instanceof EntityLivingBase)
-                {
+            if (impact_damageSource != null && entityHit.attackEntityFrom(impact_damageSource, (float) damage)) {
+                if (entityHit instanceof EntityLivingBase) {
                     float vel_horizontal = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                    if (vel_horizontal > 0.0F)
-                    {
+                    if (vel_horizontal > 0.0F) {
                         entityHit.addVelocity(this.motionX * 0.6000000238418579D / (double) vel_horizontal, 0.1D, this.motionZ * 0.6000000238418579D / (double) vel_horizontal);
                     }
                 }
 
             }
-           onImpact(hit.hitVec);
+            onImpact(hit.hitVec);
         }
     }
 
     /**
      * Generalized impact callback, used to do cleanup
      * steps regardless of impact reason.
-     *
+     * <p>
      * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
      * better handling of impacts.
      */
@@ -443,32 +431,33 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.setDead();
     }
 
-    protected void updateMotion()
-    {
-        //Update motion
-        this.posX += this.motionX;
-        this.posY += this.motionY;
-        this.posZ += this.motionZ;
+    protected void updateMotion() {
+        if (!freezeMotion) {
+            //Update motion
+            this.posX += this.motionX;
+            this.posY += this.motionY;
+            this.posZ += this.motionZ;
 
-        if(shouldAlignWithMotion()) {
-            rotateTowardsMotion();
+            if (shouldAlignWithMotion()) {
+                rotateTowardsMotion(0.05f);
+            }
+
+            //Decrease motion so the projectile stops
+            decreaseMotion();
+
+            //Set position
+            this.setPosition(this.posX, this.posY, this.posZ);
+
+            //Adjust for collision      TODO check if works, rewrite code to prevent clip through of block
+            this.doBlockCollisions();
         }
-
-        //Decrease motion so the projectile stops
-        decreaseMotion();
-
-        //Set position
-        this.setPosition(this.posX, this.posY, this.posZ);
-
-        //Adjust for collision      TODO check if works, rewrite code to prevent clip through of block
-        this.doBlockCollisions();
     }
 
     public boolean shouldAlignWithMotion() {
         return true;
     }
 
-    public void rotateTowardsMotion() {
+    public void rotateTowardsMotion(float delta) {
         //Get rotation from motion
         float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI); //TODO update to catch atan for better performance on repeat calls
@@ -476,46 +465,43 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
         //-------------------------------------
         //Fix rotation
-        while (this.rotationPitch - this.prevRotationPitch < -180.0F)
-        {
+        while (this.rotationPitch - this.prevRotationPitch < -180.0F) {
             this.prevRotationPitch -= 360.0F;
         }
 
-        while (this.rotationPitch - this.prevRotationPitch >= 180.0F)
-        {
+        while (this.rotationPitch - this.prevRotationPitch >= 180.0F) {
             this.prevRotationPitch += 360.0F;
         }
 
-        while (this.rotationYaw - this.prevRotationYaw < -180.0F)
-        {
+        while (this.rotationYaw - this.prevRotationYaw < -180.0F) {
             this.prevRotationYaw -= 360.0F;
         }
 
-        while (this.rotationYaw - this.prevRotationYaw >= 180.0F)
-        {
+        while (this.rotationYaw - this.prevRotationYaw >= 180.0F) {
             this.prevRotationYaw += 360.0F;
         }
         //-------------------------------------
         //Reduce delta in rotation to provide for a smoother animation
-        this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
-        this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
+        this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * delta;
+        this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * delta;
         //-------------------------------------
     }
 
-    protected void decreaseMotion()
-    {
+    protected void decreaseMotion() {
         //TODO get friction value
         this.motionX *= 0.99F;
         this.motionY *= 0.99F;
         this.motionZ *= 0.99F;
         //Add gravity so the projectile will fall
-        this.motionY -= 0.05F;
+        this.motionY -= getGravity();
     }
 
+    protected float getGravity() {
+        return 0.05F;
+    }
 
     @Override
-    public void shoot(double xx, double yy, double zz, float multiplier, float random)
-    {
+    public void shoot(double xx, double yy, double zz, float multiplier, float random) {
         //Normalize
         float velocity = MathHelper.sqrt(xx * xx + yy * yy + zz * zz);
         xx /= (double) velocity;
@@ -523,8 +509,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         zz /= (double) velocity;
 
         //Add randomization to make the arrow miss
-        if (random > 0)
-        {
+        if (random > 0) {
             xx += this.rand.nextGaussian() * (double) (this.rand.nextBoolean() ? -1 : 1) * 0.007499999832361937D * (double) random;
             yy += this.rand.nextGaussian() * (double) (this.rand.nextBoolean() ? -1 : 1) * 0.007499999832361937D * (double) random;
             zz += this.rand.nextGaussian() * (double) (this.rand.nextBoolean() ? -1 : 1) * 0.007499999832361937D * (double) random;
@@ -549,42 +534,36 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
-    {
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void setVelocity(double xx, double yy, double zz)
-    {
+    public void setVelocity(double xx, double yy, double zz) {
         this.motionX = xx;
         this.motionY = yy;
         this.motionZ = zz;
     }
 
     @Override
-    protected boolean canTriggerWalking()
-    {
+    protected boolean canTriggerWalking() {
         return false;
     }
 
-    public boolean canBeDestroyed(Object attacker, DamageSource damageSource)
-    {
+    public boolean canBeDestroyed(Object attacker, DamageSource damageSource) {
         return hasHealth;
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
-    {
+    public void writeEntityToNBT(NBTTagCompound nbt) {
         SAVE_LOGIC.save(this, nbt);
         super.writeEntityToNBT(nbt);
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
-    {
+    public void readEntityFromNBT(NBTTagCompound nbt) {
         super.readEntityFromNBT(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
@@ -605,7 +584,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         /* */.nodeInteger("air", (projectile) -> projectile.ticksInAir, (projectile, flag) -> projectile.ticksInAir = flag)
         /* */.nodeInteger("ground", (projectile) -> projectile.ticksInGround, (projectile, flag) -> projectile.ticksInGround = flag)
         .base();
-        //Project source, if needed implement in each projectile directly. or add a boolean toggle to .addRoot. As missile doesn't need source nor shooter due to missile.targetData
+    //Project source, if needed implement in each projectile directly. or add a boolean toggle to .addRoot. As missile doesn't need source nor shooter due to missile.targetData
         /*
         .addRoot("source")
         .nodePos("pos", (projectile) -> projectile.sourceOfProjectile, (projectile, pos) -> projectile.sourceOfProjectile = pos)
