@@ -35,7 +35,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
     public EntityBombDroplet(World world) {
         super(world);
-        this.setSize(0.3f, 0.3f);
+        this.setSize(0.25f, 0.25f);
         this.hasHealth = false;
     }
 
@@ -43,12 +43,6 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     protected void onImpact(Vec3d impactLocation) {
        super.onImpact(impactLocation);
        explosive.doExplosion(impactLocation);
-    }
-
-    @Override
-    protected void updateMotion()
-    {
-      super.updateMotion();
     }
 
     @Override
@@ -61,7 +55,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     @Override
     protected boolean shouldCollideWith(Entity entity)
     {
-        return super.shouldCollideWith(entity) && !(entity instanceof EntityBombDroplet);
+        return super.shouldCollideWith(entity) && !(entity instanceof EntityBombDroplet); //TODO ignore collision only for first few ticks
     }
 
     @Override
@@ -125,6 +119,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     @Override
     public void writeSpawnData(ByteBuf additionalMissileData)
     {
+        super.writeSpawnData(additionalMissileData);
         final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
         ByteBufUtils.writeTag(additionalMissileData, saveData);
     }
@@ -132,6 +127,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     @Override
     public void readSpawnData(ByteBuf additionalMissileData)
     {
+        super.readSpawnData(additionalMissileData);
         final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
         SAVE_LOGIC.load(this, saveData);
     }
