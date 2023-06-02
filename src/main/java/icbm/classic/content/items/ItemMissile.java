@@ -90,7 +90,7 @@ public class ItemMissile extends ItemBase
             final ItemStack clusterArrows = new ItemStack(this, 1, ICBMExplosives.CLUSTER.getRegistryID());
             Optional.ofNullable(ICBMClassicHelpers.getExplosive(clusterArrows)).ifPresent(e -> {
                 e.addCustomization(new ClusterCustomization()
-                    .setProjectilesToSpawn(100)
+                    .setProjectilesToSpawn(200)
                     .setProjectilesPerLayer(20)
                     .setProjectileStack(new ItemStack(Items.ARROW))
                     .setAllowPickupItems(false)

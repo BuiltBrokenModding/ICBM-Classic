@@ -76,6 +76,13 @@ public class BlastCluster extends BlastBase {
     private float motionScaleLayer = 0.1f;
 
     /**
+     * Random amount to apply to motion
+     */
+    @Getter
+    @Setter
+    private float motionRandomScale = 0.1f;
+
+    /**
      * Initial heading of the blast
      */
     @Getter
@@ -128,6 +135,13 @@ public class BlastCluster extends BlastBase {
                     motionX += (sourceVec.x + backVector.x) * motionScaleLayer * discIndex;
                     motionY += (sourceVec.y + backVector.y) * motionScaleLayer * discIndex;
                     motionZ += (sourceVec.z + backVector.z) * motionScaleLayer * discIndex;
+
+                    // Randomize motion to create a less perfect pattern
+                    if(motionRandomScale > 0) {
+                        motionX += (world().rand.nextFloat() - world().rand.nextFloat()) * motionScaleLayer;
+                        motionY += (world().rand.nextFloat() - world().rand.nextFloat()) * motionScaleLayer;
+                        motionZ += (world().rand.nextFloat() - world().rand.nextFloat()) * motionScaleLayer;
+                    }
 
                     // set position to slightly next to missile body
                     final Vec3d stackVector = RotationHelper.rotateY(RotationHelper.rotateX(SOUTH_VEC, sourcePitch - 180), sourceYaw); //offset from disc, if facing down this is y++

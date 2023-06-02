@@ -47,6 +47,9 @@
 - drill missile, basic version should work by breaking blocks slowly over time. Think matrix movies with the drones. It's an old idea I had for artillects to use... as it would be scary to hear an AI drill down. Never did work on it much but was reminded by drill charges in one of the COD games, warzone?, I saw on youtube shorts
 - drill seeker, advanced version of drill missile... can no-clip through soft blocks to seek out targets. 
 - drill seeker sensors, ways to customize how the drill missile navigates... such as detecting electronics via energy waves, vibrations via movement, heat spikes, radiation, etc.
+- color coded remotes to let users easily ID which remote to use
+- way to disable remote to prevent mis-clicks or require like alt + rightClick
+- radio channel display on items
 
 ## Blast system rework
 
