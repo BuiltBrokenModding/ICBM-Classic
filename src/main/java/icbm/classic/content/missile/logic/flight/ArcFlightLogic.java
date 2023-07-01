@@ -45,6 +45,8 @@ public class ArcFlightLogic implements IMissileFlightLogic
 
     private int ticksFlight = 0;
 
+    private boolean wasSimulationBlocked = false;
+
     @Override
     public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
     {
@@ -166,7 +168,7 @@ public class ArcFlightLogic implements IMissileFlightLogic
             // Sim system
             if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
             {
-                MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
+                wasSimulationBlocked = !MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
             }
         }
     }
@@ -183,18 +185,6 @@ public class ArcFlightLogic implements IMissileFlightLogic
         entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180 / Math.PI);
     }
 
-    /**
-     * Has the missile wait on the pad while it's engines start and generate a lot of smoke
-     *
-     * @param entity     representing the missile
-     * @param ticksInAir the missile has been in the air
-     */
-    protected void idleMissileOnPad(Entity entity, int ticksInAir)
-    {
-        entity.rotationPitch = entity.prevRotationPitch = 90;
-        ICBMClassic.proxy.spawnPadSmoke(entity, this, ticksInAir);
-    }
-
     @Override
     public boolean shouldRunEngineEffects(Entity entity) {
         return hasStartedFlight;
@@ -202,7 +192,7 @@ public class ArcFlightLogic implements IMissileFlightLogic
 
     protected boolean shouldSimulate(Entity entity)
     {
-        if (EntityMissile.hasPlayerRiding(entity))
+        if (wasSimulationBlocked || EntityMissile.hasPlayerRiding(entity))
         {
             return false;
         }
@@ -210,6 +200,8 @@ public class ArcFlightLogic implements IMissileFlightLogic
         {
             return true;
         }
+
+        // TODO predict if the missile only needed a few more chunks to hit... if so chunk load or let get stuck in board to prevent changing arc path
 
         final BlockPos futurePos = predictPosition(entity, BlockPos::new, 2);
 
@@ -267,6 +259,7 @@ public class ArcFlightLogic implements IMissileFlightLogic
         //Stuck in ground data
         .addRoot("flags")
         /* */.nodeBoolean("flight_started", (bl) -> bl.hasStartedFlight, (bl, data) -> bl.hasStartedFlight = data)
+        /* */.nodeBoolean("block_simulation", (bl) -> bl.wasSimulationBlocked, (bl, data) -> bl.wasSimulationBlocked = data)
         .base()
         .addRoot("inputs")
         /* */.nodeDouble("start_x", (bl) -> bl.startX, (bl, i) -> bl.startX = i)

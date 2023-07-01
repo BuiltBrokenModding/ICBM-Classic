@@ -63,6 +63,33 @@ public abstract class MissileEvent extends Event
     }
 
     /**
+     * Called when the missile is about to enter the simulation queue. Use
+     * this to prevent simulation or capture the missile to send it to a different
+     * queue or system.
+     *
+     * Main purpose of this event is to block simulation. It does offer the option
+     * to change how simulation works or switch queues. The problem with this is
+     * cross dimension should be handled by other mechanics. As the missile may
+     * not be able to predict this behavior correctly. Resulting in strange
+     * interactions and broken expectations of the player.
+     *
+     * Instead, modify the flight/guidance system of the missile. Allowing it to
+     * deliberately switching dimensions and properly enter the other dimension as expected.
+     * Such as entering the bottom of a space dimension or orbit of a planet.
+     *
+     * For magic or disconnected dimensions please use a portal. This can easily be implemented
+     * on the portal's side or the block impact system of the missile.
+     */
+    @Cancelable
+    public static class EnteringSimQueue extends MissileEvent
+    {
+        public EnteringSimQueue(IMissile missile, Entity entityMissile)
+        {
+            super(missile, entityMissile);
+        }
+    }
+
+    /**
      * Called right after the missile ran its impact code.
      * <p>
      * Called after {@link PreImpact}

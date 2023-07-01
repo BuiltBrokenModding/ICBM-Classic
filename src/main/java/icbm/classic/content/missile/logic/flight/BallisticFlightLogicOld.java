@@ -73,6 +73,8 @@ public class BallisticFlightLogicOld implements IMissileFlightLogic //TODO remov
 
     private int ticksFlight = 0;
 
+    private boolean wasSimulationBlocked = false;
+
     public BallisticFlightLogicOld(int lockHeight) {
         this.lockHeight = lockHeight;
     }
@@ -217,7 +219,7 @@ public class BallisticFlightLogicOld implements IMissileFlightLogic //TODO remov
             // Sim system
             if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
             {
-                MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
+                wasSimulationBlocked = !MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
             }
         }
     }
@@ -274,7 +276,7 @@ public class BallisticFlightLogicOld implements IMissileFlightLogic //TODO remov
 
     protected boolean shouldSimulate(Entity entity)
     {
-        if (EntityMissile.hasPlayerRiding(entity))
+        if (wasSimulationBlocked || EntityMissile.hasPlayerRiding(entity))
         {
             return false;
         }
@@ -345,6 +347,7 @@ public class BallisticFlightLogicOld implements IMissileFlightLogic //TODO remov
         //Stuck in ground data
         .addRoot("flags")
         /* */.nodeBoolean("flight_started", (bl) -> bl.hasStartedFlight, (bl, data) -> bl.hasStartedFlight = data)
+        /* */.nodeBoolean("block_simulation", (bl) -> bl.wasSimulationBlocked, (bl, data) -> bl.wasSimulationBlocked = data)
         .base()
         .addRoot("inputs")
         /* */.nodeDouble("start_x", (bl) -> bl.startX, (bl, i) -> bl.startX = i)

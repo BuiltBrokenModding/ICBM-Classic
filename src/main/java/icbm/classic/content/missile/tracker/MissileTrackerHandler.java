@@ -1,10 +1,12 @@
 package icbm.classic.content.missile.tracker;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.events.MissileEvent;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -34,13 +36,23 @@ public class MissileTrackerHandler
      * Which will then tick down until the missile should be spawned again.
      *
      * @param missile - entity to simulate
+     * @return true if missile was added to simulate queue, false if blocked
      */
-    public static void simulateMissile(EntityExplosiveMissile missile)
+    public static boolean simulateMissile(EntityExplosiveMissile missile)
     {
+        //TODO add an event to capture missile and change how simulation works... specifically AR support
         // Can't save missiles that are dead, riding another entity, or have a player riding
         if(missile != null && !missile.isDead && !missile.isRiding() && noPlayer(missile)) {
+
+            // Fire event to allow canceling simulation
+            final MissileEvent.EnteringSimQueue event = new MissileEvent.EnteringSimQueue(missile.getMissileCapability(), missile);
+            if(MinecraftForge.EVENT_BUS.post(event)) {
+                return false;
+            }
+
             getOrCreateHandler(missile.world, true).simulateMissile(missile);
         }
+        return false;
     }
 
     private static boolean noPlayer(EntityMissile missile) {
