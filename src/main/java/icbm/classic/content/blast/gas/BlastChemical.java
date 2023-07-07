@@ -34,7 +34,7 @@ public class BlastChemical extends BlastGasBase
     @Override
     protected void applyEffect(final EntityLivingBase entity, final int hitCount)
     {
-        ICBMClassic.poisonous_potion.poisonEntity(location.toPos(), entity);
+        ICBMClassic.chemicalPotion.poisonEntity(location.toPos(), entity);
         if (hitCount > 20)
         {
             entity.attackEntityFrom(CHEMICAL_DAMAGE, (hitCount - 10f) / 10);

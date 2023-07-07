@@ -63,8 +63,8 @@ public abstract class Poison
      * Called to poison this specific entity with this specific type of poison.
      *
      * @param entity
-     * @amiplifier - The amplification value.
-     * @armorRequired - The amount of pieces of armor required to be protected.
+     * @param amplifier
+     * @param emitPosition
      */
     public void poisonEntity(Pos emitPosition, EntityLivingBase entity, int amplifier)
     {
