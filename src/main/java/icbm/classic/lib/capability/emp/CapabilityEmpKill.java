@@ -25,7 +25,7 @@ public class CapabilityEmpKill<E extends Entity> implements IEMPReceiver
     {
         if (doAction)
         {
-            setDeadEmp(emp_blast, power);
+            setDeadEmp(emp_blast, power); //TODO drop item?
         }
         return power;
     }

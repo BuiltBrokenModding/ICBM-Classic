@@ -61,6 +61,11 @@ public class ArcFlightLogic implements IMissileFlightLogic
             this.endY = targetData.getY();
             this.endZ = targetData.getZ();
         }
+
+        // TODO check if entire path is chunk loaded, if a reasonable chunk count isn't then we should notify the user in the launcher UI and change to a up/down flight path
+        //      This likely will require a static function to run the calculation and show in the GUI. However, should be referenced based on the missile type
+        //      As future version might include different guidance systems based on the item's stored data. Meaning a single function wouldn't work but could
+        //      be referenced in a prediction callback. Something like IMissile#getGuidance().doPrediction()
     }
 
     //TODO wire IMissile to connect to ILauncher so we can get launcher source and let the launcher know when we are clear

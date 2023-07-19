@@ -11,7 +11,7 @@ import net.minecraft.util.SoundCategory;
 
 public class BlastBreach extends BlastTNT
 {
-    private int depth;
+    private final int depth;
 
     public BlastBreach(int depth)
     {
@@ -117,7 +117,7 @@ public class BlastBreach extends BlastTNT
                             }
                         }
                         energy *= 0.65; // reduce the blast power by a percentage for every block it travelled
-                        energy--;
+                        energy--; //TODO only remove energy if block resistance was near zero
 
                         if (energy <= 0)
                         {

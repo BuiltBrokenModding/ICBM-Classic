@@ -68,9 +68,9 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
 
                         if (r == 0)
                         {
-                            Collections.sort(results, new PosDistanceSorter(location, true, PosDistanceSorter.Sort.MANHATTEN));
+                            results.sort(new PosDistanceSorter(location, true, PosDistanceSorter.Sort.MANHATTEN));
                         }
-                        int blocksToTake = 20;
+                        int blocksToTake = 20; //TODO config
 
                         for (BlockPos targetPosition : results)
                         {
@@ -82,7 +82,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                 float hardness = blockState.getBlockHardness(world, targetPosition);
                                 if (hardness >= 0 && hardness < 1000)
                                 {
-                                    if (world().rand.nextInt(3) > 0)
+                                    if (world().rand.nextInt(3) > 0) //TODO config
                                     {
                                         //Remove block
                                         world.setBlockToAir(targetPosition);

@@ -141,7 +141,7 @@ public class BlastExothermic extends BlastBeam
         //Change time of day
         if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))
         {
-            this.world().setWorldTime(18000);
+            this.world().setWorldTime(18_000);
         }
     }
 }
