@@ -19,7 +19,7 @@ public class BlastFire extends Blast
         {
             int radius = (int) this.getBlastRadius();
 
-            for (int x = 0; x < radius; ++x)
+            for (int x = 0; x < radius; ++x) //TODO replace with edge-raytracer
             {
                 for (int y = 0; y < radius; ++y)
                 {
@@ -31,27 +31,29 @@ public class BlastFire extends Blast
                             double yStep = y / (radius - 1.0F) * 2.0F - 1.0F;
                             double zStep = z / (radius - 1.0F) * 2.0F - 1.0F;
                             double diagonalDistance = Math.sqrt(xStep * xStep + yStep * yStep + zStep * zStep);
+
                             xStep /= diagonalDistance;
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
-                            float var14 = radius * (0.7F + world().rand.nextFloat() * 0.6F);
-                            double var15 = location.x();
-                            double var17 = location.y();
-                            double var19 = location.z();
 
-                            for (float var21 = 0.3F; var14 > 0.0F; var14 -= var21 * 0.75F)
+                            float energy = radius * (0.7F + world().rand.nextFloat() * 0.6F);
+                            double posX = location.x();
+                            double posY = location.y();
+                            double posZ = location.z();
+
+                            for (float stepAmount = 0.3F; energy > 0.0F; energy -= stepAmount * 0.75F)
                             {
-                                BlockPos targetPosition = new BlockPos(var15, var17, var19);
+                                BlockPos targetPosition = new BlockPos(posX, posY, posZ);
                                 double distanceFromCenter = location.distance(targetPosition);
                                 IBlockState blockState = world().getBlockState(targetPosition);
                                 Block block = blockState.getBlock();
 
                                 if (!block.isAir(blockState, world, targetPosition))
                                 {
-                                    var14 -= (block.getExplosionResistance(world(), targetPosition, this.exploder, this) + 0.3F) * var21;
+                                    energy -= (block.getExplosionResistance(world(), targetPosition, this.exploder, this) + 0.3F) * stepAmount;
                                 }
 
-                                if (var14 > 0.0F)
+                                if (energy > 0.0F)
                                 {
                                     // Set fire by chance and distance
                                     double chance = radius - (Math.random() * distanceFromCenter);
@@ -71,9 +73,9 @@ public class BlastFire extends Blast
                                     }
                                 }
 
-                                var15 += xStep * var21;
-                                var17 += yStep * var21;
-                                var19 += zStep * var21;
+                                posX += xStep * stepAmount;
+                                posY += yStep * stepAmount;
+                                posZ += zStep * stepAmount;
                             }
                         }
                     }

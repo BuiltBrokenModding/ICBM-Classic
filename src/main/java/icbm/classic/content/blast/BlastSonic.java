@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -38,43 +39,10 @@ public class BlastSonic extends Blast implements IBlastTickable
 
     public void firstTick()
     {
-        /* TODO re-add?
-            if (this.hasShockWave)
-            {
-                for (int x = (int) (-this.getRadius() * 2); x < this.getRadius() * 2; ++x)
-                {
-                    for (int y = (int) (-this.getRadius() * 2); y < this.getRadius() * 2; ++y)
-                    {
-                        for (int z = (int) (-this.getRadius() * 2); z < this.getRadius() * 2; ++z)
-                        {
-                            Location targetPosition = position.add(new Pos(x, y, z));
-                            Block blockID = world().getBlock(targetPosition.xi(), targetPosition.yi(), targetPosition.zi());
-
-                            if (blockID != Blocks.air)
-                            {
-                                Material material = blockID.getMaterial();
-
-                                if (blockID != Blocks.bedrock && !(material.isLiquid()) && (blockID.getExplosionResistance(this.exploder, world(), targetPosition.xi(), targetPosition.yi(), targetPosition.zi(), position.xi(), position.yi(), position.zi()) > this.power || material == Material.glass))
-                                {
-                                    targetPosition.setBlock(world(), Blocks.air);
-                                }
-                            }
-                        }
-                    }
-                }
-            } */
-
         //TODO remove thread
         createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), getBlastRadius() * 2, this.exploder));
 
-        if (this.hasShockWave)
-        {
-            ICBMSounds.HYPERSONIC.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
-        }
-        else
-        {
-            ICBMSounds.SONICWAVE.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
-        }
+        ICBMSounds.SONICWAVE.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     @Override
@@ -101,7 +69,7 @@ public class BlastSonic extends Blast implements IBlastTickable
                         final double distance = location.distance(targetPosition);
 
                         //Only act on blocks inside the current radius TODO scale radius separate from ticks so we can control block creation
-                        if (distance <= radius)
+                        if (distance <= radius) //TODO consider making less round?
                         {
                             //Remove
                             it.remove();
@@ -114,19 +82,22 @@ public class BlastSonic extends Blast implements IBlastTickable
                             if (!block.isAir(blockState, world, targetPosition) && blockState.getBlockHardness(world, targetPosition) >= 0)
                             {
                                 //Trigger explosions
-                                if (block == BlockReg.blockExplosive)
+                                if (block == BlockReg.blockExplosive)  //TODO add handle to trigger more blocks
                                 {
-                                    ((TileEntityExplosive) this.world().getTileEntity(targetPosition)).trigger(false);
+                                    final TileEntity tile = this.world().getTileEntity(targetPosition);
+                                    if(tile instanceof TileEntityExplosive) {
+                                        ((TileEntityExplosive)tile).trigger(false);
+                                    }
                                 }
 
                                 //Destroy block
                                 this.world().setBlockToAir(targetPosition);
 
                                 //Create floating block
-                                if (!(block instanceof BlockFluidBase || block instanceof IFluidBlock)
-                                        && this.world().rand.nextFloat() < 0.1)
+                                if (!(block instanceof IFluidBlock) //TODO add ban list covered by a utility, but also try fixing fluids by causing a rain/slash effect
+                                        && this.world().rand.nextFloat() < 0.1) //TODO add config for chance, increase chance if we fail to spawn a block
                                 {
-                                    this.world().spawnEntity(new EntityFlyingBlock(this.world(), targetPosition, blockState));
+                                    this.world().spawnEntity(new EntityFlyingBlock(this.world(), targetPosition, blockState)); //TODO move to helper wrapped with validation
                                 }
                             }
                         }

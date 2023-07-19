@@ -123,8 +123,8 @@ public class ICBMClassic
     //Mod support
     public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
 
-    public static final ContagiousPoison poisonous_potion = new ContagiousPoison("Chemical", 0, false);
-    public static final ContagiousPoison contagios_potion = new ContagiousPoison("Contagious", 1, true);
+    public static final ContagiousPoison chemicalPotion = new ContagiousPoison("Chemical", 0, false);
+    public static final ContagiousPoison contagiousPotion = new ContagiousPoison("Contagious", 1, true);
 
     public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(ICBMConstants.DOMAIN);
 

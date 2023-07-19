@@ -28,7 +28,7 @@ public class BlastConfusion extends BlastGasBase
     @Override
     protected void applyEffect(final EntityLivingBase entity, final int hitCount)
     {
-        entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0)); //TODO scale
+        entity.addPotionEffect(new CustomPotionEffect(MobEffects.POISON, 18 * 20, 0)); //TODO scale and make configurable
         entity.addPotionEffect(new CustomPotionEffect(MobEffects.MINING_FATIGUE, 20 * 60, 0));
         entity.addPotionEffect(new CustomPotionEffect(MobEffects.SLOWNESS, 20 * 60, 2));
     }
