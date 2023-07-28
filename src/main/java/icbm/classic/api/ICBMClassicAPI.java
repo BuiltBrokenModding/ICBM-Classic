@@ -13,6 +13,7 @@ import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.reg.IExplosiveCustomization;
@@ -59,6 +60,8 @@ public final class ICBMClassicAPI
     public static IBuilderRegistry<IActionStatus> ACTION_STATUS_REGISTRY;
     /** Registry for explosive customizations */
     public static IBuilderRegistry<IExplosiveCustomization> EXPLOSIVE_CUSTOMIZATION_REGISTRY;
+    /** Registry for projectile information */
+    public static IProjectileDataRegistry PROJECTILE_DATA_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
 

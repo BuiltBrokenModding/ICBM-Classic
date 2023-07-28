@@ -7,6 +7,7 @@ import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
+import icbm.classic.content.parachute.EntityParachute;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -51,6 +52,7 @@ public final class EntityReg
         event.getRegistry().register(buildEntityEntry(EntitySmoke.class, ICBMEntities.SMOKE, 100, 15));
         event.getRegistry().register(buildEntityEntry(EntitySurfaceToAirMissile.class, ICBMEntities.MISSILE_SAM, 500, 1));
         event.getRegistry().register(buildEntityEntry(EntityBombDroplet.class, ICBMEntities.BOMB_DROPLET, 500, 1));
+        event.getRegistry().register(buildEntityEntry(EntityParachute.class, ICBMEntities.PARACHUTE, 500, 1));
 
         /*
         //Green team TODO move to addon

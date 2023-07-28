@@ -1,13 +1,14 @@
-package icbm.classic.lib.capability.missile;
+package icbm.classic.lib.projectile;
 
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
+import icbm.classic.lib.projectile.vanilla.ArrowProjectileData;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 
@@ -16,24 +17,18 @@ import javax.annotation.Nullable;
 /**
  * Applied to {@link ItemStack} that are projectiles
  */
-public class CapabilityProjectileStack implements IProjectileStack
+public class CapabilityProjectileStack implements IProjectileStack<Entity>
 {
-    private final ItemStack stack; //TODO decouple from stack and directly save init data
+    private final ResourceLocation projectileDataKey;
 
-    public CapabilityProjectileStack(ItemStack stack) {
-        this.stack = stack;
+    public CapabilityProjectileStack(ResourceLocation projectileDataKey) {
+        this.projectileDataKey = projectileDataKey;
     }
 
     @Override
-    public ResourceLocation getName() {
-        return stack.getItem().getRegistryName();
+    public IProjectileData<Entity> getProjectileData() {
+        return ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.build(projectileDataKey);
     }
-
-    @Override
-    public Entity newEntity(World world) {
-        return new EntityCreeper(world);
-    }
-
 
     public static void register()
     {
@@ -50,6 +45,6 @@ public class CapabilityProjectileStack implements IProjectileStack
 
                 }
             },
-            () -> new CapabilityProjectileStack(ItemStack.EMPTY));
+            () -> new CapabilityProjectileStack(ArrowProjectileData.NAME));
     }
 }

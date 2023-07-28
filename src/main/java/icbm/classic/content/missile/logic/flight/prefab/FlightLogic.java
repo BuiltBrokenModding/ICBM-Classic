@@ -83,6 +83,6 @@ public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFligh
 
     private static final NbtSaveHandler<FlightLogic> SAVE_LOGIC = new NbtSaveHandler<FlightLogic>()
         .mainRoot()
-        /* */.nodeBuildableObject("next", ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY, FlightLogic::getNextStep, FlightLogic::setNextStep)
+        /* */.nodeBuildableObject("next", () -> ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY, FlightLogic::getNextStep, FlightLogic::setNextStep)
         .base();
 }

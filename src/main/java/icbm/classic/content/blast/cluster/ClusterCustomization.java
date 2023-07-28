@@ -3,6 +3,7 @@ package icbm.classic.content.blast.cluster;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
@@ -35,7 +36,7 @@ public class ClusterCustomization implements IExplosiveCustomization {
     @Getter
     @Setter
     @Accessors(chain = true)
-    private ItemStack projectileStack;
+    private IProjectileData projectileData;
 
     /**
      * Number of droplets to spawn
@@ -66,16 +67,8 @@ public class ClusterCustomization implements IExplosiveCustomization {
     public void collectCustomizationInformation(Consumer<String> collector) {
         // TODO cache to improve performance
         String name = null;
-        if(projectileStack != null) {
-            if (projectileStack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-                final IProjectileStack iProjectileStack = projectileStack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
-                if (iProjectileStack != null && iProjectileStack.getName() != null) {
-                    name = LanguageUtility.buildToolTipString(new TextComponentTranslation(iProjectileStack.getName().toString()));
-                }
-            }
-            if (name == null) {
-                name = projectileStack.getDisplayName();
-            }
+        if(projectileData != null) {
+            name = LanguageUtility.buildToolTipString(new TextComponentTranslation(projectileData.getTranslationKey().toString()));
         }
         collector.accept(LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:cluster.projectile.name", Optional.ofNullable(name).orElse("???"))));
 
@@ -93,42 +86,9 @@ public class ClusterCustomization implements IExplosiveCustomization {
         if(blast instanceof BlastCluster) {
             ((BlastCluster) blast).setProjectilesToSpawn(projectilesToSpawn);
             ((BlastCluster) blast).setProjectilesPerLayer(projectilesPerLayer);
-            ((BlastCluster) blast).setProjectileBuilder(this::spawnProjectile);
+            ((BlastCluster) blast).setAllowPickupItem(allowPickupItems);
+            ((BlastCluster) blast).setProjectileBuilder((integer) -> projectileData);
         }
-    }
-
-    public Entity spawnProjectile(int index, World world) {
-        if(projectileStack == null || projectileStack.isEmpty()) {
-            return null;
-        }
-
-        // Vanilla handling TODO move to some type of 'Item -> spawning registry' or maybe recycle dispenser logic?
-        if(projectileStack.getItem() == Items.ARROW) {
-            EntityTippedArrow entitytippedarrow = new EntityTippedArrow(world);
-            entitytippedarrow.pickupStatus = allowPickupItems ? EntityArrow.PickupStatus.ALLOWED : EntityArrow.PickupStatus.DISALLOWED;
-            return entitytippedarrow;
-        }
-        else if(projectileStack.getItem() == Items.TIPPED_ARROW) {
-            EntityTippedArrow entitytippedarrow = new EntityTippedArrow(world);
-            entitytippedarrow.setPotionEffect(projectileStack);
-            entitytippedarrow.pickupStatus = allowPickupItems ? EntityArrow.PickupStatus.ALLOWED : EntityArrow.PickupStatus.DISALLOWED;
-            return entitytippedarrow;
-        }
-        else if(projectileStack.getItem() == Items.SPECTRAL_ARROW) {
-            EntityArrow entityarrow = new EntitySpectralArrow(world);
-            entityarrow.pickupStatus = allowPickupItems ? EntityArrow.PickupStatus.ALLOWED : EntityArrow.PickupStatus.DISALLOWED;
-            return entityarrow;
-        }
-        //TODO snowballs
-        //TODO tools as projectiles... because diggy diggy dwarf
-
-        if(projectileStack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-            final IProjectileStack iProjectileStack = projectileStack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
-            if(iProjectileStack != null) {
-                return iProjectileStack.newEntity(world);
-            }
-        }
-        return null;
     }
 
     @Override
@@ -143,7 +103,7 @@ public class ClusterCustomization implements IExplosiveCustomization {
 
     private static final NbtSaveHandler<ClusterCustomization> SAVE_LOGIC = new NbtSaveHandler<ClusterCustomization>()
         .mainRoot()
-        /* */.nodeItemStack("projectile_stack", ClusterCustomization::getProjectileStack, ClusterCustomization::setProjectileStack)
+        /* */.nodeBuildableObject("projectile_data", () -> ICBMClassicAPI.PROJECTILE_DATA_REGISTRY, ClusterCustomization::getProjectileData, ClusterCustomization::setProjectileData)
         /* */.nodeBoolean("projectile_allow_pickup", ClusterCustomization::isAllowPickupItems, ClusterCustomization::setAllowPickupItems)
         /* */.nodeInteger("projectile_count", ClusterCustomization::getProjectilesToSpawn, ClusterCustomization::setProjectilesToSpawn)
         /* */.nodeInteger("projectile_layer", ClusterCustomization::getProjectilesPerLayer, ClusterCustomization::setProjectilesPerLayer)

@@ -1,4 +1,4 @@
-package icbm.classic.prefab.entity;
+package icbm.classic.lib.projectile;
 
 import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.content.entity.EntityPlayerSeat;
@@ -6,6 +6,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
+import icbm.classic.prefab.entity.EntityICBM;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

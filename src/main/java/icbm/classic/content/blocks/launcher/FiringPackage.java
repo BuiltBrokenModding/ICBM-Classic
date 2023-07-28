@@ -70,8 +70,8 @@ public class FiringPackage implements INBTSerializable<NBTTagCompound>, ITick {
     private static final NbtSaveHandler<FiringPackage> SAVE_LOGIC = new NbtSaveHandler<FiringPackage>()
         .mainRoot()
         /* */.nodeInteger("countdown", FiringPackage::getCountDown, FiringPackage::setCountDown)
-        /* */.nodeBuildableObject("target", ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY, FiringPackage::getTargetData, FiringPackage::setTargetData)
-        /* */.nodeBuildableObject("cause", ICBMClassicAPI.MISSILE_CAUSE_REGISTRY, FiringPackage::getCause, FiringPackage::setCause)
+        /* */.nodeBuildableObject("target", () -> ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY, FiringPackage::getTargetData, FiringPackage::setTargetData)
+        /* */.nodeBuildableObject("cause", () -> ICBMClassicAPI.MISSILE_CAUSE_REGISTRY, FiringPackage::getCause, FiringPackage::setCause)
         .base();
 
     @Override

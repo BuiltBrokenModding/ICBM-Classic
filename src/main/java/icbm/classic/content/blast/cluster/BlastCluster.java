@@ -1,9 +1,11 @@
 package icbm.classic.content.blast.cluster;
 
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.responses.BlastForgeResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.content.blast.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.blast.imp.BlastBase;
 import icbm.classic.content.reg.ItemReg;
@@ -17,6 +19,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class BlastCluster extends BlastBase {
 
@@ -27,7 +30,11 @@ public class BlastCluster extends BlastBase {
 
     @Getter
     @Setter
-    private BiFunction<Integer, World, Entity> projectileBuilder;
+    private Function<Integer, IProjectileData> projectileBuilder;
+
+    @Getter
+    @Setter
+    private boolean allowPickupItem = true;
 
     @Getter
     @Setter
@@ -96,8 +103,11 @@ public class BlastCluster extends BlastBase {
     @Setter
     private float sourcePitch = 0;
 
+    private Entity source;
+
     @Override
     public IBlastInit setBlastSource(Entity entity) {
+        this.source = entity;
         this.sourceYaw = entity.rotationYaw;
         this.sourcePitch = entity.rotationPitch;
         return this;
@@ -137,7 +147,7 @@ public class BlastCluster extends BlastBase {
                     motionZ += (sourceVec.z + backVector.z) * motionScaleLayer * discIndex;
 
                     // Randomize motion to create a less perfect pattern
-                    if(motionRandomScale > 0) {
+                    if (motionRandomScale > 0) {
                         motionX += (world().rand.nextFloat() - world().rand.nextFloat()) * motionScaleLayer;
                         motionY += (world().rand.nextFloat() - world().rand.nextFloat()) * motionScaleLayer;
                         motionZ += (world().rand.nextFloat() - world().rand.nextFloat()) * motionScaleLayer;
@@ -164,21 +174,24 @@ public class BlastCluster extends BlastBase {
     }
 
     private boolean spawnProjectile(int index, double x, double y, double z, double mx, double my, double mz) {
-        final Entity entity = projectileBuilder != null ? projectileBuilder.apply(index, world()) : null;
-        if(entity != null) {
+        final IProjectileData data = projectileBuilder != null ? projectileBuilder.apply(index) : null;
+        if (data != null) {
 
-            entity.setPosition(x() + x, y() + y, z() + z);
+            final Entity entity = ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.spawnProjectile(data, world(), x() + x, y() + y, z() + z,
+                source, this.allowPickupItem,
+                (newEntity) -> {
+                    newEntity.setPosition(x() + x, y() + y, z() + z);
 
-            entity.motionX = mx;
-            entity.motionY = my;
-            entity.motionZ = mz;
+                    newEntity.motionX = mx;
+                    newEntity.motionY = my;
+                    newEntity.motionZ = mz;
 
-            // set rotation to match motion
-            final float f3 = MathHelper.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
-            entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180.0D / Math.PI);
-            entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(entity.motionY, f3) * 180.0D / Math.PI);
-
-            return world().spawnEntity(entity);
+                    // set rotation to match motion
+                    final float f3 = MathHelper.sqrt(newEntity.motionX * newEntity.motionX + newEntity.motionZ * newEntity.motionZ);
+                    newEntity.prevRotationYaw = newEntity.rotationYaw = (float) (Math.atan2(newEntity.motionX, newEntity.motionZ) * 180.0D / Math.PI);
+                    newEntity.prevRotationPitch = newEntity.rotationPitch = (float) (Math.atan2(newEntity.motionY, f3) * 180.0D / Math.PI);
+                });
+            return entity != null;
         }
         return false;
     }

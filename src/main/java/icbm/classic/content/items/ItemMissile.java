@@ -6,11 +6,14 @@ import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.cluster.ClusterCustomization;
+import icbm.classic.content.blast.cluster.bomblet.BombletProjectileData;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
+import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
+import icbm.classic.lib.projectile.vanilla.ArrowProjectileData;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
@@ -92,7 +95,7 @@ public class ItemMissile extends ItemBase
                 e.addCustomization(new ClusterCustomization()
                     .setProjectilesToSpawn(200)
                     .setProjectilesPerLayer(20)
-                    .setProjectileStack(new ItemStack(Items.ARROW))
+                    .setProjectileData(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.build(ArrowProjectileData.NAME))
                     .setAllowPickupItems(false)
                 );
             });
@@ -103,7 +106,7 @@ public class ItemMissile extends ItemBase
                 e.addCustomization(new ClusterCustomization()
                     .setProjectilesToSpawn(100)
                     .setProjectilesPerLayer(10)
-                    .setProjectileStack(new ItemStack(ItemReg.itemBomblet))
+                    .setProjectileData(new BombletProjectileData().setExplosiveStack(new ItemStack(ItemReg.itemBomblet)))
                     .setAllowPickupItems(false)
                 );
             });

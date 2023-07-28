@@ -205,7 +205,7 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         return node(new SaveNodeUUID<E>(name, save, load));
     }
 
-    public <C extends IBuildableObject> NbtSaveRoot<E> nodeBuildableObject(final String name, final IBuilderRegistry<C> reg, Function<E, C> getter, BiConsumer<E, C> setter)
+    public <C extends IBuildableObject> NbtSaveRoot<E> nodeBuildableObject(final String name, final Supplier<IBuilderRegistry<C>> reg, Function<E, C> getter, BiConsumer<E, C> setter)
     {
         return node(new SaveBuildableObject<E, C>(name, reg, getter, setter));
     }

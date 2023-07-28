@@ -30,11 +30,12 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     /** Explosive capability */
     public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
 
+    private ItemStack clientRenderStack;
+
     public EntityGrenade(World par1World)
     {
         super(par1World);
         this.setSize(0.25F, 0.25F);
-        //this.renderDistanceWeight = 8;
     }
 
     /**
@@ -47,6 +48,18 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
     {
         explosive.setStack(stack);
         return this;
+    }
+    /**
+     * Gets the itemStack meant to represent the render
+     *
+     * @return stack to render
+     */
+    public ItemStack renderItemStack() {
+        // Cache to prevent #toStack from bleeding memory creating new instances
+        if(clientRenderStack == null) {
+            clientRenderStack = explosive.toStack();
+        }
+        return clientRenderStack;
     }
 
     /**

@@ -15,6 +15,7 @@ import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
 import icbm.classic.content.blast.cluster.ClusterCustomization;
+import icbm.classic.content.blast.cluster.bomblet.BombletProjectileData;
 import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
@@ -30,6 +31,7 @@ import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
+import icbm.classic.content.parachute.ParachuteProjectileData;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -45,11 +47,12 @@ import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.capability.launcher.CapabilityMissileLauncher;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
-import icbm.classic.lib.capability.missile.CapabilityProjectileStack;
+import icbm.classic.lib.projectile.CapabilityProjectileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.explosive.reg.*;
 import icbm.classic.lib.network.netty.PacketManager;
+import icbm.classic.lib.projectile.ProjectileDataRegistry;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.CapabilityRadio;
 import icbm.classic.lib.radio.RadioRegistry;
@@ -230,6 +233,7 @@ public class ICBMClassic
         handleStatusRegistry();
         handleExplosiveCustomizationRegistry();
         handleExRegistry(event.getModConfigurationDirectory());
+        handleProjectileDataRegistry();
     }
 
     void registerCapabilities() {
@@ -329,6 +333,22 @@ public class ICBMClassic
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry) ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY).lock();
+    }
+
+    void handleProjectileDataRegistry()
+    {
+        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY =  new ProjectileDataRegistry();
+
+        // Register defaults
+        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BombletProjectileData.NAME, BombletProjectileData::new);
+        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, ParachuteProjectileData::new);
+        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
+
+        //Fire registry event
+        MinecraftForge.EVENT_BUS.post(new ProjectileDataRegistryEvent(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY));
+
+        //Lock to prevent late registry
+        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).lock();
     }
 
     void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls

@@ -5,7 +5,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
-import icbm.classic.prefab.entity.EntityProjectile;
+import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;

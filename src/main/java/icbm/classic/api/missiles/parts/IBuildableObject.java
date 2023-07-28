@@ -15,4 +15,14 @@ public interface IBuildableObject extends INBTSerializable<NBTTagCompound> {
      * @return registry name
      */
     ResourceLocation getRegistryName();
+
+    /**
+     * Gets the translation key for display in tooltips and
+     * other user feedback locations
+     *
+     * @return key to use
+     */
+    default ResourceLocation getTranslationKey() {
+        return getRegistryName();
+    }
 }
