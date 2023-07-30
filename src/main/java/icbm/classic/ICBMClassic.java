@@ -342,13 +342,6 @@ public class ICBMClassic
         // Register defaults
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BombletProjectileData.NAME, BombletProjectileData::new);
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, ParachuteProjectileData::new);
-        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
-
-        //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ProjectileDataRegistryEvent(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY));
-
-        //Lock to prevent late registry
-        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).lock();
     }
 
     void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls
@@ -402,6 +395,12 @@ public class ICBMClassic
         packetHandler.init();
         CREATIVE_TAB.init();
         ProjectileBlockInteraction.register();
+
+
+        // Needs to lock late as we need content to register some types
+        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
+        MinecraftForge.EVENT_BUS.post(new ProjectileDataRegistryEvent(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY));
+        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).lock();
 
         /** Potion Effects */ //TODO move to effect system
         PoisonToxin.INSTANCE = MobEffects.POISON;//new PoisonToxin(true, 5149489, "toxin");

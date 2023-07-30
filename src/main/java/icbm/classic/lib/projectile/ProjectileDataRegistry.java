@@ -3,17 +3,18 @@ package icbm.classic.lib.projectile;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.content.missile.BuildableObjectRegistry;
-import icbm.classic.lib.projectile.vanilla.ArrowProjectileData;
-import icbm.classic.lib.projectile.vanilla.ItemProjectileData;
-import icbm.classic.lib.projectile.vanilla.SpectralArrowProjectileData;
-import icbm.classic.lib.projectile.vanilla.TippedArrowProjectileData;
+import icbm.classic.lib.projectile.vanilla.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -40,6 +41,10 @@ public class ProjectileDataRegistry extends BuildableObjectRegistry<IProjectileD
     public void registerVanillaDefaults() {
         if(!this.isLocked()) {
 
+            //General Purpose
+            this.register(ItemProjectileData.NAME, ItemProjectileData::new);
+            this.register(EntitySpawnProjectileData.NAME, EntitySpawnProjectileData::new);
+
             // Basic arrow
             final IProjectileData<EntityArrow> arrowData = new ArrowProjectileData();
             this.register(ArrowProjectileData.NAME, () -> arrowData);
@@ -54,10 +59,24 @@ public class ProjectileDataRegistry extends BuildableObjectRegistry<IProjectileD
             this.register(TippedArrowProjectileData.NAME, TippedArrowProjectileData::new);
             registerItemStackConversation(new ItemStack(Items.TIPPED_ARROW), (itemStack) -> new TippedArrowProjectileData().setArrowItem(itemStack)); //TODO cache ?
 
-            this.register(ItemProjectileData.NAME, ItemProjectileData::new);
-            //TODO snowballs
-            //TODO spawn eggs
+            //Items
+            registerItemStackConversation(new ItemStack(Items.SNOWBALL), new CachedProjectileData(() -> new EntitySpawnProjectileData("minecraft:snowball")));
+            registerItemStackConversation(new ItemStack(Items.EGG), new CachedProjectileData(() -> new EntitySpawnProjectileData("minecraft:egg")));
+
+            // Spawn eggs
+            registerItemStackConversation(new ItemStack(Items.SPAWN_EGG), (itemStack) -> {
+                final EntitySpawnProjectileData projectileData = new EntitySpawnProjectileData(ItemMonsterPlacer.getNamedIdFrom(itemStack));
+                if(itemStack.hasDisplayName()) {
+                    projectileData.setDisplayName(itemStack.getDisplayName());
+                }
+                if(itemStack.getTagCompound() != null && itemStack.getTagCompound().hasKey("EntityTag", 10)) {
+                    projectileData.setEntityData(itemStack.getTagCompound().getCompoundTag("EntityTag"));
+                }
+                return projectileData;
+            });
             //TODO tools as projectiles... because diggy diggy dwarf
+
+            // TODO implement simple block renders as EntityFallingBlock
         }
     }
 

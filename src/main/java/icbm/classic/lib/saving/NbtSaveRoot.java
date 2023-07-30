@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -114,7 +115,17 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
 
     public NbtSaveRoot<E> nodeString(final String name, Function<E, String> save, BiConsumer<E, String> load)
     {
-        return node(new SaveNodeString(name, save, load));
+        return node(new SaveNodeString<E>(name, save, load));
+    }
+
+    public NbtSaveRoot<E> nodeResourceLocation(final String name, Function<E, ResourceLocation> save, BiConsumer<E, ResourceLocation> load)
+    {
+        return node(new SaveNodeResourceLocation<E>(name, save, load));
+    }
+
+    public NbtSaveRoot<E> nodeCompoundTag(final String name, Function<E, NBTTagCompound> save, BiConsumer<E, NBTTagCompound> load)
+    {
+        return node(new SaveNodeCompoundTag<E>(name, save, load));
     }
 
     public NbtSaveRoot<E> nodeInteger(final String name, Function<E, Integer> save, BiConsumer<E, Integer> load)
