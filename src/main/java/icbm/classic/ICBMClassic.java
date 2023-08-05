@@ -14,6 +14,7 @@ import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
+import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
 import icbm.classic.content.missile.MissilePartRegistry;
@@ -377,6 +378,9 @@ public class ICBMClassic
         {
             BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ItemReg.itemBombCart, new BombCartDispenseBehavior());
         }
+
+        // Generate defaults
+        FlyingBlock.loadFromConfig();
     }
 
     @Mod.EventHandler

@@ -1,6 +1,8 @@
 package icbm.classic.config;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -32,6 +34,9 @@ public class ConfigMain
         if (event.getModID().equals(ICBMConstants.DOMAIN))
         {
             ConfigManager.sync(ICBMConstants.DOMAIN, Config.Type.INSTANCE);
+
+            // Reload config so we can convert to easier to hash lists
+            FlyingBlock.loadFromConfig();
         }
     }
 }
