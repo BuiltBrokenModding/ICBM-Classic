@@ -1,7 +1,8 @@
-package icbm.classic.client.render.entity;
+package icbm.classic.content.entity.flyingblock;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -32,12 +33,21 @@ public class RenderEntityBlock extends Render<EntityFlyingBlock>
     {
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
-        final IBlockState blockState = entity.getBlockState();
+        IBlockState blockState = entity.getBlockState();
         final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) x, (float) y + 0.5F, (float) z);
 
+        // If we previously failed try to use another state
+        if(failedBlocks.contains(blockState)) {
+            if(blockState.getMaterial() == Material.LEAVES) {
+                blockState = Blocks.LEAVES.getDefaultState();
+            }
+            else {
+                blockState = Blocks.STONE.getDefaultState();
+            }
+        }
 
         try {
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -48,14 +58,14 @@ public class RenderEntityBlock extends Render<EntityFlyingBlock>
             GlStateManager.translate(0.0F, 0.0F, 1.0F);
         }
         catch (Exception e) {
-            if(!failedBlocks.contains(entity.getBlockState())) {
-                failedBlocks.add(entity.getBlockState());
-
-                // Locally change so user can still see the block
-                entity.setBlockState(Blocks.STONE.getDefaultState());
+            if(!failedBlocks.contains(blockState)) {
+                failedBlocks.add(blockState);
 
                 // Log issue, user will likely never notice but still worth logging
-                ICBMClassic.logger().error("Unexpected error render flying block. This is likely an issue with another mod not ICBM!" + entity, e);
+                ICBMClassic.logger().error("Failed to render FlyingBlocks. This is likely an issue with the block being rendered. Please report the problem to the block's author."
+                    + "\n Entity: " + entity
+                    + "\n Block: " + entity.getBlockState()
+                    , e);
             }
         }
 

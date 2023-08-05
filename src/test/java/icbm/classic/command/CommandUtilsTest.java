@@ -6,7 +6,7 @@ import com.builtbroken.mc.testing.junit.world.FakeWorld;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;

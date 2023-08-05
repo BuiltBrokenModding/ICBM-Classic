@@ -1,7 +1,8 @@
-package icbm.classic.content.entity;
+package icbm.classic.content.entity.flyingblock;
 
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
 import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -24,7 +25,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 {
     public static final float GRAVITY_DEFAULT = 0.045f;
 
-    @Setter
+    @Setter(value = AccessLevel.PACKAGE)
     private IBlockState blockState;
 
     public float yawChange = 0;
@@ -40,22 +41,6 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         this.isImmuneToFire = true;
         //this.yOffset = height / 2.0F;
         this.setSize(0.98F, 0.98F);
-    }
-
-    public EntityFlyingBlock(World world, BlockPos position, IBlockState state)
-    {
-        this(world);
-        this.setPosition(position.getX() + 0.5, position.getY(), position.getZ() + 0.5);
-        this.motionX = 0D;
-        this.motionY = 0D;
-        this.motionZ = 0D;
-        this.blockState = state;
-    }
-
-    public EntityFlyingBlock(World world, BlockPos position, IBlockState state, float gravity)
-    {
-        this(world, position, state);
-        this.gravity = gravity;
     }
 
     public void restoreGravity()

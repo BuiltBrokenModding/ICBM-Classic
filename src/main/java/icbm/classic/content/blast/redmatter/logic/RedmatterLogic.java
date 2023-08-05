@@ -12,7 +12,8 @@ import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 import icbm.classic.content.blast.redmatter.DamageSourceRedmatter;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.block.Block;
@@ -334,15 +335,12 @@ public class RedmatterLogic
         return ConfigBlast.redmatter.SPAWN_FLYING_BLOCKS && !BlastBlockHelpers.isFluid(blockState);
     }
 
-    protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
-    {
-        final EntityFlyingBlock entity = new EntityFlyingBlock(host.world, blockPos, blockState);
-        entity.yawChange = 50 * host.world.rand.nextFloat();
-        entity.pitchChange = 50 * host.world.rand.nextFloat();
-        entity.noClip = true;
-        host.world.spawnEntity(entity);
-
-        this.handleEntities(entity); //TODO why? this should just be an apply velocity call
+    protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState) {
+        FlyingBlock.spawnFlyingBlock(host.world, blockPos, blockState, (entity) -> {
+            entity.yawChange = 50 * host.world.rand.nextFloat(); //TODO why 50?
+            entity.pitchChange = 50 * host.world.rand.nextFloat();
+            entity.noClip = true;
+        }, this::handleEntities);
     }
 
     private float getEntityImpactRange()
