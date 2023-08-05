@@ -5,17 +5,13 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigFlyingBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.state.pattern.BlockStateMatcher;
-import net.minecraft.command.server.CommandSetBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.BlockStateLoader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class FlyingBlock {
 
@@ -97,7 +93,8 @@ public class FlyingBlock {
 
     public static void loadFromConfig() {
 
-        final List<String> blocks = new ArrayList();
+        //TODO consider storing logic in a class for reuse between several configs. As this really is just a generic block lookup system.
+
         final List<String> mods =  new ArrayList();
 
         for(String str : ConfigFlyingBlocks.BAN_ALLOW.BLOCK_STATES) {
@@ -130,6 +127,8 @@ public class FlyingBlock {
                 buggedBlockList.add(block);
             }
         });
+
+        //TODO load replacements, ensure we store as block -> handler
     }
 
     private static void handleBlock(String entry) {

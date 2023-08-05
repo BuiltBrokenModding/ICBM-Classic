@@ -12,26 +12,11 @@ public class ConfigFlyingBlocks
     public static boolean ENABLED = true;
 
     @Config.Name("block_replacements")
-    public static BlockReplacements REPLACE = new BlockReplacements();
+    @Config.Comment("Replacements to use, Format: 'blockStateA | blockStateB' Docs: https://github.com/BuiltBrokenModding/ICBM-Classic/wiki/config-block-states")
+    public String[] REPLACEMENTS = new String[]{"minecraft:water | minecraft:ice"};
 
     @Config.Name("block_ban_allow")
     public static BanList BAN_ALLOW = new BanList();
-
-    public static class FlyingBlockReplacement {
-
-        @Config.Name("input")
-        public static String input;
-
-        @Config.Name("output")
-        public static String output;
-    }
-
-    public static class BlockReplacements {
-
-        @Config.Name("list")
-        @Config.Comment("Replacements to use, Format: blockStateA | blockStateB")
-        public String[] BLOCK_STATES = new String[]{"minecraft:water | minecraft:ice"};
-    }
 
     public static class BanList {
 
@@ -40,7 +25,7 @@ public class ConfigFlyingBlocks
         public boolean BAN = true;
 
         @Config.Name("list")
-        @Config.Comment("Block/BlastState names. Ex: 'minecraft:stone or minecraft:stone@2' supports black listing mods via 'mod_id:~'")
+        @Config.Comment("Block/BlastState names. Docs: https://github.com/BuiltBrokenModding/ICBM-Classic/wiki/config-block-states")
         public String[] BLOCK_STATES = new String[]{"minecraft:fire"};
     }
 }
