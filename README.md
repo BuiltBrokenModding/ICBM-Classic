@@ -1,4 +1,4 @@
-![Java CI](https://github.com/BuiltBrokenModding/ICBM-Classic/workflows/Java%20CI/badge.svg) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=BuiltBrokenModding_ICBM-Classic&metric=alert_status)](https://sonarcloud.io/dashboard?id=BuiltBrokenModding_ICBM-Classic) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=BuiltBrokenModding_ICBM-Classic&metric=ncloc)](https://sonarcloud.io/dashboard?id=BuiltBrokenModding_ICBM-Classic) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=BuiltBrokenModding_ICBM-Classic&metric=coverage)](https://sonarcloud.io/dashboard?id=BuiltBrokenModding_ICBM-Classic) 
+
 
 # Info
 ICBM-Classic is an addon for the game Minecraft via MinecraftForge. It provides a series of small explosive missiles and launchers.
