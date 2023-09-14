@@ -133,7 +133,7 @@ public class BlockStateConfigList {
      * @param entries to process
      */
     public void loadBlockStates(String... entries) {
-        if (checkLock("blocks", () -> String.join(", ", entries))) {
+        if (checkLock("blocks", () -> String.join(", ", entries))) { //TODO trim string to not dump 1000s of lines into logs
             return;
         }
 

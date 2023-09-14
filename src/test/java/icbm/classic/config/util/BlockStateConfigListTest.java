@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.HashSet;
+import java.util.List;
 
 class BlockStateConfigListTest {
 
@@ -365,5 +366,40 @@ class BlockStateConfigListTest {
             final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
             Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
         }
+    }
+
+    @Test
+    void fullTest_arrayOfStates() {
+        final BlockStateConfigList configList = new BlockStateConfigList("test", (config) -> {
+            final String[] entries = new String[]{
+                "minecraft:stone",
+                "minecraft:~ore",
+                "minecraft:iron~",
+                "minecraft:concrete_powder[color:lime]",
+                "minecraft:concrete_powder[color:~blue]"
+            };
+
+            config.loadBlockStates(entries);
+        });
+        configList.reload();
+
+        // Expect temp to clear and to be locked
+        Assertions.assertEquals(0, configList.fuzzyBlockChecks.size());
+        Assertions.assertTrue(configList.isLocked());
+
+        // Expect states to be loaded
+        Assertions.assertEquals(0, configList.blockStates.size());
+
+        Assertions.assertEquals(14, configList.blocks.size());
+        List<Block> blockList = Lists.newArrayList(
+            Blocks.IRON_BLOCK, Blocks.LIT_REDSTONE_ORE, Blocks.IRON_TRAPDOOR, Blocks.REDSTONE_ORE,
+            Blocks.COAL_ORE, Blocks.IRON_BARS, Blocks.IRON_ORE, Blocks.EMERALD_ORE, Blocks.QUARTZ_ORE,
+            Blocks.GOLD_ORE, Blocks.LAPIS_ORE, Blocks.STONE, Blocks.IRON_DOOR, Blocks.DIAMOND_ORE);
+        blockList.forEach((block) -> {
+            Assertions.assertTrue(configList.blocks.contains(block));
+        });
+
+        Assertions.assertEquals(1, configList.blockStateMatchers.size());
+        //TODO validate we added two fuzzy matchers and they work as expected
     }
 }
