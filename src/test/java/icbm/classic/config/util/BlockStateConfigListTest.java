@@ -1,6 +1,7 @@
 package icbm.classic.config.util;
 
 import com.google.common.collect.Lists;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -19,6 +20,72 @@ class BlockStateConfigListTest {
     @BeforeAll
     static void beforeAll() {
         Bootstrap.register();
+    }
+
+    @Nested
+    class HandleSimpleBlockTests {
+        @Test
+        void matchingBlock_noMetaData() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertTrue(configList.handleSimpleBlock("minecraft:dirt"));
+
+            final HashSet<Block> expected = new HashSet<Block>();
+            expected.add(Blocks.DIRT);
+            Assertions.assertEquals(expected, configList.blocks);
+        }
+
+        @Test
+        void matchingBlock_withMetaData() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertTrue(configList.handleSimpleBlock("minecraft:stone"));
+
+            final HashSet<Block> expected = new HashSet<Block>();
+            expected.add(Blocks.STONE);
+            Assertions.assertEquals(expected, configList.blocks);
+        }
+
+        @Test
+        void noMatchFound() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertFalse(configList.handleSimpleBlock("minecraft:tower"));
+            Assertions.assertEquals(new HashSet<Block>(), configList.blocks);
+        }
+
+        @Test
+        void badFormat_missingResource() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertFalse(configList.handleSimpleBlock("minecraft:"));
+            Assertions.assertEquals(new HashSet<Block>(), configList.blocks);
+        }
+
+        @Test
+        void badFormat_missingDomain() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertFalse(configList.handleSimpleBlock("minecraft:"));
+            Assertions.assertEquals(new HashSet<Block>(), configList.blocks);
+        }
+
+        @ParameterizedTest(name = "{index}: invalid format \"{0}\"")
+        @ValueSource(strings = {
+            // Missing domain
+            ":stone",
+
+            // Missing resource
+            "minecraft:",
+
+            // extra colons
+            "minecraft::stone",
+            "minecraft:stone:",
+            "minecraft:stone:stone",
+
+            // Missing colon
+            "minecraftstone"
+        })
+        void badFormats(String value) {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertFalse(configList.handleSimpleBlock(value));
+            Assertions.assertEquals(new HashSet<Block>(), configList.blocks);
+        }
     }
 
     @Nested
@@ -240,5 +307,63 @@ class BlockStateConfigListTest {
         }
 
         // TODO allows extra spaces, do several with param test
+    }
+
+    @Nested
+    class HandleBlockStateTests {
+        @Test
+        void singleState() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertTrue(configList.handleBlockState("minecraft:stone[variant:diorite]"));
+
+            // Would expect 1 item to be present and contain a mather that fits out block
+            Assertions.assertEquals(1, configList.blockStateMatchers.size());
+            Assertions.assertTrue(configList.blockStateMatchers.containsKey(Blocks.STONE));
+            Assertions.assertEquals(1, configList.blockStateMatchers.get(Blocks.STONE).size());
+
+            final IBlockState target = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE);
+            Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target));
+
+            final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
+            Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
+        }
+
+        @Test
+        void singleStateFuzzy_endsWithName() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertTrue(configList.handleBlockState("minecraft:stone[variant:~diorite]"));
+
+            // Would expect 1 item to be present and contain a mather that fits out block
+            Assertions.assertEquals(1, configList.blockStateMatchers.size());
+            Assertions.assertTrue(configList.blockStateMatchers.containsKey(Blocks.STONE));
+            Assertions.assertEquals(1, configList.blockStateMatchers.get(Blocks.STONE).size());
+
+            final IBlockState targetA = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE);
+            Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetA));
+            final IBlockState targetB = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE_SMOOTH);
+            Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetB));
+
+            final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
+            Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
+        }
+
+        @Test
+        void singleStateFuzzy_startsWithName() {
+            final BlockStateConfigList configList = new BlockStateConfigList("test", null);
+            Assertions.assertTrue(configList.handleBlockState("minecraft:stone[variant:smooth~]"));
+
+            // Would expect 1 item to be present and contain a mather that fits out block
+            Assertions.assertEquals(1, configList.blockStateMatchers.size());
+            Assertions.assertTrue(configList.blockStateMatchers.containsKey(Blocks.STONE));
+            Assertions.assertEquals(1, configList.blockStateMatchers.get(Blocks.STONE).size());
+
+            final IBlockState targetA = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE_SMOOTH);
+            Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetA));
+            final IBlockState targetB = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE_SMOOTH);
+            Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetB));
+
+            final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
+            Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
+        }
     }
 }

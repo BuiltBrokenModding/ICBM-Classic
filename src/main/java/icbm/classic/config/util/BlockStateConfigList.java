@@ -1,5 +1,6 @@
 package icbm.classic.config.util;
 
+import com.google.common.collect.ImmutableMap;
 import icbm.classic.ICBMClassic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,12 +9,12 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistry;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * List of BlockStates/Blocks to use in config purposes. This is meant for internal use by the mod and should
@@ -43,6 +44,7 @@ public class BlockStateConfigList {
     // Block lists
     final HashSet<IBlockState> blockStates = new HashSet();
     final HashSet<Block> blocks = new HashSet();
+    final Map<Block, List<Function<IBlockState, Boolean>>> blockStateMatchers = new HashMap();
 
     // States
     @Getter
@@ -174,7 +176,7 @@ public class BlockStateConfigList {
                 return handleFuzzyBlocks(entry);
             }
             //TODO add ore-dictionary using `@ore:` likely can do keywords using `@word` such as `@contains:` or `@regex:`
-            return handleBlock(entry);
+            return handleSimpleBlock(entry);
         }
         // Catch all if something fails with block states in other mods
         catch (Exception e) {
@@ -183,13 +185,18 @@ public class BlockStateConfigList {
         return false;
     }
 
-    boolean handleBlock(String entry) {
-        final Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(entry));
-        if (block != null) {
-            return blocks.add(block);
+    boolean handleSimpleBlock(String entry) {
+        final ResourceLocation blockKey = this.getBlockKey(entry);
+        if(blockKey == null) {
+            return false;
         }
-        ICBMClassic.logger().error(name + ": Failed to find block matching entry `" + entry + "` for banAllow list.");
-        return false;
+
+        if(!ForgeRegistries.BLOCKS.containsKey(blockKey)) {
+            ICBMClassic.logger().error(name + ": Failed to find block matching entry `" + entry + "`");
+            return false;
+        }
+
+        return blocks.add(ForgeRegistries.BLOCKS.getValue(blockKey));
     }
 
     ResourceLocation getBlockKey(String entry) {
@@ -249,11 +256,11 @@ public class BlockStateConfigList {
 
     boolean handleBlockState(String entry) {
 
-        String[] split = entry.split("\\[");
+        final String[] nameVsPropSplit = entry.split("\\[");
 
         // Block data
-        final ResourceLocation regName = this.getBlockKey(split[0]);
-        if(regName == null) {
+        final ResourceLocation regName = this.getBlockKey(nameVsPropSplit[0]);
+        if (regName == null) {
             // TODO log formatting issue
             return false;
         }
@@ -266,14 +273,14 @@ public class BlockStateConfigList {
         }
 
         // Properties
-        final String[] properties = split[1].replace("]", "").split(",");
+        final String[] properties = nameVsPropSplit[1].replace("]", "").split(",");
 
-        Map<IProperty, Function<Comparable, Boolean>> matchers = new HashMap();
+        final Map<IProperty, Function<Comparable, Boolean>> matchers = new HashMap();
 
         for (String propEntry : properties) {
-            final String[] split3 = propEntry.split(":");
-            final String propName = split3[0].trim();
-            final String propValue = split[1].trim();
+            final String[] stateSplit = propEntry.split(":");
+            final String propName = stateSplit[0].trim();
+            final String propValue = stateSplit[1].trim();
 
             final IProperty property = block.getBlockState().getProperty(propName);
             if (property == null) {
@@ -284,22 +291,56 @@ public class BlockStateConfigList {
             if (propValue.equals("~")) {
                 matchers.put(property, (o) -> true);
             } else if (propValue.startsWith("~")) {
-                // TODO fuzz matcher
+                final String stringMatch = propValue.substring(1).trim();
+                final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getAllowedValues().stream()
+                    .filter(o -> property.getName((Comparable) o).endsWith(stringMatch)).collect(Collectors.toList());
+                if(valuesToMatch.isEmpty()) {
+                    ICBMClassic.logger().error("Config Flying Block: Failed to find values matching '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
+                    return false;
+                }
+                matchers.put(property, valuesToMatch::contains);
             } else if (propValue.endsWith("~")) {
-                // TODO fuzz matcher
+                final String stringMatch = propValue.substring(0, propValue.length() - 1).trim();
+                final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getAllowedValues().stream()
+                    .filter(o -> property.getName((Comparable) o).startsWith(stringMatch)).collect(Collectors.toList());
+                if(valuesToMatch.isEmpty()) {
+                    ICBMClassic.logger().error("Config Flying Block: Failed to find values matching '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
+                    return false;
+                }
+                matchers.put(property, valuesToMatch::contains);
+            } else {
+                // Simple value matcher
+                final Optional value = property.getAllowedValues().stream().filter(o -> property.getName((Comparable) o).equalsIgnoreCase(propValue)).findFirst();
+                if (!value.isPresent()) {
+                    ICBMClassic.logger().error("Config Flying Block: Failed to find value '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
+                    return false;
+                }
+                matchers.put(property, (o) -> Objects.equals(value.get(), o));
             }
-
-
-            // Simple value matcher
-            final Optional value = property.getAllowedValues().stream().filter(o -> property.getName((Comparable) o).equalsIgnoreCase(propValue)).findFirst();
-            if (!value.isPresent()) {
-                ICBMClassic.logger().error("Config Flying Block: Failed to find value '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "` for banAllow list.");
-                return false;
-            }
-            matchers.put(property, (o) -> Objects.equals(value.get(), o));
         }
 
-        //TODO need to store block -> state parser, as we may get partial properties rather than super specific
+        if(matchers.isEmpty()) {
+            return false;
+        }
+
+        if(!blockStateMatchers.containsKey(block)) {
+            blockStateMatchers.put(block, new ArrayList());
+        }
+        return blockStateMatchers.get(block).add((blockState) -> matchesFuzzyState(blockState, matchers));
+    }
+
+    boolean matchesFuzzyState(IBlockState state, Map<IProperty, Function<Comparable, Boolean>> matchers) {
+        final ImmutableMap<IProperty<?>, Comparable<?>> stateProps = state.getProperties();
+        for(IProperty propKey: matchers.keySet()) {
+            if(!stateProps.containsKey(propKey)) {
+                return false;
+            }
+
+            final Function<Comparable, Boolean> check = matchers.get(propKey);
+            if(check != null && !check.apply(stateProps.get(propKey))) {
+                return false;
+            }
+        }
         return true;
     }
 
