@@ -1,11 +1,13 @@
 package icbm.classic.content.missile.logic.targeting;
 
 import icbm.classic.ICBMConstants;
+import lombok.NoArgsConstructor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+@NoArgsConstructor
 public class BallisticTargetingData extends BasicTargetData {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ballistic");
 
@@ -15,17 +17,8 @@ public class BallisticTargetingData extends BasicTargetData {
      */
     private double impactHeightOffset;
 
-    public BallisticTargetingData() {
-        //Used for save/load
-    }
-
     public BallisticTargetingData(Vec3d position, int impactHeightOffset) {
         super(position);
-        this.impactHeightOffset = impactHeightOffset;
-    }
-
-    public BallisticTargetingData(BlockPos pos, int impactHeightOffset) {
-        super(pos);
         this.impactHeightOffset = impactHeightOffset;
     }
 

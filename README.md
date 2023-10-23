@@ -1,7 +1,6 @@
-# ICBM 1.0 / ICBM Classic
 
-## Info
 
+# Info
 ICBM-Classic is an addon for the game Minecraft via MinecraftForge. It provides a series of small explosive missiles and launchers.
 
 ## Description

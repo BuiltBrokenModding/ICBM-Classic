@@ -250,17 +250,29 @@ public class LauncherCapability extends LauncherBaseCapability {
 
     @Override
     public float getInaccuracy(Vec3d target, int launcherCount) {
-        // Apply inaccuracy
+        final double distance = host.getDistanceSq(target.x, target.y, target.z);
+        return calculateInaccuracy(distance, launcherCount);
+    }
+
+    /**
+     * Calculates inaccuracy to apply to target before firing the missile.
+     *
+     * @param distanceSq from the target squared
+     * @param missiles fired in the same cluster
+     * @return inaccuracy to apply to the target
+     */
+    public static float calculateInaccuracy(double distanceSq, int missiles) {
+
+        // Min amount
         float inaccuracy = (float)ConfigLauncher.MIN_INACCURACY;
 
-        // Add inaccuracy based on range
-        final double distance = host.getDistanceSq(target.x, target.y, target.z);
-        final double scale = distance / (ConfigLauncher.RANGE * ConfigLauncher.RANGE);
-        inaccuracy += scale * ConfigLauncher.SCALED_INACCURACY_DISTANCE;
+        // Range drift
+        final double scale = distanceSq / (ConfigLauncher.RANGE * ConfigLauncher.RANGE);
+        inaccuracy += (float) (scale * ConfigLauncher.SCALED_INACCURACY_DISTANCE);
 
         // Add inaccuracy for each launcher fired in circuit
-        if(launcherCount > 1) {
-            inaccuracy += (launcherCount - 1) * ConfigLauncher.SCALED_INACCURACY_LAUNCHERS;
+        if(missiles > 1) {
+            inaccuracy += (float) ((missiles - 1) * ConfigLauncher.SCALED_INACCURACY_LAUNCHERS);
         }
         return inaccuracy;
     }

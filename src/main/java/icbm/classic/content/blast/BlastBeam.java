@@ -2,8 +2,9 @@ package icbm.classic.content.blast;
 
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.entity.EntityLightBeam;
+import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
@@ -100,13 +101,9 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
                     //Remove block
                     if (world.setBlockToAir(blockPos))
                     {
-                        //Create an spawn
-                        final EntityFlyingBlock entity = new EntityFlyingBlock(this.world(), blockPos, state);
-                        entity.gravity = -0.01f;
-                        if (world.spawnEntity(entity))
-                        {
-                            flyingBlocks.add(entity);
-                        }
+                        FlyingBlock.spawnFlyingBlock(this.world, blockPos, state, (entity) -> {
+                            entity.gravity = -0.01f;
+                        }, null);
                     }
                 }
 

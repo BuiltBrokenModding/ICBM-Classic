@@ -1,7 +1,9 @@
-package icbm.classic.content.entity;
+package icbm.classic.content.entity.flyingblock;
 
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
+import lombok.Setter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -23,7 +25,8 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 {
     public static final float GRAVITY_DEFAULT = 0.045f;
 
-    private IBlockState _blockState;
+    @Setter(value = AccessLevel.PACKAGE)
+    private IBlockState blockState;
 
     public float yawChange = 0;
     public float pitchChange = 0;
@@ -40,22 +43,6 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         this.setSize(0.98F, 0.98F);
     }
 
-    public EntityFlyingBlock(World world, BlockPos position, IBlockState state)
-    {
-        this(world);
-        this.setPosition(position.getX() + 0.5, position.getY(), position.getZ() + 0.5);
-        this.motionX = 0D;
-        this.motionY = 0D;
-        this.motionZ = 0D;
-        this._blockState = state;
-    }
-
-    public EntityFlyingBlock(World world, BlockPos position, IBlockState state, float gravity)
-    {
-        this(world, position, state);
-        this.gravity = gravity;
-    }
-
     public void restoreGravity()
     {
         gravity = GRAVITY_DEFAULT;
@@ -63,11 +50,11 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 
     public IBlockState getBlockState()
     {
-        if (_blockState == null)
+        if (blockState == null)
         {
-            _blockState = Blocks.STONE.getDefaultState();
+            blockState = Blocks.STONE.getDefaultState();
         }
-        return _blockState;
+        return blockState;
     }
 
     @Override
@@ -88,7 +75,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        _blockState = NBTUtil.readBlockState(ByteBufUtils.readTag(data));
+        blockState = NBTUtil.readBlockState(ByteBufUtils.readTag(data));
         gravity = data.readFloat();
         yawChange = data.readFloat();
         pitchChange = data.readFloat();
@@ -105,9 +92,9 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         //Death state handling
         if (!world.isRemote)
         {
-            if (_blockState == null || ticksExisted > 20 * 60) //1 min despawn timer
+            if (blockState == null || ticksExisted > 20 * 60) //1 min despawn timer
             {
-                this.setBlock();
+                this.placeBlockIntoWorld();
                 return;
             }
 
@@ -120,7 +107,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
 
             if ((this.onGround && this.ticksExisted > 20))
             {
-                this.setBlock();
+                this.placeBlockIntoWorld();
                 return;
             }
         }
@@ -154,7 +141,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
         this.ticksExisted++;
     }
 
-    public void setBlock()
+    public void placeBlockIntoWorld()
     {
         if (!this.world.isRemote)
         {
@@ -200,9 +187,9 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbttagcompound)
     {
-        if (_blockState != null)
+        if (blockState != null)
         {
-            nbttagcompound.setTag(NBTConstants.BLOCK_STATE, NBTUtil.writeBlockState(new NBTTagCompound(), _blockState));
+            nbttagcompound.setTag(NBTConstants.BLOCK_STATE, NBTUtil.writeBlockState(new NBTTagCompound(), blockState));
         }
         nbttagcompound.setFloat(NBTConstants.GRAVITY, this.gravity);
     }
@@ -212,7 +199,7 @@ public class EntityFlyingBlock extends Entity implements IEntityAdditionalSpawnD
     {
         if (nbttagcompound.hasKey(NBTConstants.BLOCK_STATE))
         {
-            _blockState = NBTUtil.readBlockState(nbttagcompound.getCompoundTag(NBTConstants.BLOCK_STATE));
+            blockState = NBTUtil.readBlockState(nbttagcompound.getCompoundTag(NBTConstants.BLOCK_STATE));
         }
         this.gravity = nbttagcompound.getFloat(NBTConstants.GRAVITY);
     }

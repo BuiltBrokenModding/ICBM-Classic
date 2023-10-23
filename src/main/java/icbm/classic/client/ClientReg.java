@@ -20,6 +20,8 @@ import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.RenderEntityBlock;
 import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.parachute.EntityParachute;

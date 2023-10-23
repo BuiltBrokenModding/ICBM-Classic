@@ -26,7 +26,7 @@ public class ConfigLauncher
 
     @Config.Name("scaled_inaccuracy_per_launcher")
     @Config.Comment("Inaccuracy offset to apply per launcher fired in the same circuit.")
-    public static double SCALED_INACCURACY_LAUNCHERS = 1f;
+    public static double SCALED_INACCURACY_LAUNCHERS = 1;
 
     @Config.Name("tpower_capacity")
     @Config.Comment("Size of the energy buffer")
