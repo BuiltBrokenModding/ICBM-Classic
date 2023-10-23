@@ -64,8 +64,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                     if (this.thread.isComplete)
                     {
                         //Copy as concurrent list is not fast to sort
-                        List<BlockPos> results = new ArrayList();
-                        results.addAll(getThreadResults());
+                        List<BlockPos> results = new ArrayList(getThreadResults()); //TODO fix
 
                         if (r == 0)
                         {
@@ -101,7 +100,11 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                             entity.pitchChange = 100 * world().rand.nextFloat();
                                             entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
                                             entity.noClip = true;
-                                        }, flyingBlocks::add);
+                                            entity.gravity = 0;
+                                        }, entityFlyingBlock -> {
+                                            flyingBlocks.add(entityFlyingBlock);
+                                            ICBMClassic.logger().info("Spawned flying block" + entityFlyingBlock);
+                                        });
                                     }
                                 }
                             }

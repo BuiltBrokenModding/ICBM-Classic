@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class FlyingBlock {
 
     // Config list controlling if a block is allowed for spawning
-    private static final BlockStateConfigList banAllowList = new BlockStateConfigList("[Flying Blocks][Ban/Allow Config]",
+    static final BlockStateConfigList banAllowList = new BlockStateConfigList("[Flying Blocks][Ban/Allow Config]",
         (blockStateConfigList) -> {
             // Mod blacklisted due to https://github.com/BuiltBrokenModding/ICBM-Classic/issues/420
             blockStateConfigList.addMod("dynamictrees"); //TODO remove when issue #420 is resolved

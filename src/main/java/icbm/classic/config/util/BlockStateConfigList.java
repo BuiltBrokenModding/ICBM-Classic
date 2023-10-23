@@ -86,7 +86,7 @@ public class BlockStateConfigList {
         ForgeRegistries.BLOCKS.forEach(block -> {
 
             // Mods
-            final String modId = block.getRegistryName().getResourceDomain();
+            final String modId = Objects.requireNonNull(block.getRegistryName()).getResourceDomain();
             if (mods.contains(modId)) {
                 blocks.add(block);
             }
@@ -106,7 +106,16 @@ public class BlockStateConfigList {
         if (state == null) {
             return false;
         }
-        return blocks.contains(state.getBlock()) || blockStates.contains(state);
+        if(blocks.contains(state.getBlock()) || blockStates.contains(state))
+        {
+            return true;
+        }
+        if(Optional.ofNullable(blockStateMatchers.get(state.getBlock()))
+            .map(l -> l.stream().anyMatch(f -> f.apply(state))).orElse(false)) {
+            blockStates.add(state);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -391,5 +400,15 @@ public class BlockStateConfigList {
             this.fuzzyBlockChecks.put(domain, new ArrayList<>());
         }
         this.fuzzyBlockChecks.get(domain).add(check);
+    }
+
+    public List<String> dumpBlocksContained() {
+        final List<String> list = new ArrayList<>();
+        ForgeRegistries.BLOCKS.forEach(block -> {
+            if(this.contains(block.getDefaultState())) {
+                list.add(block.getRegistryName().toString());
+            }
+        });
+        return list;
     }
 }
