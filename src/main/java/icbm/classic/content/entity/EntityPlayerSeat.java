@@ -1,21 +1,24 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.lib.transform.rotation.EulerAngle;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartEmpty;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -27,28 +30,229 @@ import javax.annotation.Nullable;
  */
 public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnData
 {
-    public TileEntity host;
-    public Pos rideOffset;
+    private TileLauncherBase host; //TODO save host position so we can restore from save
+    private BlockPos hostPos;
+
+    public float offsetX = 0;
+    public float offsetY = 0;
+    public float offsetZ = 0;
+    public EnumFacing prevFace;
+    public EnumFacing prevRotation;
 
     public EntityPlayerSeat(World world)
     {
         super(world);
     }
 
+    public void setHost(TileLauncherBase host) {
+        this.host = host;
+        if(host != null) {
+            this.hostPos = host.getPos();
+        }
+        else {
+            this.hostPos = null;
+        }
+    }
+
+    @Override
+    public float getEyeHeight()
+    {
+        return 0;
+    }
+
     @Override
     protected void entityInit()
     {
+    }
 
+    @Override
+    public void onRemovedFromWorld() {
+        super.onRemovedFromWorld();
+        //removePassengers();
+    }
+
+    @Override
+    public void removePassengers()
+    {
+        for (int i = this.getPassengers().size() - 1; i >= 0; --i)
+        {
+            final Entity entity = this.getPassengers().get(i);
+            double prevX = entity.posX;
+            double prevY = entity.posY;
+            double prevZ = entity.posZ;
+
+            entity.dismountRidingEntity();
+
+            // Player will sometimes warp to bottom of map when dismounting
+            if(Math.abs(prevX - entity.posX) > 2 || Math.abs(prevY - entity.posZ) > 2 || Math.abs(prevZ - entity.posZ) > 2) {
+                entity.setPosition(prevX, prevY, prevZ);
+            }
+        }
     }
 
     @Override
     public void onEntityUpdate()
     {
-        if (!world.isRemote && (host == null || host.isInvalid()) || this.posY < -64.0D)
+        if(host == null && hostPos != null) {
+            final TileEntity tile = world.getTileEntity(hostPos);
+            if(tile instanceof TileLauncherBase) {
+                host = (TileLauncherBase) tile;
+                host.seat = this;
+            }
+        }
+
+        if (!world.isRemote && (host == null || host.isInvalid() || this.posY < -64.0D))
         {
+            this.removePassengers();
             this.setDead();
         }
+
+        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide())) {
+            prevFace = host.getLaunchDirection();
+            prevRotation = host.getSeatSide();
+            updatePosition(host.getLaunchDirection(), host.getSeatSide());
+            updateBox(host.getLaunchDirection(), host.getSeatSide());
+        }
     }
+
+    protected void updatePosition(EnumFacing face, EnumFacing rotation) {
+
+        // Rotation relative to block face
+        offsetX = rotation.getFrontOffsetX() * 0.2f; //TODO customize to match missile visuals
+        offsetY = rotation.getFrontOffsetY() * 0.2f;
+        offsetZ = rotation.getFrontOffsetZ() * 0.2f;
+
+        // Height relative to block rotation
+        offsetX += face.getFrontOffsetX() * 0.5f;
+        offsetY += face.getFrontOffsetY() * 0.5f;
+        offsetZ += face.getFrontOffsetZ() * 0.5f;
+
+        if(face == EnumFacing.DOWN) {
+            offsetY -= height;
+        }
+        else if(face == EnumFacing.EAST) {
+            offsetX += width / 2;
+            offsetY -= 0.6f;
+        }
+        else if(face == EnumFacing.WEST) {
+            offsetX -= width / 2;
+            offsetY -= 0.6f;
+        }
+        else if(face == EnumFacing.NORTH) {
+            offsetZ -= width / 2;
+            offsetY -= 0.6f;
+        }
+        else if(face == EnumFacing.SOUTH) {
+            offsetZ += width / 2;
+            offsetY -= 0.6f;
+        }
+
+        // Position
+        double posX = host.getPos().getX() + 0.5 + face.getFrontOffsetX() * 0.5;
+        double posY = host.getPos().getY() + 0.5 + face.getFrontOffsetY() * 0.5;
+        double posZ = host.getPos().getZ() + 0.5 + face.getFrontOffsetZ() * 0.5;
+        setPosition(posX, posY, posZ);
+
+        final EulerAngle angle = new EulerAngle(rotation);
+        this.rotationYaw = this.prevRotationYaw = (float) angle.yaw();
+        this.rotationPitch = this.prevRotationPitch = (float) angle.pitch();
+    }
+
+    protected void updateBox(EnumFacing face, EnumFacing rotation) {
+
+        final float dimA;
+        final float dimB;
+        // Size
+        if(face == EnumFacing.UP || face == EnumFacing.DOWN) {
+            setSize(0.5f, 2.5f);
+            dimA = this.width / 2;
+            dimB = this.height;
+        }
+        else {
+            setSize(2.5f, 0.5f);
+            dimA = this.height / 2;
+            dimB = this.width;
+        }
+
+        // bounding box
+        if(face == EnumFacing.UP) {
+            double minX = posX - dimA;
+            double minY = posY;
+            double minZ = posZ - dimA;
+
+            double maxX = posX + dimA;
+            double maxY = posY + dimB;
+            double maxZ = posZ + dimA;
+            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+        else if(face == EnumFacing.DOWN) {
+            double minX = posX - dimA;
+            double minY = posY - dimB;
+            double minZ = posZ - dimA;
+
+            double maxX = posX + dimA;
+            double maxY = posY;
+            double maxZ = posZ + dimA;
+            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+        else if(face == EnumFacing.EAST) {
+            double minX = posX;
+            double minY = posY - dimA;
+            double minZ = posZ - dimA;
+
+            double maxX = posX + dimB;
+            double maxY = posY + dimA;
+            double maxZ = posZ + dimA;
+            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+        else if(face == EnumFacing.WEST) {
+            double minX = posX - dimB;
+            double minY = posY - dimA;
+            double minZ = posZ - dimA;
+
+            double maxX = posX;
+            double maxY = posY + dimA;
+            double maxZ = posZ + dimA;
+            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+        else if(face == EnumFacing.NORTH) {
+            double minX = posX - dimA;
+            double minY = posY - dimA;
+            double minZ = posZ - dimB;
+
+            double maxX = posX + dimA;
+            double maxY = posY + dimA;
+            double maxZ = posZ;
+            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+
+        else if(face == EnumFacing.SOUTH) {
+            double minX = posX - dimA;
+            double minY = posY - dimA;
+            double minZ = posZ;
+
+            double maxX = posX + dimA;
+            double maxY = posY + dimA;
+            double maxZ = posZ + dimB;
+            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+    }
+
+    @Override
+    public void setPosition(double x, double y, double z)
+    {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
+    }
+
+    @Override
+    public void move(MoverType type, double x, double y, double z)
+    {
+        // Can't move
+    }
+
 
     @Override
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
@@ -92,32 +296,32 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override //make method public
     public void setSize(float width, float height)
     {
-        super.setSize(width, height);
+        this.width = width;
+        this.height = height;
     }
 
     @Override
     public double getMountedYOffset()
     {
-        if (rideOffset != null)
-        {
-            return rideOffset.y();
-        }
-        return super.getMountedYOffset();
+        return offsetY;
     }
 
     @Override
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
-        return null; //TODO might be needed for interaction
+        return super.getEntityBoundingBox(); //TODO might be needed for interaction
     }
 
     @Override
     public void updatePassenger(Entity passenger)
     {
-        if (this.isPassenger(passenger))
+        if (this.isPassenger(passenger) && host != null)
         {
-            passenger.setPosition(this.posX, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ); //TODO add rotation and position math
+            double x = this.posX + offsetX + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetX() : 0);
+            double y = this.posY + offsetY + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetY() : 0);
+            double z = this.posZ + offsetZ + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetZ() : 0);
+            passenger.setPosition(x, y, z);
         }
     }
 
@@ -134,52 +338,41 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound p_70037_1_)
+    protected void readEntityFromNBT(NBTTagCompound save)
     {
+        if(save.hasKey("pos")) {
+            this.hostPos = NBTUtil.getPosFromTag(save.getCompoundTag("pos"));
+        }
 
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound p_70014_1_)
+    protected void writeEntityToNBT(NBTTagCompound save)
     {
-
+        if(hostPos != null) {
+            save.setTag("pos", NBTUtil.createPosTag(hostPos));
+        }
     }
 
     @Override
     public void writeSpawnData(ByteBuf buffer)
     {
-        buffer.writeFloat(height);
-        buffer.writeFloat(width);
-        buffer.writeBoolean(rideOffset != null);
-        if (rideOffset != null)
-        {
-            rideOffset.writeByteBuf(buffer);
+        buffer.writeBoolean(host != null);
+        if(host != null) {
+            buffer.writeInt(host.getPos().getX());
+            buffer.writeInt(host.getPos().getY());
+            buffer.writeInt(host.getPos().getZ());
         }
     }
 
     @Override
     public void readSpawnData(ByteBuf additionalData)
     {
-        height = additionalData.readFloat();
-        width = additionalData.readFloat();
-        setSize(width, height);
-        if (additionalData.readBoolean())
-        {
-            rideOffset = new Pos(additionalData);
+        if(additionalData.readBoolean()) {
+            final TileEntity tile = world.getTileEntity(new BlockPos(additionalData.readInt(), additionalData.readInt(), additionalData.readInt()));
+            if(tile instanceof TileLauncherBase) {
+                host = (TileLauncherBase) tile;
+            }
         }
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isInRangeToRender3d(double x, double y, double z)
-    {
-        return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isInRangeToRenderDist(double distance)
-    {
-        return false;
     }
 }

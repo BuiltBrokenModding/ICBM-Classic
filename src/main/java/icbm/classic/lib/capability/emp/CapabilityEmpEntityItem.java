@@ -3,7 +3,7 @@ package icbm.classic.lib.capability.emp;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.config.ConfigEMP;
-import icbm.classic.prefab.inventory.InventoryUtility;
+import icbm.classic.lib.InventoryUtility;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;

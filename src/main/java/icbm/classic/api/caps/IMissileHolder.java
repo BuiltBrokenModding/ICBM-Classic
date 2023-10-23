@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
  * it may do additional checks to ensure the missile is supported
  * Created by Dark(DarkGuardsman, Robert) on 1/9/19.
  */
-public interface IMissileHolder
+public interface IMissileHolder //TODO refactor to be a list
 {
 
     /**
@@ -45,6 +45,13 @@ public interface IMissileHolder
      * @return remaining stack or empty stack if taken
      */
     ItemStack insertMissileStack(ItemStack stack, boolean simulate);
+
+    /**
+     * Called to consume the missile stack.
+     *
+     * @return true if missile was consumed
+     */
+    boolean consumeMissile();
 
     /**
      * Is the missile supported by the holder.

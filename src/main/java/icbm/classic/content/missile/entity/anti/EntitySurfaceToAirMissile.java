@@ -1,6 +1,5 @@
 package icbm.classic.content.missile.entity.anti;
 
-import icbm.classic.config.missile.ConfigSAMMissile;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
@@ -55,7 +54,7 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
                 this.getMissileCapability().setTargetData(scanLogic);
 
                 // Update out flight logic to follow our sam target
-                this.getMissileCapability().setFlightLogic(new FollowTargetLogic(ConfigMissile.SAM_MISSILE.FUEL));
+                this.getMissileCapability().switchFlightLogic(new FollowTargetLogic(ConfigMissile.SAM_MISSILE.FUEL));
             }
 
             //TODO move to object that gets a tick() invoke `ProximityKillHandler`

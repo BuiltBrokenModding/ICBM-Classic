@@ -1,14 +1,13 @@
 package icbm.classic.content.reg;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.*;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;

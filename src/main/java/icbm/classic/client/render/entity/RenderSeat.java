@@ -20,6 +20,9 @@ public class RenderSeat extends Render<EntityPlayerSeat>
     public void doRender(EntityPlayerSeat seat, double x, double y, double z, float entityYaw, float partialTicks)
     {
         super.doRender(seat, x, y, z, entityYaw, partialTicks);
+        //GlStateManager.pushMatrix();
+        //renderOffsetAABB(seat.getEntityBoundingBox(), x - seat.lastTickPosX, y - seat.lastTickPosY, z - seat.lastTickPosZ);
+        //GlStateManager.popMatrix();
     }
 
     @Override

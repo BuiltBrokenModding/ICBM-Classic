@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "icbmclassic:launcherbase",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "ici",
+    "ppp"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "circuitBasic"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotSteel"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plateSteel"
+    }
+  }
+}

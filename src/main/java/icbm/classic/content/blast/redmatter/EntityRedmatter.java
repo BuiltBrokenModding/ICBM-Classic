@@ -57,19 +57,21 @@ public class EntityRedmatter extends Entity
     @Override
     protected void entityInit()
     {
-        this.dataManager.register(SIZE_DATA, ConfigBlast.REDMATTER.DEFAULT_SIZE);
-        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.REDMATTER.MAX_SIZE);
+        this.dataManager.register(SIZE_DATA, ConfigBlast.redmatter.DEFAULT_SIZE);
+        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.redmatter.MAX_SIZE);
     }
 
     @Override
     public void onUpdate()
     {
+        super.onUpdate();
+
         //Update motion until we hit zero
         if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) //TODO replace zero with range check to prevent rounding issues
         {
             reduceMotion();
             correctMotion();
-            updateBoundsForMotion();
+            move(MoverType.SELF, motionX, motionY, motionZ);
         }
 
         //Run only if server
@@ -102,16 +104,6 @@ public class EntityRedmatter extends Entity
         this.motionX *= limitedSpeed;
         this.motionY *= limitedSpeed;
         this.motionZ *= limitedSpeed;
-    }
-
-    private void updateBoundsForMotion()
-    {
-        this.setEntityBoundingBox(this.getEntityBoundingBox().offset(motionX, motionY, motionZ));
-
-        //Reset position based on box
-        this.posX = (this.getEntityBoundingBox().minX + this.getEntityBoundingBox().maxX) / 2.0D;
-        this.posY = (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D;
-        this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
     }
     //</editor-fold>
 
@@ -148,13 +140,6 @@ public class EntityRedmatter extends Entity
     public boolean canBeCollidedWith()
     {
         return false;
-    }
-
-
-    @Override
-    public void move(MoverType type, double x, double y, double z)
-    {
-        //Remove default movement
     }
     //</editor-fold>
 
@@ -195,7 +180,7 @@ public class EntityRedmatter extends Entity
 
     public void setBlastSize(float size)
     {
-        final float limitedSize = Math.max(ConfigBlast.REDMATTER.MIN_SIZE, size);
+        final float limitedSize = Math.max(ConfigBlast.redmatter.MIN_SIZE, size);
         this.dataManager.set(SIZE_DATA, limitedSize);
     }
 

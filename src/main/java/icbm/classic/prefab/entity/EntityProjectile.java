@@ -1,25 +1,24 @@
 package icbm.classic.prefab.entity;
 
 import icbm.classic.api.missiles.IMissileAiming;
+import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
+import icbm.classic.lib.world.IProjectileBlockInteraction;
+import icbm.classic.lib.world.ProjectileBlockInteraction;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -68,6 +67,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public IBlockState blockInside = Blocks.AIR.getDefaultState();
     /** Toggle to note we are stuck in a tile on the ground */
     public boolean inGround = false;
+    /** Entity is being teleported, causes it to ignore block impacts */
+    public boolean changingDimensions = false;
 
     //Timers
     public int ticksInGround;
@@ -162,15 +163,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     {
         super.onUpdate();
 
-        //Update rotation to match motion
-        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
-        {
-            float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(this.motionY, (double) f) * 180.0D / Math.PI);
-        }
-
-
         //Check if we hit the ground
         IBlockState state = this.world.getBlockState(tilePos);
         if (!state.getBlock().isAir(state, world, tilePos))
@@ -179,7 +171,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
             if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ)))
             {
-                this.inGround = true;
+                setInGround(true);
             }
         }
 
@@ -195,7 +187,9 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 {
                     this.setDead();
                 }
-            } else
+            }
+            // if was in ground but block changes, fall slightly
+            else
             {
                 //TODO change to apply gravity
                 this.inGround = false;
@@ -215,9 +209,25 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 return;
             }
 
+            double rayEndVecX = motionX;
+            double rayEndVecY = motionY;
+            double rayEndVecZ = motionZ;
+
+            // Ensure we always raytrace 1 block ahead to allow early detection of collisions
+            double velocity = Math.sqrt(rayEndVecX * rayEndVecX + rayEndVecY * rayEndVecY + rayEndVecZ * rayEndVecZ);
+
+            rayEndVecX /= velocity;
+            rayEndVecY /= velocity;
+            rayEndVecZ /= velocity;
+
+            rayEndVecX *= (velocity + 1);
+            rayEndVecY *= (velocity + 1);
+            rayEndVecZ *= (velocity + 1);
+
             //Do raytrace TODO move to prefab entity for reuse
+            // Portal block will always return as collision even though it lacks a bounding box
             Vec3d rayStart = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d rayEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+            Vec3d rayEnd = new Vec3d(this.posX + rayEndVecX, this.posY + rayEndVecY, this.posZ + rayEndVecZ);
             RayTraceResult rayHit = this.world.rayTraceBlocks(rayStart, rayEnd, false, true, false);
 
             //Reset data to do entity ray trace
@@ -263,6 +273,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 rayHit = new RayTraceResult(entity);
             }
 
+
             if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit))
             {
                 //Handle entity hit
@@ -278,6 +289,13 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             }
             updateMotion();
         }
+    }
+
+    protected void setInGround(boolean b) {
+        if(!this.inGround && b) {
+            this.ticksInGround = 0;
+        }
+        this.inGround = b;
     }
 
     protected boolean ignoreImpact(RayTraceResult hit)
@@ -299,32 +317,75 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     protected boolean shouldCollideWith(Entity entity)
     {
         //TODO add listener support
-        return entity.canBeCollidedWith();
+        return entity.canBeCollidedWith() && !(entity instanceof EntityPlayerSeat);
     }
 
-    protected void handleBlockCollision(RayTraceResult movingobjectposition)
+    protected void handleBlockCollision(RayTraceResult hit)
     {
-        this.tilePos = movingobjectposition.getBlockPos();
-        this.sideTile = movingobjectposition.sideHit;
-
+        this.tilePos = hit.getBlockPos();
+        this.sideTile = hit.sideHit;
         this.blockInside = this.world.getBlockState(tilePos);
 
-        this.motionX = (double) ((float) (movingobjectposition.hitVec.x - this.posX));
-        this.motionY = (double) ((float) (movingobjectposition.hitVec.y - this.posY));
-        this.motionZ = (double) ((float) (movingobjectposition.hitVec.z - this.posZ));
+        // Special handling for ender gateways TODO move to a registry of Block -> lambda
+        final IProjectileBlockInteraction.EnumHitReactions reaction =
+            ProjectileBlockInteraction.handleSpecialInteraction(world, tilePos, hit.hitVec, sideTile, blockInside, this);
+        if(reaction.stop) {
+            return;
+        }
 
-        float velocity = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-        this.posX -= this.motionX / (double) velocity * 0.05000000074505806D;
-        this.posY -= this.motionY / (double) velocity * 0.05000000074505806D;
-        this.posZ -= this.motionZ / (double) velocity * 0.05000000074505806D;
+        // Move entity to collision location
+        moveTowards(hit.hitVec, width / 2f);
+
         //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-        this.inGround = true;
 
-        if (this.blockInside != null && this.blockInside.getMaterial() != Material.AIR)
-        {
+        if (this.blockInside.getMaterial() != Material.AIR) {
             this.blockInside.getBlock().onEntityCollidedWithBlock(this.world, tilePos, blockInside, this);
         }
-        onImpactTile(movingobjectposition);
+
+        if(!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
+            this.motionX = 0;
+            this.motionY = 0;
+            this.motionZ = 0;
+            setInGround(true);
+            onImpactTile(hit);
+        }
+    }
+
+    public void moveTowards(Vec3d hit, double offset) {
+
+        final double deltaX = hit.x - this.posX;
+        final double deltaY = hit.y - this.posY;
+        final double deltaZ = hit.z - this.posZ;
+
+        final float mag = MathHelper.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+        final double vecX = (deltaX / (double) mag) * offset;
+        final double vecY = (deltaX / (double) mag) * offset;
+        final double vecZ = (deltaZ / (double) mag) * offset;
+
+        this.posX = hit.x + vecX;
+        this.posY = hit.y + vecY;
+        this.posZ = hit.z + vecZ;
+
+        setPosition(posX, posY, posZ);
+    }
+
+    @Override
+    public Entity changeDimension(int dimensionIn, ITeleporter teleporter) {
+
+        this.changingDimensions = true;
+        return super.changeDimension(dimensionIn, teleporter);
+    }
+
+    @Override
+    public int getPortalCooldown()
+    {
+        return 10;
+    }
+
+    @Override
+    public int getMaxInPortalTime()
+    {
+        return -1;
     }
 
     /**
@@ -336,27 +397,22 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      */
     protected void onImpactTile(RayTraceResult hit)
     {
-        onImpact();
+        onImpact(hit.hitVec);
     }
 
     /**
      * Handles entity being impacted by the projectile
      *
-     * @param movingobjectposition
+     * @param hit
      * @param entityHit
      */
-    protected void handleEntityCollision(RayTraceResult movingobjectposition, Entity entityHit)
+    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
     {
-        onImpactEntity(entityHit, (float) getVelocity().magnitude(), movingobjectposition);
+        onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
     }
 
 
     protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit)
-    {
-        onImpactEntity(entityHit, (float) getVelocity().magnitude());
-    }
-
-    protected void onImpactEntity(Entity entityHit, float velocity)
     {
         if (!world.isRemote)
         {
@@ -375,7 +431,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
                 }
 
             }
-           onImpact();
+           onImpact(hit.hitVec);
         }
     }
 
@@ -386,7 +442,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
      * better handling of impacts.
      */
-    protected void onImpact() {
+    protected void onImpact(Vec3d impactLocation) {
         this.setDead();
     }
 
@@ -397,7 +453,9 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.posY += this.motionY;
         this.posZ += this.motionZ;
 
-        rotateTowardsMotion();
+        if(shouldAlignWithMotion()) {
+            rotateTowardsMotion();
+        }
 
         //Decrease motion so the projectile stops
         decreaseMotion();
@@ -409,7 +467,11 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.doBlockCollisions();
     }
 
-    protected void rotateTowardsMotion() {
+    public boolean shouldAlignWithMotion() {
+        return true;
+    }
+
+    public void rotateTowardsMotion() {
         //Get rotation from motion
         float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
@@ -503,17 +565,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.motionX = xx;
         this.motionY = yy;
         this.motionZ = zz;
-
-        if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
-        {
-            float f = MathHelper.sqrt(xx * xx + zz * zz);
-            this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(xx, zz) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(yy, (double) f) * 180.0D / Math.PI);
-            this.prevRotationPitch = this.rotationPitch;
-            this.prevRotationYaw = this.rotationYaw;
-            this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
-            this.ticksInGround = 0;
-        }
     }
 
     @Override

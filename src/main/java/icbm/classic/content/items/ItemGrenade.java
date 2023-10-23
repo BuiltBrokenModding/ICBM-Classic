@@ -2,7 +2,9 @@ package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.creativetab.CreativeTabs;
@@ -10,13 +12,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -123,7 +122,7 @@ public class ItemGrenade extends ItemBase
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
     {
-        //TODO ((ItemBlockExplosive) Item.getItemFromBlock(ICBMClassic.blockExplosive)).getDetailedInfo(stack, player, list);
+        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
     }
 
     @Override

@@ -32,30 +32,4 @@ public interface IGuiTile
     {
         return null;
     }
-
-    boolean openGui(EntityPlayer player, int requestedID);
-
-
-    /**
-     * Called to see if right click should be handled
-     * automatically and the GUI should be open.
-     *
-     * @param player - who is trying to open the GUI, in rare cases can be null
-     * @return true if should open
-     */
-    default boolean shouldOpenOnRightClick(EntityPlayer player)
-    {
-        return true;
-    }
-
-    /**
-     * Gets the default ID that should be opened
-     *
-     * @param player - who is trying to open the GUI, in rare cases can be null
-     * @return ID of the GUI
-     */
-    default int getDefaultGuiID(EntityPlayer player)
-    {
-        return 0;
-    }
 }

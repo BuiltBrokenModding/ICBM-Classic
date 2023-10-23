@@ -1,7 +1,6 @@
 package icbm.classic.client.fx;
 
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.ParticleSmokeNormal;

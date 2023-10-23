@@ -1,16 +1,21 @@
 package icbm.classic.content.blast.threaded;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.client.ICBMSounds;
+import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.transform.BlockEditHandler;
+import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 
 import java.util.List;
@@ -45,12 +50,17 @@ public class BlastAntimatter extends BlastThreaded
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
+        long time = System.currentTimeMillis();
         BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
-            if (isInsideMap(y + yi()) && shouldEditPos(x, y, z))
+            if (shouldEditPos(x, y, z))
             {
                 edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
             }
         });
+        time = System.currentTimeMillis() - time;
+        if(ConfigDebug.DEBUG_EXPLOSIVES) {
+            ICBMClassic.logger().info("Antimatter: thread calculations ran in " + time + "ms");
+        }
         return false;
     }
 
@@ -61,14 +71,28 @@ public class BlastAntimatter extends BlastThreaded
         //      OR replace thread system with an entity that ticks over time to collect data
         if (world instanceof WorldServer)
         {
+            long time = System.currentTimeMillis();
+
             //Sort distance
             edits.sort(buildSorter());
+
+            time = System.currentTimeMillis() - time;
+            if(ConfigDebug.DEBUG_EXPLOSIVES) {
+                ICBMClassic.logger().info("Antimatter: sorting blocks ran in " + time + "ms");
+            }
+
+            time = System.currentTimeMillis();
 
             //Pull out fluids and falling blocks to prevent lag issues
             final List<BlockPos> removeFirst = edits.stream()
                     .filter(blockPos -> world.isBlockLoaded(blockPos))
                     .filter(this::isFluid)
                     .collect(Collectors.toList());
+
+            time = System.currentTimeMillis() - time;
+            if(ConfigDebug.DEBUG_EXPLOSIVES) {
+                ICBMClassic.logger().info("Antimatter: filtering first edits ran in " + time + "ms");
+            }
 
             //Schedule edits to run in the world
             ((WorldServer) world).addScheduledTask(() -> scheduledTask(removeFirst, edits));
@@ -77,11 +101,25 @@ public class BlastAntimatter extends BlastThreaded
 
     private void scheduledTask(List<BlockPos> removeFirst, List<BlockPos> edits) {
 
+        long time = System.currentTimeMillis();
+
         //Remove any blocks that could cause issues when queued
         removeFirst.forEach(blockPos -> world.setBlockState(blockPos, replaceState, 2));
 
+        time = System.currentTimeMillis() - time;
+        if(ConfigDebug.DEBUG_EXPLOSIVES) {
+            ICBMClassic.logger().info("Antimatter: remove#first blocks ran in " + time + "ms,  edits:" + removeFirst.size());
+        }
+
+        time = System.currentTimeMillis();
+
         //Queue edits, even the ones from the previous
-        BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
+        BlockEditHandler.queue(world, edits, this::destroyBlock);
+
+        time = System.currentTimeMillis() - time;
+        if(ConfigDebug.DEBUG_EXPLOSIVES) {
+            ICBMClassic.logger().info("Antimatter: remove#second ran in " + time + "ms,  edits:" + edits.size());
+        }
 
         //Notify blast we have entered world again
         onPostThreadJoinWorld();
@@ -91,11 +129,6 @@ public class BlastAntimatter extends BlastThreaded
     {
         IBlockState state = world.getBlockState(blockPos);
         return state.getMaterial() == Material.WATER || state.getBlock() instanceof BlockFalling;
-    }
-
-    protected boolean isInsideMap(int y)
-    {
-        return y >= 0 && y < 256;
     }
 
     protected boolean shouldEditPos(int x, int y, int z)
@@ -109,7 +142,7 @@ public class BlastAntimatter extends BlastThreaded
         if (delta < featherEdge)
         {
             final double p2 = 1 - (delta / (double) featherEdge);
-            return world().rand.nextFloat() < p2;
+            return world().rand.nextFloat() > p2;
         }
         return true;
     }
@@ -119,6 +152,21 @@ public class BlastAntimatter extends BlastThreaded
     {
         super.onBlastCompleted();
         this.doDamageEntities(this.getBlastRadius() * 2, Integer.MAX_VALUE);
+    }
+
+    @Override
+    protected boolean doDamageEntities(float radius, float power, boolean destroyItem) {
+
+        if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER)
+        {
+            final List<Entity> allEntities = getEntities(radius * 2);
+            final long killed = allEntities.stream().filter(e -> e instanceof EntityRedmatter).peek(this::onDamageEntity).count();
+            if(killed > 0) {
+                return false;
+            }
+            return doDamageEntities(allEntities, radius, power, destroyItem);
+        }
+        return super.doDamageEntities(radius, power, destroyItem);
     }
 
     @Override

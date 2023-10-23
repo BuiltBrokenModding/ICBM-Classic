@@ -27,7 +27,7 @@ public abstract class BlastThreaded extends Blast
 
     protected IThreadWork getWorkerTask()
     {
-        return new ThreadWorkBlast((steps, edits) -> doRun(steps, edits), edits -> onWorkerThreadComplete(edits));
+        return new ThreadWorkBlast(this::doRun, this::onWorkerThreadComplete);
     }
 
     /**
@@ -44,7 +44,7 @@ public abstract class BlastThreaded extends Blast
      */
     protected Comparator<BlockPos> buildSorter()
     {
-        return new PosDistanceSorter(location, false);
+        return new PosDistanceSorter(location, false, PosDistanceSorter.Sort.SQ);
     }
 
     protected void onPostThreadJoinWorld()

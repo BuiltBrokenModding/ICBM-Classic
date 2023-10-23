@@ -2,19 +2,17 @@ package icbm.classic.api.missiles;
 
 
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.api.explosion.responses.BlastResponse;
+import icbm.classic.api.missiles.cause.IMissileSource;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
 
 /**
  * Capability added to entities to define them as missiles
  *
  * @author DarkGuardsman
  */
-public interface IMissile extends IWorldPosition
+public interface IMissile extends IWorldPosition // TODO add registry and require each missile (ex combinations included) to have a key
 {
     /**
      * The amount of ticks this missile has been flying for. Returns -1 if the missile is not
@@ -43,6 +41,16 @@ public interface IMissile extends IWorldPosition
      * @param logic to use
      */
     void setFlightLogic(IMissileFlightLogic logic);
+
+    /**
+     * Called to switch the flight logic to a new logic or next step
+     * in a flight path
+     *
+     * @param logic to use
+     */
+    default void switchFlightLogic(IMissileFlightLogic logic) {
+        setFlightLogic(logic);
+    }
 
     IMissileFlightLogic getFlightLogic();
 

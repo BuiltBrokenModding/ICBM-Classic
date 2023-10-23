@@ -9,7 +9,12 @@ import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import org.apache.tools.ant.filters.ReplaceTokens
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+        vendor = JvmVendorSpec.AMAZON
+    }
+}
 
 version = "${version_major}.${version_minor}.${version_revis}"
 archivesBaseName = "ICBM-classic-${version_mc}"
@@ -20,6 +25,7 @@ fancyGradle {
         resources
         coremods
         asm
+        mergetool
     }
 }
 
@@ -44,14 +50,13 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     //Mods
-    implementation files('libs/industrialcraft-2-2.8.170-ex112-api.jar')
     implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
 
     //Junit 5
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation files('libs/MinecraftJUnit-1.4.0-deobf.jar') //TODO use forge gradle to deobf for me testImplementation fg.deobf('whateveridc:MinecraftJUnit:1.4.0')
+    testImplementation files('libs/MinecraftJUnit-1.5.0-deobf.jar') //TODO use forge gradle to deobf for me testImplementation fg.deobf('whateveridc:MinecraftJUnit:1.4.0')
     //TODO example  runtimeOnly(fg.deobf(group = "mezz.jei", name = "jei-1.16.5", version = "7.7.1.121"))
 
     //Resource injector
@@ -169,7 +174,11 @@ jar {
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral();
+    maven {
+        name 'SquidDev'
+        url 'https://squiddev.cc/maven/'
+    };
 }
 jar.finalizedBy('reobfJar')
 

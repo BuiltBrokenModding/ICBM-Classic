@@ -2,10 +2,8 @@ package icbm.classic.lib.saving.nodes;
 
 import icbm.classic.lib.saving.NbtSaveNode;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.EnumFacing;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

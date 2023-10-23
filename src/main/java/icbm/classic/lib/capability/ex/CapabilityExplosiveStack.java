@@ -1,10 +1,10 @@
 package icbm.classic.lib.capability.ex;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.NBTConstants;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

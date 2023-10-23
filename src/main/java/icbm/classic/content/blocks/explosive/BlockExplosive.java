@@ -12,8 +12,10 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -122,6 +124,18 @@ public class BlockExplosive extends BlockICBM
         }
     }
 
+    @Override
+    public void onBlockAdded(World world, BlockPos pos, IBlockState state)
+    {
+        // Can't be implemented as we lack blockState for explosive at this point
+        //super.onBlockAdded(world, pos, state);
+
+        //if (!world.isRemote && world.isBlockPowered(pos))
+        //{
+        //    BlockExplosive.triggerExplosive(world, pos, false);
+        //}
+    }
+
     /**
      * Called when the block is placed in the world.
      */
@@ -134,7 +148,7 @@ public class BlockExplosive extends BlockICBM
             TileEntityExplosive explosive = (TileEntityExplosive) tile;
             explosive.capabilityExplosive = new CapabilityExplosiveStack(itemStack.copy());
 
-            if (world.getStrongPower(pos) > 0)
+            if (world.isBlockPowered(pos))
             {
                 BlockExplosive.triggerExplosive(world, pos, false);
             }
@@ -169,24 +183,9 @@ public class BlockExplosive extends BlockICBM
     @Override
     public void neighborChanged(IBlockState thisBlock, World world, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        int power = world.getStrongPower(pos);
-        if (power > 0)
+        if (world.isBlockPowered(pos))
         {
             BlockExplosive.triggerExplosive(world, pos, false);
-            return;
-        }
-        else
-        {
-            for (EnumFacing facing : EnumFacing.VALUES) //TODO recode
-            {
-                IBlockState state = world.getBlockState(pos.add(facing.getDirectionVec()));
-                Block block = state.getBlock();
-                if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
-                {
-                    BlockExplosive.triggerExplosive(world, pos, false);
-                    return;
-                }
-            }
         }
     }
 
@@ -229,25 +228,43 @@ public class BlockExplosive extends BlockICBM
      * represent x,y,z of the block.
      */
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer entityPlayer, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        TileEntity tileEntity = world.getTileEntity(pos);
+        ItemStack itemstack = player.getHeldItem(hand);
 
-        if (entityPlayer.getHeldItem(hand) != null)
+        if (!itemstack.isEmpty() && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE))
         {
-            if (entityPlayer.getHeldItem(hand).getItem() == Items.FLINT_AND_STEEL)
+            BlockExplosive.triggerExplosive(world, pos, false);
+
+            if (itemstack.getItem() == Items.FLINT_AND_STEEL)
             {
-                BlockExplosive.triggerExplosive(world, pos, true);
-                return true;
+                itemstack.damageItem(1, player);
+            }
+            else if (!player.capabilities.isCreativeMode)
+            {
+                itemstack.shrink(1);
+            }
+
+            return true;
+        }
+        else
+        {
+            return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+        }
+    }
+
+    @Override
+    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entityIn)
+    {
+        if (!world.isRemote && entityIn instanceof EntityArrow)
+        {
+            EntityArrow entityarrow = (EntityArrow)entityIn;
+
+            if (entityarrow.isBurning())
+            {
+                BlockExplosive.triggerExplosive(world, pos, false);
             }
         }
-
-        if (tileEntity instanceof TileEntityExplosive)
-        {
-            //return ((TileEntityExplosive) tileEntity).explosive.handler.onBlockActivated(world, pos, entityPlayer, hand, facing, hitX, hitY, hitZ); TODO fix
-        }
-
-        return false;
     }
 
     @Override

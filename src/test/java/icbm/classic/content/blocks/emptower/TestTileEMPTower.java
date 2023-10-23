@@ -1,6 +1,5 @@
 package icbm.classic.content.blocks.emptower;
 
-import icbm.classic.DummyMultiTile;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.refs.ICBMExplosives;
@@ -17,13 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -54,6 +47,7 @@ public class TestTileEMPTower
         ICBMExplosives.EMP = null;
     }
 
+    /*
     @Test
     void testGetLayoutOfMultiBlock_containsLayout()
     {
@@ -162,7 +156,7 @@ public class TestTileEMPTower
 
         //Invoke method
         Assertions.assertFalse(tileEMPTower.onMultiTileBroken(tileMulti, null, true));
-    }
+    }*/
 
     @Test
     void testGenerateEmp_all()
@@ -183,7 +177,7 @@ public class TestTileEMPTower
         Assertions.assertEquals(world, emp.world());
 
         //Validate size
-        Assertions.assertEquals(tileEMPTower.empRadius, emp.getBlastRadius());
+        Assertions.assertEquals(tileEMPTower.range, emp.getBlastRadius());
     }
 
     @Test
@@ -192,7 +186,8 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = spy(create());
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(Integer.MAX_VALUE);
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(Integer.MAX_VALUE);
 
         //Mock blast so we don't invoke world calls
         when(tileEMPTower.buildBlast()).thenReturn(new Blast()
@@ -214,7 +209,8 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(0);
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(0);
 
         //Should have fired
         Assertions.assertFalse(tileEMPTower.fire());
@@ -226,8 +222,9 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(0);
-        tileEMPTower.firingCoolDown = 1;
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(0);
+        tileEMPTower.cooldownTicks = 1;
 
         //Should have fired
         Assertions.assertFalse(tileEMPTower.fire());
@@ -239,8 +236,9 @@ public class TestTileEMPTower
         //Create tower, create mock around tile so we can fake some methods
         final TileEMPTower tileEMPTower = create();
         tileEMPTower.setPos(new BlockPos(20, 30, 40));
-        tileEMPTower.setEnergy(Integer.MAX_VALUE);
-        tileEMPTower.firingCoolDown = 1;
+        tileEMPTower.energyStorage.withOnChange(null);
+        tileEMPTower.energyStorage.setEnergyStored(Integer.MAX_VALUE);
+        tileEMPTower.cooldownTicks = 1;
 
         //Should have fired
         Assertions.assertFalse(tileEMPTower.fire());

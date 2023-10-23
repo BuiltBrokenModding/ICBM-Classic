@@ -9,6 +9,8 @@ import net.minecraft.util.DamageSource;
 public class PoisonToxin extends CustomPotion
 {
     public static Potion INSTANCE;
+    public static int tickRate = 20 * 2; //TODO config
+    public static int damage = 1;
 
     public PoisonToxin(boolean isBadEffect, int color, int id, String name)
     {
@@ -17,18 +19,18 @@ public class PoisonToxin extends CustomPotion
     }
 
     @Override
-    public void performEffect(EntityLivingBase par1EntityLiving, int amplifier)
+    public void performEffect(EntityLivingBase entity, int amplifier)
     {
-        if (!(par1EntityLiving instanceof EntityZombie) && !(par1EntityLiving instanceof EntityPigZombie))
+        if (!(entity instanceof EntityZombie) && !(entity instanceof EntityPigZombie))
         {
-            par1EntityLiving.attackEntityFrom(DamageSource.MAGIC, 1);
+            entity.attackEntityFrom(DamageSource.MAGIC, damage); //TODO change to use a custom damage source
         }
     }
 
     @Override
     public boolean isReady(int duration, int amplifier)
     {
-        if (duration % (20 * 2) == 0)
+        if (duration % tickRate == 0)
         {
             return true;
         }

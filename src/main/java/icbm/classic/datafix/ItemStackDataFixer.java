@@ -1,10 +1,8 @@
 package icbm.classic.datafix;
 
-import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.NBTConstants;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 

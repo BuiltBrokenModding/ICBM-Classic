@@ -28,6 +28,9 @@ public class NbtSaveNode<SaveObject, NbtData extends NBTBase> implements INbtSav
     @Override
     public NbtData save(SaveObject objectToSave)
     {
+        if(objectToSave == null) {
+            return null;
+        }
         return save.apply(objectToSave);
     }
 

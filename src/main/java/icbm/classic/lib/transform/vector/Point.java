@@ -4,7 +4,6 @@ import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos2D;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.Pos2D;
-
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;

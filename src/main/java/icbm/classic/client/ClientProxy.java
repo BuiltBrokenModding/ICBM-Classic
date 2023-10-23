@@ -1,16 +1,18 @@
 package icbm.classic.client;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-
 import icbm.classic.CommonProxy;
-import icbm.classic.api.missiles.IMissileFlightLogic;
+import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.client.fx.ParticleAirICBM;
 import icbm.classic.client.fx.ParticleLauncherSmoke;
 import icbm.classic.client.fx.ParticleSmokeICBM;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
+import icbm.classic.config.ConfigClient;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderChicken;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +25,16 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy
 {
+    @Override
+    public void init()
+    {
+        super.init();
+        final Render render = Minecraft.getMinecraft().getRenderManager().getEntityClassRenderObject(EntityChicken.class);
+        if(render instanceof RenderChicken) {
+            ((RenderChicken) render).addLayer(new LayerChickenHelmet((RenderChicken) render));
+        }
+    }
+
     @Override
     public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
@@ -84,80 +96,30 @@ public class ClientProxy extends CommonProxy
     @Override
     public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir)
     {
-        if (entity.world.isRemote)
+        if (entity.world.isRemote && ConfigClient.MISSILE_ENGINE_SMOKE)
         {
-            if (flightLogic instanceof BallisticFlightLogic)
+            Pos position = new Pos(entity);
+            // The distance of the smoke relative
+            // to the missile.
+            double distance = -1.2f;
+            // The delta Y of the smoke.
+            double y = Math.sin(Math.toRadians(entity.rotationPitch)) * distance;
+            // The horizontal distance of the
+            // smoke.
+            double dH = Math.cos(Math.toRadians(entity.rotationPitch)) * distance;
+            // The delta X and Z.
+            double x = Math.sin(Math.toRadians(entity.rotationYaw)) * dH;
+            double z = Math.cos(Math.toRadians(entity.rotationYaw)) * dH;
+            position = position.add(x, y, z);
+
+            for (int i = 0; i < 10; i++)
             {
-                if (entity.motionY > -1)
-                {
-                    Pos position = new Pos((IPos3D) entity);
-                    // The distance of the smoke relative
-                    // to the missile.
-                    double distance = -1.2f;
-                    // The delta Y of the smoke.
-                    double y = Math.sin(Math.toRadians(entity.rotationPitch)) * distance;
-                    // The horizontal distance of the
-                    // smoke.
-                    double dH = Math.cos(Math.toRadians(entity.rotationPitch)) * distance;
-                    // The delta X and Z.
-                    double x = Math.sin(Math.toRadians(entity.rotationYaw)) * dH;
-                    double z = Math.cos(Math.toRadians(entity.rotationYaw)) * dH;
-                    position = position.add(x, y, z);
-
-                    ((BallisticFlightLogic)flightLogic).getLastSmokePos().add(position);
-
-                    Pos lastPos = null;
-                    if (((BallisticFlightLogic)flightLogic).getLastSmokePos().size() > 5)
-                    {
-                        lastPos = ((BallisticFlightLogic)flightLogic).getLastSmokePos().get(0);
-                        ((BallisticFlightLogic)flightLogic).getLastSmokePos().remove(0);
-                    }
-
-                    spawnAirParticle(entity.world,
-                        position.x(), position.y(), position.z(),
-                        -entity.motionX * 0.75, -entity.motionY * 0.75, -entity.motionZ * 0.75,
-                        1, 0.75f, 0,
-                        5, 10);
-
-                    if (ticksInAir > 5 && lastPos != null)
-                    {
-                        for (int i = 0; i < 10; i++)
-                        {
-                            spawnAirParticle(entity.world,
-                                lastPos.x(), lastPos.y(), lastPos.z(),
-                                -entity.motionX * 0.5, -entity.motionY * 0.5, -entity.motionZ * 0.5,
-                                1, 1, 1,
-                                (int) Math.max(1d, 6d * (1 / (1 + entity.posY / 100))), 100);
-                            position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Pos position = new Pos((IPos3D) entity);
-                // The distance of the smoke relative
-                // to the missile.
-                double distance = -1.2f;
-                // The delta Y of the smoke.
-                double y = Math.sin(Math.toRadians(entity.rotationPitch)) * distance;
-                // The horizontal distance of the
-                // smoke.
-                double dH = Math.cos(Math.toRadians(entity.rotationPitch)) * distance;
-                // The delta X and Z.
-                double x = Math.sin(Math.toRadians(entity.rotationYaw)) * dH;
-                double z = Math.cos(Math.toRadians(entity.rotationYaw)) * dH;
-                position = position.add(x, y, z);
-
-                for (int i = 0; i < 10; i++)
-                {
-                    spawnAirParticle(entity.world,
-                            position.x(), position.y(), position.z(),
-                            -entity.motionX * 0.5, -entity.motionY * 0.5, -entity.motionZ * 0.5,
-                        flightLogic.engineSmokeRed(entity), flightLogic.engineSmokeGreen(entity), flightLogic.engineSmokeBlue(entity),
-                            (int) Math.max(1d, 6d * (1 / (1 + entity.posY / 100))), 100);
-                    position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
-                }
+                spawnAirParticle(entity.world,
+                    position.x(), position.y(), position.z(),
+                    -entity.motionX * 0.5, -entity.motionY * 0.5, -entity.motionZ * 0.5,
+                    flightLogic.engineSmokeRed(entity), flightLogic.engineSmokeGreen(entity), flightLogic.engineSmokeBlue(entity),
+                    (int) Math.max(1d, 6d * (1 / (1 + entity.posY / 100))), 100);
+                position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
             }
         }
     }
@@ -165,30 +127,31 @@ public class ClientProxy extends CommonProxy
     @Override
     public void spawnPadSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir)
     {
-        final World world = entity.world;
-        final Random random = world.rand;
+        if(ConfigClient.MISSILE_LAUNCH_SMOKE) {
+            final World world = entity.world;
+            final Random random = world.rand;
 
-        double posX = entity.posX;
-        double posY = entity.posY - 1.2; //TODO get missile height from type
-        double posZ = entity.posZ;
+            double posX = entity.posX;
+            double posY = entity.posY - 1.2; //TODO get missile height from type
+            double posZ = entity.posZ;
 
-        //Spawn smoke TODO add config for smoke amount
-        for (int smokeCount = 0; smokeCount < 10; smokeCount++)
-        {
-            //Randomize flight direction down in a cone
-            final double velX = (random.nextFloat() - random.nextFloat()) * 0.3;
-            final double velY = 1 - (random.nextFloat() * 0.5);
-            final double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
+            //Spawn smoke TODO add config for smoke amount
+            for (int smokeCount = 0; smokeCount < 10; smokeCount++) {
+                //Randomize flight direction down in a cone
+                final double velX = (random.nextFloat() - random.nextFloat()) * 0.3;
+                final double velY = 1 - (random.nextFloat() * 0.5);
+                final double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
 
-            //spawn smoke
-            final ParticleLauncherSmoke particleAirParticleICBM = new ParticleLauncherSmoke(world,
-                posX, posY, posZ,
-                velX, -velY, velZ,
-                1 + 2 * random.nextFloat()
-            );
-            particleAirParticleICBM.setColor(1, 1, 1, true);
-            particleAirParticleICBM.setAge(180);
-            Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
+                //spawn smoke
+                final ParticleLauncherSmoke particleAirParticleICBM = new ParticleLauncherSmoke(world,
+                    posX, posY, posZ,
+                    velX, -velY, velZ,
+                    1 + 2 * random.nextFloat()
+                );
+                particleAirParticleICBM.setColor(1, 1, 1, true);
+                particleAirParticleICBM.setAge(180);
+                Minecraft.getMinecraft().effectRenderer.addEffect(particleAirParticleICBM);
+            }
         }
     }
 }

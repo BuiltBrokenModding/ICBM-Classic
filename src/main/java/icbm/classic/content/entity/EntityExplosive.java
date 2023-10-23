@@ -1,11 +1,11 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.caps.IEMPReceiver;
+import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.tile.IRotatable;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
@@ -17,7 +17,6 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

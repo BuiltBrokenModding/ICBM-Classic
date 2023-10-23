@@ -59,8 +59,12 @@ public interface IExplosiveData extends Comparable<IExplosiveData>
      *
      * @return tier of the explosive
      */
+    @Deprecated
     @Nonnull
-    EnumTier getTier();
+    default EnumTier getTier() {
+        // Only for legacy explosives, moving forward tier is visual only and has no functionality
+        return EnumTier.NONE;
+    }
 
     /**
      * Checks if the explosive is enabled. Users

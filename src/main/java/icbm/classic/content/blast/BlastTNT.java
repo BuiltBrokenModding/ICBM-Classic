@@ -1,6 +1,5 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import icbm.classic.lib.transform.region.Cube;
@@ -12,12 +11,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.Explosion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 

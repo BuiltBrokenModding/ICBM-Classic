@@ -8,7 +8,6 @@ import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -28,8 +27,10 @@ public class RadarMap
     public final int dimID;
 
     /** Map of chunk coords( converted to long) to radar contacts in that chunk */
-    public final HashMap<ChunkPos, List<RadarEntity>> chunk_to_entities = new HashMap();
-    public final List<RadarEntity> allEntities = new ArrayList();
+    private final HashMap<ChunkPos, List<RadarEntity>> chunk_to_entities = new HashMap();
+    private final List<RadarEntity> allEntities = new ArrayList(); //TODO turn into wrapper array around chunk map
+
+    private boolean accessingData = false;
 
     public int ticks = 0;
 
@@ -55,8 +56,12 @@ public class RadarMap
             //TODO consider multi-threading if number of entries is too high (need to ensure runs in less than 10ms~)
 
 
+            this.accessingData = true;
+
             HashMap<RadarEntity, ChunkPos> removeList = new HashMap();
             List<RadarEntity> addList = new ArrayList();
+
+            // Handle entities moving between chunks
             for (Map.Entry<ChunkPos, List<RadarEntity>> entry : chunk_to_entities.entrySet())
             {
                 if (entry.getValue() != null)
@@ -97,17 +102,10 @@ public class RadarMap
                 }
             }
 
-            addList.forEach(this::add);
+            this.accessingData = false;
 
-            Iterator<RadarEntity> it = allEntities.iterator();
-            while (it.hasNext())
-            {
-                RadarEntity object = it.next();
-                if (!object.isValid())
-                {
-                    it.remove();
-                }
-            }
+            addList.forEach(this::add);
+            allEntities.removeIf(object -> !object.isValid());
         }
     }
 
@@ -118,6 +116,10 @@ public class RadarMap
 
     public boolean add(RadarEntity object)
     {
+        if(accessingData) {
+            ICBMClassic.logger().warn("Attempted to add radar entity mid access of entities", new RuntimeException());
+            return false;
+        }
         if (!allEntities.contains(object) && object.isValid())
         {
             allEntities.add(object);
@@ -155,6 +157,11 @@ public class RadarMap
 
     public boolean remove(RadarEntity object)
     {
+        if(accessingData) {
+            ICBMClassic.logger().warn("Attempted to remove radar entity mid access of entities", new RuntimeException());
+            return false;
+        }
+
         ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
         allEntities.remove(object);
         if (chunk_to_entities.containsKey(pair))
@@ -179,6 +186,11 @@ public class RadarMap
      */
     public void remove(Chunk chunk)
     {
+        if(accessingData) {
+            ICBMClassic.logger().warn("Attempted to add radar chunk mid access of entities", new RuntimeException());
+            return;
+        }
+
         ChunkPos pair = chunk.getPos();
         if (chunk_to_entities.containsKey(pair))
         {
@@ -198,6 +210,10 @@ public class RadarMap
 
     public void unloadAll()
     {
+        if(accessingData) {
+            ICBMClassic.logger().warn("Attempted to clear all mid access of entities", new RuntimeException());
+            return;
+        }
         chunk_to_entities.clear();
     }
 
@@ -214,7 +230,7 @@ public class RadarMap
         return getRadarObjects(new Cube(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance).cropToWorld(), true);
     }
 
-    public List<RadarEntity> getEntitiesInChunk(int chunkX, int chunkZ)
+    protected List<RadarEntity> getEntitiesInChunk(int chunkX, int chunkZ)
     {
         ChunkPos p = new ChunkPos(chunkX, chunkZ);
         return chunk_to_entities.get(p);
@@ -222,6 +238,7 @@ public class RadarMap
 
     public void collectEntitiesInChunk(int chunkX, int chunkZ, Consumer<RadarEntity> collector)
     {
+        this.accessingData = true;
         final List<RadarEntity> objects = getEntitiesInChunk(chunkX, chunkZ);
         if (objects != null)
         {
@@ -233,6 +250,7 @@ public class RadarMap
                 }
             }
         }
+        this.accessingData = false;
     }
 
     /**
@@ -291,4 +309,7 @@ public class RadarMap
     }
 
 
+    public boolean isEmpty() {
+        return chunk_to_entities.isEmpty();
+    }
 }

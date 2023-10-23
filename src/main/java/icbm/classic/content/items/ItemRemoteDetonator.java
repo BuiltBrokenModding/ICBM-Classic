@@ -1,24 +1,19 @@
 package icbm.classic.content.items;
 
-import icbm.classic.lib.NBTConstants;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.events.RemoteTriggerEvent;
-import icbm.classic.lib.radio.RadioHeaders;
 import icbm.classic.lib.radio.RadioRegistry;
+import icbm.classic.lib.radio.messages.TriggerActionMessage;
 import icbm.classic.prefab.FakeRadioSender;
-import icbm.classic.prefab.item.ItemICBMElectrical;
+import icbm.classic.prefab.item.ItemRadio;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 /**
  * Remotely triggers missile launches on a set frequency, call back ID, and pass key. Will not funciton if any of those
@@ -27,13 +22,12 @@ import java.util.List;
  *
  * Created by Dark(DarkGuardsman, Robert) on 3/26/2016.
  */
-public class ItemRemoteDetonator extends ItemICBMElectrical
+public class ItemRemoteDetonator extends ItemRadio
 {
-    public static final int ENERGY = 1000;
-
     public ItemRemoteDetonator()
     {
-        super("remoteDetonator");
+        this.setName("remoteDetonator");
+        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
         this.setNoRepair();
@@ -46,7 +40,10 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
         if (!world.isRemote)
         {
             if(!MinecraftForge.EVENT_BUS.post(new RemoteTriggerEvent(world, player, stack))) //event was not canceled
-                RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, 2000), getBroadCastHz(stack), RadioHeaders.FIRE_LAUNCHER.header);
+            {
+                final String channel = getRadioChannel(stack);
+                RadioRegistry.popMessage(world, new FakeRadioSender(player, stack, null), new TriggerActionMessage(channel));
+            }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
@@ -55,42 +52,5 @@ public class ItemRemoteDetonator extends ItemICBMElectrical
     public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
     {
         return true;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
-    {
-        list.add("Fires missiles remotely");
-        list.add("Right click launcher screen to encode");
-    }
-
-    /**
-     * Gets the frequency this item broadcasts information on
-     *
-     * @param stack - this item
-     * @return frequency
-     */
-    public float getBroadCastHz(ItemStack stack)
-    {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey(NBTConstants.HZ))
-        {
-            return stack.getTagCompound().getFloat(NBTConstants.HZ);
-        }
-        return 0;
-    }
-
-    /**
-     * Sets the frequency of this item
-     *
-     * @param stack - this item
-     * @param hz    - value to set
-     */
-    public void setBroadCastHz(ItemStack stack, float hz)
-    {
-        if (stack.getTagCompound() == null)
-        {
-            stack.setTagCompound(new NBTTagCompound());
-        }
-        stack.getTagCompound().setFloat(NBTConstants.HZ, hz);
     }
 }

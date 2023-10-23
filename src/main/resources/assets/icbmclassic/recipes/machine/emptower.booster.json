@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "icbmclassic:emptower",
+    "data": 1,
+    "count": 1
+  },
+  "pattern": [
+    "prp",
+    "ewe",
+    "prp"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "wireGold"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "plateSteel"
+    },
+    "r": {
+      "item": "minecraft:redstone",
+      "data": 0
+    },
+    "e": {
+      "item": "icbmclassic:battery",
+      "data": 0
+    }
+  }
+}

@@ -1,7 +1,8 @@
 package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.missiles.IMissileTarget;
+import icbm.classic.api.missiles.IMissile;
+import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -17,6 +18,15 @@ public class DirectFlightLogic extends DeadFlightLogic
     private double motionX; //TODO do we need to save?
     private double motionY;
     private double motionZ;
+
+    public DirectFlightLogic() {
+        super();
+    }
+
+    public DirectFlightLogic(int fuelTicks)
+    {
+        super(fuelTicks);
+    }
 
     @Override
     public void calculateFlightPath(World world, double startX, double startY, double startZ, IMissileTarget targetData)
@@ -41,7 +51,7 @@ public class DirectFlightLogic extends DeadFlightLogic
     }
 
     @Override
-    public void start(Entity entity)
+    public void start(Entity entity, IMissile missile)
     {
         //Set motion
         entity.motionX = motionX;

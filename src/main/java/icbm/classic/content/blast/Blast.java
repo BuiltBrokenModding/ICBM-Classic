@@ -1,22 +1,21 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.explosion.responses.BlastForgeResponses;
-import icbm.classic.api.explosion.responses.BlastResponse;
-import icbm.classic.content.blast.redmatter.EntityRedmatter;
-import icbm.classic.lib.NBTConstants;
-import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.events.BlastBuildEvent;
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.explosion.IBlastRestore;
 import icbm.classic.api.explosion.IBlastTickable;
+import icbm.classic.api.explosion.responses.BlastForgeResponses;
+import icbm.classic.api.explosion.responses.BlastResponse;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.config.ConfigDebug;
+import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.thread.ThreadExplosion;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import icbm.classic.lib.transform.vector.Location;
 import net.minecraft.entity.Entity;
@@ -319,64 +318,46 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
         return this.doDamageEntities(radius, power, true);
     }
 
+    protected List<Entity> getEntities(double radius) {
+        Location minCoord = location.add(-radius - 1); //TODO drop need for location
+        Location maxCoord = location.add(radius + 1);
+        return world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
+    }
+
     /**
      * @return true if the method ran successfully, false if it was interrupted
      */
     protected boolean doDamageEntities(float radius, float power, boolean destroyItem)
     {
-        // Step 2: Damage all entities
-        radius *= 2.0F;
-        Location minCoord = location.add(-radius - 1);
-        Location maxCoord = location.add(radius + 1);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(minCoord.xi(), minCoord.yi(), minCoord.zi(), maxCoord.xi(), maxCoord.yi(), maxCoord.zi()));
-        Vec3d var31 = new Vec3d(location.x(), location.y(), location.z());
+        final List<Entity> allEntities = getEntities(radius * 2);
+        return doDamageEntities(allEntities, radius, power, destroyItem);
+    }
 
-        if (!ConfigBlast.ANTIMATTER_BLOCK_AND_ENT_DAMAGE_ON_REDMATTER && this instanceof BlastAntimatter) //TODO why is this in here and not the antimatter ;(
-        {
-            allEntities.sort((e1, e2) -> { //TODO why are we sorting
-                if (e2 instanceof EntityRedmatter)
-                {
-                    return 1; //put red matter at the front
-                }
-                else
-                {
-                    return -1;
-                }
-            });
-
-            //TODO why are we getting first?
-            if (onDamageEntity(allEntities.get(0))) //remove red matter blast and stop doing anything else
-            {
-                return false;
-            }
-        }
-
-        for (int i = 0; i < allEntities.size(); ++i)
-        {
-            Entity entity = allEntities.get(i);
-
-            if (this.onDamageEntity(entity))
-            {
+    protected boolean  doDamageEntities(List<Entity> entities, float radius, float power, boolean destroyItem) {
+        final Vec3d center = new Vec3d(location.x(), location.y(), location.z());
+        for (Entity entity : entities) {
+            if (this.onDamageEntity(entity)) {
                 continue;
             }
 
-            if (entity instanceof EntityItem && !destroyItem)
-            {
+            if (entity instanceof EntityItem && !destroyItem) {
                 continue;
             }
 
             double distance = entity.getDistance(location.x(), location.y(), location.z()) / radius;
 
-            if (distance <= 1.0D)
-            {
+            if (distance <= 1.0D) {
                 double xDifference = entity.posX - location.x();
                 double yDifference = entity.posY - location.y();
                 double zDifference = entity.posZ - location.z();
-                double var35 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
-                xDifference /= var35;
-                yDifference /= var35;
-                zDifference /= var35;
-                double var34 = world().getBlockDensity(var31, entity.getEntityBoundingBox());
+
+                double mag = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference); //TODO switch to sq for better speed
+
+                xDifference /= mag;
+                yDifference /= mag;
+                zDifference /= mag;
+
+                double var34 = world().getBlockDensity(center, entity.getEntityBoundingBox());
                 double var36 = (1.0D - distance) * var34;
                 int damage = 0;
 

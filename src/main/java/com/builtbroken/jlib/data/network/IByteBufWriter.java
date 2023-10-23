@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf;
  *
  * Created by robert on 1/11/2015.
  */
+@Deprecated
 public interface IByteBufWriter
 {
     /**

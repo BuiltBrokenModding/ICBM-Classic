@@ -2,29 +2,16 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.config.ConfigItems;
+import icbm.classic.content.blocks.emptower.ItemBlockEmpTower;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
-import icbm.classic.content.items.ItemAntidote;
-import icbm.classic.content.items.ItemBattery;
-import icbm.classic.content.items.ItemBombCart;
-import icbm.classic.content.items.ItemCrafting;
-import icbm.classic.content.items.ItemDefuser;
-import icbm.classic.content.items.ItemGrenade;
-import icbm.classic.content.items.ItemLaserDetonator;
-import icbm.classic.content.items.ItemMissile;
-import icbm.classic.content.items.ItemRadarGun;
-import icbm.classic.content.items.ItemRemoteDetonator;
-import icbm.classic.content.items.ItemRocketLauncher;
-import icbm.classic.content.items.ItemSignalDisrupter;
-import icbm.classic.content.items.ItemTracker;
+import icbm.classic.content.items.*;
 import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
 import icbm.classic.prefab.item.ItemBase;
-import icbm.classic.prefab.item.ItemBlockRotatedMultiTile;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -117,8 +104,6 @@ public class ItemReg
         event.getRegistry().register(new ItemBase().setName("saltpeter_ball").setCreativeTab(ICBMClassic.CREATIVE_TAB));
 
         event.getRegistry().register(new ItemAntidote().setName("antidote").setCreativeTab(ICBMClassic.CREATIVE_TAB));
-        event.getRegistry().register(new ItemSignalDisrupter());
-        event.getRegistry().register(new ItemTracker());
         event.getRegistry().register(new ItemDefuser());
         event.getRegistry().register(new ItemRadarGun());
         event.getRegistry().register(new ItemRemoteDetonator());
@@ -134,11 +119,12 @@ public class ItemReg
         event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockConcrete));
         event.getRegistry().register(new ItemBlock(BlockReg.blockReinforcedGlass).setRegistryName(BlockReg.blockReinforcedGlass.getRegistryName()));
         event.getRegistry().register(new ItemBlockExplosive(BlockReg.blockExplosive).setRegistryName(BlockReg.blockExplosive.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(BlockReg.blockEmpTower).setRegistryName(BlockReg.blockEmpTower.getRegistryName()));
+        event.getRegistry().register(new ItemBlockEmpTower(BlockReg.blockEmpTower));
         event.getRegistry().register(new ItemBlock(BlockReg.blockRadarStation).setRegistryName(BlockReg.blockRadarStation.getRegistryName()));
-        event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchSupport));
-        event.getRegistry().register(new ItemBlockRotatedMultiTile(BlockReg.blockLaunchBase, e -> TileLauncherBase.getLayoutOfMultiBlock(e)));
-        event.getRegistry().register(new ItemBlockSubTypes(BlockReg.blockLaunchScreen));
+        event.getRegistry().register(new ItemBlock(BlockReg.blockLaunchSupport).setRegistryName(BlockReg.blockLaunchSupport.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(BlockReg.blockLaunchBase).setRegistryName(BlockReg.blockLaunchBase.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(BlockReg.blockLaunchConnector).setRegistryName(BlockReg.blockLaunchConnector.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(BlockReg.blockLaunchScreen).setRegistryName(BlockReg.blockLaunchScreen.getRegistryName()));
         event.getRegistry().register(new ItemBlock(BlockReg.blockCruiseLauncher).setRegistryName(BlockReg.blockCruiseLauncher.getRegistryName()));
 
         //Crafting resources
@@ -169,5 +155,7 @@ public class ItemReg
             event.getRegistry().register(new ItemBattery());
         }
 
+        OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
+        OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
     }
 }

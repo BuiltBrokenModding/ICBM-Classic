@@ -2,14 +2,12 @@ package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.prefab.item.ItemBase;
-import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;

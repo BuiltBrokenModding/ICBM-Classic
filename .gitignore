@@ -10,7 +10,7 @@
 .settings/
 build/
 eclipse/
-
+*.launch
 
 *.iml
 *.iws
@@ -39,3 +39,4 @@ ops.json
 whitelist.json
 
 output_tests/
+/src/main/resources/assets/icbmclassic/_generated_credits.md.md

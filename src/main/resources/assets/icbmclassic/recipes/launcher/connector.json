@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "icbmclassic:launcher_connector",
+    "data": 0,
+    "count": 4
+  },
+  "pattern": [
+    "iwi",
+    "whw",
+    "iwi"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "h": {
+      "item": "minecraft:hopper",
+      "data": 0
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotSteel"
+    },
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "wireCopper"
+    }
+  }
+}

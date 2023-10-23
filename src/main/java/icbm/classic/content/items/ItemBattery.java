@@ -1,7 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.config.ConfigBattery;
-import icbm.classic.lib.energy.storage.EnergyBufferLimited;
+import icbm.classic.lib.energy.storage.EnergyBuffer;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.client.util.ITooltipFlag;
@@ -37,7 +37,7 @@ public class ItemBattery extends ItemICBMBase
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
         ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("battery", CapabilityEnergy.ENERGY, new EnergyBufferLimited(ConfigBattery.BATTERY_CAPACITY, ConfigBattery.BATTERY_INPUT_LIMIT, ConfigBattery.BATTERY_OUTPUT_LIMIT));
+        provider.add("battery", CapabilityEnergy.ENERGY, new EnergyBuffer(() -> ConfigBattery.BATTERY_CAPACITY).withReceiveLimit(() -> ConfigBattery.BATTERY_INPUT_LIMIT).withExtractLimit(() -> ConfigBattery.BATTERY_OUTPUT_LIMIT));
         return provider;
     }
 

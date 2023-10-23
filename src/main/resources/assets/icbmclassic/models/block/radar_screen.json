@@ -1,0 +1,19 @@
+{
+  "parent": "block/cube",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, 135, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.40, 0.40, 0.40 ]
+    }
+  },
+  "textures": {
+    "particle": "icbmclassic:blocks/machine_green",
+    "down": "icbmclassic:blocks/machine_green",
+    "up": "icbmclassic:blocks/machine_green",
+    "north": "icbmclassic:blocks/screen/radar",
+    "east": "icbmclassic:blocks/machine_green",
+    "south": "icbmclassic:blocks/machine_green",
+    "west": "icbmclassic:blocks/machine_green"
+  }
+}

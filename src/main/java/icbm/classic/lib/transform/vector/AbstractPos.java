@@ -124,7 +124,13 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
         return null;
     }
 
+    @Deprecated
     public EulerAngle toEulerAngle(IPos3D target)
+    {
+        return sub(target).toEulerAngle();
+    }
+
+    public EulerAngle toEulerAngle(Vec3d target)
     {
         return sub(target).toEulerAngle();
     }
@@ -179,7 +185,7 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
 
     public R sub(Vec3d vec)
     {
-        return add(vec.x, vec.y, vec.z);
+        return sub(vec.x, vec.y, vec.z);
     }
 
     public double distance(Vec3i vec)

@@ -1,4 +1,4 @@
-## Master language file
+## Master language file https://htmlcolorcodes.com/minecraft-color-codes/
 itemGroup.icbmclassic=ICBM-Classic
 
 ## Config
@@ -58,7 +58,7 @@ potion.radiation=Radiation
 item.icbmclassic:battery.name=Battery
 item.icbmclassic:battery.info=Used to store and transport power
 
-item.icbmclassic:sulfurDust.name=Sulfur
+item.icbmclassic:sulfurDust.name=Organic Sulfur
 item.icbmclassic:sulfurDust.info=Used in the creation of gunpowder
 
 item.icbmclassic:saltpeter.name=Saltpeter
@@ -73,23 +73,25 @@ item.icbmclassic:poisonPowder.info=Used in the creation of explosives
 item.icbmclassic:antidote.name=Antidote
 item.icbmclassic:antidote.info=Cures all effects
 
-item.icbmclassic:radarGun.name=Radar Gun
-item.icbmclassic:radarGun.info=Stores GPS data
+# Radar Gun
+item.icbmclassic:radarGun.name=Laser Range Finder
+item.icbmclassic:radarGun.info=Stores GPS data of targetted position \n Max range of %1$sm
+item.icbmclassic:radarGun.data.pos=Target: %1$sx, %2$sy, %3$sz
+item.icbmclassic:radarGun.data.all=Target: (%1$sx, %2$sy, %3$sz) W: %4$s
+item.icbmclassic:radarGun.data.empty=Target: empty
 
+# Laser Det
 item.icbmclassic:remoteDetonator.name=Remote Detonator
-item.icbmclassic:radarGun.info.info=Remotely fire a missile
+item.icbmclassic:remoteDetonator.info=Sends a radio signal to trigger devices
 
-item.icbmclassic:defuser.name=Defuser
-item.icbmclassic:defuser.info=Remove explosives safely, even after they have gone off
+item.icbmclassic:defuser.name=Defuse Kit
+item.icbmclassic:defuser.info=Used to disarm explosive devices (blocks, entities)
 
 item.icbmclassic:laserDetonator.name=Laser Designator
-item.icbmclassic:laserDetonator.info.info=Remotely fire a missile
-
-item.icbmclassic:tracker.name=Tracker
-item.icbmclassic:tracker.info=Not implemented, set for removal
-
-item.icbmclassic:signalDisrupter.name=Signal Disrupter
-item.icbmclassic:signalDisrupter.info=Jam frequencies to prevent detection or missile launches
+item.icbmclassic:laserDetonator.info.info=Sends a radio signal to trigger devices with the target information
+item.icbmclassic:laserDetonator.laser.canceled=Laser event canceled
+item.icbmclassic:laserDetonator.laser.missed=Laser Error; Nothing on path within %1$sm
+item.icbmclassic:laserDetonator.target=Target set (%1$s, %2$s, %3$s)
 
 item.icbmclassic:rocketLauncher.name=Rocket Launcher
 item.icbmclassic:rocketLauncher.info=This rocket launcher can fire up to Tier %s rockets
@@ -104,7 +106,8 @@ item.icbmclassic:surface_to_air_missile.info=Missile designed to fire from the g
 item.icbmclassic:ingot.steel.name=Steel Ingot
 item.icbmclassic:ingot.copper.name=Copper Ingot
 
-item.icbmclassic:clump.steel.name=Steel Clump
+item.icbmclassic:clump.steel.name=Coal Encased Iron
+item.icbmclassic:clump.steel.info=Old method for steel creation using coal casing to enrich the iron with carbon
 
 item.icbmclassic:plate.iron.name=Iron Plate
 item.icbmclassic:plate.steel.name=Steel Plate
@@ -117,26 +120,25 @@ item.icbmclassic:circuit.advanced.name=Advanced Circuit
 item.icbmclassic:circuit.elite.name=Elite Circuit
 
 ## ICBM Machines
-tile.icbmclassic:launcherbase.0.name=Launcher Platform T1
-tile.icbmclassic:launcherbase.1.name=Launcher Platform T2
-tile.icbmclassic:launcherbase.2.name=Launcher Platform T3
+tile.icbmclassic:launcherbase.name=Launcher Pad
 tile.icbmclassic:launcherbase.info=Hold missiles in place before launch
 
-tile.icbmclassic:launcherscreen.0.name=Launcher Control Panel T1
-tile.icbmclassic:launcherscreen.1.name=Launcher Control Panel T2
-tile.icbmclassic:launcherscreen.2.name=Launcher Control Panel T3
+tile.icbmclassic:launcherscreen.name=Launcher Screen
 tile.icbmclassic:launcherscreen.info=Used to fire missiles from launchers
 
-tile.icbmclassic:launcherframe.0.name=Launcher Support Frame T1
-tile.icbmclassic:launcherframe.1.name=Launcher Support Frame T2
-tile.icbmclassic:launcherframe.2.name=Launcher Support Frame T3
-tile.icbmclassic:launcherframe.info=Improves accuracy of missiles
+tile.icbmclassic:launcherframe.name=Launcher Frame
+tile.icbmclassic:launcherframe.info=Optional decorative launcher connection block
+
+tile.icbmclassic:launcher_connector.name=Launcher Connector
+tile.icbmclassic:launcher_connector.info=Optional decorative launcher connection block
 
 tile.icbmclassic:radarstation.name=Radar Station
 tile.icbmclassic:radarstation.info=Detects missiles in flight
 
-tile.icbmclassic:emptower.name=EMP Tower
-tile.icbmclassic:emptower.info=Drains energy from tiles, entities and devices
+tile.icbmclassic:emptower.0.name=EMP Tower
+tile.icbmclassic:emptower.0.info=Generates an emp blast using power
+tile.icbmclassic:emptower.1.name=EMP Tower Extender
+tile.icbmclassic:emptower.1.info=Increases max range of emp tower by %1$s
 
 tile.icbmclassic:cruiselauncher.name=Cruise Launcher
 tile.icbmclassic:cruiselauncher.info=Dummy-fires a missile without target data
@@ -329,12 +331,6 @@ tile.icbmclassic:spikes.2.name=Flammable Spikes
 tile.icbmclassic:batterybox.0.name=Battery Box
 
 ## Chat messages
-message.tracker.nowtrack=Now tracking:
-message.tracker.nopower=Tracker out of electricity!
-message.tracker.banned=Tracker is banned in this area!
-
-message.defuser.nopower=Defuser out of electricity!
-
 message.designator.callTime=Calling air strike in:
 message.designator.blast=Incoming air strike!
 message.designator.setFreq=Laser Designator frequency set:
@@ -353,85 +349,89 @@ message.detonator.nopower=Remote out of electricity!
 message.radar.redstone.on=Radar set to emit redstone
 message.radar.redstone.off=Radar set to not emit redstone
 
-## GUI stuff
-gui.misc.nopower=Insufficient electricity!
-gui.misc.idle=Idle
-gui.misc.freq=Frequency:
-gui.misc.XCoord=X-Coord:
-gui.misc.YCoord=Y-Coord:
-gui.misc.ZCoord=Z-Coord:
-gui.misc.status=Status:
-gui.misc.missile=Missile[%d, %d]
-gui.misc.object=Object[%d, %d]
+## Format helper
+gui.icbmclassic:error=Unknown Error; Check console for more information.
+gui.icbmclassic:error.null=Invalid format: \n \t  Input required
+gui.icbmclassic:error.format.number.int=Invalid format: \n \t  Requires whole number \n Example: 4578
+gui.icbmclassic:error.format.number.float=Invalid format: \n \t  Requires decimal number. \n Example: 45.678
+gui.icbmclassic:error.format.vector.3d=Invalid format: \n \t  Requires 3 positional coordinates separated by commas. \n Example: 4567, 5678, 8974
+gui.icbmclassic:error.format.vector.2d=Invalid format: \n \t  Requires 2 positional coordinates separated by commas. \n Example: 4567, 5678
 
-gui.tracker.freq=Frequency
-gui.detector.name=Proximity Detector
-gui.detector.all=All
-gui.detector.players=Players
-gui.detector.mobs=Mobs
-gui.detector.range=Detection Range
-gui.detector.min=Min
-gui.detector.max=Max
-gui.detector.exclude=Exclude
-gui.detector.include=Include
-gui.detector.target=Target:
-gui.detector.on=On
-gui.detector.status=Status:
+gui.icbmclassic:energy=§aEnergy:§r %1$s / §a%2$s FE
+gui.icbmclassic:energy.withCost=§aEnergy:§r %1$s / %2$s FE \n §dUpkeep:§r %3$s FE/t
+gui.icbmclassic:energy.withCostAndAction=§aEnergy:§r %1$s / %2$s FE \n §dUpkeep:§r %3$s FE/t \n §cAction:§r %4$s FE
+gui.icbmclassic:energy.withAction=§aEnergy:§r %1$s / %2$s FE \n §cAction:§r %4$s FE
+gui.icbmclassic:error.no_network=Failed to connect to launcher network
 
-gui.empTower.name=EMP Tower
-gui.empTower.missiles=Missiles
-gui.empTower.elec=Electricity
-gui.empTower.both=Both
-gui.empTower.radius=EMP Radius: %p blocks
-gui.empTower.effect=EMP Effect:
-gui.empTower.effectDebilitate=Debilitate Electronics
-gui.empTower.effectDisrupt=Disrupt Missiles
-gui.empTower.effectDeplete=Deplete Electricity
-gui.empTower.mode=Mode:
-gui.empTower.ready=Ready to blast!
+gui.icbmclassic:tooltip.radio.channel=Radio Channel: \n \t Set to a shared alpha-numeric value to connect devices. \n \n §bAlt§r + Click to toggle active
+gui.icbmclassic:tooltip.target=Target: \n \t Current aim position. Can be set by tools or manually using format 'x, y, z'. \n Example: 56.5, 40, 89
 
-gui.launcherBase.name=Launcher Platform
-gui.launcherBase.place=Place Missile
+## Components
+gui.icbmclassic:button.face.tooltip=Missile Rotation: \n \t Sets the visual rotation and missile seat position. \n \n §bAlt§r + Click to rotate clockwise \n §bShift§r + Click to rotate counter-clockwise
+
+## EMP Tower
+gui.icbmclassic:empTower.name=EMP Tower
+gui.icbmclassic:empTower.power=Firing Safety: \n \t  Charging... %1$s
+gui.icbmclassic:empTower.cooling=Firing Safety: \n \t  Cooling... %1$s
+gui.icbmclassic:empTower.ready=Ready to fire
+
+## Launcher Silo
+gui.icbmclassic:launcherbase.name=Launcher Platform
+gui.icbmclassic:launcherbase.lock_height=Lock Height: \n \t  Distance the missile will travel up before changing course.
+gui.icbmclassic:launcherbase.group_id=Group ID: \n \t  Used to group missiles for fire missions
+gui.icbmclassic:launcherbase.group_index=Group Index: \n \t  Index of the missile in the group. Used for chain firing and other group firing features
+gui.icbmclassic:launcherbase.firing_delay=Firing Delay: \n \t  Time in ticks before firing. Useful for chain firing delay. 20 ticks in a second.
+
+## Launcher Screen
 gui.launcherscreen.name=Launcher Control Panel
-gui.launcherscreen.detHeight=Detonation Height:
-gui.launcherscreen.lockHeight=Lock Height:
-gui.launcherscreen.target=Missile Target
-gui.launcherscreen.inaccuracy=Inaccuracy: %p blocks
-gui.launcherscreen.statusMissing=Not connected!
-gui.launcherscreen.statusNoPower=Insufficient electricity!
-gui.launcherscreen.statusEmpty=Missile silo is empty!
-gui.launcherscreen.statusInvalid=Target is invalid!
-gui.launcherscreen.statusClose=Target too close!
-gui.launcherscreen.statusFar=Target too far!
-gui.launcherscreen.statusReady=Ready to launch!
-gui.launcherscreen.launch=Launch
+gui.launcherscreen.inaccuracy=Acc: %1$sm
+gui.launcherscreen.inaccuracy.info=Radius in meters from target the missile could land. Driven by a range of factors, such as: number of launchers, and distances.
+
+## Radar Station
+gui.icbmclassic:radar.name=Radar Station
+gui.icbmclassic:radar.range=Range Settings: \n \t  Trigger range & Detection range. \n \n §bShift§r for more info
+gui.icbmclassic:radar.range.shift=Trigger range will define threat area. Detection range will define radar max area of operation. Only detects flying entities of known type. Will trigger redstone and SAM missiles in response.
+gui.icbmclassic:radar.redstone.off=Redstone Off: \n \t  Click to enable outputting redstone for incoming threats
+gui.icbmclassic:radar.redstone.on=Redstone On: \n \t  Click to disable outputting redstone for incoming threats
+
+## General launcher feedback: used in GUIs tooltip, radio messages, and launcher status messages
+info.icbmclassic:launcher.error=Unknown Error
+info.icbmclassic:launcher.error.power=Firing Safety; Not enough power
+info.icbmclassic:launcher.error.fuel=Firing Safety; Not enough fuel
+info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
+info.icbmclassic:launcher.error.missile.multi=§c%1$s / %2$s not ready
+
+info.icbmclassic:launcher.error.network=Self Check; No launcher network
+info.icbmclassic:launcher.error.network.status.missing=Dev Bug; No status data
+info.icbmclassic:launcher.error.network.launchers=Self Check; No launcher(s) connected
+
+info.icbmclassic:launcher.error.target.none=Guidance Safety; No target set
+info.icbmclassic:launcher.error.target.min=Guidance safety; Target too close
+info.icbmclassic:launcher.error.target.max=Guidance safety; Target too far
+info.icbmclassic:launcher.error.target.angle=Guidance Safety; Aiming angle limits hit
+info.icbmclassic:launcher.error.missile.space=Guidance Safety; launcher collision detected.
 
 
-## Cruise launcher status, used by GUI and block interaction
-launcher.cruise.error.power=Firing Safety; Not enough power
-launcher.cruise.error.fuel=Firing Safety; Not enough fuel
-launcher.cruise.error.missile.none=Firing Safety; No missile
-launcher.cruise.error.target.none=Guidance safety; No target set
-launcher.cruise.error.target.min=Guidance safety; Target too close
-launcher.cruise.error.target.angle=Guidance safety; Aiming angle limits hit
-launcher.cruise.error.missile.space=Guidance safety; launcher collision detected. Clear area around missile required.
-launcher.cruise.ready=Ready to fire
+info.icbmclassic:launcher.error.launcher=Firing Failure; Null launcher detected
+info.icbmclassic:launcher.error.missile.spawn=Firing Failure; Missile Spawn Prevented
+
+info.icbmclassic:launcher.status=Unknown Status
+info.icbmclassic:launcher.status.ready=Ready to fire
+info.icbmclassic:launcher.status.launched=Launch Triggered
+info.icbmclassic:launcher.status.canceled=Launch Canceled
+
+info.icbmclassic:launcher.status.firing=Launch Triggered; Starting process
+info.icbmclassic:launcher.status.firing.delayed=Launch Triggered; Firing in %s
+info.icbmclassic:launcher.status.firing.aiming=Launch Triggered; Aiming at target
 
 ## Cruise launcher UI
 gui.launcher.cruise.name=Cruise Launcher
 
-### Text box feedback
-gui.launcher.cruise.error.null=Empty Input
-gui.launcher.cruise.error.format.target=Invalid format; Requires 3 positional coordinates separated by commas. Example: 4567, 5678, 8974
-gui.launcher.cruise.error.format.hz=Invalid format; Requires whole number. Example: 4578
+## IGPSData usage
+info.icbmclassic:gps.set.all=Transfered data: (%1$sx, %2$sy, %3$sz) W: %3$s
+info.icbmclassic:gps.set.pos=Transfered data: %1$sx %2$sy %3$sz
+info.icbmclassic:gps.set.empty=Error: No data to transfer
 
-
-## Chat warning if user tries to fire by hand, %s is status message from GUI
-chat.launcher.status=Status: %s
-chat.launcher.failedToFire=Warning: Cannot fire missile due to status error!
-chat.launcher.toolTargetSet=Target data transferred from tool.
-chat.launcher.toolWorldNotMatch=Target data's world is not the same as this one!
-chat.launcher.noTargetInTool=Tool does not contain any target data!
 chat.launcher.toolFrequencySet=Frequency set to %s
 
 gui.coordinator.name=Missile Coordinator
@@ -444,25 +444,10 @@ gui.coordinator.time=Time: %p seconds
 gui.coordinator.direction=Direction:
 gui.coordinator.wip=More features coming soon!
 
-gui.radar.coords=Coordinates:
-gui.radar.range=Range
-gui.radar.range.trigger=Trigger:
-gui.radar.range.detection=Detection:
-gui.radar.on=Radar on!
-gui.radar.nopower=No electricity!
-
-gui.terminal.name=Terminal
-gui.platform.ammo=Ammunition
-gui.platform.upgrades=Upgrades
-gui.platform.joules=of %j
-gui.platform.access=User Access
-
 ## Tooltips
 info.misc.freq=Frequency:
 info.tracker.tracking=Tracking:
 info.designator.noFreq=Frequency: Not set
-info.radarGun.savedCoords=Saved coordinates:
-info.radarGun.meters=Meters
 info.detonator.linked=Linked explosive:
 info.detonator.noLink=No Linked explosive
 info.misc.tier=Explosive tier
@@ -480,3 +465,19 @@ gps.error.pos.invalid.world.name=Can't target another world
 gps.error.pos.invalid.null.name=No target set
 gps.data.transferred.name=Data transferred
 gps.cleared.name=GPS data cleared
+
+## Messages
+
+### Radio
+radio.icbmclassic:message.target.null=Target data missing
+radio.icbmclassic:message.target.set=Target set to (%1$f %2$f %3$f)
+radio.icbmclassic:message.launch.success=Firing missile(s) at (%1$f %2$f %3$f) with range %4$f
+radio.icbmclassic:message.launch.failed=Failed to fire missile(s)
+radio.icbmclassic:message.launch.triggered=Firing missile(s), aiming launcher(s)
+
+### Missile
+
+
+# SubTitles
+subtitle.icbmclassic:missile.movement=Missile Engine
+subtitle.icbmclassic:missile.launch=Missile Launch

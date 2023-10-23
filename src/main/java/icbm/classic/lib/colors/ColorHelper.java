@@ -23,6 +23,10 @@ public final class ColorHelper
         return ((alpha & 255) << 24) + ((red & 255) << 16) + ((green & 255) << 8) + (blue & 255);
     }
 
+    public static int toRGB(int red, int green, int blue) {
+        return ((red & 255) << 16) + ((green & 255) << 8) + (blue & 255);
+    }
+
     /**
      * From java.awt.Color... copied and modified to avoid loading awt module
      */

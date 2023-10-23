@@ -7,15 +7,17 @@ import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
-import icbm.classic.content.missile.source.EntitySourceData;
-import icbm.classic.content.missile.source.MissileSourceEntity;
+import icbm.classic.content.missile.logic.source.MissileSource;
+import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMElectrical;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
@@ -23,6 +25,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -78,11 +81,11 @@ public class ItemRocketLauncher extends ItemICBMElectrical
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entityLiving, int timeLeft)
+    public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase shooter, int timeLeft)
     {
-        if (entityLiving instanceof EntityPlayer)
+        if (shooter instanceof EntityPlayer)
         {
-            EntityPlayer player = (EntityPlayer) entityLiving;
+            final EntityPlayer player = (EntityPlayer) shooter;
             if (this.getEnergy(stack) >= ENERGY || player.capabilities.isCreativeMode)
             {
                 // Check the player's inventory and look for missiles.
@@ -98,25 +101,45 @@ public class ItemRocketLauncher extends ItemICBMElectrical
                             if (!world.isRemote)
                             {
                                 final IMissile missile = capabilityMissileStack.newMissile(world);
-                                final Entity entity = missile.getMissileEntity();
+                                final Entity missileEntity = missile.getMissileEntity();
 
-                                if (entity instanceof IMissileAiming)
+                                if (missileEntity instanceof IMissileAiming)
                                 {
                                     //Setup aiming and offset from player
-                                    ((IMissileAiming) entity).initAimingPosition(player, 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
+                                    ((IMissileAiming) missileEntity).initAimingPosition(player, 1, ConfigMissile.DIRECT_FLIGHT_SPEED);
 
                                     //Init missile
                                     missile.setFlightLogic(new DeadFlightLogic(ConfigMissile.HANDHELD_FUEL));
-                                    missile.setMissileSource(new MissileSourceEntity(world, entity.getPositionVector(), new EntitySourceData(player)));
+                                    missile.setMissileSource(new MissileSource(world, missileEntity.getPositionVector(), new EntityCause(player)));
                                     missile.launch();
 
                                     //Spawn entity into world
-                                    if(world.spawnEntity(entity))
+                                    if(world.spawnEntity(missileEntity))
                                     {
                                         if (player.isSneaking()) //TODO allow missile to have control of when riding is allowed
                                         {
-                                            player.startRiding(entity);
+                                            player.startRiding(missileEntity);
                                             player.setSneaking(false);
+                                        }
+
+                                        else if(player.getHeldItem(EnumHand.OFF_HAND).getItem() == Items.LEAD) {
+
+                                            final double x = shooter.posX;
+                                            final double y = shooter.posY;
+                                            final double z = shooter.posZ;
+
+                                            for (EntityLiving victim : world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(
+                                                x - 7.0D, y - 7.0D, z - 7.0D,
+                                                x + 7.0D, y + 7.0D, z + 7.0D))
+                                            )
+                                            {
+                                                if (victim.getLeashHolder() == player)
+                                                {
+                                                    //victim.setLeashHolder(missileEntity, true);
+                                                    victim.startRiding(missileEntity);
+                                                    break;
+                                                }
+                                            }
                                         }
 
                                         if (!player.capabilities.isCreativeMode)

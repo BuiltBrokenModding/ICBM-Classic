@@ -26,16 +26,28 @@ import javax.annotation.Nullable;
 public class BlockRadarStation extends BlockICBM
 {
     public static final PropertyBool REDSTONE_PROPERTY = PropertyBool.create("redstone");
+    public static final PropertyRadarState RADAR_STATE = new PropertyRadarState();
 
     public BlockRadarStation()
     {
-        super("radarStation");
+        super("radarStation"); //TODO rename to "radar_screen"
+        this.dropInventory = true;
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    {
+        final TileEntity tile = worldIn.getTileEntity(pos);
+        if(tile instanceof TileRadarStation) {
+            return state.withProperty(RADAR_STATE, ((TileRadarStation) tile).getRadarState());
+        }
+        return state;
     }
 
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, ROTATION_PROP, REDSTONE_PROPERTY);
+        return new BlockStateContainer(this, ROTATION_PROP, REDSTONE_PROPERTY, RADAR_STATE);
     }
 
     @Override
@@ -43,7 +55,7 @@ public class BlockRadarStation extends BlockICBM
     {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if(tileEntity instanceof TileRadarStation) {
-            return ((TileRadarStation) tileEntity).enableRedstoneOutput;
+            return ((TileRadarStation) tileEntity).isOutputRedstone();
         }
         return false;
     }
@@ -77,13 +89,13 @@ public class BlockRadarStation extends BlockICBM
         if (!world.isRemote)
         {
             //if (WrenchUtility.isUsableWrench(player, player.getHeldItem(hand), pos.getX(), pos.getY(), pos.getZ()))
-            if (player.getHeldItem(hand).getItem() == Items.REDSTONE)
+            if (player.getHeldItem(hand).getItem() == Items.REDSTONE) //TODO move to UI
             {
                 final TileEntity tile = world.getTileEntity(pos);
                 if (tile instanceof TileRadarStation)
                 {
-                    ((TileRadarStation) tile).enableRedstoneOutput = !((TileRadarStation) tile).enableRedstoneOutput;
-                    player.sendMessage(new TextComponentTranslation(((TileRadarStation) tile).enableRedstoneOutput ? "message.radar.redstone.on" : "message.radar.redstone.off"));
+                    ((TileRadarStation) tile).setOutputRedstone(!((TileRadarStation) tile).isOutputRedstone());
+                    player.sendMessage(new TextComponentTranslation(((TileRadarStation) tile).isOutputRedstone() ? "message.radar.redstone.on" : "message.radar.redstone.off"));
                 }
                 else
                 {
@@ -99,21 +111,9 @@ public class BlockRadarStation extends BlockICBM
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+        return EnumBlockRenderType.MODEL;
     }
 
     @Nullable

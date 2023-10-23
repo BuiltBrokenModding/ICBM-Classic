@@ -2,10 +2,8 @@ package icbm.classic.content.blast.imp;
 
 import icbm.classic.api.explosion.BlastState;
 import icbm.classic.api.explosion.IBlastInit;
-import icbm.classic.api.explosion.responses.BlastForgeResponses;
 import icbm.classic.api.explosion.responses.BlastNullResponses;
 import icbm.classic.api.explosion.responses.BlastResponse;
-import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -18,6 +16,19 @@ public abstract class BlastBase implements IBlastInit
     private World world;
     private double x, y, z;
     private boolean locked;
+    private double blastSize;
+
+    @Override
+    public float getBlastRadius()
+    {
+        return (float) blastSize;
+    }
+
+    @Override
+    public IBlastInit setBlastSize(double size) {
+        this.blastSize = size;
+        return this;
+    }
 
     @Override
     public void clearBlast()

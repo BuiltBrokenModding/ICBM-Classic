@@ -1,8 +1,8 @@
 package icbm.classic.content.potion;
 
-import icbm.classic.lib.transform.vector.Pos;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -63,8 +63,8 @@ public abstract class Poison
      * Called to poison this specific entity with this specific type of poison.
      *
      * @param entity
-     * @amiplifier - The amplification value.
-     * @armorRequired - The amount of pieces of armor required to be protected.
+     * @param amplifier
+     * @param emitPosition
      */
     public void poisonEntity(Pos emitPosition, EntityLivingBase entity, int amplifier)
     {

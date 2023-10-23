@@ -1,7 +1,8 @@
 package icbm.classic.api.events;
 
-import icbm.classic.content.blocks.launcher.TileLauncherPrefab;
-import icbm.classic.lib.transform.vector.Pos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
@@ -13,12 +14,14 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 @Cancelable
 public class LauncherSetTargetEvent extends Event
 {
-    public final TileLauncherPrefab launcher;
-    public Pos target;
+    public final World world;
+    public final BlockPos pos;
+    public Vec3d target;
 
-    public LauncherSetTargetEvent(TileLauncherPrefab launcher, Pos target)
+    public LauncherSetTargetEvent(World world, BlockPos pos, Vec3d target)
     {
-        this.launcher = launcher;
+        this.world = world;
+        this.pos = pos;
         this.target = target;
     }
 }

@@ -1,7 +1,6 @@
 package icbm.classic.client;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.EnumTier;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
@@ -11,39 +10,29 @@ import icbm.classic.client.render.entity.*;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
-import icbm.classic.content.blocks.emptower.TESREMPTower;
+import icbm.classic.content.blocks.emptower.TESREmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
+import icbm.classic.content.blocks.emptower.TileEmpTowerFake;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
-import icbm.classic.content.blocks.launcher.frame.TESRLauncherFrame;
-import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
-import icbm.classic.content.blocks.launcher.screen.TESRLauncherScreen;
-import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.blocks.radarstation.TESRRadarStation;
-import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.content.entity.*;
-import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.entity.mobs.EntityXmasCreeper;
-import icbm.classic.content.entity.mobs.EntityXmasSkeleton;
-import icbm.classic.content.entity.mobs.EntityXmasSkeletonBoss;
-import icbm.classic.content.entity.mobs.EntityXmasSnowman;
-import icbm.classic.content.entity.mobs.EntityXmasZombie;
-import icbm.classic.content.entity.mobs.EntityXmasZombieBoss;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.RenderEntityBlock;
 import icbm.classic.content.items.ItemCrafting;
+import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.prefab.tile.BlockICBM;
+import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -53,7 +42,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,6 +68,26 @@ public class ClientReg
     }
 
     @SubscribeEvent
+    public static void registerBlockColor(ColorHandlerEvent.Block event) {
+        event.getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
+            if(worldIn != null && pos != null) {
+                final TileEntity tile = worldIn.getTileEntity(pos);
+                if (tile instanceof TileEMPTower) {
+                    //TODO cache as chargePercent(0 to 100 int) -> value
+                    int red = (int) Math.floor(Math.cos(((TileEMPTower) tile).getChargePercentage()) * 255);
+                    int blue = (int) Math.floor(Math.sin(((TileEMPTower) tile).getChargePercentage()) * 255);
+                    return ColorHelper.toRGB(red, 0, blue);
+                } else if (tile instanceof TileEmpTowerFake && ((TileEmpTowerFake) tile).getHost() != null) {
+                    int red = (int) Math.floor(Math.cos(((TileEmpTowerFake) tile).getHost().getChargePercentage()) * 255);
+                    int blue = (int) Math.floor(Math.sin(((TileEmpTowerFake) tile).getHost().getChargePercentage()) * 255);
+                    return ColorHelper.toRGB(red, 0, blue);
+                }
+            }
+            return 0;
+        },  BlockReg.blockEmpTower);
+    }
+
+    @SubscribeEvent
     public static void registerAllModels(ModelRegistryEvent event)
     {
         OBJLoader.INSTANCE.addDomain(ICBMConstants.DOMAIN);
@@ -102,8 +110,6 @@ public class ClientReg
         newBlockModel(BlockReg.blockConcrete, 1, "inventory", "_compact");
         newBlockModel(BlockReg.blockConcrete, 2, "inventory", "_reinforced");
 
-        newBlockModel(BlockReg.blockCruiseLauncher, 0, "inventory", "");
-
         //Explosives
         registerExBlockRenders();
         registerGrenadeRenders();
@@ -111,14 +117,14 @@ public class ClientReg
         registerMissileRenders();
 
         //Machines
-        newBlockModel(BlockReg.blockEmpTower, 0, "inventory", "");
+        newBlockModel(BlockReg.blockEmpTower, 0, "inventory_0", "");
+        newBlockModel(BlockReg.blockEmpTower, 1, "inventory_1", "");
         newBlockModel(BlockReg.blockRadarStation, 0, "inventory", "");
-
-        registerLauncherPart(BlockReg.blockLaunchBase);
-        registerLauncherPart(BlockReg.blockLaunchSupport);
-        registerLauncherPart(BlockReg.blockLaunchScreen);
-
-        registerMultiBlockRenders();
+        newBlockModel(BlockReg.blockLaunchBase, 0, "inventory", "");
+        newBlockModel(BlockReg.blockLaunchScreen, 0, "inventory", "");
+        newBlockModel(BlockReg.blockLaunchSupport, 0, "inventory", "");
+        newBlockModel(BlockReg.blockLaunchConnector, 0, "inventory", "");
+        newBlockModel(BlockReg.blockCruiseLauncher, 0, "inventory", "");
 
         //items
         newItemModel(ItemReg.itemPoisonPowder, 0, "inventory", "");
@@ -169,27 +175,10 @@ public class ClientReg
         RenderingRegistry.registerEntityRenderingHandler(EntitySmoke.class, RenderSmoke::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeleton.class, RenderSkeletonXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSkeletonBoss.class, RenderSkeletonXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasSnowman.class, RenderSnowmanXmas::new);
-
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombie.class, RenderZombieXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasZombieBoss.class, RenderZombieXmas::new);
-        RenderingRegistry.registerEntityRenderingHandler(EntityXmasCreeper.class, RenderCreeperXmas::new);
-
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREMPTower());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileRadarStation.class, new TESRRadarStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherFrame.class, new TESRLauncherFrame());
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherScreen.class, new TESRLauncherScreen());
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
-    }
-
-    protected static void registerMultiBlockRenders()
-    {
-        //Disable rendering of the block, Fixes JSON errors as well
-        ModelLoader.setCustomStateMapper(BlockReg.multiBlock, block -> Collections.emptyMap());
-        ModelBakery.registerItemVariants(Item.getItemFromBlock(BlockReg.multiBlock));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREmpTower());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEmpTowerFake.class, new TESREmpTower());
     }
 
     protected static void registerExBlockRenders()
@@ -221,26 +210,6 @@ public class ClientReg
                 .map(mrl -> new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()))
                 .collect(Collectors.toList())
                 .toArray(new ResourceLocation[itemBlockModelMap.values().size()]));
-    }
-
-    protected static void registerLauncherPart(Block block)
-    {
-        final String resourcePath = block.getRegistryName().toString();
-
-        ModelLoader.setCustomStateMapper(block, new DefaultStateMapper()
-        {
-            @Override
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                return new ModelResourceLocation(resourcePath, getPropertyString(state.getProperties()));
-            }
-        });
-        for (EnumTier tier : new EnumTier[]{EnumTier.ONE, EnumTier.TWO, EnumTier.THREE})
-        {
-            IBlockState state = block.getDefaultState().withProperty(BlockICBM.TIER_PROP, tier).withProperty(BlockICBM.ROTATION_PROP, EnumFacing.UP);
-            String properties_string = getPropertyString(state.getProperties());
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), tier.ordinal(), new ModelResourceLocation(resourcePath, properties_string));
-        }
     }
 
     protected static void registerGrenadeRenders()
@@ -312,46 +281,5 @@ public class ClientReg
     {
         if(item != null) //incase the item was disabled via config or doesn't exist due to something else
             ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(item.getRegistryName() + sub, varient));
-    }
-
-    public static String getPropertyString(Map<IProperty<?>, Comparable<?>> values, String... extrasArgs)
-    {
-        StringBuilder stringbuilder = new StringBuilder();
-
-        for (Map.Entry<IProperty<?>, Comparable<?>> entry : values.entrySet())
-        {
-            if (stringbuilder.length() != 0)
-            {
-                stringbuilder.append(",");
-            }
-
-            IProperty<?> iproperty = entry.getKey();
-            stringbuilder.append(iproperty.getName());
-            stringbuilder.append("=");
-            stringbuilder.append(getPropertyName(iproperty, entry.getValue()));
-        }
-
-
-        if (stringbuilder.length() == 0)
-        {
-            stringbuilder.append("inventory");
-        }
-
-        for (String args : extrasArgs)
-        {
-            if (stringbuilder.length() != 0)
-            {
-                stringbuilder.append(",");
-            }
-            stringbuilder.append(args);
-        }
-
-        return stringbuilder.toString();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> comparable)
-    {
-        return property.getName((T) comparable);
     }
 }

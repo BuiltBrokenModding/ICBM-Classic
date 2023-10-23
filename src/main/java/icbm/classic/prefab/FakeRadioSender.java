@@ -1,13 +1,20 @@
 package icbm.classic.prefab;
 
-import icbm.classic.api.tile.IRadioWaveReceiver;
-import icbm.classic.api.tile.IRadioWaveSender;
-import icbm.classic.ICBMClassic;
-import icbm.classic.lib.transform.region.Cube;
+import icbm.classic.api.data.IBoundBox;
+import icbm.classic.api.radio.IRadioMessage;
+import icbm.classic.api.radio.IRadioReceiver;
+import icbm.classic.api.radio.IRadioSender;
+import icbm.classic.api.radio.messages.ITextMessage;
+import icbm.classic.lib.data.BoundBlockPos;
 import icbm.classic.lib.radio.RadioRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 /**
  * Wrapper used by items to act as a radio wave sender
@@ -15,61 +22,52 @@ import net.minecraft.world.World;
  *
  * Created by Dark(DarkGuardsman, Robert) on 4/24/2016.
  */
-public class FakeRadioSender implements IRadioWaveSender
+public class FakeRadioSender implements IRadioSender
 {
+    private static final Object[] empty = new Object[0];
+
     public final EntityPlayer player;
     public final ItemStack item;
-    Cube cube;
+    IBoundBox<BlockPos> bounds;
 
-    public FakeRadioSender(EntityPlayer player, ItemStack item, int range)
+    public FakeRadioSender(EntityPlayer player, ItemStack item, Integer range)
     {
         this.player = player;
         this.item = item;
-        this.cube = new Cube(-range, Math.max(-range, 0), -range, range, range, range).add(player.posX, player.posY, player.posZ);
-    }
-
-    @Override
-    public void onMessageReceived(IRadioWaveReceiver receiver, float hz, String header, Object[] data)
-    {
-        if (ICBMClassic.runningAsDev)
-        {
-            //player.addChatComponentMessage(new TextComponentString("Received message with header " + header + " on band " + hz + "hz with data " + data));
+        if(range != null) {
+            this.bounds = new BoundBlockPos(player.getPosition(), range);
+        }
+        else {
+            this.bounds = RadioRegistry.INFINITE;
         }
     }
 
     @Override
-    public void sendRadioMessage(float hz, String header, Object... data)
-    {
-        RadioRegistry.popMessage(world(), this, hz, header, data);
+    public BlockPos getBlockPos() {
+        return player.getPosition();
     }
 
     @Override
-    public Cube getRadioSenderRange()
-    {
-        return cube;
+    public World getWorld() {
+        return player.getEntityWorld();
     }
 
     @Override
-    public double x()
-    {
-        return player.posX;
+    public IBoundBox<BlockPos> getRange() {
+        return bounds;
     }
 
     @Override
-    public double y()
-    {
-        return player.posY;
-    }
-
-    @Override
-    public double z()
-    {
-        return player.posZ;
-    }
-
-    @Override
-    public World world()
-    {
-        return player.world;
+    public void onMessageCallback(IRadioReceiver receiver, IRadioMessage response) {
+        if(response instanceof ITextMessage) {
+            final ITextMessage textMessage = (ITextMessage) response;
+            if(textMessage.shouldTranslate()) {
+                final Object[] data = Optional.ofNullable(textMessage.getTranslationInputs()).orElse(empty);
+                player.sendStatusMessage(new TextComponentTranslation(textMessage.getMessage(), data), true);
+            }
+            else {
+                player.sendStatusMessage(new TextComponentString(((ITextMessage) response).getMessage()), true);
+            }
+        }
     }
 }

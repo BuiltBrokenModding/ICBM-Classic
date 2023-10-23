@@ -34,6 +34,10 @@ public final class EnergySystem
         return getSystemForObject(item, side);
     }
 
+    public static boolean isEnergyItem(ItemStack stack) {
+        return isEnergyItem(stack, null);
+    }
+
     public static boolean isEnergyItem(ItemStack stack, EnumFacing side) {
         return energySystems.stream().anyMatch(system -> system.canSupport(stack, side));
     }

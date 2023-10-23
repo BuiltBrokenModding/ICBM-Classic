@@ -1,17 +1,17 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.api.tile.multiblock.IMultiTileHost;
-import icbm.classic.content.blocks.multiblock.MultiBlockHelper;
-import icbm.classic.prefab.tile.BlockICBM;
+import icbm.classic.ICBMConstants;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,11 +21,59 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robert) on 1/23/2018.
  */
-public class BlockEmpTower extends BlockICBM
+public class BlockEmpTower extends BlockContainer
 {
+    public static final PropertyTowerStates TOWER_MODELS = new PropertyTowerStates();
+    public static IBlockState COIL;
+    public static IBlockState ELECTRIC;
+
     public BlockEmpTower()
     {
-        super("emptower");
+        super(Material.IRON);
+        blockHardness = 10f;
+        blockResistance = 10f;
+        setRegistryName(ICBMConstants.DOMAIN, "emptower");
+        setUnlocalizedName(ICBMConstants.PREFIX + "emptower");
+        setCreativeTab(ICBMClassic.CREATIVE_TAB);
+
+        COIL = getDefaultState().withProperty(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.COIL);
+        ELECTRIC = getDefaultState().withProperty(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.ELECTRIC);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, TOWER_MODELS) {};
+    }
+
+    @Override
+    public int damageDropped(IBlockState state)
+    {
+        return getMetaFromState(state);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
+    {
+        return getStateFromMeta(meta);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta)
+    {
+        if(meta == 1) {
+            return getDefaultState().withProperty(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.SPIN);
+        }
+        return getDefaultState();
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        if(state.getValue(TOWER_MODELS) == PropertyTowerStates.EnumTowerTypes.SPIN) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override
@@ -36,25 +84,6 @@ public class BlockEmpTower extends BlockICBM
             playerIn.openGui(ICBMClassic.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
-    }
-
-    @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack stack)
-    {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof TileEMPTower)
-        {
-            //Build multiblock
-            MultiBlockHelper.buildMultiBlock(world, (IMultiTileHost) tile, true, true);
-            //TODO if can't place, break and drop item
-        }
-    }
-
-    @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
-        return worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos)
-                && worldIn.getBlockState(pos.up()).getBlock().isReplaceable(worldIn, pos.up());
     }
 
     @Override
@@ -84,13 +113,32 @@ public class BlockEmpTower extends BlockICBM
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
-        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+        return EnumBlockRenderType.MODEL;
+    }
+
+    @Override
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
+    {
+        if(state == ELECTRIC) {
+            return BlockRenderLayer.TRANSLUCENT == layer;
+        }
+        return BlockRenderLayer.SOLID == layer;
     }
 
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
+        if(meta == 1) {
+            return new TileEmpTowerFake();
+        }
         return new TileEMPTower();
+    }
+
+    @Override
+    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        items.add(new ItemStack(this, 1, 0));
+        items.add(new ItemStack(this, 1, 1));
     }
 }

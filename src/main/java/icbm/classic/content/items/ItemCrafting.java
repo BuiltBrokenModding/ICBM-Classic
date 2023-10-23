@@ -29,6 +29,7 @@ public class ItemCrafting extends ItemICBMBase
         this.oreName = oreName;
         subItems = items;
         setHasSubtypes(true);
+        registerOreNames();
     }
 
     public void registerOreNames(String... exceptions)

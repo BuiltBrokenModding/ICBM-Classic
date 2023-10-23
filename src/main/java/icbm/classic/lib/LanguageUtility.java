@@ -2,6 +2,8 @@ package icbm.classic.lib;
 
 import icbm.classic.ICBMClassic;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
@@ -9,6 +11,7 @@ import net.minecraft.util.text.translation.I18n;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Utility class to handle working with Strings
@@ -164,25 +167,62 @@ public class LanguageUtility
         return splitByLine(string, toolTipLineLength);
     }
 
-    public static List<String> splitByLine(String string, int charsPerLine)
+    public static List<String> splitByLine(String string, int charsPerLine) {
+        final List<String> lines = new ArrayList();
+        splitByLine(string, charsPerLine, lines::add);
+        return lines;
+    }
+
+    public static void splitByLine(String string, int charsPerLine, Consumer<String> lines)
     {
-        String[] words = string.split(" ");
-        List<String> lines = new ArrayList(); //TODO predict size for faster runtime
+        final String[] words = string.split(" ");
+       //TODO predict size for faster runtime
         String line = "";
+        int indent = 0;
         for (String word : words)
         {
-            if (word.length() + line.length() <= charsPerLine)
+            // Indent logic
+            if(word.trim().startsWith("\\t") || word.trim().startsWith("\t")) {
+                indent += 2;
+            }
+            else if(word.trim().startsWith("-\\t") || word.trim().startsWith("-\t")) {
+                indent -= 2;
+            }
+            // Line break logic
+            else if(word.contains("\\n") || word.contains("\n")) {
+                if(word.equals("\\n") || word.equals("\n")) {
+                    lines.accept(addSpacesLeft(line, indent));
+                    line = "";
+                }
+                // invalid format but insert anyways TODO process by splitting first
+                else {
+                    line += word.replace("\\n", "").replace("\n", "").trim();
+                }
+            }
+            // Continue building line
+            else if (word.length() + line.length() <= charsPerLine)
             {
                 line += word + " ";
             }
             else
             {
-                lines.add(line.trim());
+                // Add existing line
+                lines.accept(addSpacesLeft(line, indent));
+
+                // Start next line
                 line = word + " ";
             }
         }
-        lines.add(line.trim());
-        return lines;
+
+        // Add remaining
+        lines.accept(addSpacesLeft(line.trim(), indent));
+    }
+
+    private static String addSpacesLeft(String line, int pad) {
+        if(pad <= 0) {
+            return line;
+        }
+        return String.format("%1$" + pad + "s", "") + line;
     }
 
     public static String capitalizeFirst(String str)
@@ -193,5 +233,35 @@ public class LanguageUtility
     public static String decapitalizeFirst(String str)
     {
         return str.substring(0, 1).toLowerCase() + str.substring(1, str.length());
+    }
+
+    public static String posFormatted(Vec3d pos) {
+        return String.format("%.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
+    }
+
+    public static String posFormatted(BlockPos pos) {
+        return String.format("%d, %d, %d", pos.getX(), pos.getX(), pos.getZ());
+    }
+
+    public static void outputLines(ITextComponent textComponent, Consumer<String> lines) {
+        final String formatted = buildToolTipString(textComponent);
+        splitByLine(formatted, toolTipLineLength, lines);
+    }
+
+    public static String buildToolTipString(ITextComponent textComponent) {
+        StringBuilder stringbuilder = new StringBuilder();
+
+        for (ITextComponent itextcomponent : textComponent)
+        {
+            String s = itextcomponent.getUnformattedComponentText();
+
+            if (!s.isEmpty())
+            {
+                stringbuilder.append(itextcomponent.getStyle().getFormattingCode());
+                stringbuilder.append(s);
+            }
+        }
+
+        return stringbuilder.toString();
     }
 }

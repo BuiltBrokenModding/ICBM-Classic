@@ -1,10 +1,10 @@
 package icbm.classic.content.blast.redmatter.render;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.lib.colors.ColorB;
-import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.lib.colors.ColorB;
+import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -16,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.glu.Sphere;
 
 import javax.annotation.Nullable;
@@ -27,8 +26,9 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RenderRedmatter extends Render<EntityRedmatter>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "blackhole.png");
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "grey.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "entity/redmatter/blackhole.png");
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
+
     public static List<ColorB> randomColorsForBeams = new ArrayList();
 
     public ColorB colorIn = new ColorB(255, 255, 255); //TODO figure out how this works
@@ -59,7 +59,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
 
     public void renderSphere(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
-        final float radius = Math.max(ConfigBlast.REDMATTER.RENDER_SCALE * visualSize, 0.1f);
+        final float radius = Math.max(ConfigBlast.redmatter.RENDER_SCALE * visualSize, 0.1f);
 
         //--------------------------------------------------
         //Inside sphere
@@ -130,7 +130,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
     public void renderDisk(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
     {
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        float size = (float)Math.max(0.2, ConfigBlast.REDMATTER.RENDER_SCALE * visualSize * 3);
+        float size = (float)Math.max(0.2, ConfigBlast.redmatter.RENDER_SCALE * visualSize * 3);
 
         //Setup
         GlStateManager.pushMatrix();
@@ -144,6 +144,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
 
         //Assign texture
         this.bindTexture(TEXTURE_FILE);
+        GlStateManager.color(1, 0, 0, 1); // TODO pick color randomly and pulse the color using sin(angle)
 
         //top render
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -236,7 +237,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
             //Get color based on state
             ColorB colorOut = this.colorOut;
             ColorB colorIn = this.colorIn;
-            if (ConfigBlast.REDMATTER.RENDER_COLORED_BEAMS)
+            if (ConfigBlast.redmatter.RENDER_COLORED_BEAMS)
             {
                 if (beamIndex < randomColorsForBeams.size())
                 {

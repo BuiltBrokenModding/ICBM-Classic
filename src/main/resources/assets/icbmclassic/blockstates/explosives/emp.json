@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive_base_3",
-      "down": "icbmclassic:blocks/explosive_bottom_3",
-      "up": "icbmclassic:blocks/explosive_emp_top",
-      "north": "icbmclassic:blocks/explosive_emp_side",
-      "east": "icbmclassic:blocks/explosive_emp_side",
-      "south": "icbmclassic:blocks/explosive_emp_side",
-      "west": "icbmclassic:blocks/explosive_emp_side"
+      "particle": "icbmclassic:blocks/explosive/emp",
+      "down": "icbmclassic:blocks/explosive/bottom_3",
+      "up": "icbmclassic:blocks/explosive/bottom_3",
+      "north": "icbmclassic:blocks/explosive/emp",
+      "east": "icbmclassic:blocks/explosive/emp",
+      "south": "icbmclassic:blocks/explosive/emp",
+      "west": "icbmclassic:blocks/explosive/emp"
     }
   },
   "variants": {
@@ -26,21 +26,14 @@
     "rotation": {
       "up": {},
       "down": {
-        "x": 180
       },
       "north": {
-        "x": 90
       },
       "south": {
-        "x": 270
       },
       "east": {
-        "x": 90,
-        "y": 90
       },
       "west": {
-        "x": 90,
-        "y": 270
       }
     }
   }

@@ -1,36 +1,38 @@
 package icbm.classic.content.missile.entity;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
+import icbm.classic.lib.capability.chicken.CapSpaceChicken;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
-import icbm.classic.lib.network.packet.PacketEntity;
+import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.network.lambda.entity.PacketCodexEntity;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.prefab.entity.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityMinecartEmpty;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemMinecart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -116,7 +118,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
         if(syncClient) {
             this.syncClient = false;
-            sendDescriptionPacket();
+            PACKET_DESC.sendToAllAround(this);
         }
     }
 
@@ -147,6 +149,27 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
         if (getMissileCapability().getFlightLogic() == null || getMissileCapability().getFlightLogic().shouldDecreaseMotion(this))
         {
             super.decreaseMotion();
+        }
+    }
+
+    @Override
+    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
+    {
+        if(entityHit instanceof EntityChicken) { //TODO baby zombie for lolz?
+            if(getRidingEntity() == null) {
+                ICBMSounds.MEEP.play(entityHit, 2, 1, true);
+                entityHit.startRiding(this, true);
+                if(entityHit.hasCapability(CapSpaceChicken.INSTANCE, null)) {
+                    final CapSpaceChicken cap = entityHit.getCapability(CapSpaceChicken.INSTANCE, null);
+                    if(cap != null) {
+                        cap.setSpace(true);
+                    }
+                }
+            }
+        }
+        else
+        {
+            onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
         }
     }
 
@@ -203,8 +226,9 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void rotateTowardsMotion() {
+    public boolean shouldAlignWithMotion() {
         //Clearing default logic to flight controllers can handle motion
+        return Optional.ofNullable(missileCapability.getFlightLogic()).map((logic) -> logic.shouldAlignWithMotion(this)).orElse(false);
     }
 
     @Override
@@ -223,7 +247,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     public double getMountedYOffset()
     {
-        if (this.ticksInAir <= 0 && getMissileCapability().getFlightLogic() instanceof BallisticFlightLogic) //TODO abstract or find better way to handle seat position
+        if (this.ticksInAir <= 0 && getMissileCapability().getFlightLogic() instanceof BallisticFlightLogicOld) //TODO abstract or find better way to handle seat position
         {
             return height;
         } else if (getMissileCapability().getFlightLogic() instanceof DeadFlightLogic)
@@ -247,12 +271,9 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void onImpactEntity(Entity entityHit, float velocity)
+    protected boolean shouldCollideWith(Entity entityHit)
     {
-        if (!world.isRemote && !isRider(entityHit) && entityHit != shootingEntity)
-        {
-            super.onImpactEntity(entityHit, velocity);
-        }
+        return super.shouldCollideWith(entityHit) && !isRider(entityHit) && entityHit != shootingEntity;
     }
 
     public boolean isRider(Entity entity) {
@@ -268,28 +289,31 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void onImpact() {
+    protected void onImpact(Vec3d impactLocation) {
         if(!hasImpacted) {
             this.hasImpacted = true;
-            logImpact();
+            logImpact(impactLocation);
             dismountRidingEntity();
             removePassengers();
             setDead();
         }
     }
 
-    protected void logImpact()
+    protected void logImpact(Vec3d impactLocation)
     {
         // TODO make optional via config
         // TODO log to ICBM file separated from main config
         // TODO offer hook for database logging
-        final String formatString = "Missile[%s] impacted at (%sx,%sy,%sz,%sd)";
+        final String formatString = "Missile[%s] (%sx, %sy, %sz, %sd) impacted at (%s, %s, %s)";
         final String formattedMessage = String.format(formatString,
             this.getEntityId(),
             xi(),
             yi(),
             zi(),
-            world().provider.getDimension()
+            world().provider.getDimension(),
+            impactLocation.x,
+            impactLocation.y,
+            impactLocation.z
         );
         ICBMClassic.logger().info(formattedMessage);
     }
@@ -301,12 +325,6 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             return true;
         }
         return false;
-    }
-
-    protected void sendDescriptionPacket() {
-        final PacketEntity packet = new PacketEntity("EntityMissile#desc", this.getEntityId(), 1);
-        packet.addData(this::writeSpawnData);
-        ICBMClassic.packetHandler.sendToAllAround(packet, world, posX, posY, posZ, 200);
     }
 
     @Override
@@ -350,6 +368,13 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             (missile, data) -> missile.getMissileCapability().deserializeNBT(data)
         ))
         .base();
+
+    public static final PacketCodexEntity<EntityMissile, EntityMissile> PACKET_DESC = (PacketCodexEntity<EntityMissile, EntityMissile>) new PacketCodexEntity<EntityMissile, EntityMissile>(new ResourceLocation(ICBMConstants.DOMAIN, "missile"), "description")
+            .nodeNbtCompound(SAVE_LOGIC::save, SAVE_LOGIC::load);
+
+    static  {
+        PacketCodexReg.register(PACKET_DESC);
+    }
 
     public abstract ItemStack toStack();
 }

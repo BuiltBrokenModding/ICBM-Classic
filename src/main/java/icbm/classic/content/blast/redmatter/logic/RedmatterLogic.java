@@ -12,7 +12,8 @@ import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 import icbm.classic.content.blast.redmatter.DamageSourceRedmatter;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.entity.EntityExplosion;
-import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.explosive.ExplosiveHandler;
 import net.minecraft.block.Block;
@@ -22,11 +23,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -70,7 +67,7 @@ public class RedmatterLogic
      */
     public int getBlocksPerTick()
     {
-        return ConfigBlast.REDMATTER.MAX_BLOCKS_EDITS_PER_TICK;
+        return ConfigBlast.redmatter.MAX_BLOCKS_EDITS_PER_TICK;
     }
 
     /** Invoked each tick by the controlling entity */
@@ -102,7 +99,7 @@ public class RedmatterLogic
         doEntityEffects();
 
         //Play effects
-        if (ConfigBlast.REDMATTER.ENABLE_AUDIO)
+        if (ConfigBlast.redmatter.ENABLE_AUDIO)
         {
             //TODO collapse audio should play near blocks destroyed for better effect
             if (host.world.rand.nextInt(8) == 0)
@@ -139,7 +136,7 @@ public class RedmatterLogic
         {
             //TODO make it optional to remove small redmatters. This way we can leave land marks were old redmatter exist
             //TODO if we leave small redmatters allow players to remove them and/or capture in jars
-            if (size <= ConfigBlast.REDMATTER.MIN_SIZE)
+            if (size <= ConfigBlast.redmatter.MIN_SIZE)
             {
                 host.setBlastSize(0);
                 host.setDead();
@@ -153,7 +150,7 @@ public class RedmatterLogic
             else
             //Decrease mass
             {
-                final float newSize = size < 1 ? size * 0.9f : size * ConfigBlast.REDMATTER.STARVE_SCALE;
+                final float newSize = size < 1 ? size * 0.9f : size * ConfigBlast.redmatter.STARVE_SCALE;
                 host.setBlastSize(newSize);
             }
         }
@@ -254,7 +251,7 @@ public class RedmatterLogic
      */
     protected boolean shouldStopBreakingBlocks()
     {
-        return raytracesThisTick > ConfigBlast.REDMATTER.DEFAULT_BLOCK_RAYTRACE_PER_TICK
+        return raytracesThisTick > ConfigBlast.redmatter.DEFAULT_BLOCK_RAYTRACE_PER_TICK
                 || blockDestroyedThisTick > getBlocksPerTick()
                 || host.isDead;
     }
@@ -286,7 +283,7 @@ public class RedmatterLogic
                     }
 
                     //Convert a random amount of destroyed blocks into flying blocks for visuals
-                    if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.REDMATTER.CHANCE_FOR_FLYING_BLOCK)
+                    if (canTurnIntoFlyingBlock(blockState) && host.world.rand.nextFloat() > ConfigBlast.redmatter.CHANCE_FOR_FLYING_BLOCK)
                     {
                         spawnFlyingBlock(blockPos, blockState);
                     }
@@ -335,23 +332,20 @@ public class RedmatterLogic
 
     protected boolean canTurnIntoFlyingBlock(IBlockState blockState)
     {
-        return ConfigBlast.REDMATTER.SPAWN_FLYING_BLOCKS && !BlastBlockHelpers.isFluid(blockState);
+        return ConfigBlast.redmatter.SPAWN_FLYING_BLOCKS && !BlastBlockHelpers.isFluid(blockState);
     }
 
-    protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState)
-    {
-        final EntityFlyingBlock entity = new EntityFlyingBlock(host.world, blockPos, blockState);
-        entity.yawChange = 50 * host.world.rand.nextFloat();
-        entity.pitchChange = 50 * host.world.rand.nextFloat();
-        entity.noClip = true;
-        host.world.spawnEntity(entity);
-
-        this.handleEntities(entity); //TODO why? this should just be an apply velocity call
+    protected void spawnFlyingBlock(BlockPos blockPos, IBlockState blockState) {
+        FlyingBlock.spawnFlyingBlock(host.world, blockPos, blockState, (entity) -> {
+            entity.yawChange = 50 * host.world.rand.nextFloat(); //TODO why 50?
+            entity.pitchChange = 50 * host.world.rand.nextFloat();
+            entity.noClip = true;
+        }, this::handleEntities);
     }
 
     private float getEntityImpactRange()
     {
-        return host.getBlastSize() * ConfigBlast.REDMATTER.GRAVITY_SCALE;
+        return host.getBlastSize() * ConfigBlast.redmatter.GRAVITY_SCALE;
     }
 
     protected void doEntityEffects()
@@ -443,7 +437,7 @@ public class RedmatterLogic
         //TODO make config driven, break section out into its own method
 
         //Handle eating logic
-        final double attackRange = Math.max(1, ConfigBlast.REDMATTER.KILL_SCALE * host.getBlastSize());
+        final double attackRange = Math.max(1, ConfigBlast.redmatter.KILL_SCALE * host.getBlastSize());
         if (distance < attackRange)
         {
             if (entity instanceof EntityRedmatter && !entity.isDead)
@@ -464,6 +458,7 @@ public class RedmatterLogic
                 host.motionZ = 0;
 
                 //TODO fire an event when combined (non-cancelable to allow acting on combined result)
+                entity.setDead();
             }
             else if (entity instanceof EntityExplosion)
             {
@@ -476,6 +471,7 @@ public class RedmatterLogic
             {
                 final IExplosive explosive = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
                 ExplosiveHandler.createExplosion(host, entity.world, entity.posX, entity.posY, entity.posZ, explosive);
+                entity.setDead();
             }
             else if (entity instanceof EntityLiving || entity instanceof EntityPlayer)
             {

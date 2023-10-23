@@ -1,135 +1,27 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:machines/cruise_launcher.obj",
-    "transform": {
-      "thirdperson_lefthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          -0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "thirdperson_righthand": {
-        "rotation": [
-          {
-            "x": 90
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.25,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "gui": {
-        "rotation": [
-          {
-            "x": 25
-          },
-          {
-            "y": 45
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.25,
-          -0.0,
-          0
-        ],
-        "scale": 0.34
-      },
-      "firstperson_righthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.3,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "firstperson_lefthand": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0,
-          0,
-          0
-        ],
-        "scale": 0.5
-      },
-      "ground": {
-        "rotation": [
-          {
-            "x": 0
-          },
-          {
-            "y": 0
-          },
-          {
-            "z": 0
-          }
-        ],
-        "translation": [
-          0.11,
-          0,
-          0.11
-        ],
-        "scale": 0.3
-      }
-    }
+    "model": "icbmclassic:cruise_launcher"
   },
   "variants": {
-    "inventory": [
-      {}
-    ],
+    "inventory": {
+      "model": "icbmclassic:cruise_launcher"
+    },
     "rotation": {
       "up": {},
       "down": {},
-      "north": {},
-      "south": {},
-      "east": {},
-      "west": {}
+      "north": {
+        "y": 0
+      },
+      "south": {
+        "y": 180
+      },
+      "east": {
+        "y": 90
+      },
+      "west": {
+        "y": 270
+      }
     }
   }
 }

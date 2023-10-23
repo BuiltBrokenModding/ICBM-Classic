@@ -1,6 +1,8 @@
 package icbm.classic.datafix;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import icbm.classic.lib.NBTConstants;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
@@ -15,20 +17,23 @@ public class TileRadarStationDataFixer implements IFixableData
             String firstOldKey = "alarmBanJing";
             String secondOldKey = "safetyBanJing";
 
-            if(tag.hasKey(firstOldKey))
-            {
-                int alarmRadius = tag.getInteger(firstOldKey);
+            String firstOldKey2 = "alarmRadius";
+            String secondOldKey2 = "safetyRadius";
 
-                tag.removeTag(firstOldKey); //remove the old entry to not have legacy data. the method name may be misleading, but it actually just removes the key from the tag map
-                tag.setInteger(NBTConstants.ALARM_RADIUS, alarmRadius);
+            if(tag.hasKey(firstOldKey) || tag.hasKey(firstOldKey2))
+            {
+                final int alarmRadius = tag.getInteger(firstOldKey);
+
+                DataFixerHelpers.removeTags(tag, firstOldKey, firstOldKey2);
+                tag.setInteger(TileRadarStation.NBT_DETECTION_RANGE, alarmRadius);
             }
 
-            if(tag.hasKey(secondOldKey))
+            if(tag.hasKey(secondOldKey) | tag.hasKey(secondOldKey2))
             {
-                int safetyRadius = tag.getInteger(secondOldKey);
+                final int safetyRadius = tag.getInteger(secondOldKey);
 
-                tag.removeTag(secondOldKey); //remove the old entry to not have legacy data. the method name may be misleading, but it actually just removes the key from the tag map
-                tag.setInteger(NBTConstants.SAFETY_RADIUS, safetyRadius);
+                DataFixerHelpers.removeTags(tag, secondOldKey, secondOldKey2);
+                tag.setInteger(TileRadarStation.NBT_TRIGGER_RANGE, safetyRadius);
             }
         }
 
@@ -38,6 +43,6 @@ public class TileRadarStationDataFixer implements IFixableData
     @Override
     public int getFixVersion()
     {
-        return 1;
+        return ICBMClassic.DATA_FIXER_VERSION;
     }
 }

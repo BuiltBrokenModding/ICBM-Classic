@@ -41,6 +41,8 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(BlockReg.blockLaunchBase);
         orderItem(BlockReg.blockLaunchScreen);
         orderItem(BlockReg.blockLaunchSupport);
+        orderItem(BlockReg.blockLaunchConnector);
+        orderItem(BlockReg.blockCruiseLauncher);
         orderItem(BlockReg.blockEmpTower);
         orderItem(BlockReg.blockRadarStation);
 
@@ -55,11 +57,11 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(ItemReg.itemTracker);
         orderItem(ItemReg.itemSignalDisrupter);
         orderItem(ItemReg.itemDefuser);
-        orderItem(ItemReg.itemBattery);
 
-        orderItem(BlockReg.blockExplosive);
         orderItem(ItemReg.itemExplosiveMissile);
+        orderItem(ItemReg.itemSAM);
         orderItem(ItemReg.itemGrenade);
+        orderItem(BlockReg.blockExplosive);
         orderItem(ItemReg.itemBombCart);
 
         //Collect any non-defined items

@@ -2,6 +2,7 @@ package icbm.classic.api.data;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -9,6 +10,7 @@ import net.minecraft.world.World;
  *
  * @author DarkGuardsman
  */
+@Deprecated
 public interface IWorldPosition extends IPos3D
 {
     World world();
@@ -31,5 +33,9 @@ public interface IWorldPosition extends IPos3D
     default BlockPos getPos()
     {
         return new BlockPos(xi(), yi(), zi());
+    }
+
+    default Vec3d getVec3d() {
+        return new Vec3d(x(), y(), z());
     }
 }

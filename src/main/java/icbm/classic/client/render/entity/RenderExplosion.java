@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 public class RenderExplosion extends Render<EntityExplosion>
 {
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "grey.png");
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
 
     public RenderExplosion(RenderManager renderManager)
     {

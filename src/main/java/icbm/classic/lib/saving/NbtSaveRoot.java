@@ -1,18 +1,24 @@
 package icbm.classic.lib.saving;
 
+import icbm.classic.api.missiles.parts.IBuildableObject;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.nodes.*;
+import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -25,6 +31,8 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     private final NbtSaveRoot<E> parent;
     public final List<INbtSaveNode> nodes = new LinkedList();
 
+    private boolean shouldSave = true;
+
     public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent)
     {
         if (name == null)
@@ -36,6 +44,11 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         this.parent = parent;
     }
 
+    public NbtSaveRoot<E> disableSave() {
+        shouldSave = false;
+        return this;
+    }
+
     @Override
     public String getSaveKey()
     {
@@ -45,6 +58,9 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     @Override
     public NBTTagCompound save(E objectToSave)
     {
+        if(!shouldSave) {
+            return null;
+        }
         return save(objectToSave, new NBTTagCompound());
     }
 
@@ -155,6 +171,24 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         return node(new SaveNodePos<E>(name, save, load));
     }
 
+    @Deprecated
+    public NbtSaveRoot<E> nodeEulerAngle(final String name, Function<E, EulerAngle> save, BiConsumer<E, EulerAngle> load)
+    {
+        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+            (e) -> {
+                final EulerAngle angle = save.apply(e);
+                if (angle != null)
+                {
+                    return angle.toNBT();
+                }
+                return null;
+            },
+            (e, data) -> {
+                load.accept(e, new EulerAngle(data));
+            }
+        ));
+    }
+
     public NbtSaveRoot<E> nodeFacing(final String name, Function<E, EnumFacing> save, BiConsumer<E, EnumFacing> load)
     {
         return node(new SaveNodeFacing<E>(name, save, load));
@@ -168,6 +202,36 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
     {
         return node(new SaveNodeUUID<E>(name, save, load));
+    }
+
+    public <C extends IBuildableObject> NbtSaveRoot<E> nodeBuildableObject(final String name, final IBuilderRegistry<C> reg, Function<E, C> getter, BiConsumer<E, C> setter)
+    {
+        return node(new SaveBuildableObject<E, C>(name, reg, getter, setter));
+    }
+
+    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> accessor) { //TODO recode to allow any NBTBase
+        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+            (source) -> Optional.ofNullable(accessor.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
+            (source, data) -> {
+                final C object = accessor.apply(source);
+                if(object != null) {
+                    object.deserializeNBT(data);
+                }
+            }
+        ));
+    }
+
+    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> save, BiConsumer<E, C> load, Supplier<C> builder) {
+        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+            (source) -> Optional.ofNullable(save.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
+            (source, data) -> {
+                final C object = builder.get();
+                if(object != null) {
+                    object.deserializeNBT(data);
+                }
+                load.accept(source, object);
+            }
+        ));
     }
 
     /**

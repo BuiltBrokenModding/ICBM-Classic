@@ -1,6 +1,5 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.entity.EntitySmoke;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;

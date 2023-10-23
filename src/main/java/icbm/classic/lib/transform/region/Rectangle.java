@@ -2,6 +2,7 @@ package icbm.classic.lib.transform.region;
 
 import com.builtbroken.jlib.data.vector.IPos2D;
 import icbm.classic.lib.transform.vector.Point;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,10 +11,13 @@ import java.math.RoundingMode;
  *
  * Created by Dark(DarkGuardsman, Robert) on 2/9/2018.
  */
+
 public class Rectangle extends Shape2D
 {
-    Point min;
-    Point max;
+    @Getter
+    private final Point min;
+    @Getter
+    private final Point max;
 
     public Rectangle(Point min, Point max)
     {
@@ -45,7 +49,13 @@ public class Rectangle extends Shape2D
     /** Checks if the point is inside the shape */
     public boolean isWithin(IPos2D p)
     {
-        return p.y() >= this.min.y() && p.y() <= this.max.y() && p.x() >= this.min.x() && p.x() <= this.max.x();
+        return isWithin(p.x(), p.y());
+    }
+
+    /** Checks if the point is inside the shape */
+    public boolean isWithin(double x, double y)
+    {
+        return y >= this.min.y() && y <= this.max.y() && x >= this.min.x() && x <= this.max.x();
     }
 
     public boolean isWithin_rotated(IPos2D p)

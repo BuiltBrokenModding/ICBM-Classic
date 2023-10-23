@@ -1,7 +1,7 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.blocks.explosive.BlockExplosive;
+import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import javax.annotation.Nullable;
 
 @SideOnly(Side.CLIENT)

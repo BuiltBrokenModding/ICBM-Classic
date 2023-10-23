@@ -20,9 +20,6 @@ import java.io.IOException;
 @TestWithResources
 public class MissileTrackerDataTest extends TestBase {
 
-    @GivenJsonResource("data/saves/4.0.0/worldData_missileTracker.json")
-    NBTTagCompound fullSave400;
-
     @GivenJsonResource("data/saves/4.0.0/worldData_missileTracker_data.json")
     NBTTagCompound missileData400;
 

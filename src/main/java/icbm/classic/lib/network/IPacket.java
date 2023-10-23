@@ -48,20 +48,13 @@ public interface IPacket<P extends IPacket>
         return (P) this;
     }
 
+    @Deprecated
     default P addData(Consumer<ByteBuf> writer) {
         return (P) this;
     }
 
-    /**
-     * Handle a packet on the client side. Note this occurs after decoding has completed.
-     */
     @SideOnly(Side.CLIENT)
-    default void handleClientSide()
-    {
-        handleClientSide((EntityPlayer)Minecraft.getMinecraft().player);
-    }
-
-    default void handleClientSide(EntityPlayer player)
+    default void handleClientSide(final Minecraft minecraft, final EntityPlayer player)
     {
         throw new UnsupportedOperationException("Unsupported operation for Packet: " + getClass().getSimpleName());
     }

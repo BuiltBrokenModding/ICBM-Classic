@@ -2,11 +2,11 @@ package icbm.classic.content.entity;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.lib.NBTConstants;
 import icbm.classic.api.explosion.*;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.Blast;
+import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;

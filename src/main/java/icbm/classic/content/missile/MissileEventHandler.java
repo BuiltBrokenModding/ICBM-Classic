@@ -5,7 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import icbm.classic.content.missile.logic.flight.BallisticFlightLogic;
+import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
@@ -17,6 +17,9 @@ import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 8/4/2019.
@@ -49,16 +52,18 @@ public class MissileEventHandler
             final RadarMap map = RadarRegistry.getRadarMapForWorld(world);
             if (map != null)
             {
+                // Collect missiles we are about to unload, using list to avoid concurrent mod from radar remove TODO have radar system track removals in list and apply next tick
+                final List<EntityExplosiveMissile> unloading = new LinkedList();
                 map.collectEntitiesInChunk(chunk.x, chunk.z, (radarEntity -> {
                     if (radarEntity.entity instanceof EntityExplosiveMissile) //TODO rewrite to work on any missile via capability system
                     {
-                        final EntityExplosiveMissile missile = (EntityExplosiveMissile) radarEntity.entity;
-                        if(missile.getMissileCapability().getFlightLogic() instanceof BallisticFlightLogic)
-                        {
-                            MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) radarEntity.entity);
-                        }
+                        unloading.add((EntityExplosiveMissile) radarEntity.entity);
                     }
                 }));
+
+                unloading.stream()
+                    .filter(missile -> missile.getMissileCapability().getFlightLogic() instanceof BallisticFlightLogicOld)
+                    .forEach(MissileTrackerHandler::simulateMissile);
             }
         }
     }

@@ -3,23 +3,35 @@
   "defaults": {
     "model": "pressure_plate_down",
     "textures": {
-      "texture": "icbmclassic:blocks/glass_pressure_plate"
+      "texture": "minecraft:blocks/glass"
     }
   },
   "variants": {
     "normal": {
-      "model": "pressure_plate_up"
+      "model": "pressure_plate_up",
+      "textures": {
+        "texture": "icbmclassic:blocks/glass_pressure_plate"
+      }
     },
     "inventory": {
       "model": "pressure_plate_up",
-      "transform": "forge:default-block"
+      "transform": "forge:default-block",
+      "textures": {
+        "texture": "minecraft:blocks/glass"
+      }
     },
     "powered": {
       "false": {
-        "model": "pressure_plate_up"
+        "model": "pressure_plate_up",
+        "textures": {
+          "texture": "icbmclassic:blocks/glass_pressure_plate"
+        }
       },
       "true": {
-        "model": "pressure_plate_down"
+        "model": "pressure_plate_down",
+        "textures": {
+          "texture": "icbmclassic:blocks/glass_pressure_plate"
+        }
       }
     }
   }

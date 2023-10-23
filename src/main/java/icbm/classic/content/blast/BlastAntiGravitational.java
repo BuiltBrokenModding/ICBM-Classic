@@ -4,7 +4,8 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.blast.thread.ThreadSmallExplosion;
 import icbm.classic.content.blast.threaded.BlastThreaded;
-import icbm.classic.content.entity.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.lib.transform.PosDistanceSorter;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -13,11 +14,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.IFluidBlock;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class BlastAntiGravitational extends BlastThreaded implements IBlastTickable
@@ -67,12 +64,11 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                     if (this.thread.isComplete)
                     {
                         //Copy as concurrent list is not fast to sort
-                        List<BlockPos> results = new ArrayList();
-                        results.addAll(getThreadResults());
+                        List<BlockPos> results = new ArrayList(getThreadResults()); //TODO fix
 
                         if (r == 0)
                         {
-                            Collections.sort(results, new PosDistanceSorter(location, true));
+                            Collections.sort(results, new PosDistanceSorter(location, true, PosDistanceSorter.Sort.MANHATTEN));
                         }
                         int blocksToTake = 20;
 
@@ -99,15 +95,16 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                                         }
 
                                         //Create flying block
-                                        EntityFlyingBlock entity = new EntityFlyingBlock(world(), targetPosition, blockState, 0);
-                                        entity.yawChange = 50 * world().rand.nextFloat();
-                                        entity.pitchChange = 100 * world().rand.nextFloat();
-                                        entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
-                                        entity.noClip = true;
-                                        world().spawnEntity(entity);
-
-                                        //Track flying block
-                                        flyingBlocks.add(entity);
+                                        FlyingBlock.spawnFlyingBlock(world, targetPosition, blockState, (entity) -> {
+                                            entity.yawChange = 50 * world().rand.nextFloat();
+                                            entity.pitchChange = 100 * world().rand.nextFloat();
+                                            entity.motionY += Math.max(0.15 * world().rand.nextFloat(), 0.1);
+                                            entity.noClip = true;
+                                            entity.gravity = 0;
+                                        }, entityFlyingBlock -> {
+                                            flyingBlocks.add(entityFlyingBlock);
+                                            ICBMClassic.logger().info("Spawned flying block" + entityFlyingBlock);
+                                        });
                                     }
                                 }
                             }

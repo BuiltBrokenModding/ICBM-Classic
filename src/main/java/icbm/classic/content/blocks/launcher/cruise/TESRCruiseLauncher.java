@@ -1,13 +1,10 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.client.models.ModuleCruiseLauncherBottom;
-import icbm.classic.client.models.ModelCruiseLauncherTop;
-import icbm.classic.client.render.entity.RenderLightBeam;
+import icbm.classic.client.models.CruiseLauncherTopModel;
 import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.rotation.Quaternion;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -22,10 +19,9 @@ import org.lwjgl.util.glu.Sphere;
  */
 public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLauncher>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/" + "cruise_launcher.png");
+    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/models/cruise_launcher_top.png");
 
-    public static final ModuleCruiseLauncherBottom MODEL0 = new ModuleCruiseLauncherBottom();
-    public static final ModelCruiseLauncherTop MODEL1 = new ModelCruiseLauncherTop();
+    public static final CruiseLauncherTopModel model = new CruiseLauncherTopModel();
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -34,24 +30,20 @@ public class TESRCruiseLauncher extends TileEntitySpecialRenderer<TileCruiseLaun
         float yaw = (float) launcher.currentAim.yaw();
         float pitch = (float) launcher.currentAim.pitch();
 
+        // Render top of launcher
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-
+        GlStateManager.translate((float) x + 0.5F, (float) y + 2.5F, (float) z + 0.5F);
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
 
         GlStateManager.rotate(180F, 0.0F, 0.0F, 1.0F);
-        MODEL0.render(0.0625F);
-
-        GlStateManager.rotate(-yaw, 0F, 1F, 0F); //TODO add lerp function to smooth rotation when FPS spikes
-        GlStateManager.rotate(-pitch, 1F, 0F, 0F);
-        MODEL1.render(0.0625F);
-
+        model.render(0.0625f, -(float)Math.toRadians(yaw), -(float)Math.toRadians(pitch));
         GlStateManager.popMatrix();
 
+        // Render held missile
         if (!launcher.cachedMissileStack.isEmpty()) {
 
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5f, (float) y + 1, z + 0.5f);
+            GlStateManager.translate(x + 0.5f, (float) y + 2, z + 0.5f);
             GlStateManager.rotate(yaw , 0F, 1F, 0F);
             GlStateManager.rotate(pitch - 90, 1F, 0F, 0F);
 

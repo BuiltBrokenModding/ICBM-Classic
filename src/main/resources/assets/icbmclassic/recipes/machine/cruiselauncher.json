@@ -5,22 +5,29 @@
     "count": 1
   },
   "pattern": [
-    "LF ",
-    "SSS"
+    "CLP",
+    "SBS"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
     "L": {
-      "item": "icbmclassic:launcherbase",
-      "data": 2
+      "item": "icbmclassic:launcherbase"
     },
-    "F": {
-      "item": "icbmclassic:launcherframe",
-      "data": 2
+    "B": {
+      "item": "icbmclassic:launcherscreen",
+      "data": 0
     },
     "S": {
       "type": "forge:ore_dict",
       "ore": "ingotSteel"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "circuitAdvanced"
+    },
+    "P": {
+      "type": "forge:ore_dict",
+      "ore": "plateSteel"
     }
   }
 }

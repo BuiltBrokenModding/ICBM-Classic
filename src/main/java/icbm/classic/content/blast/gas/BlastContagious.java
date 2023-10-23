@@ -36,7 +36,7 @@ public class BlastContagious extends BlastGasBase
     @Override
     protected void applyEffect(final EntityLivingBase entity, final int hitCount)
     {
-        ICBMClassic.contagios_potion.poisonEntity(location.toPos(), entity, 3); //TODO scale
+        ICBMClassic.contagiousPotion.poisonEntity(location.toPos(), entity, 3); //TODO scale
 
         //Apply damage to non-mutated entities if toxin level is high enough
         if (!BlastMutation.applyMutationEffect(entity) && hitCount > 10)

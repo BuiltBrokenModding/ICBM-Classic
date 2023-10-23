@@ -260,5 +260,15 @@
         "sream": false
       }
     ]
+  },
+  "meep": {
+    "category": "block",
+    "subtitle": "subtitle.icbmclassic:meep",
+    "sounds": [
+      {
+        "name": "icbmclassic:meep",
+        "sream": false
+      }
+    ]
   }
 }

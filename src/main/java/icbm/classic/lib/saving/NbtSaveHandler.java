@@ -1,11 +1,9 @@
 package icbm.classic.lib.saving;
 
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Handles logic for saving/loading without needing to duplicate logic or checks
@@ -67,12 +65,26 @@ public class NbtSaveHandler<E>
      * Called to save data
      *
      * @param objectToSave to pull data from
+     * @return save object
+     */
+    public NBTTagCompound save(E objectToSave) {
+        return save(objectToSave, new NBTTagCompound());
+    }
+    /**
+     * Called to save data
+     *
+     * @param objectToSave to pull data from
      * @param save to push data into
      * @return save object
      */
     public NBTTagCompound save(E objectToSave, NBTTagCompound save)
     {
-        roots.forEach(root -> save.setTag(root.getSaveKey(), root.save(objectToSave)));
+        roots.forEach(root -> {
+            final NBTTagCompound saveData = root.save(objectToSave);
+            if(saveData != null && !saveData.hasNoTags()) {
+                save.setTag(root.getSaveKey(), saveData);
+            }
+        });
         mainRoot.save(objectToSave, save);
         return save;
     }

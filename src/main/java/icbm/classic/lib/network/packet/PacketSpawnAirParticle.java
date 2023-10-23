@@ -97,9 +97,9 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void handleClientSide(EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
     {
-        if (Minecraft.getMinecraft().world != null && player.world.provider.getDimension() == dimId)
+        if (minecraft.world != null && player.world.provider.getDimension() == dimId)
         {
             ICBMClassic.proxy.spawnAirParticle(player.world, posX, posY, posZ, v, v1, v2, red, green, blue, scale, ticksToLive);
         }

@@ -140,33 +140,22 @@
               "type": 10,
               "data": [
                 {
-                  "type": 10,
-                  "data": [
-                    {
-                      "type": 6,
-                      "data": "59.06195460480209",
-                      "key": "x"
-                    },
-                    {
-                      "type": 6,
-                      "data": "75.15145375534576",
-                      "key": "y"
-                    },
-                    {
-                      "type": 6,
-                      "data": "257.2760022607643",
-                      "key": "z"
-                    }
-                  ],
-                  "key": "pos"
+                  "type": 6,
+                  "data": "59.06195460480209",
+                  "key": "x"
+                },
+                {
+                  "type": 6,
+                  "data": "75.15145375534576",
+                  "key": "y"
+                },
+                {
+                  "type": 6,
+                  "data": "257.2760022607643",
+                  "key": "z"
                 }
               ],
-              "key": "data"
-            },
-            {
-              "type": 8,
-              "data": "icbmclassic:entity",
-              "key": "id"
+              "key": "pos"
             }
           ],
           "key": "source"
