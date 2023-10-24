@@ -4,6 +4,47 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 5.4.0 - October 10th, 2023
+
+### Runtime Changes
+
+* Added: blockState ban/allow list for flying blocks
+* Added: dynamictrees to flying block ban list due to block spawning issues
+* Added: launcher rotation system
+* Added: launcher firing solution system
+* Added: uuid for launchers to track firing events
+* Fixed(workaround): flying block crashing due to mods with broken block renders
+* Fixed: redmatters not handling removal of explosive entities causing antimatter to fail to kill redmatter
+* Fixed: some issues with redmatter movement
+* Fixed: collision issues with redmatter causing issues with antimatter not killing redmatter
+* Fixed: launcher min range check failing when only one axis was in use
+* Fixed: issues with packet system
+* Fixed: ore dictionary registering at wrong stage
+* Fixed: missile platholder collision on seats
+* Fixed: launcher rotation issues
+* Fixed: launcher seat not saving player state properly
+* Fixed: text inputs not resetting in some UIs
+* Fixed: emp tower not respecting max range
+* Fixed: accuracy being too high at shorter distances
+* Reworked: launcher to use tick actions over ticks
+* Removed: ic2 support, it didn't work and other mods provide FE to EU
+* Note: add automated tests to confirm missile accuracy
+
+### Dev Changes
+
+* Added: blockState config list, can be used to detect any blockstate via config
+* Added: entire mod selector for blockState
+* Added: fuzzy start and end selector for blockState
+* Added: block version of the above
+* Added: common system for spawning flying blocks (used by anti-gravity, endothermic, exothermic, redmatter, etc)
+* Added: new block, tool, and material icons by Morton00000 see credits file for which
+* Added: event system for read-only information on common events and network calls
+* Added: break line support to lang files
+* Reworked: network system to better handle encoding/decoding... basically codex but with lambdas
+* Reworked: ballistic flight logic to use sub-types for more customization options
+* Removed: old gps system
+* Changed: builds to use amazon JDK 8 for better consistency
+
 ## 5.3.0 - May 6th, 2023
 
 Mostly cleanup and refactors for better addon support
