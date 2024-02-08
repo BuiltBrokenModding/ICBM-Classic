@@ -1,14 +1,18 @@
 package icbm.classic.content.parachute;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -20,6 +24,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class EntityParachute extends EntityProjectile<EntityParachute> implements IEntityAdditionalSpawnData
 {
+
+    public static final float GRAVITY = 0.01f; // TODO config
+    public static final float AIR_RESISTANCE = 0.95f; // TODO config
+
     public int ticksToLive = 100;
     /** Stack to render */
     @Setter @Getter @Accessors(chain = true)
@@ -66,14 +74,12 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     @Override
     protected float getGravity() {
-        return 0;
+        return GRAVITY; // TODO make dynamic based on passenger(s) and type
     }
 
-    protected void decreaseMotion() {
-      super.decreaseMotion();
-      if(!this.onGround && this.motionY < 0) {
-          this.motionY *= 0.6D; //TODO change based on chute size and passenger(s) size
-      }
+    @Override
+    protected float getAirResistance() {
+        return AIR_RESISTANCE; // TODO make dynamic based on passenger(s) and type
     }
 
     @Override
@@ -105,6 +111,23 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
         d0 = d0 * 64.0D * getRenderDistanceWeight();
         return distance < d0 * d0;
+    }
+
+    @Override
+    protected boolean ignoreImpact(RayTraceResult hit) {
+        // Ignore entity impacts, as we only care about the ground
+        return hit.entityHit != null;
+    }
+
+    @Override
+    protected boolean shouldCollideWith(Entity entity) {
+        return super.shouldCollideWith(entity) && entity != shootingEntity;
+    }
+
+    @Override
+    protected void onImpact(Vec3d impactLocation) {
+        this.setDead();
+        ICBMClassic.logger().info(this + "Impact death");
     }
 
     @Override

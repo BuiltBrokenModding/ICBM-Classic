@@ -489,15 +489,20 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     protected void decreaseMotion() {
-        //TODO get friction value
-        this.motionX *= 0.99F;
-        this.motionY *= 0.99F;
-        this.motionZ *= 0.99F;
+        final float airResistance = getAirResistance();
+        this.motionX *= airResistance;
+        this.motionY *= airResistance;
+        this.motionZ *= airResistance;
         //Add gravity so the projectile will fall
         this.motionY -= getGravity();
     }
 
+    protected float getAirResistance() {
+        return 0.99f;
+    }
+
     protected float getGravity() {
+        // Default is 0.9800000190734863D
         return 0.05F;
     }
 

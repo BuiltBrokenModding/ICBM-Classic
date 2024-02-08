@@ -8,6 +8,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.cluster.ClusterCustomization;
 import icbm.classic.content.blast.cluster.bomblet.BombletProjectileData;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
+import icbm.classic.content.parachute.ParachuteProjectileData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
@@ -111,6 +112,17 @@ public class ItemMissile extends ItemBase
                 );
             });
             items.add(clusterBomblets);
+
+            final ItemStack parachute = new ItemStack(this, 1, ICBMExplosives.CLUSTER.getRegistryID());
+            Optional.ofNullable(ICBMClassicHelpers.getExplosive(parachute)).ifPresent(e -> {
+                e.addCustomization(new ClusterCustomization()
+                    .setProjectilesToSpawn(9)
+                    .setProjectilesPerLayer(3)
+                    .setProjectileData(new ParachuteProjectileData().setPassengerItemStack(new ItemStack(ItemReg.itemBomblet)))
+                    .setAllowPickupItems(false)
+                );
+            });
+            items.add(parachute);
         }
     }
 

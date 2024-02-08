@@ -22,6 +22,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +55,10 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
 
-    private CapabilityMissile missileCapability; //TODO refactor to use interface so parts can be better customized
+    @Getter
+    private final CapabilityMissile missileCapability = new CapabilityMissile(this); //TODO refactor to use interface so parts can be better customized
+
+    @Getter
     private final IEMPReceiver empCapability = new CapabilityEmpMissile(getMissileCapability());
 
     /** Toggle to note the missile has impacted something and already triggered impact logic */
@@ -75,7 +79,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
     {
         if (capability == CapabilityEMP.EMP)
         {
@@ -95,18 +99,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             || super.hasCapability(capability, facing);
     }
 
-    public CapabilityMissile getMissileCapability() {
-        if(missileCapability == null) {
-            missileCapability = new CapabilityMissile(this);
-        }
-        return missileCapability;
-    }
-
-    public IEMPReceiver getEmpCapability() {
-        return empCapability;
-    }
-
-    public EntityMissile ignore(Entity entity)
+    public EntityMissile<E> ignore(Entity entity)
     {
         collisionIgnoreList.add(entity);
         return this;
