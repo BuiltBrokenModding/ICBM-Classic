@@ -119,6 +119,9 @@ item.icbmclassic:circuit.basic.name=Basic Circuit
 item.icbmclassic:circuit.advanced.name=Advanced Circuit
 item.icbmclassic:circuit.elite.name=Elite Circuit
 
+item.icbmclassic:parachute.name=Projectile Parachute
+item.icbmclassic:parachute.info=Reduces fall speed for projectiles \n Air redistance: %1$s \n Gravity: %2$s m/s
+
 ## ICBM Machines
 tile.icbmclassic:launcherbase.name=Launcher Pad
 tile.icbmclassic:launcherbase.info=Hold missiles in place before launch
