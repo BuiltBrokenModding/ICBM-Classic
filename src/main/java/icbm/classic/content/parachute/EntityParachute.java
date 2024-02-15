@@ -1,6 +1,7 @@
 package icbm.classic.content.parachute;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
@@ -8,7 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.RayTraceResult;
@@ -31,7 +34,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     public int ticksToLive = 100;
     /** Stack to render */
     @Setter @Getter @Accessors(chain = true)
-    private ItemStack renderItemStack = new ItemStack(Blocks.CARPET);
+    private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
 
     /** Stack to drop on impact with ground */
     @Setter @Getter @Accessors(chain = true)
@@ -69,6 +72,28 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
         {
             removePassengers();
             setDead();
+        }
+    }
+
+    @Override
+    public double getMountedYOffset()
+    {
+        return -0.25;
+    }
+
+    @Override
+    public void updatePassenger(Entity passenger)
+    {
+        if (this.isPassenger(passenger))
+        {
+            if(passenger instanceof EntityItem)
+            {
+                passenger.setPosition(this.posX, this.posY -0.35, this.posZ);
+            }
+            else
+            {
+                passenger.setPosition(this.posX, this.posY + passenger.height -0.25, this.posZ);
+            }
         }
     }
 
