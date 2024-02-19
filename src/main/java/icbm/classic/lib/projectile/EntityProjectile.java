@@ -1,5 +1,6 @@
 package icbm.classic.lib.projectile;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -8,6 +9,9 @@ import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.prefab.entity.EntityICBM;
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -52,14 +56,16 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     /**
      * Location the projectile was fired from, use this over the shooting entity
      * to force argo on the source of the projectile. This way things like
-     * zombies don't auto go to players. Instead they can move towards the firing
+     * zombies don't auto go to players. Instead, they can move towards the firing
      * location. Think of it like moving towards the sound of the weapon.
      */
     public Pos sourceOfProjectile;
 
     //Settings
-    protected int inGroundKillTime = 1200;
-    protected int inAirKillTime = 1200;
+    @Setter @Getter @Accessors(chain = true)
+    protected int inGroundKillTime = ICBMConstants.TICKS_MIN;
+    @Setter @Getter @Accessors(chain = true)
+    protected int inAirKillTime = ICBMConstants.TICKS_MIN;
 
     //In ground data
     /**
@@ -87,6 +93,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public int ticksInGround;
     public int ticksInAir;
 
+    // Debug
     public boolean freezeMotion = false;
 
     public EntityProjectile(World world) {
@@ -193,8 +200,9 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             if (state == blockInside) {
                 ++this.ticksInGround;
 
-                if (this.ticksInGround == inGroundKillTime) {
-                    this.setDead();
+                if (shouldExpire()) {
+                    this.onExpired();
+                    return;
                 }
             }
             // if was in ground but block changes, fall slightly
@@ -210,8 +218,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         } else {
             //Kills the projectile if it moves forever into space
             ++this.ticksInAir;
-            if (ticksInAir >= inAirKillTime) {
-                this.setDead();
+            if (shouldExpire()) {
+                this.onExpired();
                 return;
             }
 
@@ -287,6 +295,26 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             }
             updateMotion();
         }
+    }
+
+    /**
+     * Called to check if the projectile
+     * should invoke {@link #onExpired()}
+     *
+     * @return true to expire
+     */
+    protected boolean shouldExpire() {
+        return ticksInAir >= inAirKillTime || ticksInGround >= inGroundKillTime;
+    }
+
+    /**
+     * Called when the projectile has expired
+     * either due to living too long or being
+     * outside its bounds
+     */
+    protected void onExpired() {
+        this.removePassengers();
+        this.setDead();
     }
 
     protected void setInGround(boolean b) {
@@ -684,8 +712,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         .base()
         //Ticks
         .addRoot("ticks")
-        /* */.nodeInteger("air", (projectile) -> projectile.ticksInAir, (projectile, flag) -> projectile.ticksInAir = flag)
-        /* */.nodeInteger("ground", (projectile) -> projectile.ticksInGround, (projectile, flag) -> projectile.ticksInGround = flag)
+        /* */.nodeInteger("air", EntityProjectile::getInAirKillTime, EntityProjectile::setInAirKillTime)
+        /* */.nodeInteger("ground", EntityProjectile::getInGroundKillTime, EntityProjectile::setInGroundKillTime)
         .base();
     //Project source, if needed implement in each projectile directly. or add a boolean toggle to .addRoot. As missile doesn't need source nor shooter due to missile.targetData
         /*

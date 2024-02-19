@@ -28,10 +28,6 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     public static final float GRAVITY = 0.01f; // TODO config
     public static final float AIR_RESISTANCE = 0.95f; // TODO config
 
-    /** Amount of time in ticks (20 per second) to exist before auto releasing */
-    @Setter @Getter @Accessors(chain = true)
-    private int ticksToLive = ICBMConstants.TICKS_PER_SEC * 100;
-
     /** Stack to render */
     @Setter @Getter @Accessors(chain = true)
     private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
@@ -56,28 +52,20 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.ticksToLive);
+        data.writeInt(this.ticksInAir);
         ByteBufUtils.writeItemStack(data, renderItemStack);
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        this.ticksToLive = data.readInt();
+        this.ticksInAir = data.readInt();
         renderItemStack = ByteBufUtils.readItemStack(data);
     }
 
     @Override
-    public void onUpdate()
-    {
-        super.onUpdate();
-
-        // Timer to auto kill the chute
-        if (!world.isRemote && (ticksExisted > ticksToLive || getPassengers().isEmpty()))
-        {
-            removePassengers();
-            setDead();
-        }
+    protected boolean shouldExpire() {
+        return ticksInAir >= inAirKillTime || getPassengers().isEmpty();
     }
 
     @Override
@@ -161,7 +149,6 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     private static final NbtSaveHandler<EntityParachute> SAVE_LOGIC = new NbtSaveHandler<EntityParachute>()
         .mainRoot()
-        .nodeInteger("ticksToLive", (e) -> e.ticksToLive, (e, i) -> e.ticksToLive = i)
         .nodeItemStack("renderItem", (e) -> e.renderItemStack, (e, i) -> e.renderItemStack = i)
         .nodeItemStack("dropItem", (e) -> e.dropItemStack, (e, i) -> e.dropItemStack = i)
         .base();
