@@ -36,8 +36,8 @@ import java.util.UUID;
 public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming, IEntityAdditionalSpawnData {
 
     /** Effectively just render distance but scales with entity size */
-    public static final double RENDER_DISTANCE_SCALE = 64;
-    /** Damage source to use on impact */
+    public static final double RENDER_DISTANCE_SCALE = 256; //TODO add config
+    /** Generic damage source to use on impact */
     public static final DamageSource DAMAGE_SOURCE = new DamageSource("icbm:projectile").setProjectile();
 
     /**
