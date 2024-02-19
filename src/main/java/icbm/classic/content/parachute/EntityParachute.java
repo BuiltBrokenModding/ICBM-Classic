@@ -1,6 +1,7 @@
 package icbm.classic.content.parachute;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.projectile.EntityProjectile;
@@ -10,8 +11,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.RayTraceResult;
@@ -19,8 +18,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Entity that acts as a slow falling seat for other entities to use
@@ -31,14 +28,17 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     public static final float GRAVITY = 0.01f; // TODO config
     public static final float AIR_RESISTANCE = 0.95f; // TODO config
 
-    public int ticksToLive = 100;
+    /** Amount of time in ticks (20 per second) to exist before auto releasing */
+    @Setter @Getter @Accessors(chain = true)
+    private int ticksToLive = ICBMConstants.TICKS_PER_SEC * 100;
+
     /** Stack to render */
     @Setter @Getter @Accessors(chain = true)
     private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
 
     /** Stack to drop on impact with ground */
     @Setter @Getter @Accessors(chain = true)
-    private ItemStack dropItemStack = ItemStack.EMPTY;
+    private ItemStack dropItemStack = new ItemStack(ItemReg.itemParachute); // TODO consider used parachute item
 
     public EntityParachute(World world)
     {
@@ -46,6 +46,11 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
         this.setSize(0.5f, 0.5f);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
+    }
+
+    @Override
+    protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
+        return 0; //TODO consider passenger weight? As heavy object on small parachute would be falling fast and do damage
     }
 
     @Override
@@ -121,21 +126,6 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
      */
     public ItemStack renderItemStack() {
         return renderItemStack;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isInRangeToRenderDist(double distance)
-    {
-        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
-
-        if (Double.isNaN(d0))
-        {
-            d0 = 1.0D;
-        }
-
-        d0 = d0 * 64.0D * getRenderDistanceWeight();
-        return distance < d0 * d0;
     }
 
     @Override

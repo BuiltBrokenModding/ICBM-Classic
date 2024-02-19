@@ -34,6 +34,12 @@ import java.util.UUID;
  * @author Darkguardsman
  */
 public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming, IEntityAdditionalSpawnData {
+
+    /** Effectively just render distance but scales with entity size */
+    public static final double RENDER_DISTANCE_SCALE = 64;
+    /** Damage source to use on impact */
+    public static final DamageSource DAMAGE_SOURCE = new DamageSource("icbm:projectile").setProjectile();
+
     /**
      * The entity who shot this projectile and can be used for damage calculations
      * As well useful for causing argo on the shooter
@@ -54,11 +60,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     //Settings
     protected int inGroundKillTime = 1200;
     protected int inAirKillTime = 1200;
-    /**
-     * Damage source to do on impact
-     */
-    //TODO replace with method allowing more complex calculations
-    protected DamageSource impact_damageSource = DamageSource.ANVIL;
 
     //In ground data
     /**
@@ -90,7 +91,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     public EntityProjectile(World world) {
         super(world);
-        //this.renderDistanceWeight = 10.0D;
         this.setSize(0.5F, 0.5F);
     }
 
@@ -141,7 +141,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     @Deprecated
     public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale) {
-        //this.renderDistanceWeight = 10.0D;
         this.sourceOfProjectile = new Pos(x, y, z);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
 
@@ -402,23 +401,80 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
     }
 
+    /**
+     * Called when the projectile impacts an entity. The location of the projectile
+     * may not be in the same location as the impacted entity. As impact is calculated
+     * by the raytrace with no update on position provided. Meaning impact is often
+     * position + velocity.
+     *
+     * @param entityHit by the projectile
+     * @param velocity during the impact
+     * @param hit trace used to calculate the impact, use this for projectile position
+     */
 
     protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
         if (!world.isRemote) {
-            int damage = MathHelper.ceil((double) velocity * 2);
-
-            //If entity takes damage add velocity to entity
-            if (impact_damageSource != null && entityHit.attackEntityFrom(impact_damageSource, (float) damage)) {
-                if (entityHit instanceof EntityLivingBase) {
-                    float vel_horizontal = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                    if (vel_horizontal > 0.0F) {
-                        entityHit.addVelocity(this.motionX * 0.6000000238418579D / (double) vel_horizontal, 0.1D, this.motionZ * 0.6000000238418579D / (double) vel_horizontal);
-                    }
-                }
-
+            final float damage = getImpactDamage(entityHit, velocity, hit);
+            final DamageSource damageSource = getImpactDamageSource(entityHit, velocity, hit);
+            if (damageSource != null && entityHit.attackEntityFrom(damageSource, damage)
+                && entityHit instanceof EntityLivingBase) {
+                applyKnockBack(entityHit);
             }
             onImpact(hit.hitVec);
+            // TODO add deflection for some projectiles, so when impact entities the projectile might redirect rather than vanish
         }
+    }
+
+    /**
+     * Called to apply knock back effects to entity during impact
+     *
+     * @param entity to move
+     */
+    protected void applyKnockBack(Entity entity) {
+        final double vertKnock =  0.6000000238418579D;
+        final double hortKnock = 0.1;
+
+        // TODO rework to use projectile motionY so knockback is in motion direction, add random offset to mimic deflection
+        // TODO see if we can drop sqrt, 1 projectile it is fine... 1000s it is slow
+        final float vel_horizontal = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        if (vel_horizontal > 0.0F) {
+            entity.addVelocity(
+                this.motionX * vertKnock / (double) vel_horizontal,
+                hortKnock,
+                this.motionZ * vertKnock / (double) vel_horizontal
+            );
+        }
+    }
+
+    /**
+     * Called to get damage to apply during impact
+     *
+     * Inputs can be used to dynamically change the damage source based on angle and velocity. An example
+     * is using 20% damage for side hits and 100% damage for direct impacts. As well reducing damage
+     * done to specific entities. Such as 5% damage to slimes and 0% damage to ghosts.
+     *
+     * @param entityHit by the projectile
+     * @param velocity during the impact
+     * @param hit trace used to calculate the impact, use this for projectile position
+     * @return damage to apply
+     */
+    protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
+        return MathHelper.ceil(velocity * 2f);
+    }
+
+    /**
+     * Called to get damage source to apply during impact
+     *
+     * Inputs can be used to dynamically change the damage source based on angle and velocity. An example
+     * is using blunt impact for side hits and piercing for front on impacts.
+     *
+     * @param entityHit by the projectile
+     * @param velocity during the impact
+     * @param hit trace used to calculate the impact, use this for projectile position
+     * @return damage source to use
+     */
+    protected DamageSource getImpactDamageSource(Entity entityHit, float velocity, RayTraceResult hit) {
+        return DAMAGE_SOURCE;
     }
 
     /**
@@ -488,6 +544,11 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         //-------------------------------------
     }
 
+    /**
+     * Called each tick, assuming no collisions, to slow
+     * down the projectile. Both via air resistance and
+     * gravity constant.
+     */
     protected void decreaseMotion() {
         final float airResistance = getAirResistance();
         this.motionX *= airResistance;
@@ -497,12 +558,26 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.motionY -= getGravity();
     }
 
+    /**
+     * Multiplier to simulate air resistance. Works
+     * by multiplying the resistance by the motion. So
+     * if the value is 0.99 or 99% then motion will
+     * decrease by 1% per tick.
+     *
+     * @return multiplier
+     */
     protected float getAirResistance() {
         return 0.99f;
     }
 
+    /**
+     * Amount to subtract each tick to create
+     * a pull towards the ground
+     *
+     * @return gravity acceleration as m/t
+     */
     protected float getGravity() {
-        // Default is 0.9800000190734863D
+        // Default is motionY *= 0.9800000190734863D
         return 0.05F;
     }
 
@@ -560,6 +635,28 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     public boolean canBeDestroyed(Object attacker, DamageSource damageSource) {
         return hasHealth;
+    }
+
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isInRangeToRenderDist(double distanceSq)
+    {
+        final double renderDistance = getAverageEdgeLength() * getRenderDistanceWeight() * getRenderDistance();
+        return distanceSq < renderDistance * renderDistance;
+    }
+
+    protected double getRenderDistance() {
+        return RENDER_DISTANCE_SCALE;
+    }
+
+    protected double getAverageEdgeLength() {
+        final AxisAlignedBB boundingBox = this.getRenderBoundingBox();
+        if(boundingBox == null) {
+            return 1;
+        }
+        double size = boundingBox.getAverageEdgeLength();
+        return Double.isNaN(size) || Double.isInfinite(size) ? 1 : size;
     }
 
     @Override
