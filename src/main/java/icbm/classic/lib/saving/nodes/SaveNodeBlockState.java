@@ -21,9 +21,7 @@ public class SaveNodeBlockState<E> extends NbtSaveNode<E, NBTTagCompound>
                 }
                 return null;
             },
-            (obj, data) -> {
-                load.accept(obj, NBTUtil.readBlockState(data));
-            }
+            (obj, data) -> load.accept(obj, NBTUtil.readBlockState(data))
         );
     }
 }

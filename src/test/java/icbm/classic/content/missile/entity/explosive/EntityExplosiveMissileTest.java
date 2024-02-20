@@ -11,6 +11,7 @@ import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.lib.projectile.InGroundData;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -81,10 +82,7 @@ public class EntityExplosiveMissileTest extends TestBase
             missile.getMissileCapability().getMissileSource());
 
         // Projectile
-        Assertions.assertEquals(new BlockPos(10, 5, 290), missile.tilePos);
-        Assertions.assertEquals(EnumFacing.EAST, missile.sideTile);
-        Assertions.assertEquals(Blocks.STONE.getDefaultState(), missile.blockInside);
-        Assertions.assertTrue(missile.inGround);
+        Assertions.assertEquals(new InGroundData(new BlockPos(10, 5, 290), EnumFacing.EAST, Blocks.STONE.getDefaultState()), missile.getInGroundData());
         Assertions.assertEquals(117, missile.ticksInAir);
         Assertions.assertEquals(45, missile.ticksInGround);
 

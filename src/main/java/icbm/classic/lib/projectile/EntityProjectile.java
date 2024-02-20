@@ -9,6 +9,7 @@ import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.prefab.entity.EntityICBM;
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -39,9 +40,13 @@ import java.util.UUID;
  */
 public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming, IEntityAdditionalSpawnData {
 
-    /** Effectively just render distance but scales with entity size */
+    /**
+     * Effectively just render distance but scales with entity size
+     */
     public static final double RENDER_DISTANCE_SCALE = 256; //TODO add config
-    /** Generic damage source to use on impact */
+    /**
+     * Generic damage source to use on impact
+     */
     public static final DamageSource DAMAGE_SOURCE = new DamageSource("icbm:projectile").setProjectile();
 
     /**
@@ -62,28 +67,19 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public Pos sourceOfProjectile;
 
     //Settings
-    @Setter @Getter @Accessors(chain = true)
+    @Setter
+    @Getter
+    @Accessors(chain = true)
     protected int inGroundKillTime = ICBMConstants.TICKS_MIN;
-    @Setter @Getter @Accessors(chain = true)
+    @Setter
+    @Getter
+    @Accessors(chain = true)
     protected int inAirKillTime = ICBMConstants.TICKS_MIN;
 
     //In ground data
-    /**
-     * Block position projectile is stuck inside
-     */
-    public BlockPos tilePos = new BlockPos(0, 0, 0);
-    /**
-     * Face of tile we are stuck inside
-     */
-    public EnumFacing sideTile = EnumFacing.UP;
-    /**
-     * Block state we are stuck inside
-     */
-    public IBlockState blockInside = Blocks.AIR.getDefaultState();
-    /**
-     * Toggle to note we are stuck in a tile on the ground
-     */
-    public boolean inGround = false;
+    @Setter(value = AccessLevel.PROTECTED)
+    @Getter
+    private InGroundData inGroundData;
     /**
      * Entity is being teleported, causes it to ignore block impacts
      */
@@ -153,7 +149,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
         //TODO figure out why we are updating position by rotation after spawning
         this.posX -= (double) (MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
-        this.posY -= 0.10000000149011612D;
+        this.posY -= 0.10000000149011612D; //TODO magic number - likely half arrow height
         this.posZ -= (double) (MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * 0.16F * distanceScale);
         this.setPosition(this.posX, this.posY, this.posZ);
 
@@ -184,38 +180,21 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     public void onUpdate() {
         super.onUpdate();
 
-        //Check if we hit the ground
-        IBlockState state = this.world.getBlockState(tilePos);
-        if (!state.getBlock().isAir(state, world, tilePos)) {
-            //Check if what we hit can be collided with
-            AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
-            if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
-                setInGround(true);
+        this.checkInGround();
+
+        // Handle ground logic
+        if (this.inGroundData != null) {
+
+            // Kill projectile if in ground for a while
+            ++this.ticksInGround;
+
+            if (shouldExpire()) {
+                this.onExpired();
             }
         }
+        // Handle in air logic
+        else {
 
-        //Handle stuck in ground
-        if (this.inGround) {
-            //TODO allow this to be disabled
-            if (state == blockInside) {
-                ++this.ticksInGround;
-
-                if (shouldExpire()) {
-                    this.onExpired();
-                    return;
-                }
-            }
-            // if was in ground but block changes, fall slightly
-            else {
-                //TODO change to apply gravity
-                this.inGround = false;
-                this.motionX *= (double) (this.rand.nextFloat() * 0.2F);
-                this.motionY *= (double) (this.rand.nextFloat() * 0.2F);
-                this.motionZ *= (double) (this.rand.nextFloat() * 0.2F);
-                this.ticksInGround = 0;
-                this.ticksInAir = 0;
-            }
-        } else {
             //Kills the projectile if it moves forever into space
             ++this.ticksInAir;
             if (shouldExpire()) {
@@ -298,6 +277,44 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     /**
+     * Runs each tick to check what block we are inside. Raytrace this in air movement
+     * but once in ground we need to refresh manually to detect block breaking.
+     *
+     * If block isn't the same or has changed logic will revalidate. If block has no
+     * collision then things will fall
+     */
+    protected void checkInGround() {
+        //Check if in ground TODO do we need to run this every tick?
+        final BlockPos tilePos = inGroundData != null ? inGroundData.getPos() : this.getPos();
+        final IBlockState state = this.world.getBlockState(tilePos);
+        final InGroundData prevInGround = this.inGroundData;
+
+        // Only run logic if we don't have an existing collision or detected block has changed TODO use events to trigger this on block edits
+        if (inGroundData == null || state != inGroundData.getState()) {
+            this.inGroundData = null;
+
+            if (!state.getBlock().isAir(state, world, tilePos)) {
+                //Check if what we hit can be collided with
+                final AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
+                if (axisalignedbb != null && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
+                    final EnumFacing side = EnumFacing.UP; //TODO calculate side based on position
+                    this.inGroundData = new InGroundData(tilePos, side, state);
+                }
+            }
+        }
+
+        // We are no longer in the ground
+        if (prevInGround != null && this.inGroundData == null) {
+            //TODO change to apply gravity instead of random
+            this.motionX *= (double) (this.rand.nextFloat() * 0.2F);
+            this.motionY *= (double) (this.rand.nextFloat() * 0.2F);
+            this.motionZ *= (double) (this.rand.nextFloat() * 0.2F);
+            this.ticksInGround = 0;
+            this.ticksInAir = 0;
+        }
+    }
+
+    /**
      * Called to check if the projectile
      * should invoke {@link #onExpired()}
      *
@@ -315,13 +332,6 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     protected void onExpired() {
         this.removePassengers();
         this.setDead();
-    }
-
-    protected void setInGround(boolean b) {
-        if (!this.inGround && b) {
-            this.ticksInGround = 0;
-        }
-        this.inGround = b;
     }
 
     protected boolean ignoreImpact(RayTraceResult hit) {
@@ -344,13 +354,11 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     protected void handleBlockCollision(RayTraceResult hit) {
-        this.tilePos = hit.getBlockPos();
-        this.sideTile = hit.sideHit;
-        this.blockInside = this.world.getBlockState(tilePos);
+        this.inGroundData = new InGroundData(world, hit);
 
         // Special handling for ender gateways TODO move to a registry of Block -> lambda
         final IProjectileBlockInteraction.EnumHitReactions reaction =
-            ProjectileBlockInteraction.handleSpecialInteraction(world, tilePos, hit.hitVec, sideTile, blockInside, this);
+            ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.hitVec, this.inGroundData.getSide(), this.inGroundData.getState(), this);
         if (reaction.stop) {
             return;
         }
@@ -360,12 +368,11 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
         //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 
-        if (this.blockInside.getMaterial() != Material.AIR) {
-            this.blockInside.getBlock().onEntityCollidedWithBlock(this.world, tilePos, blockInside, this);
+        if (this.inGroundData.getMaterial() != Material.AIR) {
+            this.inGroundData.getState().getBlock().onEntityCollidedWithBlock(this.world, this.inGroundData.getPos(), this.inGroundData.getState(), this);
         }
 
         if (!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
-            setInGround(true);
             onImpactTile(hit);
             this.motionX = 0;
             this.motionY = 0;
@@ -436,8 +443,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * position + velocity.
      *
      * @param entityHit by the projectile
-     * @param velocity during the impact
-     * @param hit trace used to calculate the impact, use this for projectile position
+     * @param velocity  during the impact
+     * @param hit       trace used to calculate the impact, use this for projectile position
      */
 
     protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
@@ -459,7 +466,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * @param entity to move
      */
     protected void applyKnockBack(Entity entity) {
-        final double vertKnock =  0.6000000238418579D;
+        final double vertKnock = 0.6000000238418579D;
         final double hortKnock = 0.1;
 
         // TODO rework to use projectile motionY so knockback is in motion direction, add random offset to mimic deflection
@@ -476,14 +483,14 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     /**
      * Called to get damage to apply during impact
-     *
+     * <p>
      * Inputs can be used to dynamically change the damage source based on angle and velocity. An example
      * is using 20% damage for side hits and 100% damage for direct impacts. As well reducing damage
      * done to specific entities. Such as 5% damage to slimes and 0% damage to ghosts.
      *
      * @param entityHit by the projectile
-     * @param velocity during the impact
-     * @param hit trace used to calculate the impact, use this for projectile position
+     * @param velocity  during the impact
+     * @param hit       trace used to calculate the impact, use this for projectile position
      * @return damage to apply
      */
     protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
@@ -492,13 +499,13 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     /**
      * Called to get damage source to apply during impact
-     *
+     * <p>
      * Inputs can be used to dynamically change the damage source based on angle and velocity. An example
      * is using blunt impact for side hits and piercing for front on impacts.
      *
      * @param entityHit by the projectile
-     * @param velocity during the impact
-     * @param hit trace used to calculate the impact, use this for projectile position
+     * @param velocity  during the impact
+     * @param hit       trace used to calculate the impact, use this for projectile position
      * @return damage source to use
      */
     protected DamageSource getImpactDamageSource(Entity entityHit, float velocity, RayTraceResult hit) {
@@ -668,8 +675,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean isInRangeToRenderDist(double distanceSq)
-    {
+    public boolean isInRangeToRenderDist(double distanceSq) {
         final double renderDistance = getAverageEdgeLength() * getRenderDistanceWeight() * getRenderDistance();
         return distanceSq < renderDistance * renderDistance;
     }
@@ -680,7 +686,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     protected double getAverageEdgeLength() {
         final AxisAlignedBB boundingBox = this.getRenderBoundingBox();
-        if(boundingBox == null) {
+        if (boundingBox == null) {
             return 1;
         }
         double size = boundingBox.getAverageEdgeLength();
@@ -701,14 +707,8 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
     private static final NbtSaveHandler<EntityProjectile> SAVE_LOGIC = new NbtSaveHandler<EntityProjectile>()
         //Stuck in ground data
-        .addRoot("ground")
-        /* */.nodeBlockPos("pos", (projectile) -> projectile.tilePos, (projectile, pos) -> projectile.tilePos = pos)
-        /* */.nodeFacing("side", (projectile) -> projectile.sideTile, (projectile, side) -> projectile.sideTile = side)
-        /* */.nodeBlockState("state", (projectile) -> projectile.blockInside, (projectile, blockState) -> projectile.blockInside = blockState)
-        .base()
-        //Flags
-        .addRoot("flags")
-        /* */.nodeBoolean("ground", (projectile) -> projectile.inGround, (projectile, flag) -> projectile.inGround = flag)
+        .mainRoot()
+        .nodeINBTSerializable("ground", EntityProjectile::getInGroundData, EntityProjectile::setInGroundData, InGroundData::new)
         .base()
         //Ticks
         .addRoot("ticks")
