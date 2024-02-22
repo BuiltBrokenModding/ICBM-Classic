@@ -59,6 +59,10 @@ public class EntityExplosiveMissileTest extends TestBase
         final World world = testManager.getWorld();
         final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
 
+        // TODO convert this to some type of snapshot test, as in reality we are basically doing a manual version of that
+        //     could use JSON to load java fields and types. Then match that to field/types on the loaded object.
+        //      Needs to be versioned as well so we can do v1 vs v1.x+ saves
+
         // Validate we have a test file
         Assertions.assertNotNull(rpgSave);
 

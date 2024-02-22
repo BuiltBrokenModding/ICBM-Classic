@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 /**
  * Applied to a missile entity to allow it's rotation and position to be set more cleanly
  */
+@Deprecated //TODO replace with something like IProjectileThrowable, where shooter does the init offset calculations
 public interface IMissileAiming
 {
     /**

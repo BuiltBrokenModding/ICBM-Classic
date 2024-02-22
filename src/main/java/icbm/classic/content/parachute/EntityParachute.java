@@ -19,6 +19,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
+import javax.annotation.Nonnull;
+
 /**
  * Entity that acts as a slow falling seat for other entities to use
  */
@@ -29,11 +31,11 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     public static final float AIR_RESISTANCE = 0.95f; // TODO config
 
     /** Stack to render */
-    @Setter @Getter @Accessors(chain = true)
+    @Nonnull @Setter @Getter @Accessors(chain = true)
     private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
 
     /** Stack to drop on impact with ground */
-    @Setter @Getter @Accessors(chain = true)
+    @Nonnull @Setter @Getter @Accessors(chain = true)
     private ItemStack dropItemStack = new ItemStack(ItemReg.itemParachute); // TODO consider used parachute item
 
     public EntityParachute(World world)
@@ -129,8 +131,27 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     @Override
     protected void onImpact(Vec3d impactLocation) {
-        this.setDead();
-        ICBMClassic.logger().info(this + "Impact death");
+        releaseParachute();
+    }
+
+    @Override
+    protected void onExpired() {
+        this.releaseParachute();
+    }
+
+    protected void releaseParachute() {
+        this.removePassengers();
+        this.setDead(); //TODO have parachute drift away and then despawn with particles
+
+        if(this.dropItemStack != null && !this.dropItemStack.isEmpty()) {
+            final EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, this.dropItemStack.copy());
+            entityitem.setDefaultPickupDelay();
+            world.spawnEntity(entityitem);
+        }
+
+        //TODO add event, idea would be to use it non-projectile items and entities to handle additional logic
+        //      though this is not meant to act as a replacement for other solutions. Such as spawn eggs using a deployer item.
+        //      example, adding a parachute backpack to entities, or adding to player inventory
     }
 
     @Override

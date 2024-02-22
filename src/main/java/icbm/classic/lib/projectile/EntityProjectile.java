@@ -1,6 +1,7 @@
 package icbm.classic.lib.projectile;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.data.D3Consumer;
 import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.saving.NbtSaveHandler;
@@ -232,14 +233,13 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
 
             //Handle entity collision boxes
             Entity entity = null;
-            List list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().offset(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
+            final List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().offset(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
             double distanceToHit = 0.0D;
             float hitBoxSizeScale;
 
-            for (int i = 0; i < list.size(); ++i) {
-                Entity checkEntity = (Entity) list.get(i);
-
-                if (shouldCollideWith(checkEntity) && (checkEntity != this.shootingEntity || this.ticksInAir >= 5)) {
+            // TODO see if we can parallel stream this? As it might be thread safe assuming we .map first
+            for (Entity checkEntity : list) {
+                if (shouldCollideWith(checkEntity) && (checkEntity != this.shootingEntity || this.ticksInAir >= 5)) { //TODO why 5 ticks specifically? Why not 'has collider left shooter'
                     hitBoxSizeScale = 0.3F;
                     AxisAlignedBB hitBox = checkEntity.getEntityBoundingBox().expand((double) hitBoxSizeScale, (double) hitBoxSizeScale, (double) hitBoxSizeScale);
                     RayTraceResult entityRayHit = hitBox.calculateIntercept(rayStart, rayEnd);
@@ -617,12 +617,12 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
     }
 
     @Override
-    public void shoot(double xx, double yy, double zz, float multiplier, float random) {
+    public void shoot(double xx, double yy, double zz, float speed, float random) {
         //Normalize
-        float velocity = MathHelper.sqrt(xx * xx + yy * yy + zz * zz);
-        xx /= (double) velocity;
-        yy /= (double) velocity;
-        zz /= (double) velocity;
+        float magnitude = MathHelper.sqrt(xx * xx + yy * yy + zz * zz);
+        xx /= (double) magnitude;
+        yy /= (double) magnitude;
+        zz /= (double) magnitude;
 
         //Add randomization to make the arrow miss
         if (random > 0) {
@@ -632,9 +632,9 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         }
 
         //Add multiplier
-        xx *= (double) multiplier;
-        yy *= (double) multiplier;
-        zz *= (double) multiplier;
+        xx *= (double) speed;
+        yy *= (double) speed;
+        zz *= (double) speed;
 
         //Set motion
         this.motionX = xx;
@@ -646,6 +646,13 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.prevRotationYaw = this.rotationYaw = (float) (Math.atan2(xx, zz) * 180.0D / Math.PI);
         this.prevRotationPitch = this.rotationPitch = (float) (Math.atan2(yy, (double) f3) * 180.0D / Math.PI);
         this.ticksInGround = 0;
+    }
+
+    protected static void vectorFromAngles(float yaw, float pitch, D3Consumer callback) {
+        callback.apply(
+            -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F),
+            -MathHelper.sin(pitch * 0.017453292F),
+            MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F));
     }
 
     @Override

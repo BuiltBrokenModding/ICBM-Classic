@@ -13,13 +13,11 @@ import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
-import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import icbm.classic.lib.projectile.vanilla.ArrowProjectileData;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,7 +25,6 @@ import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class ItemMissile extends ItemBase
@@ -118,7 +115,7 @@ public class ItemMissile extends ItemBase
                 e.addCustomization(new ClusterCustomization()
                     .setProjectilesToSpawn(9)
                     .setProjectilesPerLayer(3)
-                    .setProjectileData(new ParachuteProjectileData().setPassengerItemStack(new ItemStack(ItemReg.itemBomblet)))
+                    .setProjectileData(new ParachuteProjectileData().setHeldItem(new ItemStack(ItemReg.itemBomblet)))
                     .setAllowPickupItems(false)
                 );
             });

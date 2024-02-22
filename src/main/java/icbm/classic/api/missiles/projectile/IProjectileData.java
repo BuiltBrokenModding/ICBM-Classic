@@ -1,7 +1,10 @@
 package icbm.classic.api.missiles.projectile;
 
+import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IBuildableObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemEgg;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -59,7 +62,7 @@ public interface IProjectileData<E extends Entity>  extends IBuildableObject {
      * @param allowItemPickup true to allow entity to be collected, such as picking up arrows
      * @return entity to spawn
      */
-    E newEntity(World world, boolean allowItemPickup); //TODO consider moving an a spawnAction recycling blastAction logic
+    E newEntity(World world, boolean allowItemPickup); //TODO consider moving to a spawnAction recycling blastAction logic
 
     /**
      * Called after the entity has been added to the world. Useful
@@ -71,7 +74,8 @@ public interface IProjectileData<E extends Entity>  extends IBuildableObject {
      * @param entity created and added to the world
      * @param source that created the entity, may not always be present
      */
-    default void onEntitySpawned(@Nonnull E entity, @Nullable Entity source) { //TODO consider moving an a spawnAction
+    default void onEntitySpawned(@Nonnull E entity, @Nullable Entity source) { //TODO consider moving to a spawnAction
 
     }
+
 }

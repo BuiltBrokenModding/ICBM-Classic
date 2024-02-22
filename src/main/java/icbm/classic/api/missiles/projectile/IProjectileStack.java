@@ -4,10 +4,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 /**
  * Version of capability to apply specific to ItemStacks for additional features
  * <p>
- * Items can either be the projectile directly or a container of missile(s)
+ * Items can either be the projectile directly or a container of a projectile(s)
  */
 public interface IProjectileStack<E extends Entity>
 {
@@ -17,6 +19,7 @@ public interface IProjectileStack<E extends Entity>
      * @return data, should come from {@link icbm.classic.api.ICBMClassicAPI#PROJECTILE_DATA_REGISTRY} to allow
      * other mods to override the return value of the registry key.
      */
+    @Nullable
     IProjectileData<E> getProjectileData();
 
     /**

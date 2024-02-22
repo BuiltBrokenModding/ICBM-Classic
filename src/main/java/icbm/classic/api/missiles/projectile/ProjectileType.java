@@ -12,6 +12,8 @@ public class ProjectileType {
 
     /** Default type, anything that is projectile ammo like... this includes snowballs and arrows */
     public static final ProjectileType TYPE_PROJECTILE = new ProjectileType(new ResourceLocation("icbmclassic","projectile"), null);
+    /** Applied to projectiles that can be thrown or projected by a source */
+    public static final ProjectileType TYPE_THROWABLE = new ProjectileType(new ResourceLocation("icbmclassic","throwable"), TYPE_PROJECTILE);
     /** Missiles that use the capability {@link icbm.classic.api.missiles.IMissile} */
     public static final ProjectileType TYPE_MISSILE = new ProjectileType(new ResourceLocation("icbmclassic","missile"), TYPE_PROJECTILE);
     /** Projectiles that are explosive and use the capability {@link icbm.classic.api.caps.IExplosive} */

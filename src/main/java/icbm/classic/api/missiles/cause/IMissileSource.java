@@ -16,7 +16,7 @@ import net.minecraftforge.common.util.INBTSerializable;
  * That said ICBM team will not stop anyone from using the data. As there are valid interaction uses. Such as showing
  * missiles on an interactive map or exposing the player's own missile launch position to themselves.
  */
-public interface IMissileSource extends INBTSerializable<NBTTagCompound>
+public interface IMissileSource extends INBTSerializable<NBTTagCompound> //TODO rename to IProjectileSource
 {
     /**
      * World the missile was launched from
