@@ -2,10 +2,14 @@ package icbm.classic.api.reg.obj;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.missiles.parts.IBuildableObject;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Supplier;
 
@@ -19,7 +23,7 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
      *
      * @throws RuntimeException if registry is locked or name is already used
      */
-    void register(ResourceLocation name, Supplier<Part> builder);
+    void register(@Nonnull ResourceLocation name, @Nonnull Supplier<Part> builder);
 
     /**
      * Builds a new target data instance
@@ -27,9 +31,17 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
      * @param name matching registry
      * @return new instance or null if not registered
      */
-    Part build(ResourceLocation name);
+    @Nullable
+    Part build(@Nonnull ResourceLocation name);
 
-    default NBTTagList save(Collection<Part> parts) {
+    /**
+     *
+     * @return
+     */
+    @Nonnull
+    String getUniqueName();
+
+    default NBTTagList save(@Nonnull Collection<Part> parts) {
         final NBTTagList list = new NBTTagList();
         for(Part part : parts) {
             final NBTTagCompound save = save(part);
@@ -40,29 +52,31 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
         return list;
     }
 
-    default NBTTagCompound save(Part part) {
+    default NBTTagCompound save(@Nonnull Part part) {
         if(part == null) {
             ICBMClassic.logger().warn("Failed to save part due to null value", new RuntimeException());
             return null;
         }
-        else if(part.getRegistryName() == null) {
+        else if(part.getRegistryKey() == null) {
             ICBMClassic.logger().warn("Failed to save part due to missing registry name: " + part, new RuntimeException());
             return null;
         }
 
         final NBTTagCompound save = new NBTTagCompound();
-        save.setString("id", part.getRegistryName().toString());
+        save.setString("id", part.getRegistryKey().toString());
 
-        // Data is optional, only id is required as some objects are constants and need no save info
-        final NBTTagCompound additionalData = part.serializeNBT();
-        if (additionalData != null && !additionalData.hasNoTags()) {
-            save.setTag("data", additionalData);
+        if(part instanceof INBTSerializable) {
+            // Data is optional, only id is required as some objects are constants and need no save info
+            final NBTBase additionalData = ((INBTSerializable<NBTBase>)part).serializeNBT();
+            if (additionalData != null && !additionalData.hasNoTags()) {
+                save.setTag("data", additionalData);
+            }
         }
 
         return save;
     }
 
-    default <C extends Collection<Part>> C load(NBTTagList save, C list) {
+    default <C extends Collection<Part>> C load(@Nonnull NBTTagList save, @Nonnull C list) {
         for(int i = 0; i < save.tagCount(); i++) {
             final Part part = load((NBTTagCompound) save.get(i));
             if(part != null) {
@@ -72,13 +86,13 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
         return list;
     }
 
-    default Part load(NBTTagCompound save) {
+    default Part load(@Nullable NBTTagCompound save) {
         if(save != null && !save.hasNoTags() && save.hasKey("id")) {
             final ResourceLocation id = new ResourceLocation(save.getString("id"));
             final Part part = build(id);
-            if(part != null && save.hasKey("data")) {
-                final NBTTagCompound additionalData = save.getCompoundTag("data");
-                part.deserializeNBT(additionalData);
+            if(part instanceof INBTSerializable && save.hasKey("data")) {
+                final NBTBase additionalData = save.getTag("data");
+                ((INBTSerializable<NBTBase>)part).deserializeNBT(additionalData);
             }
             return part;
         }
