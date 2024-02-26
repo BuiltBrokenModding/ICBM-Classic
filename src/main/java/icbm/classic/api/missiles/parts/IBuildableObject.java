@@ -7,7 +7,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 /**
  * Implemented by objects that can be recreated from save or packet data
  */
-public interface IBuildableObject extends INBTSerializable<NBTTagCompound> {
+public interface IBuildableObject {
 
     /**
      * Name of the type of part. Used for save/load
