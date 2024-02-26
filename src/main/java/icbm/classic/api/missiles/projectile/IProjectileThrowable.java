@@ -40,5 +40,5 @@ public interface IProjectileThrowable<ProjectileEntity extends Entity> {
      * @param random    a random value to offset motion vector for added variation
      * @return true if everything is good to fire, false if something is invalid about the position (ex: spawning in wall)
      */
-    boolean throwProjectile(@Nonnull ProjectileEntity entity, @Nullable IMissileSource source, double x, double y, double z, double yaw, double pitch, float velocity, float random);
+    boolean throwProjectile(@Nonnull ProjectileEntity entity, @Nullable IMissileSource source, double x, double y, double z, float yaw, float pitch, float velocity, float random);
 }

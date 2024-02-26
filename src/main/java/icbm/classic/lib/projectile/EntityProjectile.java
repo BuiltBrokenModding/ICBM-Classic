@@ -3,6 +3,8 @@ package icbm.classic.lib.projectile;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.data.D3Consumer;
 import icbm.classic.api.missiles.IMissileAiming;
+import icbm.classic.api.missiles.cause.IMissileSource;
+import icbm.classic.api.missiles.projectile.IProjectileThrowable;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.transform.vector.Pos;
@@ -14,13 +16,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
@@ -31,6 +31,8 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +41,7 @@ import java.util.UUID;
  *
  * @author Darkguardsman
  */
-public abstract class EntityProjectile<E extends EntityProjectile<E>> extends EntityICBM implements IProjectile, IMissileAiming, IEntityAdditionalSpawnData {
+public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJECTILE>> extends EntityICBM implements IProjectile, IMissileAiming, IEntityAdditionalSpawnData, IProjectileThrowable<PROJECTILE> {
 
     /**
      * Effectively just render distance but scales with entity size
@@ -118,7 +120,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
      * @return this
      */
     @Deprecated
-    public E init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random) {
+    public PROJECTILE init(EntityLivingBase shooter, EntityLivingBase target, float multiplier, float random) {
         this.shootingEntity = shooter;
         this.sourceOfProjectile = new Pos(shooter);
 
@@ -140,11 +142,11 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             this.setLocationAndAngles(shooter.posX + subX, this.posY, shooter.posZ + subZ, yaw, pitch);
             this.shoot(deltaX, deltaY + (double) subY, deltaZ, multiplier, random);
         }
-        return (E) this;
+        return (PROJECTILE) this;
     }
 
     @Deprecated
-    public E init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale) {
+    public PROJECTILE init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale) {
         this.sourceOfProjectile = new Pos(x, y, z);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
 
@@ -159,7 +161,7 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
         this.motionY = (double) (-MathHelper.sin(this.rotationPitch / 180.0F * (float) Math.PI));
         this.shoot(this.motionX, this.motionY, this.motionZ, multiplier, 0);
 
-        return (E) this;
+        return (PROJECTILE) this;
     }
 
     @Override
@@ -175,6 +177,17 @@ public abstract class EntityProjectile<E extends EntityProjectile<E>> extends En
             shooter.rotationYaw, shooter.rotationPitch,
             offsetMultiplier, forceMultiplier
         );
+    }
+
+    @Override
+    public boolean throwProjectile(@Nonnull EntityProjectile entity, @Nullable IMissileSource source, double x, double y, double z, float yaw, float pitch, float velocity, float random) {
+        initAimingPosition(
+            x, y, z,
+            yaw, pitch,
+            1, velocity
+        );
+        // TODO implement random
+        return true;
     }
 
     @Override

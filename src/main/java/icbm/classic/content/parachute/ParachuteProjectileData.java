@@ -9,10 +9,7 @@ import icbm.classic.api.missiles.projectile.ProjectileType;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,9 +27,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @EqualsAndHashCode(callSuper = false)
+@ToString
 public class ParachuteProjectileData extends BuildableObject<ParachuteProjectileData, IProjectileDataRegistry> implements IProjectileData<EntityParachute>, INBTSerializable<NBTTagCompound> {
 
-    private final static ProjectileType[] TYPE = new ProjectileType[]{ProjectileType.TYPE_ENTITY, ProjectileType.TYPE_HOLDER};
+    private final static ProjectileType[] TYPE = new ProjectileType[]{ProjectileType.TYPE_ENTITY, ProjectileType.TYPE_HOLDER, ProjectileType.TYPE_THROWABLE};
     public final static ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "holder.parachute");
 
     /**

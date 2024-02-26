@@ -40,6 +40,12 @@ public class ItemParachute extends ItemBase {
     public static final int MAX_USE_DURATION = 3 * 20; //TODO config
     public static final float THROW_VELOCITY = 0.1f;
 
+    public static final TextComponentTranslation ERROR_THROWING_INTERFACE = new TextComponentTranslation("error.icbmclassic:projectile.throwing.interface", IProjectileThrowable.class.getSimpleName());
+    public static final TextComponentTranslation ERROR_THROWING_TYPE = new TextComponentTranslation("error.icbmclassic:projectile.throwing.type", ProjectileType.TYPE_THROWABLE.getID());
+
+    // TODO split into empty crafting item and version holding item
+    // TODO add a damaged/used version to drop after deploying cargo
+
     public ItemParachute() {
         this.setName("parachute");
         this.setMaxStackSize(16);
@@ -97,6 +103,9 @@ public class ItemParachute extends ItemBase {
 
         final Entity parachute = projectileData.newEntity(world, !isCreative);
         if (!projectileData.isType(ProjectileType.TYPE_THROWABLE)) {
+            if(thrower instanceof EntityPlayer) {
+                ((EntityPlayer) thrower).sendStatusMessage(ERROR_THROWING_TYPE, true);
+            }
             ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as type(s) isn't supported. " +
                 "This is likely missing implementation on the projectile. " +
                 "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
@@ -104,8 +113,8 @@ public class ItemParachute extends ItemBase {
         }
 
         if (parachute instanceof IProjectileThrowable) {
-            final double yaw = thrower instanceof EntityLivingBase ? ((EntityLivingBase) thrower).rotationYawHead : thrower.rotationYaw;
-            final double pitch = thrower.rotationPitch;
+            final float yaw = thrower instanceof EntityLivingBase ? ((EntityLivingBase) thrower).rotationYawHead : thrower.rotationYaw;
+            final float pitch = thrower.rotationPitch;
             final double x = thrower.posX;
             final double y = thrower.posY;
             final double z = thrower.posZ;
@@ -114,6 +123,9 @@ public class ItemParachute extends ItemBase {
             ((IProjectileThrowable<Entity>) parachute).throwProjectile(parachute, source, x, y, z, yaw, pitch, THROW_VELOCITY, 0);
 
         } else {
+            if(thrower instanceof EntityPlayer) {
+                ((EntityPlayer) thrower).sendStatusMessage(ERROR_THROWING_INTERFACE, true);
+            }
             ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as it doesn't support IProjectileThrowable." +
                 "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
             return false;
