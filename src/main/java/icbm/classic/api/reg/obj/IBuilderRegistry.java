@@ -35,8 +35,9 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
     Part build(@Nonnull ResourceLocation name);
 
     /**
+     * Unique name for this registry. Mostly used for translations
      *
-     * @return
+     * @return unique builder key
      */
     @Nonnull
     String getUniqueName();

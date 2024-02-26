@@ -119,11 +119,16 @@ item.icbmclassic:circuit.basic.name=Basic Circuit
 item.icbmclassic:circuit.advanced.name=Advanced Circuit
 item.icbmclassic:circuit.elite.name=Elite Circuit
 
-item.icbmclassic:parachute.name=Projectile Parachute
-item.icbmclassic:parachute.info=Reduces fall speed for projectiles \n Air redistance: %1$s \n Gravity: %2$s m/s
+## Bomblet
+item.icbmclassic:bomblet.name=Bomblet
+item.icbmclassic:bomblet.info=Unguided explosive projectile
 
 ## Parchute Projectile
-
+item.icbmclassic:parachute.name=Payload Parachute
+item.icbmclassic:parachute.info=Allow slowing deployed payloads
+projectile.icbmclassic:holder.parachute.info.entity=Deploys entity with parachute \n Held: %1$s
+projectile.icbmclassic:holder.parachute.info.item=Deploys item with parachute \n Held: %1$s
+projectile.icbmclassic:holder.parachute.info.block=Deploys block with parachute \n Held: %1$s
 
 ## ICBM Machines
 tile.icbmclassic:launcherbase.name=Launcher Pad

@@ -6,7 +6,11 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.api.missiles.projectile.ProjectileType;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
+import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -25,7 +29,8 @@ import net.minecraftforge.common.util.INBTSerializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ParachuteProjectileData implements IProjectileData<EntityParachute>, INBTSerializable<NBTTagCompound> {
+@EqualsAndHashCode(callSuper = false)
+public class ParachuteProjectileData extends BuildableObject<ParachuteProjectileData, IProjectileDataRegistry> implements IProjectileData<EntityParachute>, INBTSerializable<NBTTagCompound> {
 
     private final static ProjectileType[] TYPE = new ProjectileType[]{ProjectileType.TYPE_ENTITY, ProjectileType.TYPE_HOLDER};
     public final static ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "holder.parachute");
@@ -48,21 +53,13 @@ public class ParachuteProjectileData implements IProjectileData<EntityParachute>
     @Accessors(chain = true)
     private ParachuteMode parachuteMode = ParachuteMode.ITEM;
 
+    public ParachuteProjectileData() {
+        super(NAME, ICBMClassicAPI.PROJECTILE_DATA_REGISTRY, SAVE_LOGIC);
+    }
+
     @Override
     public ProjectileType[] getTypes() {
         return TYPE;
-    }
-
-    @Nonnull
-    @Override
-    public ResourceLocation getRegistryKey() {
-        return NAME;
-    }
-
-    @Nonnull
-    @Override
-    public IProjectileDataRegistry getRegistry() {
-        return ICBMClassicAPI.PROJECTILE_DATA_REGISTRY;
     }
 
     @Override
@@ -72,7 +69,10 @@ public class ParachuteProjectileData implements IProjectileData<EntityParachute>
 
     @Override
     public ITextComponent getTooltip() {
-        return new TextComponentTranslation(getTranslationKey().toString() + ".info." + parachuteMode.name().toLowerCase(), new TextComponentTranslation(heldItem.getUnlocalizedName()));
+        return new TextComponentTranslation(
+            getTranslationKey() + ".info." + parachuteMode.name().toLowerCase(),
+            heldItem.getItem().getItemStackDisplayName(heldItem)
+        );
     }
 
     @Override
@@ -137,16 +137,6 @@ public class ParachuteProjectileData implements IProjectileData<EntityParachute>
 
     private void spawnBlockEntity(@Nonnull EntityParachute entity) {
 
-    }
-
-    @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this);
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<ParachuteProjectileData> SAVE_LOGIC = new NbtSaveHandler<ParachuteProjectileData>()

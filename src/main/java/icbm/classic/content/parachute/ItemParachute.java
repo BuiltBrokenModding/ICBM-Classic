@@ -137,12 +137,17 @@ public class ItemParachute extends ItemBase {
 
     @Override
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
-        final String key = getUnlocalizedName(stack) + ".info";
-        final float gravity = -EntityParachute.GRAVITY * 20;
-        final float air = (1 - EntityParachute.AIR_RESISTANCE) * 100;
-        LanguageUtility.outputLines(new TextComponentTranslation(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
-
         final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+
+        // Only show basic info if we have no projectile data
+        if(projectileStack == null || projectileStack.getProjectileData() == null) {
+            final String key = getUnlocalizedName(stack) + ".info";
+            final float gravity = -EntityParachute.GRAVITY * 20;
+            final float air = (1 - EntityParachute.AIR_RESISTANCE) * 100;
+            LanguageUtility.outputLines(new TextComponentTranslation(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
+        }
+
+        // Show projectile information
         if(projectileStack != null && projectileStack.getProjectileData() != null) {
             LanguageUtility.outputLines(projectileStack.getProjectileData().getTooltip(), list::add);
         }
@@ -158,7 +163,7 @@ public class ItemParachute extends ItemBase {
 
             for (EntityList.EntityEggInfo entitylist$entityegginfo : EntityList.ENTITY_EGGS.values())
             {
-                final ItemStack eggStack = new ItemStack(this, 1);
+                final ItemStack eggStack = new ItemStack(Items.SPAWN_EGG, 1);
                 ItemMonsterPlacer.applyEntityIdToItemStack(eggStack, entitylist$entityegginfo.spawnedID);
                 items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(eggStack).setParachuteMode(ParachuteMode.ENTITY)));
             }

@@ -25,7 +25,7 @@ public class ProjectileDataRegistry extends BuildableObjectRegistry<IProjectileD
 
     private final Map<Item, List<ProjectileItemConversion>> itemConversions = new HashMap();
     public ProjectileDataRegistry() {
-        super("PROJECTILE_SPAWNING");
+        super("PROJECTILE", "projectile");
     }
 
     @Override

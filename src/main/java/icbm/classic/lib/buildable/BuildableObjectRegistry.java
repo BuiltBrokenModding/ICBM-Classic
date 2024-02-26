@@ -4,32 +4,43 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.missiles.parts.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@RequiredArgsConstructor
 public class BuildableObjectRegistry<Part extends IBuildableObject> implements IBuilderRegistry<Part>
 {
     private final Map<ResourceLocation, Supplier<Part>> builders = new HashMap<>();
     @Getter
     private boolean isLocked = false;
 
-    private final String name;
+    private final String loggerPrefix;
+    private final String key;
+
+    @Deprecated
+    public BuildableObjectRegistry(String loggerPrefix) {
+        this.loggerPrefix = loggerPrefix;
+        this.key = loggerPrefix.toLowerCase(Locale.ROOT).replace("_", ".");
+    }
+
+    public BuildableObjectRegistry(String loggerPrefix, String key) {
+        this.loggerPrefix = loggerPrefix;
+        this.key = key;
+    }
 
     @Override
     public void register(@Nonnull ResourceLocation key, @Nonnull Supplier<Part> builder) {
         if (isLocked) {
-            throw new RuntimeException(this.name + ": mod '" + FMLCommonHandler.instance().getModName() + "' attempted to do a late registry");
+            throw new RuntimeException(this.loggerPrefix + ": mod '" + FMLCommonHandler.instance().getModName() + "' attempted to do a late registry");
         }
         if (builders.containsKey(key)) {
-            throw new RuntimeException(this.name + ": mod '" + FMLCommonHandler.instance().getModName() + "' attempted to override '" + key + "'. " +
+            throw new RuntimeException(this.loggerPrefix + ": mod '" + FMLCommonHandler.instance().getModName() + "' attempted to override '" + key + "'. " +
                     "This method does not allow replacing existing registries. See implementing class for override call.");
         }
         builders.put(key, builder);
@@ -44,9 +55,9 @@ public class BuildableObjectRegistry<Part extends IBuildableObject> implements I
      */
     public void overrideRegistry(ResourceLocation key, Supplier<Part> builder) {
         if (isLocked) {
-            throw new RuntimeException(this.name + ":mod '" + FMLCommonHandler.instance().getModName() + "' attempted to do a late registry");
+            throw new RuntimeException(this.loggerPrefix + ":mod '" + FMLCommonHandler.instance().getModName() + "' attempted to do a late registry");
         }
-        ICBMClassic.logger().info(this.name + ":'" + key + "' is being overridden by " + FMLCommonHandler.instance().getModName());
+        ICBMClassic.logger().info(this.loggerPrefix + ":'" + key + "' is being overridden by " + FMLCommonHandler.instance().getModName());
         builders.put(key, builder);
     }
 
@@ -58,7 +69,7 @@ public class BuildableObjectRegistry<Part extends IBuildableObject> implements I
     @Nonnull
     @Override
     public String getUniqueName() {
-        return name;
+        return key;
     }
 
     public void lock() {
