@@ -1,7 +1,9 @@
 package icbm.classic.content.missile.logic.source.cause;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 /**
@@ -42,9 +45,16 @@ public class EntityCause extends MissileCause implements IMissileCause.IEntityCa
         return entity;
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return REG_NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IMissileCause> getRegistry() {
+        return ICBMClassicAPI.MISSILE_CAUSE_REGISTRY;
     }
 
     @Override

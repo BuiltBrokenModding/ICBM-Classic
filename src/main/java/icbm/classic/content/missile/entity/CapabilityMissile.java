@@ -204,92 +204,9 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
         /* */.nodeBoolean("doFlight", CapabilityMissile::canRunFlightLogic, (cap, i) -> cap.doFlight = i)
         .base()
         .mainRoot()
-        /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("target",
-            (cap) -> { //TODO convert to class so we can have targeting items and launcher reuse
-                if(cap.getTargetData() != null) {
-                    //Not all target components are restored via save, some are always present on the entity
-                    if (cap.getTargetData().getRegistryName() != null) {
-                        final NBTTagCompound tagCompound = new NBTTagCompound();
-                        final NBTTagCompound logicSave = cap.getTargetData().serializeNBT();
-                        if (logicSave != null && !logicSave.hasNoTags()) {
-                            tagCompound.setTag("data", logicSave);
-                        }
-                        tagCompound.setString("id", cap.getTargetData().getRegistryName().toString());
-                        return tagCompound;
-                    }
-                    else {
-                        return cap.getTargetData().serializeNBT();
-                    }
-                }
-                return null;
-            },
-            (cap, data) -> {
-                //Attempt to restore target object from save
-                if(cap.getTargetData() == null) {
-                    final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
-                    final IMissileTarget target = ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.build(saveId);
-                    if (target != null) {
-                        if (data.hasKey("data")) {
-                            target.deserializeNBT(data.getCompoundTag("data"));
-                        }
-                        cap.setTargetData(target);
-                    }
-                }
-                //Cap has hard locked target wrapper, restore any data directly to object
-                else {
-                    cap.getTargetData().deserializeNBT(data);
-                }
-            }
-        ))
-        /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("flight",
-            (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
-                final NBTTagCompound save = new NBTTagCompound();
-                final IMissileFlightLogic logic = missile.getFlightLogic();
-                if(logic != null)
-                {
-                    final NBTTagCompound logicSave = logic.serializeNBT();
-                    if (logicSave != null && !logicSave.hasNoTags())
-                    {
-                        save.setTag("data", logicSave);
-                    }
-                    save.setString("id", logic.getRegistryName().toString());
-                }
-                return save;
-            },
-            (missile, data) -> {
-                final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
-                final IMissileFlightLogic logic = ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.build(saveId);
-                if (logic != null)
-                {
-                    if (data.hasKey("data"))
-                    {
-                        logic.deserializeNBT(data.getCompoundTag("data"));
-                    }
-                    missile.setFlightLogic(logic);
-                }
-            }
-        ))
-        /* */.node(new NbtSaveNode<CapabilityMissile, NBTTagCompound>("source",
-            (missile) -> { //TODO convert to class to make cleaner and provide better testing surface
-                final NBTTagCompound save = new NBTTagCompound();
-                final IMissileSource source = missile.getMissileSource();
-                if(source != null)
-                {
-                    return source.serializeNBT();
-                }
-                return save;
-            },
-            (missile, data) -> {
-                final IMissileSource source = new MissileSource();
-                if (data.hasKey("data"))
-                {
-                    source.deserializeNBT(data.getCompoundTag("data"));
-                }
-                else {
-                    source.deserializeNBT(data);
-                }
-            }
-        ))
+        /* */.nodeBuildableObject("target", () -> ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY, CapabilityMissile::getTargetData, CapabilityMissile::setTargetData)
+        /* */.nodeBuildableObject("flight", () -> ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY, CapabilityMissile::getFlightLogic, CapabilityMissile::setFlightLogic)
+        /* */.nodeINBTSerializable("source", CapabilityMissile::getMissileSource)
         .base();
 
     public boolean canRunFlightLogic()

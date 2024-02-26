@@ -12,11 +12,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public final class MissileSource implements IMissileSource {
+public final class MissileSource implements IMissileSource, INBTSerializable<NBTTagCompound> {
 
     private World world;
     private Vec3d position;
@@ -32,35 +33,10 @@ public final class MissileSource implements IMissileSource {
         SAVE_LOGIC.load(this, save);
     }
 
-    public static final NbtSaveNode<MissileSource, NBTTagCompound> CAUSE_SAVE = new NbtSaveNode<MissileSource, NBTTagCompound>("cause",
-        (source) -> { //TODO convert to class to make cleaner and provide better testing surface
-            final NBTTagCompound save = new NBTTagCompound();
-            final IMissileCause cause = source.getCause();
-            if (cause != null) {
-                final NBTTagCompound logicSave = cause.serializeNBT();
-                if (logicSave != null && !logicSave.hasNoTags()) {
-                    save.setTag("data", logicSave);
-                }
-                save.setString("id", cause.getRegistryName().toString());
-            }
-            return save;
-        },
-        (source, data) -> {
-            final ResourceLocation saveId = new ResourceLocation(data.getString("id"));
-            final IMissileCause cause = ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.build(saveId);
-            if (cause != null) {
-                if (data.hasKey("data")) {
-                    cause.deserializeNBT(data.getCompoundTag("data"));
-                }
-                source.cause = cause;
-            }
-        }
-    );
-
     private static final NbtSaveHandler<MissileSource> SAVE_LOGIC = new NbtSaveHandler<MissileSource>()
         .mainRoot()
         /* */.nodeWorldDim("dimension", MissileSource::getWorld, MissileSource::setWorld)
         /* */.nodeVec3d("pos", MissileSource::getPosition, MissileSource::setPosition)
-        /* */.node(CAUSE_SAVE)
+        /* */.nodeBuildableObject("cause", () -> ICBMClassicAPI.MISSILE_CAUSE_REGISTRY, MissileSource::getCause, MissileSource::setCause)
         .base();
 }

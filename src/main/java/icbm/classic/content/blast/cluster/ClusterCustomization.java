@@ -3,10 +3,12 @@ package icbm.classic.content.blast.cluster;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.missiles.parts.IBuildableObject;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
@@ -22,11 +24,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ClusterCustomization implements IExplosiveCustomization {
+public class ClusterCustomization implements IExplosiveCustomization, INBTSerializable<NBTTagCompound> {
 
     public static final ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "cluster");
 
@@ -68,7 +72,7 @@ public class ClusterCustomization implements IExplosiveCustomization {
         // TODO cache to improve performance
         String name = null;
         if(projectileData != null) {
-            name = LanguageUtility.buildToolTipString(new TextComponentTranslation(projectileData.getTranslationKey().toString()));
+            name = LanguageUtility.buildToolTipString(new TextComponentTranslation(projectileData.getTranslationKey()));
         }
         collector.accept(LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:cluster.projectile.name", Optional.ofNullable(name).orElse("???"))));
 
@@ -76,9 +80,16 @@ public class ClusterCustomization implements IExplosiveCustomization {
         collector.accept(LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:cluster.projectile.layer", projectilesPerLayer)));
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IExplosiveCustomization> getRegistry() {
+        return ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY;
     }
 
     @Override

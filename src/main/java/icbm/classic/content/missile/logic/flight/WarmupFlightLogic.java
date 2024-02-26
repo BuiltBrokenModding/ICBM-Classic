@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 /**
@@ -31,8 +32,9 @@ public class WarmupFlightLogic extends FlightLogic {
         outputLines.accept("\tTimer: " + timer);
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return REG_NAME;
     }
 

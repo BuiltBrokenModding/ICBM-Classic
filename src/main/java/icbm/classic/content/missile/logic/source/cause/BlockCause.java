@@ -1,7 +1,10 @@
 package icbm.classic.content.missile.logic.source.cause;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.cause.IMissileCause;
+import icbm.classic.api.reg.IExplosiveCustomization;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+
+import javax.annotation.Nonnull;
 
 /**
  * General purpose block cause
@@ -43,9 +48,16 @@ public class BlockCause extends MissileCause implements IMissileCause.IBlockCaus
         return world;
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return REG_NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IMissileCause> getRegistry() {
+        return ICBMClassicAPI.MISSILE_CAUSE_REGISTRY;
     }
 
     @Override

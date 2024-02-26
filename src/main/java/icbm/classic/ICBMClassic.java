@@ -21,7 +21,7 @@ import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
-import icbm.classic.content.missile.BuildableObjectRegistry;
+import icbm.classic.lib.buildable.BuildableObjectRegistry;
 import icbm.classic.content.missile.entity.CapabilityMissile;
 import icbm.classic.content.missile.entity.anti.SAMTargetData;
 import icbm.classic.content.missile.logic.flight.*;

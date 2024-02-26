@@ -1,18 +1,23 @@
 package icbm.classic.lib.capability.launcher.data;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
+import icbm.classic.lib.buildable.BuildableObject;
 import lombok.NoArgsConstructor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import javax.annotation.Nonnull;
+
 
 @NoArgsConstructor
-public class LauncherStatus implements IActionStatus {
+public final class LauncherStatus implements IActionStatus {
 
     // Errors
     public static final LauncherStatus ERROR_GENERIC = new LauncherStatus().withRegName("error.generic").asError().withTranslation(LauncherLangs.ERROR);
@@ -83,24 +88,21 @@ public class LauncherStatus implements IActionStatus {
         return textComponent;
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return regName;
     }
 
+    @Nonnull
     @Override
-    public NBTTagCompound serializeNBT() {
-        return null;
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-
+    public IBuilderRegistry<IActionStatus> getRegistry() {
+        return ICBMClassicAPI.ACTION_STATUS_REGISTRY;
     }
 
     @Override
     public String toString() {
-        return "LauncherStatus[ '" + getRegistryName() + "' , '" + message + "' ]@" + hashCode();
+        return "LauncherStatus[ '" + getRegistryKey() + "' , '" + message + "' ]@" + hashCode();
     }
 
     public static void registerTypes() {
@@ -119,10 +121,10 @@ public class LauncherStatus implements IActionStatus {
         register(CANCELED);
         register(FIRING_AIMING);
 
-        ICBMClassicAPI.ACTION_STATUS_REGISTRY.register(FiringWithDelay.regName, FiringWithDelay::new);
+        ICBMClassicAPI.ACTION_STATUS_REGISTRY.register(FiringWithDelay.REG_NAME, FiringWithDelay::new);
     }
 
     private static void register(LauncherStatus constantStatus) {
-        ICBMClassicAPI.ACTION_STATUS_REGISTRY.register(constantStatus.getRegistryName(), () -> constantStatus);
+        ICBMClassicAPI.ACTION_STATUS_REGISTRY.register(constantStatus.getRegistryKey(), () -> constantStatus);
     }
 }

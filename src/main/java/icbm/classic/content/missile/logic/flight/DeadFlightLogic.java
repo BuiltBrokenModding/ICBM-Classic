@@ -1,18 +1,23 @@
 package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.util.INBTSerializable;
+
+import javax.annotation.Nonnull;
 
 /**
  * Flight computer that does nothing, acts as a placeholder for when we fire missiles like an arrow or are using
  * raw motion setting logic in another system.
  */
-public class DeadFlightLogic implements IMissileFlightLogic
+public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<NBTTagCompound>
 {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "dead");
 
@@ -80,10 +85,17 @@ public class DeadFlightLogic implements IMissileFlightLogic
         );
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName()
+    public ResourceLocation getRegistryKey()
     {
         return REG_NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IMissileFlightLogic> getRegistry() {
+        return ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY;
     }
 
     @Override
@@ -95,7 +107,7 @@ public class DeadFlightLogic implements IMissileFlightLogic
     @Override
     public boolean equals(Object other) {
         if(other instanceof DeadFlightLogic) {
-            return fuelTicks == ((DeadFlightLogic) other).fuelTicks && getRegistryName() == ((DeadFlightLogic) other).getRegistryName();
+            return fuelTicks == ((DeadFlightLogic) other).fuelTicks && getRegistryKey() == ((DeadFlightLogic) other).getRegistryKey();
         }
         return false;
     }

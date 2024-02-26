@@ -9,6 +9,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by Robin Seifert on 2/8/2022.
  */
@@ -67,8 +69,9 @@ public class DirectFlightLogic extends DeadFlightLogic
     //TODO rework to use current pitch and yaw to set motion
     //TODO update motion as long as we have fuel (ticks of motion time)
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName()
+    public ResourceLocation getRegistryKey()
     {
         return REG_NAME;
     }

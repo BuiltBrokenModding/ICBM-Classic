@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 /**
@@ -35,8 +36,9 @@ public class MoveByFacingLogic extends AccelerateByFacingLogic {
         outputLines.accept("\tRelative: " + relative);
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return REG_NAME;
     }
 

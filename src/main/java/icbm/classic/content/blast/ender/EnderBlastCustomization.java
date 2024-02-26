@@ -1,9 +1,12 @@
 package icbm.classic.content.blast.ender;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
+import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
@@ -15,14 +18,16 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 @Data
 @NoArgsConstructor
-public class EnderBlastCustomization implements IExplosiveCustomization {
+public class EnderBlastCustomization implements IExplosiveCustomization, INBTSerializable<NBTTagCompound> {
 
     public static final ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ender");
 
@@ -68,9 +73,16 @@ public class EnderBlastCustomization implements IExplosiveCustomization {
         }
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IExplosiveCustomization> getRegistry() {
+        return ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY;
     }
 
     @Override

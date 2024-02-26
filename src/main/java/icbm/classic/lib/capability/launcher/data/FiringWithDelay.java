@@ -1,23 +1,37 @@
 package icbm.classic.lib.capability.launcher.data;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.launcher.IActionStatus;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
-import lombok.NoArgsConstructor;
+import icbm.classic.content.missile.logic.flight.prefab.FlightLogic;
+import icbm.classic.lib.buildable.BuildableObject;
+import icbm.classic.lib.saving.NbtSaveHandler;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
-@NoArgsConstructor
-public class FiringWithDelay implements IActionStatus {
+import javax.annotation.Nonnull;
 
-    public static final ResourceLocation regName = new ResourceLocation(ICBMConstants.DOMAIN, "firing.delayed");
+public class FiringWithDelay extends BuildableObject<FiringWithDelay, IBuilderRegistry<IActionStatus>> implements IActionStatus {
 
+    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "firing.delayed");
+
+    @Getter @Setter(AccessLevel.PROTECTED)
     private int delay;
     private ITextComponent message;
 
+    public FiringWithDelay() {
+        super(REG_NAME, ICBMClassicAPI.ACTION_STATUS_REGISTRY, SAVE_LOGIC);
+    }
+
     public FiringWithDelay(int delay) {
+        this();
         this.delay = delay;
     }
 
@@ -38,20 +52,8 @@ public class FiringWithDelay implements IActionStatus {
         return message;
     }
 
-    @Override
-    public ResourceLocation getRegistryName() {
-        return regName;
-    }
-
-    @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound tag = new NBTTagCompound();
-        tag.setInteger("delay", delay);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        delay = nbt.getInteger("delay");
-    }
+    private static final NbtSaveHandler<FiringWithDelay> SAVE_LOGIC = new NbtSaveHandler<FiringWithDelay>()
+        .mainRoot()
+        /* */.nodeInteger("delay", FiringWithDelay::getDelay, FiringWithDelay::setDelay)
+        .base();
 }

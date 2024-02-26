@@ -1,7 +1,10 @@
 package icbm.classic.lib.projectile.vanilla;
 
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.projectile.IProjectileData;
+import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.content.missile.logic.source.MissileSource;
+import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveRoot;
 import lombok.Getter;
@@ -15,10 +18,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
-@NoArgsConstructor
-public class EntitySpawnProjectileData implements IProjectileData<Entity> {
+public class EntitySpawnProjectileData extends BuildableObject<EntitySpawnProjectileData, IProjectileDataRegistry> implements IProjectileData<Entity> {
 
     public static final ResourceLocation NAME = new ResourceLocation("minecraft", "entity");
 
@@ -29,17 +32,17 @@ public class EntitySpawnProjectileData implements IProjectileData<Entity> {
     @Getter @Setter @Accessors(chain = true)
     private NBTTagCompound entityData;
 
+    public EntitySpawnProjectileData() {
+        super(NAME, ICBMClassicAPI.PROJECTILE_DATA_REGISTRY, SAVE_LOGIC);
+    }
+
     public EntitySpawnProjectileData(ResourceLocation key) {
+        this();
         this.entityKey = key;
     }
 
     public EntitySpawnProjectileData(String name) {
         this(new ResourceLocation(name));
-    }
-
-    @Override
-    public ResourceLocation getRegistryName() {
-        return NAME;
     }
 
     @Override
@@ -64,16 +67,6 @@ public class EntitySpawnProjectileData implements IProjectileData<Entity> {
             }
         }
         return null;
-    }
-
-    @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this);
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-       SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<EntitySpawnProjectileData> SAVE_LOGIC = new NbtSaveHandler<EntitySpawnProjectileData>()

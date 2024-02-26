@@ -1,22 +1,31 @@
 package icbm.classic.content.parachute;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.projectile.IProjectileData;
+import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.api.missiles.projectile.ProjectileType;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ParachuteProjectileData implements IProjectileData<EntityParachute> {
+public class ParachuteProjectileData implements IProjectileData<EntityParachute>, INBTSerializable<NBTTagCompound> {
 
     private final static ProjectileType[] TYPE = new ProjectileType[]{ProjectileType.TYPE_ENTITY, ProjectileType.TYPE_HOLDER};
     public final static ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "holder.parachute");
@@ -44,14 +53,26 @@ public class ParachuteProjectileData implements IProjectileData<EntityParachute>
         return TYPE;
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IProjectileDataRegistry getRegistry() {
+        return ICBMClassicAPI.PROJECTILE_DATA_REGISTRY;
     }
 
     @Override
     public EntityParachute newEntity(World world, boolean allowItemPicku) {
         return new EntityParachute(world); //.setRenderItemStack(parachute);
+    }
+
+    @Override
+    public ITextComponent getTooltip() {
+        return new TextComponentTranslation(getTranslationKey().toString() + ".info." + parachuteMode.name().toLowerCase(), new TextComponentTranslation(heldItem.getUnlocalizedName()));
     }
 
     @Override
@@ -80,11 +101,38 @@ public class ParachuteProjectileData implements IProjectileData<EntityParachute>
     }
 
     private void spawnEntity(@Nonnull EntityParachute entity) {
+        if(heldItem.getItem() instanceof ItemMonsterPlacer) {
+            final Entity mob = ItemMonsterPlacer.spawnCreature(entity.world, ItemMonsterPlacer.getNamedIdFrom(heldItem), entity.x(), entity.y(), entity.z());
+            if(mob != null) {
+                mob.startRiding(entity);
 
+                if (mob instanceof EntityLivingBase && heldItem.hasDisplayName())
+                {
+                    entity.setCustomNameTag(heldItem.getDisplayName());
+                }
+
+                ItemMonsterPlacer.applyItemEntityDataToEntity(entity.world, null, heldItem, mob);
+            }
+            else {
+                ICBMClassic.logger().warn("ParachuteProjectile: unknown item for entity spawning. Data: {}, Item: {}", this, heldItem);
+                spawnItemEntity(entity);
+            }
+        }
+        else {
+            ICBMClassic.logger().warn("ParachuteProjectile: unknown item for entity spawning. Data: {}, Item: {}", this, heldItem);
+            spawnItemEntity(entity);
+        }
     }
 
     private void spawnItemEntity(@Nonnull EntityParachute entity) {
+        final EntityItem entityItem = new EntityItem(entity.world);
+        entityItem.setItem(heldItem.copy());
+        entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
+        entityItem.setDefaultPickupDelay();
 
+        if(entity.world.spawnEntity(entityItem)) {
+            entityItem.startRiding(entityItem);
+        }
     }
 
     private void spawnBlockEntity(@Nonnull EntityParachute entity) {
@@ -93,12 +141,12 @@ public class ParachuteProjectileData implements IProjectileData<EntityParachute>
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return null;
+        return SAVE_LOGIC.save(this);
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-
+        SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<ParachuteProjectileData> SAVE_LOGIC = new NbtSaveHandler<ParachuteProjectileData>()

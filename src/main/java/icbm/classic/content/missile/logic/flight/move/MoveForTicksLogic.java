@@ -12,6 +12,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+
 /**
  * Flight logic to move in a direction matching {@link EnumFacing} until a set distance is meet
  */
@@ -22,8 +24,9 @@ public class MoveForTicksLogic extends AccelerateByFacingLogic {
     @Getter @Setter @Accessors(chain = true)
     private int ticks;
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName() {
+    public ResourceLocation getRegistryKey() {
         return REG_NAME;
     }
 

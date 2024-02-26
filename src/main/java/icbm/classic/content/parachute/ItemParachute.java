@@ -14,16 +14,23 @@ import icbm.classic.lib.projectile.ProjectileStack;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemEgg;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,7 +74,7 @@ public class ItemParachute extends ItemBase {
 
     @Override
     public void onPlayerStoppedUsing(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entityLiving, int timeLeft) {
-        if (throwProjectile(stack, world, entityLiving) && !(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).isCreative()) {
+        if (!world.isRemote && throwProjectile(stack, world, entityLiving) && !(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).isCreative()) {
             stack.shrink(1);
         }
     }
@@ -75,43 +82,50 @@ public class ItemParachute extends ItemBase {
     // TODO move logic to common helper called `throwProjectile` to better reuse common spawn logic
     public static boolean throwProjectile(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull Entity thrower) {
         final boolean isCreative = thrower instanceof EntityPlayer && ((EntityPlayer) thrower).isCreative();
-        if (!world.isRemote && stack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-            final IProjectileStack<Entity> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
-            if (projectileStack != null) {
-                final IProjectileData<Entity> projectileData = projectileStack.getProjectileData();
-                final Entity parachute = projectileData.newEntity(world, !isCreative);
-                if (projectileData.isType(ProjectileType.TYPE_THROWABLE)) {
-                    if (parachute instanceof IProjectileThrowable) {
-                        final double yaw = thrower instanceof EntityLivingBase ? ((EntityLivingBase) thrower).rotationYawHead : thrower.rotationYaw;
-                        final double pitch = thrower.rotationPitch;
-                        final double x = thrower.posX;
-                        final double y = thrower.posY;
-                        final double z = thrower.posZ;
+        if (!stack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
+            return false;
+        }
+        final IProjectileStack<Entity> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        if (projectileStack == null) {
+            return false;
+        }
 
-                        final IMissileSource source = new MissileSource(world, new Vec3d(x, y, z), new EntityCause(thrower));
-                        ((IProjectileThrowable<Entity>) parachute).throwProjectile(parachute, source, x, y, z, yaw, pitch, THROW_VELOCITY, 0);
+        final IProjectileData<Entity> projectileData = projectileStack.getProjectileData();
+        if(projectileData == null) {
+            return false;
+        }
 
-                    } else {
-                        ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as it doesn't support IProjectileThrowable." +
-                            "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
-                        return false;
-                    }
-                } else {
-                    ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as type(s) isn't supported. " +
-                        "This is likely missing implementation on the projectile. " +
-                        "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
-                    return false;
-                }
+        final Entity parachute = projectileData.newEntity(world, !isCreative);
+        if (!projectileData.isType(ProjectileType.TYPE_THROWABLE)) {
+            ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as type(s) isn't supported. " +
+                "This is likely missing implementation on the projectile. " +
+                "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
+            return false;
+        }
 
-                // Spawn
-                if (world.spawnEntity(parachute)) {
+        if (parachute instanceof IProjectileThrowable) {
+            final double yaw = thrower instanceof EntityLivingBase ? ((EntityLivingBase) thrower).rotationYawHead : thrower.rotationYaw;
+            final double pitch = thrower.rotationPitch;
+            final double x = thrower.posX;
+            final double y = thrower.posY;
+            final double z = thrower.posZ;
 
-                    // Run post spawn logic
-                    projectileStack.getProjectileData().onEntitySpawned(parachute, thrower);
+            final IMissileSource source = new MissileSource(world, new Vec3d(x, y, z), new EntityCause(thrower));
+            ((IProjectileThrowable<Entity>) parachute).throwProjectile(parachute, source, x, y, z, yaw, pitch, THROW_VELOCITY, 0);
 
-                    return true;
-                }
-            }
+        } else {
+            ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as it doesn't support IProjectileThrowable." +
+                "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
+            return false;
+        }
+
+        // Spawn
+        if (world.spawnEntity(parachute)) {
+
+            // Run post spawn logic
+            projectileStack.getProjectileData().onEntitySpawned(parachute, thrower);
+
+            return true;
         }
         return false;
     }
@@ -127,6 +141,36 @@ public class ItemParachute extends ItemBase {
         final float gravity = -EntityParachute.GRAVITY * 20;
         final float air = (1 - EntityParachute.AIR_RESISTANCE) * 100;
         LanguageUtility.outputLines(new TextComponentTranslation(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
-        //TODO passenger item
+
+        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        if(projectileStack != null && projectileStack.getProjectileData() != null) {
+            LanguageUtility.outputLines(projectileStack.getProjectileData().getTooltip(), list::add);
+        }
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    {
+        if (this.isInCreativeTab(tab))
+        {
+            items.add(new ItemStack(this));
+            items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ParachuteMode.ITEM)));
+
+            for (EntityList.EntityEggInfo entitylist$entityegginfo : EntityList.ENTITY_EGGS.values())
+            {
+                final ItemStack eggStack = new ItemStack(this, 1);
+                ItemMonsterPlacer.applyEntityIdToItemStack(eggStack, entitylist$entityegginfo.spawnedID);
+                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(eggStack).setParachuteMode(ParachuteMode.ENTITY)));
+            }
+        }
+    }
+
+    private ItemStack parachuteWith(IProjectileData data) {
+        final ItemStack stack = new ItemStack(this);
+        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        if(projectileStack instanceof ProjectileStack) {
+            ((ProjectileStack) projectileStack).setProjectileData(data);
+        }
+        return stack;
     }
 }

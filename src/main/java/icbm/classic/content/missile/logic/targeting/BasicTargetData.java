@@ -1,19 +1,23 @@
 package icbm.classic.content.missile.logic.targeting;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
  * Simple 3D position targeting data
  */
-public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed {
+public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, INBTSerializable<NBTTagCompound> {
 
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "basic");
     private Vec3d position;
@@ -77,10 +81,17 @@ public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed {
         return position != null ? position.z : Double.NaN;
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName()
+    public ResourceLocation getRegistryKey()
     {
         return REG_NAME;
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IMissileTarget> getRegistry() {
+        return ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY;
     }
 
     @Override

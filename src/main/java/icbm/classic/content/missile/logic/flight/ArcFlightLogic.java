@@ -2,13 +2,16 @@ package icbm.classic.content.missile.logic.flight;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
+import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,10 +19,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 /**
  * Flight path that moves in a ballistic arc from start position to target position
  */
-public class ArcFlightLogic implements IMissileFlightLogic
+public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegistry<IMissileFlightLogic>> implements IMissileFlightLogic
 {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "path.arc");
 
@@ -46,6 +51,10 @@ public class ArcFlightLogic implements IMissileFlightLogic
     private int ticksFlight = 0;
 
     private boolean wasSimulationBlocked = false;
+
+    public ArcFlightLogic() {
+        super(REG_NAME, ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY, SAVE_LOGIC);
+    }
 
     @Override
     public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
@@ -233,24 +242,6 @@ public class ArcFlightLogic implements IMissileFlightLogic
         }
 
         return builder.apply(x, y, z);
-    }
-
-    @Override
-    public ResourceLocation getRegistryName()
-    {
-        return REG_NAME;
-    }
-
-    @Override
-    public NBTTagCompound serializeNBT()
-    {
-        return SAVE_LOGIC.save(this, new NBTTagCompound());
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt)
-    {
-        SAVE_LOGIC.load(this, nbt);
     }
 
     @Override

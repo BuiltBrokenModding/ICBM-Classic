@@ -7,6 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
+import javax.annotation.Nonnull;
+
 /**
  * Follows the location of the target data
  *
@@ -66,8 +68,9 @@ public class FollowTargetLogic extends DeadFlightLogic
         }
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName()
+    public ResourceLocation getRegistryKey()
     {
         return REG_NAME;
     }

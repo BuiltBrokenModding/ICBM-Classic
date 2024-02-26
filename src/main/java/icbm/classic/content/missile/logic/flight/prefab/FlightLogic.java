@@ -5,6 +5,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileFlightLogicStep;
+import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
@@ -12,10 +13,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFlightLogicStep {
+public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFlightLogicStep, INBTSerializable<NBTTagCompound> {
 
     @Getter @Setter @Accessors(chain = true)
     private IMissileFlightLogic nextStep;
@@ -79,6 +82,12 @@ public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFligh
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
         SAVE_LOGIC.load(this, nbt);
+    }
+
+    @Nonnull
+    @Override
+    public IBuilderRegistry<IMissileFlightLogic> getRegistry() {
+        return ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY;
     }
 
     private static final NbtSaveHandler<FlightLogic> SAVE_LOGIC = new NbtSaveHandler<FlightLogic>()

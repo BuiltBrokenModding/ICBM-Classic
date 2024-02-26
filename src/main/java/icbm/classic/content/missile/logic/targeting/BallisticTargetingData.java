@@ -7,6 +7,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import javax.annotation.Nonnull;
+
 @NoArgsConstructor
 public class BallisticTargetingData extends BasicTargetData {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ballistic");
@@ -22,8 +24,9 @@ public class BallisticTargetingData extends BasicTargetData {
         this.impactHeightOffset = impactHeightOffset;
     }
 
+    @Nonnull
     @Override
-    public ResourceLocation getRegistryName()
+    public ResourceLocation getRegistryKey()
     {
         return REG_NAME;
     }

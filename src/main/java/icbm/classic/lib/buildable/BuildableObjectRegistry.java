@@ -1,4 +1,4 @@
-package icbm.classic.content.missile;
+package icbm.classic.lib.buildable;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.missiles.parts.IBuildableObject;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -16,14 +17,14 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class BuildableObjectRegistry<Part extends IBuildableObject> implements IBuilderRegistry<Part>
 {
-    private final Map<ResourceLocation, Supplier<Part>> builders = new HashMap();
+    private final Map<ResourceLocation, Supplier<Part>> builders = new HashMap<>();
     @Getter
     private boolean isLocked = false;
 
     private final String name;
 
     @Override
-    public void register(ResourceLocation key, Supplier<Part> builder) {
+    public void register(@Nonnull ResourceLocation key, @Nonnull Supplier<Part> builder) {
         if (isLocked) {
             throw new RuntimeException(this.name + ": mod '" + FMLCommonHandler.instance().getModName() + "' attempted to do a late registry");
         }
@@ -50,8 +51,14 @@ public class BuildableObjectRegistry<Part extends IBuildableObject> implements I
     }
 
     @Override
-    public Part build(ResourceLocation name) {
+    public Part build(@Nonnull ResourceLocation name) {
         return Optional.ofNullable(builders.get(name)).map(Supplier::get).orElse(null);
+    }
+
+    @Nonnull
+    @Override
+    public String getUniqueName() {
+        return name;
     }
 
     public void lock() {
