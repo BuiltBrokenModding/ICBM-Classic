@@ -18,6 +18,7 @@ import icbm.classic.content.blast.cluster.ClusterCustomization;
 import icbm.classic.content.blast.cluster.bomblet.BombletProjectileData;
 import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
+import icbm.classic.content.cargo.balloon.BalloonProjectileData;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
 import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
@@ -32,7 +33,7 @@ import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
-import icbm.classic.content.parachute.ParachuteProjectileData;
+import icbm.classic.content.cargo.parachute.ParachuteProjectileData;
 import icbm.classic.content.potion.ContagiousPoison;
 import icbm.classic.content.potion.PoisonContagion;
 import icbm.classic.content.potion.PoisonFrostBite;
@@ -343,6 +344,7 @@ public class ICBMClassic
         // Register defaults
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BombletProjectileData.NAME, BombletProjectileData::new);
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, ParachuteProjectileData::new);
+        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BalloonProjectileData.NAME, BalloonProjectileData::new);
     }
 
     void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls

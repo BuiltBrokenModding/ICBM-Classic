@@ -1,15 +1,15 @@
-package icbm.classic.content.parachute;
+package icbm.classic.content.cargo;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.missiles.parts.IBuildableObject;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.api.missiles.projectile.ProjectileType;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,21 +17,16 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@EqualsAndHashCode(callSuper = false)
-@ToString
-public class ParachuteProjectileData extends BuildableObject<ParachuteProjectileData, IProjectileDataRegistry> implements IProjectileData<EntityParachute>, INBTSerializable<NBTTagCompound> {
+public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY extends Entity> implements IBuildableObject, IProjectileData<ENTITY>, INBTSerializable<NBTTagCompound> {
 
     private final static ProjectileType[] TYPE = new ProjectileType[]{ProjectileType.TYPE_ENTITY, ProjectileType.TYPE_HOLDER, ProjectileType.TYPE_THROWABLE};
-    public final static ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "holder.parachute");
 
     /**
      * ItemStack to use to spawn as a passenger of this parachute
@@ -39,7 +34,7 @@ public class ParachuteProjectileData extends BuildableObject<ParachuteProjectile
     @Getter
     @Setter
     @Accessors(chain = true)
-    private ItemStack heldItem = ItemStack.EMPTY;
+    private ItemStack heldItem = ItemStack.EMPTY; //TODO make builder
 
 
     /**
@@ -49,20 +44,17 @@ public class ParachuteProjectileData extends BuildableObject<ParachuteProjectile
     @Getter
     @Setter
     @Accessors(chain = true)
-    private ParachuteMode parachuteMode = ParachuteMode.ITEM;
+    private ProjectileCargoMode parachuteMode = ProjectileCargoMode.ITEM;
 
-    public ParachuteProjectileData() {
-        super(NAME, ICBMClassicAPI.PROJECTILE_DATA_REGISTRY, SAVE_LOGIC);
+    @Nonnull
+    @Override
+    public IProjectileDataRegistry getRegistry() {
+        return ICBMClassicAPI.PROJECTILE_DATA_REGISTRY;
     }
 
     @Override
     public ProjectileType[] getTypes() {
         return TYPE;
-    }
-
-    @Override
-    public EntityParachute newEntity(World world, boolean allowItemPicku) {
-        return new EntityParachute(world); //.setRenderItemStack(parachute);
     }
 
     @Override
@@ -74,7 +66,7 @@ public class ParachuteProjectileData extends BuildableObject<ParachuteProjectile
     }
 
     @Override
-    public void onEntitySpawned(@Nonnull EntityParachute entity, @Nullable Entity source) {
+    public void onEntitySpawned(@Nonnull ENTITY entity, @Nullable Entity source) {
         if (!heldItem.isEmpty()) {
             switch (parachuteMode) {
                 case PROJECTILE:
@@ -86,7 +78,6 @@ public class ParachuteProjectileData extends BuildableObject<ParachuteProjectile
                 case BLOCK:
                     spawnBlockEntity(entity);
                     return;
-                case ITEM:
                 default:
                     spawnItemEntity(entity);
                     return;
@@ -94,53 +85,75 @@ public class ParachuteProjectileData extends BuildableObject<ParachuteProjectile
         }
     }
 
-    private void spawnProjectile(@Nonnull EntityParachute entity) {
+    private void spawnProjectile(@Nonnull ENTITY entity) {
+        final Entity projectile =
+            ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.spawnProjectile(heldItem,
+                entity.world, entity.posX, entity.posY, entity.posZ,
+                entity, true, (proj) -> {
+                    // TODO add extra logic for parachute spawning
+                    proj.rotationPitch = proj.prevRotationPitch = entity.rotationPitch;
+                    proj.rotationYaw = proj.prevRotationYaw = entity.rotationYaw;
+                }
+            );
 
+        if (projectile != null) {
+            projectile.startRiding(entity);
+        } else {
+            spawnItemEntity(entity);
+        }
     }
 
-    private void spawnEntity(@Nonnull EntityParachute entity) {
-        if(heldItem.getItem() instanceof ItemMonsterPlacer) {
-            final Entity mob = ItemMonsterPlacer.spawnCreature(entity.world, ItemMonsterPlacer.getNamedIdFrom(heldItem), entity.x(), entity.y(), entity.z());
-            if(mob != null) {
+    private void spawnEntity(@Nonnull ENTITY entity) {
+        //TODO for some entities attempt to render a parachute on their model instead of acting as a mount
+
+        if (heldItem.getItem() instanceof ItemMonsterPlacer) {
+            final Entity mob = ItemMonsterPlacer.spawnCreature(entity.world, ItemMonsterPlacer.getNamedIdFrom(heldItem), entity.posX, entity.posY, entity.posZ);
+            if (mob != null) {
                 mob.startRiding(entity);
 
-                if (mob instanceof EntityLivingBase && heldItem.hasDisplayName())
-                {
+                if (mob instanceof EntityLivingBase && heldItem.hasDisplayName()) {
                     entity.setCustomNameTag(heldItem.getDisplayName());
                 }
 
                 ItemMonsterPlacer.applyItemEntityDataToEntity(entity.world, null, heldItem, mob);
-            }
-            else {
+            } else {
                 ICBMClassic.logger().warn("ParachuteProjectile: unknown item for entity spawning. Data: {}, Item: {}", this, heldItem);
                 spawnItemEntity(entity);
             }
-        }
-        else {
+        } else {
             ICBMClassic.logger().warn("ParachuteProjectile: unknown item for entity spawning. Data: {}, Item: {}", this, heldItem);
             spawnItemEntity(entity);
         }
     }
 
-    private void spawnItemEntity(@Nonnull EntityParachute entity) {
+    private void spawnItemEntity(@Nonnull ENTITY entity) {
         final EntityItem entityItem = new EntityItem(entity.world);
         entityItem.setItem(heldItem.copy());
         entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
         entityItem.setDefaultPickupDelay();
 
-        if(entity.world.spawnEntity(entityItem)) {
+        if (entity.world.spawnEntity(entityItem)) {
             entityItem.startRiding(entityItem);
         }
     }
 
-    private void spawnBlockEntity(@Nonnull EntityParachute entity) {
+    private void spawnBlockEntity(@Nonnull ENTITY entity) {
 
     }
 
-    private static final NbtSaveHandler<ParachuteProjectileData> SAVE_LOGIC = new NbtSaveHandler<ParachuteProjectileData>()
-        //Stuck in ground data
+    @Override
+    public NBTTagCompound serializeNBT(){
+        return SAVE_LOGIC.save(this);
+    }
+
+    @Override
+    public void deserializeNBT(NBTTagCompound nbt) {
+        SAVE_LOGIC.load(this, nbt);
+    }
+
+    private static final NbtSaveHandler<CargoProjectileData> SAVE_LOGIC = new NbtSaveHandler<CargoProjectileData>()
         .mainRoot()
-        .nodeItemStack("stack", ParachuteProjectileData::getHeldItem, ParachuteProjectileData::setHeldItem)
-        .nodeEnumString("mode", ParachuteProjectileData::getParachuteMode, ParachuteProjectileData::setParachuteMode, ParachuteMode::valueOf) //TODO maybe instead create different projectileData versions for each mode?
+        .nodeItemStack("stack", CargoProjectileData::getHeldItem, CargoProjectileData::setHeldItem)
+        .nodeEnumString("mode", CargoProjectileData::getParachuteMode, CargoProjectileData::setParachuteMode, ProjectileCargoMode::valueOf)
         .base();
 }

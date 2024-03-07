@@ -8,7 +8,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.cluster.ClusterCustomization;
 import icbm.classic.content.blast.cluster.bomblet.BombletProjectileData;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.content.parachute.ParachuteProjectileData;
+import icbm.classic.content.cargo.parachute.ParachuteProjectileData;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;

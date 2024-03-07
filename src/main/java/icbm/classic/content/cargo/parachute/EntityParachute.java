@@ -1,7 +1,5 @@
-package icbm.classic.content.parachute;
+package icbm.classic.content.cargo.parachute;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.projectile.EntityProjectile;

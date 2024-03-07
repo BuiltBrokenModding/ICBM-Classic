@@ -1,6 +1,6 @@
-package icbm.classic.content.parachute;
+package icbm.classic.content.cargo;
 
-public enum ParachuteMode {
+public enum ProjectileCargoMode {
     // Don't change names without updating save to be backwards compatible
     ITEM,
     BLOCK,

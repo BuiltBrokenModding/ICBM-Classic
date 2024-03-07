@@ -8,7 +8,7 @@ import icbm.classic.content.blocks.emptower.ItemBlockEmpTower;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.items.*;
 import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
-import icbm.classic.content.parachute.ItemParachute;
+import icbm.classic.content.cargo.ItemThrowableProjectile;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
@@ -78,7 +78,10 @@ public class ItemReg
     public static ItemSurfaceToAirMissile itemSAM;
 
     @ObjectHolder(ICBMConstants.PREFIX + "parachute")
-    public static ItemParachute itemParachute;
+    public static ItemThrowableProjectile itemParachute;
+
+    @ObjectHolder(ICBMConstants.PREFIX + "balloon")
+    public static ItemThrowableProjectile itemBalloon;
 
     @SubscribeEvent
     public static void missingMapping(RegistryEvent.MissingMappings<Item> event) {
@@ -117,9 +120,12 @@ public class ItemReg
         event.getRegistry().register(new ItemLaserDetonator());
         event.getRegistry().register(new ItemRocketLauncher());
         event.getRegistry().register(new ItemMissile().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
-        event.getRegistry().register(new ItemBombDroplet().setName("bomblet").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemSurfaceToAirMissile());
-        event.getRegistry().register(new ItemParachute().setCreativeTab(ICBMClassic.CREATIVE_TAB));
+
+        // TODO move to addon
+        event.getRegistry().register(new ItemBombDroplet().setName("bomblet").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemThrowableProjectile().setName("parachute").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemThrowableProjectile().setName("balloon").setCreativeTab(ICBMClassic.CREATIVE_TAB));
 
         //Block items
         event.getRegistry().register(new ItemBlock(BlockReg.blockGlassPlate).setRegistryName(BlockReg.blockGlassPlate.getRegistryName()));

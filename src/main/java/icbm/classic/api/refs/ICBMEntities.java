@@ -23,6 +23,7 @@ public final class ICBMEntities
     public static final ResourceLocation MISSILE_SEAT = new ResourceLocation(ICBMClassicAPI.ID, "holder.seat");
     public static final ResourceLocation BOMB_DROPLET = new ResourceLocation(ICBMClassicAPI.ID, "bomb_droplet");
     public static final ResourceLocation PARACHUTE = new ResourceLocation(ICBMClassicAPI.ID, "parachute");
+    public static final ResourceLocation BALLOON = new ResourceLocation(ICBMClassicAPI.ID, "balloon");
 
     public static final ResourceLocation REDMATTER = new ResourceLocation(ICBMClassicAPI.ID, "redmatter");
 

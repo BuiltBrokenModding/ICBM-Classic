@@ -1,4 +1,4 @@
-package icbm.classic.content.parachute;
+package icbm.classic.content.cargo;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
@@ -7,8 +7,11 @@ import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.missiles.projectile.IProjectileThrowable;
 import icbm.classic.api.missiles.projectile.ProjectileType;
+import icbm.classic.content.cargo.parachute.EntityParachute;
+import icbm.classic.content.cargo.parachute.ParachuteProjectileData;
 import icbm.classic.content.missile.logic.source.MissileSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.projectile.ProjectileStack;
 import icbm.classic.prefab.item.ItemBase;
@@ -16,27 +19,22 @@ import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemEgg;
-import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemParachute extends ItemBase {
+public class ItemThrowableProjectile extends ItemBase {
     public static final int MAX_USE_DURATION = 3 * 20; //TODO config
     public static final float THROW_VELOCITY = 0.1f;
 
@@ -46,8 +44,7 @@ public class ItemParachute extends ItemBase {
     // TODO split into empty crafting item and version holding item
     // TODO add a damaged/used version to drop after deploying cargo
 
-    public ItemParachute() {
-        this.setName("parachute");
+    public ItemThrowableProjectile() {
         this.setMaxStackSize(16);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
@@ -171,13 +168,12 @@ public class ItemParachute extends ItemBase {
         if (this.isInCreativeTab(tab))
         {
             items.add(new ItemStack(this));
-            items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ParachuteMode.ITEM)));
 
-            for (EntityList.EntityEggInfo entitylist$entityegginfo : EntityList.ENTITY_EGGS.values())
-            {
-                final ItemStack eggStack = new ItemStack(Items.SPAWN_EGG, 1);
-                ItemMonsterPlacer.applyEntityIdToItemStack(eggStack, entitylist$entityegginfo.spawnedID);
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(eggStack).setParachuteMode(ParachuteMode.ENTITY)));
+            if(this == ItemReg.itemParachute) {
+                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
+            }
+            else if(this == ItemReg.itemBalloon) {
+                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
             }
         }
     }

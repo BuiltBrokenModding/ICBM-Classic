@@ -3,7 +3,7 @@ package icbm.classic.lib.projectile;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
-import icbm.classic.content.parachute.EntityParachute;
+import icbm.classic.content.cargo.parachute.EntityParachute;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
