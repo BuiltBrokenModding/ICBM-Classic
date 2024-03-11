@@ -1,0 +1,46 @@
+{
+	"credit": "QueenOfMissiles",
+	"textures": {
+		"0": "icbmclassic:items/balloon",
+		"particle": "icbmclassic:items/balloon"
+	},
+	"elements": [
+		{
+			"name": "main",
+			"from": [2, 2, 2],
+			"to": [14, 14, 14],
+			"faces": {
+				"north": {"uv": [2, 2, 14, 14], "texture": "#0"},
+				"east": {"uv": [2, 2, 14, 14], "texture": "#0"},
+				"south": {"uv": [2, 2, 14, 14], "texture": "#0"},
+				"west": {"uv": [2, 2, 14, 14], "texture": "#0"},
+				"up": {"uv": [2, 2, 14, 14], "texture": "#0"},
+				"down": {"uv": [2, 2, 14, 14], "texture": "#0"}
+			}
+		},
+		{
+			"name": "top",
+			"from": [3, 14, 3],
+			"to": [13, 16, 13],
+			"faces": {
+				"north": {"uv": [3, 0, 13, 2], "texture": "#0"},
+				"east": {"uv": [3, 12, 13, 14], "texture": "#0"},
+				"south": {"uv": [3, 0, 13, 2], "texture": "#0"},
+				"west": {"uv": [3, 12, 13, 14], "texture": "#0"},
+				"up": {"uv": [3, 2, 13, 12], "texture": "#0"}
+			}
+		},
+		{
+			"name": "bottom",
+			"from": [3, 0, 3],
+			"to": [13, 2, 13],
+			"faces": {
+				"north": {"uv": [3, 0, 13, 2], "texture": "#0"},
+				"east": {"uv": [3, 12, 13, 14], "texture": "#0"},
+				"south": {"uv": [3, 0, 13, 2], "texture": "#0"},
+				"west": {"uv": [3, 12, 13, 14], "texture": "#0"},
+				"down": {"uv": [3, 2, 13, 12], "texture": "#0"}
+			}
+		}
+	]
+}

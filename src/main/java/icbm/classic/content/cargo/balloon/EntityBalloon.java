@@ -2,6 +2,7 @@ package icbm.classic.content.cargo.balloon;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.lib.data.LazyBuilder;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import io.netty.buffer.ByteBuf;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
 /**
  * Entity that acts as a slow falling seat for other entities to use. Mimics a balloon in concept but
@@ -27,6 +29,7 @@ import javax.annotation.Nonnull;
  */
 public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IEntityAdditionalSpawnData
 {
+    private final static Supplier<ItemStack> DEFAULT_RENDER = new LazyBuilder<>(() -> new ItemStack(ItemReg.itemBalloon, 1, 1));
 
     public static final float GRAVITY = 0.005f; // TODO config
     public static final float AIR_RESISTANCE = 0.90f; // TODO config
@@ -43,7 +46,7 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     /** Stack to render */
     @Nonnull
     @Setter @Getter @Accessors(chain = true)
-    private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
+    private ItemStack renderItemStack = DEFAULT_RENDER.get();
 
     public EntityBalloon(World world)
     {

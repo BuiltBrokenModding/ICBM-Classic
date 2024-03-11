@@ -145,7 +145,8 @@ public class ClientReg
         newItemModel(ItemReg.itemRocketLauncher, 0, "inventory", "");
         newItemModel(ItemReg.itemBattery, 0, "inventory", "");
         newItemModel(ItemReg.itemBomblet, 0, "inventory", "");
-        newItemModel(ItemReg.itemParachute, 0, "inventory", "");
+        newItemModel(ItemReg.itemParachute, 0, "render=2d", "");
+        newItemModel(ItemReg.itemParachute, 1, "render=3d", ""); // Fake meta version purely for entity renderer
         ModelLoader.setCustomModelResourceLocation(ItemReg.itemSAM, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/surface_to_air", "inventory"));
 
         //crafting parts
