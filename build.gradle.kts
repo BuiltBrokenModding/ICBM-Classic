@@ -7,22 +7,26 @@ import java.time.format.DateTimeFormatter
 plugins {
     id("eclipse")
     id("idea")
-    id("net.minecraftforge.gradle") version "6.+"
+    id("net.neoforged.gradle.userdev") version "7.+"
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
-val version_major by project.properties
-val version_minor by project.properties
-val version_revis by project.properties
-val version_mc by project.properties
+val mod_version: String by project.properties
+val minecraft_version: String by project.properties
+val neo_version: String by project.properties
+val mod_id: String by project.properties
 
-version = "$version_major.$version_minor.$version_revis"
-val archivesBaseName = "ICBM-classic-${version_mc}"
+version = mod_version
+val archivesBaseName = "ICBM-classic-${minecraft_version}"
+
+base {
+    archivesName = mod_id
+}
 
 //fancyGradle {
 //    patches {
@@ -45,7 +49,7 @@ idea {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:1.12.2-14.23.5.2860")
+    implementation("net.neoforged:neoforge:$neo_version")
 
     // https://projectlombok.org/setup/gradle
     compileOnly("org.projectlombok:lombok:1.18.24")
@@ -76,21 +80,23 @@ dependencies {
 
 
 minecraft {
-    mappings("snapshot", "20171003-1.12")
+    mappings {
 
-    accessTransformer(file("src/main/resources/META-INF/ICBMClassic_at.cfg"))
+    }
+    accessTransformers {
+        file("src/main/resources/META-INF/ICBMClassic_at.cfg")
+    }
 
     runs {
+        configureEach {
+            systemProperty("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
+            systemProperty("forge.logging.console.level", "debug")
+        }
         register("client") {
             workingDirectory(project.file("run/client"))
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("forge.logging.console.level", "debug")
         }
-
         register("server") {
             workingDirectory(project.file("run/server"))
-            property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-            property("forge.logging.console.level", "debug")
         }
     }
 }
@@ -129,14 +135,14 @@ tasks.processResources {
 
     // this will ensure that this task is redone when the versions change.
     inputs.property("version", version)
-    inputs.property("mcversion", version_mc)
+    inputs.property("mcversion", minecraft_version)
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.map { it.resources.sourceDirectories }) {
         include("mcmod.info")
 
         // replace version and mcversion
-        expand("version" to version, "mcversion" to version_mc)
+        expand("version" to version, "mcversion" to minecraft_version)
     }
 
     // copy everything else except the mcmod.info

@@ -3,12 +3,8 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         maven {
-            name = "MinecraftForge"
-            url = uri("https://maven.minecraftforge.net/")
-        }
-        maven {
-            name = "Garden of Fancy"
-            url = uri("https://gitlab.com/api/v4/projects/26758973/packages/maven")
+            name = "NeoForge"
+            url = uri("https://maven.neoforged.net/releases")
         }
     }
 }
