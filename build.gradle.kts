@@ -28,16 +28,6 @@ base {
     archivesName = mod_id
 }
 
-//fancyGradle {
-//    patches {
-//        //https://gitlab.com/gofancy/fancygradle/-/wikis/IDE-Specific-Runs
-//        resources
-//        coremods
-//        asm
-//        mergetool
-//    }
-//}
-
 idea {
     module {
 //        outputDir = compileJava.destinationDir
