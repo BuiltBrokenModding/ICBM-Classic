@@ -7,6 +7,7 @@ import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.missiles.projectile.IProjectileThrowable;
 import icbm.classic.api.missiles.projectile.ProjectileType;
+import icbm.classic.content.cargo.balloon.BalloonProjectileData;
 import icbm.classic.content.cargo.parachute.EntityParachute;
 import icbm.classic.content.cargo.parachute.ParachuteProjectileData;
 import icbm.classic.content.missile.logic.source.MissileSource;
@@ -133,6 +134,7 @@ public class ItemThrowableProjectile extends ItemBase {
 
             // Run post spawn logic
             projectileStack.getProjectileData().onEntitySpawned(parachute, thrower);
+            ICBMClassic.logger().info("spawned: " + parachute);
 
             return true;
         }
@@ -173,7 +175,7 @@ public class ItemThrowableProjectile extends ItemBase {
                 items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
             }
             else if(this == ItemReg.itemBalloon) {
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
+                items.add(parachuteWith(new BalloonProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
             }
         }
     }

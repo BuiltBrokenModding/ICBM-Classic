@@ -127,14 +127,27 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     }
 
     private void spawnItemEntity(@Nonnull ENTITY entity) {
+       final EntityItem entityItem = createItemEntity(entity);
+
+        // Spawn item
+        if (!entity.world.spawnEntity(entityItem)) {
+            ICBMClassic.logger().error("CargoProjectileData: Failed to spawn held item as {}, this likely resulted in loss of items", entityItem);
+            //TODO see if we can undo cargo spawn if this fails
+        }
+
+        // Attach to host entity (parachute/balloon)
+        if (!entityItem.startRiding(entity)) {
+            ICBMClassic.logger().error("CargoProjectileData: Failed to set {} as rider of {}, this likely resulted in loss of items", entityItem, entity);
+            //TODO see if we can undo cargo spawn if this fails
+        }
+    }
+
+    private EntityItem createItemEntity(@Nonnull ENTITY entity) {
         final EntityItem entityItem = new EntityItem(entity.world);
         entityItem.setItem(heldItem.copy());
         entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
         entityItem.setDefaultPickupDelay();
-
-        if (entity.world.spawnEntity(entityItem)) {
-            entityItem.startRiding(entityItem);
-        }
+        return entityItem;
     }
 
     private void spawnBlockEntity(@Nonnull ENTITY entity) {
@@ -142,7 +155,7 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     }
 
     @Override
-    public NBTTagCompound serializeNBT(){
+    public NBTTagCompound serializeNBT() {
         return SAVE_LOGIC.save(this);
     }
 

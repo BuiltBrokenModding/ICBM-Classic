@@ -1,5 +1,6 @@
 package icbm.classic.content.cargo.balloon;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.data.LazyBuilder;
@@ -64,20 +65,20 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     @Override
     public void writeSpawnData(ByteBuf data)
     {
-        data.writeInt(this.ticksInAir);
+        data.writeInt(this.liftTicks);
         ByteBufUtils.writeItemStack(data, renderItemStack);
     }
 
     @Override
     public void readSpawnData(ByteBuf data)
     {
-        this.ticksInAir = data.readInt();
+        this.liftTicks = data.readInt();
         renderItemStack = ByteBufUtils.readItemStack(data);
     }
 
     @Override
     protected boolean shouldExpire() {
-        return ticksInAir >= inAirKillTime || getPassengers().isEmpty();
+        return super.shouldExpire() || getPassengers().isEmpty();
     }
 
     @Override
@@ -107,7 +108,7 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
         super.onUpdate();
 
         // Balloon pop chance
-        if(isServer() && world.rand.nextFloat() <= BREAK_CHANCE) {
+        if(isServer() && liftTicks <= 0 && world.rand.nextFloat() <= BREAK_CHANCE) {
             releaseCargoAndDespawn();
         }
     }
@@ -115,8 +116,8 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     @Override
     protected void decreaseMotion() {
         super.decreaseMotion();
-        if(ticksInAir > 0) {
-            this.ticksInAir--;
+        if(this.liftTicks > 0) {
+            this.liftTicks--;
         }
     }
 
@@ -161,7 +162,10 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     }
 
     protected void releaseCargoAndDespawn() {
-        this.removePassengers();
+        ICBMClassic.logger().info("despan ballon " + this);
+        if(!this.getPassengers().isEmpty()) {
+            this.removePassengers();
+        }
         this.setDead();
         // TODO release balloon fragment particles as a "pop" affect
     }

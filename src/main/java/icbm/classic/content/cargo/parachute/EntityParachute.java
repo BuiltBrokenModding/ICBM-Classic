@@ -106,16 +106,6 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
         return false;
     }
 
-
-    /**
-     * Gets the itemStack meant to represent the render
-     *
-     * @return stack to render
-     */
-    public ItemStack renderItemStack() {
-        return renderItemStack;
-    }
-
     @Override
     protected boolean ignoreImpact(RayTraceResult hit) {
         // Ignore entity impacts, as we only care about the ground
