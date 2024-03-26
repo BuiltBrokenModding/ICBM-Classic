@@ -1,15 +1,16 @@
 package icbm.classic.content.missile.logic.flight;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.content.missile.logic.targeting.BasicTargetData;
-import net.minecraft.world.World;
+import icbm.classic.world.missile.logic.flight.DirectFlightLogic;
+import icbm.classic.world.missile.logic.targeting.BasicTargetData;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.*;
 
 class DirectFlightLogicTest
 {
     static TestManager testManager = new TestManager("missile", Assertions::fail);
 
-    final World world = testManager.getWorld();
+    final Level level = testManager.getLevel();
 
     @AfterAll
     public static void afterAllTests()

@@ -3,8 +3,9 @@ package icbm.classic.content.entity;
 import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
 import icbm.classic.TestBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import icbm.classic.world.entity.BombCartEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,13 @@ import org.junit.jupiter.api.Test;
 public class EntityBombCartTest extends TestBase {
 
     @GivenJsonResource("data/saves/4.0.0/entity_ExplosiveCart_sonic.json")
-    NBTTagCompound version4save;
+    CompoundTag version4save;
 
     @Test
     @DisplayName("Loads from old version 4.0.0 save file")
     void loadFromVersion4() {
-        final World world = testManager.getWorld();
-        final EntityBombCart bombCart = new EntityBombCart(world);
+        final Level level = testManager.getLevel();
+        final BombCartEntity bombCart = new BombCartEntity(world);
 
         // Validate we have a test file
         Assertions.assertNotNull(version4save);

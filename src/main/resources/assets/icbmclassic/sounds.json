@@ -213,7 +213,7 @@
   },
   "powerdown": {
     "category": "block",
-    "subtitle": "subtitle.icbmclassic:power.down",
+    "subtitle": "subtitle.icbmclassic:power.below",
     "sounds": [
       {
         "name": "icbmclassic:powerdown",

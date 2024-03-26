@@ -1,18 +1,19 @@
 package icbm.classic.config.missile;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
  * Configs for Missiles
- *
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 2/28/2018.
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/missile")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/missile")
 @Config.LangKey("config.icbmclassic:missile.title")
-public class ConfigMissile
-{
-    /**  */
+public class ConfigMissile {
+    /**
+     *
+     */
     @Config.Name("speed_direct_fire")
     @Config.Comment("Speed (meters per tick) limiter of the missile when fired directly without a target")
     @Config.RangeDouble(min = 0.0001, max = 10)

@@ -2,19 +2,17 @@ package icbm.classic.api.reg.content;
 
 import icbm.classic.api.data.EntityInteractionFunction;
 import icbm.classic.api.missiles.IMissile;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.function.Consumer;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
-public interface IExMissileRegistry extends IExplosiveContentRegistry
-{
+public interface IExMissileRegistry extends IExplosiveContentRegistry {
 
     /**
      * Adds a simple callback for when a missile launches
@@ -46,7 +44,7 @@ public interface IExMissileRegistry extends IExplosiveContentRegistry
      * Do not use this in place of normal events, this is designed to add logic for
      * specific missile types.
      *
-     * @param exName        - id of the explosive/missile
+     * @param exName   - id of the explosive/missile
      * @param function - function to call
      */
     void setInteractionListener(ResourceLocation exName, EntityInteractionFunction function);
@@ -58,5 +56,5 @@ public interface IExMissileRegistry extends IExplosiveContentRegistry
 
     void triggerFlightUpdate(IMissile missile);
 
-    boolean onInteraction(Entity entity, EntityPlayer player, EnumHand hand);
+    boolean onInteraction(Entity entity, Player player, InteractionHand hand);
 }

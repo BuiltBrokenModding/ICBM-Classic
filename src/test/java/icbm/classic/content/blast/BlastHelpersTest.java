@@ -1,5 +1,6 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.world.blast.BlastHelpers;
 import net.minecraft.util.math.Vec3i;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

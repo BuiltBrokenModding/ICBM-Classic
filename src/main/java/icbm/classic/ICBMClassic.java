@@ -1,39 +1,22 @@
 package icbm.classic;
 
+import com.mojang.brigadier.CommandDispatcher;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.launcher.IActionStatus;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.reg.events.*;
-import icbm.classic.client.ICBMCreativeTab;
-import icbm.classic.command.ICBMCommands;
-import icbm.classic.command.system.CommandEntryPoint;
+import icbm.classic.client.ClientProxy;
+import icbm.classic.client.particle.AntimatterParticle;
+import icbm.classic.client.particle.IcbmSmokeParticle;
+import icbm.classic.client.particle.LauncherSmokeParticle;
+import icbm.classic.client.particle.StaleSmokeParticle;
+import icbm.classic.command.BlastCommand;
+import icbm.classic.command.IcbmCommand;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
-import icbm.classic.content.blast.caps.CapabilityBlast;
-import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
-import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
-import icbm.classic.content.entity.flyingblock.FlyingBlock;
-import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
-import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
-import icbm.classic.content.missile.MissilePartRegistry;
-import icbm.classic.content.missile.entity.CapabilityMissile;
-import icbm.classic.content.missile.entity.anti.SAMTargetData;
-import icbm.classic.content.missile.logic.flight.*;
-import icbm.classic.content.missile.logic.flight.move.MoveByFacingLogic;
-import icbm.classic.content.missile.logic.flight.move.MoveForTicksLogic;
-import icbm.classic.content.missile.logic.source.cause.BlockCause;
-import icbm.classic.content.missile.logic.source.cause.EntityCause;
-import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
-import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
-import icbm.classic.content.missile.logic.targeting.BasicTargetData;
-import icbm.classic.content.potion.ContagiousPoison;
-import icbm.classic.content.potion.PoisonContagion;
-import icbm.classic.content.potion.PoisonFrostBite;
-import icbm.classic.content.potion.PoisonToxin;
-import icbm.classic.content.reg.ExplosiveInit;
-import icbm.classic.content.reg.ItemReg;
+import icbm.classic.core.registries.IcbmBuiltinRegistries;
 import icbm.classic.datafix.*;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
@@ -46,7 +29,6 @@ import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.EnergySystemFE;
 import icbm.classic.lib.explosive.reg.*;
-import icbm.classic.lib.network.netty.PacketManager;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.radio.CapabilityRadio;
 import icbm.classic.lib.radio.RadioRegistry;
@@ -54,30 +36,51 @@ import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.tracker.EventTracker;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.prefab.item.LootEntryItemStack;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.command.ICommandManager;
-import net.minecraft.command.ServerCommandManager;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.datafix.FixTypes;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTableList;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ModFixs;
-import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModMetadata;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import icbm.classic.world.*;
+import icbm.classic.world.blast.caps.CapabilityBlast;
+import icbm.classic.world.blast.caps.CapabilityBlastVelocity;
+import icbm.classic.world.block.launcher.screen.BlockScreenCause;
+import icbm.classic.world.effect.ContagiousPoison;
+import icbm.classic.world.effect.PoisonContagion;
+import icbm.classic.world.effect.PoisonFrostBite;
+import icbm.classic.world.effect.PoisonToxin;
+import icbm.classic.world.entity.flyingblock.FlyingBlock;
+import icbm.classic.world.item.behavior.BombCartDispenseBehavior;
+import icbm.classic.world.item.behavior.GrenadeDispenseBehavior;
+import icbm.classic.world.missile.MissilePartRegistry;
+import icbm.classic.world.missile.entity.CapabilityMissile;
+import icbm.classic.world.missile.entity.anti.SAMTargetData;
+import icbm.classic.world.missile.logic.flight.*;
+import icbm.classic.world.missile.logic.flight.move.MoveByFacingLogic;
+import icbm.classic.world.missile.logic.flight.move.MoveForTicksLogic;
+import icbm.classic.world.missile.logic.source.cause.BlockCause;
+import icbm.classic.world.missile.logic.source.cause.EntityCause;
+import icbm.classic.world.missile.logic.source.cause.RedstoneCause;
+import icbm.classic.world.missile.logic.targeting.BallisticTargetingData;
+import icbm.classic.world.missile.logic.targeting.BasicTargetData;
+import icbm.classic.world.reg.ExplosiveInit;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.LootTableLoadEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -92,30 +95,19 @@ import java.util.List;
  * <p>
  * Orginal author and creator of the mod: Calclavia
  */
-@Mod(modid = ICBMConstants.DOMAIN, name = "ICBM-Classic")
+@Mod(IcbmConstants.MOD_ID)
 @Mod.EventBusSubscriber
-public class ICBMClassic
-{
+public class ICBMClassic {
     public static final int DATA_FIXER_VERSION = 5;
 
     public static final boolean runningAsDev = System.getProperty("development") != null && System.getProperty("development").equalsIgnoreCase("true");
 
-    @Mod.Instance(ICBMConstants.DOMAIN)
-    public static ICBMClassic INSTANCE;
-
-    @Mod.Metadata(ICBMConstants.DOMAIN)
-    public static ModMetadata metadata;
-
-    @SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.CommonProxy")
-    public static CommonProxy proxy;
+    public static CommonProxy proxy = FMLEnvironment.dist.isClient() ? new ClientProxy() : new CommonProxy();
 
     public static final int MAP_HEIGHT = 255;
 
     @Deprecated
-    private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
-
-
-    public static final PacketManager packetHandler = new PacketManager(ICBMConstants.DOMAIN);
+    private static final Logger logger = LogManager.getLogger(IcbmConstants.MOD_ID);
 
     //Mod support
     public static Block blockRadioactive = Blocks.MYCELIUM; //TODO implement
@@ -123,84 +115,95 @@ public class ICBMClassic
     public static final ContagiousPoison chemicalPotion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagiousPotion = new ContagiousPoison("Contagious", 1, true);
 
-    public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(ICBMConstants.DOMAIN);
-
-    public static ModFixs modFixs;
-
     public static final EventTracker MAIN_TRACKER = new EventTracker();
 
-    @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
-    {
-        if (ConfigItems.ENABLE_CRAFTING_ITEMS)
-        {
-            if (ConfigItems.ENABLE_INGOTS_ITEMS)
-            {
-                //Steel clump -> Steel ingot
-                GameRegistry.addSmelting(new ItemStack(ItemReg.itemIngotClump, 1, 0), new ItemStack(ItemReg.itemIngot, 1, 0), 0.1f);
-            }
-
-            if (ConfigItems.ENABLE_PLATES_ITEMS)
-            {
-                //Fix for removing recipe of plate
-                GameRegistry.addSmelting(ItemReg.itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
-            }
-        }
-
-        GameRegistry.addSmelting(new ItemStack(ItemReg.itemSaltpeterBall, 1, 0), new ItemStack(ItemReg.itemSaltpeterDust, 1, 0), 0.1f);
+    public ICBMClassic(IEventBus bus) {
+        IcbmBlockEntityTypes.REGISTER.register(bus);
+        IcbmBlocks.REGISTER.register(bus);
+        IcbmCreativeModeTabs.REGISTER.register(bus);
+        IcbmDamageTypes.REGISTER.register(bus);
+        IcbmEntityTypes.REGISTER.register(bus);
+        IcbmItems.REGISTER.register(bus);
+        IcbmMobEffects.REGISTER.register(bus);
+        IcbmParticleTypes.REGISTER.register(bus);
+        IcbmPotions.REGISTER.register(bus);
     }
 
     @SubscribeEvent
-    public static void registerLoot(LootTableLoadEvent event)
-    {
+    static void registerRegistries(NewRegistryEvent event) {
+        event.register(IcbmBuiltinRegistries.EXPLOSIVES);
+        event.register(IcbmBuiltinRegistries.MISSILES);
+        event.register(IcbmBuiltinRegistries.MISSILE_FLIGHT_LOGIC);
+        event.register(IcbmBuiltinRegistries.MISSILE_CAUSE);
+        event.register(IcbmBuiltinRegistries.MISSILE_TARGETS);
+        event.register(IcbmBuiltinRegistries.GRENADES);
+    }
+
+    @SubscribeEvent
+    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+        if (ConfigItems.ENABLE_CRAFTING_ITEMS) {
+            if (ConfigItems.ENABLE_INGOTS_ITEMS) {
+                //Steel clump -> Steel ingot
+                GameRegistry.addSmelting(new ItemStack(IcbmItems.itemIngotClump, 1, 0), new ItemStack(IcbmItems.itemIngot, 1, 0), 0.1f);
+            }
+
+            if (ConfigItems.ENABLE_PLATES_ITEMS) {
+                //Fix for removing recipe of plate
+                GameRegistry.addSmelting(IcbmItems.itemPlate.getStack("iron", 1), new ItemStack(Items.IRON_INGOT), 0f);
+            }
+        }
+
+        GameRegistry.addSmelting(new ItemStack(IcbmItems.itemSaltpeterBall, 1, 0), new ItemStack(IcbmItems.itemSaltpeterDust, 1, 0), 0.1f);
+    }
+
+    @SubscribeEvent
+    public static void registerLoot(LootTableLoadEvent event) {
         ///setblock ~ ~ ~ minecraft:chest 0 replace {LootTable:"minecraft:chests/simple_dungeon"}
         final String VANILLA_LOOT_POOL_ID = "main";
-        if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) || event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON))
-        {
-            if (ConfigItems.ENABLE_LOOT_DROPS)
-            {
+        if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) || event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON)) {
+            if (ConfigItems.ENABLE_LOOT_DROPS) {
                 LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-                if (lootPool != null && ConfigItems.ENABLE_CRAFTING_ITEMS)
-                {
-                    if (ConfigItems.ENABLE_INGOTS_ITEMS)
-                    {
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "ingot.copper", ItemReg.itemIngot.getStack("copper", 10), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "ingot.steel", ItemReg.itemIngot.getStack("steel", 10), 20, 3));
+                if (lootPool != null && ConfigItems.ENABLE_CRAFTING_ITEMS) {
+                    if (ConfigItems.ENABLE_INGOTS_ITEMS) {
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "ingot.copper", IcbmItems.itemIngot.getStack("copper", 10), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "ingot.steel", IcbmItems.itemIngot.getStack("steel", 10), 20, 3));
                     }
-                    if (ConfigItems.ENABLE_PLATES_ITEMS)
-                    {
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "plate.steel", ItemReg.itemPlate.getStack("steel", 5), 30, 3));
+                    if (ConfigItems.ENABLE_PLATES_ITEMS) {
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "plate.steel", IcbmItems.itemPlate.getStack("steel", 5), 30, 3));
                     }
-                    if (ConfigItems.ENABLE_WIRES_ITEMS)
-                    {
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "wire.copper", ItemReg.itemWire.getStack("copper", 20), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "wire.gold", ItemReg.itemWire.getStack("gold", 15), 30, 3));
+                    if (ConfigItems.ENABLE_WIRES_ITEMS) {
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "wire.copper", IcbmItems.itemWire.getStack("copper", 20), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "wire.gold", IcbmItems.itemWire.getStack("gold", 15), 30, 3));
                     }
-                    if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
-                    {
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "circuit.basic", ItemReg.itemCircuit.getStack("basic", 15), 15, 5));
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "circuit.advanced", ItemReg.itemCircuit.getStack("advanced", 11), 30, 3));
-                        lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "circuit.elite", ItemReg.itemCircuit.getStack("elite", 8), 30, 3));
+                    if (ConfigItems.ENABLE_CIRCUIT_ITEMS) {
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "circuit.basic", IcbmItems.itemCircuit.getStack("basic", 15), 15, 5));
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "circuit.advanced", IcbmItems.itemCircuit.getStack("advanced", 11), 30, 3));
+                        lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "circuit.elite", IcbmItems.itemCircuit.getStack("elite", 8), 30, 3));
                     }
                 }
             }
-        } else if (event.getName().equals(LootTableList.ENTITIES_CREEPER) || event.getName().equals(LootTableList.ENTITIES_BLAZE))
-        {
-            if (ConfigItems.ENABLE_SULFUR_LOOT_DROPS)
-            {
+        } else if (event.getName().equals(LootTableList.ENTITIES_CREEPER) || event.getName().equals(LootTableList.ENTITIES_BLAZE)) {
+            if (ConfigItems.ENABLE_SULFUR_LOOT_DROPS) {
                 LootPool lootPool = event.getTable().getPool(VANILLA_LOOT_POOL_ID);
-                if (lootPool != null)
-                {
-                    lootPool.addEntry(new LootEntryItemStack(ICBMConstants.PREFIX + "sulfur", new ItemStack(ItemReg.itemSulfurDust, 10, 0), 2, 0));
+                if (lootPool != null) {
+                    lootPool.addEntry(new LootEntryItemStack(IcbmConstants.PREFIX + "sulfur", new ItemStack(IcbmItems.itemSulfurDust, 10, 0), 2, 0));
                 }
             }
         }
     }
 
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void registerParticles(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(IcbmParticleTypes.STALE_SMOKE.get(), StaleSmokeParticle.Provider::new);
+        event.registerSpriteSet(IcbmParticleTypes.ICBM_SMOKE.get(), IcbmSmokeParticle.Provider::new);
+        event.registerSpriteSet(IcbmParticleTypes.LAUNCHER_SMOKE.get(), LauncherSmokeParticle.Provider::new);
+        event.registerSpriteSet(IcbmParticleTypes.ANTIMATTER.get(), AntimatterParticle.Provider::new);
+    }
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
+
+    @SubscribeEvent
+    public void preInit(FMLConstructModEvent event) {
         proxy.preInit();
         EnergySystem.register(new EnergySystemFE());
 
@@ -208,7 +211,7 @@ public class ICBMClassic
         registerCapabilities();
 
         //Register data fixers
-        modFixs = FMLCommonHandler.instance().getDataFixer().init(ICBMConstants.DOMAIN, DATA_FIXER_VERSION);
+        modFixs = FMLCommonHandler.instance().getDataFixer().init(IcbmConstants.MOD_ID, DATA_FIXER_VERSION);
         modFixs.registerFix(FixTypes.ENTITY, new EntityExplosiveDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityBombCartDataFixer());
         modFixs.registerFix(FixTypes.ENTITY, new EntityGrenadeDataFixer());
@@ -242,8 +245,7 @@ public class ICBMClassic
         CapabilityGPSData.register();
     }
 
-    void handleMissileTargetRegistry()
-    {
+    void handleMissileTargetRegistry() {
         ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = new MissilePartRegistry<IMissileTarget>("TARGET_DATA");
 
         // Default types
@@ -252,14 +254,13 @@ public class ICBMClassic
         ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(SAMTargetData.REG_NAME, () -> null); //Can't be restored from save but reserving name
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY));
+        NeoForge.EVENT_BUS.post(new MissileTargetRegistryEvent(ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY).lock();
+        ((MissilePartRegistry) ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY).lock();
     }
 
-    void handleMissileFlightRegistry()
-    {
+    void handleMissileFlightRegistry() {
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = new MissilePartRegistry<IMissileFlightLogic>("FLIGHT_LOGIC");
 
         // Register defaults
@@ -274,15 +275,15 @@ public class ICBMClassic
 
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY));
+        NeoForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY).lock();
+        ((MissilePartRegistry) ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY).lock();
     }
 
-    void handleMissileCauseRegistry()
-    {
-        ICBMClassicAPI.MISSILE_CAUSE_REGISTRY =  new MissilePartRegistry<IMissileCause>("CAUSE_DATA");;
+    void handleMissileCauseRegistry() {
+        ICBMClassicAPI.MISSILE_CAUSE_REGISTRY = new MissilePartRegistry<IMissileCause>("CAUSE_DATA");
+        ;
 
         // Register defaults
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(EntityCause.REG_NAME, EntityCause::new);
@@ -291,28 +292,26 @@ public class ICBMClassic
         ICBMClassicAPI.MISSILE_CAUSE_REGISTRY.register(RedstoneCause.REG_NAME, RedstoneCause::new);
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new MissileCauseRegistryEvent(ICBMClassicAPI.MISSILE_CAUSE_REGISTRY));
+        NeoForge.EVENT_BUS.post(new MissileCauseRegistryEvent(ICBMClassicAPI.MISSILE_CAUSE_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.MISSILE_CAUSE_REGISTRY).lock();
+        ((MissilePartRegistry) ICBMClassicAPI.MISSILE_CAUSE_REGISTRY).lock();
     }
 
-    void handleStatusRegistry()
-    {
-        ICBMClassicAPI.ACTION_STATUS_REGISTRY =  new MissilePartRegistry<IActionStatus>("ACTION_STATUS");
+    void handleStatusRegistry() {
+        ICBMClassicAPI.ACTION_STATUS_REGISTRY = new MissilePartRegistry<IActionStatus>("ACTION_STATUS");
 
         // Register defaults
         LauncherStatus.registerTypes();
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ActionStatusRegistryEvent(ICBMClassicAPI.ACTION_STATUS_REGISTRY));
+        NeoForge.EVENT_BUS.post(new ActionStatusRegistryEvent(ICBMClassicAPI.ACTION_STATUS_REGISTRY));
 
         //Lock to prevent late registry
-        ((MissilePartRegistry)ICBMClassicAPI.ACTION_STATUS_REGISTRY).lock();
+        ((MissilePartRegistry) ICBMClassicAPI.ACTION_STATUS_REGISTRY).lock();
     }
 
-    void handleExRegistry(File configMainFolder) //TODO move away from singleton instances for better testing controls
-    {
+    void handleExRegistry(File configMainFolder) { // TODO: move away from singleton instances for better testing controls
         //Init registry
         final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
         ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
@@ -323,7 +322,7 @@ public class ICBMClassic
         ICBMClassicAPI.EX_MISSILE_REGISTRY = new ExMissileContentReg();
 
         //Load data
-        if(configMainFolder != null) {
+        if (configMainFolder != null) {
             explosiveRegistry.loadReg(new File(configMainFolder, "icbmclassic/explosive_reg.json"));
         }
 
@@ -334,7 +333,7 @@ public class ICBMClassic
         explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_MINECART_REGISTRY);
 
         //Fire registry events for content types
-        MinecraftForge.EVENT_BUS.post(new ExplosiveContentRegistryEvent(explosiveRegistry));
+        NeoForge.EVENT_BUS.post(new ExplosiveContentRegistryEvent(explosiveRegistry));
 
         //Lock content types, done to prevent errors with adding content
         explosiveRegistry.lockNewContentTypes();
@@ -343,24 +342,21 @@ public class ICBMClassic
         ExplosiveInit.init();
 
         //Fire registry event for explosives
-        MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
+        NeoForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
         explosiveRegistry.lockNewExplosives();
 
         //Lock all registry, done to prevent errors in data generation for renders and content
         explosiveRegistry.completeLock();
 
         //Save registry, at this point everything should be registered
-        if(configMainFolder != null) {
+        if (configMainFolder != null) {
             explosiveRegistry.saveReg();
         }
     }
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    @SubscribeEvent
+    public void init(FMLCommonSetupEvent event) {
         proxy.init();
-        packetHandler.init();
-        CREATIVE_TAB.init();
         ProjectileBlockInteraction.register();
 
         /** Potion Effects */ //TODO move to effect system
@@ -369,64 +365,53 @@ public class ICBMClassic
         PoisonFrostBite.INSTANCE = MobEffects.POISON;//new PoisonFrostBite(false, 5149489, "frostBite");
 
         /** Dispenser Handler */
-        if (ItemReg.itemGrenade != null)
-        {
-            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ItemReg.itemGrenade, new GrenadeDispenseBehavior());
-        }
+        IcbmItems.GRENADE.asOptional().ifPresent(grenadeItem -> {
+            DispenserBlock.registerBehavior(grenadeItem, new GrenadeDispenseBehavior());
+        });
 
-        if (ItemReg.itemBombCart != null)
-        {
-            BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(ItemReg.itemBombCart, new BombCartDispenseBehavior());
-        }
+        IcbmItems.BOMB_CART.asOptional().ifPresent(bombCartItem -> {
+            DispenserBlock.registerBehavior(bombCartItem, new BombCartDispenseBehavior());
+        });
 
         // Generate defaults
         FlyingBlock.loadFromConfig();
     }
 
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
+    @SubscribeEvent
+    public void postInit(FMLLoadCompleteEvent event) {
         proxy.postInit();
     }
 
 
-    @Mod.EventHandler
-    public void serverStarting(FMLServerStartingEvent event)
-    {
-        //Get command manager
-        ICommandManager commandManager = FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager();
-        ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
-
-        //Setup commands
-        ICBMCommands.init();
-
-        //Register main command
-        serverCommandManager.registerCommand(new CommandEntryPoint("icbm", ICBMCommands.ICBM_COMMAND));
-
+    @SubscribeEvent
+    public void serverStarting(ServerStartingEvent event) {
         WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
         WorkerThreadManager.INSTANCE.startThreads();
     }
 
-    @Mod.EventHandler
-    public void serverStopping(FMLServerStoppingEvent event)
-    {
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+
+        IcbmCommand.register(dispatcher);
+        BlastCommand.register(dispatcher);
+    }
+
+    @SubscribeEvent
+    public void serverStopping(ServerStoppingEvent event) {
         WorkerThreadManager.INSTANCE.killThreads();
     }
 
-    public static Logger logger()
-    {
+    public static Logger logger() {
         return logger;
     }
 
-    public static boolean isJUnitTest()
-    {
+    public static boolean isJUnitTest() {
         //TODO do boolean flag from VoltzTestRunner to simplify solution
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         List<StackTraceElement> list = Arrays.asList(stackTrace);
-        for (StackTraceElement element : list)
-        {
-            if (element.getClassName().startsWith("org.junit.") || element.getClassName().startsWith("com.builtbroken.mc.testing.junit.VoltzTestRunner"))
-            {
+        for (StackTraceElement element : list) {
+            if (element.getClassName().startsWith("org.junit.") || element.getClassName().startsWith("com.builtbroken.mc.testing.junit.VoltzTestRunner")) {
                 return true;
             }
         }

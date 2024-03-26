@@ -2,11 +2,10 @@ package icbm.classic.lib.tracker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.entity.Entity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -33,7 +32,7 @@ final class EventTrackerData {
 
         // Minecraft
         VALID_OBJECTS.add(BlockPos.class);
-        VALID_OBJECTS.add(Vec3d.class);
+        VALID_OBJECTS.add(Vec3.class);
 
         INVALID_OBJECTS.add(Entity.class);
         INVALID_OBJECTS.add(World.class);
@@ -43,18 +42,18 @@ final class EventTrackerData {
     public static boolean isValidType(Class objClass) {
 
         // Always use errors, as they are effectively immutable in usage
-        if(Throwable.class.isAssignableFrom(objClass)) {
+        if (Throwable.class.isAssignableFrom(objClass)) {
             return true;
         }
 
-        if(VALID_OBJECTS.contains(objClass)) {
+        if (VALID_OBJECTS.contains(objClass)) {
             return true;
         }
-        if(INVALID_OBJECTS.contains(objClass)) {
+        if (INVALID_OBJECTS.contains(objClass)) {
             return false;
         }
 
-        if(!scanClass(objClass)) {
+        if (!scanClass(objClass)) {
             INVALID_OBJECTS.add(objClass);
             return false;
         }
@@ -67,7 +66,7 @@ final class EventTrackerData {
         CURRENTLY_SCANNING.add(objClass);
 
         // Check parent first
-        if(objClass.getSuperclass() != null && !isValidType(objClass.getSuperclass())) {
+        if (objClass.getSuperclass() != null && !isValidType(objClass.getSuperclass())) {
             return false;
         }
 
@@ -75,7 +74,7 @@ final class EventTrackerData {
         final Field[] objFields = objClass.getDeclaredFields();
         boolean isValid = true;
         for (Field objField : objFields) {
-            if(!Modifier.isFinal(objField.getModifiers())) {
+            if (!Modifier.isFinal(objField.getModifiers())) {
                 isValid = false;
             }
 

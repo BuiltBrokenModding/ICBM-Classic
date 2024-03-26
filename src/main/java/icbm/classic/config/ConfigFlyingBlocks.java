@@ -1,12 +1,11 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/flying_blocks")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/flying_blocks")
 @Config.LangKey("config.icbmclassic:flying_blocks")
-public class ConfigFlyingBlocks
-{
+public class ConfigFlyingBlocks {
     @Config.Name("enable")
     @Config.Comment("Enables flying blocks, set to false to prevent additional usage in blasts. Doesn't remove existing or prevent other mods from spawning more.")
     public static boolean ENABLED = true;

@@ -22,13 +22,11 @@ public interface IMissileFlightLogicStep extends IMissileFlightLogic {
     IMissileFlightLogic setNextStep(IMissileFlightLogic logic);
 
     default IMissileFlightLogicStep addStep(IMissileFlightLogic logicStep) {
-        if(getNextStep() == null) {
+        if (getNextStep() == null) {
             setNextStep(logicStep);
-        }
-        else if(getNextStep() instanceof IMissileFlightLogicStep) {
+        } else if (getNextStep() instanceof IMissileFlightLogicStep) {
             ((IMissileFlightLogicStep) getNextStep()).addStep(logicStep);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(this + "Next step is not an IMissileFlightLogicStep");
         }
         return this;

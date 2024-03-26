@@ -14,7 +14,7 @@ public class TickDoOnce implements ITick {
 
     @Override
     public void update(int tick, boolean isServer) {
-        if(doAction) {
+        if (doAction) {
             this.doAction = false;
             action.accept(tick);
         }

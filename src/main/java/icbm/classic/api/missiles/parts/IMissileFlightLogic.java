@@ -1,8 +1,8 @@
 package icbm.classic.api.missiles.parts;
 
 import icbm.classic.api.missiles.IMissile;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -16,21 +16,20 @@ import javax.annotation.Nullable;
  * <p>
  * Created by Robin Seifert on 2/7/2022.
  */
-public interface IMissileFlightLogic extends IBuildableObject
-{
+public interface IMissileFlightLogic extends IBuildableObject {
     /**
      * Called to set our path data based on start position and target
-     *
+     * <p>
      * Once call the implementation should lock and ignore additional calls.
      */
-    default void calculateFlightPath(final World world, final double startX, final double startY, final double startZ, final IMissileTarget targetData) {
+    default void calculateFlightPath(final Level level, final double startX, final double startY, final double startZ, final IMissileTarget targetData) {
 
     }
 
     /**
      * Called to start the flight logic
      *
-     * @param entity running the logic
+     * @param entity  running the logic
      * @param missile running the logic
      */
     default void start(Entity entity, IMissile missile) {
@@ -40,19 +39,17 @@ public interface IMissileFlightLogic extends IBuildableObject
     /**
      * Called each tick of the missile motion
      */
-    default void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
-    {
+    default void onEntityTick(Entity entity, IMissile missile, int ticksInAir) {
     }
 
     /**
      * Callback to allow taking control of gravity and friction
-     *
+     * <p>
      * Do custom friction and gravity in update tick
      *
      * @return true to allow normal friction and gravity to apply
      */
-    default boolean shouldDecreaseMotion(Entity entity)
-    {
+    default boolean shouldDecreaseMotion(Entity entity) {
         return true;
     }
 
@@ -62,7 +59,7 @@ public interface IMissileFlightLogic extends IBuildableObject
      * doesn't understand the exact flight logic and only understands motion vector.
      * This way we get a fair gameplay mechanic of anti-missile systems missing.
      *
-     * @param builder - function to build position, {@link net.minecraft.util.math.Vec3d#Vec3d(double, double, double)}
+     * @param builder - function to build position, {@link net.minecraft.util.math.Vec3#Vec3(double, double, double)}
      * @param <V>     - return type of the builder
      * @return return of the builder function or null if feature is not supported, not all flight logics move the missile
      */
@@ -71,6 +68,7 @@ public interface IMissileFlightLogic extends IBuildableObject
 
     /**
      * Call back to see if the engine effects should run
+     *
      * @return true to run default engine effects
      */
     default boolean shouldRunEngineEffects(Entity entity) {
@@ -85,7 +83,9 @@ public interface IMissileFlightLogic extends IBuildableObject
      * @param entity to update
      * @return true to allow alignment
      */
-    default boolean shouldAlignWithMotion(Entity entity) { return false; }
+    default boolean shouldAlignWithMotion(Entity entity) {
+        return false;
+    }
 
     default float engineSmokeRed(Entity entity) {
         // TODO consider using an object for storing settings
@@ -102,11 +102,11 @@ public interface IMissileFlightLogic extends IBuildableObject
 
     /**
      * Checks to see if we can safely exit the flight logic without issues.
-     *
+     * <p>
      * This is called often before switching from one flight logic set to another. Specific
      * cases may be a missile is exiting a launcher and now wants to move to target updating
      * logic. Such as with the AB missiles that may fly towards a target.
-     *
+     * <p>
      * Safe usually means we have finished any startup movements and are at low risk
      * to impacting walls in a player's base. This doesn't mean we should check if it is
      * actually safe unless the flight logic is built for that purpose.
@@ -118,14 +118,12 @@ public interface IMissileFlightLogic extends IBuildableObject
     }
 
     @FunctionalInterface
-    interface MotionUpdateFunc
-    {
+    interface MotionUpdateFunc {
         void apply(double x, double y, double z);
     }
 
     @FunctionalInterface
-    interface VecBuilderFunc<V>
-    {
+    interface VecBuilderFunc<V> {
         V apply(double x, double y, double z);
     }
 }

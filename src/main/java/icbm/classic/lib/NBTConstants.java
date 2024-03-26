@@ -7,8 +7,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 
 @Deprecated //We don't want to have a master file for data that is not exposed as an API
-public class NBTConstants
-{
+public class NBTConstants {
     /* Verifies that the nbt tag constants are distinct (only exist once).
      * This ensures that save files don't get corrupted. (Imagine writing a byte-array and an integer with the
      * same name and then trying to load that again)
@@ -16,20 +15,17 @@ public class NBTConstants
      * FAILING THIS CHECK WILL RESULT IN A CRASH!
      *
      */
-    public static void ensureThatAllTagNamesAreDistinct()
-    {
+    public static void ensureThatAllTagNamesAreDistinct() {
         Field[] fields = NBTConstants.class.getDeclaredFields(); // grab all fields
         LinkedList<String> alreadySeen = new LinkedList<>(); // keep track of all already seen fields
         for (Field field : fields) { // iterate the fields
             try {
-                String value = (String)field.get(null); // get the field's value
+                String value = (String) field.get(null); // get the field's value
                 if (alreadySeen.contains(value)) { // check if an equal value was seen before
                     // crash the game to prevent save corruptions
                     ICBMClassic.logger().log(Level.FATAL, "FAILED AND NBT INIT CHECK! This is a severe problem as it can cause save data to get messed up. Because of this the game is going to crash now. Please report this! Conflicting value: " + value);
-                    throw new RuntimeException( "ICBM Classic failed an nbt init check! Fatal conflict: " + value);
-                }
-                else
-                {
+                    throw new RuntimeException("ICBM Classic failed an nbt init check! Fatal conflict: " + value);
+                } else {
                     alreadySeen.add(value); // add value to check against it later
                 }
             } catch (IllegalAccessException ex) {
@@ -106,6 +102,6 @@ public class NBTConstants
     public static final String TRACKING_ENTITY = "trackingEntity";
     public static final String X = "x";
     public static final String Y = "y";
-    public static final String YAW  = "yaw";
+    public static final String YAW = "yaw";
     public static final String Z = "z";
 }

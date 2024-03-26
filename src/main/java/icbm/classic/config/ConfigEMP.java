@@ -1,16 +1,14 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/emp")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/emp")
 @Config.LangKey("config.icbmclassic:emp.title")
-public class ConfigEMP
-{
+public class ConfigEMP {
     @Config.Name("allow_creeper_charging")
     @Config.Comment("Should a lighting effect be applied to the creeper to super charge it due to EMP effect?")
     public static boolean ALLOW_LIGHTING_CREEPER = true;

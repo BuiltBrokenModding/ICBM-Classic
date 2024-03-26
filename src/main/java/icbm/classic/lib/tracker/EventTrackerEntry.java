@@ -1,7 +1,7 @@
 package icbm.classic.lib.tracker;
 
 import lombok.Data;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -16,6 +16,7 @@ public class EventTrackerEntry {
     public <DATA> DATA get(ResourceLocation key) {
         return get(key, null);
     }
+
     public <DATA> DATA get(ResourceLocation key, DATA placeholder) {
         return (DATA) Optional.ofNullable(type.getField(key).get(this)).orElse(placeholder);
     }

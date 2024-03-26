@@ -1,17 +1,16 @@
 package icbm.classic.config.machines;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
  * Settings class for various configuration settings.
  *
  * @author Calclavia, DarkCow
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/launcher")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/launcher")
 @Config.LangKey("config.icbmclassic:launcher.title")
-public class ConfigLauncher
-{
+public class ConfigLauncher {
     @Config.Name("max_range")
     @Config.Comment("Range of silo launcher in blocks (meters)")
     public static int RANGE = 10000;

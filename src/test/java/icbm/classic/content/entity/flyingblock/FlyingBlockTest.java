@@ -3,12 +3,14 @@ package icbm.classic.content.entity.flyingblock;
 import com.builtbroken.mc.testing.junit.TestManager;
 import com.google.common.collect.Lists;
 import icbm.classic.config.ConfigFlyingBlocks;
-import net.minecraft.entity.Entity;
+import icbm.classic.world.entity.flyingblock.FlyingBlockEntity;
+import icbm.classic.world.entity.flyingblock.FlyingBlock;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.util.ClassInheritanceMultiMap;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.*;
 
 import java.util.Arrays;
@@ -60,21 +62,21 @@ class FlyingBlockTest {
     @Test
     @DisplayName("Confirm we can spawn a flying block if allowed")
     void spawnFlyingBlock_allowedToSpawn() {
-        final World world = testManager.getWorld(0);
+        final Level level = testManager.getLevel(0);
 
         final BlockPos pos = new BlockPos(10, 10, 10);
         final boolean result = FlyingBlock.spawnFlyingBlock(world, pos, Blocks.STONE.getDefaultState());
         Assertions.assertTrue(result);
 
-        assertMobCountInChunk(world, pos, (entity) -> entity instanceof EntityFlyingBlock, 1);
-        assertMobCountInChunk(world, pos, (entity) -> !(entity instanceof EntityFlyingBlock), 1);
+        assertMobCountInChunk(world, pos, (entity) -> entity instanceof FlyingBlockEntity, 1);
+        assertMobCountInChunk(world, pos, (entity) -> !(entity instanceof FlyingBlockEntity), 1);
         // TODO optimize to return map<class, count>
     }
 
     @Test
     @DisplayName("Confirm we don't spawn a flying block if disallowed")
     void spawnFlyingBlock_disallowedToSpawn() {
-        final World world = testManager.getWorld(0);
+        final Level level = testManager.getLevel(0);
 
         FlyingBlock.banAllowList.loadBlockStates("minecraft:dirt");
 
@@ -85,7 +87,7 @@ class FlyingBlockTest {
         assertMobCountInChunk(world, pos, Objects::nonNull, 0);
     }
 
-    void assertMobCountInChunk(World world, BlockPos chunkBlockPos, Function<Entity, Boolean> matcher, int count) {
+    void assertMobCountInChunk(Level level, BlockPos chunkBlockPos, Function<Entity, Boolean> matcher, int count) {
       Assertions.assertEquals(count, Arrays.stream(world.getChunkFromBlockCoords(chunkBlockPos).getEntityLists())
             .mapToInt(entities -> (int)entities.stream()
                 .filter(matcher::apply).count()).sum());

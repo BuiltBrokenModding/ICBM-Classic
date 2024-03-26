@@ -1,12 +1,11 @@
 package icbm.classic.config.blast.types;
 
-import net.minecraftforge.common.config.Config;
+import net.neoforged.common.config.Config;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 2/9/2020.
  */
-public class ConfigRedmatter
-{
+public class ConfigRedmatter {
     @Config.Name("redmatter_max_size")
     @Config.Comment("Largest size the redmatter can grow into before stopping.")
     public float MAX_SIZE = 70;

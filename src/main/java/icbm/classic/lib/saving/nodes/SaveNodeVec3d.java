@@ -1,20 +1,18 @@
 package icbm.classic.lib.saving.nodes;
 
 import icbm.classic.lib.saving.NbtSaveNode;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class SaveNodeVec3d<E> extends NbtSaveNode<E, NBTTagCompound>
-{
-    public SaveNodeVec3d(final String name, Function<E, Vec3d> getter, BiConsumer<E, Vec3d> setter) {
+public class SaveNodeVec3<E> extends NbtSaveNode<E, CompoundTag> {
+    public SaveNodeVec3(final String name, Function<E, Vec3> getter, BiConsumer<E, Vec3> setter) {
         super(name,
             (obj) -> {
-                final Vec3d pos = getter.apply(obj);
-                if (pos != null)
-                {
+                final Vec3 pos = getter.apply(obj);
+                if (pos != null) {
                     return save(pos);
                 }
                 return null;
@@ -25,18 +23,19 @@ public class SaveNodeVec3d<E> extends NbtSaveNode<E, NBTTagCompound>
         );
     }
 
-    public static NBTTagCompound save(Vec3d pos) {
-        return save(pos, new NBTTagCompound());
+    public static CompoundTag save(Vec3 pos) {
+        return save(pos, new CompoundTag());
     }
-    public static NBTTagCompound save(Vec3d pos, NBTTagCompound compound) {
+
+    public static CompoundTag save(Vec3 pos, CompoundTag compound) {
         compound.setDouble("x", pos.x);
         compound.setDouble("y", pos.y);
         compound.setDouble("z", pos.z);
         return compound;
     }
 
-    public static Vec3d load(NBTTagCompound compound) {
-        return new Vec3d(
+    public static Vec3 load(CompoundTag compound) {
+        return new Vec3(
             compound.getDouble("x"),
             compound.getDouble("y"),
             compound.getDouble("z")

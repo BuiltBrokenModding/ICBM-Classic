@@ -3,16 +3,16 @@ package icbm.classic.lib.network.lambda.tile;
 import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.world.FakeWorldServer;
 import com.google.common.collect.Lists;
-import icbm.classic.TileEntityFakeData;
+import icbm.classic.BlockEntityFakeData;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -23,15 +23,15 @@ class PacketLambdaTileTest {
 
     static TestManager testManager = new TestManager("packet.tile", Assertions::fail).withWorldWrapper(Mockito::spy);
 
-    final FakeWorldServer world = testManager.getWorld(0);
-    final TileEntityFakeData tile = Mockito.spy(TileEntityFakeData.class);
+    final FakeWorldServer world = testManager.getLevel(0);
+    final BlockEntityFakeData tile = Mockito.spy(BlockEntityFakeData.class);
 
-    public static final PacketCodexTile<TileEntityFakeData, TileEntityFakeData> CODEX =
-        (PacketCodexTile<TileEntityFakeData, TileEntityFakeData>) new PacketCodexTile<TileEntityFakeData, TileEntityFakeData>(PARENT, "target")
+    public static final PacketCodexTile<BlockEntityFakeData, BlockEntityFakeData> CODEX =
+        (PacketCodexTile<BlockEntityFakeData, BlockEntityFakeData>) new PacketCodexTile<BlockEntityFakeData, BlockEntityFakeData>(PARENT, "target")
             .fromClient()
-            .nodeInt(TileEntityFakeData::getField1, TileEntityFakeData::setField1)
-            .nodeFloat(TileEntityFakeData::getField2, TileEntityFakeData::setField2)
-            .nodeString(TileEntityFakeData::getField3, TileEntityFakeData::setField3)
+            .nodeInt(BlockEntityFakeData::getField1, BlockEntityFakeData::setField1)
+            .nodeFloat(BlockEntityFakeData::getField2, BlockEntityFakeData::setField2)
+            .nodeString(BlockEntityFakeData::getField3, BlockEntityFakeData::setField3)
             .onFinished((r, t, p) -> t.wasRead(true));
     ;
 
@@ -51,7 +51,7 @@ class PacketLambdaTileTest {
     @BeforeEach
     public void beforeEachTest() {
         tile.setPos(new BlockPos(100, 105, 6789));
-        tile.setWorld(world);
+        tile.setLevel(world);
     }
 
     @AfterEach
@@ -135,7 +135,7 @@ class PacketLambdaTileTest {
     @DisplayName("Verify we handle client side")
     void handleClient() {
         //Setup packet
-        final PacketLambdaTile<TileEntityFakeData> packet = new PacketLambdaTile<TileEntityFakeData>();
+        final PacketLambdaTile<BlockEntityFakeData> packet = new PacketLambdaTile<BlockEntityFakeData>();
         final BlockPos pos = new BlockPos(567, 345, 123);
         packet.setCodex(CODEX);
         packet.setDimensionId(0);
@@ -146,7 +146,7 @@ class PacketLambdaTileTest {
             (tile) -> tile.setField3("cat")
         ));
 
-        final EntityPlayer player = testManager.getPlayer();
+        final Player player = testManager.getPlayer();
 
         final Minecraft minecraft = Mockito.mock(Minecraft.class);
         Mockito.when(minecraft.addScheduledTask((Runnable) Mockito.any())).then((answer) -> {
@@ -154,7 +154,7 @@ class PacketLambdaTileTest {
             return null;
         });
 
-        Mockito.when(world.getTileEntity(pos)).thenReturn(tile);
+        Mockito.when(world.getBlockEntity(pos)).thenReturn(tile);
         Mockito.doReturn(true).when(world).isBlockLoaded(pos);
 
         // Invoke
@@ -171,7 +171,7 @@ class PacketLambdaTileTest {
     @DisplayName("Verify we handle server side")
     void handleServer() {
         //Setup packet
-        final PacketLambdaTile<TileEntityFakeData> packet = new PacketLambdaTile<TileEntityFakeData>();
+        final PacketLambdaTile<BlockEntityFakeData> packet = new PacketLambdaTile<BlockEntityFakeData>();
         final BlockPos pos = new BlockPos(567, 345, 123);
         packet.setCodex(CODEX);
         packet.setDimensionId(0);
@@ -182,14 +182,14 @@ class PacketLambdaTileTest {
             (tile) -> tile.setField3("cat")
         ));
 
-        final EntityPlayer player = testManager.getPlayer();
+        final Player player = testManager.getPlayer();
 
         Mockito.doAnswer((answer) -> {
             ((Runnable) answer.getArgument(0)).run();
             return null;
         }).when(world).addScheduledTask((Runnable) Mockito.any());
 
-        Mockito.when(world.getTileEntity(pos)).thenReturn(tile);
+        Mockito.when(world.getBlockEntity(pos)).thenReturn(tile);
         Mockito.doReturn(true).when(world).isBlockLoaded(pos);
 
         // Invoke

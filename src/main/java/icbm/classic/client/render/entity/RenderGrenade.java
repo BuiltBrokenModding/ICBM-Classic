@@ -1,53 +1,49 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.content.entity.EntityGrenade;
+import icbm.classic.world.entity.GrenadeEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderEntityItem;
+import net.minecraft.client.renderer.entity.RenderItemEntity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-@SideOnly(Side.CLIENT)
-public class RenderGrenade extends Render<EntityGrenade>
-{
-    private EntityItem entityItem;
-    private RenderEntityItem renderEntityItem;
+@OnlyIn(Dist.CLIENT)
+public class RenderGrenade extends Render<GrenadeEntity> {
+    private ItemEntity entityItem;
+    private RenderItemEntity renderItemEntity;
 
-    public RenderGrenade(RenderManager renderManagerIn)
-    {
+    public RenderGrenade(RenderManager renderManagerIn) {
         super(renderManagerIn);
-        renderEntityItem = new RenderEntityItem(renderManagerIn, Minecraft.getMinecraft().getRenderItem());
+        renderItemEntity = new RenderItemEntity(renderManagerIn, Minecraft.getMinecraft().getRenderItem());
         this.shadowSize = 0.15F;
         this.shadowOpaque = 0.75F;
     }
 
     @Override
-    public void doRender(EntityGrenade entity, double x, double y, double z, float par8, float par9)
-    {
+    public void doRender(GrenadeEntity entity, double x, double y, double z, float par8, float par9) {
         setupFakeItem(entity);
-        renderEntityItem.doRender(entityItem, x, y, z, par8, par9);
+        renderItemEntity.doRender(entityItem, x, y, z, par8, par9);
     }
 
-    protected void setupFakeItem(EntityGrenade entity) {
+    protected void setupFakeItem(GrenadeEntity entity) {
 
         //Create fake item if missing
-        if(entityItem == null) {
-            entityItem = new EntityItem(entity.world);
+        if (entityItem == null) {
+            entityItem = new ItemEntity(entity.world);
         }
 
         //Apply data from entity
-        entityItem.setWorld(entity.world);
-        entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
+        entityItem.setLevel(entity.world);
+        entityItem.setPosition(entity.getX(), entity.getY(), entity.getZ());
         entityItem.setItem(entity.explosive.toStack());
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityGrenade entity)
-    {
+    protected ResourceLocation getEntityTexture(GrenadeEntity entity) {
         return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 }

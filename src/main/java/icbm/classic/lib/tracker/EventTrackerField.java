@@ -3,7 +3,7 @@ package icbm.classic.lib.tracker;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -20,24 +20,26 @@ public class EventTrackerField<DATA> {
 
     /**
      * Unique name, within {@link EventTrackerType}, to identify this column.
-     *
+     * <p>
      * Is also used to generate visual information in various applications.
      * Will prefix 'event' plus {@link EventTrackerType#name} and suffix type.
-     *
+     * <p>
      * If domain matches {@link EventTrackerType#name} then it will be ignored.
      * Otherwise, it will be added to the translation key. Allowing for tracking
      * of which mod added the column and to avoid collisions in the translation file.
-     *
+     * <p>
      * Example:
-     *  type#name -> icbm:missile.systems.flight.on_switch
-     *  this#key -> icbm:component.new
-     *  columnName -> event.icbm:missile.systems.flight.switch.component.new.column = New Logic
-     *  column -> event.icbm:missile.systems.flight.switch.component.new.sql=new_type
+     * type#name -> icbm:missile.systems.flight.on_switch
+     * this#key -> icbm:component.new
+     * columnName -> event.icbm:missile.systems.flight.switch.component.new.column = New Logic
+     * column -> event.icbm:missile.systems.flight.switch.component.new.sql=new_type
      */
     @Getter
     private final ResourceLocation key;
 
-    /** Data type of the field, used by other systems to understand how to consume the output of {@link #accessor} */
+    /**
+     * Data type of the field, used by other systems to understand how to consume the output of {@link #accessor}
+     */
     @Getter
     private final Type type;
 
@@ -45,10 +47,12 @@ public class EventTrackerField<DATA> {
      * Index of the column in the list, this isn't the same as data index. As some columns
      * pull from the same data index or may combine data.
      */
-    @Getter @Setter(value = AccessLevel.PACKAGE)
+    @Getter
+    @Setter(value = AccessLevel.PACKAGE)
     private int index;
 
-    @Getter @Setter(value = AccessLevel.PACKAGE)
+    @Getter
+    @Setter(value = AccessLevel.PACKAGE)
     private EventTrackerType parent;
 
     /**
@@ -61,6 +65,7 @@ public class EventTrackerField<DATA> {
         this.type = type;
         this.accessor = accessor;
     }
+
     public DATA get(EventTrackerEntry entry) {
         return Optional.ofNullable(accessor).map(f -> f.apply(entry)).orElse(null);
     }

@@ -5,7 +5,7 @@ import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.Optional;
@@ -26,16 +26,26 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     private final int x;
     private final int y;
 
-    /** Energy getter */
+    /**
+     * Energy getter
+     */
     private final Supplier<Integer> energyGetter;
-    /** Max energy getter */
+    /**
+     * Max energy getter
+     */
     private final Supplier<Integer> energyMaxGetter;
-    /** Cost per tick getter */
+    /**
+     * Cost per tick getter
+     */
     private Supplier<Integer> tickingCostGetter;
-    /** Cost per action getter */
+    /**
+     * Cost per action getter
+     */
     private Supplier<Integer> actionCostGetter;
 
-    /** Parent */
+    /**
+     * Parent
+     */
     private GuiContainerBase container;
 
     private float energyPercent = 0;
@@ -44,7 +54,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     private int prevMaxEnergy = 0;
     private boolean prevShift = false;
 
-    private ITextComponent tooltip;
+    private Component tooltip;
 
 
     public SlotEnergyBar(int x, int y, Supplier<Integer> energyGetter, Supplier<Integer> energyMaxGetter) {
@@ -73,7 +83,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         final int actionCost = Optional.ofNullable(actionCostGetter).map(Supplier::get).orElse(0);
         final boolean shift = GuiScreen.isShiftKeyDown();
 
-        if(energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift) {
+        if (energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift) {
             prevEnergy = energy;
             prevMaxEnergy = maxEnergy;
             prevShift = shift;
@@ -81,21 +91,19 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
             energyPercent = energy / (float) maxEnergy;
 
             String translationToUse = TOOLTIP_FORMAT;
-            if(tickingCost > 0) {
+            if (tickingCost > 0) {
                 translationToUse = TOOLTIP_FORMAT_COST;
-                if(actionCost > 0) {
+                if (actionCost > 0) {
                     translationToUse = TOOLTIP_FORMAT_COST_ACTION;
                 }
-            }
-            else if(actionCost > 0) {
+            } else if (actionCost > 0) {
                 translationToUse = TOOLTIP_FORMAT_ACTION;
             }
 
-            if(shift) {
+            if (shift) {
                 tooltip = new TextComponentTranslation(translationToUse, energy, maxEnergy, -tickingCost, -actionCost);
-            }
-            else {
-                tooltip = new TextComponentTranslation(translationToUse, formatEnergy(energy), formatEnergy(maxEnergy), formatEnergy(-tickingCost),formatEnergy(-actionCost));
+            } else {
+                tooltip = new TextComponentTranslation(translationToUse, formatEnergy(energy), formatEnergy(maxEnergy), formatEnergy(-tickingCost), formatEnergy(-actionCost));
             }
         }
     }
@@ -105,21 +113,21 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         int number = Math.abs(energy);
         String type = "";
         // Mega
-        if(number >= 1_000_000_000) {
+        if (number >= 1_000_000_000) {
             number = number / 1_000_000_000;
             type = "G";
         }
         // Mega
-        else if(number >= 1_000_000) {
+        else if (number >= 1_000_000) {
             number = number / 1_000_000;
             type = "M";
         }
         // Kilo
-        else if(number >= 1_000) {
+        else if (number >= 1_000) {
             number = number / 1_000;
             type = "k";
         }
-        return String.format("%s%d%s", neg ? "-" :  "", number, type); //TODO add decimal place
+        return String.format("%s%d%s", neg ? "-" : "", number, type); //TODO add decimal place
     }
 
     @Override
@@ -134,11 +142,11 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Calculate bar ratio
-        final float barRatio = (float)Math.floor(ENERGY_BAR_WIDTH * energyPercent);
+        final float barRatio = (float) Math.floor(ENERGY_BAR_WIDTH * energyPercent);
 
         // Calculate bar width
         final int minBar = energyPercent > 0 ? 1 : 0;
-        int renderWidth = (int)Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
+        int renderWidth = (int) Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
 
         // Render box
         container.drawTexturedModalRect(container.getGuiLeft() + x, container.getGuiTop() + y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
@@ -152,7 +160,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     }
 
     @Override
-    public ITextComponent getTooltip() {
+    public Component getTooltip() {
         return tooltip;
     }
 }

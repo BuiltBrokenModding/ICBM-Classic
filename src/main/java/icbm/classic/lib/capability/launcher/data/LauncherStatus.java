@@ -1,13 +1,13 @@
 package icbm.classic.lib.capability.launcher.data;
 
-import icbm.classic.ICBMConstants;
+import icbm.classic.IcbmConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.launcher.IActionStatus;
-import icbm.classic.content.blocks.launcher.LauncherLangs;
+import icbm.classic.world.block.launcher.LauncherLangs;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 
 
@@ -38,7 +38,7 @@ public class LauncherStatus implements IActionStatus {
     private boolean error = false;
     private boolean block = false;
     private String message;
-    private ITextComponent textComponent;
+    private Component textComponent;
     private ResourceLocation regName;
 
     public LauncherStatus asError() {
@@ -57,7 +57,7 @@ public class LauncherStatus implements IActionStatus {
     }
 
     public LauncherStatus withRegName(String key) {
-        return withRegName(ICBMConstants.DOMAIN, key);
+        return withRegName(IcbmConstants.MOD_ID, key);
     }
 
     public LauncherStatus withRegName(String domain, String key) {
@@ -76,8 +76,8 @@ public class LauncherStatus implements IActionStatus {
     }
 
     @Override
-    public ITextComponent message() {
-        if(textComponent == null) {
+    public Component message() {
+        if (textComponent == null) {
             textComponent = new TextComponentTranslation(message);
         }
         return textComponent;
@@ -89,12 +89,12 @@ public class LauncherStatus implements IActionStatus {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT() {
         return null;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
 
     }
 

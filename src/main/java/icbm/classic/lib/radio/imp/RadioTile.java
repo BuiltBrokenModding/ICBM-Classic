@@ -6,15 +6,15 @@ import icbm.classic.api.radio.IRadioSender;
 import icbm.classic.lib.radio.RadioRegistry;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class RadioTile<T extends TileEntity> extends Radio {
+public abstract class RadioTile<T extends BlockEntity> extends Radio {
 
     protected final T host;
 
@@ -28,8 +28,8 @@ public abstract class RadioTile<T extends TileEntity> extends Radio {
     }
 
     @Override
-    public World getWorld() {
-        return host.getWorld();
+    public Level getLevel() {
+        return host.getLevel();
     }
 
     @Override
@@ -42,7 +42,7 @@ public abstract class RadioTile<T extends TileEntity> extends Radio {
             // Usually sender isn't receive, but could happen in rare cases
             && sender != this
             // Only accept server side
-            && host.hasWorld() && !host.getWorld().isRemote
+            && host.hasLevel() && !host.getLevel().isClientSide()
             // Validate channel, this might create the channel string if null
             && Objects.equals(getChannel(), packet.getChannel());
     }

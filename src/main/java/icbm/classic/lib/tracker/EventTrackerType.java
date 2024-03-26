@@ -5,9 +5,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -152,7 +152,7 @@ public class EventTrackerType {
                         .map(BlockPos::getZ).orElse(null));
         }
 
-        public Builder withVec3d(ResourceLocation prefix, Function<EventTrackerEntry, Vec3d> accessor) {
+        public Builder withVec3(ResourceLocation prefix, Function<EventTrackerEntry, Vec3> accessor) {
             return withDouble(suffix(prefix, "x"),
                 (entry) -> Optional.ofNullable(accessor.apply(entry))
                     .map(v -> v.x).orElse(null))

@@ -1,15 +1,14 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
  * Client only settings
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/client")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/client")
 @Config.LangKey("config.icbmclassic:client.title")
-public class ConfigClient
-{
+public class ConfigClient {
     @Config.Name("missile_engine_smoke")
     @Config.Comment("Enables engine smoke effect for missiles")
     public static boolean MISSILE_ENGINE_SMOKE = true;

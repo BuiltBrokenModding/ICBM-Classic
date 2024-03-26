@@ -1,7 +1,7 @@
 package icbm.classic.prefab.inventory;
 
 import lombok.Getter;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -53,7 +53,7 @@ public class InventorySlot {
     }
 
     public InventorySlot withInsertCheck(Function<ItemStack, Boolean> onInsertStack) {
-        this.onInsertStack =  onInsertStack;
+        this.onInsertStack = onInsertStack;
         return this;
     }
 }

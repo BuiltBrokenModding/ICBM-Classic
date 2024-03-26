@@ -1,7 +1,7 @@
 package icbm.classic.lib.saving.nodes;
 
 import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,24 +15,24 @@ class SaveNodeFacingTest
     @Test
     void save() {
         final SideSaveThing thing = new SideSaveThing();
-        thing.facing = EnumFacing.EAST;
+        thing.facing = Direction.EAST;
 
         final NBTTagByte save = node.save(thing);
 
-        Assertions.assertEquals((byte)EnumFacing.EAST.ordinal(), save.getByte());
+        Assertions.assertEquals((byte)Direction.EAST.ordinal(), save.getByte());
     }
 
     @Test
     void load() {
         final SideSaveThing thing = new SideSaveThing();
-        final NBTTagByte save = new NBTTagByte((byte)EnumFacing.DOWN.ordinal());
+        final NBTTagByte save = new NBTTagByte((byte)Direction.DOWN.ordinal());
 
         node.load(thing, save);
 
-        Assertions.assertEquals(EnumFacing.DOWN, thing.facing);
+        Assertions.assertEquals(Direction.DOWN, thing.facing);
     }
 
     static class SideSaveThing {
-        public EnumFacing facing;
+        public Direction facing;
     }
 }

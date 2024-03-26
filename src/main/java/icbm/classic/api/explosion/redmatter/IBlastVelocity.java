@@ -1,7 +1,7 @@
 package icbm.classic.api.explosion.redmatter;
 
 import icbm.classic.api.explosion.IBlast;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
@@ -13,8 +13,7 @@ import javax.annotation.Nullable;
  * <p>
  * Created by Dark(DarkGuardsman, Robert) on 1/26/2020.
  */
-public interface IBlastVelocity
-{
+public interface IBlastVelocity {
     /**
      * Called to handle motion being applied
      *

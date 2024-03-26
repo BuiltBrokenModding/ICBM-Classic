@@ -1,16 +1,14 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 4/10/2018.
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/debug")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/debug")
 @Config.LangKey("config.icbmclassic:debug.title")
-public class ConfigDebug
-{
+public class ConfigDebug {
     @Config.Name("debug_threads")
     @Config.Comment("Enables extra console output to check the state of the explosive threads.")
     public static boolean DEBUG_THREADS = false;

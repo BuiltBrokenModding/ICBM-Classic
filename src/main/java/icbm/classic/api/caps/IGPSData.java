@@ -1,9 +1,8 @@
 package icbm.classic.api.caps;
 
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -18,15 +17,15 @@ public interface IGPSData {
      *
      * @param position to set, can be set to null to clear
      */
-    void setPosition(@Nullable Vec3d position);
+    void setPosition(@Nullable Vec3 position);
 
     /**
      * Sets the dimension
      *
-     * @param world to set, can be set to null to clear
+     * @param level to set, can be set to null to clear
      */
-    default void setWorld(World world) {
-        setWorld(Optional.ofNullable(world).map(w -> w.provider).map(WorldProvider::getDimension).orElse(null));
+    default void setLevel(@Nullable Level level) {
+        setLevel(Optional.ofNullable(level).map(Level::dimension).orElse(null));
     }
 
     /**
@@ -34,7 +33,7 @@ public interface IGPSData {
      *
      * @param dimension to set, can be set to null to clear
      */
-    void setWorld(@Nullable Integer dimension);
+    void setLevel(@Nullable ResourceKey<Level> dimension);
 
     /**
      * Gets the position component of the GPS data
@@ -42,18 +41,18 @@ public interface IGPSData {
      * @return position
      */
     @Nullable
-    Vec3d getPosition();
+    Vec3 getPosition();
 
     /**
-     * Gets the world instance, if client side use {@link #getWorldId()}
+     * Gets the world instance, if client side use {@link #getLevelId()}
      *
      * @return world
      */
     @Nullable
-    default World getWorld() {
-        final Integer id = getWorldId();
-        if(id != null) {
-            return DimensionManager.getWorld(id);
+    default Level getLevel() {
+        final Integer id = getLevelId();
+        if (id != null) {
+            return DimensionManager.getLevel(id);
         }
         return null;
     }
@@ -64,5 +63,5 @@ public interface IGPSData {
      * @return id
      */
     @Nullable
-    Integer getWorldId();
+    ResourceKey<Level> getLevelId();
 }

@@ -1,7 +1,7 @@
 package icbm.classic.api.energy;
 
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 /**
  * Applied to tiles that provide access to an energy buffer for a side. This should
@@ -15,13 +15,12 @@ import net.minecraft.util.EnumFacing;
  * Created by Dark on 8/15/2015.
  */
 @Deprecated //Will be replaced by Capability system
-public interface IEnergyBufferProvider
-{
+public interface IEnergyBufferProvider {
     /**
      * Gets access to power buffer for the given side
      *
      * @param side - side, null should be treated as unknown
      * @return energy buffer or null if none provider
      */
-    IEnergyBuffer getEnergyBuffer(EnumFacing side);
+    IEnergyBuffer getEnergyBuffer(Direction side);
 }

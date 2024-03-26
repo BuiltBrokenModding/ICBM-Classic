@@ -1,9 +1,9 @@
 package icbm.classic.config.util;
 
 import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.block.BlockStone;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
 import org.junit.jupiter.api.Assertions;
@@ -300,7 +300,7 @@ class BlockStateConfigListTest {
             final BlockStateConfigList configList = new BlockStateConfigList("test", null);
             Assertions.assertTrue(configList.handleMetaData("minecraft:stone@2"));
 
-            HashSet<IBlockState> sets = new HashSet();
+            HashSet<BlockState> sets = new HashSet();
             sets.add(Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE_SMOOTH));
 
             // Would expect exact match
@@ -322,10 +322,10 @@ class BlockStateConfigListTest {
             Assertions.assertTrue(configList.blockStateMatchers.containsKey(Blocks.STONE));
             Assertions.assertEquals(1, configList.blockStateMatchers.get(Blocks.STONE).size());
 
-            final IBlockState target = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE);
+            final BlockState target = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE);
             Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target));
 
-            final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
+            final BlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
             Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
         }
 
@@ -339,12 +339,12 @@ class BlockStateConfigListTest {
             Assertions.assertTrue(configList.blockStateMatchers.containsKey(Blocks.STONE));
             Assertions.assertEquals(1, configList.blockStateMatchers.get(Blocks.STONE).size());
 
-            final IBlockState targetA = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE);
+            final BlockState targetA = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE);
             Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetA));
-            final IBlockState targetB = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE_SMOOTH);
+            final BlockState targetB = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE_SMOOTH);
             Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetB));
 
-            final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
+            final BlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
             Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
         }
 
@@ -358,12 +358,12 @@ class BlockStateConfigListTest {
             Assertions.assertTrue(configList.blockStateMatchers.containsKey(Blocks.STONE));
             Assertions.assertEquals(1, configList.blockStateMatchers.get(Blocks.STONE).size());
 
-            final IBlockState targetA = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE_SMOOTH);
+            final BlockState targetA = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE_SMOOTH);
             Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetA));
-            final IBlockState targetB = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE_SMOOTH);
+            final BlockState targetB = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.DIORITE_SMOOTH);
             Assertions.assertTrue(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(targetB));
 
-            final IBlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
+            final BlockState target2 = Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.GRANITE);
             Assertions.assertFalse(configList.blockStateMatchers.get(Blocks.STONE).get(0).apply(target2));
         }
     }

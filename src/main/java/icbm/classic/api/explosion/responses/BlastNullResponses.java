@@ -4,11 +4,10 @@ import icbm.classic.api.explosion.BlastState;
 
 /**
  * Reference enum for finding common blast responses for null data entries
- *
+ * <p>
  * Created by Robin Seifert on 5/21/2021.
  */
-public enum BlastNullResponses
-{
+public enum BlastNullResponses {
     WORLD(BlastState.ERROR, "Minecraft:world.null"),
     BLAST_CREATION(BlastState.ERROR, "ICBM:blast.creation.null"),
     BLAST_FACTORY(BlastState.ERROR, "ICBM:blast.factory.null"),

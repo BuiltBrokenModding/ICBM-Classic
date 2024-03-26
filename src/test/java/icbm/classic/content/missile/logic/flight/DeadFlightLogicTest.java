@@ -1,9 +1,10 @@
 package icbm.classic.content.missile.logic.flight;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.world.World;
+import icbm.classic.world.missile.logic.flight.DeadFlightLogic;
+import net.minecraft.world.entity.projectile.EntityArrow;
+import net.minecraft.world.entity.projectile.EntityTippedArrow;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +14,7 @@ class DeadFlightLogicTest
 {
     static TestManager testManager = new TestManager("missile", Assertions::fail);
 
-    final World world = testManager.getWorld();
+    final Level level = testManager.getLevel();
 
     @AfterAll
     public static void afterAllTests()

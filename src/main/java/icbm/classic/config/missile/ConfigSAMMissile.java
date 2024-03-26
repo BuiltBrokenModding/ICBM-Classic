@@ -1,12 +1,11 @@
 package icbm.classic.config.missile;
 
-import net.minecraftforge.common.config.Config;
+import net.neoforged.common.config.Config;
 
 /**
  * Config for Surface to Air missiles
  */
-public class ConfigSAMMissile
-{
+public class ConfigSAMMissile {
     @Config.Name("speed")
     @Config.Comment("Speed (meters per tick) limiter of the missile")
     @Config.RangeDouble(min = 0.0001, max = 10)

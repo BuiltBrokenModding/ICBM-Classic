@@ -17,7 +17,7 @@ public class RecipeGeneration {
         final File saveFolder = new File(".", "recipes/bombcarts");
         saveFolder.mkdirs();
 
-        final Gson gson =  new GsonBuilder().setPrettyPrinting().create();
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosives().forEach(ex -> {
 
@@ -54,8 +54,7 @@ public class RecipeGeneration {
 
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(recipeJson, writer);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -65,7 +64,7 @@ public class RecipeGeneration {
         final File saveFolder = new File(".", "recipes/grenades");
         saveFolder.mkdirs();
 
-        final Gson gson =  new GsonBuilder().setPrettyPrinting().create();
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosives().forEach(ex -> {
 
@@ -92,7 +91,7 @@ public class RecipeGeneration {
             recipeJson.add("key", keyJson);
 
             final JsonObject key1 = new JsonObject();
-            key1.addProperty("type","forge:ore_dict");
+            key1.addProperty("type", "forge:ore_dict");
             key1.addProperty("ore", "string");
             keyJson.add("s", key1);
 
@@ -103,8 +102,7 @@ public class RecipeGeneration {
 
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(recipeJson, writer);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -114,7 +112,7 @@ public class RecipeGeneration {
         final File saveFolder = new File(".", "recipes/missiles");
         saveFolder.mkdirs();
 
-        final Gson gson =  new GsonBuilder().setPrettyPrinting().create();
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosives().forEach(ex -> {
 
@@ -140,7 +138,7 @@ public class RecipeGeneration {
             recipeJson.add("key", keyJson);
 
             final JsonObject key1 = new JsonObject();
-            key1.addProperty("type","icbmclassic:explosive");
+            key1.addProperty("type", "icbmclassic:explosive");
             key1.addProperty("device", "icbmclassic:missile.module");
             keyJson.add("m", key1);
 
@@ -152,8 +150,7 @@ public class RecipeGeneration {
 
             try (Writer writer = new FileWriter(file)) {
                 gson.toJson(recipeJson, writer);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });

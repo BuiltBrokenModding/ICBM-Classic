@@ -1,11 +1,9 @@
 package icbm.classic.lib.thread;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 10/8/2018.
  */
-public interface IThreadWork
-{
+public interface IThreadWork {
     /**
      * Called to run the work
      *
@@ -29,8 +27,7 @@ public interface IThreadWork
      *
      * @return
      */
-    default int getStepsRequired()
-    {
+    default int getStepsRequired() {
         return 1;
     }
 
@@ -40,8 +37,7 @@ public interface IThreadWork
      *
      * @return
      */
-    default int getStepsLeft()
-    {
+    default int getStepsLeft() {
         return -1;
     }
 }

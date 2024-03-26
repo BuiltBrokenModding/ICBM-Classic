@@ -2,8 +2,8 @@ package icbm.classic.api.explosion;
 
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.explosion.responses.BlastResponse;
-import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
+import icbm.classic.api.reg.ExplosiveType;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,11 +13,10 @@ import javax.annotation.Nullable;
  *
  * @author Calclavia, Darkguardsman
  */
-public interface IBlast extends IWorldPosition
-{
+public interface IBlast extends IWorldPosition {
     /**
      * Gets the radius/size of the effect of the blast.
-     *
+     * <p>
      * This not always the full effect range of the blast.
      * Rather is used more as a scale factor
      *
@@ -56,7 +55,7 @@ public interface IBlast extends IWorldPosition
      */
     @Nullable
     @Deprecated
-    default IExplosiveData getExplosiveData() //TODO move to save handler, this shouldn't be exposed
+    default ExplosiveType getExplosiveData() //TODO move to save handler, this shouldn't be exposed
     {
         return null;
     }
@@ -75,8 +74,7 @@ public interface IBlast extends IWorldPosition
      * @return controller
      */
     @Nullable
-    default Entity getEntity()
-    {
+    default Entity getEntity() {
         return null;
     }
 
@@ -86,8 +84,7 @@ public interface IBlast extends IWorldPosition
      * @return entity, can be null
      */
     @Nullable
-    default Entity getBlastSource()
-    {
+    default Entity getBlastSource() {
         return getEntity();
     }
 

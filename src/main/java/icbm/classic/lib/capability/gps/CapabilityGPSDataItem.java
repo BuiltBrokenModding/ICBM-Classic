@@ -1,10 +1,12 @@
 package icbm.classic.lib.capability.gps;
 
 import icbm.classic.api.caps.IGPSData;
-import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3d;
+import icbm.classic.lib.saving.nodes.SaveNodeVec3;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -21,39 +23,39 @@ public class CapabilityGPSDataItem implements IGPSData {
     }
 
     @Override
-    public void setPosition(@Nullable Vec3d position) {
+    public void setPosition(@Nullable Vec3 position) {
 
         // Ignore empty clearing empty
-        if(position == null) {
-            if(stack.getTagCompound() == null) {
+        if (position == null) {
+            if (stack.getTagCompound() == null) {
                 return;
             }
-            stack.getTagCompound().removeTag(POS_KEY);
+            stack.getTagCompound().remove(POS_KEY);
             return;
         }
 
         // Setup data
-        if(stack.getTagCompound() == null) {
-            stack.setTagCompound(new NBTTagCompound());
+        if (stack.getTagCompound() == null) {
+            stack.setTagCompound(new CompoundTag());
         }
 
-        stack.getTagCompound().setTag(POS_KEY, SaveNodeVec3d.save(position));
+        stack.getTagCompound().put(POS_KEY, SaveNodeVec3.save(position));
     }
 
     @Override
-    public void setWorld(@Nullable Integer dimension) {
+    public void setLevel(@Nullable ResourceKey<Level> dimension) {
         // Ignore empty clearing empty
-        if(dimension == null) {
-            if(stack.getTagCompound() == null) {
+        if (dimension == null) {
+            if (stack.getTagCompound() == null) {
                 return;
             }
-            stack.getTagCompound().removeTag(DIM_KEY);
+            stack.getTagCompound().remove(DIM_KEY);
             return;
         }
 
         // Setup data
-        if(stack.getTagCompound() == null) {
-            stack.setTagCompound(new NBTTagCompound());
+        if (stack.getTagCompound() == null) {
+            stack.setTagCompound(new CompoundTag());
         }
 
         stack.getTagCompound().setInteger(DIM_KEY, dimension);
@@ -61,17 +63,17 @@ public class CapabilityGPSDataItem implements IGPSData {
 
     @Nullable
     @Override
-    public Vec3d getPosition() {
-        if(stack.getTagCompound() != null && stack.getTagCompound().hasKey(POS_KEY)) {
-            return SaveNodeVec3d.load(stack.getTagCompound().getCompoundTag(POS_KEY));
+    public Vec3 getPosition() {
+        if (stack.getTagCompound() != null && stack.getTagCompound().contains(POS_KEY)) {
+            return SaveNodeVec3.load(stack.getTagCompound().getCompound(POS_KEY));
         }
         return null;
     }
 
     @Nullable
     @Override
-    public Integer getWorldId() {
-        if(stack.getTagCompound() != null && stack.getTagCompound().hasKey(DIM_KEY)) {
+    public ResourceKey<Level> getLevelId() {
+        if (stack.getTagCompound() != null && stack.getTagCompound().contains(DIM_KEY)) {
             return stack.getTagCompound().getInteger(POS_KEY);
         }
         return null;

@@ -2,18 +2,17 @@ package icbm.classic.api.launcher;
 
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
  * Capability for accessing data about a launcher
- *
+ * <p>
  * Created by Dark(DarkGuardsman, Robin) on 1/9/19.
  */
-public interface IMissileLauncher
-{
+public interface IMissileLauncher {
 
     /**
      * Unique ID to reference this launcher. Used for a mix of logging, events,
@@ -25,7 +24,7 @@ public interface IMissileLauncher
 
     /**
      * Direct way to get launcher's current status
-     *
+     * <p>
      * {@link #launch(IMissileTarget, IMissileCause, boolean)} will often invoke this in addition
      * to other logic. This only allows exacting status without triggering pre-checks or launch
      * results. Useful for checking how the launcher itself is doing and not what launcher will do
@@ -37,7 +36,7 @@ public interface IMissileLauncher
 
     /**
      * Direct way to get launcher's validate result of the target and cause.
-     *
+     * <p>
      * {@link #launch(IMissileTarget, IMissileCause, boolean)} will often invoke this in addition
      * to other logic. This only allows exacting pre-validation logic directly without worrying
      * about launch results.
@@ -48,14 +47,14 @@ public interface IMissileLauncher
 
     /**
      * Tries to launch the missile
-     *
+     * <p>
      * Ensure that simulation logic doesn't trigger any lasting effects on the launcher. As
      * different systems will use simulate as a way to predict launcher behavior. Including
      * seeing what status the launcher will output. As well any issues with firing the missile.
      *
      * @param firingSolution to drive how missiles are fired and what target they use
-     * @param cause to note, optional but recommended to create a history of firing reason
-     * @param simulate to do pre-flight checks and get current status
+     * @param cause          to note, optional but recommended to create a history of firing reason
+     * @param simulate       to do pre-flight checks and get current status
      * @return status of launch
      */
     IActionStatus launch(ILauncherSolution firingSolution, @Nullable IMissileCause cause, boolean simulate);
@@ -97,10 +96,10 @@ public interface IMissileLauncher
      * Gets the predicted inaccuracy for the fire mission
      *
      * @param predictedTarget that might be passed to the launcher
-     * @param launchers count being used in the fire mission
+     * @param launchers       count being used in the fire mission
      * @return inaccuracy
      */
-    default float getInaccuracy(Vec3d predictedTarget, int launchers) {
+    default float getInaccuracy(Vec3 predictedTarget, int launchers) {
         return 0;
     }
 }

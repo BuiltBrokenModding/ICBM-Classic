@@ -1,24 +1,22 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
-import icbm.classic.content.entity.flyingblock.FlyingBlock;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import icbm.classic.IcbmConstants;
+import icbm.classic.world.entity.flyingblock.FlyingBlock;
+import net.neoforged.common.config.Config;
+import net.neoforged.common.config.ConfigManager;
+import net.neoforged.fml.client.event.ConfigChangedEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Settings class for various configuration settings.
  *
  * @author Calclavia, DarkCow
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/main")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/main")
 @Config.LangKey("config.icbmclassic:main.title")
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
-public class ConfigMain
-{
+@Mod.EventBusSubscriber(modid = IcbmConstants.MOD_ID)
+public class ConfigMain {
     @Config.Name("use_energy")
     @Config.Comment("Range of tier 1 launcher")
     public static boolean REQUIRES_POWER = true;
@@ -29,11 +27,9 @@ public class ConfigMain
     public static int ROCKET_LAUNCHER_TIER_FIRE_LIMIT = 2;
 
     @SubscribeEvent
-    public static void onConfigChangedEvent(final ConfigChangedEvent.OnConfigChangedEvent event)
-    {
-        if (event.getModID().equals(ICBMConstants.DOMAIN))
-        {
-            ConfigManager.sync(ICBMConstants.DOMAIN, Config.Type.INSTANCE);
+    public static void onConfigChangedEvent(final ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (event.getModID().equals(IcbmConstants.MOD_ID)) {
+            ConfigManager.sync(IcbmConstants.MOD_ID, Config.Type.INSTANCE);
 
             // Reload config so we can convert to easier to hash lists
             FlyingBlock.loadFromConfig();

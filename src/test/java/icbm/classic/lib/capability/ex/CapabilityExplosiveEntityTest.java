@@ -1,10 +1,10 @@
 package icbm.classic.lib.capability.ex;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.world.entity.monster.EntityZombie;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.*;
 
 class CapabilityExplosiveEntityTest
@@ -12,7 +12,7 @@ class CapabilityExplosiveEntityTest
 
     static TestManager testManager = new TestManager("missile", Assertions::fail);
 
-    final World world = testManager.getWorld();
+    final Level level = testManager.getLevel();
 
     @AfterAll
     public static void afterAllTests()

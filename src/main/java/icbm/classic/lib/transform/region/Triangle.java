@@ -6,20 +6,17 @@ import icbm.classic.lib.transform.vector.Point;
 /**
  * Created by robert on 1/12/2015.
  */
-public class Triangle extends Shape2D
-{
+public class Triangle extends Shape2D {
     IPos2D a, b, c;
 
-    public Triangle(IPos2D a, IPos2D b, IPos2D c)
-    {
+    public Triangle(IPos2D a, IPos2D b, IPos2D c) {
         super(null);
         this.a = a;
         this.b = b;
         this.c = c;
     }
 
-    public Triangle set(Triangle other)
-    {
+    public Triangle set(Triangle other) {
         this.a = other.a;
         this.b = other.b;
         this.c = other.c;
@@ -27,14 +24,12 @@ public class Triangle extends Shape2D
     }
 
     @Override
-    public boolean isWithin(double x, double y)
-    {
+    public boolean isWithin(double x, double y) {
         return isWithin(new Point(x, y));
     }
 
 
-    public boolean isWithin(IPos2D p)
-    {
+    public boolean isWithin(IPos2D p) {
         double ab = new Triangle(a, b, p).getArea();
         double bc = new Triangle(b, c, p).getArea();
         double ca = new Triangle(c, a, p).getArea();
@@ -43,14 +38,12 @@ public class Triangle extends Shape2D
 
 
     @Override
-    public double getArea()
-    {
+    public double getArea() {
         return Math.abs(a.x() * (b.y() - c.y()) + b.x() * (c.y() - a.y()) + c.x() * (a.y() - b.y())) / 2;
     }
 
     @Override
-    public double getSizeX()
-    {
+    public double getSizeX() {
         double lower = a.x();
         double upper = a.x();
 
@@ -68,8 +61,7 @@ public class Triangle extends Shape2D
     }
 
     @Override
-    public double getSizeY()
-    {
+    public double getSizeY() {
         double lower = a.y();
         double upper = a.y();
 

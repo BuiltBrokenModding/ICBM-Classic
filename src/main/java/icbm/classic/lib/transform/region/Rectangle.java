@@ -8,58 +8,52 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 2/9/2018.
  */
 
-public class Rectangle extends Shape2D
-{
+public class Rectangle extends Shape2D {
     @Getter
     private final Point min;
     @Getter
     private final Point max;
 
-    public Rectangle(Point min, Point max)
-    {
+    public Rectangle(Point min, Point max) {
         super(min.midpoint(max));
         this.min = min;
         this.max = max;
     }
 
-    public Rectangle()
-    {
+    public Rectangle() {
         this(new Point(), new Point());
     }
 
-    public Rectangle(Point vec, double expansion)
-    {
+    public Rectangle(Point vec, double expansion) {
         this(vec, vec.add(expansion));
     }
 
-    public Rectangle(double minX, double minY, double maxX, double maxY)
-    {
+    public Rectangle(double minX, double minY, double maxX, double maxY) {
         this(new Point(minX, minY), new Point(maxX, maxY));
     }
 
-    public Rectangle(Rectangle rect)
-    {
+    public Rectangle(Rectangle rect) {
         this(rect.min.clone(), rect.max.clone());
     }
 
-    /** Checks if the point is inside the shape */
-    public boolean isWithin(IPos2D p)
-    {
+    /**
+     * Checks if the point is inside the shape
+     */
+    public boolean isWithin(IPos2D p) {
         return isWithin(p.x(), p.y());
     }
 
-    /** Checks if the point is inside the shape */
-    public boolean isWithin(double x, double y)
-    {
+    /**
+     * Checks if the point is inside the shape
+     */
+    public boolean isWithin(double x, double y) {
         return y >= this.min.y() && y <= this.max.y() && x >= this.min.x() && x <= this.max.x();
     }
 
-    public boolean isWithin_rotated(IPos2D p)
-    {
+    public boolean isWithin_rotated(IPos2D p) {
         //Rect corners
         final Point cornerA = this.cornerA();
         final Point cornerB = this.cornerB();
@@ -76,35 +70,28 @@ public class Rectangle extends Shape2D
         return (areaAB + areaBC + areaCD + areaDA) <= getArea();
     }
 
-    public Point cornerA()
-    {
+    public Point cornerA() {
         return min;
     }
 
-    public Point cornerB()
-    {
+    public Point cornerB() {
         return new Point(min.x(), max.y());
     }
 
-    public Point cornerC()
-    {
+    public Point cornerC() {
         return max;
     }
 
-    public Point cornerD()
-    {
+    public Point cornerD() {
         return new Point(max.x(), min.y());
     }
 
     /**
      * Returns whether the given region intersects with this one.
      */
-    public boolean intersects(Rectangle region)
-    {
-        if (region.max.x() > this.min.x() && region.min.x() < this.max.x())
-        {
-            if (region.max.y() > this.min.y() && region.min.y() < this.max.y())
-            {
+    public boolean intersects(Rectangle region) {
+        if (region.max.x() > this.min.x() && region.min.x() < this.max.x()) {
+            if (region.max.y() > this.min.y() && region.min.y() < this.max.y()) {
                 return true;
             }
         }
@@ -113,42 +100,35 @@ public class Rectangle extends Shape2D
     }
 
     @Override
-    public double getArea()
-    {
+    public double getArea() {
         return getSizeX() * getSizeY();
     }
 
     @Override
-    public double getSizeX()
-    {
+    public double getSizeX() {
         return max.x() - min.x();
     }
 
     @Override
-    public double getSizeY()
-    {
+    public double getSizeY() {
         return max.y() - min.y();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final int precision = 4;
         return "Rectangle[" + BigDecimal.valueOf(min.x()).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(min.y()).setScale(precision, RoundingMode.HALF_UP) + "] -> [" + BigDecimal.valueOf(max.x()).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(max.y()).setScale(precision, RoundingMode.HALF_UP) + "]";
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o instanceof Rectangle)
-        {
+    public boolean equals(Object o) {
+        if (o instanceof Rectangle) {
             return (min == ((Rectangle) o).min) && (max == ((Rectangle) o).max);
         }
         return false;
     }
 
-    public Rectangle clone()
-    {
+    public Rectangle clone() {
         return new Rectangle(this);
     }
 }

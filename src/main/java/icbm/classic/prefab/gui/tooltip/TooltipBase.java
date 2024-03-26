@@ -4,7 +4,7 @@ import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import lombok.Getter;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Simple tooltip component for showing users additional information
@@ -67,12 +67,12 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
     }
 
     @Override
-    public final ITextComponent getTooltip() {
+    public final Component getTooltip() {
         if (hoveringTicks < hoverDelay) {
             return null;
         }
         return getActualTooltip();
     }
 
-    protected abstract ITextComponent getActualTooltip();
+    protected abstract Component getActualTooltip();
 }

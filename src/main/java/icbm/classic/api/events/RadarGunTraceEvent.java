@@ -1,10 +1,10 @@
 package icbm.classic.api.events;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * Called on the server side when the player rightclicks
@@ -12,16 +12,13 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * that gets saved to the radar, or cancel the event to
  * not have any data saved.
  */
-@Cancelable
-public class RadarGunTraceEvent extends Event
-{
-    public final World world;
-    public final EntityPlayer player;
-    public Vec3d pos;
+public class RadarGunTraceEvent extends Event implements ICancellableEvent {
+    public final Level level;
+    public final Player player;
+    public Vec3 pos;
 
-    public RadarGunTraceEvent(World world, Vec3d pos, EntityPlayer player)
-    {
-        this.world = world;
+    public RadarGunTraceEvent(Level level, Vec3 pos, Player player) {
+        this.level = level;
         this.pos = pos;
         this.player = player;
     }

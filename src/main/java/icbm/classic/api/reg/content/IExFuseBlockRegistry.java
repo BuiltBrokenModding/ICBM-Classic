@@ -1,15 +1,14 @@
 package icbm.classic.api.reg.content;
 
-import icbm.classic.api.data.WorldPosIntSupplier;
-import icbm.classic.api.data.WorldTickFunction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import icbm.classic.api.data.LevelPosIntSupplier;
+import icbm.classic.api.data.LevelTickFunction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 9/7/2019.
  */
-public interface IExFuseBlockRegistry
-{
+public interface IExFuseBlockRegistry {
     /**
      * Called to set a supplier that will be used to define the fuse time
      * of the explosive.
@@ -20,7 +19,7 @@ public interface IExFuseBlockRegistry
      * @param exName
      * @param fuseTimer
      */
-    void setFuseSupplier(ResourceLocation exName, WorldPosIntSupplier fuseTimer);
+    void setFuseSupplier(ResourceLocation exName, LevelPosIntSupplier fuseTimer);
 
     /**
      * Called to set a function to invoke each tick of an explosive block's fuse.
@@ -32,7 +31,7 @@ public interface IExFuseBlockRegistry
      * @param exName
      * @param function
      */
-    void setFuseTickListener(ResourceLocation exName, WorldTickFunction function);
+    void setFuseTickListener(ResourceLocation exName, LevelTickFunction function);
 
     /**
      * Called by objects to tick the fuse for the explosive
@@ -43,7 +42,7 @@ public interface IExFuseBlockRegistry
      * @param posZ
      * @param ticksExisted
      */
-    void tickFuse(World world, double posX, double posY, double posZ, int ticksExisted, int explosiveID);
+    void tickFuse(Level level, double posX, double posY, double posZ, int ticksExisted, int explosiveID);
 
-    int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID);
+    int getFuseTime(Level level, double posX, double posY, double posZ, int explosiveID);
 }

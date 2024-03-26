@@ -1,16 +1,14 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 3/20/2018.
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/item")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/item")
 @Config.LangKey("config.icbmclassic:item.title")
-public class ConfigItems
-{
+public class ConfigItems {
     @Config.Name("enable_crafting_items")
     @Config.Comment("Enables crafting items required to make most of the content. Only disable if other mods provide the resources or custom recipes are implemented.")
     @Config.RequiresMcRestart

@@ -1,16 +1,14 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 2/22/2018.
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/mods/ic2")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/mods/ic2")
 @Config.LangKey("config.icbmclassic:ic2.title")
-public class ConfigIC2
-{
+public class ConfigIC2 {
     @Config.Name("from_ic2")
     @Config.Comment("How much (EU) IC2 energy to turn into (FE) Forge energy")
     @Config.RangeInt(min = 0)

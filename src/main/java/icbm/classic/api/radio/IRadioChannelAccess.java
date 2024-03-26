@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
  * Applied to capabilities that have a single channel that can be set and accessed.
  * Some systems will have several channels either for sending or receiving. Thus,
  * can't be easily accessed.
- *
+ * <p>
  * This mostly exists for tools to get or set the value.
  */
 public interface IRadioChannelAccess extends IRadio {

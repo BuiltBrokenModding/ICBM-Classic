@@ -16,10 +16,8 @@ public class RedstoneButton extends GuiButtonBase<RedstoneButton> {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
-    {
-        if (this.visible)
-        {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        if (this.visible) {
             // Reset and bind texture
             mc.getTextureManager().bindTexture(GuiContainerBase.COMPONENTS_TEXTURE);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -30,10 +28,9 @@ public class RedstoneButton extends GuiButtonBase<RedstoneButton> {
 
             // Handle state
             int offset = 0;
-            if(!this.enabled) {
+            if (!this.enabled) {
                 offset = 1;
-            }
-            else if(this.hovered) {
+            } else if (this.hovered) {
                 offset = 2;
             }
 

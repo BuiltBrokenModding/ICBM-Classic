@@ -4,11 +4,10 @@ import icbm.classic.api.explosion.BlastState;
 
 /**
  * Reference enum for error responses
- *
+ * <p>
  * Created by Robin Seifert on 5/22/2021.
  */
-public enum BlastErrorResponses
-{
+public enum BlastErrorResponses {
     MISSING_BLAST_REGISTRY(BlastState.ERROR, "ICBM:registry.blast.missing");
 
     private final BlastResponse response;

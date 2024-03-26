@@ -5,11 +5,10 @@ package icbm.classic.lib.transform.rotation;
  *
  * @author DarkGuardsman
  */
-public interface IRotation
-{
-	double yaw();
+public interface IRotation {
+    double yaw();
 
-	double pitch();
+    double pitch();
 
-	double roll();
+    double roll();
 }

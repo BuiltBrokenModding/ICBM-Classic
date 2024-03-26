@@ -3,8 +3,8 @@ package icbm.classic.lib.data;
 import icbm.classic.api.data.IBoundBox;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 @Data
 @AllArgsConstructor
@@ -18,9 +18,9 @@ public class BoundBlockPos implements IBoundBox<BlockPos> {
         this.max = new BlockPos(i, j, k);
     }
 
-    public BoundBlockPos(Vec3d pos, int range) {
-        this.min = new BlockPos((int)Math.floor(pos.x) - range, (int)Math.floor(pos.y) - range, (int)Math.floor(pos.z) - range);
-        this.max = new BlockPos((int)Math.floor(pos.x) + range, (int)Math.floor(pos.y) + range, (int)Math.floor(pos.z) + range);
+    public BoundBlockPos(Vec3 pos, int range) {
+        this.min = new BlockPos((int) Math.floor(pos.x) - range, (int) Math.floor(pos.y) - range, (int) Math.floor(pos.z) - range);
+        this.max = new BlockPos((int) Math.floor(pos.x) + range, (int) Math.floor(pos.y) + range, (int) Math.floor(pos.z) + range);
     }
 
     public BoundBlockPos(BlockPos pos, int range) {

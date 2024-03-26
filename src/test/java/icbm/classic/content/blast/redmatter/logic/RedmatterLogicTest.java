@@ -1,11 +1,12 @@
 package icbm.classic.content.blast.redmatter.logic;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.world.blast.redmatter.RedmatterEntity;
+import icbm.classic.world.blast.redmatter.logic.RedmatterLogic;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +40,7 @@ public class RedmatterLogicTest
     void testInit_ShouldStartWithRadius()
     {
         //Create redmatter
-        final EntityRedmatter redmatter = new EntityRedmatter(testManager.getWorld());
+        final RedmatterEntity redmatter = new RedmatterEntity(testManager.getLevel());
         final RedmatterLogic logic = redmatter.redmatterLogic;
 
         Assertions.assertEquals(-1, logic.currentBlockDestroyRadius, "Starting size should be 1");
@@ -52,12 +53,12 @@ public class RedmatterLogicTest
         @Test
         void raytraceTarget_verifyMath()
         {
-            final World world = Mockito.spy(testManager.getWorld());
-            final EntityRedmatter redmatter = new EntityRedmatter(world);
+            final Level level = Mockito.spy(testManager.getLevel());
+            final RedmatterEntity redmatter = new RedmatterEntity(world);
             final RedmatterLogic logic = redmatter.redmatterLogic;
 
             //Invoke method
-            logic.rayTraceTowardsBlock(new Vec3d(0.5, 0.5, 0.5), new BlockPos(3, 1, 2));
+            logic.rayTraceTowardsBlock(new Vec3(0.5, 0.5, 0.5), new BlockPos(3, 1, 2));
 
             //Validate we called ray trace with the correct position data
             Mockito.verify(world).rayTraceBlocks(
@@ -79,17 +80,17 @@ public class RedmatterLogicTest
         void collectBlocksSize1()
         {
 
-            final World world = testManager.getWorld();
+            final Level level = testManager.getLevel();
 
             //Build world
             world.setBlockState(new BlockPos(8, 0, 8), Blocks.STONE.getDefaultState());
 
             //Create redmatter
-            final EntityRedmatter redmatter = new EntityRedmatter(world);
+            final RedmatterEntity redmatter = new RedmatterEntity(world);
             redmatter.setBlastSize(70); //Default size
-            redmatter.posX = 8;
-            redmatter.posY = 1;
-            redmatter.posZ = 8;
+            redmatter.getX() = 8;
+            redmatter.getY() = 1;
+            redmatter.getZ() = 8;
             world.spawnEntity(redmatter);
 
             //Validate starting conditions
@@ -119,12 +120,12 @@ public class RedmatterLogicTest
         @Test
         void raytraceTarget_verifyMath()
         {
-            final World world = Mockito.spy(testManager.getWorld());
-            final EntityRedmatter redmatter = new EntityRedmatter(world);
+            final Level level = Mockito.spy(testManager.getLevel());
+            final RedmatterEntity redmatter = new RedmatterEntity(world);
             final RedmatterLogic logic = redmatter.redmatterLogic;
 
             //Invoke method
-            logic.rayTraceTowardsBlock(new Vec3d(0.5, 0.5, 0.5), new BlockPos(3, 1, 2));
+            logic.rayTraceTowardsBlock(new Vec3(0.5, 0.5, 0.5), new BlockPos(3, 1, 2));
 
             //Validate we called ray trace with the correct position data
             Mockito.verify(world).rayTraceBlocks(
@@ -139,13 +140,13 @@ public class RedmatterLogicTest
         @Test
         void raytraceTarget_verifyHit()
         {
-            final World world = testManager.getWorld();
-            final EntityRedmatter redmatter = new EntityRedmatter(world);
+            final Level level = testManager.getLevel();
+            final RedmatterEntity redmatter = new RedmatterEntity(world);
             final RedmatterLogic logic = Mockito.spy(redmatter.redmatterLogic);
             world.setBlockState(new BlockPos(2, 0, 0), Blocks.STONE.getDefaultState());
 
             //Invoke method
-            logic.rayTraceTowardsBlock(new Vec3d(0.5, 0.5, 0.5), new BlockPos(3, 0, 0));
+            logic.rayTraceTowardsBlock(new Vec3(0.5, 0.5, 0.5), new BlockPos(3, 0, 0));
 
             //Validate we passed the ray hit to the next method
             Mockito.verify(logic).processNextBlock(Mockito.argThat(pos -> pos.getX() == 2 && pos.getY() == 0 && pos.getZ() == 0));
@@ -154,14 +155,14 @@ public class RedmatterLogicTest
         @Test
         void raytraceTarget_verifyRemoveBlock()
         {
-            final World world = testManager.getWorld();
-            final EntityRedmatter redmatter = new EntityRedmatter(world);
+            final Level level = testManager.getLevel();
+            final RedmatterEntity redmatter = new RedmatterEntity(world);
             final RedmatterLogic logic = redmatter.redmatterLogic;
             logic.currentBlockDestroyRadius = 5;
             world.setBlockState(new BlockPos(2, 0, 0), Blocks.STONE.getDefaultState());
 
             //Invoke method
-            logic.rayTraceTowardsBlock(new Vec3d(0.5, 0.5, 0.5), new BlockPos(3, 0, 0));
+            logic.rayTraceTowardsBlock(new Vec3(0.5, 0.5, 0.5), new BlockPos(3, 0, 0));
 
             //Validate we passed the ray hit to the next method
             Assertions.assertEquals(Blocks.AIR, world.getBlockState(new BlockPos(2, 0, 0)).getBlock());

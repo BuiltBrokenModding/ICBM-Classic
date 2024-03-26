@@ -1,14 +1,14 @@
 package icbm.classic.config.machines;
 
-import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.IcbmConstants;
+import net.neoforged.common.config.Config;
 
 /**
  * Settings class for various configuration settings.
  *
  * @author Calclavia, DarkCow
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/emp_tower")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/emp_tower")
 @Config.LangKey("config.icbmclassic:emp_tower.title")
 public class ConfigEmpTower {
     @Config.Name("extender_range_bonus")

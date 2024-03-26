@@ -5,7 +5,7 @@ import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.missiles.cause.IMissileSource;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Capability added to entities to define them as missiles
@@ -38,6 +38,7 @@ public interface IMissile extends IWorldPosition // TODO add registry and requir
 
     /**
      * Sets the flight logic to use for the missile
+     *
      * @param logic to use
      */
     void setFlightLogic(IMissileFlightLogic logic);
@@ -56,13 +57,14 @@ public interface IMissile extends IWorldPosition // TODO add registry and requir
 
     /**
      * Sets the missile source information
+     *
      * @param source
      */
     void setMissileSource(IMissileSource source);
 
     /**
      * Gets the missile source
-     *
+     * <p>
      * Should not be exposed to the player
      *
      * @return source
@@ -71,10 +73,10 @@ public interface IMissile extends IWorldPosition // TODO add registry and requir
 
     /**
      * Tells the missile to start motion
-     *
+     * <p>
      * This will trigger flight logic to run calculation and lock in start conditions.
      * After which the entity will start moving and handle any updates as required.
-     *
+     * <p>
      * Once launched don't expect the flight logic or other systems to allow modifications.
      */
     void launch();
