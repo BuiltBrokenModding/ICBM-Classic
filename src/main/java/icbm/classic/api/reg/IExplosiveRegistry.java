@@ -1,9 +1,9 @@
 package icbm.classic.api.reg;
 
-import icbm.classic.api.EnumTier;
+import icbm.classic.api.WeaponTier;
 import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
 import java.util.Set;
@@ -11,8 +11,7 @@ import java.util.Set;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
-public interface IExplosiveRegistry
-{
+public interface IExplosiveRegistry {
 
     /**
      * Registers a new blast factory and explosion data instance
@@ -23,9 +22,9 @@ public interface IExplosiveRegistry
      * @return data created
      */
     @Deprecated
-    IExplosiveData register(ResourceLocation name, EnumTier tier, IBlastFactory blastFactory);
+    ExplosiveType register(ResourceLocation name, WeaponTier tier, IBlastFactory blastFactory);
 
-    default IExplosiveData register(ResourceLocation name, IBlastFactory blastFactory) {
+    default ExplosiveType register(ResourceLocation name, IBlastFactory blastFactory) {
         return register(name, null, blastFactory);
     }
 
@@ -35,7 +34,7 @@ public interface IExplosiveRegistry
      * @param name - registry name
      * @return explosive data if registered
      */
-    IExplosiveData getExplosiveData(ResourceLocation name);
+    ExplosiveType getExplosiveData(ResourceLocation name);
 
     /**
      * Gets the explosive data for the registry name
@@ -43,7 +42,7 @@ public interface IExplosiveRegistry
      * @param id - id of the explosive
      * @return explosive data if registered
      */
-    IExplosiveData getExplosiveData(int id);
+    ExplosiveType getExplosiveData(int id);
 
     /**
      * All content registries that use the explosive registry.
@@ -66,8 +65,7 @@ public interface IExplosiveRegistry
      *
      * @param registry - handler for registering
      */
-    default void registerContentRegistry(IExplosiveContentRegistry registry)
-    {
+    default void registerContentRegistry(IExplosiveContentRegistry registry) {
         registerContentRegistry(registry.getRegistryName(), registry);
     }
 
@@ -84,5 +82,5 @@ public interface IExplosiveRegistry
      *
      * @return
      */
-    Set<IExplosiveData> getExplosives();
+    Set<ExplosiveType> getExplosives();
 }

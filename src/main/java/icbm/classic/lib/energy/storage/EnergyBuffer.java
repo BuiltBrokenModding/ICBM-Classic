@@ -3,21 +3,20 @@ package icbm.classic.lib.energy.storage;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.IEnergySystem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.NBTTagInt;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.energy.IEnergyStorage;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
  * Basic implementation of energy buffer
- *
+ * <p>
  * Created by Dark on 8/15/2015.
  */
-public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
-{
+public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt> {
     private final Supplier<Integer> storageLimit;
 
     private EnergyChangeCallback onEnergyChanged;
@@ -28,8 +27,7 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
 
     private int energyStorage;
 
-    public EnergyBuffer(Supplier<Integer> storageLimit)
-    {
+    public EnergyBuffer(Supplier<Integer> storageLimit) {
         this.storageLimit = storageLimit;
     }
 
@@ -59,57 +57,51 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate)
-    {
-        if (!canReceive())
-        {
+    public int receiveEnergy(int maxReceive, boolean simulate) {
+        if (!canReceive()) {
             return 0;
         }
         final int inputEnergy = Math.min(maxReceive, Optional.ofNullable(receiveLimit).map(Supplier::get).orElse(Integer.MAX_VALUE));
         return receiveEnergyInternal(inputEnergy, simulate);
     }
 
-    public int receiveEnergyInternal(int inputEnergy, boolean simulate)
-    {
+    public int receiveEnergyInternal(int inputEnergy, boolean simulate) {
         final int maxEnergy = getMaxEnergyStored();
         final int energyStored = getEnergyStored();
         final int roomLeft = maxEnergy - energyStored;
 
-        if (inputEnergy <= 0 || roomLeft <= 0)
-        {
+        if (inputEnergy <= 0 || roomLeft <= 0) {
             return 0;
         }
 
 
         final int toAdd = Math.min(roomLeft, inputEnergy);
-        if(!simulate) {
+        if (!simulate) {
             setEnergyInternal(energyStored + toAdd, EnergyActionType.ADD);
         }
         return toAdd;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate)
-    {
-        if(!canExtract()) {
+    public int extractEnergy(int maxExtract, boolean simulate) {
+        if (!canExtract()) {
             return 0;
         }
         final int desiredEnergy = Math.min(maxExtract, Optional.ofNullable(extractLimit).map(Supplier::get).orElse(Integer.MAX_VALUE));
         return extractEnergyInternal(desiredEnergy, simulate);
     }
 
-    public int extractEnergyInternal(int desiredEnergy, boolean simulate)
-    {
+    public int extractEnergyInternal(int desiredEnergy, boolean simulate) {
 
         final int maxEnergy = getMaxEnergyStored();
         final int energyStored = getEnergyStored();
 
-        if(desiredEnergy <= 0 || energyStored <= 0) {
+        if (desiredEnergy <= 0 || energyStored <= 0) {
             return 0;
         }
 
         final int toRemove = Math.min(maxEnergy, desiredEnergy);
-        if(!simulate) {
+        if (!simulate) {
             setEnergyInternal(energyStored - desiredEnergy, EnergyActionType.REMOVE);
         }
         return toRemove;
@@ -118,7 +110,7 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
     /**
      * Called to consume power. Config overrides this and always returns true if REQUIRES_POWER=FALSE
      *
-     * @param amount to remove
+     * @param amount   to remove
      * @param simulate to check call
      * @return true if amount was consumed
      */
@@ -128,11 +120,11 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
 
     public ItemStack dischargeItem(ItemStack itemStack) {
         final IEnergySystem system = EnergySystem.getSystem(itemStack, null);
-        if(system != null && canReceive()) {
+        if (system != null && canReceive()) {
             final int energyLeftToStore = getMaxEnergyStored() - getEnergyStored(); //TODO limit based on receive method
-            if(energyLeftToStore > 0) {
+            if (energyLeftToStore > 0) {
                 final int removed = system.removeEnergy(itemStack, null, energyLeftToStore, false);
-                if(removed > 0) {
+                if (removed > 0) {
                     receiveEnergy(removed, false);
                 }
             }
@@ -141,51 +133,44 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
     }
 
     @Override
-    public int getEnergyStored()
-    {
+    public int getEnergyStored() {
         return energyStorage;
     }
 
     @Override
-    public int getMaxEnergyStored()
-    {
+    public int getMaxEnergyStored() {
         return storageLimit.get();
     }
 
     @Override
-    public boolean canExtract()
-    {
+    public boolean canExtract() {
         return Optional.ofNullable(canExtract).map(Supplier::get).orElse(false);
     }
 
     @Override
-    public boolean canReceive()
-    {
+    public boolean canReceive() {
         return Optional.ofNullable(canReceive).map(Supplier::get).orElse(true);
     }
 
-    public void setEnergyStored(int energy)
-    {
-       setEnergyInternal(energy, EnergyActionType.SET);
+    public void setEnergyStored(int energy) {
+        setEnergyInternal(energy, EnergyActionType.SET);
     }
 
     private void setEnergyInternal(int energy, EnergyActionType type) {
         final int prev = this.energyStorage;
-        if(energy != prev) {
+        if (energy != prev) {
             this.energyStorage = Math.min(getMaxEnergyStored(), Math.max(0, energy));
             Optional.ofNullable(onEnergyChanged).ifPresent(f -> f.onChange(prev, energy, type));
         }
     }
 
     @Override
-    public NBTTagInt serializeNBT()
-    {
+    public NBTTagInt serializeNBT() {
         return new NBTTagInt(getEnergyStored());
     }
 
     @Override
-    public void deserializeNBT(NBTTagInt nbt)
-    {
+    public void deserializeNBT(NBTTagInt nbt) {
         setEnergyStored(nbt.getInt());
     }
 }

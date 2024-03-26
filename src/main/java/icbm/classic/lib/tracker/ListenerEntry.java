@@ -2,7 +2,7 @@ package icbm.classic.lib.tracker;
 
 import icbm.classic.ICBMClassic;
 import lombok.Data;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
@@ -28,8 +28,7 @@ public class ListenerEntry implements IEventTrackerListener {
     public void accept(EventTrackerEntry entry) {
         try {
             listener.accept(entry);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ICBMClassic.logger().error(String.format("Listener(%s): error while handling entry(%s)", name, entry.getType()));
         }
     }

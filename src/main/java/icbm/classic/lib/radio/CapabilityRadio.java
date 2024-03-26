@@ -2,12 +2,12 @@ package icbm.classic.lib.radio;
 
 import icbm.classic.api.data.IBoundBox;
 import icbm.classic.api.radio.IRadio;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraft.world.level.Level;
+import net.neoforged.common.capabilities.Capability;
+import net.neoforged.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +19,7 @@ public class CapabilityRadio implements IRadio {
     }
 
     @Override
-    public World getWorld() {
+    public Level getLevel() {
         return null;
     }
 
@@ -28,18 +28,16 @@ public class CapabilityRadio implements IRadio {
         return null;
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IRadio.class, new Capability.IStorage<IRadio>()
-            {
+    public static void register() {
+        CapabilityManager.INSTANCE.register(IRadio.class, new Capability.IStorage<IRadio>() {
                 @Nullable
                 @Override
-                public NBTBase writeNBT(Capability<IRadio> capability, IRadio instance, EnumFacing side) {
+                public NBTBase writeNBT(Capability<IRadio> capability, IRadio instance, Direction side) {
                     return null;
                 }
 
                 @Override
-                public void readNBT(Capability<IRadio> capability, IRadio instance, EnumFacing side, NBTBase nbt) {
+                public void readNBT(Capability<IRadio> capability, IRadio instance, Direction side, NBTBase nbt) {
 
                 }
             },

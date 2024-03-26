@@ -1,9 +1,9 @@
 package icbm.classic.api.explosion;
 
-import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import icbm.classic.api.reg.ExplosiveType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -13,8 +13,7 @@ import javax.annotation.Nonnull;
  * <p>
  * Created by Dark(DarkGuardsman, Robert) on 1/3/19.
  */
-public interface IBlastInit extends IBlast
-{
+public interface IBlastInit extends IBlast {
 
     /**
      * Sets the size of the blast
@@ -28,6 +27,7 @@ public interface IBlastInit extends IBlast
 
     /**
      * Scales the size of the blast
+     *
      * @param scale - multiplier to apply
      * @return this
      */
@@ -42,8 +42,7 @@ public interface IBlastInit extends IBlast
      * @param entity - source of the blast
      * @return this
      */
-    default IBlastInit setBlastSource(Entity entity)
-    { //TODO maybe consider using a blame object that wrappers the source in case it dies
+    default IBlastInit setBlastSource(Entity entity) { //TODO maybe consider using a blame object that wrappers the source in case it dies
         return this;
     }
 
@@ -53,10 +52,10 @@ public interface IBlastInit extends IBlast
      * change for a blast. If you teleport the blast through
      * a portal destroy and recreate to kill connections.
      *
-     * @param world
+     * @param level
      * @return this
      */
-    IBlastInit setBlastWorld(World world);
+    IBlastInit setBlastLevel(Level level);
 
     /**
      * Sets the blast's position. Should only be called
@@ -77,7 +76,7 @@ public interface IBlastInit extends IBlast
      * @param customData - nbt save data
      * @return this
      */
-    default IBlastInit setCustomData(@Nonnull NBTTagCompound customData) {
+    default IBlastInit setCustomData(@Nonnull CompoundTag customData) {
         return this;
     }
 
@@ -101,7 +100,7 @@ public interface IBlastInit extends IBlast
      * @param data
      * @return this
      */
-    default IBlastInit setExplosiveData(IExplosiveData data) {
+    default IBlastInit setExplosiveData(ExplosiveType data) {
         return this;
     }
 

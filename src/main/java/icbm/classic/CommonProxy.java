@@ -1,176 +1,130 @@
 package icbm.classic;
 
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
-import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.mods.ModInteraction;
 import icbm.classic.prefab.tile.IGuiTile;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-public class CommonProxy implements IGuiHandler
-{
+public class CommonProxy {
     public static final int GUI_ITEM = 10002;
     public static final int GUI_ENTITY = 10001;
 
-    public void doLoadModels()
-    {
-
+    public void doLoadModels() {
     }
 
-    public void preInit()
-    {
+    public void preInit() {
         ModInteraction.preInit();
     }
 
-    public void init()
-    {
+    public void init() {
         ModInteraction.init();
     }
 
-    public void postInit()
-    {
+    public void postInit() {
         ModInteraction.postInit();
     }
 
-    public void loadComplete()
-    {
-
+    public void loadComplete() {
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
-    {
-        if (ID == GUI_ITEM)
-        {
+    public Object getServerGuiElement(int id, ServerPlayer player, Level level, int x, int y, int z) {
+        if (id == GUI_ITEM) {
             return getServerGuiElement(y, player, x);
+        } else if (id == GUI_ENTITY) {
+            return getServerGuiElement(y, player, level.getEntity(x));
         }
-        else if (ID == GUI_ENTITY)
-        {
-            return getServerGuiElement(y, player, world.getEntityByID(x));
-        }
-        return getServerGuiElement(ID, player, world.getTileEntity(new BlockPos(x, y, z)));
+        return getServerGuiElement(id, player, level.getBlockEntity(new BlockPos(x, y, z)));
     }
 
-    public Object getServerGuiElement(int ID, EntityPlayer player, int slot)
-    {
-        ItemStack stack = player.inventory.getStackInSlot(slot);
-        if (stack != null && stack.getItem() instanceof IGuiTile)
-        {
-            return ((IGuiTile) stack.getItem()).getServerGuiElement(ID, player);
+    public Object getServerGuiElement(int id, Player player, int slot) {
+        ItemStack stack = player.getInventory().getItem(slot);
+        if (stack.getItem() instanceof IGuiTile guiTile) {
+            return guiTile.getServerGuiElement(id, player);
         }
         return null;
     }
 
-    public Object getServerGuiElement(int ID, EntityPlayer player, TileEntity tile)
-    {
-        if (tile instanceof IGuiTile)
-        {
-            return ((IGuiTile) tile).getServerGuiElement(ID, player);
+    public Object getServerGuiElement(int id, Player player, BlockEntity blockEntity) {
+        if (blockEntity instanceof IGuiTile guiBlockEntity) {
+            return guiBlockEntity.getServerGuiElement(id, player);
         }
         return null;
     }
 
-    public Object getServerGuiElement(int ID, EntityPlayer player, Entity entity)
-    {
-        if (entity instanceof IGuiTile)
-        {
-            return ((IGuiTile) entity).getServerGuiElement(ID, player);
+    public Object getServerGuiElement(int id, Player player, Entity entity) {
+        if (entity instanceof IGuiTile guiEntity) {
+            return guiEntity.getServerGuiElement(id, player);
         }
         return null;
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
-    {
-        if (ID == GUI_ITEM)
-        {
-            return getServerGuiElement(y, player, world.getEntityByID(x));
+    public Object getClientGuiElement(int id, Player player, Level level, int x, int y, int z) {
+        if (id == GUI_ITEM) {
+            return getServerGuiElement(y, player, level.getEntity(x));
+        } else if (id == GUI_ENTITY) {
+            return getClientGuiElement(y, player, level.getEntity(x));
         }
-        else if (ID == GUI_ENTITY)
-        {
-            return getClientGuiElement(y, player, world.getEntityByID(x));
-        }
-        return getClientGuiElement(ID, player, world.getTileEntity(new BlockPos(x, y, z)));
+        return getClientGuiElement(id, player, level.getBlockEntity(new BlockPos(x, y, z)));
     }
 
-    public Object getClientGuiElement(int ID, EntityPlayer player, int slot)
-    {
-        ItemStack stack = player.inventory.getStackInSlot(slot);
-        if (stack != null && stack.getItem() instanceof IGuiTile)
-        {
-            return ((IGuiTile) stack.getItem()).getClientGuiElement(ID, player);
+    public Object getClientGuiElement(int id, Player player, int slot) {
+        ItemStack stack = player.getInventory().getItem(slot);
+        if (stack.getItem() instanceof IGuiTile guiTile) {
+            return guiTile.getClientGuiElement(id, player);
         }
         return null;
     }
 
-    public Object getClientGuiElement(int ID, EntityPlayer player, TileEntity tile)
-    {
-        if (tile instanceof IGuiTile)
-        {
-            return ((IGuiTile) tile).getClientGuiElement(ID, player);
+    public Object getClientGuiElement(int id, Player player, BlockEntity blockEntity) {
+        if (blockEntity instanceof IGuiTile guiTile) {
+            return guiTile.getClientGuiElement(id, player);
         }
         return null;
     }
 
-    public Object getClientGuiElement(int ID, EntityPlayer player, Entity entity)
-    {
-        if (entity instanceof IGuiTile)
-        {
-            return ((IGuiTile) entity).getClientGuiElement(ID, player);
+    public Object getClientGuiElement(int ID, Player player, Entity entity) {
+        if (entity instanceof IGuiTile guiTile) {
+            return guiTile.getClientGuiElement(ID, player);
         }
         return null;
     }
 
-    @SideOnly(Side.CLIENT)
-    public boolean isShiftHeld()
-    {
+    @OnlyIn(Dist.CLIENT)
+    public boolean isShiftHeld() {
         return Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-    }
-
-    public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int age)
-    {
-
-    }
-
-    public void spawnAirParticle(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
-    {
-        //TODO allow client settings to sync to server to not received these packets
-        PacketSpawnAirParticle.sendToAllClients(world, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
     }
 
     /**
      * Spawns a vanilla explosion particle when destroying blocks. Server side this will sync a packet per
      * block destroyed. Client side it will spawn 2 particles depending on data.
      *
-     * @param world to spawn inside
-     * @param sourceX of the blast
-     * @param sourceY of the blast
-     * @param sourceZ of the blast
+     * @param level      to spawn inside
+     * @param sourceX    of the blast
+     * @param sourceY    of the blast
+     * @param sourceZ    of the blast
      * @param blastScale of the blast
-     * @param blockPos of the block being destroyed
+     * @param blockPos   of the block being destroyed
      */
-    public void spawnExplosionParticles(World world, double sourceX, double sourceY, double sourceZ, double blastScale, BlockPos blockPos)
-    {
-        //TODO allow client settings to sync to server to not received these packets
-        PacketSpawnBlockExplosion.sendToAllClients(world, sourceX, sourceY, sourceZ, blastScale, blockPos);
+    public void spawnExplosionParticles(Level level, double sourceX, double sourceY, double sourceZ, double blastScale, BlockPos blockPos) {
+        // TODO: allow client settings to sync to server to not received these packets
+        PacketSpawnBlockExplosion.sendToAllClients(level, sourceX, sourceY, sourceZ, blastScale, blockPos);
     }
 
-    public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir) //TODO refactor to be packet based or wired to each flight logic type
-    {
-
+    public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir) {
+        // TODO: refactor to be packet based or wired to each flight logic type
     }
 
     public void spawnPadSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir) {
-
     }
 }

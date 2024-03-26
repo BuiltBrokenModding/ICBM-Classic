@@ -4,11 +4,11 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import icbm.classic.api.reg.ExplosiveType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,43 +16,33 @@ import javax.annotation.Nullable;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-public class CapabilityExplosiveEntity implements IExplosive
-{
+public class CapabilityExplosiveEntity implements IExplosive {
     public final Entity entity;
     private ItemStack stack = ItemStack.EMPTY;
 
-    public CapabilityExplosiveEntity(@Nonnull Entity entity)
-    {
+    public CapabilityExplosiveEntity(@Nonnull Entity entity) {
         this.entity = entity;
     }
 
-    public NBTTagCompound serializeNBT()
-    {
+    public CompoundTag serializeNBT() {
         return toStack().serializeNBT();
     }
 
-    public void deserializeNBT(@Nonnull NBTTagCompound nbt)
-    {
-        if (nbt.getSize() == 0)
-        {
+    public void deserializeNBT(@Nonnull CompoundTag nbt) {
+        if (nbt.getSize() == 0) {
             stack = ItemStack.EMPTY;
-        }
-        else
-        {
+        } else {
             stack = new ItemStack(nbt);
         }
     }
 
     @Nullable
     @Override
-    public IExplosiveData getExplosiveData()
-    {
+    public ExplosiveType getExplosiveData() {
         final ItemStack stack = toStack();
-        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
-        {
+        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null)) {
             final IExplosive explosive = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
+            if (explosive != null) {
                 return explosive.getExplosiveData();
             }
         }
@@ -61,46 +51,37 @@ public class CapabilityExplosiveEntity implements IExplosive
 
     @Nonnull
     @Override
-    public NBTTagCompound getCustomBlastData()
-    {
+    public CompoundTag getCustomBlastData() {
         final ItemStack stack = toStack();
-        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
-        {
+        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null)) {
             final IExplosive explosive = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
-                final NBTTagCompound tag = explosive.getCustomBlastData();
-                if (tag != null && !tag.hasNoTags())
-                {
+            if (explosive != null) {
+                final CompoundTag tag = explosive.getCustomBlastData();
+                if (tag != null && !tag.isEmpty()) {
                     return tag;
                 }
             }
         }
-        return new NBTTagCompound();
+        return new CompoundTag();
     }
 
     @Nonnull
     @Override
-    public ItemStack toStack()
-    {
-        if (stack == null)
-        {
+    public ItemStack toStack() {
+        if (stack == null) {
             stack = ItemStack.EMPTY;
         }
         return stack;
     }
 
     @Override
-    public void onDefuse()
-    {
-        entity.world.spawnEntity(new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, toStack().copy()));
+    public void onDefuse() {
+        entity.world.spawnEntity(new ItemEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), toStack().copy()));
         entity.setDead();
     }
 
-    public void setStack(@Nonnull ItemStack stack)
-    {
-        if (!stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
-        {
+    public void setStack(@Nonnull ItemStack stack) {
+        if (!stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null)) {
             ICBMClassic.logger().error("CapabilityExplosive[" + entity + "] Was set with a stack that is not an explosive [" + stack + "]");
         }
         this.stack = stack.copy().splitStack(1);

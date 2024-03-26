@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.config.machines.ConfigLauncher;
+import icbm.classic.world.block.launcher.base.LauncherCapability;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;

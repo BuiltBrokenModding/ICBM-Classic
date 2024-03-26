@@ -7,10 +7,10 @@ import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.radio.IRadioMessage;
 import icbm.classic.api.radio.IRadioReceiver;
 import icbm.classic.api.radio.IRadioSender;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,22 +18,31 @@ import java.util.List;
 
 /**
  * Map of radio wave receivers
- *
- *
+ * <p>
+ * <p>
  * Created by Dark(DarkGuardsman, Robert) on 3/5/2016.
  */
-public class RadioMap
-{
-    /** DIM ID, never change */
+public class RadioMap {
+    /**
+     * DIM ID, never change
+     */
     protected final int dimID;
 
-    /** Map of chunk positions to receive, mainly used by short range radio gear */
+    /**
+     * Map of chunk positions to receive, mainly used by short range radio gear
+     */
     protected HashMap<ChunkPos, List<IRadioReceiver>> chunk_to_entities = new HashMap();
-    /** Map of receive to chunks covered, only for static tiles */
+    /**
+     * Map of receive to chunks covered, only for static tiles
+     */
     protected HashMap<IRadioReceiver, List<ChunkPos>> receive_to_chunks = new HashMap();
-    /** Map of sender to receives, only for static tiles */
+    /**
+     * Map of sender to receives, only for static tiles
+     */
     protected HashMap<IRadioSender, List<IRadioReceiver>> sender_to_receivers_cache = new HashMap();
-    /** Cache of receivers to their range, used by {@link #update(IRadioReceiver)} method */
+    /**
+     * Cache of receivers to their range, used by {@link #update(IRadioReceiver)} method
+     */
     protected HashMap<IRadioReceiver, IBoundBox<BlockPos>> receive_to_range = new HashMap();
 
     protected List<IRadioReceiver> fullMapRangeReceives = new ArrayList();
@@ -44,30 +53,23 @@ public class RadioMap
      *
      * @param dimID - unique dimension that is not already tracked
      */
-    public RadioMap(int dimID)
-    {
+    public RadioMap(int dimID) {
         this.dimID = dimID;
     }
 
-    public boolean add(IRadioReceiver receiver)
-    {
-        if(receiver.getWorld() == null || receiver.getWorld().isRemote)
-        {
+    public boolean add(IRadioReceiver receiver) {
+        if (receiver.getLevel() == null || receiver.getLevel().isClientSide()) {
             return false;
         }
         final IBoundBox<BlockPos> range = receiver.getRange();
-        if (range != null)
-        {
-            if (range == RadioRegistry.INFINITE)
-            {
-                if (!fullMapRangeReceives.contains(receiver))
-                {
+        if (range != null) {
+            if (range == RadioRegistry.INFINITE) {
+                if (!fullMapRangeReceives.contains(receiver)) {
                     fullMapRangeReceives.add(receiver);
                 }
                 return true;
             }
-            if (!receive_to_chunks.containsKey(receiver))
-            {
+            if (!receive_to_chunks.containsKey(receiver)) {
                 updateChunkCache(receiver, range);
                 updateSenderCache(receiver, range);
                 return true;
@@ -77,45 +79,36 @@ public class RadioMap
         return false;
     }
 
-    public static List<ChunkPos> getChunkCoords(IBoundBox<BlockPos> range)
-    {
+    public static List<ChunkPos> getChunkCoords(IBoundBox<BlockPos> range) {
         List<ChunkPos> chunks = new ArrayList();
-        for (int chunkX = (range.lowerBound().getX() >> 4) - 1; chunkX <= (range.upperBound().getX() >> 4) + 1; chunkX++)
-        {
-            for (int chunkZ = (range.lowerBound().getZ() >> 4) - 1; chunkZ <= (range.upperBound().getZ() >> 4) + 1; chunkZ++)
-            {
+        for (int chunkX = (range.lowerBound().getX() >> 4) - 1; chunkX <= (range.upperBound().getX() >> 4) + 1; chunkX++) {
+            for (int chunkZ = (range.lowerBound().getZ() >> 4) - 1; chunkZ <= (range.upperBound().getZ() >> 4) + 1; chunkZ++) {
                 chunks.add(new ChunkPos(chunkX, chunkZ));
             }
         }
         return chunks;
     }
 
-    public static boolean doesOverlap(IBoundBox<BlockPos> self, IBoundBox<BlockPos> box)
-    {
+    public static boolean doesOverlap(IBoundBox<BlockPos> self, IBoundBox<BlockPos> box) {
         return !isOutSide(box.lowerBound().getX(), box.upperBound().getX(), self.lowerBound().getX(), self.upperBound().getX())
             || !isOutSide(box.lowerBound().getY(), box.upperBound().getY(), self.lowerBound().getY(), self.upperBound().getY())
             || !isOutSide(box.lowerBound().getZ(), box.upperBound().getZ(), self.lowerBound().getZ(), self.upperBound().getZ());
     }
 
-    public static boolean isOutSide(int boxMin, int boxMax, int selfMin, int selfMax)
-    {
+    public static boolean isOutSide(int boxMin, int boxMax, int selfMin, int selfMax) {
         return selfMin > boxMin || boxMax > selfMax;
     }
 
-    protected void updateChunkCache(IRadioReceiver receiver, IBoundBox<BlockPos> range)
-    {
+    protected void updateChunkCache(IRadioReceiver receiver, IBoundBox<BlockPos> range) {
         final List<ChunkPos> list = getChunkCoords(range);
 
         //Update chunk position map
-        for (ChunkPos pair : list)
-        {
+        for (ChunkPos pair : list) {
             List<IRadioReceiver> receivers = chunk_to_entities.get(pair);
-            if (receivers == null)
-            {
+            if (receivers == null) {
                 receivers = new ArrayList();
             }
-            if (!receivers.contains(receiver))
-            {
+            if (!receivers.contains(receiver)) {
                 receivers.add(receiver);
             }
             chunk_to_entities.put(pair, receivers);
@@ -125,23 +118,17 @@ public class RadioMap
         receive_to_chunks.put(receiver, list);
     }
 
-    protected void updateSenderCache(IRadioReceiver receiver, IBoundBox<BlockPos> range)
-    {
-        if (range != null)
-        {
+    protected void updateSenderCache(IRadioReceiver receiver, IBoundBox<BlockPos> range) {
+        if (range != null) {
             //Update sender cache
-            for (IRadioSender sender : sender_to_receivers_cache.keySet())
-            {
+            for (IRadioSender sender : sender_to_receivers_cache.keySet()) {
                 final IBoundBox<BlockPos> senderRange = sender.getRange();
-                if (doesOverlap(senderRange, range))
-                {
+                if (doesOverlap(senderRange, range)) {
                     List<IRadioReceiver> receivers = sender_to_receivers_cache.get(sender);
-                    if (receivers == null)
-                    {
+                    if (receivers == null) {
                         receivers = new ArrayList();
                     }
-                    if (!receivers.contains(receiver))
-                    {
+                    if (!receivers.contains(receiver)) {
                         receivers.add(receiver);
                     }
                     sender_to_receivers_cache.put(sender, receivers);
@@ -156,36 +143,27 @@ public class RadioMap
      *
      * @param receiver
      */
-    public void update(IRadioReceiver receiver)
-    {
-        if (!receive_to_range.containsKey(receiver) || receive_to_range.get(receiver) == null || receive_to_range.get(receiver).equals(receiver.getRange()))
-        {
+    public void update(IRadioReceiver receiver) {
+        if (!receive_to_range.containsKey(receiver) || receive_to_range.get(receiver) == null || receive_to_range.get(receiver).equals(receiver.getRange())) {
             IBoundBox<BlockPos> range = receiver.getRange();
-            if (range != null)
-            {
+            if (range != null) {
                 updateChunkCache(receiver, range);
                 updateSenderCache(receiver, range);
             }
         }
     }
 
-    public boolean remove(IRadioReceiver receiver)
-    {
-        if(receiver.getWorld() == null || receiver.getWorld().isRemote)
-        {
+    public boolean remove(IRadioReceiver receiver) {
+        if (receiver.getLevel() == null || receiver.getLevel().isClientSide()) {
             return false;
         }
-        if(fullMapRangeReceives.contains(receiver))
-        {
+        if (fullMapRangeReceives.contains(receiver)) {
             fullMapRangeReceives.remove(receiver);
         }
-        if (receive_to_chunks.containsKey(receiver))
-        {
+        if (receive_to_chunks.containsKey(receiver)) {
             //Clear cached chunk positions
-            for (ChunkPos pair : receive_to_chunks.get(receiver))
-            {
-                if (chunk_to_entities.containsKey(pair))
-                {
+            for (ChunkPos pair : receive_to_chunks.get(receiver)) {
+                if (chunk_to_entities.containsKey(pair)) {
                     chunk_to_entities.get(pair).remove(receiver);
                 }
             }
@@ -193,15 +171,12 @@ public class RadioMap
             receive_to_chunks.remove(receiver);
 
             //Update sender cache
-            for (IRadioSender sender : sender_to_receivers_cache.keySet())
-            {
+            for (IRadioSender sender : sender_to_receivers_cache.keySet()) {
                 List<IRadioReceiver> receivers = sender_to_receivers_cache.get(sender);
-                if (receivers == null)
-                {
+                if (receivers == null) {
                     receivers = new ArrayList();
                 }
-                if (receivers.contains(receiver))
-                {
+                if (receivers.contains(receiver)) {
                     receivers.remove(receiver);
                 }
                 sender_to_receivers_cache.put(sender, receivers);
@@ -217,70 +192,56 @@ public class RadioMap
      * @param sender pushing the message
      * @param packet containing message
      */
-    public void popMessage(IRadioSender sender, IRadioMessage packet)
-    {
+    public void popMessage(IRadioSender sender, IRadioMessage packet) {
 
-        if(packet == null || packet.getChannel() == null || packet.getChannel().trim().isEmpty() || sender == null) {
+        if (packet == null || packet.getChannel() == null || packet.getChannel().trim().isEmpty() || sender == null) {
             ICBMClassic.logger().error("RadarMap[" + dimID + "]: Invalid radio message " + sender + " " + packet, new RuntimeException());
             return;
         }
 
         //Cache for senders that know they will be active
-        if (sender_to_receivers_cache.containsKey(sender))
-        {
-            for (IRadioReceiver receiver : sender_to_receivers_cache.get(sender))
-            {
+        if (sender_to_receivers_cache.containsKey(sender)) {
+            for (IRadioReceiver receiver : sender_to_receivers_cache.get(sender)) {
                 receiver.onMessage(sender, packet);
             }
             return;
         }
 
         //Receivers that have full map range, used for legacy systems mainly
-        for(int i = fullMapRangeReceives.size() - 1; i >= 0; i--)
-        {
+        for (int i = fullMapRangeReceives.size() - 1; i >= 0; i--) {
             fullMapRangeReceives.get(i).onMessage(sender, packet);
         }
 
         //Slow way to update receives with messages
         final IBoundBox<BlockPos> senderRange = sender.getRange();
-        if (senderRange != null)
-        {
+        if (senderRange != null) {
             //Use simpler method if the range of number of entries is small
             if (receive_to_chunks.size() < 200 || (senderRange.upperBound().getX() - senderRange.lowerBound().getX()) > 320 || (senderRange.upperBound().getZ() - senderRange.lowerBound().getZ()) > 320) //20 chunks
             {
-                for (IRadioReceiver receiver : receive_to_chunks.keySet())
-                {
-                    if (receiver != null && receiver != sender)
-                    {
+                for (IRadioReceiver receiver : receive_to_chunks.keySet()) {
+                    if (receiver != null && receiver != sender) {
                         IBoundBox<BlockPos> receiverRange = receiver.getRange();
-                        if (doesOverlap(senderRange, receiverRange) || doesOverlap(receiverRange, senderRange))
-                        {
+                        if (doesOverlap(senderRange, receiverRange) || doesOverlap(receiverRange, senderRange)) {
                             receiver.onMessage(sender, packet);
                         }
                     }
                 }
             }
             //Complex method only used if number of receive is very high, e.g. is faster~ish than the above method
-            else
-            {
+            else {
                 final List<ChunkPos> coords = getChunkCoords(senderRange);
                 final List<IRadioReceiver> receivers = new ArrayList(); //TODO move over to collector pattern
-                for (ChunkPos pair : coords)
-                {
+                for (ChunkPos pair : coords) {
                     final List<IRadioReceiver> l = chunk_to_entities.get(pair);
-                    if (l != null && l.size() > 0)
-                    {
-                        for (IRadioReceiver r : l)
-                        {
-                            if (r != null && r != sender && !receivers.contains(r))
-                            {
+                    if (l != null && l.size() > 0) {
+                        for (IRadioReceiver r : l) {
+                            if (r != null && r != sender && !receivers.contains(r)) {
                                 receivers.add(r);
                             }
                         }
                     }
                 }
-                for (IRadioReceiver receiver : receivers)
-                {
+                for (IRadioReceiver receiver : receivers) {
                     receiver.onMessage(sender, packet);
                 }
             }
@@ -292,7 +253,7 @@ public class RadioMap
      * <p>
      * Make sure if you call this you clear your
      * cache when the sender is no longer valid
-     * use {@link TileEntity#invalidate()}
+     * use {@link BlockEntity#invalidate()}
      * or {@link Entity#setDead()} to
      * clear the cache.
      * <p>
@@ -311,14 +272,12 @@ public class RadioMap
      *               to have a valid {@link IRadioWaveSender#getRadioSenderRange()}
      *               value in order to be cached.
      */
-    public void updateCache(IRadioSender sender)
-    {
+    public void updateCache(IRadioSender sender) {
         //Clear cache value
         sender_to_receivers_cache.remove(sender);
 
         final IBoundBox<BlockPos> range = sender.getRange();
-        if (range != null)
-        {
+        if (range != null) {
             sender_to_receivers_cache.put(sender, getReceiversInRange(range, sender instanceof IRadioReceiver ? (IRadioReceiver) sender : (IRadioReceiver) null));
         }
     }
@@ -330,8 +289,7 @@ public class RadioMap
      * @param exclude - object to ignore
      * @return list of receivers, or empty list
      */
-    public List<IRadioReceiver> getReceiversInRange(IBoundBox<BlockPos> range, IRadioReceiver exclude)
-    {
+    public List<IRadioReceiver> getReceiversInRange(IBoundBox<BlockPos> range, IRadioReceiver exclude) {
         return getReceiversInRange(range, exclude != null ? Lists.newArrayList(exclude) : null);
     }
 
@@ -342,19 +300,14 @@ public class RadioMap
      * @param excludeList - tiles to ignore
      * @return list of receivers, or empty list
      */
-    public List<IRadioReceiver> getReceiversInRange(IBoundBox<BlockPos> range, List<IRadio> excludeList)
-    {
+    public List<IRadioReceiver> getReceiversInRange(IBoundBox<BlockPos> range, List<IRadio> excludeList) {
         List<IRadioReceiver> receivers = new ArrayList();
         receivers.addAll(fullMapRangeReceives);
-        if (range != null)
-        {
-            for (IRadioReceiver receiver : receive_to_chunks.keySet())
-            {
-                if (receiver != null && (excludeList == null || !excludeList.contains(receiver)))
-                {
+        if (range != null) {
+            for (IRadioReceiver receiver : receive_to_chunks.keySet()) {
+                if (receiver != null && (excludeList == null || !excludeList.contains(receiver))) {
                     final IBoundBox<BlockPos> receiverRange = receiver.getRange();
-                    if (receiverRange != null && doesOverlap(range, receiverRange))
-                    {
+                    if (receiverRange != null && doesOverlap(range, receiverRange)) {
                         receivers.add(receiver);
                     }
                 }
@@ -363,13 +316,11 @@ public class RadioMap
         return receivers;
     }
 
-    protected final ChunkPos getChunkValue(int x, int z)
-    {
+    protected final ChunkPos getChunkValue(int x, int z) {
         return new ChunkPos(x >> 4, z >> 4);
     }
 
-    public void unloadAll()
-    {
+    public void unloadAll() {
         chunk_to_entities.clear();
     }
 
@@ -379,28 +330,22 @@ public class RadioMap
      *
      * @return valid dim ID.
      */
-    public int dimID()
-    {
+    public int dimID() {
         return dimID;
     }
 
     @Override
-    public boolean equals(Object object)
-    {
-        if (object == this)
-        {
+    public boolean equals(Object object) {
+        if (object == this) {
             return true;
-        }
-        else if (object instanceof RadioMap)
-        {
+        } else if (object instanceof RadioMap) {
             return ((RadioMap) object).dimID == dimID;
         }
         return false;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RadioMap[" + dimID + "]";
     }
 

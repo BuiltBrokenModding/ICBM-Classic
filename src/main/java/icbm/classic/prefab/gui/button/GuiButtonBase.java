@@ -5,7 +5,7 @@ import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Supplier;
 
@@ -14,7 +14,7 @@ public class GuiButtonBase<B extends GuiButtonBase> extends GuiButton implements
     private ActionTrigger action;
 
     private final Rectangle bounds;
-    private Supplier<ITextComponent> tooltip;
+    private Supplier<Component> tooltip;
 
     private GuiContainerBase container;
 
@@ -33,13 +33,13 @@ public class GuiButtonBase<B extends GuiButtonBase> extends GuiButton implements
         return (B) this;
     }
 
-    public B setTooltip(Supplier<ITextComponent> tooltip) {
+    public B setTooltip(Supplier<Component> tooltip) {
         this.tooltip = tooltip;
         return (B) this;
     }
 
     public void triggerAction() {
-        if(action != null) {
+        if (action != null) {
             action.trigger();
         }
     }
@@ -50,8 +50,8 @@ public class GuiButtonBase<B extends GuiButtonBase> extends GuiButton implements
     }
 
     @Override
-    public ITextComponent getTooltip() {
-        if(tooltip != null) {
+    public Component getTooltip() {
+        if (tooltip != null) {
             return tooltip.get();
         }
         return null;

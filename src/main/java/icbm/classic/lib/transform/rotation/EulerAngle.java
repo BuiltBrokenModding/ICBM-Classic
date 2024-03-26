@@ -2,13 +2,12 @@ package icbm.classic.lib.transform.rotation;
 
 import com.builtbroken.jlib.data.network.IByteBufReader;
 import com.builtbroken.jlib.data.network.IByteBufWriter;
-import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
+import com.builtbroken.jlib.data.vector.Vec3;
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * This object is not immutable like other vector objects. It is designed to take the player of storing 3 separate variables for rotation. Thus it will
@@ -19,8 +18,7 @@ import net.minecraft.util.EnumFacing;
  * <p>
  * Original version by Calclavia
  */
-public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteBufReader, IRotation
-{
+public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteBufReader, IRotation {
     protected double yaw = 0;
     protected double pitch = 0;
     protected double roll = 0;
@@ -32,8 +30,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param pitch - value for pitch
      * @param roll  - value for roll
      */
-    public EulerAngle(double yaw, double pitch, double roll)
-    {
+    public EulerAngle(double yaw, double pitch, double roll) {
         this.yaw = yaw;
         this.pitch = pitch;
         this.roll = roll;
@@ -45,8 +42,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param yaw   - value for yaw
      * @param pitch - value for pitch
      */
-    public EulerAngle(double yaw, double pitch)
-    {
+    public EulerAngle(double yaw, double pitch) {
         this(yaw, pitch, 0);
     }
 
@@ -55,8 +51,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @param tag - save
      */
-    public EulerAngle(NBTTagCompound tag)
-    {
+    public EulerAngle(CompoundTag tag) {
         readFromNBT(tag);
     }
 
@@ -65,20 +60,17 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @param data - data, needs to have 3 doubles or will crash
      */
-    public EulerAngle(ByteBuf data)
-    {
+    public EulerAngle(ByteBuf data) {
         readByteBuf(data);
     }
 
     /**
-     * Creates a new EulerAngle from a {@link EnumFacing}
+     * Creates a new EulerAngle from a {@link Direction}
      *
      * @param direction - direction
      */
-    public EulerAngle(EnumFacing direction)
-    {
-        switch (direction)
-        {
+    public EulerAngle(Direction direction) {
+        switch (direction) {
             case DOWN:
                 pitch = -90;
                 break;
@@ -107,8 +99,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param pitch - value to set pitch
      * @param roll  - value to set roll
      */
-    public void set(double yaw, double pitch, double roll)
-    {
+    public void set(double yaw, double pitch, double roll) {
         this.yaw = yaw;
         this.pitch = pitch;
         this.roll = roll;
@@ -121,18 +112,14 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param index - index 0 yaw, 1 pitch, 2 roll
      * @param value - value to set
      */
-    public void set(int index, double value)
-    {
-        if (index == 0)
-        {
+    public void set(int index, double value) {
+        if (index == 0) {
             this.yaw = value;
         }
-        if (index == 1)
-        {
+        if (index == 1) {
             this.pitch = value;
         }
-        if (index == 2)
-        {
+        if (index == 2) {
             this.roll = value;
         }
     }
@@ -143,8 +130,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param other - values to use
      * @return this
      */
-    public EulerAngle set(EulerAngle other)
-    {
+    public EulerAngle set(EulerAngle other) {
         yaw = other.yaw;
         pitch = other.pitch;
         roll = other.roll;
@@ -162,8 +148,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param v - value to add
      * @return this
      */
-    public EulerAngle add(double v)
-    {
+    public EulerAngle add(double v) {
         this.yaw += v;
         this.pitch += v;
         this.roll += v;
@@ -176,8 +161,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param other - angle to add
      * @return this
      */
-    public EulerAngle add(EulerAngle other)
-    {
+    public EulerAngle add(EulerAngle other) {
         this.yaw += other.yaw;
         this.pitch += other.pitch;
         this.roll += other.roll;
@@ -190,8 +174,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param v - value to multiply
      * @return this
      */
-    public EulerAngle multiply(double v)
-    {
+    public EulerAngle multiply(double v) {
         this.yaw *= v;
         this.pitch *= v;
         this.roll *= v;
@@ -204,8 +187,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param v - value to multiply
      * @return this
      */
-    public EulerAngle multiply(float v)
-    {
+    public EulerAngle multiply(float v) {
         this.yaw *= v;
         this.pitch *= v;
         this.roll *= v;
@@ -218,8 +200,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param other
      * @return this
      */
-    public EulerAngle multiply(EulerAngle other)
-    {
+    public EulerAngle multiply(EulerAngle other) {
         this.yaw *= other.yaw;
         this.pitch *= other.pitch;
         this.roll *= other.roll;
@@ -231,8 +212,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return this
      */
-    public EulerAngle reciprocal()
-    {
+    public EulerAngle reciprocal() {
         this.yaw = 1 / yaw;
         this.pitch = 1 / pitch;
         this.roll = 1 / roll;
@@ -244,8 +224,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return this
      */
-    public EulerAngle ceil()
-    {
+    public EulerAngle ceil() {
         this.yaw = Math.ceil(yaw);
         this.pitch = Math.ceil(pitch);
         this.roll = Math.ceil(roll);
@@ -257,8 +236,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return this
      */
-    public EulerAngle floor()
-    {
+    public EulerAngle floor() {
         this.yaw = Math.floor(yaw);
         this.pitch = Math.floor(pitch);
         this.roll = Math.floor(roll);
@@ -270,8 +248,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return this
      */
-    public EulerAngle round()
-    {
+    public EulerAngle round() {
         this.yaw = Math.round(yaw);
         this.pitch = Math.round(pitch);
         this.roll = Math.round(roll);
@@ -284,8 +261,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param other - angle to compare
      * @return new EulerAngle containing the larger values
      */
-    public EulerAngle max(EulerAngle other)
-    {
+    public EulerAngle max(EulerAngle other) {
         return new EulerAngle(Math.max(yaw, other.yaw), Math.max(pitch, other.pitch), Math.max(roll, other.roll));
     }
 
@@ -296,8 +272,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param other - angle to compare
      * @return new EulerAngle containing the smallest values
      */
-    public EulerAngle min(EulerAngle other)
-    {
+    public EulerAngle min(EulerAngle other) {
         return new EulerAngle(Math.min(yaw, other.yaw), Math.min(pitch, other.pitch), Math.min(roll, other.roll));
     }
 
@@ -307,8 +282,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param other - angle to compare
      * @return new EulerAngle containing the differences between the two angles
      */
-    public EulerAngle absoluteDifference(EulerAngle other)
-    {
+    public EulerAngle absoluteDifference(EulerAngle other) {
         return new EulerAngle(Math.abs(yaw - other.yaw), Math.abs(pitch - other.pitch), Math.abs(roll - other.roll));
     }
 
@@ -319,8 +293,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param error - room for error in degrees
      * @return true if all 3 angles are near the margin value of error
      */
-    public boolean isWithin(EulerAngle other, double error)
-    {
+    public boolean isWithin(EulerAngle other, double error) {
         return other != null && isYawWithin(other.yaw, error) && isPitchWithin(other.pitch, error) && isRollWithin(other.roll, error);
     }
 
@@ -334,8 +307,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *              will always return false
      * @return true if the current yaw is withing the error range
      */
-    public boolean isYawWithin(double yaw, double error)
-    {
+    public boolean isYawWithin(double yaw, double error) {
         double delta = distanceYaw(yaw);
         return delta <= error;
     }
@@ -350,8 +322,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *              will always return false
      * @return true if the current pitch is withing the error range
      */
-    public boolean isPitchWithin(double pitch, double error)
-    {
+    public boolean isPitchWithin(double pitch, double error) {
         double delta = distancePitch(pitch);
         return delta <= error;
     }
@@ -366,8 +337,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *              will always return false
      * @return true if the current roll is withing the error range
      */
-    public boolean isRollWithin(double roll, double error)
-    {
+    public boolean isRollWithin(double roll, double error) {
         double delta = distanceRoll(roll);
         return delta <= error;
     }
@@ -378,8 +348,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param yaw - desired yaw
      * @return distance;
      */
-    public final double distanceYaw(double yaw)
-    {
+    public final double distanceYaw(double yaw) {
         return delta(this.yaw, yaw);
     }
 
@@ -389,8 +358,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param pitch - desired pitch
      * @return distance;
      */
-    public final double distancePitch(double pitch)
-    {
+    public final double distancePitch(double pitch) {
         return delta(this.pitch, pitch);
     }
 
@@ -400,8 +368,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param roll - desired roll
      * @return distance;
      */
-    public final double distanceRoll(double roll)
-    {
+    public final double distanceRoll(double roll) {
         return delta(this.roll, roll);
     }
 
@@ -410,8 +377,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
     }
 
     @Override
-    public IPos3D transform(IPos3D vector)
-    {
+    public Vec3 transform(Vec3 vector) {
         return new Pos(vector).transform(toQuaternion());
     }
 
@@ -420,23 +386,19 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return new {@link Pos}
      */
-    public Pos toPos()
-    {
+    public Pos toPos() {
         return new Pos(x(), y(), z());
     }
 
-    public double x()
-    {
+    public double x() {
         return -Math.sin(yaw_radian()) * Math.cos(pitch_radian());
     }
 
-    public double y()
-    {
+    public double y() {
         return Math.sin(pitch_radian());
     }
 
-    public double z()
-    {
+    public double z() {
         return Math.sin(-Math.cos(yaw_radian()) * Math.cos(pitch_radian()));
     }
 
@@ -445,8 +407,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return new {@link Quaternion}
      */
-    public Quaternion toQuaternion()
-    {
+    public Quaternion toQuaternion() {
         // Assuming the angles are in radians.
         double c1 = Math.cos(Math.toRadians(yaw) / 2);
         double s1 = Math.sin(Math.toRadians(yaw) / 2);
@@ -469,20 +430,17 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return 3 size array
      */
-    public double[] toArray()
-    {
+    public double[] toArray() {
         return new double[]{yaw, pitch, roll};
     }
 
     @Override
-    public EulerAngle clone()
-    {
+    public EulerAngle clone() {
         return new EulerAngle(yaw, pitch, roll);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "EulerAngle[" + yaw + "," + pitch + "," + roll + "]";
     }
 
@@ -491,8 +449,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @Deprecated {@link #writeBytes(ByteBuf)}
      */
     @Deprecated
-    public void writeByteBuf(ByteBuf data)
-    {
+    public void writeByteBuf(ByteBuf data) {
         data.writeDouble(yaw);
         data.writeDouble(pitch);
         data.writeDouble(roll);
@@ -500,8 +457,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
 
 
     @Override
-    public ByteBuf writeBytes(ByteBuf data)
-    {
+    public ByteBuf writeBytes(ByteBuf data) {
         data.writeDouble(yaw);
         data.writeDouble(pitch);
         data.writeDouble(roll);
@@ -509,37 +465,32 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
     }
 
     @Deprecated
-    public void readByteBuf(ByteBuf data)
-    {
+    public void readByteBuf(ByteBuf data) {
         yaw = data.readDouble();
         pitch = data.readDouble();
         roll = data.readDouble();
     }
 
     @Override
-    public EulerAngle readBytes(ByteBuf data)
-    {
+    public EulerAngle readBytes(ByteBuf data) {
         yaw = data.readDouble();
         pitch = data.readDouble();
         roll = data.readDouble();
         return this;
     }
 
-    public NBTTagCompound writeNBT(NBTTagCompound nbt)
-    {
+    public CompoundTag writeNBT(CompoundTag nbt) {
         nbt.setDouble(NBTConstants.YAW, yaw);
         nbt.setDouble(NBTConstants.PITCH, pitch);
         nbt.setDouble(NBTConstants.ROLL, roll);
         return nbt;
     }
 
-    public NBTTagCompound toNBT()
-    {
-        return writeNBT(new NBTTagCompound());
+    public CompoundTag toNBT() {
+        return writeNBT(new CompoundTag());
     }
 
-    public EulerAngle readFromNBT(NBTTagCompound nbt)
-    {
+    public EulerAngle readFromNBT(CompoundTag nbt) {
         yaw = nbt.getDouble(NBTConstants.YAW);
         pitch = nbt.getDouble(NBTConstants.PITCH);
         roll = nbt.getDouble(NBTConstants.ROLL);
@@ -552,8 +503,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return this
      */
-    public EulerAngle clampTo360()
-    {
+    public EulerAngle clampTo360() {
         this.yaw = clampAngleTo360(yaw);
         this.pitch = clampAngleTo360(pitch);
         this.roll = clampAngleTo360(roll);
@@ -567,16 +517,14 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param deltaTime - percent to move by
      * @return this
      */
-    public EulerAngle lerp(EulerAngle aim, double deltaTime)
-    {
+    public EulerAngle lerp(EulerAngle aim, double deltaTime) {
         this.yaw = lerp(yaw, aim.yaw, deltaTime);
         this.pitch = lerp(pitch, aim.pitch, deltaTime);
         this.roll = lerp(roll, aim.roll, deltaTime);
         return this;
     }
 
-    private final double lerp(double a, double b, double f)
-    {
+    private final double lerp(double a, double b, double f) {
         return a + f * (b - a);
     }
 
@@ -589,8 +537,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *                  one if you do not care to use lerp.
      * @return this
      */
-    public EulerAngle moveTowards(EulerAngle aim, double speed, double deltaTime)
-    {
+    public EulerAngle moveTowards(EulerAngle aim, double speed, double deltaTime) {
         moveYaw(aim.yaw, speed, deltaTime);
         movePitch(aim.pitch, speed, deltaTime);
         moveRoll(aim.roll, speed, deltaTime);
@@ -607,10 +554,8 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *                 if zero or less it will return current
      * @return this
      */
-    public static double moveToAngle(double current, double target, double movement)
-    {
-        if (movement <= 0)
-        {
+    public static double moveToAngle(double current, double target, double movement) {
+        if (movement <= 0) {
             return current;
         }
         final double currentAngle = ((current % 360) + 360) % 360;
@@ -618,28 +563,19 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
 
         //Ensures we go to exact angle if under rotation speed
         double diff = Math.abs(targetAngle - currentAngle);
-        if (diff < movement)
-        {
+        if (diff < movement) {
             return targetAngle;
         }
 
-        if (diff < 180)
-        {
-            if (currentAngle < targetAngle)
-            {
+        if (diff < 180) {
+            if (currentAngle < targetAngle) {
                 return currentAngle + movement;
-            }
-            else
-            {
+            } else {
                 return currentAngle - movement;
             }
-        }
-        else if (currentAngle < targetAngle)
-        {
+        } else if (currentAngle < targetAngle) {
             return currentAngle - movement;
-        }
-        else
-        {
+        } else {
             return currentAngle + movement;
         }
     }
@@ -652,8 +588,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * @param speed     - how fast to move, mainly a limit
      * @return this
      */
-    public EulerAngle moveYaw(double targetYaw, double speed, double deltaTime)
-    {
+    public EulerAngle moveYaw(double targetYaw, double speed, double deltaTime) {
         setYaw(moveToAngle(yaw, targetYaw, speed * deltaTime));
         return this;
     }
@@ -662,11 +597,10 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * Called to move towards the new pitch at a fixed speed over time
      *
      * @param targetPitch - desired position
-     * @param speed     - how fast to move, mainly a limit
+     * @param speed       - how fast to move, mainly a limit
      * @return this
      */
-    public EulerAngle movePitch(double targetPitch, double speed, double deltaTime)
-    {
+    public EulerAngle movePitch(double targetPitch, double speed, double deltaTime) {
         setPitch(moveToAngle(pitch, targetPitch, speed * deltaTime));
         return this;
     }
@@ -675,75 +609,61 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      * Called to move towards the new roll at a fixed speed over time
      *
      * @param targetRoll - desired position
-     * @param speed     - how fast to move, mainly a limit
+     * @param speed      - how fast to move, mainly a limit
      * @return this
      */
-    public EulerAngle moveRoll(double targetRoll, double speed, double deltaTime)
-    {
+    public EulerAngle moveRoll(double targetRoll, double speed, double deltaTime) {
         setRoll(moveToAngle(roll, targetRoll, speed * deltaTime));
         return this;
     }
 
-    public static double clampAngleTo360(double value)
-    {
+    public static double clampAngleTo360(double value) {
         return clampAngle(value, -360, 360);
     }
 
-    public static double clampAngle(double value, double min, double max)
-    {
+    public static double clampAngle(double value, double min, double max) {
         double result = value % 360;
-        while (result < min)
-        {
+        while (result < min) {
             result += 360;
         }
-        while (result > max)
-        {
+        while (result > max) {
             result -= 360;
         }
         return result;
     }
 
-    public static double clampPos360(double value)
-    {
+    public static double clampPos360(double value) {
         double result = value % 360;
-        while (result < 0)
-        {
+        while (result < 0) {
             result += 360;
         }
-        while (result > 360)
-        {
+        while (result > 360) {
             result -= 360;
         }
         return result;
     }
 
-    public double yaw()
-    {
+    public double yaw() {
         return yaw;
     }
 
-    public double pitch()
-    {
+    public double pitch() {
         return pitch;
     }
 
-    public double roll()
-    {
+    public double roll() {
         return roll;
     }
 
-    public double yaw_radian()
-    {
+    public double yaw_radian() {
         return Math.toRadians(yaw);
     }
 
-    public double pitch_radian()
-    {
+    public double pitch_radian() {
         return Math.toRadians(pitch);
     }
 
-    public double roll_radian()
-    {
+    public double roll_radian() {
         return Math.toRadians(roll);
     }
 
@@ -753,8 +673,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return true if values are near zero
      */
-    public boolean isZero()
-    {
+    public boolean isZero() {
         return isYawZero() && isPitchZero() && isRollZero();
     }
 
@@ -764,8 +683,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return true if values are near zero
      */
-    public boolean isYawZero()
-    {
+    public boolean isYawZero() {
         return yaw <= 0.00001 && yaw >= -0.00001;
     }
 
@@ -775,8 +693,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return true if values are near zero
      */
-    public boolean isPitchZero()
-    {
+    public boolean isPitchZero() {
         return pitch <= 0.00001 && pitch >= -0.00001;
     }
 
@@ -786,41 +703,34 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @return true if values are near zero
      */
-    public boolean isRollZero()
-    {
+    public boolean isRollZero() {
         return roll <= 0.00001 && roll >= -0.00001;
     }
 
     @Deprecated
-    public void yaw_$eq(double v)
-    {
+    public void yaw_$eq(double v) {
         yaw = v;
     }
 
     @Deprecated
-    public void pitch_$eq(double v)
-    {
+    public void pitch_$eq(double v) {
         pitch = v;
     }
 
     @Deprecated
-    public void roll_$eq(double v)
-    {
+    public void roll_$eq(double v) {
         roll = v;
     }
 
-    public void setYaw(double v)
-    {
+    public void setYaw(double v) {
         yaw = v;
     }
 
-    public void setPitch(double v)
-    {
+    public void setPitch(double v) {
         pitch = v;
     }
 
-    public void setRoll(double v)
-    {
+    public void setRoll(double v) {
         roll = v;
     }
 }

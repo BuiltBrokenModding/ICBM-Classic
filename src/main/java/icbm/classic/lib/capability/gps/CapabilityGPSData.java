@@ -2,73 +2,74 @@ package icbm.classic.lib.capability.gps;
 
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.common.capabilities.Capability;
+import net.neoforged.common.capabilities.CapabilityManager;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
-public class CapabilityGPSData implements IGPSData, INBTSerializable<NBTTagCompound> {
+public class CapabilityGPSData implements IGPSData, INBTSerializable<CompoundTag> {
 
-    private Vec3d position;
-    private Integer dimension;
+    private Vec3 position;
+    private ResourceKey<Level> level;
 
     @Override
-    public void setPosition(@Nullable Vec3d position) {
+    public void setPosition(@Nullable Vec3 position) {
         this.position = position;
     }
 
     @Override
-    public void setWorld(@Nullable Integer dimension) {
-        this.dimension = dimension;
+    public void setLevel(@Nullable ResourceKey<Level> dimension) {
+        this.level = dimension;
     }
 
     @Nullable
     @Override
-    public Vec3d getPosition() {
+    public Vec3 getPosition() {
         return position;
     }
 
     @Nullable
     @Override
-    public Integer getWorldId() {
-        return dimension;
+    public ResourceKey<Level> getLevelId() {
+        level.location();
+        return level;
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT() {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<IGPSData> SAVE_LOGIC = new NbtSaveHandler<IGPSData>()
         .mainRoot()
-        /* */.nodeVec3d("pos", IGPSData::getPosition, IGPSData::setPosition)
-        /* */.nodeInteger("dim", IGPSData::getWorldId, IGPSData::setWorld)
+        /* */.nodeVec3("pos", IGPSData::getPosition, IGPSData::setPosition)
+        /* */.nodeString("dim", igpsData -> igpsData.getLevelId().location().toString(), IGPSData::setLevel)
         .base();
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IGPSData.class, new Capability.IStorage<IGPSData>()
-            {
+    public static void register() {
+        CapabilityManager.INSTANCE.register(IGPSData.class, new Capability.IStorage<IGPSData>() {
                 @Nullable
                 @Override
-                public NBTBase writeNBT(Capability<IGPSData> capability, IGPSData instance, EnumFacing side) {
+                public NBTBase writeNBT(Capability<IGPSData> capability, IGPSData instance, Direction side) {
                     return SAVE_LOGIC.save(instance);
                 }
 
                 @Override
-                public void readNBT(Capability<IGPSData> capability, IGPSData instance, EnumFacing side, NBTBase nbt) {
-                    if(nbt instanceof NBTTagCompound) {
-                        SAVE_LOGIC.load(instance, (NBTTagCompound) nbt);
+                public void readNBT(Capability<IGPSData> capability, IGPSData instance, Direction side, NBTBase nbt) {
+                    if (nbt instanceof CompoundTag) {
+                        SAVE_LOGIC.load(instance, (CompoundTag) nbt);
                     }
                 }
             },

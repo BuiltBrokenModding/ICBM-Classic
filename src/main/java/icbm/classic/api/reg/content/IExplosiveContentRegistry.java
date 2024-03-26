@@ -1,16 +1,15 @@
 package icbm.classic.api.reg.content;
 
-import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import icbm.classic.api.reg.ExplosiveType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Set;
 
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/4/19.
  */
-public interface IExplosiveContentRegistry
-{
+public interface IExplosiveContentRegistry {
     /**
      * Unique name of the content registry
      *
@@ -50,7 +49,7 @@ public interface IExplosiveContentRegistry
      *
      * @return
      */
-    Set<IExplosiveData> getExplosives();
+    Set<ExplosiveType> getExplosives();
 
     /**
      * Gets a supported explosive by name
@@ -58,7 +57,7 @@ public interface IExplosiveContentRegistry
      * @param regName - registry name of the explosive
      * @return
      */
-    IExplosiveData getExplosive(ResourceLocation regName);
+    ExplosiveType getExplosive(ResourceLocation regName);
 
     /**
      * Creates a new explosive device represented by
@@ -74,7 +73,7 @@ public interface IExplosiveContentRegistry
      * @param data for explosive instance
      * @return new device stack
      */
-    default ItemStack getDeviceStack(IExplosiveData data) {
+    default ItemStack getDeviceStack(ExplosiveType data) {
         return getDeviceStack(data.getRegistryName());
     }
 
@@ -107,8 +106,7 @@ public interface IExplosiveContentRegistry
      * @param explosiveData - explosive data
      * @return true if enabled, can also be false if the registry is not setup yet
      */
-    default boolean isEnabled(IExplosiveData explosiveData)
-    {
+    default boolean isEnabled(ExplosiveType explosiveData) {
         return getExplosivesIDs() != null && getExplosivesIDs().contains(explosiveData.getRegistryID());
     }
 
@@ -118,8 +116,7 @@ public interface IExplosiveContentRegistry
      * @param exName - explosive data name
      * @return true if enabled, can also be false if the registry is not setup yet
      */
-    default boolean isEnabled(ResourceLocation exName)
-    {
+    default boolean isEnabled(ResourceLocation exName) {
         return getExplosiveNames() != null && getExplosiveNames().contains(exName);
     }
 
@@ -129,8 +126,7 @@ public interface IExplosiveContentRegistry
      * @param exID - explosive data ID
      * @return true if enabled, can also be false if the registry is not setup yet
      */
-    default boolean isEnabled(int exID)
-    {
+    default boolean isEnabled(int exID) {
         return getExplosivesIDs() != null && getExplosivesIDs().contains(exID);
     }
 

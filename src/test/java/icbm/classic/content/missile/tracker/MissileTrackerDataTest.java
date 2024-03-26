@@ -1,30 +1,22 @@
 package icbm.classic.content.missile.tracker;
 
-import com.adelean.inject.resources.junit.jupiter.GivenBinaryResource;
 import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
-import com.ibm.icu.impl.Assert;
-import com.lunarshark.nbttool.mod.NBTTool;
-import com.lunarshark.nbttool.utils.SaveToJson;
 import icbm.classic.TestBase;
-import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.nbt.NBTTagCompound;
-import org.apache.logging.log4j.LogManager;
+import icbm.classic.world.missile.tracker.MissileTrackerData;
+import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.io.IOException;
 
 @TestWithResources
 public class MissileTrackerDataTest extends TestBase {
 
     @GivenJsonResource("data/saves/4.0.0/worldData_missileTracker_data.json")
-    NBTTagCompound missileData400;
+    CompoundTag missileData400;
 
     @GivenJsonResource("data/saves/fixer/worldData_missileTracker_missile.json")
-    NBTTagCompound missile;
+    CompoundTag missile;
 
     @Test
     @DisplayName("Updates v4.0.0 missile data")

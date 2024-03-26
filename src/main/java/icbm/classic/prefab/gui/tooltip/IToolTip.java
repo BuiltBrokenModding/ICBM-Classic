@@ -1,6 +1,6 @@
 package icbm.classic.prefab.gui.tooltip;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public interface IToolTip {
 
@@ -18,5 +18,5 @@ public interface IToolTip {
      *
      * @return tooltip or null to ignore
      */
-    ITextComponent getTooltip();
+    Component getTooltip();
 }

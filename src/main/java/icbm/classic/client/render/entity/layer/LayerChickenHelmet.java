@@ -1,51 +1,54 @@
 package icbm.classic.client.render.entity.layer;
 
-import icbm.classic.ICBMConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
+import icbm.classic.IcbmConstants;
 import icbm.classic.client.models.ModelChickenHelmet;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderChicken;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.model.ChickenModel;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.ChickenRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.Chicken;
+import org.jetbrains.annotations.NotNull;
 
-public class LayerChickenHelmet implements LayerRenderer<EntityChicken> {
+public class LayerChickenHelmet extends RenderLayer<Chicken, ChickenModel<Chicken>> {
 
     final ModelChickenHelmet helmet = new ModelChickenHelmet();
-    final ResourceLocation texture = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/space_chicken.png");
+    final ResourceLocation texture = new ResourceLocation(IcbmConstants.MOD_ID, "textures/entity/space_chicken.png");
 
-    private final RenderChicken renderChicken;
+    private final ChickenRenderer renderer;
 
-    public LayerChickenHelmet(RenderChicken renderChicken) {
-        this.renderChicken = renderChicken;
+    public LayerChickenHelmet(ChickenRenderer renderer) {
+        super(renderer);
+        this.renderer = renderer;
     }
 
     @Override
-    public void doRenderLayer(EntityChicken entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        if(entity.hasCapability(CapSpaceChicken.INSTANCE, null)) {
+    protected @NotNull ResourceLocation getTextureLocation(@NotNull Chicken entity) {
+        return texture;
+    }
 
-            final CapSpaceChicken cap = entity.getCapability(CapSpaceChicken.INSTANCE, null);
-            if(cap != null && cap.isSpace()) {
-
-                renderChicken.bindTexture(texture);
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-                GlStateManager.pushMatrix();
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                GlStateManager.alphaFunc(516, 0.003921569F);
-
-                helmet.isChild = entity.isChild();
-                helmet.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-
-                GlStateManager.disableBlend();
-                GlStateManager.popMatrix();
-            }
+    @Override
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Chicken entity,
+                       float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw,
+                       float headPitch) {
+        CapSpaceChicken capability = entity.getCapability(CapSpaceChicken.INSTANCE);
+        if (capability != null && capability.isSpace()) {
+            // FIXME: Figure out how to render the helmet
+//            renderer.bindTexture(texture);
+//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+//
+//            GlStateManager.pushMatrix();
+//            GlStateManager.enableBlend();
+//            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+//            GlStateManager.alphaFunc(516, 0.003921569F);
+//
+//            helmet.isChild = entity.isChild();
+//            helmet.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+//
+//            GlStateManager.disableBlend();
+//            GlStateManager.popMatrix();
         }
-    }
-
-    @Override
-    public boolean shouldCombineTextures() {
-        return false;
     }
 }

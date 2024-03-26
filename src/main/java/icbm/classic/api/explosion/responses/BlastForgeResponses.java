@@ -4,11 +4,10 @@ import icbm.classic.api.explosion.BlastState;
 
 /**
  * Reference enum for finding common blast responses for forge events
- *
+ * <p>
  * Created by Robin Seifert on 5/21/2021.
  */
-public enum BlastForgeResponses
-{
+public enum BlastForgeResponses {
     EXPLOSION_EVENT(BlastState.CANCLED, "Forge:event.explosion"),
     ENTITY_SPAWNING(BlastState.CANCLED, "Forge:event.entity.spawning");
 

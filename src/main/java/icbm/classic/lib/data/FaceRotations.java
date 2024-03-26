@@ -1,12 +1,12 @@
 package icbm.classic.lib.data;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
-import static net.minecraft.util.EnumFacing.*;
+import static net.minecraft.util.Direction.*;
 
 public class FaceRotations {
 
-    public static final EnumFacing[] CW_UP_AXIS = new RotationBuilder()
+    public static final Direction[] CW_UP_AXIS = new RotationBuilder()
         .start(NORTH)
         .rotation(NORTH, EAST)
         .rotation(EAST, SOUTH)
@@ -14,7 +14,7 @@ public class FaceRotations {
         .rotation(WEST, NORTH)
         .build();
 
-    public static final EnumFacing[] CCW_UP_AXIS = new RotationBuilder()
+    public static final Direction[] CCW_UP_AXIS = new RotationBuilder()
         .start(NORTH)
         .rotation(NORTH, WEST)
         .rotation(EAST, NORTH)
@@ -22,7 +22,7 @@ public class FaceRotations {
         .rotation(WEST, SOUTH)
         .build();
 
-    public static final EnumFacing[] CW_NORTH_AXIS = new RotationBuilder()
+    public static final Direction[] CW_NORTH_AXIS = new RotationBuilder()
         .start(UP)
         .rotation(UP, WEST)
         .rotation(WEST, DOWN)
@@ -30,7 +30,7 @@ public class FaceRotations {
         .rotation(EAST, UP)
         .build();
 
-    public static final EnumFacing[] CW_EAST_AXIS = new RotationBuilder()
+    public static final Direction[] CW_EAST_AXIS = new RotationBuilder()
         .start(UP)
         .rotation(UP, NORTH)
         .rotation(NORTH, DOWN)
@@ -38,7 +38,7 @@ public class FaceRotations {
         .rotation(SOUTH, UP)
         .build();
 
-    public static final EnumFacing[] CW_SOUTH_AXIS = new RotationBuilder()
+    public static final Direction[] CW_SOUTH_AXIS = new RotationBuilder()
         .start(UP)
         .rotation(UP, EAST)
         .rotation(EAST, DOWN)
@@ -46,7 +46,7 @@ public class FaceRotations {
         .rotation(WEST, UP)
         .build();
 
-    public static final EnumFacing[] CW_WEST_AXIS = new RotationBuilder()
+    public static final Direction[] CW_WEST_AXIS = new RotationBuilder()
         .start(UP)
         .rotation(UP, SOUTH)
         .rotation(SOUTH, DOWN)
@@ -54,7 +54,7 @@ public class FaceRotations {
         .rotation(NORTH, UP)
         .build();
 
-    public static final EnumFacing[] CW_DOWN_AXIS = new RotationBuilder()
+    public static final Direction[] CW_DOWN_AXIS = new RotationBuilder()
         .start(NORTH)
         .rotation(NORTH, WEST)
         .rotation(WEST, SOUTH)
@@ -62,8 +62,10 @@ public class FaceRotations {
         .rotation(EAST, NORTH)
         .build();
 
-    /** Rotates around the face clockwise */
-    public static final EnumFacing[][] CW_FACE = new EnumFacing[][] {
+    /**
+     * Rotates around the face clockwise
+     */
+    public static final Direction[][] CW_FACE = new Direction[][]{
 
         // UP
         CW_UP_AXIS,
@@ -81,52 +83,54 @@ public class FaceRotations {
 
     /**
      * Rotates clockwise, towards right relative to self on a clock face
-     *
+     * <p>
      * Clockwise {@see https://en.wikipedia.org/wiki/Clockwise}
      *
-     * @param face to rotate around
+     * @param face    to rotate around
      * @param current rotation
      * @return next rotation, if current is same as face or inverse of face it will pick starting rotation
      */
-    public static EnumFacing rotateRight(EnumFacing face, EnumFacing current) {
+    public static Direction rotateRight(Direction face, Direction current) {
         return CW_FACE[face.ordinal()][current.ordinal()];
     }
 
     /**
      * Rotates counter-clockwise, towards left relative to self on a clock face
-     *
+     * <p>
      * Clockwise {@see https://en.wikipedia.org/wiki/Clockwise}
      *
-     * @param face to rotate around
+     * @param face    to rotate around
      * @param current rotation
      * @return next rotation, if current is same as face or inverse of face it will pick starting rotation
      */
-    public static EnumFacing rotateLeft(EnumFacing face, EnumFacing current) {
+    public static Direction rotateLeft(Direction face, Direction current) {
         return CW_FACE[face.ordinal()][current.ordinal()].getOpposite();
     }
 
     public static class RotationBuilder {
-        private final EnumFacing[] rotations = new EnumFacing[6];
+        private final Direction[] rotations = new Direction[6];
 
-        public RotationBuilder() {}
-        public RotationBuilder(EnumFacing[] sides) {
+        public RotationBuilder() {
+        }
+
+        public RotationBuilder(Direction[] sides) {
             System.arraycopy(sides, 0, rotations, 0, 6);
         }
 
-        public RotationBuilder rotation(EnumFacing input, EnumFacing output) {
+        public RotationBuilder rotation(Direction input, Direction output) {
             rotations[input.ordinal()] = output;
             return this;
         }
 
-        public RotationBuilder start(EnumFacing face) {
-            for(int i = 0; i < 6; i++) {
+        public RotationBuilder start(Direction face) {
+            for (int i = 0; i < 6; i++) {
                 this.rotations[i] = face;
             }
             return this;
         }
 
-        public EnumFacing[] build() {
-            final EnumFacing[] rotations = new EnumFacing[6];
+        public Direction[] build() {
+            final Direction[] rotations = new Direction[6];
             System.arraycopy(this.rotations, 0, rotations, 0, 6);
             return rotations;
         }

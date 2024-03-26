@@ -18,8 +18,11 @@ public class DisableButton extends GuiButtonBase<DisableButton> implements IGuiC
     private static final int UV_Y = 241;
     private static final int UV_X = 0;
 
-    /** Checks if disable status should render, not the same as #enabled or #visble. Even though this causes it to stop rendering is true */
+    /**
+     * Checks if disable status should render, not the same as #enabled or #visble. Even though this causes it to stop rendering is true
+     */
     private final Supplier<Boolean> shouldShowAsDisabled;
+
     public DisableButton(int buttonId, int x, int y, Supplier<Boolean> shouldShowAsDisabled) {
         super(buttonId, x, y, WIDTH, HEIGHT, "");
         this.shouldShowAsDisabled = shouldShowAsDisabled;
@@ -42,7 +45,7 @@ public class DisableButton extends GuiButtonBase<DisableButton> implements IGuiC
                 this.drawTexturedModalRect(this.x, this.y, UV_X + WIDTH, UV_Y, this.width, this.height);
             }
             // Default state
-            else if(shouldShowAsDisabled.get()) {
+            else if (shouldShowAsDisabled.get()) {
                 this.drawTexturedModalRect(this.x, this.y, UV_X, UV_Y, this.width, this.height);
             }
 
@@ -52,8 +55,7 @@ public class DisableButton extends GuiButtonBase<DisableButton> implements IGuiC
     }
 
     @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
-    {
+    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
         return super.mousePressed(mc, mouseX, mouseY) && GuiContainer.isAltKeyDown();
     }
 }

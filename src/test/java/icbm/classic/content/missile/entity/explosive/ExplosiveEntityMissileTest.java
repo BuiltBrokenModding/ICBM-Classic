@@ -1,0 +1,96 @@
+package icbm.classic.content.missile.entity.explosive;
+
+import com.adelean.inject.resources.junit.jupiter.GivenJsonResource;
+import com.adelean.inject.resources.junit.jupiter.TestWithResources;
+import icbm.classic.ICBMClassic;
+import icbm.classic.TestBase;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.caps.IExplosive;
+import icbm.classic.world.item.MissileItem;
+import icbm.classic.world.missile.entity.explosive.ExplosiveMissileEntity;
+import icbm.classic.world.missile.logic.flight.DeadFlightLogic;
+import icbm.classic.world.missile.logic.source.MissileSource;
+import icbm.classic.world.missile.logic.source.cause.EntityCause;
+import icbm.classic.world.IcbmItems;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.junit.jupiter.api.*;
+
+import java.util.UUID;
+
+@TestWithResources
+public class ExplosiveEntityMissileTest extends TestBase
+{
+    @GivenJsonResource("data/saves/4.2.0/entity_missile_rpg.json")
+    CompoundTag rpgSave;
+
+    @BeforeAll
+    public static void beforeAllTests()
+    {
+        // Register missile for loading explosive stack from save
+        ForgeRegistries.ITEMS.register(IcbmItems.itemExplosiveMissile = new MissileItem().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+    }
+
+    @Test
+    @DisplayName("Loaded file saves back to same tag set")
+    void readMatchesWrite() {
+        final Level level = testManager.getLevel();
+        final ExplosiveMissileEntity missile = new ExplosiveMissileEntity(world);
+
+        // Load entity custom save
+        missile.readEntityFromNBT(rpgSave);
+
+        final CompoundTag newSave = new CompoundTag();
+        missile.writeEntityToNBT(newSave);
+
+        // Validate our new save matches the inputted data
+        // Only checking for deltas in save data, doesn't confirm save/load is good... only not fucked
+        assertTags(rpgSave, newSave);
+    }
+
+    @Test
+    @DisplayName("Loads rpg missile from existing save")
+    void loadFromSave_rpg() {
+        final Level level = testManager.getLevel();
+        final ExplosiveMissileEntity missile = new ExplosiveMissileEntity(world);
+
+        // Validate we have a test file
+        Assertions.assertNotNull(rpgSave);
+
+        // Load entity custom save
+        missile.readEntityFromNBT(rpgSave);
+
+        // EntityExplosiveMissile
+        final IExplosive explosive = missile.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+        Assertions.assertEquals(ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(10), explosive.getExplosiveData());
+
+        // EntityMissile
+        Assertions.assertTrue(missile.getMissileCapability().canRunFlightLogic());
+        Assertions.assertNull(missile.getMissileCapability().getTargetData());
+        Assertions.assertEquals(new DeadFlightLogic(135), missile.getMissileCapability().getFlightLogic());
+
+        final EntityCause entitySourceData = new EntityCause();
+        entitySourceData.setName("Player890");
+        entitySourceData.setId(new UUID(2454671487114819752L, -8122821596986775482L));
+        entitySourceData.setPlayer(true);
+        Assertions.assertEquals(new MissileSource(world, new Vec3(59.06195460480209, 75.15145375534576, 257.2760022607643), entitySourceData),
+            missile.getMissileCapability().getMissileSource());
+
+        // Projectile
+        Assertions.assertEquals(new BlockPos(10, 5, 290), missile.tilePos);
+        Assertions.assertEquals(Direction.EAST, missile.sideTile);
+        Assertions.assertEquals(Blocks.STONE.getDefaultState(), missile.blockInside);
+        Assertions.assertTrue(missile.inGround);
+        Assertions.assertEquals(117, missile.ticksInAir);
+        Assertions.assertEquals(45, missile.ticksInGround);
+
+        // ICBM Entity
+        assertFloating(43.1f, missile.getHealth(), 0.001f);
+
+    }
+}

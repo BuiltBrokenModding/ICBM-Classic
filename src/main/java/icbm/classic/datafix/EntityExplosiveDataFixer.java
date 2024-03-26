@@ -4,45 +4,40 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.datafix.IFixableData;
+import net.minecraft.world.item.ItemStack;
 
-public class EntityExplosiveDataFixer implements IFixableData
-{
+public class EntityExplosiveDataFixer implements IFixableData {
     private static final String ENTITY_ID = "id";
     private static final String EXPLOSIVE_ID = "explosiveID";
     private static final String DATA = "data";
 
     @Override
-    public NBTTagCompound fixTagCompound(NBTTagCompound existingSave)
-    {
+    public CompoundTag fixTagCompound(CompoundTag existingSave) {
         //Match to entity, we get all entity tags as input
-        if (existingSave.hasKey(ENTITY_ID) && existingSave.getString(ENTITY_ID).equalsIgnoreCase(ICBMEntities.BLOCK_EXPLOSIVE.toString()))
-        {
+        if (existingSave.contains(ENTITY_ID) && existingSave.getString(ENTITY_ID).equalsIgnoreCase(ICBMEntities.BLOCK_EXPLOSIVE.toString())) {
             // Move hypersonic to sonic
-            if(existingSave.hasKey(NBTConstants.EXPLOSIVE_STACK)) {
-                final NBTTagCompound stackSave = existingSave.getCompoundTag(NBTConstants.EXPLOSIVE_STACK);
-                if(stackSave.hasKey("Damage")) {
+            if (existingSave.contains(NBTConstants.EXPLOSIVE_STACK)) {
+                final CompoundTag stackSave = existingSave.getCompound(NBTConstants.EXPLOSIVE_STACK);
+                if (stackSave.contains("Damage")) {
                     final int damage = stackSave.getInteger("Damage");
 
-                    if(damage == ICBMExplosives.HYPERSONIC.getRegistryID()) {
+                    if (damage == ICBMExplosives.HYPERSONIC.getRegistryID()) {
 
                         // Change to sonic id
                         stackSave.setInteger("Damage", ICBMExplosives.SONIC.getRegistryID());
 
                         // Wipe out custom data, shouldn't exist but could crash a 3rd-party's code
-                        stackSave.removeTag("tag");
-                        stackSave.removeTag("ForgeCaps");
+                        stackSave.remove("tag");
+                        stackSave.remove("ForgeCaps");
                     }
                 }
             }
             // Fix explosive ID save
-            else if (existingSave.hasKey(EXPLOSIVE_ID))
-            {
+            else if (existingSave.contains(EXPLOSIVE_ID)) {
                 final int id = existingSave.getInteger(EXPLOSIVE_ID);
 
                 //Generate stack so we can serialize off it
@@ -50,28 +45,25 @@ public class EntityExplosiveDataFixer implements IFixableData
 
                 //Handle custom explosive data
                 final IExplosive ex = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-                if(ex instanceof CapabilityExplosiveStack)
-                {
-                    if (existingSave.hasKey(DATA))
-                    {
-                        ((CapabilityExplosiveStack)ex).setCustomData(existingSave.getCompoundTag(DATA));
+                if (ex instanceof CapabilityExplosiveStack) {
+                    if (existingSave.contains(DATA)) {
+                        ((CapabilityExplosiveStack) ex).setCustomData(existingSave.getCompound(DATA));
                     }
                 }
 
                 //Remove old tags
-                existingSave.removeTag(EXPLOSIVE_ID);
-                existingSave.removeTag(DATA);
+                existingSave.remove(EXPLOSIVE_ID);
+                existingSave.remove(DATA);
 
                 //Save stack
-                existingSave.setTag(NBTConstants.EXPLOSIVE_STACK, stack.serializeNBT());
+                existingSave.put(NBTConstants.EXPLOSIVE_STACK, stack.serializeNBT());
             }
         }
         return existingSave;
     }
 
     @Override
-    public int getFixVersion()
-    {
+    public int getFixVersion() {
         return 2;
     }
 }

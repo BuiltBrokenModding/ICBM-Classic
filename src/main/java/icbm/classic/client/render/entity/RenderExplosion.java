@@ -1,34 +1,30 @@
 package icbm.classic.client.render.entity;
 
-import icbm.classic.ICBMConstants;
-import icbm.classic.content.entity.EntityExplosion;
+import icbm.classic.IcbmConstants;
+import icbm.classic.world.entity.ExplosionEntity;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
-@SideOnly(Side.CLIENT)
-public class RenderExplosion extends Render<EntityExplosion>
-{
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
+@OnlyIn(Dist.CLIENT)
+public class RenderExplosion extends Render<ExplosionEntity> {
+    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(IcbmConstants.MOD_ID, IcbmConstants.TEXTURE_DIRECTORY + "models/grey.png");
 
-    public RenderExplosion(RenderManager renderManager)
-    {
+    public RenderExplosion(RenderManager renderManager) {
         super(renderManager);
     }
 
     @Override
-    public void doRender(EntityExplosion entityExplosion, double x, double y, double z, float entityYaw, float partialTicks)
-    {
+    public void doRender(ExplosionEntity entityExplosion, double x, double y, double z, float entityYaw, float partialTicks) {
     }
 
     @Nullable
     @Override
-    protected ResourceLocation getEntityTexture(EntityExplosion entity)
-    {
+    protected ResourceLocation getEntityTexture(ExplosionEntity entity) {
         return GREY_TEXTURE;
     }
 }

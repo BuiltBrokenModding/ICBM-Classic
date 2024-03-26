@@ -1,19 +1,17 @@
 package icbm.classic.config.blast;
 
-import icbm.classic.ICBMConstants;
+import icbm.classic.IcbmConstants;
 import icbm.classic.config.blast.types.ConfigExBasics;
 import icbm.classic.config.blast.types.ConfigNuclear;
 import icbm.classic.config.blast.types.ConfigRedmatter;
-import net.minecraftforge.common.config.Config;
+import net.neoforged.common.config.Config;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 2/22/2018.
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/blast")
+@Config(modid = IcbmConstants.MOD_ID, name = "icbmclassic/blast")
 @Config.LangKey("config.icbmclassic:blast.title")
-public class ConfigBlast
-{
+public class ConfigBlast {
     @Config.LangKey("config.icbmclassic:blast.condensed.title")
     @Config.Comment("Settings for condensed explosive")
     public static ConfigExBasics condensed = new ConfigExBasics(6);

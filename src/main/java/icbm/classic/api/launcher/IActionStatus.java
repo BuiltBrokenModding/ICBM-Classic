@@ -1,12 +1,12 @@
 package icbm.classic.api.launcher;
 
 import icbm.classic.api.missiles.parts.IBuildableObject;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Status response for triggering an action. This can be used
  * for various events that were triggered.
- *
+ * <p>
  * Specific examples will be missile launchers and emp towers.
  * Both will respond with a status of what happened after they
  * were triggered by the player.
@@ -36,7 +36,7 @@ public interface IActionStatus extends IBuildableObject {
      *
      * @return message
      */
-    ITextComponent message();
+    Component message();
 
     // TODO add a status callback for when 'status=aiming` or 'status=delay'
 }

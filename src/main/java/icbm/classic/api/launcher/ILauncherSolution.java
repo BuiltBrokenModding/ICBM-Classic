@@ -9,7 +9,7 @@ public interface ILauncherSolution {
 
     /**
      * Target data to feed into the missile during launch
-     *
+     * <p>
      * This may be called several times for the same launcher. Ensure
      * that it produces the same results each call. If randomization
      * is used, store the randomization on solution creation.

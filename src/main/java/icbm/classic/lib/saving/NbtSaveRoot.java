@@ -4,17 +4,16 @@ import icbm.classic.api.missiles.parts.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.common.DimensionManager;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,8 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
-{
+public class NbtSaveRoot<E> implements INbtSaveNode<E, CompoundTag> {
     private final String name;
     private final NbtSaveHandler<E> handler;
     private final NbtSaveRoot<E> parent;
@@ -33,10 +31,8 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
 
     private boolean shouldSave = true;
 
-    public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent)
-    {
-        if (name == null)
-        {
+    public NbtSaveRoot(String name, NbtSaveHandler<E> handler, NbtSaveRoot<E> parent) {
+        if (name == null) {
             throw new IllegalArgumentException("save key can't be null");
         }
         this.name = name;
@@ -50,135 +46,114 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
     }
 
     @Override
-    public String getSaveKey()
-    {
+    public String getSaveKey() {
         return name;
     }
 
     @Override
-    public NBTTagCompound save(E objectToSave)
-    {
-        if(!shouldSave) {
+    public CompoundTag save(E objectToSave) {
+        if (!shouldSave) {
             return null;
         }
-        return save(objectToSave, new NBTTagCompound());
+        return save(objectToSave, new CompoundTag());
     }
 
     /**
-     * Entry point for {@link NbtSaveHandler#save(Object, NBTTagCompound)} to save directly to main root. Shouldn't
+     * Entry point for {@link NbtSaveHandler#save(Object, CompoundTag)} to save directly to main root. Shouldn't
      * be used by anything else.
      *
      * @param objectToSave used to save
      * @param tagCompound  to save against
      * @return save
      */
-    protected NBTTagCompound save(E objectToSave, NBTTagCompound tagCompound)
-    {
+    protected CompoundTag save(E objectToSave, CompoundTag tagCompound) {
         nodes.forEach(node -> {
             final NBTBase tag = node.save(objectToSave);
-            if (tag != null && !tag.hasNoTags())
-            {
-                tagCompound.setTag(node.getSaveKey(), tag);
+            if (tag != null && !tag.isEmpty()) {
+                tagCompound.put(node.getSaveKey(), tag);
             }
         });
         return tagCompound;
     }
 
     @Override
-    public void load(E objectToLoad, NBTTagCompound save)
-    {
-        if (save != null && !save.hasNoTags())
-        {
+    public void load(E objectToLoad, CompoundTag save) {
+        if (save != null && !save.isEmpty()) {
             nodes.forEach(node -> {
-                if (save.hasKey(node.getSaveKey()))
-                {
+                if (save.contains(node.getSaveKey())) {
                     node.load(objectToLoad, save.getTag(node.getSaveKey()));
                 }
             });
         }
     }
 
-    public NbtSaveRoot<E> addRoot(final String name)
-    {
+    public NbtSaveRoot<E> addRoot(final String name) {
         final NbtSaveRoot<E> root = new NbtSaveRoot<>(name, handler, this);
         nodes.add(root);
         return root;
     }
 
-    public <O extends NBTBase> NbtSaveRoot<E> node(NbtSaveNode<E, O> node)
-    {
+    public <O extends NBTBase> NbtSaveRoot<E> node(NbtSaveNode<E, O> node) {
         nodes.add(node);
         return this;
     }
 
-    public NbtSaveRoot<E> nodeString(final String name, Function<E, String> save, BiConsumer<E, String> load)
-    {
+    public NbtSaveRoot<E> nodeString(final String name, Function<E, String> save, BiConsumer<E, String> load) {
         return node(new SaveNodeString(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeInteger(final String name, Function<E, Integer> save, BiConsumer<E, Integer> load)
-    {
+    public NbtSaveRoot<E> nodeInteger(final String name, Function<E, Integer> save, BiConsumer<E, Integer> load) {
         return node(new SaveNodeInteger<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeDouble(final String name, Function<E, Double> save, BiConsumer<E, Double> load)
-    {
+    public NbtSaveRoot<E> nodeDouble(final String name, Function<E, Double> save, BiConsumer<E, Double> load) {
         return node(new SaveNodeDouble<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeFloat(final String name, Function<E, Float> save, BiConsumer<E, Float> load)
-    {
+    public NbtSaveRoot<E> nodeFloat(final String name, Function<E, Float> save, BiConsumer<E, Float> load) {
         return node(new SaveNodeFloat<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeBoolean(final String name, Function<E, Boolean> save, BiConsumer<E, Boolean> load)
-    {
+    public NbtSaveRoot<E> nodeBoolean(final String name, Function<E, Boolean> save, BiConsumer<E, Boolean> load) {
         return node(new SaveNodeBoolean<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeBlockPos(final String name, Function<E, BlockPos> save, BiConsumer<E, BlockPos> load)
-    {
+    public NbtSaveRoot<E> nodeBlockPos(final String name, Function<E, BlockPos> save, BiConsumer<E, BlockPos> load) {
         return node(new SaveNodeBlockPos<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeVec3d(final String name, Function<E, Vec3d> save, BiConsumer<E, Vec3d> load)
-    {
-        return node(new SaveNodeVec3d<E>(name, save, load));
+    public NbtSaveRoot<E> nodeVec3(final String name, Function<E, Vec3> save, BiConsumer<E, Vec3> load) {
+        return node(new SaveNodeVec3<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeWorldDim(final String name, Function<E, World> save, BiConsumer<E, World> load)
-    {
+    public NbtSaveRoot<E> nodeWorldDim(final String name, Function<E, World> save, BiConsumer<E, World> load) {
         return node(new NbtSaveNode<E, NBTTagInt>(name,
             (e) -> {
-                final World world = save.apply(e);
-                if (world != null && world.provider != null)
-                {
+                final Level level = save.apply(e);
+                if (world != null && world.provider != null) {
                     return new NBTTagInt(world.provider.getDimension());
                 }
                 return null;
             },
             (e, data) -> {
                 final int dim = data.getInt();
-                final World world = DimensionManager.getWorld(dim);
+                final Level level = DimensionManager.getLevel(dim);
                 load.accept(e, world);
             }
         ));
     }
 
     @Deprecated
-    public NbtSaveRoot<E> nodePos(final String name, Function<E, Pos> save, BiConsumer<E, Pos> load)
-    {
+    public NbtSaveRoot<E> nodePos(final String name, Function<E, Pos> save, BiConsumer<E, Pos> load) {
         return node(new SaveNodePos<E>(name, save, load));
     }
 
     @Deprecated
-    public NbtSaveRoot<E> nodeEulerAngle(final String name, Function<E, EulerAngle> save, BiConsumer<E, EulerAngle> load)
-    {
-        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+    public NbtSaveRoot<E> nodeEulerAngle(final String name, Function<E, EulerAngle> save, BiConsumer<E, EulerAngle> load) {
+        return node(new NbtSaveNode<E, CompoundTag>(name,
             (e) -> {
                 final EulerAngle angle = save.apply(e);
-                if (angle != null)
-                {
+                if (angle != null) {
                     return angle.toNBT();
                 }
                 return null;
@@ -189,44 +164,40 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
         ));
     }
 
-    public NbtSaveRoot<E> nodeFacing(final String name, Function<E, EnumFacing> save, BiConsumer<E, EnumFacing> load)
-    {
+    public NbtSaveRoot<E> nodeFacing(final String name, Function<E, Direction> save, BiConsumer<E, Direction> load) {
         return node(new SaveNodeFacing<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeBlockState(final String name, Function<E, IBlockState> save, BiConsumer<E, IBlockState> load)
-    {
+    public NbtSaveRoot<E> nodeBlockState(final String name, Function<E, BlockState> save, BiConsumer<E, BlockState> load) {
         return node(new SaveNodeBlockState<E>(name, save, load));
     }
 
-    public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
-    {
+    public NbtSaveRoot<E> nodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load) {
         return node(new SaveNodeUUID<E>(name, save, load));
     }
 
-    public <C extends IBuildableObject> NbtSaveRoot<E> nodeBuildableObject(final String name, final IBuilderRegistry<C> reg, Function<E, C> getter, BiConsumer<E, C> setter)
-    {
+    public <C extends IBuildableObject> NbtSaveRoot<E> nodeBuildableObject(final String name, final IBuilderRegistry<C> reg, Function<E, C> getter, BiConsumer<E, C> setter) {
         return node(new SaveBuildableObject<E, C>(name, reg, getter, setter));
     }
 
-    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> accessor) { //TODO recode to allow any NBTBase
-        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+    public <C extends INBTSerializable<CompoundTag>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> accessor) { //TODO recode to allow any NBTBase
+        return node(new NbtSaveNode<E, CompoundTag>(name,
             (source) -> Optional.ofNullable(accessor.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
             (source, data) -> {
                 final C object = accessor.apply(source);
-                if(object != null) {
+                if (object != null) {
                     object.deserializeNBT(data);
                 }
             }
         ));
     }
 
-    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> save, BiConsumer<E, C> load, Supplier<C> builder) {
-        return node(new NbtSaveNode<E, NBTTagCompound>(name,
+    public <C extends INBTSerializable<CompoundTag>> NbtSaveRoot<E> nodeINBTSerializable(final String name, Function<E, C> save, BiConsumer<E, C> load, Supplier<C> builder) {
+        return node(new NbtSaveNode<E, CompoundTag>(name,
             (source) -> Optional.ofNullable(save.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
             (source, data) -> {
                 final C object = builder.get();
-                if(object != null) {
+                if (object != null) {
                     object.deserializeNBT(data);
                 }
                 load.accept(source, object);
@@ -239,8 +210,7 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
      *
      * @return parent, can be null if this root is at base
      */
-    public NbtSaveRoot<E> parent()
-    {
+    public NbtSaveRoot<E> parent() {
         return parent;
     }
 
@@ -249,8 +219,7 @@ public class NbtSaveRoot<E> implements INbtSaveNode<E, NBTTagCompound>
      *
      * @return handler
      */
-    public NbtSaveHandler<E> base()
-    {
+    public NbtSaveHandler<E> base() {
         return handler;
     }
 }

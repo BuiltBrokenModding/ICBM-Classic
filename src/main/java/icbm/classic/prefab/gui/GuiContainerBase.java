@@ -1,7 +1,7 @@
 package icbm.classic.prefab.gui;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
+import icbm.classic.IcbmConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.button.GuiButtonBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
@@ -10,8 +10,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 
@@ -19,28 +19,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class GuiContainerBase extends GuiContainer
-{
-    public static final ResourceLocation COMPONENTS_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
+public abstract class GuiContainerBase extends GuiContainer {
+    public static final ResourceLocation COMPONENTS_TEXTURE = new ResourceLocation(IcbmConstants.MOD_ID, IcbmConstants.GUI_DIRECTORY + "gui_components.png");
 
     public String currentTooltipText = "";
 
     protected ArrayList<IGuiComponent> components = new ArrayList();
 
 
-    /** Debug toogle to render text for the ID and inventory ID for a slot */
+    /**
+     * Debug toogle to render text for the ID and inventory ID for a slot
+     */
     public boolean renderSlotDebugIDs = false;
 
-    public GuiContainerBase(Container container)
-    {
+    public GuiContainerBase(Container container) {
         super(container);
     }
 
     public abstract ResourceLocation getBackground();
 
     @Override
-    public void initGui()
-    {
+    public void initGui() {
         super.initGui();
         this.buttonList.clear();
         this.components.clear();
@@ -54,29 +53,25 @@ public abstract class GuiContainerBase extends GuiContainer
      * @return
      */
     @Deprecated
-    protected <E extends GuiButton> E addButton(E button)
-    {
-        if(button instanceof IGuiComponent) {
+    protected <E extends GuiButton> E addButton(E button) {
+        if (button instanceof IGuiComponent) {
             addComponent((IGuiComponent) button);
-        }
-        else {
+        } else {
             buttonList.add(button);
         }
         return button;
     }
 
-    protected void drawString(String str, int x, int y, int color)
-    {
+    protected void drawString(String str, int x, int y, int color) {
         Minecraft.getMinecraft().fontRenderer.drawString(str, x, y, color);
     }
 
-    protected void drawStringCentered(String str, int x, int y, int color)
-    {
+    protected void drawStringCentered(String str, int x, int y, int color) {
         drawString(str, x - (Minecraft.getMinecraft().fontRenderer.getStringWidth(str) / 2), y, color);
     }
 
     protected <T extends IGuiComponent> T addComponent(T field) {
-        if(field instanceof GuiButton) {
+        if (field instanceof GuiButton) {
             buttonList.add((GuiButton) field);
         }
         components.add(field);
@@ -85,8 +80,7 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    public void onGuiClosed()
-    {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
         super.onGuiClosed();
     }
@@ -98,8 +92,7 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-    {
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
         components.forEach(field -> {
@@ -108,14 +101,13 @@ public abstract class GuiContainerBase extends GuiContainer
             field.drawForegroundLayer(mouseX, mouseY);
 
             // Detect if we need to display error feedback for the box
-            if(field instanceof IToolTip && ((IToolTip) field).isWithin(mouseX, mouseY)) {
-                final ITextComponent tooltip = ((IToolTip) field).getTooltip();
-                if(tooltip != null) {
+            if (field instanceof IToolTip && ((IToolTip) field).isWithin(mouseX, mouseY)) {
+                final Component tooltip = ((IToolTip) field).getTooltip();
+                if (tooltip != null) {
                     try {
                         this.currentTooltipText = LanguageUtility.buildToolTipString(tooltip);
-                    }
-                    catch (Exception e) {
-                        if(ICBMClassic.runningAsDev) {
+                    } catch (Exception e) {
+                        if (ICBMClassic.runningAsDev) {
                             ICBMClassic.logger().error("Failed to format text for display", e);
                         }
                     }
@@ -124,8 +116,7 @@ public abstract class GuiContainerBase extends GuiContainer
         });
 
         // Render current tooltip if not empty
-        if (!StringUtils.isEmpty(this.currentTooltipText))
-        {
+        if (!StringUtils.isEmpty(this.currentTooltipText)) {
             java.util.List<String> lines = LanguageUtility.splitByLine(currentTooltipText);
             this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines);
         }
@@ -135,34 +126,27 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         renderHoveredToolTip(mouseX, mouseY); //TODO consider render tooltips in this step
         components.forEach(component -> component.draw(mouseX, mouseY, partialTicks));
     }
 
     @Override
-    protected void keyTyped(char c, int id) throws IOException
-    {
+    protected void keyTyped(char c, int id) throws IOException {
         //Key for debug render
-        if (id == Keyboard.KEY_INSERT)
-        {
+        if (id == Keyboard.KEY_INSERT) {
             renderSlotDebugIDs = !renderSlotDebugIDs;
-        }
-        else
-        {
+        } else {
             boolean f = components.stream().anyMatch(component -> component.onKeyTyped(c, id));
-            if (!f)
-            {
+            if (!f) {
                 super.keyTyped(c, id);
             }
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
-    {
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         drawDefaultBackground();
 
         this.mc.renderEngine.bindTexture(this.getBackground());
@@ -174,20 +158,18 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         components.forEach(component -> {
-            if(!(component instanceof GuiButton)) {
+            if (!(component instanceof GuiButton)) {
                 component.onMouseClick(mouseX, mouseY, mouseButton);
             }
         });
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if(button instanceof GuiButtonBase) {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button instanceof GuiButtonBase) {
             ((GuiButtonBase) button).triggerAction();
         }
     }
@@ -205,13 +187,10 @@ public abstract class GuiContainerBase extends GuiContainer
      * @param height   - height of the texture
      * @param newWidth - new width to render the rectangle, minimal size of 6
      */
-    protected void drawRectWithScaledWidth(int x, int y, int u, int v, int width, int height, int newWidth)
-    {
-        if (width > 0)
-        {
+    protected void drawRectWithScaledWidth(int x, int y, int u, int v, int width, int height, int newWidth) {
+        if (width > 0) {
             //If both widths are the same redirect to original call
-            if (newWidth <= 0 || width == newWidth)
-            {
+            if (newWidth <= 0 || width == newWidth) {
                 drawTexturedModalRect(x, y, u, v, width, height);
             }
 
@@ -223,12 +202,10 @@ public abstract class GuiContainerBase extends GuiContainer
             x += 3;
 
             //only render middle if it is larger than 6
-            if (newWidth > 6)
-            {
+            if (newWidth > 6) {
                 //Loop over number of sections that need to be rendered
                 int loops = newWidth / width;
-                while (loops > 0)
-                {
+                while (loops > 0) {
                     drawTexturedModalRect(x, y, u + 3, v, midWidth, height);
                     x += midWidth;
                     loops -= 1;
@@ -236,15 +213,13 @@ public abstract class GuiContainerBase extends GuiContainer
 
                 //Check if there is a remainder that still needs rendered
                 loops = newWidth % width;
-                if (loops != 0)
-                {
+                if (loops != 0) {
                     drawTexturedModalRect(x, y, u + 3, v, loops, height);
                     x += loops;
                 }
             }
 
-            if (width > 3)
-            {
+            if (width > 3) {
                 //End cap of image rect
                 drawTexturedModalRect(x, y, u + width - 3, v, 3, height);
             }
@@ -252,23 +227,19 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     //TODO update and docs
-    public void drawTooltip(int x, int y, Collection<String> toolTips)
-    {
-        if (toolTips != null)
-        {
+    public void drawTooltip(int x, int y, Collection<String> toolTips) {
+        if (toolTips != null) {
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableDepth();
 
             int textMaxWidth = 0;
 
             // Render all my lines
-            for (String line : toolTips)
-            {
+            for (String line : toolTips) {
                 final int lineWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(line);
 
                 // Tack longest line
-                if (lineWidth > textMaxWidth)
-                {
+                if (lineWidth > textMaxWidth) {
                     textMaxWidth = lineWidth;
                 }
             }
@@ -278,13 +249,11 @@ public abstract class GuiContainerBase extends GuiContainer
 
             int var9 = 8;
 
-            if (toolTips.size() > 1)
-            {
-                var9 += 2 + (toolTips.size()- 1) * 10;
+            if (toolTips.size() > 1) {
+                var9 += 2 + (toolTips.size() - 1) * 10;
             }
 
-            if (this.guiTop + backgroundY + var9 + 6 > this.height)
-            {
+            if (this.guiTop + backgroundY + var9 + 6 > this.height) {
                 backgroundY = this.height - var9 - this.guiTop - 6;
             }
 
@@ -303,8 +272,7 @@ public abstract class GuiContainerBase extends GuiContainer
             this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
 
             // Draw text shadows
-            for (String line : toolTips)
-            {
+            for (String line : toolTips) {
                 Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line, backgroundX, backgroundY, -1);
                 backgroundY += 10;
             }

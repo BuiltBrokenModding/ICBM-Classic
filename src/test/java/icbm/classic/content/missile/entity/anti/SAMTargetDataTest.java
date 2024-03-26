@@ -1,11 +1,12 @@
 package icbm.classic.content.missile.entity.anti;
 
 import com.builtbroken.mc.testing.junit.TestManager;
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.world.World;
+import icbm.classic.world.missile.entity.anti.SurfaceToAirMissileEntity;
+import icbm.classic.world.missile.entity.explosive.ExplosiveMissileEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.EntityZombie;
+import net.minecraft.world.entity.passive.EntitySheep;
+import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.*;
 
 import java.util.function.Function;
@@ -14,13 +15,13 @@ public class SAMTargetDataTest {
 
     static TestManager testManager = new TestManager("radarScanLogic", Assertions::fail);
 
-    final World world = testManager.getWorld();
+    final Level level = testManager.getLevel();
 
-    EntitySurfaceToAirMissile antiMissile;
+    SurfaceToAirMissileEntity antiMissile;
 
     @BeforeEach
     void beforeEach() {
-        antiMissile = spawnEntity(EntitySurfaceToAirMissile::new, 100, 100, 100);
+        antiMissile = spawnEntity(SurfaceToAirMissileEntity::new, 100, 100, 100);
     }
 
     @AfterAll
@@ -69,7 +70,7 @@ public class SAMTargetDataTest {
     @DisplayName("No target: dead missiles")
     @Test
     void deadMissiles_noTarget() {
-        spawnEntity(EntityExplosiveMissile::new, 100, 100, 105).setDead();
+        spawnEntity(ExplosiveMissileEntity::new, 100, 100, 105).setDead();
 
         antiMissile.scanLogic.refreshTargets();
         Assertions.assertNull(antiMissile.scanLogic.getTarget());
@@ -79,12 +80,12 @@ public class SAMTargetDataTest {
     @DisplayName("No target: outside range")
     @Test
     void outsideRange_noTarget() {
-        spawnEntity(EntityExplosiveMissile::new, 100 + 31, 100, 100);
-        spawnEntity(EntityExplosiveMissile::new, 100 - 31, 100, 100);
-        spawnEntity(EntityExplosiveMissile::new, 100, 100, 100 + 31);
-        spawnEntity(EntityExplosiveMissile::new, 100, 100, 100 - 31);
-        spawnEntity(EntityExplosiveMissile::new, 100, 100 + 31, 100);
-        spawnEntity(EntityExplosiveMissile::new, 100, 100 - 31, 100);
+        spawnEntity(ExplosiveMissileEntity::new, 100 + 31, 100, 100);
+        spawnEntity(ExplosiveMissileEntity::new, 100 - 31, 100, 100);
+        spawnEntity(ExplosiveMissileEntity::new, 100, 100, 100 + 31);
+        spawnEntity(ExplosiveMissileEntity::new, 100, 100, 100 - 31);
+        spawnEntity(ExplosiveMissileEntity::new, 100, 100 + 31, 100);
+        spawnEntity(ExplosiveMissileEntity::new, 100, 100 - 31, 100);
 
         antiMissile.scanLogic.refreshTargets();
         Assertions.assertNull(antiMissile.scanLogic.getTarget());
@@ -94,7 +95,7 @@ public class SAMTargetDataTest {
     @DisplayName("Target: single target")
     @Test
     void singleTarget_findOneTarget() {
-        final EntityExplosiveMissile missile = spawnEntity(EntityExplosiveMissile::new, 105, 100, 100);
+        final ExplosiveMissileEntity missile = spawnEntity(ExplosiveMissileEntity::new, 105, 100, 100);
 
         antiMissile.scanLogic.refreshTargets();
         Assertions.assertSame(missile, antiMissile.scanLogic.getTarget());
@@ -104,13 +105,13 @@ public class SAMTargetDataTest {
     @DisplayName("Target: 10 targets but only store 5")
     @Test
     void severalTarget_findFiveTargets() {
-        final EntityExplosiveMissile[] missiles = new EntityExplosiveMissile[]{
-            spawnEntity(EntityExplosiveMissile::new, 101, 100, 100), // +1x
-            spawnEntity(EntityExplosiveMissile::new, 100, 100, 102), // +2z
-            spawnEntity(EntityExplosiveMissile::new, 100, 103, 100), // +3y
-            spawnEntity(EntityExplosiveMissile::new, 100, 96, 100), // -4y
-            spawnEntity(EntityExplosiveMissile::new, 100, 100, 95), //-5z
-            spawnEntity(EntityExplosiveMissile::new, 94, 100, 100), //-6x
+        final ExplosiveMissileEntity[] missiles = new ExplosiveMissileEntity[]{
+            spawnEntity(ExplosiveMissileEntity::new, 101, 100, 100), // +1x
+            spawnEntity(ExplosiveMissileEntity::new, 100, 100, 102), // +2z
+            spawnEntity(ExplosiveMissileEntity::new, 100, 103, 100), // +3y
+            spawnEntity(ExplosiveMissileEntity::new, 100, 96, 100), // -4y
+            spawnEntity(ExplosiveMissileEntity::new, 100, 100, 95), //-5z
+            spawnEntity(ExplosiveMissileEntity::new, 94, 100, 100), //-6x
         };
 
         antiMissile.scanLogic.refreshTargets();
@@ -143,7 +144,7 @@ public class SAMTargetDataTest {
     @DisplayName("Validate lifecycle updates")
     @Test
     void tickingLifecycle() {
-        final EntityExplosiveMissile missile = spawnEntity(EntityExplosiveMissile::new, 105, 100, 100);
+        final ExplosiveMissileEntity missile = spawnEntity(ExplosiveMissileEntity::new, 105, 100, 100);
 
         //After 10 ticks we should trigger scanning
         for(int i = 0; i < 10; i++) {
@@ -159,7 +160,7 @@ public class SAMTargetDataTest {
     private <T extends Entity> T spawnEntity(Function<World, T> creator, double x, double y, double z) { //TODO move to testing helper library
         //Create entity and set position
         final Entity entity = creator.apply(world);
-        entity.setPosition(x, y, z);
+        entity.setPos(x, y, z);
 
         //Force spawn so chunk loads
         entity.forceSpawn = true;

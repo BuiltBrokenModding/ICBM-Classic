@@ -6,10 +6,10 @@ import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.missiles.cause.IMissileCause;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.lib.capability.launcher.data.LauncherStatus;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.neoforged.common.capabilities.Capability;
+import net.neoforged.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -17,25 +17,20 @@ import java.util.UUID;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/7/19.
  */
-public class CapabilityMissileLauncher implements IMissileLauncher
-{
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IMissileLauncher.class, new Capability.IStorage<IMissileLauncher>()
-        {
-            @Nullable
-            @Override
-            public NBTBase writeNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, EnumFacing side)
-            {
-                return null;
-            }
+public class CapabilityMissileLauncher implements IMissileLauncher {
+    public static void register() {
+        CapabilityManager.INSTANCE.register(IMissileLauncher.class, new Capability.IStorage<IMissileLauncher>() {
+                @Nullable
+                @Override
+                public NBTBase writeNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, Direction side) {
+                    return null;
+                }
 
-            @Override
-            public void readNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, EnumFacing side, NBTBase nbt)
-            {
+                @Override
+                public void readNBT(Capability<IMissileLauncher> capability, IMissileLauncher instance, Direction side, NBTBase nbt) {
 
-            }
-        },
+                }
+            },
             CapabilityMissileLauncher::new);
     }
 

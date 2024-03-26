@@ -1,28 +1,24 @@
 package icbm.classic.lib.transform.region;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
+import com.builtbroken.jlib.data.vector.Vec3;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * Created by robert on 1/12/2015.
  */
-public abstract class Shape3D
-{
+public abstract class Shape3D {
     EulerAngle angle;
     Pos center;
 
-    public Shape3D(Pos center)
-    {
+    public Shape3D(Pos center) {
         this.center = center;
     }
 
-    public Shape3D(NBTTagCompound nbt)
-    {
-        this(new Pos(nbt.getCompoundTag(NBTConstants.CENTER)));
+    public Shape3D(CompoundTag nbt) {
+        this(new Pos(nbt.getCompound(NBTConstants.CENTER)));
         angle = new EulerAngle(nbt.getDouble(NBTConstants.YAW), nbt.getDouble(NBTConstants.PITCH), nbt.getDouble(NBTConstants.ROLL));
     }
 
@@ -59,8 +55,7 @@ public abstract class Shape3D
     /**
      * gets the max distance a corner of the shape will reach from the center
      */
-    double getSize()
-    {
+    double getSize() {
         double r = getSizeX();
         if (getSizeY() > r)
             r = getSizeY();
@@ -72,26 +67,22 @@ public abstract class Shape3D
     /**
      * Center of the 3D shape
      */
-    public IPos3D getCenter()
-    {
+    public Vec3 getCenter() {
         return center;
     }
 
-    public double distance(IPos3D pos)
-    {
+    public double distance(Vec3 pos) {
         return center.distance(pos);
     }
 
     /**
      * Is the vector(x, y, z) inside the shape
      */
-    public boolean isWithin(IPos3D vec)
-    {
+    public boolean isWithin(Vec3 vec) {
         return isWithin(vec.x(), vec.y(), vec.z());
     }
 
-    public boolean isWithin(BlockPos vec)
-    {
+    public boolean isWithin(BlockPos vec) {
         return isWithin(vec.getX(), vec.getY(), vec.getZ());
     }
 }

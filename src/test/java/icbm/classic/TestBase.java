@@ -2,20 +2,18 @@ package icbm.classic;
 
 import com.adelean.inject.resources.junit.jupiter.WithGson;
 import com.builtbroken.mc.testing.junit.TestManager;
-import com.google.common.base.Suppliers;
 import com.google.gson.*;
 
 import com.lunarshark.nbttool.utils.JsonUtils;
 import com.lunarshark.nbttool.utils.SaveToJson;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.items.ItemGrenade;
+import icbm.classic.api.reg.ExplosiveType;
 import net.minecraft.init.Bootstrap;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -33,7 +31,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class TestBase {
@@ -47,7 +44,7 @@ public abstract class TestBase {
 
     public TestBase(String type) {
         if("tile".equals(type)) {
-            gson = JsonUtils.gsonTileEntityExcludeVanillaFields;
+            gson = JsonUtils.gsonBlockEntityExcludeVanillaFields;
         }
     }
 
@@ -90,17 +87,17 @@ public abstract class TestBase {
         }
     }
 
-    protected static void assertExplosive(@Nonnull ItemStack stack, @Nonnull String registryName, @Nonnull NBTTagCompound customTag) {
+    protected static void assertExplosive(@Nonnull ItemStack stack, @Nonnull String registryName, @Nonnull CompoundTag customTag) {
         assertExplosive(stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null), registryName, customTag);
     }
 
-    protected static void assertExplosive(IExplosive explosive, @Nonnull String registryName, @Nonnull NBTTagCompound customTag) {
+    protected static void assertExplosive(IExplosive explosive, @Nonnull String registryName, @Nonnull CompoundTag customTag) {
 
         // Check capability is returned with the correct type
         Assertions.assertNotNull(explosive, "Failed to get explosive capability");
 
         // Validate correct explosive
-        final IExplosiveData explosiveData = explosive.getExplosiveData();
+        final ExplosiveType explosiveData = explosive.getExplosiveData();
         Assertions.assertNotNull(explosiveData, "Explosive capability is lacking explosive data");
         Assertions.assertEquals(new ResourceLocation(registryName), explosiveData.getRegistryName());
 
@@ -115,13 +112,13 @@ public abstract class TestBase {
         }
     }
 
-    protected void assertTags(NBTTagCompound expectedTag, NBTTagCompound actualTag) {
+    protected void assertTags(CompoundTag expectedTag, CompoundTag actualTag) {
         if(!expectedTag.equals(actualTag)) {
             throw new AssertionFailedError("Compound tags do not match",  outputJson(expectedTag), outputJson(actualTag));
         }
     }
 
-    protected String outputJson(NBTTagCompound tag) {
+    protected String outputJson(CompoundTag tag) {
         JsonObject saveData = sortAndGet(SaveToJson.convertToGsonObjects(tag));
         return gson.toJson(saveData);
     }
@@ -142,7 +139,7 @@ public abstract class TestBase {
         return temp;
     }
 
-    protected NBTTagCompound readSaveFile(File file) {
+    protected CompoundTag readSaveFile(File file) {
         try(FileInputStream fileinputstream = new FileInputStream(file)) {
             return CompressedStreamTools.readCompressed(fileinputstream);
         }

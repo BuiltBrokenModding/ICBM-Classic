@@ -20,10 +20,13 @@ import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.api.reg.content.IExMissileRegistry;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.common.capabilities.Capability;
+import net.neoforged.common.capabilities.CapabilityInject;
+import net.neoforged.neoforge.capabilities.BaseCapability;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 /**
  * API reference class for ICBM-Classic mod
@@ -31,8 +34,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
  * <p>
  * Created by Dark(DarkGuardsman, Robert) on 3/12/2018.
  */
-public final class ICBMClassicAPI
-{
+public final class ICBMClassicAPI {
 
     //=========================
     //=== Registry ============
@@ -47,13 +49,21 @@ public final class ICBMClassicAPI
     public static IExBlockRegistry EX_BLOCK_REGISTRY;
     public static IExMinecartRegistry EX_MINECART_REGISTRY;
 
-    /** Registry for target data save/load in missiles */
+    /**
+     * Registry for target data save/load in missiles
+     */
     public static IBuilderRegistry<IMissileTarget> MISSILE_TARGET_DATA_REGISTRY;
-    /** Registry for flight logic save/load in missiles */
+    /**
+     * Registry for flight logic save/load in missiles
+     */
     public static IBuilderRegistry<IMissileFlightLogic> MISSILE_FLIGHT_LOGIC_REGISTRY;
-    /** Registry for missile cause save/load in missiles */
+    /**
+     * Registry for missile cause save/load in missiles
+     */
     public static IBuilderRegistry<IMissileCause> MISSILE_CAUSE_REGISTRY;
-    /** Registry for status messages produced by machines, items, and entities in the mod */
+    /**
+     * Registry for status messages produced by machines, items, and entities in the mod
+     */
     public static IBuilderRegistry<IActionStatus> ACTION_STATUS_REGISTRY;
 
     //TODO create missile builder handler that will allow API driven calls to create and spawn missiles in world
@@ -82,35 +92,33 @@ public final class ICBMClassicAPI
     @CapabilityInject(IExplosive.class)
     public static Capability<IExplosive> EXPLOSIVE_CAPABILITY = null;
 
-    /** Only applies to entities */
-    @CapabilityInject(IMissile.class)
-    public static Capability<IMissile> MISSILE_CAPABILITY = null;
+    /**
+     * Only applies to entities
+     */
+    public static final EntityCapability<IMissile, Void> MISSILE_CAPABILITY =
+        EntityCapability.createVoid(new ResourceLocation("missile"), IMissile.class);
 
-    /** Only applies to ItemStack */
-    @CapabilityInject(ICapabilityMissileStack.class)
-    public static Capability<ICapabilityMissileStack> MISSILE_STACK_CAPABILITY = null;
+    /**
+     * Only applies to ItemStack
+     */
+    public static final ItemCapability<ICapabilityMissileStack, Void> MISSILE_STACK_CAPABILITY =
+        ItemCapability.createVoid(new ResourceLocation("missile_stack"), ICapabilityMissileStack.class);
 
-    @CapabilityInject(IMissileHolder.class)
-    public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;
+    public static BaseCapability<IMissileHolder, Void> MISSILE_HOLDER_CAPABILITY = null;
 
-    @CapabilityInject(IMissileLauncher.class)
-    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
+    public static BaseCapability<IMissileLauncher, Void> MISSILE_LAUNCHER_CAPABILITY = null;
 
-    @CapabilityInject(IRadio.class)
-    public static Capability<IRadio> RADIO_CAPABILITY = null;
+    public static BaseCapability<IRadio, Void> RADIO_CAPABILITY = null;
 
-    @CapabilityInject(IBlastVelocity.class)
-    public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;
+    public static BaseCapability<IBlastVelocity, Void> BLAST_VELOCITY_CAPABILITY = null;
 
-    @CapabilityInject(IBlast.class)
-    public static Capability<IBlast> BLAST_CAPABILITY = null;
+    public static BaseCapability<IBlast, Void> BLAST_CAPABILITY = null;
 
-    @CapabilityInject(IGPSData.class)
-    public static Capability<IGPSData> GPS_CAPABILITY = null;
+    public static BaseCapability<IGPSData, Void> GPS_CAPABILITY = null;
 
     /**
      * Called to register an EMP handler for the {@link Block}
-     * and related {@link net.minecraft.block.state.IBlockState}
+     * and related {@link net.minecraft.world.level.block.state.BlockState}
      * <p>
      * Allows several receiver to be registered per block.
      *
@@ -118,8 +126,7 @@ public final class ICBMClassicAPI
      * @param receiver - receiver
      */
     @Deprecated //Will be placed in a registry/handler
-    public void registerBlockEmpHandler(Block block, IEMPReceiver receiver)
-    {
+    public void registerBlockEmpHandler(Block block, IEMPReceiver receiver) {
         //TODO implement
     }
 

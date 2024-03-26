@@ -1,53 +1,48 @@
 package icbm.classic.api.events;
 
 import icbm.classic.api.explosion.IBlast;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.Event;
 
 /**
- *
  * Created by Dark(DarkGuardsman, Robert) on 1/3/19.
  */
-public abstract class BlastEvent<B extends IBlast> extends Event
-{
-    /** Source of the event */
-    public final IBlast blast;
+public abstract class BlastEvent<B extends IBlast> extends Event {
+    /**
+     * Source of the event
+     */
+    public final B blast;
 
-    public BlastEvent(IBlast blast)
-    {
+    public BlastEvent(B blast) {
         this.blast = blast;
     }
 
     /**
      * Source of the blast.
      */
-    public World world()
-    {
-        return blast.world();
+    public Level level() {
+        return blast.level();
     }
 
     /**
      * Source of the blast.
      */
-    public double x()
-    {
+    public double x() {
         return blast.x();
     }
 
     /**
      * Source of the blast.
      */
-    public double y()
-    {
+    public double y() {
         return blast.y();
     }
 
     /**
      * Source of the blast.
      */
-    public double z()
-    {
+    public double z() {
         return blast.z();
     }
 
@@ -58,8 +53,7 @@ public abstract class BlastEvent<B extends IBlast> extends Event
      *
      * @return entity, can be null in some cases
      */
-    public Entity getSourceEntity()
-    {
+    public Entity getSourceEntity() {
         return blast.getBlastSource();
     }
 }

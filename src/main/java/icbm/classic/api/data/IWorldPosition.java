@@ -1,9 +1,8 @@
 package icbm.classic.api.data;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Useful interface to define that an object has a 3D location, and a defined world.
@@ -11,31 +10,32 @@ import net.minecraft.world.World;
  * @author DarkGuardsman
  */
 @Deprecated
-public interface IWorldPosition extends IPos3D
-{
-    World world();
+public interface IWorldPosition {
+    double x();
 
-    default boolean isClient()
-    {
-        return hasWorld() && world().isRemote;
+    double y();
+
+    double z();
+
+    Level level();
+
+    default boolean isClient() {
+        return hasLevel() && level().isClientSide();
     }
 
-    default boolean isServer()
-    {
-        return hasWorld() && !world().isRemote;
+    default boolean isServer() {
+        return hasLevel() && !level().isClientSide();
     }
 
-    default boolean hasWorld()
-    {
-        return world() != null;
+    default boolean hasLevel() {
+        return level() != null;
     }
 
-    default BlockPos getPos()
-    {
-        return new BlockPos(xi(), yi(), zi());
+    default BlockPos getBlockPos() {
+        return BlockPos.containing(x(), y(), z());
     }
 
-    default Vec3d getVec3d() {
-        return new Vec3d(x(), y(), z());
+    default Vec3 getPos() {
+        return new Vec3(x(), y(), z());
     }
 }

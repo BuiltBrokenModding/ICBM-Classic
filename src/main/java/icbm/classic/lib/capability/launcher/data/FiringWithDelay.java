@@ -1,21 +1,21 @@
 package icbm.classic.lib.capability.launcher.data;
 
-import icbm.classic.ICBMConstants;
+import icbm.classic.IcbmConstants;
 import icbm.classic.api.launcher.IActionStatus;
-import icbm.classic.content.blocks.launcher.LauncherLangs;
+import icbm.classic.world.block.launcher.LauncherLangs;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 
 @NoArgsConstructor
 public class FiringWithDelay implements IActionStatus {
 
-    public static final ResourceLocation regName = new ResourceLocation(ICBMConstants.DOMAIN, "firing.delayed");
+    public static final ResourceLocation regName = new ResourceLocation(IcbmConstants.MOD_ID, "firing.delayed");
 
     private int delay;
-    private ITextComponent message;
+    private Component message;
 
     public FiringWithDelay(int delay) {
         this.delay = delay;
@@ -31,8 +31,8 @@ public class FiringWithDelay implements IActionStatus {
     }
 
     @Override
-    public ITextComponent message() {
-        if(message == null) {
+    public Component message() {
+        if (message == null) {
             message = new TextComponentTranslation(LauncherLangs.STATUS_FIRING_DELAYED, delay);
         }
         return message;
@@ -44,14 +44,14 @@ public class FiringWithDelay implements IActionStatus {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound tag = new NBTTagCompound();
+    public CompoundTag serializeNBT() {
+        final CompoundTag tag = new CompoundTag();
         tag.setInteger("delay", delay);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         delay = nbt.getInteger("delay");
     }
 }

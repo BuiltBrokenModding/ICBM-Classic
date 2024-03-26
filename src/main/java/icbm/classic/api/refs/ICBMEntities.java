@@ -1,14 +1,13 @@
 package icbm.classic.api.refs;
 
 import icbm.classic.api.ICBMClassicAPI;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Holds references related to ICBM entities
  * Created by Robin Seifert on 1/7/19.
  */
-public final class ICBMEntities
-{
+public final class ICBMEntities {
 
     //TODO refactor all entity names to match vanilla `_` style
     public static final ResourceLocation BLOCK_GRAVITY = new ResourceLocation(ICBMClassicAPI.ID, "block.gravity");

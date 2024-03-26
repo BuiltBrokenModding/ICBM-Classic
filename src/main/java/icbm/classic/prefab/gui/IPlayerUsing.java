@@ -1,6 +1,6 @@
 package icbm.classic.prefab.gui;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
@@ -9,17 +9,14 @@ import java.util.Collection;
  * for GUI handling.
  * Created by robert on 1/12/2015.
  */
-public interface IPlayerUsing
-{
-    Collection<EntityPlayer> getPlayersUsing();
+public interface IPlayerUsing {
+    Collection<Player> getPlayersUsing();
 
-    default boolean addPlayerToUseList(EntityPlayer player)
-    {
+    default boolean addPlayerToUseList(Player player) {
         return getPlayersUsing().add(player);
     }
 
-    default boolean removePlayerToUseList(EntityPlayer player)
-    {
+    default boolean removePlayerToUseList(Player player) {
         return getPlayersUsing().remove(player);
     }
 }

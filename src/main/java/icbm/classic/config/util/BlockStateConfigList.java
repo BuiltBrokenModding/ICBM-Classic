@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import icbm.classic.ICBMClassic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.fml.common.registry.ForgeRegistries;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -42,9 +42,9 @@ public class BlockStateConfigList {
     final Map<String, List<Function<Block, Boolean>>> fuzzyBlockChecks = new HashMap<>();
 
     // Block lists
-    final HashSet<IBlockState> blockStates = new HashSet();
+    final HashSet<BlockState> blockStates = new HashSet();
     final HashSet<Block> blocks = new HashSet();
-    final Map<Block, List<Function<IBlockState, Boolean>>> blockStateMatchers = new HashMap();
+    final Map<Block, List<Function<BlockState, Boolean>>> blockStateMatchers = new HashMap();
 
     // States
     @Getter
@@ -102,15 +102,14 @@ public class BlockStateConfigList {
         lock();
     }
 
-    public boolean contains(IBlockState state) {
+    public boolean contains(BlockState state) {
         if (state == null) {
             return false;
         }
-        if(blocks.contains(state.getBlock()) || blockStates.contains(state))
-        {
+        if (blocks.contains(state.getBlock()) || blockStates.contains(state)) {
             return true;
         }
-        if(Optional.ofNullable(blockStateMatchers.get(state.getBlock()))
+        if (Optional.ofNullable(blockStateMatchers.get(state.getBlock()))
             .map(l -> l.stream().anyMatch(f -> f.apply(state))).orElse(false)) {
             blockStates.add(state);
             return true;
@@ -196,11 +195,11 @@ public class BlockStateConfigList {
 
     boolean handleSimpleBlock(String entry) {
         final ResourceLocation blockKey = this.getBlockKey(entry);
-        if(blockKey == null) {
+        if (blockKey == null) {
             return false;
         }
 
-        if(!ForgeRegistries.BLOCKS.containsKey(blockKey)) {
+        if (!ForgeRegistries.BLOCKS.containsKey(blockKey)) {
             ICBMClassic.logger().error(name + ": Failed to find block matching entry `" + entry + "`");
             return false;
         }
@@ -245,7 +244,7 @@ public class BlockStateConfigList {
 
         // Get state from meta value
         final int desiredMetadata = Integer.parseInt(metaSplit[1]);
-        final IBlockState state = block.getStateFromMeta(desiredMetadata);
+        final BlockState state = block.getStateFromMeta(desiredMetadata);
 
         // Null state is a sign of a buggy mod-block
         if (state == null) {
@@ -303,7 +302,7 @@ public class BlockStateConfigList {
                 final String stringMatch = propValue.substring(1).trim();
                 final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getAllowedValues().stream()
                     .filter(o -> property.getName((Comparable) o).endsWith(stringMatch)).collect(Collectors.toList());
-                if(valuesToMatch.isEmpty()) {
+                if (valuesToMatch.isEmpty()) {
                     ICBMClassic.logger().error("Config Flying Block: Failed to find values matching '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
                     return false;
                 }
@@ -312,7 +311,7 @@ public class BlockStateConfigList {
                 final String stringMatch = propValue.substring(0, propValue.length() - 1).trim();
                 final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getAllowedValues().stream()
                     .filter(o -> property.getName((Comparable) o).startsWith(stringMatch)).collect(Collectors.toList());
-                if(valuesToMatch.isEmpty()) {
+                if (valuesToMatch.isEmpty()) {
                     ICBMClassic.logger().error("Config Flying Block: Failed to find values matching '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
                     return false;
                 }
@@ -328,25 +327,25 @@ public class BlockStateConfigList {
             }
         }
 
-        if(matchers.isEmpty()) {
+        if (matchers.isEmpty()) {
             return false;
         }
 
-        if(!blockStateMatchers.containsKey(block)) {
+        if (!blockStateMatchers.containsKey(block)) {
             blockStateMatchers.put(block, new ArrayList());
         }
         return blockStateMatchers.get(block).add((blockState) -> matchesFuzzyState(blockState, matchers));
     }
 
-    boolean matchesFuzzyState(IBlockState state, Map<IProperty, Function<Comparable, Boolean>> matchers) {
+    boolean matchesFuzzyState(BlockState state, Map<IProperty, Function<Comparable, Boolean>> matchers) {
         final ImmutableMap<IProperty<?>, Comparable<?>> stateProps = state.getProperties();
-        for(IProperty propKey: matchers.keySet()) {
-            if(!stateProps.containsKey(propKey)) {
+        for (IProperty propKey : matchers.keySet()) {
+            if (!stateProps.containsKey(propKey)) {
                 return false;
             }
 
             final Function<Comparable, Boolean> check = matchers.get(propKey);
-            if(check != null && !check.apply(stateProps.get(propKey))) {
+            if (check != null && !check.apply(stateProps.get(propKey))) {
                 return false;
             }
         }
@@ -405,7 +404,7 @@ public class BlockStateConfigList {
     public List<String> dumpBlocksContained() {
         final List<String> list = new ArrayList<>();
         ForgeRegistries.BLOCKS.forEach(block -> {
-            if(this.contains(block.getDefaultState())) {
+            if (this.contains(block.getDefaultState())) {
                 list.add(block.getRegistryName().toString());
             }
         });

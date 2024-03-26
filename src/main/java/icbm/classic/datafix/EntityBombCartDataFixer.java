@@ -2,23 +2,20 @@ package icbm.classic.datafix;
 
 import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.refs.ICBMExplosives;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.datafix.IFixableData;
 
-public class EntityBombCartDataFixer implements IFixableData
-{
+public class EntityBombCartDataFixer implements IFixableData {
     private static final String ENTITY_ID = "id";
     private static final String EXPLOSIVE_ID = "explosive";
 
     @Override
-    public NBTTagCompound fixTagCompound(NBTTagCompound existingSave)
-    {
+    public CompoundTag fixTagCompound(CompoundTag existingSave) {
         //Match to entity, we get all entity tags as input
-        if (existingSave.hasKey(ENTITY_ID) && existingSave.getString(ENTITY_ID).equalsIgnoreCase(ICBMEntities.BOMB_CART.toString()))
-        {
+        if (existingSave.contains(ENTITY_ID) && existingSave.getString(ENTITY_ID).equalsIgnoreCase(ICBMEntities.BOMB_CART.toString())) {
             // Move hypersonic to sonic
             final int explosiveId = existingSave.getInteger(EXPLOSIVE_ID);
-            if(explosiveId == ICBMExplosives.HYPERSONIC.getRegistryID()) {
+            if (explosiveId == ICBMExplosives.HYPERSONIC.getRegistryID()) {
                 existingSave.setInteger(EXPLOSIVE_ID, ICBMExplosives.SONIC.getRegistryID());
             }
         }
@@ -26,8 +23,7 @@ public class EntityBombCartDataFixer implements IFixableData
     }
 
     @Override
-    public int getFixVersion()
-    {
+    public int getFixVersion() {
         return 2;
     }
 }

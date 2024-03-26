@@ -1,6 +1,6 @@
 package icbm.classic.lib.saving;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,8 +24,8 @@ public class NbtSaveHandleTest
         void returnsOriginalTag() {
             final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>();
 
-            final NBTTagCompound originalSave = new NBTTagCompound();
-            final NBTTagCompound save = saveHandler.save(new RandomSaveThing(), originalSave);
+            final CompoundTag originalSave = new CompoundTag();
+            final CompoundTag save = saveHandler.save(new RandomSaveThing(), originalSave);
 
             Assertions.assertSame(originalSave, save);
         }
@@ -35,10 +35,10 @@ public class NbtSaveHandleTest
         void nothingToSave() {
             final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>();
 
-            final NBTTagCompound originalSave = new NBTTagCompound();
-            final NBTTagCompound save = saveHandler.save(new RandomSaveThing(), originalSave);
+            final CompoundTag originalSave = new CompoundTag();
+            final CompoundTag save = saveHandler.save(new RandomSaveThing(), originalSave);
 
-            Assertions.assertTrue(save.hasNoTags());
+            Assertions.assertTrue(save.isEmpty());
         }
 
         @Test
@@ -48,11 +48,11 @@ public class NbtSaveHandleTest
             final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>()
                 .addRoot("dave")
                 .base();
-            final NBTTagCompound expectedSave = new NBTTagCompound();
-            expectedSave.setTag("dave", new NBTTagCompound());
+            final CompoundTag expectedSave = new CompoundTag();
+            expectedSave.put("dave", new CompoundTag());
 
             //Invoke
-            final NBTTagCompound save = saveHandler.save(new RandomSaveThing(), new NBTTagCompound());
+            final CompoundTag save = saveHandler.save(new RandomSaveThing(), new CompoundTag());
 
             //Check
             Assertions.assertEquals(expectedSave, save);
@@ -67,16 +67,16 @@ public class NbtSaveHandleTest
                 .nodeInteger("i", (r) -> r.field1, (r, i) -> r.field1 = i)
                 .base();
 
-            final NBTTagCompound expectedSave = new NBTTagCompound();
-            final NBTTagCompound dave = new NBTTagCompound();
+            final CompoundTag expectedSave = new CompoundTag();
+            final CompoundTag dave = new CompoundTag();
             dave.setInteger("i", 23);
-            expectedSave.setTag("dave", dave);
+            expectedSave.put("dave", dave);
 
             final RandomSaveThing saveThing = new RandomSaveThing();
             saveThing.field1 = 23;
 
             //Invoke
-            final NBTTagCompound save = saveHandler.save(saveThing, new NBTTagCompound());
+            final CompoundTag save = saveHandler.save(saveThing, new CompoundTag());
 
             //Check
             Assertions.assertEquals(expectedSave, save);
@@ -91,14 +91,14 @@ public class NbtSaveHandleTest
                 .nodeInteger("i", (r) -> r.field1, (r, i) -> r.field1 = i)
                 .base();
 
-            final NBTTagCompound expectedSave = new NBTTagCompound();
+            final CompoundTag expectedSave = new CompoundTag();
             expectedSave.setInteger("i", 23);
 
             final RandomSaveThing saveThing = new RandomSaveThing();
             saveThing.field1 = 23;
 
             //Invoke
-            final NBTTagCompound save = saveHandler.save(saveThing, new NBTTagCompound());
+            final CompoundTag save = saveHandler.save(saveThing, new CompoundTag());
 
             //Check
             Assertions.assertEquals(expectedSave, save);
@@ -113,12 +113,12 @@ public class NbtSaveHandleTest
                 .node(new NbtSaveNode<>("i", (r) -> null, null))
                 .base();
 
-            final NBTTagCompound expectedSave = new NBTTagCompound();
+            final CompoundTag expectedSave = new CompoundTag();
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
             //Invoke
-            final NBTTagCompound save = saveHandler.save(saveThing, new NBTTagCompound());
+            final CompoundTag save = saveHandler.save(saveThing, new CompoundTag());
 
             //Check
             Assertions.assertEquals(expectedSave, save);
@@ -130,15 +130,15 @@ public class NbtSaveHandleTest
             //Setup
             final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>()
                 .mainRoot()
-                .node(new NbtSaveNode<>("i", (r) -> new NBTTagCompound(), null))
+                .node(new NbtSaveNode<>("i", (r) -> new CompoundTag(), null))
                 .base();
 
-            final NBTTagCompound expectedSave = new NBTTagCompound();
+            final CompoundTag expectedSave = new CompoundTag();
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
             //Invoke
-            final NBTTagCompound save = saveHandler.save(saveThing, new NBTTagCompound());
+            final CompoundTag save = saveHandler.save(saveThing, new CompoundTag());
 
             //Check
             Assertions.assertEquals(expectedSave, save);
@@ -158,7 +158,7 @@ public class NbtSaveHandleTest
                 .nodeInteger("i", (r) -> r.field1, (r, i) -> r.field1 = i)
                 .base();
 
-            final NBTTagCompound saveToLoad = new NBTTagCompound();
+            final CompoundTag saveToLoad = new CompoundTag();
             final RandomSaveThing saveThing = new RandomSaveThing();
 
             //Invoke
@@ -175,9 +175,9 @@ public class NbtSaveHandleTest
             //Setup
             final NbtSaveHandler<RandomSaveThing> saveHandler = new NbtSaveHandler<RandomSaveThing>();
 
-            final NBTTagCompound saveToLoad = new NBTTagCompound();
+            final CompoundTag saveToLoad = new CompoundTag();
             saveToLoad.setInteger("i", 3);
-            saveToLoad.setString("bob", "dave");
+            saveToLoad.putString("bob", "dave");
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
@@ -197,9 +197,9 @@ public class NbtSaveHandleTest
                 .addRoot("bob")
                 .base();
 
-            final NBTTagCompound saveToLoad = new NBTTagCompound();
+            final CompoundTag saveToLoad = new CompoundTag();
             saveToLoad.setInteger("i", 3);
-            saveToLoad.setString("bob", "dave");
+            saveToLoad.putString("bob", "dave");
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
@@ -220,9 +220,9 @@ public class NbtSaveHandleTest
                 .nodeInteger("j", null, (t, i) -> t.field1 = i)
                 .base();
 
-            final NBTTagCompound saveToLoad = new NBTTagCompound();
+            final CompoundTag saveToLoad = new CompoundTag();
             saveToLoad.setInteger("i", 3);
-            saveToLoad.setString("bob", "dave");
+            saveToLoad.putString("bob", "dave");
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
@@ -243,11 +243,11 @@ public class NbtSaveHandleTest
                 .nodeInteger("i", (r) -> r.field1, (r, i) -> r.field1 = i)
                 .base();
 
-            final NBTTagCompound saveToLoad = new NBTTagCompound();
-            final NBTTagCompound bob = new NBTTagCompound();
+            final CompoundTag saveToLoad = new CompoundTag();
+            final CompoundTag bob = new CompoundTag();
             bob.setInteger("i", 3);
-            saveToLoad.setTag("bob", bob);
-            saveToLoad.setString("f", "dave");
+            saveToLoad.put("bob", bob);
+            saveToLoad.putString("f", "dave");
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
@@ -271,9 +271,9 @@ public class NbtSaveHandleTest
                 .nodeInteger("i", (r) -> r.field1, (r, i) -> r.field1 = i)
                 .base();
 
-            final NBTTagCompound saveToLoad = new NBTTagCompound();
+            final CompoundTag saveToLoad = new CompoundTag();
             saveToLoad.setInteger("i", 3);
-            saveToLoad.setString("bob", "dave");
+            saveToLoad.putString("bob", "dave");
 
             final RandomSaveThing saveThing = new RandomSaveThing();
 
