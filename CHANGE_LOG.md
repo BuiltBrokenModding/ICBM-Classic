@@ -4,6 +4,10 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 1.12.2-6.3.1 - June 20th, 2024
+
+* Fixed: protective armor config not loading
+
 ## 1.12.2-6.3.0 - June 20th, 2024
 
 ### Runtime Changes
@@ -36,8 +40,8 @@ Order of chance is destruction -> engine/guidance -> payload. Chance is less tha
 ### Dev Changes
 
 * Fixed: MetaTag generation using key as domain and other janky issues. This broke the MetaTag.isType check
-* Changed: MetaTag key to be namespace (mod's domain) + path (previosuly key)
-* Changed: MetaTag subtype creationg to prefix the parent's path to better organize. Previously key was just `icbmclassic:error` now is `icbmclassic:action.status.red.error`. This will help with translation keys later and make it more clear what the tag is by name alone.
+* Changed: MetaTag key to be namespace (mod's domain) + path (previously key)
+* Changed: MetaTag subtype creation to prefix the parent's path to better organize. Previously key was just `icbmclassic:error` now is `icbmclassic:action.status.red.error`. This will help with translation keys later and make it more clear what the tag is by name alone.
 
 ## 1.12.2-6.2.0 - June 14, 2024
 
