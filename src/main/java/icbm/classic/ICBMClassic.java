@@ -13,6 +13,7 @@ import icbm.classic.config.ConfigThread;
 import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.cluster.missile.RecipeCluster;
+import icbm.classic.content.gas.ProtectiveArmorHandler;
 import icbm.classic.content.missile.logic.flight.move.MoveByVec3Logic;
 import icbm.classic.content.radioactive.RadioactiveHandler;
 import icbm.classic.lib.actions.ActionSystem;
@@ -367,6 +368,7 @@ public class ICBMClassic
         ClusterMissileHandler.setup();
         CargoHolderHandler.setup();
         RadioactiveHandler.setup();
+        ProtectiveArmorHandler.setup();
 
         // Needs to lock late as we need content to register some types
         ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
