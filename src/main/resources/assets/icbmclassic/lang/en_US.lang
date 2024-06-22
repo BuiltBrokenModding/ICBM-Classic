@@ -475,7 +475,7 @@ info.icbmclassic:launcher.error.missile.none=Firing Safety; No missile
 info.icbmclassic:launcher.error.missile.multi=§c%1$s / %2$s not ready
 
 info.icbmclassic:launcher.error.network=Self Check; No launcher network
-info.icbmclassic:launcher.error.network.status.missing=Dev Bug; No status data
+info.icbmclassic:launcher.error.network.status.missing=No Status... server desync
 info.icbmclassic:launcher.error.network.launchers=Self Check; No launcher(s) connected
 
 info.icbmclassic:launcher.error.target.none=Guidance Safety; No target set
