@@ -1,34 +1,4 @@
 {
-  "airstrike": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:airstrike",
-    "sounds": [
-      {
-        "name": "icbmclassic:airstrike",
-        "sream": false
-      }
-    ]
-  },
-  "alarm": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:alarm",
-    "sounds": [
-      {
-        "name": "icbmclassic:alarm",
-        "sream": false
-      }
-    ]
-  },
-  "antigravity": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:explosion.antigravity",
-    "sounds": [
-      {
-        "name": "icbmclassic:antigravity",
-        "sream": false
-      }
-    ]
-  },
   "antimatter": {
     "category": "block",
     "subtitle": "subtitle.icbmclassic:explosion.antimatter",
@@ -137,46 +107,6 @@
       }
     ]
   },
-  "hypersonic": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:explosion.hypersonic",
-    "sounds": [
-      {
-        "name": "icbmclassic:hypersonic",
-        "sream": false
-      }
-    ]
-  },
-  "interface": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:interface",
-    "sounds": [
-      {
-        "name": "icbmclassic:interface1",
-        "sream": false
-      }
-    ]
-  },
-  "laser": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:laser",
-    "sounds": [
-      {
-        "name": "icbmclassic:laser1",
-        "sream": false
-      }
-    ]
-  },
-  "lasershot": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:laser.shot",
-    "sounds": [
-      {
-        "name": "icbmclassic:lasershot",
-        "sream": false
-      }
-    ]
-  },
   "machinehum": {
     "category": "block",
     "subtitle": "subtitle.icbmclassic:machine.hum",
@@ -221,16 +151,6 @@
       }
     ]
   },
-  "radaralarm": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:alarm.radar",
-    "sounds": [
-      {
-        "name": "icbmclassic:radaralarm",
-        "sream": false
-      }
-    ]
-  },
   "redmatter": {
     "category": "block",
     "subtitle": "subtitle.icbmclassic:explosion.redmatter",
@@ -247,16 +167,6 @@
     "sounds": [
       {
         "name": "icbmclassic:sonicwave",
-        "sream": false
-      }
-    ]
-  },
-  "targetlocked": {
-    "category": "block",
-    "subtitle": "subtitle.icbmclassic:target.locked",
-    "sounds": [
-      {
-        "name": "icbmclassic:targetlocked",
         "sream": false
       }
     ]
