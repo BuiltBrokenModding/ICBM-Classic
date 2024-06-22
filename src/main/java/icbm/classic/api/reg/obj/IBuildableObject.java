@@ -98,6 +98,6 @@ public interface IBuildableObject {
      */
     @Nonnull
     default ITextComponent getTooltip() {
-        return new TextComponentTranslation(getTranslationKey());
+        return getDisplayName();
     }
 }

@@ -1,8 +1,10 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.actions.status.ActionStatusTypes;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
+import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.TextInput;
@@ -53,9 +55,9 @@ public class GuiCruiseLauncher extends GuiContainerBase
         // Launch button
         addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
             .doDrawDisabledGlass()
-            .setTooltip(this.tileEntity::getStatusTranslation))
+            .setTooltip(() -> this.tileEntity.getLauncher().preCheckLaunch(new BasicTargetData(tileEntity.getTarget()), null).message()))
             .setAction(() -> TileCruiseLauncher.PACKET_LAUNCH.sendToServer(tileEntity))
-            .setEnabledCheck(tileEntity::canLaunch)
+            .setEnabledCheck(() -> !tileEntity.getLauncher().preCheckLaunch(new BasicTargetData(tileEntity.getTarget()), null).isBlocking())
         ;
 
         addComponent(new SlotEnergyBar(141, 66,

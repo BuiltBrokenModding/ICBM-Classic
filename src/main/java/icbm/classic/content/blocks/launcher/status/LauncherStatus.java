@@ -12,6 +12,7 @@ public final class LauncherStatus {
     // Errors
     public static final ActionStatus ERROR_GENERIC = new ActionStatus().withRegName("launcher.error.generic").asError().withTranslation(LauncherLangs.ERROR);
     public static final ActionStatus ERROR_SPAWN = new ActionStatus().withRegName("launcher.error.spawning").asError().withTranslation(LauncherLangs.ERROR_MISSILE_SPAWNING);
+    public static final ActionStatus ERROR_SPAWN_COLLIDER = new ActionStatus().withRegName("launcher.error.spawning.space").asError().withTranslation(LauncherLangs.ERROR_MISSILE_SPACE);
     public static final ActionStatus ERROR_MIN_RANGE = new ActionStatus().withRegName("launcher.error.range.min").asError().withTranslation(LauncherLangs.ERROR_TARGET_MIN); //TODO use factory to provide range
     public static final ActionStatus ERROR_MAX_RANGE = new ActionStatus().withRegName("launcher.error.range.max").asError().withTranslation(LauncherLangs.ERROR_TARGET_MAX);
     public static final ActionStatus ERROR_TARGET_NULL = new ActionStatus().withRegName("launcher.error.target.null").asError().withTranslation(LauncherLangs.ERROR_TARGET_NONE);
@@ -34,6 +35,7 @@ public final class LauncherStatus {
 
         register(ERROR_GENERIC);
         register(ERROR_SPAWN);
+        register(ERROR_SPAWN_COLLIDER);
         register(ERROR_MIN_RANGE);
         register(ERROR_MAX_RANGE);
         register(ERROR_TARGET_NULL);

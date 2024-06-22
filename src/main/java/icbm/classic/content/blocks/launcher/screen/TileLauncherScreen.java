@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.launcher.screen;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LauncherSetTargetEvent;
