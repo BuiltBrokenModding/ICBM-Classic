@@ -553,5 +553,18 @@ radio.icbmclassic:message.launch.failed=Failed to fire missile(s)
 radio.icbmclassic:message.launch.triggered=Firing missile(s), aiming launcher(s)
 
 # SubTitles
+subtitle.icbmclassic:explosion.antimatter=Antimatter Explosion
+subtitle.icbmclassic:beam.charge=Energy Beam Start
+subtitle.icbmclassic:explosion.collapse=Block Collapse
+subtitle.icbmclassic:explosion.debilitation=Debilition Gas
+subtitle.icbmclassic:explosion.emp=EMP Discharge
+subtitle.icbmclassic:explosion=Explosion
+subtitle.icbmclassic:explosion.fire=Fire Explosion
+subtitle.icbmclassic:gas.leak=Gas Attack
+subtitle.icbmclassic:machine.hum=Machine Hum
 subtitle.icbmclassic:missile.movement=Missile Engine
 subtitle.icbmclassic:missile.launch=Missile Launch
+subtitle.icbmclassic:power.down=Energy Beam End
+subtitle.icbmclassic:explosion.redmatter=Redmatter Blast
+subtitle.icbmclassic:explosion.sonicwave=Sonic Blast
+subtitle.icbmclassic:meep=Meep Meep
