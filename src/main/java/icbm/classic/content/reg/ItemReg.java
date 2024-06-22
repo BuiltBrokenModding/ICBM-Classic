@@ -30,10 +30,6 @@ public class ItemReg
 {
     @ObjectHolder(ICBMConstants.PREFIX + "antidote")
     public static Item itemAntidote;
-    @ObjectHolder(ICBMConstants.PREFIX + "signalDisrupter")
-    public static Item itemSignalDisrupter;
-    @ObjectHolder(ICBMConstants.PREFIX + "tracker")
-    public static Item itemTracker;
     @ObjectHolder(ICBMConstants.PREFIX + "explosive_missile")
     public static Item itemExplosiveMissile;
     @ObjectHolder(ICBMConstants.PREFIX + "defuser")

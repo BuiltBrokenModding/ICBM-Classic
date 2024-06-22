@@ -144,8 +144,6 @@ public class ClientReg
         newItemModel(ItemReg.itemSaltpeterDust, 0, "inventory", "");
         newItemModel(ItemReg.itemSaltpeterBall, 0, "inventory", "");
         newItemModel(ItemReg.itemAntidote, 0, "inventory", "");
-        newItemModel(ItemReg.itemSignalDisrupter, 0, "inventory", "");
-        newItemModel(ItemReg.itemTracker, 0, "inventory", "");
         newItemModel(ItemReg.itemDefuser, 0, "inventory", "");
         newItemModel(ItemReg.itemRadarGun, 0, "inventory", "");
         newItemModel(ItemReg.itemRemoteDetonator, 0, "inventory", "");

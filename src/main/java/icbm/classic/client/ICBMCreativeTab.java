@@ -55,8 +55,6 @@ public class ICBMCreativeTab extends CreativeTabs
         orderItem(ItemReg.itemRadarGun);
         orderItem(ItemReg.itemRemoteDetonator);
         orderItem(ItemReg.itemLaserDetonator);
-        orderItem(ItemReg.itemTracker);
-        orderItem(ItemReg.itemSignalDisrupter);
         orderItem(ItemReg.itemDefuser);
 
         orderItem(ItemReg.itemExplosiveMissile);
