@@ -164,6 +164,12 @@ bomblet.icbmclassic:hypersonic.name=Hypersonic Bomblet
 bomblet.icbmclassic:antimatter.name=Antimatter Bomblet
 bomblet.icbmclassic:redmatter.name=Red Matter Bomblet
 
+## Missile Held Item
+item.icbmclassic:held_item_missile.name=Item Holder Missile
+item.icbmclassic:held_item_missile.sword.name=Sword Missile
+item.icbmclassic:held_item_missile.info=Item + Glue + Missile
+item.icbmclassic:held_item_missile.held_item=Uses item on impact \n Held: %1$s
+
 ## Parchute Projectile
 item.icbmclassic:parachute.name=Payload Parachute
 item.icbmclassic:parachute.info=Allow slowing deployed payloads

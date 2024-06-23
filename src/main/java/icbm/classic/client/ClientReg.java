@@ -159,6 +159,7 @@ public class ClientReg
         newItemModel(ItemReg.itemBalloon, 1, "render=3d", ""); // Fake meta version purely for entity renderer
         ModelLoader.setCustomModelResourceLocation(ItemReg.itemSAM, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/surface_to_air", "inventory"));
         ModelLoader.setCustomModelResourceLocation(ItemReg.itemClusterMissile, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/cluster", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(ItemReg.heldItemMissile, 0, new ModelResourceLocation(ICBMConstants.DOMAIN + ":missiles/held_item", "inventory"));
 
         //crafting parts
         if(ConfigItems.ENABLE_CRAFTING_ITEMS)

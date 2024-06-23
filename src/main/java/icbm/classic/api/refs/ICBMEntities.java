@@ -18,6 +18,7 @@ public final class ICBMEntities
     public static final ResourceLocation MISSILE_EXPLOSIVE = new ResourceLocation(ICBMClassicAPI.ID, "explosive_missile");
     public static final ResourceLocation MISSILE_GENERIC = new ResourceLocation(ICBMClassicAPI.ID, "generic_missile");
     public static final ResourceLocation MISSILE_SAM = new ResourceLocation(ICBMClassicAPI.ID, "surface_to_air_missile");
+    public static final ResourceLocation MISSILE_HELD_ITEM = new ResourceLocation(ICBMClassicAPI.ID, "held_item_missile");
 
     public static final ResourceLocation EXPLOSION = new ResourceLocation(ICBMClassicAPI.ID, "holder.explosion");
     public static final ResourceLocation BEAM = new ResourceLocation(ICBMClassicAPI.ID, "beam.light");

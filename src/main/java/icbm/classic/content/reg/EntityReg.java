@@ -11,6 +11,7 @@ import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.entity.explosive.EntityMissileActionable;
+import icbm.classic.content.missile.entity.itemstack.EntityHeldItemMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -49,6 +50,7 @@ public final class EntityReg
         event.getRegistry().register(buildEntityEntry(EntityExplosiveMissile.class, ICBMEntities.MISSILE_EXPLOSIVE, 500, 1));
         event.getRegistry().register(buildEntityEntry(EntityMissileActionable.class, ICBMEntities.MISSILE_GENERIC, 500, 1));
         event.getRegistry().register(buildEntityEntry(EntitySurfaceToAirMissile.class, ICBMEntities.MISSILE_SAM, 500, 1));
+        event.getRegistry().register(buildEntityEntry(EntityHeldItemMissile.class, ICBMEntities.MISSILE_HELD_ITEM, 500, 1));
 
         event.getRegistry().register(buildEntityEntry(EntityExplosion.class, ICBMEntities.EXPLOSION, 100, 5));
         event.getRegistry().register(buildEntityEntry(EntityLightBeam.class, ICBMEntities.BEAM, 80, 5));

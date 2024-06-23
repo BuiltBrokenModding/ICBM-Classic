@@ -53,18 +53,19 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
         this.shadowOpaque = 0.75F;
     }
 
-    protected abstract ItemStack getRenderItem(E entity);
+    @Nonnull
+    protected abstract ItemStack getRenderItem(E entity, int index);
 
-    protected ItemCameraTransforms.TransformType getTransformType() {
+    protected ItemCameraTransforms.TransformType getTransformType(int index) {
         return ItemCameraTransforms.TransformType.NONE;
     }
 
-    protected void translate(@Nullable E entity, IBakedModel iBakedModel, double x, double y, double z, float partialTicks) {
+    protected void translate(@Nullable E entity, ItemStack itemstack, IBakedModel iBakedModel, double x, double y, double z, float partialTicks, int index) {
         float hoverStart = iBakedModel.getItemCameraTransforms().getTransform(ItemCameraTransforms.TransformType.GROUND).scale.y;
         GlStateManager.translate((float)x, (float)y + 0.25F * hoverStart, (float)z);
     }
 
-    protected void rotate(@Nullable E entity, float entityYaw, float entityPitch, float partialTicks) {
+    protected void rotate(@Nullable E entity, ItemStack itemstack, float entityYaw, float entityPitch, float partialTicks, int index) {
         // Rotate by entity yaw
         if(billboard) {
             GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F); //fish ><>
@@ -75,25 +76,23 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
         }
     }
 
-    protected void scale(@Nullable E e, float partialTicks) {
+    protected void scale(@Nullable E e, ItemStack itemstack, float partialTicks, int index) {
         //GlStateManager.scale(2, 2, 2);
     }
 
     @Override
     public void doRender(@Nonnull E entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        ItemStack itemstack = getRenderItem(entity);
-        if(itemstack == null || itemstack.isEmpty()) {
-            itemstack = BACKUP_RENDER_STACK.get();
-        }
-
         final float yaw = getYaw(entity, entityYaw, partialTicks); // yaw is already lerped by render manager
         final float entityPitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
         final float pitch = getPitch(entity, entityPitch, partialTicks);
-
-        this.renderItem(entity, itemstack, entity.world, x, y, z, yaw, pitch, partialTicks);
+        doRenderItem(entity, entity.world, x, y, z, yaw, pitch, partialTicks);
 
         super.doRender(entity, x, y, z, yaw, partialTicks);
+    }
+
+    protected void doRenderItem(@Nonnull E entity, World world, double x, double y, double z, float yaw, float pitch, float partialTicks) {
+        this.renderItem(entity, getRenderItem(entity, 0), entity.world, x, y, z, yaw, pitch, partialTicks, 0);
     }
 
     protected float getYaw(@Nonnull E entity, float providedYaw, float partialTicks) {
@@ -111,10 +110,14 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
 
     public void renderItem(ItemStack missileStack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks)
     {
-        this.renderItem(null, missileStack, world, x, y, z, entityYaw, entityPitch, partialTicks);
+        this.renderItem(null, missileStack, world, x, y, z, entityYaw, entityPitch, partialTicks, 0);
     }
 
-    protected void renderItem(@Nullable E entity, ItemStack itemstack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks) {
+    protected void renderItem(@Nullable E entity, ItemStack itemstack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks, int index) {
+        if(itemstack == null || itemstack.isEmpty()) {
+            itemstack = BACKUP_RENDER_STACK.get();
+        }
+
         this.random.setSeed(Item.getIdFromItem(itemstack.getItem()) + itemstack.getMetadata());
         boolean hasTexture = false;
 
@@ -133,9 +136,9 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
         GlStateManager.pushMatrix();
 
         IBakedModel ibakedmodel = this.getBakedModel(entity, world, itemstack);
-        this.translate(entity, ibakedmodel, x, y, z, partialTicks);
-        this.rotate(entity, entityYaw, entityPitch, partialTicks);
-        this.scale(entity, partialTicks);
+        this.translate(entity, itemstack, ibakedmodel, x, y, z, partialTicks, index);
+        this.rotate(entity, itemstack, entityYaw, entityPitch, partialTicks, index);
+        this.scale(entity, itemstack, partialTicks, index);
 
         if (this.renderOutlines)
         {
@@ -145,7 +148,7 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
 
         // Render item
         GlStateManager.pushMatrix();
-        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, getTransformType(), false);
+        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, getTransformType(index), false);
         this.itemRenderer.renderItem(itemstack, ibakedmodel);
         GlStateManager.popMatrix();
 
@@ -157,6 +160,7 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
         }
 
         GlStateManager.popMatrix();
+
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();
         this.bindEntityTexture(entity);

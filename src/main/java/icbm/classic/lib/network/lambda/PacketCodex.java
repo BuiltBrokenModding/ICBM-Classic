@@ -120,7 +120,10 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeItemStack(Function<TARGET, ItemStack> getter, BiConsumer<TARGET, ItemStack> setter) {
-        return node(ItemStack.class,false,  getter, setter, ByteBufUtils::writeItemStack, ByteBufUtils::readItemStack);
+        return node(ItemStack.class,false,  getter, setter,
+            (byteBuf, stack) -> { ByteBufUtils.writeTag(byteBuf, stack.serializeNBT());},
+            (byteBuf) -> new ItemStack(ByteBufUtils.readTag(byteBuf))
+        );
     }
 
     public PacketCodex<RAW, TARGET> nodeVec3d(Function<TARGET, Vec3d> getter, BiConsumer<TARGET, Vec3d> setter) {

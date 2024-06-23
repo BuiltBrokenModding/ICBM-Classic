@@ -10,6 +10,7 @@ import icbm.classic.content.cluster.bomblet.ItemBombDroplet;
 import icbm.classic.content.cluster.missile.ItemClusterMissile;
 import icbm.classic.content.items.*;
 import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
+import icbm.classic.content.missile.entity.itemstack.item.ItemHeldItemMissile;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemBlockSubTypes;
 import net.minecraft.item.Item;
@@ -79,6 +80,9 @@ public class ItemReg
     @ObjectHolder(ICBMConstants.PREFIX + "surface_to_air_missile")
     public static ItemSurfaceToAirMissile itemSAM;
 
+    @ObjectHolder(ICBMConstants.PREFIX + "held_item_missile")
+    public static ItemHeldItemMissile heldItemMissile;
+
     @ObjectHolder(ICBMConstants.PREFIX + "cluster_missile")
     public static Item itemClusterMissile;
 
@@ -128,6 +132,7 @@ public class ItemReg
         event.getRegistry().register(new ItemMissile().setName("explosive_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemSurfaceToAirMissile());
         event.getRegistry().register(new ItemClusterMissile().setName("cluster_missile").setCreativeTab(ICBMClassic.CREATIVE_TAB));
+        event.getRegistry().register(new ItemHeldItemMissile());
 
         event.getRegistry().register(new ItemBase().setName("empty_bomblet").setCreativeTab(ICBMClassic.CREATIVE_TAB));
         event.getRegistry().register(new ItemBombDroplet().setName("explosive_bomblet").setCreativeTab(ICBMClassic.CREATIVE_TAB));
