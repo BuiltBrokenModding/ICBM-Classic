@@ -18,6 +18,11 @@ public class ConfigMissile
     @Config.RangeDouble(min = 0.0001, max = 10)
     public static float DIRECT_FLIGHT_SPEED = 2;
 
+    @Config.Name("simulation_flight_speed")
+    @Config.Comment("Speed (meters per tick) of missiles in simulation")
+    @Config.RangeDouble(min = 0.0001)
+    public static float SIMULATION_FLIGHT_SPEED = 10;
+
     @Config.Name("simulation_exit_height")
     @Config.Comment("Height (y level) to start simulating a missile when it travels above the map")
     @Config.RangeInt(min = 1)

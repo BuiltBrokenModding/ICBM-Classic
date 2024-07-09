@@ -27,17 +27,16 @@ import java.util.LinkedList;
 public class MissileTrackerWorld extends WorldSavedData
 {
     //Constants
-    private final int speedPerSecond = 10; //10 blocks per second
-    private final int unloadChunkCooldown = 60; //1 minute
-    private final int preLoadChunkTimer = 5; //5 update ticks (5 seconds) / the time that we wait before spawning the missile in a force-loaded chunk
+    private static final int unloadChunkCooldown = 60; //1 minute
+    private static final int preLoadChunkTimer = 5; //5 update ticks (5 seconds) / the time that we wait before spawning the missile in a force-loaded chunk
 
     //Missile lists
-    private LinkedList<MissileTrackerData> missileList;         //Stores missiles which are being simulated right now
-    private LinkedList<MissileTrackerData> missileSpawnList;    //Stores missiles which are awaiting to be spawned in world
+    private final LinkedList<MissileTrackerData> missileList;         //Stores missiles which are being simulated right now
+    private final LinkedList<MissileTrackerData> missileSpawnList;    //Stores missiles which are awaiting to be spawned in world
 
     //Chunk stuff
     private ForgeChunkManager.Ticket chunkLoadTicket;   //The chunkloading ticket used for loading chunks
-    private LinkedList<LoadedChunkPair> currentLoadedChunks;    //Stores the currently loaded chunks along with a timer how long they will be loaded for
+    private final LinkedList<LoadedChunkPair> currentLoadedChunks;    //Stores the currently loaded chunks along with a timer how long they will be loaded for
 
     //Tick counter for reducing the simulation speed
     private int ticks = 0;
@@ -80,7 +79,7 @@ public class MissileTrackerWorld extends WorldSavedData
             double dst = Math.sqrt(dx * dx + dz * dz);
 
             //Calculate duration and queue up
-            mtd.ticksLeftToTarget = (int) Math.round(dst / speedPerSecond);
+            mtd.ticksLeftToTarget = (int) Math.round(dst / ConfigMissile.SIMULATION_FLIGHT_SPEED);
             missileList.add(mtd);
 
             //Destroys the entity and marks it for removal from world
