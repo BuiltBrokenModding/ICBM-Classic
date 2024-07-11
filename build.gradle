@@ -1,8 +1,7 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '5.1.+'
-    id 'wtf.gofancy.fancygradle' version '1.1.+'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
 import groovy.json.JsonSlurper
@@ -19,14 +18,12 @@ java {
 version = "${version_major}.${version_minor}.${version_revise}"
 archivesBaseName = "ICBM-classic-${version_mc}"
 
-fancyGradle {
-    patches {
-        //https://gitlab.com/gofancy/fancygradle/-/wikis/IDE-Specific-Runs
-        resources
-        coremods
-        asm
-        mergetool
-    }
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+legacy {
+    fixClasspath = true
+    extractMappings = true
+    attachMappings = true
 }
 
 idea {
@@ -69,11 +66,17 @@ dependencies {
     //Mockito
     testImplementation 'org.mockito:mockito-inline:4.3.1'
     testImplementation 'org.mockito:mockito-core:4.3.1'
+
+    configurations.forEach {
+        // mergetool pollutes the classpath with conflicting classes
+        it.exclude(group: 'net.minecraftforge', module: 'mergetool')
+    }
 }
 
 
 minecraft {
     mappings channel: 'snapshot', version: '20171003-1.12'
+    copyIdeResources = true
 
     accessTransformer = file('src/main/resources/META-INF/ICBMClassic_at.cfg')
 
@@ -82,12 +85,28 @@ minecraft {
             workingDirectory project.file('run/client')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+
+            environment 'MC_VERSION', '1.12.2'
+
+            mods {
+                icbmclassic {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
             workingDirectory project.file('run/server')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+
+            environment 'MC_VERSION', '1.12.2'
+
+            mods {
+                icbmclassic {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
@@ -201,3 +220,33 @@ task installLocalGitHook(type: Copy){
 }
 
 build.dependsOn installLocalGitHook
+
+//TODO jar signing https://github.com/TheCodex6824/ThaumcraftFix/blob/480c97d385d521daf0d7168073e44132f77fbfff/build.gradle#L199
+
+
+//javadoc { TODO fix doc issues and enable
+//    include 'icbm/classic/api/**'
+//}
+
+/*task javadocJar(type: Jar, dependsOn: javadoc) {
+    from 'build/docs/javadoc'
+    archiveClassifier = 'javadoc'
+}*/
+
+task apiJar(type: Jar) {
+    from sourceSets.main.output
+    from sourceSets.main.java
+    archiveClassifier = 'api'
+    include 'icbm/classic/api/**'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java
+    archiveClassifier = 'sources'
+}
+
+artifacts {
+    archives apiJar
+    //archives javadocJar
+    archives sourcesJar
+}
