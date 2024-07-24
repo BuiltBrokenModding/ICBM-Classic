@@ -1,0 +1,22 @@
+{
+  "result": {
+    "explosive": "icbmclassic:smoke",
+    "count": 16
+  },
+  "pattern": [
+    "CCC",
+    "CrC",
+    "CCC"
+  ],
+  "type": "icbmclassic:explosive",
+  "key": {
+    "C": {
+      "item": "minecraft:coal",
+      "data": 1
+    },
+    "r": {
+      "type" : "icbmclassic:explosive",
+      "explosive": "icbmclassic:repulsive"
+    }
+  }
+}
