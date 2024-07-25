@@ -4,6 +4,30 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
+repositories {
+    mavenCentral();
+    maven {
+        // JEI
+        name "Progwml6 maven"
+        url "https://dvs1.progwml6.com/files/maven/"
+    };
+    maven {
+        // JEI fallback
+        name "ModMaven"
+        url "https://modmaven.dev"
+    };
+    maven {
+        name 'SquidDev'
+        url 'https://squiddev.cc/maven/'
+    }
+    maven {
+        url = 'https://www.cursemaven.com/'
+        content {
+            includeGroup "curse.maven"
+        }
+    };
+}
+
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -48,7 +72,10 @@ dependencies {
 
     //Mods
     implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
+
     compileOnly "mezz.jei:jei_1.12.2:4.16.1.302:api"
+    //runtimeOnly 'curse.maven:jei-238222:2995897'
+
     //https://github.com/mekanism/Mekanism/tree/1.12
 
     //Junit 5
@@ -192,24 +219,6 @@ jar {
             "Implementation-Version": "${project.version}",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "FMLAT": "ICBMClassic_at.cfg")
-}
-
-repositories {
-    mavenCentral();
-    maven {
-        // JEI
-        name "Progwml6 maven"
-        url "https://dvs1.progwml6.com/files/maven/"
-    };
-    maven {
-        // JEI fallback
-        name "ModMaven"
-        url "https://modmaven.dev"
-    };
-    maven {
-        name 'SquidDev'
-        url 'https://squiddev.cc/maven/'
-    };
 }
 jar.finalizedBy('reobfJar')
 
