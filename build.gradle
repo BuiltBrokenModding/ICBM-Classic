@@ -1,11 +1,15 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.minecraftforge.gradle' version '6.0.+'
 }
 
 repositories {
     mavenCentral();
+    maven {
+        name "Su5ed LegacyDev Fork"
+        url "https://maven.su5ed.dev/releases"
+    }
     maven {
         // JEI
         name "Progwml6 maven"
@@ -74,9 +78,19 @@ dependencies {
     implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
 
     compileOnly "mezz.jei:jei_1.12.2:4.16.1.302:api"
-    //runtimeOnly 'curse.maven:jei-238222:2995897'
+    runtimeOnly 'curse.maven:jei-238222:2995897'
 
     //https://github.com/mekanism/Mekanism/tree/1.12
+
+    constraints {
+        implementation('net.minecraftforge:legacydev:0.3.0.0-legacyExt') {
+            because 'needed to have all ATs work properly'
+        }
+
+        implementation('org.ow2.asm:asm-debug-all:5.2') {
+            because 'newer ASM versions include module info that causes errors in Java 8'
+        }
+    }
 
     //Junit 5
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
@@ -97,6 +111,15 @@ dependencies {
     configurations.forEach {
         // mergetool pollutes the classpath with conflicting classes
         it.exclude(group: 'net.minecraftforge', module: 'mergetool')
+
+        // legacydev forge dep wants fatjar as the classifier, but 3.0 lacks it
+        it.resolutionStrategy.eachDependency {
+            if (it.requested.module.toString() == "net.minecraftforge:legacydev") {
+                it.artifactSelection {
+                    it.selectArtifact(DependencyArtifact.DEFAULT_TYPE, null, null)
+                }
+            }
+        }
     }
 }
 
