@@ -139,7 +139,7 @@ item.icbmclassic:explosive_bomblet.name=낙탄
 bomblet.icbmclassic:condensed.name=응축 낙탄
 bomblet.icbmclassic:shrapnel.name=파편 낙탄
 bomblet.icbmclassic:incendiary.name=소이 낙탄
-bomblet.icbmclassic:debilitation.name=약화 낙탄
+bomblet.icbmclassic:debilitation.name=쇠약 낙탄
 bomblet.icbmclassic:chemical.name=화학 낙탄
 bomblet.icbmclassic:anvil.name=모루 낙탄
 bomblet.icbmclassic:repulsive.name=반발 낙탄
@@ -163,6 +163,12 @@ bomblet.icbmclassic:hypersonic.name=극초음속 낙탄
 
 bomblet.icbmclassic:antimatter.name=반물질 낙탄
 bomblet.icbmclassic:redmatter.name=적색 물질 낙탄
+
+## Missile Held Item
+item.icbmclassic:held_item_missile.name=아이템 미사일
+item.icbmclassic:held_item_missile.sword.name=검 미사일
+item.icbmclassic:held_item_missile.info=아이템이 붙은 미사일
+item.icbmclassic:held_item_missile.held_item=폭발 시 아이템을 사용합니다. \n 아이템: %1$s
 
 ## Parchute Projectile
 item.icbmclassic:parachute.name=페이로드 낙하산
@@ -225,7 +231,7 @@ tier.icbmclassic.four=4티어
 explosive.icbmclassic:condensed.name=응축 폭발물
 explosive.icbmclassic:shrapnel.name=파편 폭발물
 explosive.icbmclassic:incendiary.name=소이 폭발물
-explosive.icbmclassic:debilitation.name=약화 폭발물
+explosive.icbmclassic:debilitation.name=쇠약 폭발물
 explosive.icbmclassic:chemical.name=화학 폭발물
 explosive.icbmclassic:anvil.name=모루 폭발물
 explosive.icbmclassic:repulsive.name=반발 폭발물
@@ -264,7 +270,7 @@ missile.icbmclassic:generic.name=미사일
 missile.icbmclassic:condensed.name=응축 미사일
 missile.icbmclassic:shrapnel.name=파편 미사일
 missile.icbmclassic:incendiary.name=소이 미사일
-missile.icbmclassic:debilitation.name=약화 미사일
+missile.icbmclassic:debilitation.name=쇠약 미사일
 missile.icbmclassic:chemical.name=화학 미사일
 missile.icbmclassic:anvil.name=모루 미사일
 missile.icbmclassic:repulsive.name=반발 미사일
@@ -293,7 +299,7 @@ missile.icbmclassic:redmatter.name=적색 물질 미사일
 bombcart.icbmclassic:condensed.name=응축 광산 수레
 bombcart.icbmclassic:shrapnel.name=파편 광산 수레
 bombcart.icbmclassic:incendiary.name=발화 광산 수레
-bombcart.icbmclassic:debilitation.name=약화 광산 수레
+bombcart.icbmclassic:debilitation.name=쇠약 광산 수레
 bombcart.icbmclassic:chemical.name=화학 광산 수레
 bombcart.icbmclassic:anvil.name=모루 광산 수레
 bombcart.icbmclassic:repulsive.name=반발 광산 수레
@@ -378,7 +384,7 @@ missile.icbmclassic:homing.name=유도 미사일
 grenade.icbmclassic:condensed.name=응축 수류탄
 grenade.icbmclassic:shrapnel.name=파편 수류탄
 grenade.icbmclassic:incendiary.name=화염 수류탄
-grenade.icbmclassic:debilitation.name=약화 수류탄
+grenade.icbmclassic:debilitation.name=쇠약 수류탄
 grenade.icbmclassic:chemical.name=화학 수류탄
 grenade.icbmclassic:anvil.name=모루 수류탄
 grenade.icbmclassic:repulsive.name=반발 수류탄
@@ -553,25 +559,18 @@ radio.icbmclassic:message.launch.failed=미사일(s)을 발사하지 못했습�
 radio.icbmclassic:message.launch.triggered=미사일(s)을 발사 중이며, 발사기를 조준하고 있습니다
 
 # SubTitles
-subtitle.icbmclassic:missile.movement=미사일 엔진
-
-item.icbmclassic:held_item_missile.name=아이템 홀더 미사일
-item.icbmclassic:held_item_missile.sword.name=검 미사일
-item.icbmclassic:held_item_missile.info=아이템 + 글루 + 미사일
-item.icbmclassic:held_item_missile.held_item=충돌 시 아이템 사용 \n 보유: %1$s
-
 subtitle.icbmclassic:explosion.antimatter=반물질 폭발
-subtitle.icbmclassic:beam.charge=에너지 빔 시작
+subtitle.icbmclassic:beam.charge=에너지 광선 시작
 subtitle.icbmclassic:explosion.collapse=블록 붕괴
-subtitle.icbmclassic:explosion.debilitation=약화 가스
+subtitle.icbmclassic:explosion.debilitation=쇠약 가스
 subtitle.icbmclassic:explosion.emp=EMP 방전
 subtitle.icbmclassic:explosion=폭발
 subtitle.icbmclassic:explosion.fire=화염 폭발
 subtitle.icbmclassic:gas.leak=가스 공격
-subtitle.icbmclassic:machine.hum=기계 윙윙거림
+subtitle.icbmclassic:machine.hum=기계가 윙윙거림
+subtitle.icbmclassic:missile.movement=미사일 엔진
 subtitle.icbmclassic:missile.launch=미사일 발사
-subtitle.icbmclassic:power.down=에너지 빔 종료
+subtitle.icbmclassic:power.down=에너지 광선 끝
 subtitle.icbmclassic:explosion.redmatter=적색 물질 폭발
-
-
-subtitle.icbmclassic:explosion.sonicwave=Sonic Blastsubtitle.icbmclassic:meep=Meep Meepsubtitle.icbmclassic:explosion.sonicwave=Sonic Blastsubtitle.icbmclassic:meep=Meep Meepsubtitle.icbmclassic:missile.launch=Missile Launch
+subtitle.icbmclassic:explosion.sonicwave=소닉붐
+subtitle.icbmclassic:meep=꽥 꽥
