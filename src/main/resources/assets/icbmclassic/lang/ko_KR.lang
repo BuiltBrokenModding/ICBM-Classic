@@ -1,0 +1,577 @@
+## Master language file https://htmlcolorcodes.com/minecraft-color-codes/
+itemGroup.icbmclassic=ICBM-Classic
+
+## Config
+config.icbmclassic:main.title=일반
+config.icbmclassic:launcher.title=발사기
+config.icbmclassic:blast.title=폭발
+config.icbmclassic:blast.fusetimes.title=퓨즈 시간
+config.icbmclassic:blast.fusetimes.bombcarts.title=폭발물 카트
+config.icbmclassic:blast.fusetimes.explosives.title=폭발물
+config.icbmclassic:blast.fusetimes.grenades.title=수류탄
+config.icbmclassic:emp.title=EMP
+config.icbmclassic:missile.title=미사일
+config.icbmclassic:battery.title=배터리
+config.icbmclassic:thread.title=스레드
+config.icbmclassic:item.title=아이템
+config.icbmclassic:ic2.title=Industrial Craft 2
+config.icbmclassic:debug.title=디버그
+config.icbmclassic:missile.sam.title=지대공 미사일
+config.icbmclassic:missile.cluster.title=클러스터 미사일
+config.icbmclassic:contagious.title=전염성 독
+config.icbmclassic:frostbite.title=동상 독
+config.icbmclassic:bomblet.title=폭발물 / 낙탄
+config.icbmclassic:cargo.holder.title=화물 보관함 (낙하산, 풍선)
+
+## Chat commands
+
+
+### Blast Trigger Command: Good outputs - shared by blast spread command
+command.icbmclassic:icbm.blast.triggered=%1$s가 %2$f 스케일로 [%3$s@%4$d, %5$d, %6$d, %7$d]에서 폭발이 발생했습니다.
+command.icbmclassic:icbm.blast.threaded=%1$s가 %2$f 스케일로 폭발이 큐에 추가되었습니다. 처리 완료 후 [%3$s@%4$d, %5$d, %6$d, %7$d]에서 폭발이 발생합니다.
+
+### Blast Trigger Command: Errors Blast Triggering - shared by blast spread command
+command.icbmclassic:icbm.blast.error=폭발 생성 중 예상치 못한 오류가 발생했습니다. 자세한 내용은 콘솔을 확인하십시오.
+command.icbmclassic:icbm.blast.error.blocked=폭발이 Forge 이벤트에 의해 차단되었습니다. 자세한 내용은 콘솔을 확인하십시오.
+command.icbmclassic:icbm.blast.error.null=BlastFactory에서 폭발을 생성하지 않았습니다. 자세한 내용은 콘솔을 확인하십시오.
+command.icbmclassic:icbm.blast.error.triggered=폭발이 이미 발생했습니다. 이는 절대 발생해서는 안 되며, 버그입니다.
+command.icbmclassic:icbm.blast.error.unknown=명령이 알 수 없는 폭발 상태 코드를 받았습니다. 자세한 내용은 콘솔을 확인하십시오.
+
+### Blast Trigger Command: Errors Input data - shared by blast spread command
+command.icbmclassic:icbm.blast.error.explosive.id='%1$s' ID를 가진 폭발물을 찾을 수 없습니다.
+command.icbmclassic:icbm.blast.error.scale.zero=스케일은 0보다 커야 합니다!
+
+### Blast Spread Command: Good outputs
+command.icbmclassic:icbm.spread.started=%3$s@%4$d, %5$d, %6$d, %7$d]에서 %1$s 폭발물과 %2$f 스케일로 %10$d개의 폭발이 트리거되었으며, %9$d 거리에서 %8$d만큼 확산되었습니다.
+
+### Lag Command
+command.icbmclassic:icbm.lag.remove=%3$d 미터 내에서 %1$d개의 폭발과 %2$d개의 엔티티가 제거되었습니다.
+
+### Remove Command
+command.icbmclassic:icbm.remove=%2$d 미터 내에서 %1%d개의 엔티티가 제거되었습니다.
+
+### Generic errors
+command.icbmclassic:icbm.error.unknown.command=알 수 없는 명령입니다. 자세한 내용은 %s 도움말을 참조하십시오.
+
+## Potions
+potion.toxin=독
+potion.virus=바이러스
+potion.frostBite=동상
+potion.radiation=방사능
+
+## Items
+item.icbmclassic:battery.name=배터리
+item.icbmclassic:battery.info=전력을 저장하고 운반하는 데 사용됨
+
+item.icbmclassic:sulfurDust.name=유기 황
+item.icbmclassic:sulfurDust.info=화약 제작에 사용됨
+
+item.icbmclassic:saltpeter.name=초석
+item.icbmclassic:saltpeter.info=화약 제작에 사용됨
+
+item.icbmclassic:saltpeter_ball.name=초석 조각
+item.icbmclassic:saltpeter_ball.info=초석을 추출하기 위해 화로에서 사용됨
+
+item.icbmclassic:poisonPowder.name=독가루
+item.icbmclassic:poisonPowder.info=폭발물 제작에 사용됨
+
+item.icbmclassic:antidote.name=해독제
+item.icbmclassic:antidote.info=모든 효과를 해제함
+
+# Radar Gun
+item.icbmclassic:radarGun.name=레이저 거리 측정기
+item.icbmclassic:radarGun.info=지정된 위치의 GPS 데이터를 저장합니다 \n 최대 범위: %1$s미터
+item.icbmclassic:radarGun.data.pos=목표: %1$sx, %2$sy, %3$sz
+item.icbmclassic:radarGun.data.all=목표: (%1$sx, %2$sy, %3$sz) 세계: %4$s
+item.icbmclassic:radarGun.data.empty=목표: 없음
+
+# Laser Det
+item.icbmclassic:remoteDetonator.name=원격 기폭 장치
+item.icbmclassic:remoteDetonator.info=기기를 작동시키는 라디오 신호를 전송합니다
+
+item.icbmclassic:defuser.name=해체 키트
+item.icbmclassic:defuser.info=폭발 장치(블록, 엔티티)를 해체하는 데 사용됩니다
+
+item.icbmclassic:laserDetonator.name=레이저 표적 지시기
+item.icbmclassic:laserDetonator.info.info=대상 정보를 포함한 신호를 보내 장치를 작동시킵니다
+item.icbmclassic:laserDetonator.laser.canceled=레이저 이벤트 취소됨
+item.icbmclassic:laserDetonator.laser.missed=레이저 오류; %1$sm 내에 경로상에 아무것도 없음
+item.icbmclassic:laserDetonator.target=대상 설정됨 (%1$s, %2$s, %3$s)
+
+item.icbmclassic:rocketLauncher.name=로켓 발사기: 직선형
+item.icbmclassic:rocketLauncher.info=미사일을 직선으로 발사합니다
+
+item.icbmclassic:ballisticLauncher.name=로켓 발사기: 탄도형
+item.icbmclassic:ballisticLauncher.info=미사일을 목표를 향해 포물선 궤적으로 발사합니다. 3m의 사전 발사 거리와 20m의 높이 오프셋이 있습니다.
+
+item.icbmclassic:rocketLauncher.info.creative=창작 모드: 티어 제한을 우회합니다
+item.icbmclassic:rocketLauncher.error.IMissileAiming=미사일 %1$s가 손에 있는 발사기에서 사용될 수 있도록 IMissileAiming을 구현하지 않았습니다
+item.icbmclassic:rocketLauncher.error.spawning=미사일 생성이 월드에 의해 취소되었습니다
+item.icbmclassic:rocketLauncher.error.targeting=안전 수칙: 목표가 설정되지 않았습니다
+item.icbmclassic:rocketLauncher.error.distance.min=안전 수칙: 최소 사거리 %1$s 미터
+
+item.icbmclassic:surface_to_air_missile.name=지대공 미사일
+item.icbmclassic:surface_to_air_missile.info=지면에서 발사하여 공중의 목표를 공격하도록 설계된 미사일
+
+## Crafting items
+item.icbmclassic:ingot.steel.name=강철 주괴
+item.icbmclassic:ingot.copper.name=구리 주괴
+
+item.icbmclassic:clump.steel.name=석탄으로 감싼 철
+item.icbmclassic:clump.steel.info=옛날 방식으로, 철을 석탄으로 감싸 탄소를 풍부하게 만들어 강철을 제작함
+
+item.icbmclassic:plate.iron.name=철판
+item.icbmclassic:plate.steel.name=강철판
+
+item.icbmclassic:wire.copper.name=구리 전선
+item.icbmclassic:wire.gold.name=금 전선
+
+item.icbmclassic:circuit.basic.name=기본 회로
+item.icbmclassic:circuit.advanced.name=고급 회로
+item.icbmclassic:circuit.elite.name=첨단 회로
+
+## Bomblet/Droplet
+item.icbmclassic:empty_bomblet.name=빈 낙탄
+item.icbmclassic:empty_bomblet.info=유도되지 않은 빈 발사체
+
+item.icbmclassic:explosive_bomblet.name=낙탄
+
+bomblet.icbmclassic:condensed.name=응축 낙탄
+bomblet.icbmclassic:shrapnel.name=파편 낙탄
+bomblet.icbmclassic:incendiary.name=소이 낙탄
+bomblet.icbmclassic:debilitation.name=약화 낙탄
+bomblet.icbmclassic:chemical.name=화학 낙탄
+bomblet.icbmclassic:anvil.name=모루 낙탄
+bomblet.icbmclassic:repulsive.name=반발 낙탄
+bomblet.icbmclassic:attractive.name=인력 낙탄
+bomblet.icbmclassic:colors.name=다채로운 낙탄
+bomblet.icbmclassic:smoke.name=표식 낙탄
+
+bomblet.icbmclassic:fragmentation.name=세열 낙탄
+bomblet.icbmclassic:contagious.name=전염성 낙탄
+bomblet.icbmclassic:sonic.name=음속 낙탄
+bomblet.icbmclassic:breaching.name=브리칭 낙탄
+bomblet.icbmclassic:thermobaric.name=열압 낙탄
+
+bomblet.icbmclassic:nuclear.name=핵 낙탄
+bomblet.icbmclassic:emp.name=EMP 낙탄
+bomblet.icbmclassic:exothermic.name=발열 낙탄
+bomblet.icbmclassic:endothermic.name=흡열 낙탄
+bomblet.icbmclassic:antigravitational.name=반중력 낙탄
+
+bomblet.icbmclassic:hypersonic.name=극초음속 낙탄
+
+bomblet.icbmclassic:antimatter.name=반물질 낙탄
+bomblet.icbmclassic:redmatter.name=적색 물질 낙탄
+
+## Parchute Projectile
+item.icbmclassic:parachute.name=페이로드 낙하산
+item.icbmclassic:parachute.info=투하된 페이로드의 속도를 줄여줌
+
+item.icbmclassic:balloon.name=페이로드 풍선
+item.icbmclassic:balloon.info=페이로드를 코믹하게 투하하는 방법
+
+error.icbmclassic:projectile.throwing.interface=개발자 오류: 누락된 %1$s
+error.icbmclassic:projectile.throwing.type=개발자 오류: 누락된 발사체 유형 %1$s
+
+projectile.icbmclassic:holder.parachute.info.entity=낙하산으로 엔티티를 투하 \n 유지 중: %1$s
+projectile.icbmclassic:holder.parachute.info.item=낙하산으로 아이템을 투하 \n 유지 중: %1$s
+projectile.icbmclassic:holder.parachute.info.block=낙하산으로 블록을 투하 \n 유지 중: %1$s
+
+projectile.icbmclassic:holder.balloon.info.entity=풍선으로 엔티티를 투하 \n 유지 중: %1$s
+projectile.icbmclassic:holder.balloon.info.item=풍선으로 아이템을 투하 \n 유지 중: %1$s
+projectile.icbmclassic:holder.balloon.info.block=풍선으로 블록을 투하 \n 유지 중: %1$s
+
+## ICBM Machines
+tile.icbmclassic:launcherbase.name=발사대 패드
+tile.icbmclassic:launcherbase.info=미사일을 발사 전에 고정시킴
+
+tile.icbmclassic:launcherscreen.name=발사 화면
+tile.icbmclassic:launcherscreen.info=발사대에서 미사일을 발사하는 데 사용됨
+
+tile.icbmclassic:launcherframe.name=발사대 프레임
+tile.icbmclassic:launcherframe.info=선택적인 장식용 발사대 연결 블록
+
+tile.icbmclassic:launcher_connector.name=발사대 커넥터
+tile.icbmclassic:launcher_connector.info=선택적인 장식용 발사대 연결 블록
+
+tile.icbmclassic:radarstation.name=레이더 스테이션
+tile.icbmclassic:radarstation.info=비행 중인 미사일을 탐지함
+
+tile.icbmclassic:emptower.0.name=EMP 타워
+tile.icbmclassic:emptower.0.info=전력을 사용하여 EMP 폭발을 생성함
+tile.icbmclassic:emptower.1.name=EMP 타워 확장기
+tile.icbmclassic:emptower.1.info=EMP 타워의 최대 범위를 %1$s 증가시킴
+
+tile.icbmclassic:cruiselauncher.name=순항 미사일 발사기
+tile.icbmclassic:cruiselauncher.info=목표 데이터 없이 미사일을 더미로 발사함
+
+tile.icbmclassic:missilecoordinator.name=미사일 코디네이터
+tile.icbmclassic:missilecoordinator.info=거대한 계산기. 비행 경로를 계산함
+
+## Blocks
+tile.icbmclassic:radioactive.0.name=방사능 흙
+tile.icbmclassic:radioactive.1.name=방사능 돌
+
+## ICBM Explosives
+
+### Tiers
+tier.icbmclassic.one=1티어
+tier.icbmclassic.two=2티어
+tier.icbmclassic.three=3티어
+tier.icbmclassic.four=4티어
+
+### Block Form
+explosive.icbmclassic:condensed.name=응축 폭발물
+explosive.icbmclassic:shrapnel.name=파편 폭발물
+explosive.icbmclassic:incendiary.name=소이 폭발물
+explosive.icbmclassic:debilitation.name=약화 폭발물
+explosive.icbmclassic:chemical.name=화학 폭발물
+explosive.icbmclassic:anvil.name=모루 폭발물
+explosive.icbmclassic:repulsive.name=반발 폭발물
+explosive.icbmclassic:attractive.name=인력 폭발물
+explosive.icbmclassic:nightmare.name=악몽 폭발물
+explosive.icbmclassic:colors.name=다채로운 폭발물
+explosive.icbmclassic:smoke.name=표식 폭발물
+
+explosive.icbmclassic:fragmentation.name=세열 폭발물
+explosive.icbmclassic:contagious.name=전염성 폭발물
+explosive.icbmclassic:sonic.name=음속 폭발물
+explosive.icbmclassic:breaching.name=브리칭 폭발물
+explosive.icbmclassic:thermobaric.name=열압 폭발물
+
+explosive.icbmclassic:nuclear.name=핵 폭발물
+explosive.icbmclassic:emp.name=EMP 폭발물
+explosive.icbmclassic:exothermic.name=발열 폭발물
+explosive.icbmclassic:endothermic.name=흡열 폭발물
+explosive.icbmclassic:antigravitational.name=반중력 폭발물
+
+explosive.icbmclassic:hypersonic.name=극초음속 폭발물
+explosive.icbmclassic:antimatter.name=반물질 폭발물
+explosive.icbmclassic:redmatter.name=적색 물질 폭발물
+
+### Ender
+explosive.icbmclassic:ender.name=엔더 폭발물
+missile.icbmclassic:ender.name=엔더 미사일
+bombcart.icbmclassic:ender.name=엔더 광산 수레
+explosive.icbmclassic:ender.info=당신의 기지를 이동시킵니다
+explosive.icbmclassic:ender.pos=대상: %1$sx, %2$sy, %3$sz
+explosive.icbmclassic:ender.world=월드: [%1$s] %2$s
+
+### Missile Form
+missile.icbmclassic:generic.name=미사일
+
+missile.icbmclassic:condensed.name=응축 미사일
+missile.icbmclassic:shrapnel.name=파편 미사일
+missile.icbmclassic:incendiary.name=소이 미사일
+missile.icbmclassic:debilitation.name=약화 미사일
+missile.icbmclassic:chemical.name=화학 미사일
+missile.icbmclassic:anvil.name=모루 미사일
+missile.icbmclassic:repulsive.name=반발 미사일
+missile.icbmclassic:attractive.name=인력 미사일
+missile.icbmclassic:colors.name=다채로운 미사일
+missile.icbmclassic:smoke.name=표식 미사일
+
+missile.icbmclassic:fragmentation.name=세열 미사일
+missile.icbmclassic:contagious.name=전염성 미사일
+missile.icbmclassic:sonic.name=음속 미사일
+missile.icbmclassic:breaching.name=브리칭 미사일
+missile.icbmclassic:thermobaric.name=열압 미사일
+
+missile.icbmclassic:nuclear.name=핵 미사일
+missile.icbmclassic:emp.name=EMP 미사일
+missile.icbmclassic:exothermic.name=발열 미사일
+missile.icbmclassic:endothermic.name=흡열 미사일
+missile.icbmclassic:antigravitational.name=반중력 미사일
+
+missile.icbmclassic:hypersonic.name=극초음속 미사일
+
+missile.icbmclassic:antimatter.name=반물질 미사일
+missile.icbmclassic:redmatter.name=적색 물질 미사일
+
+### Explosive Minecarts
+bombcart.icbmclassic:condensed.name=응축 광산 수레
+bombcart.icbmclassic:shrapnel.name=파편 광산 수레
+bombcart.icbmclassic:incendiary.name=발화 광산 수레
+bombcart.icbmclassic:debilitation.name=약화 광산 수레
+bombcart.icbmclassic:chemical.name=화학 광산 수레
+bombcart.icbmclassic:anvil.name=모루 광산 수레
+bombcart.icbmclassic:repulsive.name=반발 광산 수레
+bombcart.icbmclassic:attractive.name=인력 광산 수레
+bombcart.icbmclassic:nightmare.name=악몽 광산 수레
+bombcart.icbmclassic:colors.name=다채로운 광산 수레
+bombcart.icbmclassic:smoke.name=표식 광산 수레
+
+bombcart.icbmclassic:fragmentation.name=세열 광산 수레
+bombcart.icbmclassic:contagious.name=전염성 광산 수레
+bombcart.icbmclassic:sonic.name=음속 광산 수레
+bombcart.icbmclassic:breaching.name=브리칭 광산 수레
+bombcart.icbmclassic:thermobaric.name=열압 광산 수레
+
+bombcart.icbmclassic:nuclear.name=핵 광산 수레
+bombcart.icbmclassic:emp.name=EMP 광산 수레
+bombcart.icbmclassic:exothermic.name=발열 광산 수레
+bombcart.icbmclassic:endothermic.name=흡열 광산 수레
+bombcart.icbmclassic:antigravitational.name=반중력 광산 수레
+
+bombcart.icbmclassic:hypersonic.name=초음속 광산 수레
+
+bombcart.icbmclassic:antimatter.name=반물질 광산 수레
+bombcart.icbmclassic:redmatter.name=적색 물질 광산 수레
+
+### Explosive Info
+explosive.icbmclassic:condensed.info=TNT보다 약간 더 파괴적인 버전
+explosive.icbmclassic:shrapnel.info=금속 조각이 폭발하여 퍼져나감
+explosive.icbmclassic:incendiary.info=주변을 불태우는 폭발
+explosive.icbmclassic:debilitation.info=주변 모두를 혼란스럽게 하고 방향 감각을 상실하게 만듦
+explosive.icbmclassic:chemical.info=호흡이 어려우면 싸울 수 없다
+explosive.icbmclassic:anvil.info=무슨 일인가요?
+explosive.icbmclassic:repulsive.info=모두를 밀어내는 폭발
+explosive.icbmclassic:attractive.info=모두를 끌어들이는 폭발
+explosive.icbmclassic:colors.info=정말 다양한 색상!!!
+explosive.icbmclassic:smoke.info=짧은 연기 신호로 목표를 테스트함
+
+explosive.icbmclassic:fragmentation.info=고속 조각으로 풍경을 초토화시킴
+explosive.icbmclassic:contagious.info=전염병에 대해 들어본 적 있나요?
+explosive.icbmclassic:sonic.info=이 정도 소음으로 몰래 들어가는 건 불가능하겠죠?
+explosive.icbmclassic:breaching.info=문이 필요할 때 쓰면 됩니다
+explosive.icbmclassic:thermobaric.info=소형 핵폭탄. 아니면 북쪽에서 가능한 한 가까운 것
+
+explosive.icbmclassic:nuclear.info=안녕하세요! 저는 핵 중독자입니다..
+explosive.icbmclassic:emp.info=9000 이상? 이제는 아닙니다
+explosive.icbmclassic:exothermic.info=태양이 뜨겁다고 생각했죠
+explosive.icbmclassic:endothermic.info=저는 프리즈씨라고 불립니다
+explosive.icbmclassic:antigravitational.info=당신의 기지가 떠 있는 게 더 보기 좋다고 생각해요
+
+explosive.icbmclassic:hypersonic.info=귀가 안쓰럽습니다
+
+explosive.icbmclassic:antimatter.info=물질 + 반물질 = 아무것도 없음
+
+### Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8
+explosive.icbmclassic:redMatter.info.count=11
+explosive.icbmclassic:redMatter.info.0=Yogscast? 파헤치기 시작!
+explosive.icbmclassic:redMatter.info.1=당신의 기지가 아무것도 없는 것으로 압축되는 건 안타깝겠군요
+explosive.icbmclassic:redMatter.info.2=볼츠의 특별함... 그 폭탄
+explosive.icbmclassic:redMatter.info.3=버스 바퀴가 돌아가고 있어요
+explosive.icbmclassic:redMatter.info.4=창문 밖에 소가 날아간 것 같아요?
+explosive.icbmclassic:redMatter.info.5=오, 하느님! 나를 빨아들이고 있어!
+explosive.icbmclassic:redMatter.info.6=탈출할 길이 없어요
+explosive.icbmclassic:redMatter.info.7=빛조차도...
+explosive.icbmclassic:redMatter.info.8=공허 속으로
+explosive.icbmclassic:redMatter.info.9=오? 도망칠 수 있다고 생각하나요
+explosive.icbmclassic:redMatter.info.10=오, 제발 돌아와요
+
+## Cluster Missile
+item.icbmclassic:cluster_missile.name=클러스터 미사일
+item.icbmclassic:cluster_missile.info=타겟 근처에 다수의 발사체를 배치합니다. 충격 센서가 없습니다.
+item.icbmclassic:cluster_missile.contents=내용물: %1$s
+
+missile.icbmclassic:cluster.name=클러스터 미사일
+
+## Special Missiles
+missile.icbmclassic:missile.name=미사일 모듈
+missile.icbmclassic:antiBallistic.name=탄도 미사일 요격 미사일
+missile.icbmclassic:nuclearCluster.name=핵 클러스터 미사일
+missile.icbmclassic:homing.name=유도 미사일
+
+## Grenades
+grenade.icbmclassic:condensed.name=응축 수류탄
+grenade.icbmclassic:shrapnel.name=파편 수류탄
+grenade.icbmclassic:incendiary.name=화염 수류탄
+grenade.icbmclassic:debilitation.name=약화 수류탄
+grenade.icbmclassic:chemical.name=화학 수류탄
+grenade.icbmclassic:anvil.name=모루 수류탄
+grenade.icbmclassic:repulsive.name=반발 수류탄
+grenade.icbmclassic:attractive.name=인력 수류탄
+grenade.icbmclassic:colors.name=다채로운 수류탄
+grenade.icbmclassic:smoke.name=연막 수류탄
+
+## ICBM Misc Blocks
+tile.icbmclassic:concrete.0.name=콘크리트
+tile.icbmclassic:concrete.1.name=압축된 콘크리트
+tile.icbmclassic:concrete.2.name=강화 콘크리트
+
+tile.icbmclassic:reinforcedGlass.name=강화 유리
+tile.icbmclassic:glassPressurePlate.name=유리 압력판
+tile.icbmclassic:glassButton.name=유리 버튼
+tile.icbmclassic:camouflage.name=위장
+tile.icbmclassic:proximityDetector.name=근접 감지기
+
+tile.icbmclassic:spikes.0.name=가시
+tile.icbmclassic:spikes.1.name=독 가시
+tile.icbmclassic:spikes.2.name=가연성 가시
+
+tile.icbmclassic:batterybox.0.name=배터리 박스
+
+## Chat messages
+message.designator.callTime=공중 폭격 호출 대기 중:
+message.designator.blast=공중 폭격이 다가오고 있습니다!
+message.designator.setFreq=레이저 조준기의 주파수가 설정되었습니다:
+message.designator.failFreq=주파수는 0보다 커야 합니다.
+message.designator.callBlast=지정된 위치로 공중 폭격을 호출합니다!
+message.designator.nopower=레이저 조준기가 전력이 부족합니다!
+message.designator.noFreq=레이저 조준기의 주파수가 설정되지 않았습니다!
+
+message.radarGun.scanned=스캔된 좌표: X:%x Y:%y Z:%z - 거리: %d
+message.radarGun.nopower=레이다 총이 전력이 부족합니다!
+message.radarGun.transfer=좌표 정보가 전송되었습니다!
+message.radarGun.noCoords=좌표를 스캔해야 합니다!
+message.launcher.protected=해당 지역은 보호 중입니다.
+message.detonator.locked=원격 장치가 잠금되었습니다: X:%x Y:%y Z:%z
+message.detonator.nopower=원격 장치가 전력이 부족합니다!
+message.radar.redstone.on=레이다가 레드스톤을 방출하도록 설정되었습니다
+message.radar.redstone.off=레이다가 레드스톤을 방출하지 않도록 설정되었습니다
+
+## Format helper
+gui.icbmclassic:error=알 수 없는 오류; 자세한 정보는 콘솔을 확인하세요.
+gui.icbmclassic:error.null=잘못된 형식: \n \t  입력이 필요합니다
+gui.icbmclassic:error.format.number.int=잘못된 형식: \n \t  정수 숫자가 필요합니다 \n 예: 4578
+gui.icbmclassic:error.format.number.float=잘못된 형식: \n \t  소수 숫자가 필요합니다. \n 예: 45.678
+gui.icbmclassic:error.format.vector.3d=잘못된 형식: \n \t  3개의 좌표를 쉼표로 구분해서 입력해야 합니다. \n 예: 4567, 5678, 8974
+gui.icbmclassic:error.format.vector.2d=잘못된 형식: \n \t  2개의 좌표를 쉼표로 구분해서 입력해야 합니다. \n 예: 4567, 5678
+
+gui.icbmclassic:energy=§a에너지:§r %1$s / §a%2$s FE
+gui.icbmclassic:energy.withCost=§a에너지:§r %1$s / %2$s FE \n §d유지비:§r %3$s FE/t
+gui.icbmclassic:energy.withCostAndAction=§a에너지:§r %1$s / %2$s FE \n §d유지비:§r %3$s FE/t \n §c작동:§r %4$s FE
+gui.icbmclassic:energy.withAction=§a에너지:§r %1$s / %2$s FE \n §c작동:§r %4$s FE
+gui.icbmclassic:error.no_network=발사기 네트워크에 연결하지 못했습니다
+
+gui.icbmclassic:tooltip.radio.channel=라디오 채널: \n \t 장치 연결을 위해 공유 알파-넘버 값으로 설정하십시오. \n \n §bAlt§r + 클릭으로 활성화/비활성화 전환
+gui.icbmclassic:tooltip.target=대상: \n \t 현재 조준 위치입니다. 도구 또는 'x, y, z' 형식으로 수동으로 설정할 수 있습니다. \n 예: 56.5, 40, 89
+
+
+## Components
+gui.icbmclassic:button.face.tooltip=미사일 회전: \n \t 시각적 회전 및 미사일 좌석 위치를 설정합니다. \n \n §bAlt§r + 클릭하여 시계 방향으로 회전 \n §bShift§r + 클릭하여 반시계 방향으로 회전
+
+## EMP Tower
+gui.icbmclassic:empTower.name=EMP 타워
+gui.icbmclassic:empTower.power=발사 안전: \n \t  충전 중... %1$s
+gui.icbmclassic:empTower.cooling=발사 안전: \n \t  냉각 중... %1$s
+gui.icbmclassic:empTower.ready=발사 준비 완료
+
+## Launcher Silo
+gui.icbmclassic:launcherbase.name=발사대 플랫폼
+gui.icbmclassic:launcherbase.lock_height=고정 높이: \n \t  미사일이 방향을 변경하기 전에 이동할 높이 거리입니다.
+gui.icbmclassic:launcherbase.group_id=그룹 ID: \n \t  미사일을 발사 임무를 위해 그룹화하는 데 사용됩니다.
+gui.icbmclassic:launcherbase.group_index=그룹 인덱스: \n \t  그룹 내 미사일의 인덱스입니다. 체인 발사 및 기타 그룹 발사 기능에 사용됩니다.
+gui.icbmclassic:launcherbase.firing_delay=발사 지연: \n \t  발사 전 대기 시간입니다. 체인 발사 지연에 유용하며, 1초에 20틱이 포함됩니다.
+
+## Launcher Screen
+gui.launcherscreen.name=발사기 제어 패널
+gui.launcherscreen.inaccuracy=오차: %1$sm
+gui.launcherscreen.inaccuracy.info=미사일이 목표에서 떨어질 수 있는 반경 (미터 단위). 발사기 수와 거리 등 다양한 요인에 의해 결정됩니다.
+
+## Radar Station
+gui.icbmclassic:radar.name=레이더 스테이션
+gui.icbmclassic:radar.range=범위 설정: \n \t  트리거 범위 및 탐지 범위. \n \n §bShift§r를 눌러 자세히 보기
+gui.icbmclassic:radar.range.shift=트리거 범위는 위협 지역을 정의합니다. 탐지 범위는 레이더의 최대 작동 범위를 정의합니다. 알려진 유형의 비행 개체만 감지합니다. 레드스톤 및 SAM 미사일을 발사하여 응답합니다.
+gui.icbmclassic:radar.redstone.off=레드스톤 끔: \n \t  클릭하여 수신 위협에 대한 레드스톤 출력을 활성화합니다.
+gui.icbmclassic:radar.redstone.on=레드스톤 켬: \n \t  클릭하여 수신 위협에 대한 레드스톤 출력을 비활성화합니다.
+
+## General launcher feedback: used in GUIs tooltip, radio messages, and launcher status messages
+info.icbmclassic:launcher.error=알 수 없는 오류
+info.icbmclassic:launcher.error.power=에러; 전력 부족
+info.icbmclassic:launcher.error.fuel=에러; 연료 부족
+info.icbmclassic:launcher.error.missile.none=에러; 미사일 없음
+info.icbmclassic:launcher.error.missile.multi=§c%1$s / %2$s 준비되지 않음
+
+info.icbmclassic:launcher.error.network=자체 점검; 발사기 네트워크 없음
+info.icbmclassic:launcher.error.network.status.missing=개발 버그; 상태 데이터 없음
+info.icbmclassic:launcher.error.network.launchers=자체 점검; 연결된 발사기 없음
+
+info.icbmclassic:launcher.error.target.none=유도 에러; 목표 설정되지 않음
+info.icbmclassic:launcher.error.target.min=유도 에러; 목표가 너무 가까움
+info.icbmclassic:launcher.error.target.max=유도 에러; 목표가 너무 멀리 있음
+info.icbmclassic:launcher.error.target.angle=유도 에러; 조준 각도 제한 초과
+info.icbmclassic:launcher.error.missile.space=유도 에러; 발사기 충돌 감지됨
+
+info.icbmclassic:launcher.error.launcher=발사 실패; 발사기 감지되지 않음
+info.icbmclassic:launcher.error.missile.spawn=발사 실패; 미사일 생성 차단됨
+
+info.icbmclassic:launcher.status=알 수 없는 상태
+info.icbmclassic:launcher.status.ready=발사 준비 완료
+info.icbmclassic:launcher.status.launched=발사 트리거됨
+info.icbmclassic:launcher.status.canceled=발사 취소됨
+
+info.icbmclassic:launcher.status.firing=발사 트리거됨; 과정 시작
+info.icbmclassic:launcher.status.firing.delayed=발사 트리거됨; %s 후 발사
+info.icbmclassic:launcher.status.firing.aiming=발사 트리거됨; 목표 조준 중
+
+## Cruise launcher UI
+gui.launcher.cruise.name=순항 발사기
+
+## IGPSData usage
+info.icbmclassic:gps.set.all=전송된 데이터: (%1$sx, %2$sy, %3$sz) W: %4$s
+info.icbmclassic:gps.set.pos=전송된 데이터: %1$sx %2$sy %3$sz
+info.icbmclassic:gps.set.empty=오류: 전송할 데이터가 없습니다
+
+chat.launcher.toolFrequencySet=주파수가 %s로 설정되었습니다
+
+gui.coordinator.name=미사일 조정기
+gui.coordinator.sim=경로 시뮬레이터
+gui.coordinator.from=출발지:
+gui.coordinator.to=도착지:
+gui.coordinator.displace=이동 거리: %p 미터
+gui.coordinator.arc=호: %p 미터
+gui.coordinator.time=시간: %p 초
+gui.coordinator.direction=방향:
+gui.coordinator.wip=추가 기능은 곧 제공됩니다!
+
+## Tooltips
+info.misc.freq=주파수:
+info.tracker.tracking=추적 중:
+info.designator.noFreq=주파수: 설정되지 않음
+info.detonator.linked=연결된 폭발물:
+info.detonator.noLink=연결된 폭발물이 없음
+info.misc.tier=폭발물 등급
+info.tracker.tooltip=왼쪽 클릭으로 몹(플레이어 포함)을 클릭하면 해당 대상을 가리킵니다.
+
+## Death messages
+death.attack.icbm.redmatter=%s는 거대한 블랙홀의 압도적인 질량에 의해 짓눌려 사망했습니다.
+death.attack.icbm.chemical=%s는 갑자기 기분이 매우 나빠졌습니다.
+death.attack.icbm.contagious=%s가 너무 많은 녹색 물질을 흡입했습니다.
+death.attack.icbmclassic:spikes=%s가 스파이크에 의해 사망했습니다.
+death.attack.icbmclassic:projectile=%s가 발사체에 의해 사망했습니다.
+death.attack.icbmclassic:bomblet=%s가 폭탄에 맞아 머리를 다쳤습니다.
+death.attack.icbmclassic:radioactive_block=%s가 방사능 낙진에 의해 사망했습니다.
+
+## GPS
+gps.pos.set.name=GPS 데이터가 저장되었습니다
+gps.error.pos.invalid.name=유효하지 않은 위치
+gps.error.pos.invalid.world.name=다른 세계를 대상으로 할 수 없습니다
+gps.error.pos.invalid.null.name=대상이 설정되지 않았습니다
+gps.data.transferred.name=데이터가 전송되었습니다
+gps.cleared.name=GPS 데이터가 삭제되었습니다
+
+## Messages
+
+### Radio
+radio.icbmclassic:message.target.null=대상 데이터가 없습니다
+radio.icbmclassic:message.target.set=대상이 (%1$f %2$f %3$f)로 설정되었습니다
+radio.icbmclassic:message.launch.success=미사일(s)을 (%1$f %2$f %3$f) 위치로 발사하며, 사정거리는 %4$f입니다
+radio.icbmclassic:message.launch.failed=미사일(s)을 발사하지 못했습니다
+radio.icbmclassic:message.launch.triggered=미사일(s)을 발사 중이며, 발사기를 조준하고 있습니다
+
+# SubTitles
+subtitle.icbmclassic:missile.movement=미사일 엔진
+
+item.icbmclassic:held_item_missile.name=아이템 홀더 미사일
+item.icbmclassic:held_item_missile.sword.name=검 미사일
+item.icbmclassic:held_item_missile.info=아이템 + 글루 + 미사일
+item.icbmclassic:held_item_missile.held_item=충돌 시 아이템 사용 \n 보유: %1$s
+
+subtitle.icbmclassic:explosion.antimatter=반물질 폭발
+subtitle.icbmclassic:beam.charge=에너지 빔 시작
+subtitle.icbmclassic:explosion.collapse=블록 붕괴
+subtitle.icbmclassic:explosion.debilitation=약화 가스
+subtitle.icbmclassic:explosion.emp=EMP 방전
+subtitle.icbmclassic:explosion=폭발
+subtitle.icbmclassic:explosion.fire=화염 폭발
+subtitle.icbmclassic:gas.leak=가스 공격
+subtitle.icbmclassic:machine.hum=기계 윙윙거림
+subtitle.icbmclassic:missile.launch=미사일 발사
+subtitle.icbmclassic:power.down=에너지 빔 종료
+subtitle.icbmclassic:explosion.redmatter=적색 물질 폭발
+
+
+subtitle.icbmclassic:explosion.sonicwave=Sonic Blastsubtitle.icbmclassic:meep=Meep Meepsubtitle.icbmclassic:explosion.sonicwave=Sonic Blastsubtitle.icbmclassic:meep=Meep Meepsubtitle.icbmclassic:missile.launch=Missile Launch
