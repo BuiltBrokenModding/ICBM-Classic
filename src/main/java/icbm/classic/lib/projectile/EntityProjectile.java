@@ -470,6 +470,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
                 && entityHit instanceof EntityLivingBase) {
                 applyKnockBack(entityHit);
             }
+            hit.hitVec = hit.hitVec.add(new Vec3d(0, 0.5, 0)); //Add some offset to prevent the entity from disappearing
             onImpact(hit);
             // TODO add deflection for some projectiles, so when impact entities the projectile might redirect rather than vanish
         }
