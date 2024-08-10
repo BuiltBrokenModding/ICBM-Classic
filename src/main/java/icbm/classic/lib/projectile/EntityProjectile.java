@@ -280,7 +280,13 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
             if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit)) {
                 //Handle entity hit
                 if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY) {
-                    handleEntityCollision(rayHit, rayHit.entityHit);
+                    //rayHit.hitVec == rayHit.entityHit.pos, So, hitbox points are calculated to prevent the entity from disappearing.
+                    RayTraceResult hitPoint = rayHit.entityHit.getEntityBoundingBox().calculateIntercept(
+                        new Vec3d(posX, posY, posZ),
+                        new Vec3d(rayHit.entityHit.posX, rayHit.entityHit.posY, rayHit.entityHit.posZ)
+                    );
+
+                    handleEntityCollision(hitPoint, rayHit.entityHit);
                 } else //Handle block hit
                 {
                     handleBlockCollision(rayHit);
