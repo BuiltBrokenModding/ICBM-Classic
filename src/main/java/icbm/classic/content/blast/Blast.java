@@ -378,17 +378,15 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 yDifference /= mag;
                 zDifference /= mag;
 
-                double var34 = world().getBlockDensity(center, entity.getEntityBoundingBox());
-                double var36 = (1.0D - distance) * var34;
-                int damage = 0;
-
-                damage = (int) ((var36 * var36 + var36) / 2.0D * 8.0D * power + 1.0D);
+                double blockDensity = world().getBlockDensity(center, entity.getEntityBoundingBox());
+                double damageScale = (1.0D - distance) * blockDensity;
+                int damage = (int) ((damageScale * damageScale + damageScale) / 2.0D * 8.0D * power + 1.0D); //TODO magic numbers
 
                 entity.attackEntityFrom(getDamageSource(), damage);
 
-                entity.motionX += xDifference * var36;
-                entity.motionY += yDifference * var36;
-                entity.motionZ += zDifference * var36;
+                entity.motionX += xDifference * damageScale;
+                entity.motionY += yDifference * damageScale;
+                entity.motionZ += zDifference * damageScale;
             }
         }
 
