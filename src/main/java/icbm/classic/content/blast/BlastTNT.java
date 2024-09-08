@@ -13,9 +13,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 
@@ -68,9 +70,27 @@ public class BlastTNT extends Blast
     }
 
     @Override
+    protected void clientRunBlast()
+    {
+
+    }
+
+    @Override
     public boolean doExplode(int callCount)
     {
         calculateDamage(); //TODO add listener(s) to control block break and placement
+
+        if(world instanceof WorldServer) {
+            final WorldServer worldServer = (WorldServer)world;
+            if (this.size >= 2.0F)
+            {
+                worldServer.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, false, this.x, this.y, this.z, 1, 1.0D, 0.0D, 0.0D, 1);
+            }
+            else
+            {
+                worldServer.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, false, this.x, this.y, this.z, 1, 1.0D, 0.0D, 0.0D, 1);
+            }
+        }
 
         this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
 
