@@ -1,6 +1,7 @@
 package icbm.classic.content.missile.entity.itemstack;
 
 import com.google.common.collect.Multimap;
+import icbm.classic.ICBMClassic;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.reg.ItemReg;
@@ -113,9 +114,12 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                         final IAttributeInstance attributeInstance =  attributeMap.getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE);
                         double damage = attributeInstance.getAttributeValue();
 
-                        damage += EnchantmentHelper.getModifierForCreature(held, ((EntityLivingBase) entityHit).getCreatureAttribute()) * velocity;
+                        damage += EnchantmentHelper.getModifierForCreature(held, ((EntityLivingBase) entityHit).getCreatureAttribute());
+                        damage *= velocity;
+
                         if(damage > 0) {
-                            entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase) this.shootingEntity : player), (float)damage);
+                            final EntityLivingBase attacker = this.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase) this.shootingEntity : player;
+                            entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, attacker), (float)damage);
                         }
                         //TODO if entity dies keep moving with sword
 
