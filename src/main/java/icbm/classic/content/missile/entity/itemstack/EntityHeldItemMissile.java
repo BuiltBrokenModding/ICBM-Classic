@@ -2,8 +2,11 @@ package icbm.classic.content.missile.entity.itemstack;
 
 import com.google.common.collect.Multimap;
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
+import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMissile;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
@@ -165,14 +168,23 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     }
 
     @Override
-    public ItemStack toStack() {
+    public ItemStack toStack() { //TODO replace with more specific callbacks to decouple render side from drop-logic from pick-logic
         if(world.isRemote) {
             if(renderStackCache == null) {
-                renderStackCache = new ItemStack(ItemReg.heldItemMissile);
+                renderStackCache = genItem();
             }
             return renderStackCache;
         }
-        return new ItemStack(ItemReg.heldItemMissile);
+        return genItem();
+    }
+
+    private ItemStack genItem() {
+        final ItemStack stack = new ItemStack(ItemReg.heldItemMissile);
+        final ICapabilityMissileStack capabilityMissileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        if(capabilityMissileStack instanceof CapabilityHeldItemMissile) {
+            ((CapabilityHeldItemMissile) capabilityMissileStack).setHeldItem(itemStackHandler.getStackInSlot(0));
+        }
+        return stack;
     }
 
     @Override
