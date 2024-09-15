@@ -2,11 +2,8 @@ package icbm.classic.content.missile.entity.itemstack.item;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.content.cargo.CargoHolderHandler;
-import icbm.classic.content.cargo.CargoProjectileData;
 import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.projectile.ProjectileStack;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,8 +13,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-import java.util.function.Supplier;
-
 
 /**
  * Recipe for adding cargo to cargo projectile item
@@ -25,7 +20,7 @@ import java.util.function.Supplier;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @Data
-public class RecipeHelItemMissile extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+public class RecipeHeldItemMissile extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
 
     private final ItemStack recipeOutput;
 
