@@ -4,6 +4,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.missile.entity.itemstack.EntityHeldItemMissile;
+import icbm.classic.content.missile.entity.itemstack.HeldActionMode;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ public class CapabilityHeldItemMissile implements ICapabilityMissileStack, INBTS
     @Getter @Setter
     private ItemStack heldItem = ItemStack.EMPTY;
     @Getter @Setter
-    private boolean primaryAction = true;
+    private HeldActionMode actionMode = HeldActionMode.PRIMARY_FIRST;
     //TODO store homing on/off
 
     @Override
@@ -30,7 +31,7 @@ public class CapabilityHeldItemMissile implements ICapabilityMissileStack, INBTS
     {
         final EntityHeldItemMissile missile = new EntityHeldItemMissile(world);
         missile.getItemStackHandler().setStackInSlot(0, heldItem.copy());
-        missile.setPrimaryAction(primaryAction);
+        missile.setActionMode(actionMode);
         return missile.getMissileCapability();
     }
 
@@ -47,6 +48,6 @@ public class CapabilityHeldItemMissile implements ICapabilityMissileStack, INBTS
     private static final NbtSaveHandler<CapabilityHeldItemMissile> SAVE_LOGIC = new NbtSaveHandler<CapabilityHeldItemMissile>()
         .mainRoot()
         /* */.nodeItemStack("held", CapabilityHeldItemMissile::getHeldItem, CapabilityHeldItemMissile::setHeldItem)
-        /* */.nodeBoolean("primary_action", CapabilityHeldItemMissile::isPrimaryAction, CapabilityHeldItemMissile::setPrimaryAction)
+        /* *//* */.nodeEnumString("action_mode", CapabilityHeldItemMissile::getActionMode, CapabilityHeldItemMissile::setActionMode, HeldActionMode::valueOf)
         .base();
 }
