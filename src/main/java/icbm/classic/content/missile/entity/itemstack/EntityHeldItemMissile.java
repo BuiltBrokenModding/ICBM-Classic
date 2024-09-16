@@ -11,6 +11,7 @@ import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -108,17 +109,62 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                     useItemPrimaryOnEntity(held, entityHit, velocity);
                 }
                 else {
-                    //TODO activate item on entity
+                    useItemSecondaryOnEntity(held, entityHit);
                 }
             }
             onImpact(hit);
         }
     }
 
+    private void useItemSecondaryOnEntity(ItemStack held, Entity entityHit) {
+        final FakePlayer player = getFakePlayer();
+
+        // Setup player
+        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
+
+        if(entityHit instanceof EntityLivingBase) {
+            hasUsedAction = player.interactOn(entityHit, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS;
+
+            if(!hasUsedAction) {
+
+                // Try off-hand
+                player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+                player.setHeldItem(EnumHand.OFF_HAND, held.copy());
+
+                hasUsedAction = player.interactOn(entityHit, EnumHand.OFF_HAND) == EnumActionResult.SUCCESS;
+
+                // If used store impacted item, this may not be the same item
+                if(hasUsedAction) {
+                    this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.OFF_HAND));
+                }
+            }
+            else {
+                this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+            }
+        }
+
+        resetFakePlayer(player);
+    }
+
+    private FakePlayer getFakePlayer() {
+        final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world);
+        //TODO get shooter and use them as the player for protections & death logs
+        resetFakePlayer(player);
+        return player;
+    }
+
+    private void resetFakePlayer(FakePlayer player) {
+        player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
+        player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+        player.dismountRidingEntity();
+    }
+
     private void useItemPrimaryOnEntity(ItemStack held, Entity entityHit, float velocity) {
-        final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO get shooter and use them as the player for protections & death logs
+        final FakePlayer player = getFakePlayer();
 
         held = held.copy();
+
+        // Setup player
         player.setHeldItem(EnumHand.MAIN_HAND, held);
 
         // Left click entity
@@ -158,6 +204,9 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                 this.itemStackHandler.setStackInSlot(0, held);
             }
         }
+
+        // Reset
+        resetFakePlayer(player);
     }
 
     @Override
