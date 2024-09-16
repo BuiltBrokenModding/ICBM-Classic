@@ -17,7 +17,7 @@ public final class CargoHolderHandler {
     }
 
     public static boolean isAllowed(ItemStack itemStack) {
-        return ConfigMissile.CARGO_HOLDERS.BAN_ALLOW.BAN == banAllowItems.isAllowed(itemStack);
+        return banAllowItems.isAllowed(itemStack, ConfigMissile.CARGO_HOLDERS.BAN_ALLOW.BAN);
     }
 
     public static void loadFromConfig() {

@@ -24,6 +24,7 @@ public final class ClusterMissileHandler {
         configList.setDefault(ItemReg.itemClusterMissile.getRegistryName(), 20, 0);
         configList.setDefault(ItemReg.itemExplosiveMissile.getRegistryName(), 20, 0);
         configList.setDefault(ItemReg.itemSAM.getRegistryName(), 10, 0);
+        configList.setDefault(ItemReg.heldItemMissile.getRegistryName(), 10, 0);
 
         configList.setDefault(ItemReg.itemBombletExplosive.getRegistryName(), 2, 0);
         for(IExplosiveData data : ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives()) {
@@ -50,7 +51,7 @@ public final class ClusterMissileHandler {
     }
 
     public static boolean isAllowed(ItemStack itemStack) {
-        return ConfigMissile.CLUSTER_MISSILE.BAN_ALLOW.BAN == banAllowItems.isAllowed(itemStack);
+        return banAllowItems.isAllowed(itemStack, ConfigMissile.CLUSTER_MISSILE.BAN_ALLOW.BAN);
     }
 
     public static void loadFromConfig() {
