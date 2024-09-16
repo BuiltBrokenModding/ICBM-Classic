@@ -94,6 +94,11 @@ public class ConfigMissile
     @Config.Comment("https://github.com/BuiltBrokenModding/ICBM-Classic/wiki/config-cluster")
     public static ConfigClusterMissile CLUSTER_MISSILE = new ConfigClusterMissile();
 
+    @Config.Name("held_item")
+    @Config.LangKey("config.icbmclassic:missile.held_item.title")
+    @Config.Comment("https://github.com/BuiltBrokenModding/ICBM-Classic/wiki/Config-Cargo-Holders")
+    public static ConfigHeldItemMissile HELD_ITEM_MISSILE = new ConfigHeldItemMissile();
+
     @Config.Name("cargo_holder")
     @Config.LangKey("config.icbmclassic:cargo.holder.title")
     @Config.Comment("https://github.com/BuiltBrokenModding/ICBM-Classic/wiki/Config-Cargo-Holders")

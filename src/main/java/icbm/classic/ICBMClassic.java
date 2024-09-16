@@ -14,6 +14,7 @@ import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.cluster.missile.RecipeCluster;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
+import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.missile.entity.itemstack.item.RecipeHeldItemMissile;
 import icbm.classic.content.missile.entity.itemstack.item.RecipeHeldItemMissileDecraft;
 import icbm.classic.content.missile.logic.flight.move.MoveByVec3Logic;
@@ -368,6 +369,7 @@ public class ICBMClassic
         ProjectileBlockInteraction.register();
         ClusterMissileHandler.setup();
         CargoHolderHandler.setup();
+        HeldItemMissileHandler.setup();
         RadioactiveHandler.setup();
         ProtectiveArmorHandler.setup();
 

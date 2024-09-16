@@ -6,6 +6,7 @@ import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
+import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.radioactive.RadioactiveHandler;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -78,6 +79,7 @@ public class ConfigMain
             FlyingBlock.loadFromConfig();
             ClusterMissileHandler.loadFromConfig();
             CargoHolderHandler.loadFromConfig();
+            HeldItemMissileHandler.loadFromConfig();
             RadioactiveHandler.loadFromConfig();
             ProtectiveArmorHandler.loadFromConfig();
         }
