@@ -31,6 +31,29 @@ public class ItemHeldItemMissile extends ItemICBMBase {
     public ItemHeldItemMissile() {
         super("held_item_missile");
         this.setMaxStackSize(1);
+        this.setHasSubtypes(true);
+    }
+
+    @Override
+    public boolean showDurabilityBar(ItemStack stack)
+    {
+        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        if (cap instanceof CapabilityHeldItemMissile) {
+            final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
+            return heldItem.getItem().showDurabilityBar(heldItem);
+        }
+        return stack.isItemDamaged();
+    }
+
+    @Override
+    public double getDurabilityForDisplay(ItemStack stack)
+    {
+        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        if (cap instanceof CapabilityHeldItemMissile) {
+            final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
+            return heldItem.getItem().getDurabilityForDisplay(heldItem);
+        }
+        return super.getDurabilityForDisplay(stack);
     }
 
     @Override
