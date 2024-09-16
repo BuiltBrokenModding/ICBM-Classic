@@ -61,8 +61,7 @@ public class RecipeHeldItemMissile extends net.minecraftforge.registries.IForgeR
     }
 
     private boolean isAllowedItem(ItemStack slotStack) {
-        return slotStack.getItem() != ItemReg.itemClusterMissile
-            && CargoHolderHandler.isAllowed(slotStack);
+        return HeldItemMissileHandler.isAllowed(slotStack);
     }
 
     @Override

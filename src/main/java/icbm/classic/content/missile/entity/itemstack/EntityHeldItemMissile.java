@@ -1,15 +1,14 @@
 package icbm.classic.content.missile.entity.itemstack;
 
 import com.google.common.collect.Multimap;
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMissile;
+import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.saving.NbtSaveNode;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,7 +23,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -37,7 +35,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Missile holding an item, will use the item on impact if possible
@@ -70,22 +67,10 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     @Override
     protected void actionOnImpact(RayTraceResult hit) {
         if(!this.world.isRemote) {
-            ItemStack held = this.itemStackHandler.getStackInSlot(0);
-            if (!held.isEmpty() && !primaryAction) {
-                if (!hasUsedAction) {
-                    final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO get shooter and use them as the player for protections & death logs
+            final ItemStack held = this.itemStackHandler.getStackInSlot(0);
 
-                    held = held.copy();
-                    player.setHeldItem(EnumHand.MAIN_HAND, held);
-
-                    // Right click
-                    EnumActionResult ret = held.onItemUseFirst(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
-                    if (ret == EnumActionResult.PASS) {
-                        held.onItemUse(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
-                    }
-
-                    this.itemStackHandler.setStackInSlot(0, held);
-                }
+            if(!hasUsedAction && !held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
+                useItemOnPosition(held, hit);
             }
 
             if (isEntityAlive()) {
@@ -95,56 +80,82 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         }
     }
 
+    private void useItemOnPosition(ItemStack held, RayTraceResult hit) {
+        if (!primaryAction) {
+            final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO get shooter and use them as the player for protections & death logs
+
+            held = held.copy();
+            player.setHeldItem(EnumHand.MAIN_HAND, held);
+
+            // Right click
+            EnumActionResult ret = held.onItemUseFirst(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
+            if (ret == EnumActionResult.PASS) {
+                held.onItemUse(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
+            }
+
+            this.itemStackHandler.setStackInSlot(0, held);
+        }
+    }
+
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
         if (!world.isRemote) {
-            ItemStack held = this.itemStackHandler.getStackInSlot(0);
-            if(!held.isEmpty() && primaryAction) {
-                final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO get shooter and use them as the player for protections & death logs
+            final ItemStack held = this.itemStackHandler.getStackInSlot(0);
 
-                held = held.copy();
-                player.setHeldItem(EnumHand.MAIN_HAND, held);
-
-                // Left click entity
-                if(entityHit instanceof EntityLivingBase) {
-
-                    final Multimap<String, AttributeModifier> attributes = held.getAttributeModifiers(EntityEquipmentSlot.MAINHAND);
-                    if(attributes.containsKey(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
-                        final AbstractAttributeMap attributeMap = new AttributeMap();
-                        attributeMap.registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
-                        attributeMap.applyAttributeModifiers(attributes);
-
-                        final IAttributeInstance attributeInstance =  attributeMap.getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE);
-                        double damage = attributeInstance.getAttributeValue();
-
-                        damage += EnchantmentHelper.getModifierForCreature(held, ((EntityLivingBase) entityHit).getCreatureAttribute());
-                        damage *= velocity;
-
-                        if(damage > 0) {
-                            final EntityLivingBase attacker = this.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase) this.shootingEntity : player;
-                            entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, attacker), (float)damage);
-                        }
-                        //TODO if entity dies keep moving with sword
-
-                        // TODO pull knockback from item
-
-                        final int j = EnchantmentHelper.getFireAspectModifier(player);
-                        if (j > 0)
-                        {
-                            entityHit.setFire(j * 4);
-                        }
-
-                        this.applyEnchantments(player, entityHit);
-                    }
-
-                    hasUsedAction = held.getItem().hitEntity(held, (EntityLivingBase) entityHit, player);
-                    if (hasUsedAction) {
-                        this.itemStackHandler.setStackInSlot(0, held);
-                    }
+            if(!held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
+                if(primaryAction) {
+                    useItemPrimaryOnEntity(held, entityHit, velocity);
                 }
-
+                else {
+                    //TODO activate item on entity
+                }
             }
             onImpact(hit);
+        }
+    }
+
+    private void useItemPrimaryOnEntity(ItemStack held, Entity entityHit, float velocity) {
+        final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO get shooter and use them as the player for protections & death logs
+
+        held = held.copy();
+        player.setHeldItem(EnumHand.MAIN_HAND, held);
+
+        // Left click entity
+        if(entityHit instanceof EntityLivingBase) {
+
+            final Multimap<String, AttributeModifier> attributes = held.getAttributeModifiers(EntityEquipmentSlot.MAINHAND);
+            if(attributes.containsKey(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
+                final AbstractAttributeMap attributeMap = new AttributeMap();
+                attributeMap.registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
+                attributeMap.applyAttributeModifiers(attributes);
+
+                final IAttributeInstance attributeInstance =  attributeMap.getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE);
+                double damage = attributeInstance.getAttributeValue();
+
+                damage += EnchantmentHelper.getModifierForCreature(held, ((EntityLivingBase) entityHit).getCreatureAttribute());
+                damage *= velocity;
+
+                if(damage > 0) {
+                    final EntityLivingBase attacker = this.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase) this.shootingEntity : player;
+                    entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, attacker), (float)damage);
+                }
+                //TODO if entity dies keep moving with sword
+
+                // TODO pull knockback from item
+
+                final int j = EnchantmentHelper.getFireAspectModifier(player);
+                if (j > 0)
+                {
+                    entityHit.setFire(j * 4);
+                }
+
+                this.applyEnchantments(player, entityHit);
+            }
+
+            hasUsedAction = held.getItem().hitEntity(held, (EntityLivingBase) entityHit, player);
+            if (hasUsedAction) {
+                this.itemStackHandler.setStackInSlot(0, held);
+            }
         }
     }
 
