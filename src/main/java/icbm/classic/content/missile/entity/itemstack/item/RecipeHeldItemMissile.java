@@ -46,14 +46,13 @@ public class RecipeHeldItemMissile extends net.minecraftforge.registries.IForgeR
             if(!slotStack.isEmpty()) {
                 itemCount++;
 
-                if(ItemStack.areItemsEqual(slotStack, recipeOutput)) {
+                if(slotStack.getItem() == recipeOutput.getItem()) {
+                    if(hasMissile) {
+                        return false;
+                    }
                     hasMissile = true;
                 }
-                // Cluster takes priority as it is before parachute/balloon
-                else if((slotStack.getItem() == ItemReg.itemClusterMissile) && !hasMissile) {
-                    return false;
-                }
-                else if(!CargoHolderHandler.isAllowed(slotStack)) {
+                else if(!isAllowedItem(slotStack)) {
                     return false;
                 }
             }
@@ -61,17 +60,30 @@ public class RecipeHeldItemMissile extends net.minecraftforge.registries.IForgeR
         return itemCount == 2 && hasMissile;
     }
 
+    private boolean isAllowedItem(ItemStack slotStack) {
+        return slotStack.getItem() != ItemReg.itemClusterMissile
+            && CargoHolderHandler.isAllowed(slotStack);
+    }
+
     @Override
     public ItemStack getCraftingResult(InventoryCrafting inv) {
+        // TODO in future version redo recipe to use a data-pad to set the interaction mode
+        //       said data pad can be generic use for all crafting to encode settings for missile automation
+
         ItemStack missileIn = null;
         ItemStack cargo = null;
+        boolean primaryAction = true;
         for(int slot = 0; slot < inv.getSizeInventory() && (cargo == null || missileIn == null); slot++) {
             final ItemStack slotStack = inv.getStackInSlot(slot);
             if (!slotStack.isEmpty()) {
-                if (ItemStack.areItemsEqual(slotStack, recipeOutput)) {
+                if (slotStack.getItem() == recipeOutput.getItem()) {
                     missileIn = recipeOutput;
                 } else {
                     cargo = slotStack;
+                    // If cargo comes second then secondary action (right click)
+                    if(missileIn != null) {
+                        primaryAction = false;
+                    }
                 }
             }
         }
@@ -93,6 +105,7 @@ public class RecipeHeldItemMissile extends net.minecraftforge.registries.IForgeR
             insert.setCount(1);
 
             ((CapabilityHeldItemMissile) cap).setHeldItem(insert);
+            ((CapabilityHeldItemMissile) cap).setPrimaryAction(primaryAction);
 
             return missileOut;
         }

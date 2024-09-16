@@ -27,30 +27,26 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemHeldItemMissile extends ItemICBMBase
-{
-    public ItemHeldItemMissile()
-    {
+public class ItemHeldItemMissile extends ItemICBMBase {
+    public ItemHeldItemMissile() {
         super("held_item_missile");
         this.setMaxStackSize(1);
-        //TODO add decrafting
     }
 
     @Override
     @Nullable
-    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
-    {
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
         final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
         provider.add("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilityHeldItemMissile());
         return provider;
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack)
-    {
+    public String getUnlocalizedName(ItemStack stack) {
         final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if(cap instanceof CapabilityHeldItemMissile && (((CapabilityHeldItemMissile) cap).getHeldItem().getItem() instanceof ItemSword)) {
+        if (cap instanceof CapabilityHeldItemMissile && (((CapabilityHeldItemMissile) cap).getHeldItem().getItem() instanceof ItemSword)) {
             return super.getUnlocalizedName(stack) + ".sword";
+            //TODO attempt to localize all items to allow customized naming
         }
         return super.getUnlocalizedName(stack);
     }
@@ -60,21 +56,23 @@ public class ItemHeldItemMissile extends ItemICBMBase
         final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
 
         // Only show basic info if we have no projectile data
-        if(cap == null) {
+        if (!(cap instanceof CapabilityHeldItemMissile) || ((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
             LanguageUtility.outputLines(new TextComponentTranslation(getUnlocalizedName() + ".info"), list::add);
         }
 
         // Show projectile information
-        if(cap instanceof CapabilityHeldItemMissile && !((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
-            LanguageUtility.outputLines(new TextComponentTranslation(getUnlocalizedName() + ".held_item", ((CapabilityHeldItemMissile) cap).getHeldItem()), list::add);
+        if (cap instanceof CapabilityHeldItemMissile && !((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
+            LanguageUtility.outputLines(
+                new TextComponentTranslation(
+                    getUnlocalizedName() + ".held_item." + (((CapabilityHeldItemMissile) cap).isPrimaryAction() ? "primary" : "secondary"),
+                    ((CapabilityHeldItemMissile) cap).getHeldItem()
+                ), list::add);
         }
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (this.isInCreativeTab(tab))
-        {
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (this.isInCreativeTab(tab)) {
             items.add(new ItemStack(this));
 
             items.add(createStack(new ItemStack(Items.DIAMOND_SWORD)));
@@ -88,7 +86,7 @@ public class ItemHeldItemMissile extends ItemICBMBase
     private ItemStack createStack(ItemStack data) {
         final ItemStack stack = new ItemStack(this);
         final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if(cap instanceof CapabilityHeldItemMissile) {
+        if (cap instanceof CapabilityHeldItemMissile) {
             ((CapabilityHeldItemMissile) cap).setHeldItem(data);
         }
         return stack;
