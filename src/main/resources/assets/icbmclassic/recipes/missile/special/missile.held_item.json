@@ -1,0 +1,33 @@
+{
+  "result": {
+    "item": "icbmclassic:held_item_missile",
+    "count": 1
+  },
+  "pattern": [
+    "e",
+    "c",
+    "m"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "m": {
+      "item": "icbmclassic:explosive_missile",
+      "data": 24
+    },
+    "e": {
+      "item": "minecraft:sticky_piston",
+      "data": 0
+    },
+    "c": {
+      "type": "forge:ore_dict",
+      "ore": "circuitBasic"
+    }
+  },
+  "conditions": [
+    {
+      "type": "icbmclassic:ore_value",
+      "condition": "true",
+      "value": "circuitBasic"
+    }
+  ]
+}
