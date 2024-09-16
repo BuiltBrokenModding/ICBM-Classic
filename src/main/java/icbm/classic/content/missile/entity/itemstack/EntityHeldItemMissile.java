@@ -25,6 +25,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
@@ -46,7 +47,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     @Getter
     private final ItemStackHandler itemStackHandler = new ItemStackHandler(1); //TODO send packet if inventory changes
     @Getter @Setter
-    private boolean primaryAction = true;
+    private HeldActionMode actionMode = HeldActionMode.PRIMARY_FIRST;
 
     boolean hasUsedAction = false;
 
@@ -72,7 +73,19 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
 
             if(!hasUsedAction && !held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
-                useItemOnPosition(held, hit);
+
+                if(actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
+                    usePrimaryOnPosition(held, hit);
+                    if(actionMode == HeldActionMode.PRIMARY_FIRST) {
+                        useSecondaryOnPosition(held, hit);
+                    }
+                }
+                else {
+                    useSecondaryOnPosition(held, hit);
+                    if(actionMode == HeldActionMode.SECONDARY_FIRST) {
+                        usePrimaryOnPosition(held, hit);
+                    }
+                }
             }
 
             if (isEntityAlive()) {
@@ -82,42 +95,66 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         }
     }
 
-    private void useItemOnPosition(ItemStack held, RayTraceResult hit) {
-        if (!primaryAction) {
-            final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO get shooter and use them as the player for protections & death logs
+    private void usePrimaryOnPosition(ItemStack held, RayTraceResult hit) {
+        final FakePlayer player = getFakePlayer(new Vec3d(
+            hit.hitVec.x + hit.sideHit.getFrontOffsetX(),
+            hit.hitVec.y + hit.sideHit.getFrontOffsetY(),
+            hit.hitVec.z + hit.sideHit.getFrontOffsetZ()
+        ));
+        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
 
-            held = held.copy();
-            player.setHeldItem(EnumHand.MAIN_HAND, held);
+        player.interactionManager.onBlockClicked(hit.getBlockPos(), hit.sideHit);
 
-            // Right click
-            EnumActionResult ret = held.onItemUseFirst(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
-            if (ret == EnumActionResult.PASS) {
-                held.onItemUse(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
-            }
+        this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+        resetFakePlayer(player);
+    }
 
-            this.itemStackHandler.setStackInSlot(0, held);
+    private void useSecondaryOnPosition(ItemStack held, RayTraceResult hit) {
+        final FakePlayer player = getFakePlayer(new Vec3d(
+            hit.hitVec.x + hit.sideHit.getFrontOffsetX(),
+            hit.hitVec.y + hit.sideHit.getFrontOffsetY(),
+            hit.hitVec.z + hit.sideHit.getFrontOffsetZ()
+        ));
+
+        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
+
+        // Right click
+        EnumActionResult ret = held.onItemUseFirst(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
+        if (ret == EnumActionResult.PASS) {
+            held.onItemUse(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
         }
+
+        //TODO handle offhand
+
+        this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+        resetFakePlayer(player);
     }
 
     @Override
     protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
         if (!world.isRemote) {
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
+            final FakePlayer player = getFakePlayer(hit.hitVec);
 
             if(!held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
-                if(primaryAction) {
-                    useItemPrimaryOnEntity(held, entityHit, velocity);
+                if(actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
+                    useItemPrimaryOnEntity(player, held, entityHit, velocity);
+                    if(actionMode == HeldActionMode.PRIMARY_FIRST) {
+                        useItemSecondaryOnEntity(player, held, entityHit);
+                    }
                 }
                 else {
-                    useItemSecondaryOnEntity(held, entityHit);
+                    useItemSecondaryOnEntity(player, held, entityHit);
+                    if(actionMode == HeldActionMode.SECONDARY_FIRST) {
+                        useItemPrimaryOnEntity(player, held, entityHit, velocity);
+                    }
                 }
             }
             onImpact(hit);
         }
     }
 
-    private void useItemSecondaryOnEntity(ItemStack held, Entity entityHit) {
-        final FakePlayer player = getFakePlayer();
+    private void useItemSecondaryOnEntity(FakePlayer player, ItemStack held, Entity entityHit) {
 
         // Setup player
         player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
@@ -146,8 +183,9 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         resetFakePlayer(player);
     }
 
-    private FakePlayer getFakePlayer() {
+    private FakePlayer getFakePlayer(Vec3d pos) {
         final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world);
+        player.setPosition(pos.x, pos.y, pos.z);
         //TODO get shooter and use them as the player for protections & death logs
         resetFakePlayer(player);
         return player;
@@ -159,13 +197,10 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         player.dismountRidingEntity();
     }
 
-    private void useItemPrimaryOnEntity(ItemStack held, Entity entityHit, float velocity) {
-        final FakePlayer player = getFakePlayer();
-
-        held = held.copy();
+    private void useItemPrimaryOnEntity(FakePlayer player, ItemStack held, Entity entityHit, float velocity) {
 
         // Setup player
-        player.setHeldItem(EnumHand.MAIN_HAND, held);
+        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
 
         // Left click entity
         if(entityHit instanceof EntityLivingBase) {
@@ -201,7 +236,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
 
             hasUsedAction = held.getItem().hitEntity(held, (EntityLivingBase) entityHit, player);
             if (hasUsedAction) {
-                this.itemStackHandler.setStackInSlot(0, held);
+                this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
             }
         }
 
@@ -244,7 +279,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         final ICapabilityMissileStack capabilityMissileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
         if(capabilityMissileStack instanceof CapabilityHeldItemMissile) {
             ((CapabilityHeldItemMissile) capabilityMissileStack).setHeldItem(itemStackHandler.getStackInSlot(0));
-            ((CapabilityHeldItemMissile) capabilityMissileStack).setPrimaryAction(primaryAction);
+            ((CapabilityHeldItemMissile) capabilityMissileStack).setActionMode(getActionMode());
         }
         return stack;
     }
@@ -282,6 +317,6 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     private static final NbtSaveHandler<EntityHeldItemMissile> SAVE_LOGIC = new NbtSaveHandler<EntityHeldItemMissile>()
         .mainRoot()
         /* */.nodeINBTSerializable("inventory", EntityHeldItemMissile::getItemStackHandler)
-        /* */.nodeBoolean("primary_action", EntityHeldItemMissile::isPrimaryAction, EntityHeldItemMissile::setPrimaryAction)
+        /* */.nodeEnumString("action_mode", EntityHeldItemMissile::getActionMode, EntityHeldItemMissile::setActionMode, HeldActionMode::valueOf)
         .base();
 }

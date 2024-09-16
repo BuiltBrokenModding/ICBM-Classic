@@ -87,7 +87,7 @@ public class ItemHeldItemMissile extends ItemICBMBase {
         if (cap instanceof CapabilityHeldItemMissile && !((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
             LanguageUtility.outputLines(
                 new TextComponentTranslation(
-                    getUnlocalizedName() + ".held_item." + (((CapabilityHeldItemMissile) cap).isPrimaryAction() ? "primary" : "secondary"),
+                    getUnlocalizedName() + ".held_item." + ((CapabilityHeldItemMissile) cap).getActionMode().name().toLowerCase(),
                     ((CapabilityHeldItemMissile) cap).getHeldItem()
                 ), list::add);
         }
@@ -97,12 +97,8 @@ public class ItemHeldItemMissile extends ItemICBMBase {
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(tab)) {
             items.add(new ItemStack(this));
-
             items.add(createStack(new ItemStack(Items.DIAMOND_SWORD)));
-            items.add(createStack(new ItemStack(Items.STONE_AXE)));
             items.add(createStack(new ItemStack(Items.SHEARS)));
-            items.add(createStack(new ItemStack(Items.EGG)));
-            items.add(createStack(new ItemStack(Blocks.FURNACE)));
         }
     }
 

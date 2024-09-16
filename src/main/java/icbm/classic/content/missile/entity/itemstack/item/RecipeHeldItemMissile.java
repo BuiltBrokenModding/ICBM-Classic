@@ -3,6 +3,7 @@ package icbm.classic.content.missile.entity.itemstack.item;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.content.cargo.CargoHolderHandler;
+import icbm.classic.content.missile.entity.itemstack.HeldActionMode;
 import icbm.classic.content.reg.ItemReg;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -104,7 +105,7 @@ public class RecipeHeldItemMissile extends net.minecraftforge.registries.IForgeR
             insert.setCount(1);
 
             ((CapabilityHeldItemMissile) cap).setHeldItem(insert);
-            ((CapabilityHeldItemMissile) cap).setPrimaryAction(primaryAction);
+            ((CapabilityHeldItemMissile) cap).setActionMode(primaryAction ? HeldActionMode.PRIMARY : HeldActionMode.SECONDARY);
 
             return missileOut;
         }
