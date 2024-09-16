@@ -44,6 +44,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     private ItemStack renderStackCache;
     @Getter
     private final ItemStackHandler itemStackHandler = new ItemStackHandler(1); //TODO send packet if inventory changes
+    @Getter @Setter
     private boolean primaryAction = true;
 
     boolean hasUsedAction = false;
@@ -194,6 +195,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         final ICapabilityMissileStack capabilityMissileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
         if(capabilityMissileStack instanceof CapabilityHeldItemMissile) {
             ((CapabilityHeldItemMissile) capabilityMissileStack).setHeldItem(itemStackHandler.getStackInSlot(0));
+            ((CapabilityHeldItemMissile) capabilityMissileStack).setPrimaryAction(primaryAction);
         }
         return stack;
     }
@@ -231,5 +233,6 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     private static final NbtSaveHandler<EntityHeldItemMissile> SAVE_LOGIC = new NbtSaveHandler<EntityHeldItemMissile>()
         .mainRoot()
         /* */.nodeINBTSerializable("inventory", EntityHeldItemMissile::getItemStackHandler)
+        /* */.nodeBoolean("primary_action", EntityHeldItemMissile::isPrimaryAction, EntityHeldItemMissile::setPrimaryAction)
         .base();
 }

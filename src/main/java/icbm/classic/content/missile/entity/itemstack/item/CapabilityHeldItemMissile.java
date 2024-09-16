@@ -30,6 +30,7 @@ public class CapabilityHeldItemMissile implements ICapabilityMissileStack, INBTS
     {
         final EntityHeldItemMissile missile = new EntityHeldItemMissile(world);
         missile.getItemStackHandler().setStackInSlot(0, heldItem.copy());
+        missile.setPrimaryAction(primaryAction);
         return missile.getMissileCapability();
     }
 
