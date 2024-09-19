@@ -289,7 +289,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
                     handleEntityCollision(hitPoint, rayHit.entityHit);
                 } else //Handle block hit
                 {
-                    handleBlockCollision(rayHit);
+                    handleBlockCollision(rayHit, velocity);
                 }
 
                 postImpact(rayHit);
@@ -373,12 +373,11 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
         return entity.canBeCollidedWith() && !(entity instanceof EntityPlayerSeat);
     }
 
-    protected void handleBlockCollision(RayTraceResult hit) {
+    protected void handleBlockCollision(RayTraceResult hit, double velocity) {
         this.inGroundData = new InGroundData(world, hit);
 
         // Special handling for ender gateways TODO move to a registry of Block -> lambda
-        final IProjectileBlockInteraction.EnumHitReactions reaction =
-            ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.hitVec, this.inGroundData.getSide(), this.inGroundData.getState(), this);
+        final IProjectileBlockInteraction.EnumHitReactions reaction = specialHandleBlock(hit, velocity);
         if (reaction.stop) {
             return;
         }
@@ -398,6 +397,10 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
             this.motionY = 0;
             this.motionZ = 0;
         }
+    }
+
+    protected IProjectileBlockInteraction.EnumHitReactions specialHandleBlock(RayTraceResult hit, double velocity) {
+        return  ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.hitVec, this.inGroundData.getSide(), this.inGroundData.getState(), this);
     }
 
     public void moveTowards(Vec3d hit, double offset) {

@@ -1,6 +1,7 @@
 package icbm.classic.content.missile.entity.itemstack;
 
 import com.google.common.collect.Multimap;
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.config.missile.ConfigMissile;
@@ -9,25 +10,32 @@ import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMiss
 import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import icbm.classic.lib.world.IProjectileBlockInteraction;
+import icbm.classic.lib.world.ProjectileBlockInteraction;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.*;
+import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -68,26 +76,36 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     }
 
     @Override
-    protected void actionOnImpact(RayTraceResult hit) {
-        if(!this.world.isRemote) {
+    protected IProjectileBlockInteraction.EnumHitReactions specialHandleBlock(RayTraceResult hit, double velocity) {
+        if(!world.isRemote) {
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
 
-            if(!hasUsedAction && !held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
-
-                if(actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
-                    usePrimaryOnPosition(held, hit);
-                    if(actionMode == HeldActionMode.PRIMARY_FIRST) {
+            if (!hasUsedAction && !held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
+                if (actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
+                    usePrimaryOnPosition(held, hit, velocity);
+                    if (actionMode == HeldActionMode.PRIMARY_FIRST) {
                         useSecondaryOnPosition(held, hit);
                     }
-                }
-                else {
+                } else {
                     useSecondaryOnPosition(held, hit);
-                    if(actionMode == HeldActionMode.SECONDARY_FIRST) {
-                        usePrimaryOnPosition(held, hit);
+                    if (actionMode == HeldActionMode.SECONDARY_FIRST) {
+                        usePrimaryOnPosition(held, hit, velocity);
                     }
                 }
             }
 
+            if (hasUsedAction) {
+                return IProjectileBlockInteraction.EnumHitReactions.CONTINUE;
+            }
+
+            return ProjectileBlockInteraction.handleSpecialInteraction(world, this.getInGroundData().getPos(), hit.hitVec, this.getInGroundData().getSide(), this.getInGroundData().getState(), this);
+        }
+        return IProjectileBlockInteraction.EnumHitReactions.PASS;
+    }
+
+    @Override
+    protected void actionOnImpact(RayTraceResult hit) {
+        if(!this.world.isRemote) {
             if (isEntityAlive()) {
                 this.entityDropItem(toStack(), 0);
             }
@@ -95,7 +113,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         }
     }
 
-    private void usePrimaryOnPosition(ItemStack held, RayTraceResult hit) {
+    private void usePrimaryOnPosition(ItemStack held, RayTraceResult hit, double velocity) {
         final FakePlayer player = getFakePlayer(new Vec3d(
             hit.hitVec.x + hit.sideHit.getFrontOffsetX(),
             hit.hitVec.y + hit.sideHit.getFrontOffsetY(),
@@ -103,7 +121,36 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         ));
         player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
 
-        player.interactionManager.onBlockClicked(hit.getBlockPos(), hit.sideHit);
+        // TODO mimic player.interactionManager.onBlockClicked(hit.getBlockPos(), hit.sideHit);
+        final BlockPos pos = hit.getBlockPos();
+        final IBlockState state = world.getBlockState(pos);
+
+        if(held.getItem().onBlockStartBreak(held, pos, player)) {
+            hasUsedAction = true;
+        }
+        // TODO state.getBlock().canSilkHarvest(world, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, held) > 0
+        else if(state.getBlock().canHarvestBlock(world, pos, player)) {
+            // Player default dig speed with hand is 1.0, wood shovel is 2.0, stone is 4.0, diamond is 8.0
+            //  block HP (technically progress) is hardness * 10, hardness = digSpeed / blockHardness / (30 if can harvest | 100 if can't)
+            //  tool strike irl can be 5m/s to 10m/s depending on method... we want to scale by velocity with a bonus to mass of missile
+
+            final float missileDigSpeedScale = 4; //TODO config
+            final float toolSpeed = player.getHeldItemMainhand().getDestroySpeed(state);
+            final float hardness = state.getBlockHardness(world, pos);
+            final float digSpeed = toolSpeed * (float)velocity * missileDigSpeedScale;
+
+            if(hardness <= digSpeed) {
+                this.hasUsedAction = true;
+
+                // Break block TODO trigger events with shooter if player
+                if (state.getBlock().removedByPlayer(state, world, pos, null, true))
+                {
+                    state.getBlock().harvestBlock(this.world, player, pos, state, world().getTileEntity(pos), player.getHeldItem(EnumHand.MAIN_HAND));
+                    state.getBlock().onBlockDestroyedByPlayer(this.world, pos, state);
+                }
+            }
+
+        }
 
         this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
         resetFakePlayer(player);
