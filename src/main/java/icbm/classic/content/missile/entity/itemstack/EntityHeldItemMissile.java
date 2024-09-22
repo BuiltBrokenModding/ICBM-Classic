@@ -144,7 +144,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                 this.hasUsedAction = true;
 
                 // Break block TODO trigger events with shooter if player
-                if (state.getBlock().removedByPlayer(state, world, pos, null, true))
+                if (state.getBlock().removedByPlayer(state, world, pos, player, true))
                 {
                     state.getBlock().harvestBlock(this.world, player, pos, state, world().getTileEntity(pos), player.getHeldItem(EnumHand.MAIN_HAND));
                     state.getBlock().onBlockDestroyedByPlayer(this.world, pos, state);
