@@ -142,7 +142,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
             // Player default dig speed with hand is 1.0, wood shovel is 2.0, stone is 4.0, diamond is 8.0
             //  block HP (technically progress) is hardness * 10, hardness = digSpeed / blockHardness / (30 if can harvest | 100 if can't)
             //  tool strike irl can be 5m/s to 10m/s depending on method... we want to scale by velocity with a bonus to mass of missile
-            // Damage should be scaled on impact alone and do calculation for single tool swing.
+            // Damage should be scaled on single impact and shouldn't account for some enchantments.
 
             final float toolSpeed = player.getHeldItemMainhand().getDestroySpeed(state);
             final float hardness = state.getBlockHardness(world, pos);
@@ -154,6 +154,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                 // Special handling for dynamic tree mod, due to async tool isn't handled correctly for fake player
                 final String clazzName = state.getBlock().getClass().getName();
                 if(clazzName.startsWith("com.ferreusveritas.dynamictrees.blocks.") && clazzName.contains("Branch")) {
+                    //TODO replace with their API and create system for dynamically registering special handlers
                    this.handleDynamicTreeBreak(state, world, pos, player);
                 }
                 // Break block TODO trigger events with shooter if player
