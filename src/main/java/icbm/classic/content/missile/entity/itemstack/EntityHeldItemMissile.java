@@ -125,6 +125,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         final BlockPos pos = hit.getBlockPos();
         final IBlockState state = world.getBlockState(pos);
 
+        // Shear use this to instant break leaves (via IShearable)
         if(held.getItem().onBlockStartBreak(held, pos, player)) {
             hasUsedAction = true;
         }

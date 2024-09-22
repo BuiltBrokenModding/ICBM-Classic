@@ -170,6 +170,8 @@ item.icbmclassic:held_item_missile.sword.name=Sword Missile
 item.icbmclassic:held_item_missile.info=Holds an item for use during impact. \n \n Craft to install item: \n \t Missile + Item > Primary \n Item + Missile > Secondary
 item.icbmclassic:held_item_missile.held_item.primary=Uses item's primary action on impact \n Held: %1$s
 item.icbmclassic:held_item_missile.held_item.secondary=Uses item's secondary action on impact \n Held: %1$s
+item.icbmclassic:held_item_missile.held_item.primary_first=Uses item's primary action, or secondary if nothing happens, on impact \n Held: %1$s
+item.icbmclassic:held_item_missile.held_item.secondary_first=Uses item's secondary action, or primary if nothing happens, on impact \n Held: %1$s
 
 ## Parchute Projectile
 item.icbmclassic:parachute.name=Payload Parachute
