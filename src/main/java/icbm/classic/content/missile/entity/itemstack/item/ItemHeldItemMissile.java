@@ -85,11 +85,13 @@ public class ItemHeldItemMissile extends ItemICBMBase {
 
         // Show projectile information
         if (cap instanceof CapabilityHeldItemMissile && !((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
+            final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
             LanguageUtility.outputLines(
                 new TextComponentTranslation(
                     getUnlocalizedName() + ".held_item." + ((CapabilityHeldItemMissile) cap).getActionMode().name().toLowerCase(),
-                    ((CapabilityHeldItemMissile) cap).getHeldItem()
+                    heldItem.getDisplayName()
                 ), list::add);
+            heldItem.getItem().addInformation(heldItem, world, list, flag);
         }
     }
 
