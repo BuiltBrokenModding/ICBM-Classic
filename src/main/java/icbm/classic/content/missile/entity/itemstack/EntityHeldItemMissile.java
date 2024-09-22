@@ -141,11 +141,11 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
             // Player default dig speed with hand is 1.0, wood shovel is 2.0, stone is 4.0, diamond is 8.0
             //  block HP (technically progress) is hardness * 10, hardness = digSpeed / blockHardness / (30 if can harvest | 100 if can't)
             //  tool strike irl can be 5m/s to 10m/s depending on method... we want to scale by velocity with a bonus to mass of missile
+            // Damage should be scaled on impact alone and do calculation for single tool swing.
 
-            final float missileDigSpeedScale = 4; //TODO config
             final float toolSpeed = player.getHeldItemMainhand().getDestroySpeed(state);
             final float hardness = state.getBlockHardness(world, pos);
-            final float digSpeed = toolSpeed * (float)velocity * missileDigSpeedScale;
+            final float digSpeed = toolSpeed * (float)velocity * ConfigMissile.HELD_ITEM_MISSILE.BLOCK_DAMAGE_MULTIPLIER;
 
             if(hardness <= digSpeed) {
                 this.hasUsedAction = true;
