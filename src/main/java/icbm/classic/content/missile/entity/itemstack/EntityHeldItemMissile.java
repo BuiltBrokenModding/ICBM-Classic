@@ -45,6 +45,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 
 /**
  * Missile holding an item, will use the item on impact if possible
@@ -150,18 +151,37 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
             if(hardness <= digSpeed) {
                 this.hasUsedAction = true;
 
+                // Special handling for dynamic tree mod, due to async tool isn't handled correctly for fake player
+                final String clazzName = state.getBlock().getClass().getName();
+                if(clazzName.startsWith("com.ferreusveritas.dynamictrees.blocks.") && clazzName.contains("Branch")) {
+                   this.handleDynamicTreeBreak(state, world, pos, player);
+                }
                 // Break block TODO trigger events with shooter if player
-                if (state.getBlock().removedByPlayer(state, world, pos, player, true))
+                else if (state.getBlock().removedByPlayer(state, world, pos, player, true))
                 {
                     state.getBlock().harvestBlock(this.world, player, pos, state, world().getTileEntity(pos), player.getHeldItem(EnumHand.MAIN_HAND));
                     state.getBlock().onBlockDestroyedByPlayer(this.world, pos, state);
                 }
             }
-
         }
 
-        this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+        if(hasUsedAction) {
+            this.itemStackHandler.setStackInSlot(0, player.getHeldItemMainhand());
+        }
+
         resetFakePlayer(player);
+    }
+
+    private void handleDynamicTreeBreak(IBlockState state, World world, BlockPos pos, EntityLivingBase player) {
+        try {
+            // https://github.com/DynamicTreesTeam/DynamicTrees/blob/release/1.12.2/src/main/java/com/ferreusveritas/dynamictrees/blocks/BlockBranch.java#L396
+            Class clazz = state.getBlock().getClass();
+            Method method = clazz.getMethod("futureBreak", IBlockState.class, World.class, BlockPos.class, EntityLivingBase.class);
+            method.invoke(state.getBlock(), state, world, pos, player);
+        }
+        catch (Exception e) {
+            ICBMClassic.logger().error("Failed to handle breaking dynamic tree. Missile: " + this, e);
+        }
     }
 
     private void useSecondaryOnPosition(ItemStack held, RayTraceResult hit) {
