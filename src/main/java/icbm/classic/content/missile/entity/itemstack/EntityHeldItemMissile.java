@@ -81,16 +81,23 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
 
             if (!hasUsedAction && !held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
-                if (actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
-                    usePrimaryOnPosition(held, hit, velocity);
-                    if (actionMode == HeldActionMode.PRIMARY_FIRST) {
-                        useSecondaryOnPosition(held, hit);
-                    }
-                } else {
-                    useSecondaryOnPosition(held, hit);
-                    if (actionMode == HeldActionMode.SECONDARY_FIRST) {
+                try {
+                    if (actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
                         usePrimaryOnPosition(held, hit, velocity);
+                        if (actionMode == HeldActionMode.PRIMARY_FIRST) {
+                            useSecondaryOnPosition(held, hit);
+                        }
+                    } else {
+                        useSecondaryOnPosition(held, hit);
+                        if (actionMode == HeldActionMode.SECONDARY_FIRST) {
+                            usePrimaryOnPosition(held, hit, velocity);
+                        }
                     }
+                }
+                catch (Exception e) {
+                    hasUsedAction = true;
+                    ICBMClassic.logger().error("Failed to mimic player interaction during missile impact. Missile: {}", this);
+                    ICBMClassic.logger().error("Impact error", e);
                 }
             }
 
