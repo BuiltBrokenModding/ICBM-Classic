@@ -71,10 +71,7 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
 
     @Override
     public ITextComponent getTooltip() {
-        return new TextComponentTranslation(
-            getTranslationKey() + ".info." + parachuteMode.name().toLowerCase(),
-            heldItem.getItem().getItemStackDisplayName(heldItem)
-        );
+        return new TextComponentTranslation(getTranslationKey() + ".info." + parachuteMode.name().toLowerCase());
     }
 
     @Override

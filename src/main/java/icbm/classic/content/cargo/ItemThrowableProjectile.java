@@ -17,6 +17,7 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.projectile.ProjectileStack;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -164,7 +165,24 @@ public class ItemThrowableProjectile extends ItemBase {
 
         // Show projectile information
         if(projectileStack != null && projectileStack.getProjectileData() != null) {
-            LanguageUtility.outputLines(projectileStack.getProjectileData().getTooltip(), list::add);
+            final IProjectileData projectileData = projectileStack.getProjectileData();
+            LanguageUtility.outputLines(projectileData.getTooltip(), list::add);
+
+            if(projectileData instanceof CargoProjectileData) {
+                final ItemStack held = ((CargoProjectileData<?, ?>) projectileData).getHeldItem();
+
+
+                if(held != null && !held.isEmpty()) {
+                    list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.held"));
+                    list.add("----");
+                    list.addAll(held.getTooltip(Minecraft.getMinecraft().player, flag));
+                    list.add("----");
+                }
+                else {
+                    list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.empty"));
+                }
+            }
+
         }
     }
 
