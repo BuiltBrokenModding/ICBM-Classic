@@ -99,12 +99,14 @@ public class ItemHeldItemMissile extends ItemICBMBase {
                     getUnlocalizedName() + ".held_item." + ((CapabilityHeldItemMissile) cap).getActionMode().name().toLowerCase()
                 ), list::add);
 
-            list.add("----");
+
+            list.add("");
+            list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.held"));
             list.addAll(heldItem.getTooltip(Minecraft.getMinecraft().player, flag));
-            list.add("----");
+            list.add("");
 
             if(!HeldItemMissileHandler.isAllowed(heldItem)) {
-                list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled"));
+                list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled.config"));
             }
         }
     }

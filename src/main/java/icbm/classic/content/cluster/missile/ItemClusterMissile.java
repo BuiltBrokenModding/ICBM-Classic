@@ -85,26 +85,38 @@ public class ItemClusterMissile extends ItemBase {
 
     @Override
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list) {
-        StringBuilder contents = new StringBuilder("\n");
 
         CapabilityClusterMissileStack cap = (CapabilityClusterMissileStack) stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
 
-        if (cap.getActionDataCluster().getClusterSpawnEntries().isEmpty()) {
-            contents.append("empty");
-        }
-        else {
+        if (!cap.getActionDataCluster().getClusterSpawnEntries().isEmpty()) {
+            list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.held.multiple"));
+
             Map<String, Integer> contentMap = new HashMap<>();
+            boolean someDisabled = false;
             for (ItemStack itemStack : cap.getActionDataCluster().getClusterSpawnEntries()) {
-                int count = contentMap.computeIfAbsent(itemStack.getDisplayName(), (k) -> 0);
-                contentMap.put(itemStack.getDisplayName(), count + 1);
+                someDisabled = someDisabled || !ClusterMissileHandler.isAllowed(itemStack);
+
+                String displayName = itemStack.getDisplayName();
+                if(!ClusterMissileHandler.isAllowed(itemStack)) {
+                    final TextComponentTranslation translation = new TextComponentTranslation("projectile.icbmclassic:holder.disabled.prefix", displayName);
+                    displayName = translation.getFormattedText();
+                }
+
+                int count = contentMap.computeIfAbsent(displayName, (k) -> 0);
+                contentMap.put(displayName, count + 1);
             }
             for (Map.Entry<String, Integer> entry : contentMap.entrySet()) {
-                contents.append("\t").append(entry.getValue()).append(" x ").append(entry.getKey());
+                list.add("  " + entry.getValue() + " x " + entry.getKey());
+                //TODO Find a way to provide more item details
+            }
+
+            if(someDisabled) {
+                final TextComponentTranslation translation = new TextComponentTranslation("projectile.icbmclassic:holder.disabled.prefix",
+                    LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled.config")
+                );
+                list.add(translation.getFormattedText());
             }
         }
 
-
-        final TextComponentTranslation translation = new TextComponentTranslation(getUnlocalizedName() + ".contents", contents.toString());
-        LanguageUtility.outputLines(translation, list::add);
     }
 }

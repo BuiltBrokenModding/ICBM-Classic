@@ -169,17 +169,17 @@ public class ItemThrowableProjectile extends ItemBase {
             LanguageUtility.outputLines(projectileData.getTooltip(), list::add);
 
             if(projectileData instanceof CargoProjectileData) {
-                final ItemStack held = ((CargoProjectileData<?, ?>) projectileData).getHeldItem();
+                final ItemStack heldItem = ((CargoProjectileData<?, ?>) projectileData).getHeldItem();
 
 
-                if(held != null && !held.isEmpty()) {
+                if(heldItem != null && !heldItem.isEmpty()) {
+                    list.add("");
                     list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.held"));
-                    list.add("----");
-                    list.addAll(held.getTooltip(Minecraft.getMinecraft().player, flag));
-                    list.add("----");
+                    list.addAll(heldItem.getTooltip(Minecraft.getMinecraft().player, flag));
+                    list.add("");
 
-                    if(!CargoHolderHandler.isAllowed(held)) {
-                        list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled"));
+                    if(!CargoHolderHandler.isAllowed(heldItem)) {
+                        list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled.config"));
                     }
                 }
                 else {
