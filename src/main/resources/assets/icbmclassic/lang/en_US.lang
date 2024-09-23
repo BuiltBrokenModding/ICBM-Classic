@@ -185,7 +185,7 @@ error.icbmclassic:projectile.throwing.type=Dev Error: Missing Projectile Type %1
 
 projectile.icbmclassic:holder.held=Held:
 projectile.icbmclassic:holder.empty=Held: <empty>
-projectile.icbmclassic:holder.parachute.info.block=Deploys block with parachute \n Held: %1$s
+projectile.icbmclassic:holder.disabled=§4Held item disabled in config
 
 projectile.icbmclassic:holder.parachute.info.entity=Deploys entity with parachute
 projectile.icbmclassic:holder.parachute.info.item=Deploys item with parachute
