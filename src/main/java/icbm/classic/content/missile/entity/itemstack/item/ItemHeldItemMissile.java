@@ -13,8 +13,10 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.projectile.ProjectileStack;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -23,6 +25,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -75,6 +79,7 @@ public class ItemHeldItemMissile extends ItemICBMBase {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
         final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
 
@@ -86,12 +91,16 @@ public class ItemHeldItemMissile extends ItemICBMBase {
         // Show projectile information
         if (cap instanceof CapabilityHeldItemMissile && !((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
             final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
+
+
             LanguageUtility.outputLines(
                 new TextComponentTranslation(
-                    getUnlocalizedName() + ".held_item." + ((CapabilityHeldItemMissile) cap).getActionMode().name().toLowerCase(),
-                    heldItem.getDisplayName()
+                    getUnlocalizedName() + ".held_item." + ((CapabilityHeldItemMissile) cap).getActionMode().name().toLowerCase()
                 ), list::add);
-            heldItem.getItem().addInformation(heldItem, world, list, flag);
+
+            list.add("----");
+            list.addAll(heldItem.getTooltip(Minecraft.getMinecraft().player, flag));
+            list.add("----");
         }
     }
 
