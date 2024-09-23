@@ -4,6 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
+import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cargo.ProjectileCargoMode;
 import icbm.classic.content.cargo.balloon.BalloonProjectileData;
 import icbm.classic.content.cargo.parachute.EntityParachute;
@@ -101,6 +102,10 @@ public class ItemHeldItemMissile extends ItemICBMBase {
             list.add("----");
             list.addAll(heldItem.getTooltip(Minecraft.getMinecraft().player, flag));
             list.add("----");
+
+            if(!HeldItemMissileHandler.isAllowed(heldItem)) {
+                list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled"));
+            }
         }
     }
 

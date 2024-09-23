@@ -177,6 +177,10 @@ public class ItemThrowableProjectile extends ItemBase {
                     list.add("----");
                     list.addAll(held.getTooltip(Minecraft.getMinecraft().player, flag));
                     list.add("----");
+
+                    if(!CargoHolderHandler.isAllowed(held)) {
+                        list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled"));
+                    }
                 }
                 else {
                     list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.empty"));
