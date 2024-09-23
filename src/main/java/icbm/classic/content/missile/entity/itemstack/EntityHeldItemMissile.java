@@ -144,6 +144,12 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
             //  tool strike irl can be 5m/s to 10m/s depending on method... we want to scale by velocity with a bonus to mass of missile
             // Damage should be scaled on single impact and shouldn't account for some enchantments.
 
+            // Prevent non-tools from breaking blocks, keeps a stick from killing a dirt block
+            if(player.getHeldItemMainhand().getItem().getToolClasses(held).isEmpty()) {
+                resetFakePlayer(player);
+                return;
+            }
+
             final float toolSpeed = player.getHeldItemMainhand().getDestroySpeed(state);
             final float hardness = state.getBlockHardness(world, pos);
             final float digSpeed = toolSpeed * (float)velocity * ConfigMissile.HELD_ITEM_MISSILE.BLOCK_DAMAGE_MULTIPLIER;
