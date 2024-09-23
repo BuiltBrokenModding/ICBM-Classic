@@ -168,10 +168,10 @@ bomblet.icbmclassic:redmatter.name=Red Matter Bomblet
 item.icbmclassic:held_item_missile.name=Item Holder Missile
 item.icbmclassic:held_item_missile.sword.name=Sword Missile
 item.icbmclassic:held_item_missile.info=Holds an item for use during impact. \n \n Craft to install item: \n \t Missile + Item > Primary \n Item + Missile > Secondary
-item.icbmclassic:held_item_missile.held_item.primary=Uses item's primary action on impact \n Held:
-item.icbmclassic:held_item_missile.held_item.secondary=Uses item's secondary action on impact \n Held:
-item.icbmclassic:held_item_missile.held_item.primary_first=Uses item's primary action, or secondary if nothing happens, on impact \n Held:
-item.icbmclassic:held_item_missile.held_item.secondary_first=Uses item's secondary action, or primary if nothing happens, on impact \n Held:
+item.icbmclassic:held_item_missile.held_item.primary=Uses item's primary action on impact
+item.icbmclassic:held_item_missile.held_item.secondary=Uses item's secondary action on impact
+item.icbmclassic:held_item_missile.held_item.primary_first=Uses item's primary action, or secondary if nothing happens, on impact
+item.icbmclassic:held_item_missile.held_item.secondary_first=Uses item's secondary action, or primary if nothing happens, on impact
 
 ## Parchute Projectile
 item.icbmclassic:parachute.name=Payload Parachute
@@ -183,9 +183,11 @@ item.icbmclassic:balloon.info=Comical way to drop payloads
 error.icbmclassic:projectile.throwing.interface=Dev Error: Missing %1$s
 error.icbmclassic:projectile.throwing.type=Dev Error: Missing Projectile Type %1$s
 
-projectile.icbmclassic:holder.held=Held:
-projectile.icbmclassic:holder.empty=Held: <empty>
-projectile.icbmclassic:holder.disabled=§4Held item disabled in config
+projectile.icbmclassic:holder.held=§8§nHeld Item
+projectile.icbmclassic:holder.held.multiple=§8§nHeld Items
+projectile.icbmclassic:holder.empty=§8Held Item: §r<empty>
+projectile.icbmclassic:holder.disabled.config=§4Held item disabled by config, may not work correctly!!
+projectile.icbmclassic:holder.disabled.prefix=§4(D): %1$s
 
 projectile.icbmclassic:holder.parachute.info.entity=Deploys entity with parachute
 projectile.icbmclassic:holder.parachute.info.item=Deploys item with parachute
@@ -377,7 +379,6 @@ explosive.icbmclassic:redMatter.info.10=Oh baby come back
 ## Cluster Missile
 item.icbmclassic:cluster_missile.name=Cluster Missile
 item.icbmclassic:cluster_missile.info=Deploys a spread of projectiles in proximity to target. Lacks impact sensor.
-item.icbmclassic:cluster_missile.contents=Contents: %1$s
 
 missile.icbmclassic:cluster.name=Cluster Missile
 
