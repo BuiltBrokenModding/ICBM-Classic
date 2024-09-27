@@ -7,7 +7,11 @@ import net.minecraftforge.common.config.Config;
 @Config.LangKey("config.icbmclassic:blocks.title")
 public class ConfigBlocks
 {
-    @Config.Name("spike_blocks")
+    @Config.Name("spikes")
     @Config.Comment("Config for spike blocks")
     public static ConfigSpikes spikes = new ConfigSpikes();
+
+    @Config.Name("radioactive")
+    @Config.Comment("Config for radioactive blocks")
+    public static ConfigRadioactive radioactive = new ConfigRadioactive();
 }
