@@ -62,7 +62,7 @@ public class ConfigBlast
 
     @Config.LangKey("config.icbmclassic:blast.thermobaric.title")
     @Config.Comment("Settings for thermobaric explosive")
-    public static ConfigExBasics thermobaric = new ConfigExBasics(30);
+    public static ConfigThermobaric thermobaric = new ConfigThermobaric();
 
     @Config.LangKey("config.icbmclassic:blast.nuclear.title")
     @Config.Comment("Settings for nuclear explosive")
