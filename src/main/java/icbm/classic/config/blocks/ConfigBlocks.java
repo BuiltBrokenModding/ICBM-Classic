@@ -1,7 +1,6 @@
-package icbm.classic.config;
+package icbm.classic.config.blocks;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.config.machines.ConfigSpikes;
 import net.minecraftforge.common.config.Config;
 
 @Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/blocks")

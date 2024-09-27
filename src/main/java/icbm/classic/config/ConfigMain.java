@@ -1,7 +1,6 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.config.machines.ConfigSpikes;
 import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
