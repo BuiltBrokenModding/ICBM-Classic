@@ -28,9 +28,7 @@ public class ConfigMain
     @Config.Comment("Range of tier 1 launcher")
     public static boolean REQUIRES_POWER = true;
 
-    @Config.Name("spike_blocks")
-    @Config.Comment("Config for spike blocks")
-    public static ConfigSpikes spikes = new ConfigSpikes();
+
 
     @Config.Name("protective_armor")
     @Config.Comment("Settings for setting protection support on armor items")
