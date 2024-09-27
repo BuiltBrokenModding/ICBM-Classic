@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigMain;
+import icbm.classic.config.blocks.ConfigBlocks;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -35,11 +36,6 @@ public class BlockRadioactive extends Block {
 
     public static final DamageSource damageSource = new DamageSource("icbmclassic:radioactive_block");
 
-    public float decayChance = 0.85f; //TODO configs
-    public int areaOfEffect = 5;
-    public int tickRate = 5;
-    public float damage = 2;
-
     public BlockRadioactive() {
         super(Material.ROCK);
         this.setDefaultState(getDefaultState().withProperty(TYPE_PROP, EnumType.STONE));
@@ -51,37 +47,38 @@ public class BlockRadioactive extends Block {
     }
 
     @Override
-    public int tickRate(World worldIn)
-    {
-        return tickRate;
+    public int tickRate(World worldIn) {
+        return ConfigBlocks.radioactive.decayDelay;
     }
 
     @Override
     public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
-        if (!worldIn.isRemote)
-        {
-            final AxisAlignedBB bounds = new AxisAlignedBB(pos).grow(areaOfEffect, areaOfEffect, areaOfEffect);
+        if (!worldIn.isRemote) {
+            if (ConfigBlocks.radioactive.decayRange <= 0 || ConfigBlocks.radioactive.decayChance <= 0) {
+                return;
+            }
+
+            final AxisAlignedBB bounds = new AxisAlignedBB(pos).grow(ConfigBlocks.radioactive.decayRange, ConfigBlocks.radioactive.decayRange, ConfigBlocks.radioactive.decayRange);
             final List<EntityLivingBase> entities = worldIn.getEntitiesWithinAABB(EntityLivingBase.class, bounds);
-            for(EntityLivingBase entity : entities) {
-                if(random.nextFloat() < decayChance) {
+            for (EntityLivingBase entity : entities) {
+                if (random.nextFloat() < ConfigBlocks.radioactive.decayChance) {
                     float protection = ProtectiveArmorHandler.getProtectionRating(entity);
                     if (protection < ConfigMain.protectiveArmor.minProtectionRadiation || protection < random.nextFloat()) {
-                        entity.attackEntityFrom(damageSource, damage); //TODO consider reducing damage by random amount of protection found. This way iron armor can reduce damage every so often
+                        entity.attackEntityFrom(damageSource, ConfigBlocks.radioactive.decayDamage); //TODO consider reducing damage by random amount of protection found. This way iron armor can reduce damage every so often
                         entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20));
                     }
                 }
             }
 
-            worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(tickRate)));
+            worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(ConfigBlocks.radioactive.decayDelay)));
         }
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-        if (rand.nextInt(12) == 0)
-        {
-            worldIn.playSound(((float)pos.getX() + 0.5F), ((float)pos.getY() + 0.5F), ((float)pos.getZ() + 0.5F),
+        if (rand.nextInt(12) == 0) {
+            worldIn.playSound(((float) pos.getX() + 0.5F), ((float) pos.getY() + 0.5F), ((float) pos.getZ() + 0.5F),
                 SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, //TODO get custom audio
                 1.0F + rand.nextFloat(), rand.nextFloat() * 1.7F + 0.3F, false);
         }
