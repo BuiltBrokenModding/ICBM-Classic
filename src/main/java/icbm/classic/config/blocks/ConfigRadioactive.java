@@ -15,7 +15,7 @@ public class ConfigRadioactive {
     public int decayRange = 5;
 
     @Config.Name("decay_delay")
-    @Config.Comment("Delay (20 ticks per second) between running decay chance calculation and effects")
+    @Config.Comment("Delay (20 ticks per second) between running decay chance calculation and effects. Set to zero to disable, if previously zero requires world restart for old blocks to tick.")
     @Config.RangeInt(min = 1)
     public int decayDelay = 5;
 

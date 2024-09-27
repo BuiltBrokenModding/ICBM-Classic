@@ -43,7 +43,9 @@ public class BlockRadioactive extends Block {
         this.setUnlocalizedName(ICBMConstants.PREFIX + "radioactive");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(0.5f);
-        this.setTickRandomly(true);
+        if(ConfigBlocks.radioactive.decayDelay > 0) {
+            this.setTickRandomly(true);
+        }
     }
 
     @Override
