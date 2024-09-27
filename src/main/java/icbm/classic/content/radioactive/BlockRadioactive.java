@@ -56,24 +56,49 @@ public class BlockRadioactive extends Block {
     @Override
     public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
         if (!worldIn.isRemote) {
-            if (ConfigBlocks.radioactive.decayRange <= 0 || ConfigBlocks.radioactive.decayChance <= 0) {
-                return;
-            }
+            this.decaySelf(worldIn, pos, state, random);
+            this.decayEntities(worldIn, pos, state, random);
+        }
+    }
 
-            final AxisAlignedBB bounds = new AxisAlignedBB(pos).grow(ConfigBlocks.radioactive.decayRange, ConfigBlocks.radioactive.decayRange, ConfigBlocks.radioactive.decayRange);
-            final List<EntityLivingBase> entities = worldIn.getEntitiesWithinAABB(EntityLivingBase.class, bounds);
-            for (EntityLivingBase entity : entities) {
-                if (random.nextFloat() < ConfigBlocks.radioactive.decayChance) {
-                    float protection = ProtectiveArmorHandler.getProtectionRating(entity);
-                    if (protection < ConfigMain.protectiveArmor.minProtectionRadiation || protection < random.nextFloat()) {
-                        entity.attackEntityFrom(damageSource, ConfigBlocks.radioactive.decayDamage); //TODO consider reducing damage by random amount of protection found. This way iron armor can reduce damage every so often
-                        entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20));
-                    }
+    private void decaySelf(World worldIn, BlockPos pos, IBlockState state, Random random) {
+        // Block death chance
+        if(random.nextFloat() < ConfigBlocks.radioactive.decayBlockChance) {
+            switch(state.getValue(TYPE_PROP)) {
+                case DIRT:
+                    worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
+                    break;
+                case STONE:
+                    worldIn.setBlockState(pos, Blocks.STONE.getDefaultState());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void decayEntities(World worldIn, BlockPos pos, IBlockState state, Random random) {
+        if (ConfigBlocks.radioactive.decayEffectRange <= 0 || ConfigBlocks.radioactive.decayEffectChance <= 0) {
+            return;
+        }
+
+        final AxisAlignedBB bounds = new AxisAlignedBB(pos).grow(ConfigBlocks.radioactive.decayEffectRange, ConfigBlocks.radioactive.decayEffectRange, ConfigBlocks.radioactive.decayEffectRange);
+        final List<EntityLivingBase> entities = worldIn.getEntitiesWithinAABB(EntityLivingBase.class, bounds);
+        for (EntityLivingBase entity : entities) {
+            if (random.nextFloat() < ConfigBlocks.radioactive.decayEffectChance) {
+                float protection = ProtectiveArmorHandler.getProtectionRating(entity);
+                if (protection < ConfigMain.protectiveArmor.minProtectionRadiation || protection < random.nextFloat()) {
+                    //TODO randomize damage
+                    //TODO scale damage by protection percentage
+                    //TODO scale damage by range
+
+                    entity.attackEntityFrom(damageSource, ConfigBlocks.radioactive.decayEffectDamage);
+                    entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20));
                 }
             }
-
-            worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(ConfigBlocks.radioactive.decayDelay)));
         }
+
+        worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(ConfigBlocks.radioactive.decayDelay)));
     }
 
     @Override
