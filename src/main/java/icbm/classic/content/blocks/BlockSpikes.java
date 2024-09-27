@@ -3,6 +3,7 @@ package icbm.classic.content.blocks;
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.config.ConfigBlocks;
 import icbm.classic.config.ConfigMain;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -115,16 +116,16 @@ public class BlockSpikes extends Block
         {
             if (world.getBlockState(pos).getValue(SPIKE_PROPERTY) == EnumSpikes.POISON) //TODO replace with state
             {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigMain.spikes.poisonDamage);
+                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.poisonDamage);
                 ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.POISON, 7 * 20, 0));
             }
             else if (world.getBlockState(pos).getValue(SPIKE_PROPERTY) == EnumSpikes.FIRE)
             {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigMain.spikes.fireDamage);
+                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.fireDamage);
                 entity.setFire(7);
             }
             else {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigMain.spikes.normalDamage);
+                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.normalDamage);
             }
         }
     }
