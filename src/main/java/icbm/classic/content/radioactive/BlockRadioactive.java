@@ -93,7 +93,9 @@ public class BlockRadioactive extends Block {
                     //TODO scale damage by range
 
                     entity.attackEntityFrom(damageSource, ConfigBlocks.radioactive.decayEffectDamage);
-                    entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20));
+                    if(ConfigBlocks.radioactive.decayWitherDuration > 0) {
+                        entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20));
+                    }
                 }
             }
         }
