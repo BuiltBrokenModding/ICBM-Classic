@@ -29,4 +29,10 @@ public class ConfigRadioactive {
     @Config.Comment("Damage to apply to entities caught in decay range")
     @Config.RangeDouble(min = 1)
     public float decayEffectDamage = 2;
+
+    @Config.Name("decay_effect_wither_duration")
+    @Config.Comment("Time in ticks (20 ticks per second) to apply withering effect. Set to zero to disable")
+    @Config.RangeInt(min = 0)
+    public int decayWitherDuration = 20;
+
 }
