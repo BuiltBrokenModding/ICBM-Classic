@@ -25,6 +25,7 @@ import icbm.classic.content.blast.gas.BlastContagious;
 import icbm.classic.content.blast.redmatter.ActionSpawnRedmatter;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
+import icbm.classic.content.blast.threaded.BlastThermobaric;
 import icbm.classic.content.entity.EntityFragments;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
@@ -194,7 +195,7 @@ public class ExplosiveInit
         //12 -> Regen
 
         ICBMExplosives.THERMOBARIC = newEx(13, "thermobaric", EnumTier.TWO,
-                (w, x, y, z, s) -> new BlastNuclear().setEnergy(45).setBlastSize(ConfigBlast.thermobaric.scale).setBlastWorld(w).setBlastPosition(x, y, z));
+                (w, x, y, z, s) -> new BlastThermobaric().setEnergy(ConfigBlast.thermobaric.energy).setBlastSize(ConfigBlast.thermobaric.scale).setBlastWorld(w).setBlastPosition(x, y, z));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.THERMOBARIC.getRegistryKey(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.THERMOBARIC);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.THERMOBARIC.getRegistryKey(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.THERMOBARIC);
 
