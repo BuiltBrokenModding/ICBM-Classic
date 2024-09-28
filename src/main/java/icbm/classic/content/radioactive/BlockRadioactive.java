@@ -66,7 +66,7 @@ public class BlockRadioactive extends Block {
             this.tryDecayEntities(worldIn, pos, state, random);
 
             if(!ConfigBlocks.radioactive.randomTickOnly) {
-                worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(tickRate(worldIn))));
+                worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(tickRate(worldIn) + 1)));
             }
         }
     }
