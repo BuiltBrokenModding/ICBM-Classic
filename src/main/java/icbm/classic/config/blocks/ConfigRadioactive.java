@@ -4,6 +4,10 @@ import net.minecraftforge.common.config.Config;
 
 public class ConfigRadioactive {
 
+    @Config.Name("random_world_tick")
+    @Config.Comment("If true will use the gamerule 'randomTickSpeed' ignoring 'decay_delay'. Resulting in a far slower but less performance impacting tick.")
+    public boolean randomTickOnly = false;
+
     @Config.Name("decay_delay")
     @Config.Comment("Delay in ticks (20 ticks per second) between running decay chance calculation and effects. Set to zero to disable, if previously zero requires world restart for old blocks to tick.")
     @Config.RangeInt(min = 1)
