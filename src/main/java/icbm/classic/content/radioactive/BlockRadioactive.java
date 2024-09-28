@@ -1,5 +1,6 @@
 package icbm.classic.content.radioactive;
 
+import com.builtbroken.jlib.lang.StringHelpers;
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
@@ -43,7 +44,7 @@ public class BlockRadioactive extends Block {
         this.setUnlocalizedName(ICBMConstants.PREFIX + "radioactive");
         this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
         this.setHardness(0.5f);
-        if(ConfigBlocks.radioactive.decayDelay > 0) {
+        if (ConfigBlocks.radioactive.decayDelay > 0) {
             this.setTickRandomly(true);
         }
     }
@@ -55,29 +56,46 @@ public class BlockRadioactive extends Block {
 
     @Override
     public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
-        if (!worldIn.isRemote) {
-            this.decaySelf(worldIn, pos, state, random);
-            this.decayEntities(worldIn, pos, state, random);
-        }
+        updateTick(worldIn, pos, state, random);
     }
 
-    private void decaySelf(World worldIn, BlockPos pos, IBlockState state, Random random) {
-        // Block death chance
-        if(random.nextFloat() < ConfigBlocks.radioactive.decayBlockChance) {
-            switch(state.getValue(TYPE_PROP)) {
-                case DIRT:
-                    worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
-                    break;
-                case STONE:
-                    worldIn.setBlockState(pos, Blocks.STONE.getDefaultState());
-                    break;
-                default:
-                    break;
+    @Override
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
+        if (!worldIn.isRemote) {
+            this.tryDecaySelf(worldIn, pos, state, random);
+            this.tryDecayEntities(worldIn, pos, state, random);
+
+            if(!ConfigBlocks.radioactive.randomTickOnly) {
+                worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(tickRate(worldIn))));
             }
         }
     }
 
-    private void decayEntities(World worldIn, BlockPos pos, IBlockState state, Random random) {
+    private void tryDecaySelf(World worldIn, BlockPos pos, IBlockState state, Random random) {
+        if(ConfigBlocks.radioactive.decayBlockChance <= 0.000000001) {
+            return;
+        }
+        // Block death chance
+        if (random.nextFloat() < ConfigBlocks.radioactive.decayBlockChance) {
+            // TODO fire action event
+            this.doDecaySelf(worldIn, pos, state);
+        }
+    }
+
+    private void doDecaySelf(World worldIn, BlockPos pos, IBlockState state) {
+        switch (state.getValue(TYPE_PROP)) {
+            case DIRT:
+                worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
+                break;
+            case STONE:
+                worldIn.setBlockState(pos, Blocks.STONE.getDefaultState());
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void tryDecayEntities(World worldIn, BlockPos pos, IBlockState state, Random random) {
         if (ConfigBlocks.radioactive.decayEffectRange <= 0 || ConfigBlocks.radioactive.decayEffectChance <= 0) {
             return;
         }
@@ -93,14 +111,12 @@ public class BlockRadioactive extends Block {
                     //TODO scale damage by range
 
                     entity.attackEntityFrom(damageSource, ConfigBlocks.radioactive.decayEffectDamage);
-                    if(ConfigBlocks.radioactive.decayWitherDuration > 0) {
+                    if (ConfigBlocks.radioactive.decayWitherDuration > 0) {
                         entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20));
                     }
                 }
             }
         }
-
-        worldIn.scheduleUpdate(pos, this, Math.max(1, random.nextInt(ConfigBlocks.radioactive.decayDelay)));
     }
 
     @Override
