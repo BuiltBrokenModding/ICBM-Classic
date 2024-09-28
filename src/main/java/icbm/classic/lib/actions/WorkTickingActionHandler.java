@@ -37,11 +37,11 @@ public class WorkTickingActionHandler //TODO create interface that is related to
     @SubscribeEvent
     public static void worldUnload(WorldEvent.Unload event)
     {
-        if (!event.getWorld().isRemote)
+        if (!event.getWorld().isRemote && !activeBlasts.isEmpty())
         {
             final int dim = event.getWorld().provider.getDimension();
             activeBlasts.stream()
-                    .filter(blast -> !blast.hasWorld() || blast.world().provider.getDimension() == dim)
+                    .filter(blast -> blast != null && (blast.world() == null || blast.world().provider.getDimension() == dim))
                     .forEach(IBlast::clearBlast);
         }
     }
