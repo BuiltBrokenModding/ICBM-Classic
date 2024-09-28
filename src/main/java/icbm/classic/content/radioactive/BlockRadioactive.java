@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
@@ -50,36 +51,38 @@ public class BlockRadioactive extends Block {
     }
 
     @Override
-    public int tickRate(World worldIn) {
+    public int tickRate(@Nonnull World worldIn) {
         return ConfigBlocks.radioactive.decayDelay;
     }
 
     @Override
-    public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
+    public void randomTick(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull Random random) {
         updateTick(worldIn, pos, state, random);
     }
 
     @Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
+    public void updateTick(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull Random random) {
         if (!worldIn.isRemote) {
-            this.tryDecaySelf(worldIn, pos, state, random);
+            final boolean stop = this.tryDecaySelf(worldIn, pos, state, random);
             this.tryDecayEntities(worldIn, pos, state, random);
 
-            if(!ConfigBlocks.radioactive.randomTickOnly) {
+            if(!stop && !ConfigBlocks.radioactive.randomTickOnly) {
                 worldIn.scheduleUpdate(pos, this, random.nextInt(tickRate(worldIn)) + 1);
             }
         }
     }
 
-    private void tryDecaySelf(World worldIn, BlockPos pos, IBlockState state, Random random) {
+    private boolean tryDecaySelf(World worldIn, BlockPos pos, IBlockState state, Random random) {
         if(ConfigBlocks.radioactive.decayBlockChance <= 0.000000001) {
-            return;
+            return false;
         }
         // Block death chance
         if (random.nextFloat() < ConfigBlocks.radioactive.decayBlockChance) {
             // TODO fire action event
             this.doDecaySelf(worldIn, pos, state);
+            return true;
         }
+        return false;
     }
 
     private void doDecaySelf(World worldIn, BlockPos pos, IBlockState state) {
@@ -121,7 +124,7 @@ public class BlockRadioactive extends Block {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+    public void randomDisplayTick(@Nonnull IBlockState stateIn, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Random rand) {
         if (rand.nextInt(12) == 0) {
             worldIn.playSound(((float) pos.getX() + 0.5F), ((float) pos.getY() + 0.5F), ((float) pos.getZ() + 0.5F),
                 SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, //TODO get custom audio
@@ -132,7 +135,7 @@ public class BlockRadioactive extends Block {
     }
 
     @Deprecated
-    public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
+    public float getBlockHardness(@Nonnull IBlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos) {
         if (blockState.getProperties().containsKey(TYPE_PROP)) {
             final EnumType type = (EnumType) blockState.getProperties().get(TYPE_PROP);
             switch (type) {
@@ -147,7 +150,7 @@ public class BlockRadioactive extends Block {
     }
 
     @Override
-    public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion) {
+    public float getExplosionResistance(@Nonnull World world, @Nonnull BlockPos pos, @Nullable Entity exploder, @Nonnull Explosion explosion) {
         final IBlockState blockState = world.getBlockState(pos);
         if (blockState.getProperties().containsKey(TYPE_PROP)) {
             final EnumType type = (EnumType) blockState.getProperties().get(TYPE_PROP);
@@ -162,7 +165,7 @@ public class BlockRadioactive extends Block {
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
+    public int damageDropped(@Nonnull IBlockState state) {
         return getMetaFromState(state);
     }
 
@@ -172,7 +175,9 @@ public class BlockRadioactive extends Block {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+    public IBlockState getStateForPlacement(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing facing,
+                                            float hitX, float hitY, float hitZ, int meta,
+                                            @Nonnull EntityLivingBase placer, @Nonnull EnumHand hand) {
         return getDefaultState().withProperty(TYPE_PROP, EnumType.get(meta));
     }
 
@@ -181,13 +186,14 @@ public class BlockRadioactive extends Block {
         return state.getValue(TYPE_PROP).ordinal();
     }
 
+    @Nonnull
     @Deprecated
     public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(TYPE_PROP, EnumType.get(meta));
     }
 
     @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
+    public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
         if (tab == this.getCreativeTabToDisplayOn()) {
             for (EnumType type : EnumType.values()) {
                 items.add(new ItemStack(this, 1, type.ordinal()));
