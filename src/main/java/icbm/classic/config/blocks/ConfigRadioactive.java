@@ -14,9 +14,9 @@ public class ConfigRadioactive {
     public int decayDelay = 5;
 
     @Config.Name("decay_block_chance")
-    @Config.Comment("Chance (random < value) for radioactive block to convert into harmless blocks, EX: Radioactive Stone -> Stone")
+    @Config.Comment("Chance (random < value) for radioactive block to convert into harmless blocks, EX: Radioactive Stone -> Stone. Set to zero to disable.")
     @Config.RangeDouble(min = 0, max = 1)
-    public float decayBlockChance = 0.01f;
+    public float decayBlockChance = 0.0001f;
 
     @Config.Name("decay_effect_chance")
     @Config.Comment("Chance (random < value) for radioactive decay effects to be triggered per entity")
