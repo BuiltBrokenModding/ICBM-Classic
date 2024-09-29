@@ -4,6 +4,7 @@ import com.builtbroken.jlib.lang.StringHelpers;
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.blocks.ConfigBlocks;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
@@ -126,9 +127,9 @@ public class BlockRadioactive extends Block {
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(@Nonnull IBlockState stateIn, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Random rand) {
         if (rand.nextInt(12) == 0) {
-            worldIn.playSound(((float) pos.getX() + 0.5F), ((float) pos.getY() + 0.5F), ((float) pos.getZ() + 0.5F),
-                SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, //TODO get custom audio
-                1.0F + rand.nextFloat(), rand.nextFloat() * 1.7F + 0.3F, false);
+            ICBMSounds.RADIOACTIVE_TICK.play(worldIn, ((float) pos.getX() + 0.5F), ((float) pos.getY() + 0.5F), ((float) pos.getZ() + 0.5F),
+                1.0F + rand.nextFloat() * 0.5f, 1 + rand.nextFloat() * 0.2f,
+                true);
         }
 
         //TODO spawn particles showing AOE
