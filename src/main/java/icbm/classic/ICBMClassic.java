@@ -11,6 +11,7 @@ import icbm.classic.command.system.CommandEntryPoint;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.cargo.CargoHolderHandler;
+import icbm.classic.content.cargo.RecipeCargoDataDecraft;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.cluster.missile.RecipeCluster;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
@@ -153,10 +154,16 @@ public class ICBMClassic
 
         // Dynamic item recipes
         event.getRegistry().register(new RecipeCargoData(new ItemStack(ItemReg.itemBalloon), BalloonProjectileData::new).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "balloon_cargo")));
+        event.getRegistry().register(new RecipeCargoDataDecraft(ItemReg.itemBalloon).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "balloon_cargo_decraft")));
+
         event.getRegistry().register(new RecipeCargoData(new ItemStack(ItemReg.itemParachute), ParachuteProjectileData::new).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "parachute_cargo")));
+        event.getRegistry().register(new RecipeCargoDataDecraft(ItemReg.itemParachute).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "parachute_cargo_decraft")));
+
         event.getRegistry().register(new RecipeCluster(new ItemStack(ItemReg.itemClusterMissile)).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "cluster_missile")));
+
         event.getRegistry().register(new RecipeHeldItemMissile(new ItemStack(ItemReg.heldItemMissile)).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile")));
         event.getRegistry().register(new RecipeHeldItemMissileDecraft(ItemReg.heldItemMissile).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile_decraft")));
+
     }
 
     @SubscribeEvent
