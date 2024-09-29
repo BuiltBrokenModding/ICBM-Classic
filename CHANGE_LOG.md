@@ -4,6 +4,31 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 1.12.2-6.4.0 - September 29th, 2024
+
+### Runtime Changes
+
+* Added: subtitle translations for audio assets
+* Added: item-holder missile (aka sword missile) that can hold and action held items/blocks
+* Added: config for missile simulation speed (how fast missile moves outside game world)
+* Added: recipe for marking smoke
+* Added: warning to cluster, parachute, and balloon when held items are config disabled
+* Added: configs for radioactive blocks (delay, chance, range, damage, and wither duration)
+* Added: audio for radioactive block
+* Added: half life decay for radioactive blocks (configurable chance and can be disabled)
+* Added: recipe to remove items from parachute and balloon
+* Added: partial korean translations made by community contributor (Shell) on github
+* Changed: condensed explosive to use vanilla large and huge explosion particles for resource pack makers
+* Changed: cruise launcher status messages to be more informative
+* Changed: 'No Status Data' message to 'No Status... server desync' to better reflect cause
+* Changed: tooltip on cluster, parachute, and balloon to show held item's tooltip & details
+* Changed: spike block config to exist under 'blocks' parent config
+* Fixed: parachute and balloon configs not always loading disallow list properly
+* Fixed: npe when unloading world with null blast instance
+* Fixed: thermobaric using same blast as nuke (legacy tech debt go brrr)
+* Fixed: missiles setting hit target's position to invalid number, fix by community contributor (Shell) on github
+* Removed: unused audio files decreasing file size
+
 ## 1.12.2-6.3.1 - June 20th, 2024
 
 * Fixed: protective armor config not loading
