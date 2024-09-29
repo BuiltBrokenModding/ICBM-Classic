@@ -180,5 +180,15 @@
         "sream": false
       }
     ]
+  },
+  "radioactive_tick": {
+    "category": "block",
+    "subtitle": "subtitle.icbmclassic:radioactive_tick",
+    "sounds": [
+      {
+        "name": "icbmclassic:radioactive_tick",
+        "sream": false
+      }
+    ]
   }
 }
