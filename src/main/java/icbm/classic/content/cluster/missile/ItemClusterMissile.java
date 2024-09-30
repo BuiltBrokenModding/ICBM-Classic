@@ -18,6 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -84,6 +86,7 @@ public class ItemClusterMissile extends ItemBase {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list) {
 
         CapabilityClusterMissileStack cap = (CapabilityClusterMissileStack) stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
