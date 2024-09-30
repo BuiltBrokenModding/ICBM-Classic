@@ -4,6 +4,10 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 1.12.2-6.4.1 - September 30th, 2024
+
+* Fixed: server side crash due to client side code loading
+
 ## 1.12.2-6.4.0 - September 29th, 2024
 
 ### Runtime Changes
