@@ -9,6 +9,8 @@ import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cargo.CargoProjectileData;
 import icbm.classic.content.cluster.missile.CapabilityClusterMissileStack;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
+import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMissile;
+import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.projectile.ProjectileStack;
 import mezz.jei.api.IModPlugin;
@@ -64,12 +66,29 @@ public class JEIProxy implements IModPlugin {
         return key;
     }
 
+    private String itemHolderKey(ISubtypeRegistry subtypeRegistry, ItemStack itemStack) {
+        String key = Integer.toString(itemStack.getMetadata());
+        if(itemStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
+            final ICapabilityMissileStack projectileStack = itemStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+            if (projectileStack instanceof CapabilityHeldItemMissile) {
+                final ItemStack stack = ((CapabilityHeldItemMissile) projectileStack).getHeldItem();
+                if(stack != null && !stack.isEmpty()) {
+                    return key
+                        + ":" + stack.getItem().getRegistryName()
+                        + ":" + Optional.ofNullable(subtypeRegistry.getSubtypeInfo(stack)).orElse(Integer.toString(stack.getMetadata()));
+                }
+            }
+        }
+        return key;
+    }
+
     @Override
     public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
         if(!ConfigJEI.DISABLED) {
             subtypeRegistry.registerSubtypeInterpreter(ItemReg.itemParachute, (i) -> this.cargoItemKey(subtypeRegistry, i));
             subtypeRegistry.registerSubtypeInterpreter(ItemReg.itemBalloon, (i) -> this.cargoItemKey(subtypeRegistry, i));
             subtypeRegistry.registerSubtypeInterpreter(ItemReg.itemClusterMissile, (i) -> this.clusterItemKey(subtypeRegistry, i));
+            subtypeRegistry.registerSubtypeInterpreter(ItemReg.heldItemMissile, (i) -> this.itemHolderKey(subtypeRegistry, i));
         }
     }
 
@@ -84,6 +103,9 @@ public class JEIProxy implements IModPlugin {
                 if (CargoHolderHandler.isAllowed(stack)) {
                     recipes.add(new CargoItemWrapper(new ItemStack(ItemReg.itemBalloon), stack, new ResourceLocation(ICBMConstants.DOMAIN, "balloon_cargo")));
                     recipes.add(new CargoItemWrapper(new ItemStack(ItemReg.itemParachute), stack, new ResourceLocation(ICBMConstants.DOMAIN, "parachute_cargo")));
+                }
+                if(HeldItemMissileHandler.isAllowed(stack)) {
+                    recipes.add(new HeldItemMissileWrapper(new ItemStack(ItemReg.heldItemMissile), stack, new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile")));
                 }
                 if (ClusterMissileHandler.isAllowed(stack)) {
                     recipes.add(new ClusterItemWrapper(new ItemStack(ItemReg.itemClusterMissile), stack, new ResourceLocation(ICBMConstants.DOMAIN, "cluster_missile")));
