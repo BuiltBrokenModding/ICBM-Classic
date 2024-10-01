@@ -28,6 +28,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -276,7 +277,6 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
                 rayHit = new RayTraceResult(entity);
             }
 
-
             if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit)) {
                 //Handle entity hit
                 if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY) {
@@ -286,13 +286,21 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
                         new Vec3d(rayHit.entityHit.posX, rayHit.entityHit.posY, rayHit.entityHit.posZ)
                     );
 
-                    handleEntityCollision(hitPoint, rayHit.entityHit);
-                } else //Handle block hit
+                    if(!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitPoint)) {
+                        handleEntityCollision(hitPoint, rayHit.entityHit);
+                        postImpact(rayHit);
+                    }
+                }
+                //Handle block hit
+                else
                 {
-                    handleBlockCollision(rayHit, velocity);
+                    if(!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, rayHit)) {
+                        handleBlockCollision(rayHit, velocity);
+                        postImpact(rayHit);
+                    }
                 }
 
-                postImpact(rayHit);
+
             }
             updateMotion();
         }
