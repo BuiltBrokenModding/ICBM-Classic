@@ -62,7 +62,7 @@ public class ConfigMain
         //TODO once on latest MC rethinking gas protection to be per weapon system.
         @Config.Name("item_ratings")
         @Config.Comment("Item/ItemStack to percentage protection between 0.0 to 1.0 'domain:resource=floating_point', ex: 'minecraft:iron_helmet=0.02'")
-        public String[] ITEMS = new String[]{"example:mask=0.95"};
+        public String[] ITEMS = new String[]{};
     }
 
     @SubscribeEvent

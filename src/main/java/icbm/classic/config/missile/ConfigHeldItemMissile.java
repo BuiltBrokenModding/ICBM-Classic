@@ -23,6 +23,6 @@ public class ConfigHeldItemMissile
 
         @Config.Name("list")
         @Config.Comment("Item/ItemStack names 'domain:resource=ignore' set 'ignore' to true to skip the entry during loading; ex: 'minecraft:stone' will be used while 'minecraft:fire=true' will be ignored")
-        public String[] ITEMS = new String[]{"minecraft:fire=true"};
+        public String[] ITEMS = new String[]{};
     }
 }
