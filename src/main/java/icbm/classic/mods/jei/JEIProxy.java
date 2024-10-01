@@ -13,7 +13,6 @@ import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMiss
 import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.projectile.ProjectileStack;
-import icbm.classic.mods.DecraftCargoItemWrapper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
@@ -23,10 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @JEIPlugin
 public class JEIProxy implements IModPlugin {
@@ -110,6 +107,7 @@ public class JEIProxy implements IModPlugin {
                 }
                 if(HeldItemMissileHandler.isAllowed(stack)) {
                     recipes.add(new HeldItemMissileWrapper(new ItemStack(ItemReg.heldItemMissile), stack, new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile")));
+                    recipes.add(new DecraftHeldItemMissileWrapper(new ItemStack(ItemReg.heldItemMissile), stack, new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile_decraft")));
                 }
                 if (ClusterMissileHandler.isAllowed(stack)) {
                     recipes.add(new ClusterItemWrapper(new ItemStack(ItemReg.itemClusterMissile), stack, new ResourceLocation(ICBMConstants.DOMAIN, "cluster_missile")));

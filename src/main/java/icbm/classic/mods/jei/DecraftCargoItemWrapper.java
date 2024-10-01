@@ -1,4 +1,4 @@
-package icbm.classic.mods;
+package icbm.classic.mods.jei;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
