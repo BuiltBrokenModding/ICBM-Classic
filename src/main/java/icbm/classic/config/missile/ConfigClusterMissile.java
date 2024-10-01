@@ -34,7 +34,7 @@ public class ConfigClusterMissile
 
         @Config.Name("list")
         @Config.Comment("Item/ItemStack sizes 'domain:resource=whole_number', ex: 'minecraft:stone=4'")
-        public String[] ITEMS = new String[]{"minecraft:fire=999"};
+        public String[] ITEMS = new String[]{};
     }
 
     public static class BanList {
@@ -45,7 +45,7 @@ public class ConfigClusterMissile
 
         @Config.Name("list")
         @Config.Comment("Item/ItemStack names 'domain:resource=ignore' set 'ignore' to true to skip the entry during loading; ex: 'minecraft:stone' will be used while 'minecraft:fire=true' will be ignored")
-        public String[] ITEMS = new String[]{"minecraft:fire=true"};
+        public String[] ITEMS = new String[]{};
     }
 
 }
