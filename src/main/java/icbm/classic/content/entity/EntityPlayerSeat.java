@@ -3,6 +3,7 @@ package icbm.classic.content.entity;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.EntityMinecart;
@@ -19,6 +20,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -38,6 +41,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     public float offsetZ = 0;
     public EnumFacing prevFace;
     public EnumFacing prevRotation;
+    public boolean prevRiding;
 
     public EntityPlayerSeat(World world)
     {
@@ -107,9 +111,10 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             this.setDead();
         }
 
-        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide())) {
+        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide() || prevRiding != this.isBeingRidden())) {
             prevFace = host.getLaunchDirection();
             prevRotation = host.getSeatSide();
+            prevRiding = this.isBeingRidden();
             updatePosition(host.getLaunchDirection(), host.getSeatSide());
             updateBox(host.getLaunchDirection(), host.getSeatSide());
         }
@@ -164,12 +169,12 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         final float dimB;
         // Size
         if(face == EnumFacing.UP || face == EnumFacing.DOWN) {
-            setSize(0.5f, 2.5f);
+            setSize(0.5f, this.isBeingRidden() ? 0.5f : 2.5f);
             dimA = this.width / 2;
             dimB = this.height;
         }
         else {
-            setSize(2.5f, 0.5f);
+            setSize(this.isBeingRidden() ? 0.5f : 2.5f, 0.5f);
             dimA = this.height / 2;
             dimB = this.width;
         }
@@ -310,7 +315,19 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
+        if(getPassengers().contains(entityIn)) {
+            return null;
+        }
         return super.getEntityBoundingBox(); //TODO might be needed for interaction
+    }
+
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox()
+    {
+        if(!this.getPassengers().isEmpty()) {
+            return null;
+        }
+        return this.getEntityBoundingBox();
     }
 
     @Override
