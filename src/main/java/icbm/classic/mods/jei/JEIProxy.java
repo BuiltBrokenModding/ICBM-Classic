@@ -13,6 +13,7 @@ import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMiss
 import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.projectile.ProjectileStack;
+import icbm.classic.mods.DecraftCargoItemWrapper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
@@ -103,6 +104,9 @@ public class JEIProxy implements IModPlugin {
                 if (CargoHolderHandler.isAllowed(stack)) {
                     recipes.add(new CargoItemWrapper(new ItemStack(ItemReg.itemBalloon), stack, new ResourceLocation(ICBMConstants.DOMAIN, "balloon_cargo")));
                     recipes.add(new CargoItemWrapper(new ItemStack(ItemReg.itemParachute), stack, new ResourceLocation(ICBMConstants.DOMAIN, "parachute_cargo")));
+
+                    recipes.add(new DecraftCargoItemWrapper(new ItemStack(ItemReg.itemBalloon), stack, new ResourceLocation(ICBMConstants.DOMAIN, "balloon_cargo_decraft")));
+                    recipes.add(new DecraftCargoItemWrapper(new ItemStack(ItemReg.itemParachute), stack, new ResourceLocation(ICBMConstants.DOMAIN, "parachute_cargo_decraft")));
                 }
                 if(HeldItemMissileHandler.isAllowed(stack)) {
                     recipes.add(new HeldItemMissileWrapper(new ItemStack(ItemReg.heldItemMissile), stack, new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile")));
