@@ -286,6 +286,10 @@ public class EntityGrenade extends Entity implements IEntityAdditionalSpawnData
         else
         {
             ICBMClassicAPI.EX_GRENADE_REGISTRY.tickFuse(this, explosive.getExplosiveData(), ticksExisted);
+            this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL,
+                this.posX - this.motionX, this.posY - this.motionY + 0.4, this.posZ - this.motionZ,
+                this.motionX, this.motionY, this.motionZ
+            );
         }
     }
 
