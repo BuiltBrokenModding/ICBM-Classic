@@ -115,6 +115,10 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     public void setFocused(boolean isFocusedIn) {
         super.setFocused(isFocusedIn);
 
+        if(isFocusedIn == this.isFocused()) {
+            return;
+        }
+
         // Reset error feedback when we de-select
         if(!isFocusedIn) {
             errorFeedback = null;
