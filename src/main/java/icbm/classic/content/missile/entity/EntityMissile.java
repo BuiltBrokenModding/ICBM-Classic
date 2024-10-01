@@ -8,6 +8,7 @@ import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.missile.ConfigMissile;
+import icbm.classic.content.missile.logic.flight.ArcFlightLogic;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
