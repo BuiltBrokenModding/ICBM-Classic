@@ -15,6 +15,7 @@ import icbm.classic.content.cargo.RecipeCargoDataDecraft;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.cluster.missile.RecipeCluster;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
+import icbm.classic.content.items.ItemCrafting;
 import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.missile.entity.itemstack.item.RecipeHeldItemMissile;
 import icbm.classic.content.missile.entity.itemstack.item.RecipeHeldItemMissileDecraft;
@@ -67,6 +68,7 @@ import net.minecraft.block.BlockDispenser;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -82,6 +84,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -164,6 +167,31 @@ public class ICBMClassic
         event.getRegistry().register(new RecipeHeldItemMissile(new ItemStack(ItemReg.heldItemMissile)).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile")));
         event.getRegistry().register(new RecipeHeldItemMissileDecraft(ItemReg.heldItemMissile).setRegistryName(new ResourceLocation(ICBMConstants.DOMAIN, "held_item_missile_decraft")));
 
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void registerOres(RegistryEvent.Register<IRecipe> event)
+    {
+        if (ConfigItems.ENABLE_CRAFTING_ITEMS)
+        {
+            if (ConfigItems.ENABLE_INGOTS_ITEMS)
+            {
+                ItemReg.itemIngot.registerOreNames();
+                ItemReg.itemIngotClump.registerOreNames();
+            }
+            if (ConfigItems.ENABLE_PLATES_ITEMS)
+            {
+                ItemReg.itemPlate.registerOreNames();
+            }
+            if (ConfigItems.ENABLE_CIRCUIT_ITEMS)
+            {
+                ItemReg.itemCircuit.registerOreNames();
+            }
+            if (ConfigItems.ENABLE_WIRES_ITEMS)
+            {
+                ItemReg.itemWire.registerOreNames();
+            }
+        }
     }
 
     @SubscribeEvent
