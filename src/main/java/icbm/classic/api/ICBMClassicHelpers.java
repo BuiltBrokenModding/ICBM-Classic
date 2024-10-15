@@ -125,12 +125,6 @@ public final class ICBMClassicHelpers
         return null;
     }
 
-    @Deprecated //Will be placed in a registry/handler
-    public static boolean hasEmpHandler(IBlockState iBlockState)
-    {
-        return false; //TODO implement
-    }
-
     /**
      * Gets the {@link IGPSData} capability from an {@link ItemStack}
      * @param stack to access
