@@ -1,28 +1,30 @@
 package icbm.classic.content.radioactive;
 
 import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.config.util.BlockReplacementData;
 import icbm.classic.config.util.BlockStateConfigList;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class RadioactiveHandler {
     public static final BlockStateConfigList.BlockChanceOut radioactiveBlockSwaps = new BlockStateConfigList.BlockChanceOut("[RadioactiveReplacements]", (configList) -> {
-        configList.setDefault(Blocks.STONE.getRegistryName(), Pair.of(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.STONE), 0.2f), 0);
+        configList.setDefault(Blocks.STONE.getRegistryName(), new BlockReplacementData().setChance(0.2f).setBlockState(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.STONE)), 0);
 
-        configList.setDefault(Blocks.DIRT.getRegistryName(), Pair.of(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.DIRT), 0.2f), 0);
-        configList.setDefault(Blocks.FARMLAND.getRegistryName(), Pair.of(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.DIRT), 0.2f), 0);
-        configList.setDefault(Blocks.GRASS_PATH.getRegistryName(), Pair.of(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.DIRT), 0.2f), 0);
-        configList.setDefault(Blocks.GRASS.getRegistryName(), Pair.of(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.DIRT), 0.2f), 0);
-        configList.setDefault(Blocks.MYCELIUM.getRegistryName(), Pair.of(BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.DIRT), 0.2f), 0);
+        final IBlockState radDirt = BlockReg.blockRadioactive.getDefaultState().withProperty(BlockRadioactive.TYPE_PROP, BlockRadioactive.EnumType.DIRT);
+        configList.setDefault(Blocks.DIRT.getRegistryName(), new BlockReplacementData().setChance(0.2f).setBlockState(radDirt), 0);
+        configList.setDefault(Blocks.FARMLAND.getRegistryName(), new BlockReplacementData().setChance(0.2f).setBlockState(radDirt), 0);
+        configList.setDefault(Blocks.GRASS_PATH.getRegistryName(), new BlockReplacementData().setChance(0.2f).setBlockState(radDirt), 0);
+        configList.setDefault(Blocks.GRASS.getRegistryName(), new BlockReplacementData().setChance(0.2f).setBlockState(radDirt), 0);
+        configList.setDefault(Blocks.MYCELIUM.getRegistryName(), new BlockReplacementData().setChance(0.2f).setBlockState(radDirt), 0);
 
         for(Block block: ForgeRegistries.BLOCKS) {
             final Material material = block.getMaterial(block.getDefaultState());
             if(material == Material.PLANTS || material == Material.LEAVES || material == Material.VINE) {
-                configList.setDefault(block.getRegistryName(), Pair.of(Blocks.AIR.getDefaultState(), null), 0);
+                configList.setDefault(block.getRegistryName(), new BlockReplacementData().setBlockState(Blocks.AIR.getDefaultState()), 0);
             }
         }
 
