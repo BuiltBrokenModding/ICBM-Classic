@@ -3,7 +3,7 @@ package icbm.classic.lib.capability.emp;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.config.ConfigEMP;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.actions.emp.ActionEmpArea;
 import icbm.classic.lib.InventoryUtility;
 import icbm.classic.lib.energy.system.EnergySystem;
@@ -69,7 +69,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
 
     public static float empItemStack(ItemStack itemStack, World world, double x, double y, double z, Object container, IAction emp_blast, float power, boolean doAction)
     {
-        boolean doInventory = ConfigEMP.ALLOW_ITEM_INVENTORY;
+        boolean doInventory = ConfigBlast.emp.ALLOW_ITEM_INVENTORY;
 
 
         //Check for EMP support
@@ -84,7 +84,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
                 doInventory = cap.shouldEmpSubObjects(world, x, y, z) && doInventory;
             }
         }
-        else if (ConfigEMP.DRAIN_ENERGY_ITEMS)
+        else if (ConfigBlast.emp.DRAIN_ENERGY_ITEMS)
         {
             EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, false);
         }
@@ -120,7 +120,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ENTITY_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigBlast.emp.ALLOW_ENTITY_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
             {
                 IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
@@ -153,7 +153,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_TILE_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigBlast.emp.ALLOW_TILE_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
             {
                 IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
@@ -188,7 +188,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigBlast.emp.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
             {
                 IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
@@ -223,7 +223,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigBlast.emp.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
             {
                 IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 

@@ -9,7 +9,9 @@ import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.EmpEvent;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigEMP;
+import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.config.util.BlockReplacementData;
+import icbm.classic.content.radioactive.RadioactiveHandler;
 import icbm.classic.lib.actions.ActionBase;
 import icbm.classic.lib.actions.status.ActionResponses;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
@@ -26,7 +28,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -41,7 +42,9 @@ import java.util.List;
 @Getter
 @Setter
 public class ActionEmpArea extends ActionBase {
+
     static final List<ActionField> SUPPORTED_FIELDS = new ArrayList<>(Collections.singleton(ActionFields.AREA_SIZE));
+
     @Accessors(chain = true)
     private int size = 1;
 
@@ -83,7 +86,7 @@ public class ActionEmpArea extends ActionBase {
     }
 
     protected void empTiles() {
-        if (!ConfigEMP.ALLOW_TILES) {
+        if (!ConfigBlast.emp.ALLOW_TILES) {
             return;
         }
         final BlockPos.MutableBlockPos currentPos = new BlockPos.MutableBlockPos();
@@ -114,7 +117,19 @@ public class ActionEmpArea extends ActionBase {
         //Fire event to allow canceling action on entity
         if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState))) {
 
-            TileEntity tileEntity = getWorld().getTileEntity(blockPos);
+            // TODO allow scaling replacement by emp energy key=value@nbt({"energy":@energy(min, max)}) with @energy being a replacement target
+            // TODO allow gating replacement by emp energy @if(energy>30, replacement)
+            final IBlockState blockState = getWorld().getBlockState(blockPos);
+            final BlockReplacementData replacement = EmpHandler.empBlockSwaps.getValue(blockState);
+            if(replacement != null) {
+                replacement.apply(getWorld(), blockPos);
+                return;
+            }
+
+            // TODO Oct 15, 2024 - run action handler per block
+            //                     add mod compatability for common mods using NBT editing and reflection
+
+            final TileEntity tileEntity = getWorld().getTileEntity(blockPos);
             if (tileEntity != null) {
                 boolean doInventory = true;
                 if (tileEntity.hasCapability(CapabilityEMP.EMP, null)) {
@@ -123,7 +138,7 @@ public class ActionEmpArea extends ActionBase {
                         powerEntity = empEntity(tileEntity, powerEntity, receiver);
                         doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
                     }
-                } else if (ConfigEMP.DRAIN_ENERGY_TILES) {
+                } else if (ConfigBlast.emp.DRAIN_ENERGY_TILES) {
                     IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
                     if (energySystem.canSetEnergyDirectly(tileEntity, null)) {
                         energySystem.setEnergy(tileEntity, null, 0, false);
@@ -144,7 +159,7 @@ public class ActionEmpArea extends ActionBase {
     }
 
     protected void empEntities() {
-        if (!ConfigEMP.ALLOW_ENTITY) {
+        if (!ConfigBlast.emp.ALLOW_ENTITY) {
             return;
         }
         //Calculate bounds
@@ -167,7 +182,7 @@ public class ActionEmpArea extends ActionBase {
                         powerEntity = empEntity(entity, powerEntity, receiver);
                         doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.posX, entity.posY, entity.posZ);
                     }
-                } else if (ConfigEMP.DRAIN_ENERGY_ENTITY) {
+                } else if (ConfigBlast.emp.DRAIN_ENERGY_ENTITY) {
                     IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
                     if (energySystem.canSetEnergyDirectly(entity, null)) {
                         energySystem.setEnergy(entity, null, 0, false);

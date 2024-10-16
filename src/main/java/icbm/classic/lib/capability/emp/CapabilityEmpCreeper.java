@@ -2,7 +2,7 @@ package icbm.classic.lib.capability.emp;
 
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.config.ConfigEMP;
+import icbm.classic.config.blast.ConfigBlast;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.util.EnumFacing;
@@ -29,7 +29,7 @@ public class CapabilityEmpCreeper implements IEMPReceiver, ICapabilityProvider
     @Override
     public float applyEmpAction(World world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
     {
-        if (ConfigEMP.ALLOW_LIGHTING_CREEPER)
+        if (ConfigBlast.emp.ALLOW_LIGHTING_CREEPER)
         {
             //Attack creeper with lighting TODO replace with data manager call
             creeper.onStruckByLightning(new EntityLightningBolt(world, creeper.posX, creeper.posY, creeper.posZ, true));
