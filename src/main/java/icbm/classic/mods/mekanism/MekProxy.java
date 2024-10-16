@@ -1,6 +1,9 @@
 package icbm.classic.mods.mekanism;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.config.util.BlockReplacementData;
+import icbm.classic.content.actions.emp.EmpHandler;
 import icbm.classic.lib.network.packet.PacketEntityPos;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
@@ -9,8 +12,10 @@ import icbm.classic.mods.ModProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -34,6 +39,21 @@ public class MekProxy extends ModProxy
 
     @GameRegistry.ObjectHolder("mekanism:BasicBlock")
     public static Block basicBlock;
+
+    @Optional.Method(modid = "mekanism")
+    @Override
+    public void preInit() {
+        // Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/MekanismBlocks.java
+        //          https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/block/states/BlockStateMachine.java
+        final NBTTagCompound energyOverride = new NBTTagCompound();
+        energyOverride.setDouble("electricityStored", 0); // https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/tile/prefab/TileEntityElectricBlock.java#L169
+
+        // TODO replace with mek's API as this is painful given they use a central block for several sub-blocks
+        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock2"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock3"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "EnergyCube"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+    }
 
     @Override
     @Optional.Method(modid = "mekanism")
