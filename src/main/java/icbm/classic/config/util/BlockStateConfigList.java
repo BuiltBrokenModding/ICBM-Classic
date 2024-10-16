@@ -227,8 +227,10 @@ public abstract class BlockStateConfigList<VALUE> extends ResourceConfigList<Blo
             if(value.contains(";")) {
                 final String[] entries = value.split(";");
 
-                // First entry should always be block state
-                blockReplacementData.setBlockState(super.parseBlockState(source, key, entries[0]));
+                // First entry should always be block, @keep will skip replacement and use the existing block
+                if(!entries[0].equals("~")) {
+                    blockReplacementData.setBlockState(super.parseBlockState(source, key, entries[0]));
+                }
 
                 for(int i = 1; i < entries.length; i++) {
                     final String subEntry = entries[i];
