@@ -68,10 +68,9 @@ public class ConfigBlast
     @Config.Comment("Settings for nuclear explosive")
     public static ConfigNuclear nuclear = new ConfigNuclear();
 
-    @Deprecated
     @Config.LangKey("config.icbmclassic:blast.emp.title")
     @Config.Comment("Settings for emp explosive")
-    public static ConfigExBasics emp = new ConfigExBasics(50);
+    public static ConfigEmp emp = new ConfigEmp();
 
     @Config.LangKey("config.icbmclassic:blast.exothermic.title")
     @Config.Comment("Settings for exothermic explosive")

@@ -10,6 +10,7 @@ import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.CommandEntryPoint;
 import icbm.classic.config.ConfigItems;
 import icbm.classic.config.ConfigThread;
+import icbm.classic.content.actions.emp.EmpHandler;
 import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cargo.RecipeCargoDataDecraft;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
@@ -407,6 +408,7 @@ public class ICBMClassic
         HeldItemMissileHandler.setup();
         RadioactiveHandler.setup();
         ProtectiveArmorHandler.setup();
+        EmpHandler.setup();
 
         // Needs to lock late as we need content to register some types
         ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
