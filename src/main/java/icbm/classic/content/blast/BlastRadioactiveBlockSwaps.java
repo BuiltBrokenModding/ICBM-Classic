@@ -29,8 +29,8 @@ public class BlastRadioactiveBlockSwaps extends BlastThreaded implements IBlastT
     {
         final IBlockState blockState = world.getBlockState(targetPosition);
         final BlockReplacementData replacement = RadioactiveHandler.radioactiveBlockSwaps.getValue(blockState);
-        if(replacement != null && (replacement.getChance() < 0 || world.rand.nextFloat() <= replacement.getChance())) {
-            world.setBlockState(targetPosition, replacement.getBlockState(), 3);
+        if(replacement != null) {
+            replacement.apply(world, targetPosition);
         }
     }
 }
