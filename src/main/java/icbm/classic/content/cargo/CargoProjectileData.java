@@ -17,18 +17,22 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemMonsterPlacer;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -74,7 +78,7 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     public ITextComponent getTooltip() {
         return new TranslationTextComponent(
             getTranslationKey() + ".info." + parachuteMode.name().toLowerCase(),
-            heldItem.getItem().getItemStackDisplayName(heldItem)
+            heldItem.getItem().getDisplayName(heldItem)
         );
     }
 
@@ -124,15 +128,10 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
         }
 
         if (heldItem.getItem() instanceof SpawnEggItem) {
-            final Entity mob = ItemMonsterPlacer.spawnCreature(entity.world, ItemMonsterPlacer.getNamedIdFrom(heldItem), entity.posX, entity.posY, entity.posZ);
+            final EntityType entityType = ((SpawnEggItem)heldItem.getItem()).getType(heldItem.getTag());
+            final Entity mob = entityType.spawn(entity.world, heldItem, null, entity.getPosition(), SpawnReason.SPAWN_EGG, false, false);
             if (mob != null) {
                 mob.startRiding(entity);
-
-                if (mob instanceof LivingEntity && heldItem.hasDisplayName()) {
-                    entity.setCustomNameTag(heldItem.getDisplayName());
-                }
-
-                ItemMonsterPlacer.applyItemEntityDataToEntity(entity.world, null, heldItem, mob);
             } else {
                 ICBMClassic.logger().warn("ParachuteProjectile: unknown item for entity spawning. Data: {}, Item: {}", this, heldItem);
                 spawnItemEntity(entity);
@@ -147,7 +146,7 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
         final ItemEntity entityItem = createItemEntity(entity);
 
         // Spawn item
-        if (!entity.world.spawnEntity(entityItem)) {
+        if (!entity.world.addEntity(entityItem)) {
             ICBMClassic.logger().error("CargoProjectileData: Failed to spawn held item as {}, this likely resulted in loss of items", entityItem);
             //TODO see if we can undo cargo spawn if this fails
         }
@@ -160,8 +159,9 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     }
 
     private ItemEntity createItemEntity(@Nonnull ENTITY entity) {
-        final ItemEntity entityItem = new ItemEntity(entity.world);
+        final ItemEntity entityItem = new ItemEntity(EntityType.ITEM, entity.world);
         entityItem.setItem(heldItem.copy());
+        entityItem.rotationYaw = entity.world.rand.nextFloat() * 360.0F;
         entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
         entityItem.setDefaultPickupDelay();
         return entityItem;
@@ -172,18 +172,8 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
             spawnItemEntity(entity);
             return;
         }
-        int i = heldItem.getItem().getMetadata(heldItem.getMetadata());
-        BlockState iblockstate = null;
+        final BlockState iblockstate = ((BlockItem) heldItem.getItem()).getBlock().getDefaultState();
 
-        try {
-            // TODO if source is a missile try to get caused by player
-            final LivingEntity entityLivingBase = source instanceof LivingEntity ? (LivingEntity) source : FakePlayerFactory.getMinecraft((ServerWorld) entity.world);
-            iblockstate = ((BlockItem) heldItem.getItem()).getBlock()
-                .getStateForPlacement(entity.world, entity.getPosition(), Direction.NORTH, 0.5f, 1f, 0.5f, i, entityLivingBase, hand);
-        } catch (Exception e) {
-            ICBMClassic.logger().error("CargoProjectileData: Failed to use Block#getStateForPlacement to get block state. This may cause incorrect block placements", e);
-            iblockstate = ((BlockItem) heldItem.getItem()).getBlock().getStateFromMeta(i);
-        }
 
         // TODO add itemstack to flying block for better placement and handling of TE data
         final BlockCaptureData blockCaptureData = new BlockCaptureData(iblockstate, heldItem.copy());

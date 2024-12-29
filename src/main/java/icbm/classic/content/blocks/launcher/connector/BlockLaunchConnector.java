@@ -1,27 +1,25 @@
 package icbm.classic.content.blocks.launcher.connector;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
+import net.minecraft.block.Block;
 import net.minecraft.block.ContainerBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
@@ -30,27 +28,22 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
-public class BlockLaunchConnector extends ContainerBlock
+public class BlockLaunchConnector extends Block
 {
-    public static final PropertyBool UP = PropertyBool.create("up");
-    public static final PropertyBool DOWN = PropertyBool.create("down");
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
+    public static final BooleanProperty UP = BooleanProperty.create("up");
+    public static final BooleanProperty DOWN = BooleanProperty.create("down");
+    public static final BooleanProperty NORTH = BooleanProperty.create("north");
+    public static final BooleanProperty EAST = BooleanProperty.create("east");
+    public static final BooleanProperty SOUTH = BooleanProperty.create("south");
+    public static final BooleanProperty WEST = BooleanProperty.create("west");
 
     public BlockLaunchConnector()
     {
-        super(Material.IRON);
-        blockHardness = 10f;
-        blockResistance = 10f;
-        setRegistryName(ICBMConstants.DOMAIN, "launcher_connector");
-        setUnlocalizedName(ICBMConstants.PREFIX + "launcher_connector");
-        setCreativeTab(ICBMClassic.CREATIVE_TAB);
+        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
     }
 
     @Override
-    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos)
+    public BlockState getExtendedState(BlockState state, IBlockReader worldIn, BlockPos pos)
     {
         final boolean upConnection = isConnection(worldIn, pos, Direction.UP);
         final boolean downConnection = isConnection(worldIn, pos, Direction.DOWN);
@@ -60,39 +53,26 @@ public class BlockLaunchConnector extends ContainerBlock
         final boolean westConnection = isConnection(worldIn, pos, Direction.WEST);
 
         return state
-            .withProperty(UP, upConnection)
-            .withProperty(DOWN, downConnection)
-            .withProperty(NORTH, northConnection)
-            .withProperty(EAST, eastConnection)
-            .withProperty(SOUTH, southConnection)
-            .withProperty(WEST, westConnection);
+            .with(UP, upConnection)
+            .with(DOWN, downConnection)
+            .with(NORTH, northConnection)
+            .with(EAST, eastConnection)
+            .with(SOUTH, southConnection)
+            .with(WEST, westConnection);
     }
 
-    private boolean isConnection(IBlockAccess worldIn, BlockPos selfPos, Direction side) {
+    private boolean isConnection(IBlockReader worldIn, BlockPos selfPos, Direction side) {
         final BlockPos pos = selfPos.offset(side);
         final TileEntity tile = worldIn.getTileEntity(pos);
         if(tile != null) {
-            return tile.hasCapability(CapabilityEnergy.ENERGY, side.getOpposite())
-                || tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side.getOpposite());
+            return tile.getCapability(CapabilityEnergy.ENERGY, side.getOpposite()).isPresent()
+                || tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side.getOpposite()).isPresent();
         }
         return false;
     }
 
-
     @Override
-    public BlockState getStateFromMeta(int meta)
-    {
-        return getDefaultState();
-    }
-
-    @Override
-    public int getMetaFromState(BlockState state)
-    {
-        return 0;
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, BlockState state, PlayerEntity playerIn, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult hit)
     {
         final TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof icbm.classic.content.blocks.launcher.frame.TileLauncherFrame)
@@ -116,9 +96,8 @@ public class BlockLaunchConnector extends ContainerBlock
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, UP, DOWN, NORTH, EAST, WEST, SOUTH);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(UP, DOWN, NORTH, EAST, WEST, SOUTH);
     }
 
     @Override
@@ -128,27 +107,26 @@ public class BlockLaunchConnector extends ContainerBlock
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
         return new TileLauncherConnector();
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, BlockState state)
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
     {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ILauncherComponent)
         {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
-        super.breakBlock(world, pos, state);
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 }

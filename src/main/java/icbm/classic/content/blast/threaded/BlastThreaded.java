@@ -8,7 +8,7 @@ import icbm.classic.lib.transform.BlockEditHandler;
 import icbm.classic.lib.transform.PosDistanceSorter;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.Comparator;
 import java.util.List;
@@ -66,16 +66,16 @@ public abstract class BlastThreaded extends Blast
             edits.sort(buildSorter());
 
             //Schedule edits to run in the world
-            ((ServerWorld) world).addScheduledTask(() -> {
+            ((ServerWorld) world).getServer().execute(() -> {
 
                 if (skipQueue())
                 {
-                    edits.forEach(blockPos -> destroyBlock(blockPos));
+                    edits.forEach(this::destroyBlock);
                 }
                 else
                 {
                     //Queue edits
-                    BlockEditHandler.queue(world, edits, blockPos -> destroyBlock(blockPos));
+                    BlockEditHandler.queue(world, edits, this::destroyBlock);
                 }
 
                 //Notify blast we have entered world again
@@ -108,10 +108,10 @@ public abstract class BlastThreaded extends Blast
 
     public void destroyBlock(BlockPos pos)
     {
-        BlockState state = this.world().getBlockState(pos);
+        final BlockState state = this.world().getBlockState(pos);
         if (!state.getBlock().isAir(state, world(), pos))
         {
-            state.getBlock().onBlockExploded(this.world(), pos, this);
+            state.getBlock().onBlockExploded(state, this.world(), pos, this);
         }
     }
 

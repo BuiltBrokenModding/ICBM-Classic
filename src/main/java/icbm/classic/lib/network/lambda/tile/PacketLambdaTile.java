@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -18,13 +19,16 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DeferredWorkQueue;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Data
 @NoArgsConstructor
-public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET>> {
+public class PacketLambdaTile<TARGET> {
 
     private PacketCodex codex;
     private Integer dimensionId;
@@ -49,8 +53,9 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         writers = codex.encodeAsWriters(target);
     }
 
-    @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+
+
+    public void encode(PacketBuffer buffer) {
         // Write general data
         buffer.writeInt(codex.getId());
         buffer.writeInt(dimensionId);
@@ -62,19 +67,34 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         writers.forEach(c -> c.accept(buffer));
     }
 
-    @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+    public static PacketLambdaTile decode(PacketBuffer buffer) {
+        final PacketLambdaTile packet = new PacketLambdaTile();
 
         // Read general data
-        codex = PacketCodexReg.get(buffer.readInt());
-        dimensionId = buffer.readInt();
-        pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
+        packet.codex = PacketCodexReg.get(buffer.readInt());
+        packet.dimensionId = buffer.readInt();
+        packet.pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
 
         // Read data for builder
-        setters = codex.decodeAsSetters(buffer);
+        packet.setters = packet.codex.decodeAsSetters(buffer);
+
+        return packet;
+
     }
 
-    @Override
+    public static void handle(PacketLambdaTile packet, Supplier<NetworkEvent.Context> contextSupplier) {
+       switch (contextSupplier.get().getDirection()) {
+           case PLAY_TO_CLIENT:
+               contextSupplier.get().enqueueWork(() -> packet.handleClientSide(Minecraft.getInstance(), Objects.requireNonNull(contextSupplier.get().getSender())));
+               break;
+           case PLAY_TO_SERVER:
+               contextSupplier.get().enqueueWork(() -> packet.handleServerSide(Objects.requireNonNull(contextSupplier.get().getSender())));
+               break;
+           default:
+               throw new IllegalStateException("Unexpected value: " + contextSupplier.get().getDirection());
+       }
+    }
+
     @OnlyIn(Dist.CLIENT)
     public void handleClientSide(final Minecraft minecraft, final PlayerEntity player)
     {
@@ -91,7 +111,6 @@ public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET
         DeferredWorkQueue.runLater(() -> loadDataIntoTile(world, player));
     }
 
-    @Override
     public void handleServerSide(PlayerEntity player)
     {
         final int playerDim = player.world.getDimension().getType().getId();

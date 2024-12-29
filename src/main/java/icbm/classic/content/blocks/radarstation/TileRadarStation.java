@@ -12,6 +12,7 @@ import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;
 import icbm.classic.content.blocks.radarstation.gui.GuiRadarStation;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
@@ -38,6 +39,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -46,9 +48,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -115,6 +119,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     private int firingCooldown = 0;
 
     public TileRadarStation() {
+        super(TileReg.RADAR_STATION.get());
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20, true, (t) -> {
@@ -140,9 +145,9 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     }
 
     @Override
-    public void update()
+    public void tick()
     {
-        super.update();
+        super.tick();
 
         if (isServer())
         {
@@ -181,16 +186,16 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
 
             //Update redstone state
             final boolean shouldBeOn = hasPower && hasIncomingMissiles();
-            if (world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
+            if (world.getBlockState(getPos()).get(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
             {
                 final BlockPos selfPos = getPos();
 
-                world.setBlockState(selfPos, getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);
+                world.setBlockState(selfPos, getBlockState().with(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);
                 for (Direction facing : Direction.values())
                 {
                     final BlockPos targetPos = selfPos.offset(facing);
-                    world.neighborChanged(targetPos, getBlockType(), getPos());
-                    world.notifyNeighborsOfStateExcept(targetPos, getBlockType(), facing.getOpposite());
+                    world.neighborChanged(targetPos, getBlockState().getBlock(), getPos());
+                    world.notifyNeighborsOfStateExcept(targetPos, getBlockState().getBlock(), facing.getOpposite());
                 }
             }
         }
@@ -203,15 +208,9 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         // Force block re-render if our state has changed
         if(preRadarVisualState != radarVisualState) {
             this.markDirty();
-            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, preRadarVisualState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, radarVisualState), 3);
+            this.world.markAndNotifyBlock(pos, null, getBlockState().with(BlockRadarStation.RADAR_STATE, preRadarVisualState), getBlockState().with(BlockRadarStation.RADAR_STATE, radarVisualState), 3);
             preRadarVisualState = radarVisualState;
         }
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, BlockState oldState, BlockState newState)
-    {
-        return !(oldState.getBlock() == BlockReg.blockRadarStation && newState.getBlock() == BlockReg.blockRadarStation); //Don't kill tile if the radar station is still there
     }
 
     private void doScan() //TODO document and thread
@@ -279,8 +278,8 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
             // Ignore SAM missiles
             && !(entity instanceof EntitySurfaceToAirMissile)
             // Track explosive missiles (using caps to allow other mods to interact more easily)
-            && entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)
-            && entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null); //TODO recode to use a radar classification system
+            && entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY).isPresent()
+            && entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY).isPresent(); //TODO recode to use a radar classification system
     }
 
     /**
@@ -291,7 +290,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
      */
     public boolean isMissileGoingToHit(IMissile missile)
     {
-        if (missile == null || missile.getMissileEntity() == null || !missile.getMissileEntity().isEntityAlive())
+        if (missile == null || missile.getMissileEntity() == null || !missile.getMissileEntity().isAlive())
         {
             return false;
         }
@@ -300,7 +299,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
         Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
 
-        double nextDistance = mpos.addVector(missile.getMissileEntity().motionX, missile.getMissileEntity().motionY, missile.getMissileEntity().motionZ).distanceTo(rpos);   // next distance from missile to radar
+        double nextDistance = mpos.add(missile.getMissileEntity().getMotion().x, missile.getMissileEntity().getMotion().y, missile.getMissileEntity().getMotion().z).distanceTo(rpos);   // next distance from missile to radar
         double currentDistance = mpos.distanceTo(rpos); // current distance from missile to radar
 
         return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
@@ -341,27 +340,20 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         return incomingThreats.size() > 0;
     }
 
-    @Override
+    //@Override
     public ITextComponent getDisplayName()
     {
         return TRANSLATION_GUI_NAME;
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing)
+    public <T> LazyOptional<T> getCapability(@Nonnull final Capability<T> capability, final @Nullable Direction facing)
     {
         if (capability == CapabilityEnergy.ENERGY)
         {
-            return (T) energyStorage;
+            return LazyOptional.of(() -> energyStorage).cast();
         }
         return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing)
-    {
-        return super.hasCapability(capability, facing)
-            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER;
     }
 
     @Override
@@ -377,19 +369,16 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     }
 
     @Override
-    public void readFromNBT(CompoundNBT nbt)
+    public void read(CompoundNBT nbt)
     {
-        super.readFromNBT(nbt);
+        super.read(nbt);
         SAVE_LOGIC.load(this, nbt);
-        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
-            this.radio.setChannel(Integer.toString(nbt.getInt(NBTConstants.FREQUENCY)));
-        }
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT nbt)
+    public CompoundNBT write(CompoundNBT nbt)
     {   SAVE_LOGIC.save(this, nbt);
-        return super.writeToNBT(nbt);
+        return super.write(nbt);
     }
 
     private static final NbtSaveHandler<TileRadarStation> SAVE_LOGIC = new NbtSaveHandler<TileRadarStation>()

@@ -7,6 +7,7 @@ import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import icbm.classic.prefab.tile.BlockICBM;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,7 +17,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -25,12 +28,10 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
-public class BlockLaunchScreen extends BlockICBM
+public class BlockLaunchScreen extends Block
 {
-    public BlockLaunchScreen()
-    {
-        super("launcherscreen");
-        this.dropInventory = true;
+    public BlockLaunchScreen(Properties properties) {
+        super(properties);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class BlockLaunchScreen extends BlockICBM
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
     {
         if (!world.isRemote)
         {
@@ -70,19 +71,20 @@ public class BlockLaunchScreen extends BlockICBM
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
         return new TileLauncherScreen();
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, BlockState state)
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
     {
-        TileEntity tile = world.getTileEntity(pos);
+        //TODO drop inventory
+        final TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ILauncherComponent)
         {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
-        super.breakBlock(world, pos, state);
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 }

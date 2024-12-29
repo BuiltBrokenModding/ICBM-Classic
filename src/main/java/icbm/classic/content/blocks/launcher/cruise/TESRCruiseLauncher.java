@@ -1,17 +1,16 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.CruiseLauncherTopModel;
 import icbm.classic.client.render.entity.RenderMissile;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.util.glu.Sphere;
+//import org.lwjgl.util.glu.Sphere;
 
 /**
  *
@@ -25,17 +24,17 @@ public class TESRCruiseLauncher extends TileEntityRenderer<TileCruiseLauncher>
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render(TileCruiseLauncher launcher, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+    public void render(TileCruiseLauncher launcher, double x, double y, double z, float partialTicks, int destroyStage)
     {
         float yaw = (float) launcher.currentAim.yaw();
         float pitch = (float) launcher.currentAim.pitch();
 
         // Render top of launcher
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x + 0.5F, (float) y + 2.5F, (float) z + 0.5F);
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE_FILE);
+        GlStateManager.translatef((float) x + 0.5F, (float) y + 2.5F, (float) z + 0.5F);
+        this.bindTexture(TEXTURE_FILE);
 
-        GlStateManager.rotate(180F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotatef(180F, 0.0F, 0.0F, 1.0F);
         model.render(0.0625f, -(float)Math.toRadians(yaw), -(float)Math.toRadians(pitch));
         GlStateManager.popMatrix();
 
@@ -43,7 +42,7 @@ public class TESRCruiseLauncher extends TileEntityRenderer<TileCruiseLauncher>
         if (!launcher.cachedMissileStack.isEmpty()) {
 
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x + 0.5f, (float) y + 2, z + 0.5f);
+            GlStateManager.translated(x + 0.5f, (float) y + 2, z + 0.5f);
 
             RenderMissile.INSTANCE.renderItem(launcher.cachedMissileStack,launcher.getWorld(), 0, 0, 0, yaw, pitch - 90, partialTicks);
             GlStateManager.popMatrix();
@@ -61,10 +60,10 @@ public class TESRCruiseLauncher extends TileEntityRenderer<TileCruiseLauncher>
                 float radius = 4f;
 
                 GlStateManager.pushMatrix();
-                GlStateManager.translate((float) x + 0.5, (float) y + 3, (float) z + 0.5);
+                GlStateManager.translatef((float) x + 0.5f, (float) y + 3f, (float) z + 0.5f);
                 bindTexture(RenderRedmatter.GREY_TEXTURE);
-                GlStateManager.color(0.0F, 0.0F, 1F, 1);
-                new Sphere().draw(0.5f, 32, 32);
+                GlStateManager.color4f(0.0F, 0.0F, 1F, 1);
+                //new Sphere().draw(0.5f, 32, 32);
                 GlStateManager.popMatrix();
 
                 if (!launcher.cachedMissileStack.isEmpty()) {
@@ -74,10 +73,10 @@ public class TESRCruiseLauncher extends TileEntityRenderer<TileCruiseLauncher>
                     double offsetY = radius * angle.y();
 
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate(x + 0.5 + offsetX, (float) y + 3 + offsetY, z + 0.5 + offsetZ);
+                    GlStateManager.translated(x + 0.5f + offsetX, (float) y + 3f + offsetY, z + 0.5f + offsetZ);
                     bindTexture(RenderRedmatter.GREY_TEXTURE);
-                    GlStateManager.color(0.0F, 0.0F, 1F, 1);
-                    new Sphere().draw(0.1f, 32, 32);
+                    GlStateManager.color4f(0.0F, 0.0F, 1F, 1);
+                    //new Sphere().draw(0.1f, 32, 32);
                     GlStateManager.popMatrix();
 
 
@@ -86,11 +85,11 @@ public class TESRCruiseLauncher extends TileEntityRenderer<TileCruiseLauncher>
                     offsetY = (radius + 0.2) * angle.y();
 
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate(x + 0.5 + offsetX, (float) y + 3 + offsetY, z + 0.5 + offsetZ);
-                    GlStateManager.rotate(yu, 0F, 1F, 0F);
-                    GlStateManager.rotate(pu + 90, 1F, 0F, 0F);
+                    GlStateManager.translated(x + 0.5 + offsetX, (float) y + 3 + offsetY, z + 0.5 + offsetZ);
+                    GlStateManager.rotatef(yu, 0F, 1F, 0F);
+                    GlStateManager.rotatef(pu + 90, 1F, 0F, 0F);
 
-                    GlStateManager.translate(0, -1, 0);
+                    GlStateManager.translatef(0, -1, 0);
                     RenderMissile.INSTANCE.renderItem(launcher.cachedMissileStack,launcher.getWorld(),0, 0, 0, 0, 0, partialTicks);
                     GlStateManager.popMatrix();
                 }

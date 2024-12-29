@@ -8,15 +8,9 @@ import icbm.classic.content.blocks.launcher.connector.TileLauncherConnector;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
-import icbm.classic.content.blocks.multiblock.TileMulti;
 import icbm.classic.content.blocks.radarstation.TileRadarStation;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -27,7 +21,7 @@ public class TileReg
     public static final RegistryObject<TileEntityType<?>> EMP_TOWER_BASE = TYPES.register("emp_tower_base", () -> TileEntityType.Builder.create(TileEMPTower::new, BlockReg.EMP_TOWER_BASE.get()).build(null));
     public static final RegistryObject<TileEntityType<?>> EMP_TOWER_COIL = TYPES.register("emp_tower_coil", () -> TileEntityType.Builder.create(TileEmpTowerFake::new, BlockReg.EMP_TOWER_COIL.get()).build(null));
 
-    public static final RegistryObject<TileEntityType<?>> RADAR_STATION = TYPES.register("radar_station", () -> TileEntityType.Builder.create(TileRadarStation::new, BlockReg.RADAR_STATION.get()).build(null));
+    public static final RegistryObject<TileEntityType<?>> RADAR_STATION = TYPES.register("radar_station", () -> TileEntityType.Builder.create(TileRadarStation::new, BlockReg.RADAR_SCREEN.get()).build(null));
 
     public static final RegistryObject<TileEntityType<?>> LAUNCHER_FRAME = TYPES.register("launcher_frame", () -> TileEntityType.Builder.create(TileLauncherFrame::new, BlockReg.LAUNCHER_FRAME.get()).build(null));
     public static final RegistryObject<TileEntityType<?>> LAUNCHER_CONNECTOR = TYPES.register("launcher_connector", () -> TileEntityType.Builder.create(TileLauncherConnector::new, BlockReg.LAUNCHER_CONNECTOR.get()).build(null));

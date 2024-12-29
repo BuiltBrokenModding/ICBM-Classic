@@ -13,7 +13,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,7 +27,7 @@ public class BlastAntimatter extends BlastThreaded
     public boolean setupBlast()
     {
         super.setupBlast();
-        ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
+        ICBMSounds.ANTIMATTER.play(world, this.x(), this.y(), this.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
         return this.doDamageEntities(this.getBlastRadius() * 2, ConfigBlast.antimatter.damage); //TODO config for radius
     }
 
@@ -92,7 +92,7 @@ public class BlastAntimatter extends BlastThreaded
             }
 
             //Schedule edits to run in the world
-            ((ServerWorld) world).addScheduledTask(() -> scheduledTask(removeFirst, edits));
+            ((ServerWorld) world).getServer().execute(() -> scheduledTask(removeFirst, edits));
         }
     }
 
@@ -172,7 +172,7 @@ public class BlastAntimatter extends BlastThreaded
         if (entity instanceof EntityRedmatter)
         {
             //TODO implement a proper event instead of BlastCancel
-            entity.setDead();
+            entity.remove();
             return true;
         }
 

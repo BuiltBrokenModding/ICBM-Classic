@@ -7,6 +7,7 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -30,7 +31,7 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
         this(parent, name, (tile) -> (T) tile);
     }
     public PacketCodexTile(ResourceLocation parent, String name) {
-        this(parent, new ResourceLocation(parent.getResourceDomain(), name));
+        this(parent, new ResourceLocation(parent.getNamespace(), name));
     }
 
     public void sendToAllAround(R tile){
@@ -48,12 +49,13 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
     }
 
     public void sendToAllAround(R tile, double range){
-        super.sendToAllAround(tile, new NetworkRegistry.TargetPoint(
-            tile.getWorld().provider.getDimension(),
+        super.sendToAllAround(tile, new PacketDistributor.TargetPoint(
+            null,
             tile.getPos().getX(),
             tile.getPos().getY(),
             tile.getPos().getZ(),
-            range
+            range,
+            tile.getWorld().dimension.getType()
         ));
     }
 

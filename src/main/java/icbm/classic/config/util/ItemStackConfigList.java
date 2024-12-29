@@ -5,7 +5,7 @@ package icbm.classic.config.util;
 import icbm.classic.lib.ForgeRegistryHelpers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,7 +19,6 @@ import java.util.function.Function;
 public abstract class ItemStackConfigList<VALUE> extends ResourceConfigList<ItemStackConfigList, ItemStack, VALUE> {
     public ItemStackConfigList(String name, Consumer<ItemStackConfigList> reloadCallback) {
         super(name, "https://github.com/BuiltBrokenModding/ICBM-Classic/wiki/config-itemstack", reloadCallback);
-        addMatcher(META_KEY_REGEX, this::handleMeta);
         addMatcher(KEY_VALUE_REGEX, this::handleSimple);
     }
 
@@ -40,17 +39,6 @@ public abstract class ItemStackConfigList<VALUE> extends ResourceConfigList<Item
     }
 
     //TODO add support for NBT
-
-    @Override
-    protected Function<ItemStack, VALUE> getMetaValue(ResourceLocation key, int metadata, @Nullable VALUE value) {
-        // TODO check that the item supports sub-types
-        return (stack) -> {
-            if(getContentKey(stack) == key && stack.getMetadata() == metadata) {
-                return value;
-            }
-            return null;
-        };
-    }
 
     @Override
     protected boolean isValidKey(ResourceLocation targetKey) {
@@ -87,14 +75,6 @@ public abstract class ItemStackConfigList<VALUE> extends ResourceConfigList<Item
                 return null;
             }
             return super.getSimpleValue(targetKey, true);
-        }
-
-        @Override
-        protected Function<ItemStack, Boolean> getMetaValue(ResourceLocation key, int metadata, @Nullable Boolean disable) {
-            if(Boolean.TRUE.equals(disable)) {
-                return null;
-            }
-            return super.getMetaValue(key, metadata, true);
         }
 
         @Override

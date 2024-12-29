@@ -5,8 +5,9 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
-import icbm.classic.prefab.tile.BlockICBM;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -14,7 +15,8 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -23,61 +25,35 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/15/2018.
  */
-public class BlockCruiseLauncher extends BlockICBM
+public class BlockCruiseLauncher extends Block
 {
     public BlockCruiseLauncher()
     {
-        super("cruiseLauncher");
-        this.blockHardness = 10f;
-        this.blockResistance = 10f;
-        this.dropInventory = true;
+        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+        //TODO set voxel shape
     }
 
     @Override
-    public boolean canConnectRedstone(BlockState state, IBlockAccess world, BlockPos pos, @Nullable Direction side)
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side)
     {
         return true;
     }
 
     @Override
-    public boolean isOpaqueCube(BlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(BlockState state)
-    {
-        return false;
-    }
-
-    @Override
     public BlockRenderType getRenderType(BlockState state)
     {
-        return BlockRenderType.MODEL;
-    }
-
-    @Override
-    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, Direction side)
-    {
-        return super.canPlaceBlockOnSide(worldIn, pos, side);
-    }
-
-    @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
-        return super.canPlaceBlockAt(worldIn, pos);
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
         return new TileCruiseLauncher();
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
     {
         if (!world.isRemote)
         {
@@ -97,13 +73,14 @@ public class BlockCruiseLauncher extends BlockICBM
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, BlockState state)
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
     {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof ILauncherComponent)
         {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
-        super.breakBlock(world, pos, state);
+        super.onReplaced(state, world, pos, newState, isMoving);
+        //TODO drop inventory
     }
 }

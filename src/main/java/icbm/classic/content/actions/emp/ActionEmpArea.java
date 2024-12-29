@@ -22,41 +22,44 @@ import lombok.experimental.Accessors;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.INBT;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
-@Getter @Setter
-public class ActionEmpArea extends ActionBase
-{
+@Getter
+@Setter
+public class ActionEmpArea extends ActionBase {
     static final List<ActionField> SUPPORTED_FIELDS = new ArrayList<>(Collections.singleton(ActionFields.AREA_SIZE));
     @Accessors(chain = true)
     private int size = 1;
-    
+
     public ActionEmpArea(World world, Vec3d vec3d, IActionSource source, IActionData actionData) {
         super(world, vec3d, source, actionData);
     }
 
     @Override
     public <VALUE, TAG extends INBT> VALUE getValue(ActionField<VALUE, TAG> key) {
-        if(key == ActionFields.AREA_SIZE) {
-            return (VALUE) ActionFields.AREA_SIZE.cast((float)size);
+        if (key == ActionFields.AREA_SIZE) {
+            return (VALUE) ActionFields.AREA_SIZE.cast((float) size);
         }
         return null;
     }
-    
+
     @Override
     public List<ActionField> getFields() {
         return SUPPORTED_FIELDS;
@@ -69,78 +72,59 @@ public class ActionEmpArea extends ActionBase
 
     @Nonnull
     @Override
-    public IActionStatus doAction()
-    {
-        if (!getWorld().isRemote)
-        {
-            if (ConfigEMP.ALLOW_TILES)
-            {
+    public IActionStatus doAction() {
+        if (!getWorld().isRemote) {
+            if (ConfigEMP.ALLOW_TILES) {
                 //Loop through cube to effect blocks TODO replace with ray trace system
-                for (int x = (int) -this.size; x < (int) this.size; x++)
-                {
-                    for (int y = (int) -this.size; y < (int) this.size; y++)
-                    {
-                        for (int z = (int) -this.size; z < (int) this.size; z++)
-                        {
+                for (int x = (int) -this.size; x < (int) this.size; x++) {
+                    for (int y = (int) -this.size; y < (int) this.size; y++) {
+                        for (int z = (int) -this.size; z < (int) this.size; z++) {
                             final BlockPos blockPos = this.getBlockPos().add(x, y, z);
 
                             //Do distance check
                             double dist = MathHelper.sqrt(x * x + y * y + z * z);
-                            if (dist > this.size)
-                            {
+                            if (dist > this.size) {
                                 continue;
                             }
 
                             //Apply action on block if loaded
-                            if (getWorld().isBlockLoaded(blockPos))
-                            {
+                            if (getWorld().isBlockLoaded(blockPos)) {
                                 //Generate some effects
-                                if (blockPos.getY() == this.getBlockPos().getY())
-                                {
-                                    getWorld().spawnParticle(EnumParticleTypes.SMOKE_LARGE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
+                                if (blockPos.getY() == this.getBlockPos().getY()) {
+                                    getWorld().addParticle(ParticleTypes.LARGE_SMOKE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
                                 }
 
                                 BlockState iBlockState = getWorld().getBlockState(blockPos);
                                 float powerEntity = 1f;
 
                                 //Fire event to allow canceling action on entity
-                                if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState)))
-                                {
-                                    if (ICBMClassicHelpers.hasEmpHandler(iBlockState))
-                                    {
+                                if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState))) {
+                                    if (ICBMClassicHelpers.hasEmpHandler(iBlockState)) {
                                         //TODO implement
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         TileEntity tileEntity = getWorld().getTileEntity(blockPos);
-                                        if (tileEntity != null)
-                                        {
+                                        if (tileEntity != null) {
                                             boolean doInventory = true;
-                                            if (tileEntity.hasCapability(CapabilityEMP.EMP, null))
-                                            {
-                                                IEMPReceiver receiver = tileEntity.getCapability(CapabilityEMP.EMP, null);
-                                                if (receiver != null)
-                                                {
-                                                    powerEntity = empEntity(tileEntity, powerEntity, receiver);
-                                                    doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
-                                                }
-                                            }
-                                            else if (ConfigEMP.DRAIN_ENERGY_TILES)
-                                            {
+                                            final LazyOptional<IEMPReceiver> empCap = tileEntity.getCapability(CapabilityEMP.EMP);
+                                            if (empCap.isPresent()) {
+                                                final IEMPReceiver receiver = empCap.orElseThrow(IllegalStateException::new);
+                                                powerEntity = empEntity(tileEntity, powerEntity, receiver);
+                                                doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
+
+                                            } else if (ConfigEMP.DRAIN_ENERGY_TILES) {
                                                 IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
-                                                if (energySystem.canSetEnergyDirectly(tileEntity, null))
-                                                {
+                                                if (energySystem.canSetEnergyDirectly(tileEntity, null)) {
                                                     energySystem.setEnergy(tileEntity, null, 0, false);
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     //TODO Spawn tick based effect to drain as much energy as possible over several ticks
                                                 }
                                             }
 
-                                            if (doInventory && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
-                                            {
-                                                powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
+                                            if (doInventory) {
+                                                final LazyOptional<IItemHandler> inv = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+                                                if (inv.isPresent()) {
+                                                    powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
+                                                }
                                             }
                                         }
                                     }
@@ -154,49 +138,40 @@ public class ActionEmpArea extends ActionBase
                 }
             }
 
-            if (ConfigEMP.ALLOW_ENTITY)
-            {
+            if (ConfigEMP.ALLOW_ENTITY) {
                 //Calculate bounds
                 AxisAlignedBB bounds = new AxisAlignedBB(
-                        getPos().getX() - this.size, getPos().getY() - this.size, getPos().getZ() - this.size,
+                    getPos().getX() - this.size, getPos().getY() - this.size, getPos().getZ() - this.size,
                     getPos().getX() + this.size, getPos().getY() + this.size, getPos().getZ() + this.size);
 
                 //Get entities in bounds
                 List<Entity> entities = getWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
                 //Loop entities to apply effects
-                for (Entity entity : entities)
-                {
+                for (Entity entity : entities) {
                     float powerEntity = 1f;
                     //Fire event to allow canceling action on entity
-                    if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity)))
-                    {
+                    if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity))) {
                         boolean doInventory = true;
-                        if (entity.hasCapability(CapabilityEMP.EMP, null))
-                        {
-                            IEMPReceiver receiver = entity.getCapability(CapabilityEMP.EMP, null);
-                            if (receiver != null)
-                            {
-                                powerEntity = empEntity(entity, powerEntity, receiver);
-                                doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.posX, entity.posY, entity.posZ);
-                            }
-                        }
-                        else if (ConfigEMP.DRAIN_ENERGY_ENTITY)
-                        {
+                        final LazyOptional<IEMPReceiver> empCap = entity.getCapability(CapabilityEMP.EMP);
+                        if (empCap.isPresent()) {
+                            final IEMPReceiver receiver = empCap.orElseThrow(IllegalStateException::new);
+                            powerEntity = empEntity(entity, powerEntity, receiver);
+                            doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.posX, entity.posY, entity.posZ);
+                        } else if (ConfigEMP.DRAIN_ENERGY_ENTITY) {
                             IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
-                            if (energySystem.canSetEnergyDirectly(entity, null))
-                            {
+                            if (energySystem.canSetEnergyDirectly(entity, null)) {
                                 energySystem.setEnergy(entity, null, 0, false);
-                            }
-                            else
-                            {
+                            } else {
                                 //TODO Spawn tick based effect to drain as much energy as possible over several ticks
                             }
                         }
 
-                        if (doInventory && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
-                        {
-                            powerEntity = empEntity(entity, powerEntity, new CapabilityEmpInventory.EntityInv(entity));
+                        if (doInventory) {
+                            final LazyOptional<IItemHandler> inv = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+                            if(inv.isPresent()) {
+                                powerEntity = empEntity(entity, powerEntity, new CapabilityEmpInventory.EntityInv(entity));
+                            }
                         }
 
                         //Fire post event to allow hooking EMP action
@@ -213,10 +188,8 @@ public class ActionEmpArea extends ActionBase
         return ActionResponses.COMPLETED;
     }
 
-    protected float empEntity(Entity entity, float powerEntity, IEMPReceiver receiver)
-    {
-        if (receiver != null)
-        {
+    protected float empEntity(Entity entity, float powerEntity, IEMPReceiver receiver) {
+        if (receiver != null) {
             powerEntity = receiver.applyEmpAction(getWorld(), entity.posX, entity.posY, entity.posZ, this, powerEntity, true);
             //TODO spawn effects on entity if items were effected
             //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
@@ -224,10 +197,8 @@ public class ActionEmpArea extends ActionBase
         return powerEntity;
     }
 
-    protected float empEntity(TileEntity entity, float powerEntity, IEMPReceiver receiver)
-    {
-        if (receiver != null)
-        {
+    protected float empEntity(TileEntity entity, float powerEntity, IEMPReceiver receiver) {
+        if (receiver != null) {
             powerEntity = receiver.applyEmpAction(getWorld(), entity.getPos().getX(), entity.getPos().getY(), entity.getPos().getZ(), this, powerEntity, true);
             //TODO spawn effects on entity if items were effected
             //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);

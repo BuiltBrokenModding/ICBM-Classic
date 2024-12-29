@@ -2,16 +2,27 @@ package icbm.classic.lib.network.netty;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.network.IPacket;
+import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
+import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
+import icbm.classic.lib.network.packet.PacketEntityPos;
+import icbm.classic.lib.network.packet.PacketPlayerItem;
+import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
+import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
-import net.minecraftforge.fml.common.network.FMLOutboundHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.EnumMap;
 
@@ -22,7 +33,16 @@ import java.util.EnumMap;
 public class PacketManager
 {
     public final String channel;
-    protected EnumMap<Side, FMLEmbeddedChannel> channelEnumMap;
+
+    private static final String PROTOCOL_VERSION = Integer.toString(1);
+    private static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
+        .named(new ResourceLocation(ICBMConstants.DOMAIN, "main_channel"))
+        .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+        .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+        .networkProtocolVersion(() -> PROTOCOL_VERSION)
+        .simpleChannel();
+
+    private int nextID = 0;
 
     public PacketManager(String channel)
     {
@@ -31,25 +51,24 @@ public class PacketManager
 
     public void init()
     {
-        this.channelEnumMap = NetworkRegistry.INSTANCE.newChannel(channel, new PacketEncoderDecoderHandler(), new PacketInboundHandler());
+        HANDLER.registerMessage(nextID++, PacketLambdaTile.class, PacketLambdaTile::encode, PacketLambdaTile::decode, PacketLambdaTile::handle);
+        HANDLER.registerMessage(nextID++, PacketLambdaEntity.class, PacketLambdaEntity::encode, PacketLambdaEntity::decode, PacketLambdaEntity::handle);
+
+        addPacket(PacketPlayerItem.class);
+        addPacket(PacketSpawnAirParticle.class);
+        addPacket(PacketSpawnBlockExplosion.class);
+        addPacket(PacketEntityPos.class);
     }
 
     /**
      * @param packet the packet to send to the player
      * @param player the player MP object
      */
-    public void sendToPlayer(IPacket packet, ServerPlayerEntity player)
+    public <MSG> void sendToPlayer(MSG packet, ServerPlayerEntity player)
     {
-        //Null check is for JUnit
-        if (channelEnumMap != null)
+        if (!(player instanceof FakePlayer))
         {
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
-            this.channelEnumMap.get(Side.SERVER).writeAndFlush(packet);
-        }
-        else
-        {
-            ICBMClassic.logger().error("Packet sent to player[" + player + "]");
+            HANDLER.sendTo(packet, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 
@@ -57,24 +76,14 @@ public class PacketManager
      * @param packet the packet to send to the players in the dimension
      * @param dimId  the dimension ID to send to.
      */
-    public void sendToAllInDimension(IPacket packet, int dimId)
+    public <MSG> void sendToAllInDimension(MSG packet, DimensionType dimId)
     {
-        //Null check is for JUnit
-        if (channelEnumMap != null)
-        {
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DIMENSION);
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(dimId);
-            this.channelEnumMap.get(Side.SERVER).writeAndFlush(packet);
-        }
-        else
-        {
-            ICBMClassic.logger().error("Packet sent to dim[" + dimId + "]");
-        }
+        HANDLER.send(PacketDistributor.DIMENSION.with(() -> dimId), packet);
     }
 
-    public void sendToAllInDimension(IPacket packet, World world)
+    public <MSG> void sendToAllInDimension(MSG packet, World world)
     {
-        sendToAllInDimension(packet, world.provider.getDimension());
+        sendToAllInDimension(packet, world.dimension.getType());
     }
 
     /**
@@ -82,74 +91,45 @@ public class PacketManager
      *
      * @param packet the packet to send.
      */
-    public void sendToAll(IPacket packet)
+    public <MSG> void sendToAll(MSG packet)
     {
-        //Null check is for JUnit
-        if (channelEnumMap != null)
-        {
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALL);
-            this.channelEnumMap.get(Side.SERVER).writeAndFlush(packet);
-        }
-        else
-        {
-            ICBMClassic.logger().error("Packet sent to all");
-        }
+        HANDLER.send(PacketDistributor.ALL.noArg(), packet);
     }
 
-    public void sendToAllAround(IPacket message, NetworkRegistry.TargetPoint point)
+    public <MSG> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
     {
-        //Null check is for JUnit
-        if (channelEnumMap != null)
-        {
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
-            this.channelEnumMap.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(point);
-            this.channelEnumMap.get(Side.SERVER).writeAndFlush(message);
-        }
-        else
-        {
-            ICBMClassic.logger().error("Packet sent to target point: " + point);
-        }
+        HANDLER.send(PacketDistributor.NEAR.with(() -> point), message);
     }
 
-    public void sendToAllAround(IPacket message, IWorldPosition point, double range)
+    public <MSG> void sendToAllAround(MSG message, IWorldPosition point, double range)
     {
         sendToAllAround(message, point.world(), point.x(), point.y(), point.z(), range);
     }
 
-    public void sendToAllAround(IPacket message, World world, IPos3D point, double range)
+    public <MSG> void sendToAllAround(MSG message, World world, IPos3D point, double range)
     {
         sendToAllAround(message, world, point.x(), point.y(), point.z(), range);
     }
 
-    public void sendToAllAround(IPacket message, TileEntity tile)
+    public <MSG> void sendToAllAround(MSG message, TileEntity tile)
     {
         sendToAllAround(message, tile, 64);
     }
 
-    public void sendToAllAround(IPacket message, TileEntity tile, double range)
+    public <MSG> void sendToAllAround(MSG message, TileEntity tile, double range)
     {
         sendToAllAround(message, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), range);
     }
 
-    public void sendToAllAround(IPacket message, World world, double x, double y, double z, double range)
+    public <MSG> void sendToAllAround(MSG message, World world, double x, double y, double z, double range)
     {
         if (world != null)
-            sendToAllAround(message, new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, range));
+            sendToAllAround(message, new PacketDistributor.TargetPoint(null, x, y, z, range, world.dimension.getType()));
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void sendToServer(IPacket packet)
+    public <MSG> void sendToServer(MSG packet)
     {
-        //Null check is for JUnit
-        if (channelEnumMap != null)
-        {
-            this.channelEnumMap.get(Side.CLIENT).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
-            this.channelEnumMap.get(Side.CLIENT).writeAndFlush(packet);
-        }
-        else
-        {
-            ICBMClassic.logger().error("Packet sent to server");
-        }
+        HANDLER.sendToServer(packet);
     }
 }
 

@@ -1,10 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
-import icbm.classic.ICBMClassic;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;

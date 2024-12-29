@@ -15,14 +15,8 @@ import icbm.classic.content.blocks.radarstation.BlockRadarStation;
 import icbm.classic.content.radioactive.BlockRadioactive;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GlassBlock;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -48,7 +42,7 @@ public class BlockReg {
     public static final RegistryObject<Block> EMP_TOWER_BASE = BLOCKS.register("emp_tower_base", BlockEmpTowerBase::new);
     public static final RegistryObject<Block> EMP_TOWER_COIL = BLOCKS.register("emp_tower_coil", BlockEmpTowerCoil::new);
 
-    public static final RegistryObject<Block> RADAR_STATION = BLOCKS.register("radar_station", BlockRadarStation::new);
+    public static final RegistryObject<Block> RADAR_SCREEN = BLOCKS.register("radar_screen", BlockRadarStation::new);
 
     public static final RegistryObject<Block> LAUNCHER_FRAME = BLOCKS.register("launcher_frame", BlockLaunchFrame::new);
     public static final RegistryObject<Block> LAUNCHER_CONNECTOR = BLOCKS.register("launcher_connector", BlockLaunchConnector::new);

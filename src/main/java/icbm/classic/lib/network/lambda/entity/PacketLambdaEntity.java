@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
@@ -11,17 +12,23 @@ import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Data
 @NoArgsConstructor
-public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TARGET>> {
+public class PacketLambdaEntity<TARGET> {
 
     public static final String ERROR_HANDLING = "unexpected error writing to Entity(%s)\nEntity: %s";
     public static final String ERROR_NOT_SERVER = "Received packet server side but world(%s) is not WorldServer";
@@ -41,8 +48,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
         this.writers = codex.encodeAsWriters(target);
     }
 
-    @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+    public void encode(PacketBuffer buffer) {
         // Write general data
         buffer.writeInt(codex.getId());
         buffer.writeInt(entityId);
@@ -52,29 +58,44 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
         writers.forEach(c -> c.accept(buffer));
     }
 
-    @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+    public static PacketLambdaEntity decode(PacketBuffer buffer) {
+        final PacketLambdaEntity packet = new PacketLambdaEntity();
 
         // Read general data
         final int codexId = buffer.readInt();
-        codex = PacketCodexReg.get(codexId);
-        if(codex == null) {
+        packet.codex = PacketCodexReg.get(codexId);
+        if(packet.codex == null) {
             ICBMClassic.logger().error(String.format("PacketEntity: Failed to locate codex(%s)", codexId));
-            return;
+            return null;
         }
 
-        entityId = buffer.readInt();
-        dimensionId = buffer.readInt();
+        packet.entityId = buffer.readInt();
+        packet.dimensionId = buffer.readInt();
 
         // Read data for builder
-        setters = codex.decodeAsSetters(buffer);
+        packet.setters = packet.codex.decodeAsSetters(buffer);
+
+        return packet;
+
     }
 
-    @Override
+    public static void handle(PacketLambdaEntity packet, Supplier<NetworkEvent.Context> contextSupplier) {
+        switch (contextSupplier.get().getDirection()) {
+            case PLAY_TO_CLIENT:
+                contextSupplier.get().enqueueWork(() -> packet.handleClientSide(Minecraft.getInstance(), Objects.requireNonNull(contextSupplier.get().getSender())));
+                break;
+            case PLAY_TO_SERVER:
+                contextSupplier.get().enqueueWork(() -> packet.handleServerSide(Objects.requireNonNull(contextSupplier.get().getSender())));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + contextSupplier.get().getDirection());
+        }
+    }
+
     @OnlyIn(Dist.CLIENT)
     public void handleClientSide(Minecraft minecraft, PlayerEntity player)
     {
-        final int playerDim = player.world.provider.getDimension();
+        final int playerDim = player.world.dimension.getType().getId();
 
         // Normal, player may have changed dim between network calls
         if (playerDim != getDimensionId()) {
@@ -85,13 +106,12 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
 
         final World world = player.world;
 
-        minecraft.addScheduledTask(() -> loadDataIntoTile(world, player));
+        minecraft.enqueue(() -> loadDataIntoTile(world, player));
     }
 
-    @Override
     public void handleServerSide(PlayerEntity player)
     {
-        final int playerDim = player.world.provider.getDimension();
+        final int playerDim = player.world.dimension.getType().getId();
 
         // Normal, player may have changed dim between network calls
         if (playerDim != getDimensionId()) {
@@ -108,7 +128,7 @@ public class PacketLambdaEntity<TARGET> implements IPacket<PacketLambdaEntity<TA
         }
 
         final ServerWorld world = (ServerWorld) player.world;
-        world.addScheduledTask(() -> loadDataIntoTile(world, player));
+        world.getServer().execute(() -> loadDataIntoTile(world, player));
     }
 
     private void loadDataIntoTile(World world, PlayerEntity player) {

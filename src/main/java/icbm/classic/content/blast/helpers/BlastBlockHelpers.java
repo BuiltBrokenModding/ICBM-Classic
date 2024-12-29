@@ -1,7 +1,7 @@
 package icbm.classic.content.blast.helpers;
 
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraftforge.fluids.IFluidBlock;
 
 /**
@@ -22,7 +22,7 @@ public final class BlastBlockHelpers
      */
     public static boolean isFluid(BlockState blockState)
     {
-        return blockState.getBlock() instanceof BlockLiquid || blockState.getBlock() instanceof IFluidBlock;
+        return blockState.getBlock() instanceof FlowingFluidBlock || blockState.getBlock() instanceof IFluidBlock;
     }
 
     /**
@@ -33,6 +33,6 @@ public final class BlastBlockHelpers
      */
     public static boolean isFlowingWater(BlockState blockState)
     {
-        return blockState.getBlock() instanceof BlockLiquid && blockState.getValue(BlockLiquid.LEVEL) < 7;
+        return blockState.getBlock() instanceof FlowingFluidBlock && blockState.get(FlowingFluidBlock.LEVEL) < 7;
     }
 }
