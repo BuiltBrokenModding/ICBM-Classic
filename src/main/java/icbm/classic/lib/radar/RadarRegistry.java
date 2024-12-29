@@ -177,9 +177,9 @@ public final class RadarRegistry
     @SubscribeEvent
     public void worldUpdateTick(TickEvent.WorldTickEvent event)
     {
-        if (event.world.provider != null && event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END)
+        if (event.world != null && event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END)
         {
-            int dim = event.world.provider.getDimension();
+            int dim = event.world.getDimension().getType().getId();
             if (RADAR_MAPS.containsKey(dim))
             {
                 RadarMap map = getRadarMapForDim(dim);
@@ -198,9 +198,9 @@ public final class RadarRegistry
     @SubscribeEvent
     public void worldUnload(WorldEvent.Unload event)
     {
-        if (event.getWorld().provider != null)
+        if (event.getWorld() != null)
         {
-            int dim = event.getWorld().provider.getDimension();
+            int dim = event.getWorld().getDimension().getType().getId();
             if (RADAR_MAPS.containsKey(dim))
             {
                 getRadarMapForDim(dim).unloadAll();

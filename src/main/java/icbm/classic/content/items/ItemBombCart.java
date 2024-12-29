@@ -14,7 +14,10 @@ import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.properties.RailShape;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,10 +28,11 @@ import java.util.List;
 
 public class ItemBombCart extends ItemBase
 {
-    public ItemBombCart()
+    private final IExplosiveData data;
+    public ItemBombCart(IExplosiveData data)
     {
-        this.setMaxStackSize(3);
-        this.setHasSubtypes(true);
+        super(new Properties().maxStackSize(3));
+        this.data = data;
     }
 
     @Override
@@ -43,42 +47,28 @@ public class ItemBombCart extends ItemBase
         return capabilityExplosive;
     }
 
-    /**
-     * Callback for item usage. If the item does something special on right clicking, he will have
-     * one of those. Return True if something happen and false if it don't. This is for ITEMS, not
-     * BLOCKS
-     */
     @Override
-    public ActionResultType onItemUse(PlayerEntity player, World worldIn, BlockPos pos, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
-    {
-        BlockState iblockstate = worldIn.getBlockState(pos);
-
-        if (!AbstractRailBlock.isRailBlock(iblockstate))
-        {
+    public ActionResultType onItemUse(ItemUseContext context) {
+        World world = context.getWorld();
+        BlockPos blockpos = context.getPos();
+        BlockState blockstate = world.getBlockState(blockpos);
+        if (!blockstate.isIn(BlockTags.RAILS)) {
             return ActionResultType.FAIL;
-        }
-        else
-        {
-            ItemStack itemstack = player.getHeldItem(hand);
-
-            if (!worldIn.isRemote)
-            {
-                AbstractRailBlock.EnumRailDirection railBlock = iblockstate.getBlock() instanceof AbstractRailBlock ? ((AbstractRailBlock) iblockstate.getBlock()).getRailDirection(worldIn, pos, iblockstate, null) : AbstractRailBlock.EnumRailDirection.NORTH_SOUTH;
+        } else {
+            ItemStack itemstack = context.getItem();
+            if (!world.isRemote) {
+                RailShape railshape = blockstate.getBlock() instanceof AbstractRailBlock ? ((AbstractRailBlock)blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null) : RailShape.NORTH_SOUTH;
                 double d0 = 0.0D;
-
-                if (railBlock.isAscending())
-                {
+                if (railshape.isAscending()) {
                     d0 = 0.5D;
                 }
 
-                AbstractMinecartEntity entityminecart = new EntityBombCart(worldIn, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.0625D + d0, (double) pos.getZ() + 0.5D, itemstack);
-
-                if (itemstack.hasDisplayName())
-                {
-                    entityminecart.setCustomNameTag(itemstack.getDisplayName());
+                AbstractMinecartEntity abstractminecartentity = new EntityBombCart(world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D, itemstack);
+                if (itemstack.hasDisplayName()) {
+                    abstractminecartentity.setCustomName(itemstack.getDisplayName());
                 }
 
-                worldIn.spawnEntity(entityminecart);
+                world.addEntity(abstractminecartentity);
             }
 
             itemstack.shrink(1);
@@ -86,42 +76,7 @@ public class ItemBombCart extends ItemBase
         }
     }
 
-    @Override
-    public int getMetadata(int damage)
-    {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack itemstack)
-    {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
-        if (data != null)
-        {
-            return "bombcart." + data.getRegistryKey();
-        }
-        return "bombcart";
-    }
-
-    @Override
-    public String getUnlocalizedName()
-    {
-        return "bombcart";
-    }
-
-    @Override
-    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> items)
-    {
-        if (tab == getCreativeTab() || tab == ItemGroup.SEARCH)
-        {
-            for (int id : ICBMClassicAPI.EX_MINECART_REGISTRY.getExplosivesIDs())
-            {
-                items.add(new ItemStack(this, 1, id));
-            }
-        }
-    }
-
-    @Override
+   /* @Override
     protected boolean hasDetailedInfo(ItemStack stack, PlayerEntity player)
     {
         return true;
@@ -131,6 +86,6 @@ public class ItemBombCart extends ItemBase
     protected void getDetailedInfo(ItemStack stack, PlayerEntity player, List list)
     {
         //TODO change over to a hook
-        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
-    }
+        //((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
+    }*/
 }

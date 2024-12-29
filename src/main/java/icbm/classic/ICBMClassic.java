@@ -111,6 +111,7 @@ public class ICBMClassic
 
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         BlockReg.BLOCKS.register(modBus);
+        ItemReg.ITEMS.register(modBus);
         TileReg.TYPES.register(modBus);
     }
 

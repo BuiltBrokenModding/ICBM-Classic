@@ -25,11 +25,12 @@ public class ItemGrenade extends ItemBase
 {
     public static final int MAX_USE_DURATION = 3 * 20; //TODO config
 
-    public ItemGrenade()
+    private final IExplosiveData data;
+
+    public ItemGrenade(IExplosiveData data)
     {
-        this.setMaxStackSize(16);
-        this.setMaxDamage(0);
-        this.setHasSubtypes(true);
+        super(new Properties().maxStackSize(16));
+        this.data = data;
     }
 
     @Override
@@ -90,30 +91,7 @@ public class ItemGrenade extends ItemBase
         }
     }
 
-    @Override
-    public int getMetadata(int damage)
-    {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack itemstack)
-    {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
-        if (data != null)
-        {
-            return "grenade." + data.getRegistryKey();
-        }
-        return "grenade";
-    }
-
-    @Override
-    public String getUnlocalizedName()
-    {
-        return "grenade";
-    }
-
-    @Override
+    /*@Override
     protected boolean hasDetailedInfo(ItemStack stack, PlayerEntity player)
     {
         return true;
@@ -123,7 +101,7 @@ public class ItemGrenade extends ItemBase
     protected void getDetailedInfo(ItemStack stack, PlayerEntity player, List list)
     {
         ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
-    }
+    }*/
 
     @Override
     public void getSubItems(ItemGroup tab, NonNullList<ItemStack> list)

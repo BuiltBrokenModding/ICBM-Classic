@@ -9,13 +9,13 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -29,63 +29,9 @@ import java.util.List;
 public class ItemBlockAbstract extends BlockItem
 {
     //Make sure to mirror all changes to other abstract class
-    public ItemBlockAbstract(Block p_i45328_1_)
+    public ItemBlockAbstract(Block p_i45328_1_, Item.Properties builder)
     {
-        super(p_i45328_1_);
-    }
-
-    @Override
-    public ActionResultType onItemUse(PlayerEntity player, World worldIn, BlockPos pos, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
-    {
-        BlockState iblockstate = worldIn.getBlockState(pos);
-        Block block = iblockstate.getBlock();
-
-        if (!block.isReplaceable(worldIn, pos))
-        {
-            pos = pos.offset(facing);
-        }
-
-        ItemStack itemstack = player.getHeldItem(hand);
-
-        if (!itemstack.isEmpty() && canPlace(player, worldIn, pos, itemstack, facing, hitX, hitY, hitZ))
-        {
-            int i = this.getMetadata(itemstack.getMetadata());
-            BlockState iblockstate1 = this.block.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player, hand);
-
-            if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1))
-            {
-                iblockstate1 = worldIn.getBlockState(pos);
-                SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
-                worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                itemstack.shrink(1);
-            }
-
-            return ActionResultType.SUCCESS;
-        }
-        else
-        {
-            return ActionResultType.FAIL;
-        }
-    }
-
-    /**
-     * Called to check if the player can place the block
-     * <p>
-     * Allows for easy override of placement checks
-     *
-     * @param player
-     * @param worldIn
-     * @param pos
-     * @param itemstack
-     * @param facing
-     * @param hitX
-     * @param hitY
-     * @param hitZ
-     * @return
-     */
-    protected boolean canPlace(PlayerEntity player, World worldIn, BlockPos pos, ItemStack itemstack, Direction facing, float hitX, float hitY, float hitZ)
-    {
-        return player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(this.block, pos, false, facing, (Entity) null);
+        super(p_i45328_1_, builder);
     }
 
     @Override

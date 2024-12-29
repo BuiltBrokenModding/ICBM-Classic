@@ -24,13 +24,8 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public class ItemRemoteDetonator extends ItemRadio
 {
-    public ItemRemoteDetonator()
-    {
-        this.setName("remoteDetonator");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setHasSubtypes(true);
-        this.setMaxStackSize(1);
-        this.setNoRepair();
+    public ItemRemoteDetonator(Properties p_i48487_1_) {
+        super(p_i48487_1_);
     }
 
     @Override
@@ -49,7 +44,7 @@ public class ItemRemoteDetonator extends ItemRadio
     }
 
     @Override
-    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, PlayerEntity player)
+    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IWorldReader world, BlockPos pos, PlayerEntity player)
     {
         return true;
     }

@@ -11,6 +11,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.StringTextComponent;
@@ -21,10 +22,10 @@ public class ItemDefuser extends ItemICBMElectrical
 {
     private static final int ENERGY_COST = 2000;
 
-    public ItemDefuser()
-    {
-        super("defuser");
+    public ItemDefuser(Properties properties) {
+        super(properties);
     }
+
 
     /**
      * Called when the player Left Clicks (attacks) an entity. Processed before damage is done, if

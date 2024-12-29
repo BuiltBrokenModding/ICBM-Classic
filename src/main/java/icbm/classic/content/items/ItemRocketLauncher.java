@@ -49,9 +49,9 @@ public class ItemRocketLauncher extends ItemICBMElectrical
 
     private final boolean fireUpDown;
 
-    public ItemRocketLauncher(boolean fireUpDown)
+    public ItemRocketLauncher(Item.Properties properties, boolean fireUpDown)
     {
-        super(fireUpDown ? "ballisticLauncher" : "rocketLauncher"); //TODO move to set name
+        super(properties); //TODO move to set name
         this.fireUpDown = fireUpDown;
         this.addPropertyOverride(new ResourceLocation("pulling"), new IItemPropertyGetter()
         {

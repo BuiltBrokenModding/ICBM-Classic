@@ -3,6 +3,7 @@ package icbm.classic.content.items;
 import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.UseAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -10,8 +11,11 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class ItemAntidote extends ItemBase
+public class ItemAntidote extends Item
 {
+    public ItemAntidote(Properties properties) {
+        super(properties);
+    }
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World world, LivingEntity entityLiving)

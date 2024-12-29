@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,15 +33,11 @@ public class MissileEventHandler
     @SubscribeEvent
     public static void onEntityMount(EntityMountEvent event)
     {
-        if (event.isDismounting()
-                && event.getEntityBeingMounted().hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)
-                && event.getEntityMounting() instanceof PlayerEntity)
+        if (event.isDismounting() && event.getEntityMounting() instanceof PlayerEntity)
         {
-            IMissile missile = event.getEntityBeingMounted().getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
-            if(missile != null)
-            {
+            event.getEntityBeingMounted().getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null).ifPresent(missile -> {
                 event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop(missile, (PlayerEntity) event.getEntityMounting())));
-            }
+            });
         }
     }
 
@@ -56,7 +53,7 @@ public class MissileEventHandler
             {
                 // Collect missiles we are about to unload, using list to avoid concurrent mod from radar remove TODO have radar system track removals in list and apply next tick
                 final List<EntityExplosiveMissile> unloading = new LinkedList();
-                map.collectEntitiesInChunk(chunk.x, chunk.z, (radarEntity -> {
+                map.collectEntitiesInChunk(chunk.getPos().x, chunk.getPos().z, (radarEntity -> {
                     if (radarEntity.entity instanceof EntityExplosiveMissile) //TODO rewrite to work on any missile via capability system
                     {
                         unloading.add((EntityExplosiveMissile) radarEntity.entity);

@@ -1,7 +1,6 @@
 package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IGPSData;
@@ -26,13 +25,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -45,14 +42,10 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver
 {
     public static final double MAX_RANGE = 200; //TODO config
 
-    public ItemRadarGun()
-    {
-        this.setMaxStackSize(1);
-        this.setHasSubtypes(true);
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setUnlocalizedName(ICBMConstants.PREFIX + "radarGun");
-        this.setRegistryName(ICBMConstants.DOMAIN, "radarGun");
+    public ItemRadarGun(Properties p_i48487_1_) {
+        super(p_i48487_1_);
     }
+
 
     @Override
     @Nullable
@@ -114,10 +107,9 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver
         {
             if (!world.isRemote) {
                 ItemStack stack = player.getHeldItem(handIn);
-                stack.setTagCompound(null);
-                stack.setItemDamage(0);
+                stack.setTag(null);
                 LanguageUtility.addChatToPlayer(player, "gps.cleared.name");
-                player.inventoryContainer.detectAndSendChanges();
+                player.container.detectAndSendChanges();
             }
             return new ActionResult<ItemStack>(ActionResultType.SUCCESS, player.getHeldItem(handIn));
         }
@@ -146,10 +138,9 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver
 
         if (player.isSneaking())
         {
-            stack.setTagCompound(null);
-            stack.setItemDamage(0);
+            stack.setTag(null);
             LanguageUtility.addChatToPlayer(player, "gps.cleared.name");
-            player.inventoryContainer.detectAndSendChanges();
+            player.container.detectAndSendChanges();
             return ActionResultType.SUCCESS;
         }
         else if(onTrace(new Vec3d(pos.getX() + hitX, pos.getY() + hitX, pos.getZ() + hitZ), player, stack)) {
@@ -168,7 +159,7 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver
         final Hand hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
         final Vec3d pos = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
         if(player.world instanceof ServerWorld) {
-            ((ServerWorld) player.world).addScheduledTask(() -> {
+            ((ServerWorld) player.world).getServer().execute(() -> {
                 onTrace(pos, player, player.getHeldItem(hand));
             });
         }

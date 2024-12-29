@@ -11,14 +11,17 @@ import icbm.classic.lib.actions.status.ActionResponses;
 import icbm.classic.lib.actions.status.MissingFieldStatus;
 import icbm.classic.lib.projectile.EntityProjectile;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -47,21 +50,14 @@ public class ActionSpawnEntity extends ActionBase {
         if (entityID == null) {
             return new MissingFieldStatus().setSource("ActionSpawnEntity").setField("entityId");
         }
-        final Entity entity = EntityList.createEntityByIDFromName(entityID, getWorld());
+        final Entity entity = ForgeRegistries.ENTITIES.getValue(entityID).create(getWorld());
         if (entity == null) {
             return new MissingFieldStatus().setSource("ActionSpawnEntity#doAction()").setField("entityInstance");
         }
 
         entity.setPosition(getPosition().x, getPosition().y, getPosition().z);
         if (motion != null) {
-            if(entity instanceof EntityProjectile) {
-                ((EntityProjectile<?>) entity).setMotionVector(motion.x, motion.y, motion.z);
-            }
-            else {
-                entity.motionX = motion.x;
-                entity.motionY = motion.y;
-                entity.motionZ = motion.z;
-            }
+            entity.setMotion(motion.x, motion.y, motion.z);
         }
 
         // Apply yaw
@@ -86,15 +82,15 @@ public class ActionSpawnEntity extends ActionBase {
         if (entityData != null) {
             final UUID uuid = entity.getUniqueID();
 
-            CompoundNBT mergedData = entity.writeToNBT(new CompoundNBT());
+            CompoundNBT mergedData = entity.writeWithoutTypeId(new CompoundNBT());
             mergedData.merge(entityData);
-            entity.readFromNBT(mergedData);
+            entity.read(mergedData);
 
             entity.setUniqueId(uuid);
 
         }
 
-        if (!getWorld().spawnEntity(entity)) {
+        if (!getWorld().addEntity(entity)) {
             return ActionResponses.ENTITY_SPAWN_FAILED;
         }
         return ActionResponses.COMPLETED;

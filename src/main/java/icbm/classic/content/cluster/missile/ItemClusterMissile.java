@@ -23,9 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemClusterMissile extends ItemBase {
-    public ItemClusterMissile() {
-        this.setMaxDamage(0);
-        this.setMaxStackSize(1);
+
+
+    public ItemClusterMissile(Properties p_i48487_1_) {
+        super(p_i48487_1_);
     }
 
     @Override

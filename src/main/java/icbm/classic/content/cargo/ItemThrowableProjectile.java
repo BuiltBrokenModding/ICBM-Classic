@@ -44,14 +44,13 @@ public class ItemThrowableProjectile extends ItemBase {
     public static final TranslationTextComponent ERROR_THROWING_INTERFACE = new TranslationTextComponent("error.icbmclassic:projectile.throwing.interface", IProjectileThrowable.class.getSimpleName());
     public static final TranslationTextComponent ERROR_THROWING_TYPE = new TranslationTextComponent("error.icbmclassic:projectile.throwing.type", ProjectileTypes.TYPE_THROWABLE.getKey());
 
+    public ItemThrowableProjectile(Properties p_i48487_1_) {
+        super(p_i48487_1_);
+    }
+
     // TODO split into empty crafting item and version holding item
     // TODO add a damaged/used version to drop after deploying cargo
 
-    public ItemThrowableProjectile() {
-        this.setMaxStackSize(16);
-        this.setMaxDamage(0);
-        this.setHasSubtypes(true);
-    }
 
     @Override
     @Nullable

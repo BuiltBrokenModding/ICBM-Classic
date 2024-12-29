@@ -17,6 +17,10 @@ import net.minecraft.world.World;
 
 public class ItemRadio extends ItemBase {
 
+    public ItemRadio(Properties p_i48487_1_) {
+        super(p_i48487_1_);
+    }
+
     @Override
     public ActionResultType onItemUseFirst(PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, Hand hand)
     {

@@ -22,11 +22,11 @@ import java.util.List;
 
 public class ItemMissile extends ItemBase
 {
-    public ItemMissile()
-    {
-        this.setMaxDamage(0);
-        this.setHasSubtypes(true);
-        this.setMaxStackSize(1);
+    private final IExplosiveData data;
+
+    public ItemMissile(IExplosiveData data, Properties p_i48487_1_) {
+        super(p_i48487_1_);
+        this.data = data;
     }
 
     @Override
@@ -40,49 +40,6 @@ public class ItemMissile extends ItemBase
     }
 
     @Override
-    public int getMetadata(int damage)
-    {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack itemstack)
-    {
-        if (itemstack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
-        {
-            final IExplosive explosive = itemstack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
-                final IExplosiveData data = explosive.getExplosiveData();
-                if (data != null)
-                {
-                    return "missile." + data.getRegistryKey();
-                }
-            }
-        }
-        return "missile";
-    }
-
-    @Override
-    public String getUnlocalizedName()
-    {
-        return "missile";
-    }
-
-    @Override
-    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> items)
-    {
-        if (tab == getCreativeTab() || tab == ItemGroup.SEARCH)
-        {
-            for (int id : ICBMClassicAPI.EX_MISSILE_REGISTRY.getExplosivesIDs())
-            {
-                items.add(new ItemStack(this, 1, id));
-            }
-            items.add(new ItemStack(this, 1, 24)); //TODO fix work around for missile module not counting as a missile
-        }
-    }
-
-    @Override
     protected boolean hasDetailedInfo(ItemStack stack, PlayerEntity player)
     {
         return true;
@@ -92,7 +49,7 @@ public class ItemMissile extends ItemBase
     protected void getDetailedInfo(ItemStack stack, PlayerEntity player, List list)
     {
         //TODO add hook
-        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
+        //((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
         final IExplosive explosive = ICBMClassicHelpers.getExplosive(stack);
         if(explosive != null) { //TODO make shift-key display?
             explosive.collectInformation(list::add);

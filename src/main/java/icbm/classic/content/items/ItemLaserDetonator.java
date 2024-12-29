@@ -24,7 +24,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -40,14 +40,10 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
 
     public static final int RANGE = 200;
 
-    public ItemLaserDetonator()
-    {
-        this.setName("laserDetonator");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setHasSubtypes(true);
-        this.setMaxStackSize(1);
-        this.setNoRepair();
+    public ItemLaserDetonator(Properties p_i48487_1_) {
+        super(p_i48487_1_);
     }
+
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn)

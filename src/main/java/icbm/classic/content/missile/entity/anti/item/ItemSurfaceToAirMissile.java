@@ -1,6 +1,7 @@
 package icbm.classic.content.missile.entity.anti.item;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.item.ItemStack;
@@ -12,12 +13,10 @@ import javax.annotation.Nullable;
  * Previously called Anti-Ballastic (AB) Missile in older version of the mod. Now Surface to Air Missile (SAM) with similar
  * purpose to attack enemy missiles. However, with expanded logic to target any entity found in the air.
  */
-public class ItemSurfaceToAirMissile extends ItemICBMBase
+public class ItemSurfaceToAirMissile extends ItemBase
 {
-    public ItemSurfaceToAirMissile()
-    {
-        super("surface_to_air_missile");
-        this.setMaxStackSize(1);
+    public ItemSurfaceToAirMissile(Properties p_i48487_1_) {
+        super(p_i48487_1_);
     }
 
     @Override
