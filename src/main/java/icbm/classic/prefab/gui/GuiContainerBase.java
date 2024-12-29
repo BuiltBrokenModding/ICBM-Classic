@@ -1,5 +1,6 @@
 package icbm.classic.prefab.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
@@ -8,18 +9,17 @@ import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class GuiContainerBase extends ContainerScreen
+public abstract class GuiContainerBase<T extends Container> extends ContainerScreen<T>
 {
     public static final ResourceLocation COMPONENTS_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
 
@@ -31,17 +31,17 @@ public abstract class GuiContainerBase extends ContainerScreen
     /** Debug toogle to render text for the ID and inventory ID for a slot */
     public boolean renderSlotDebugIDs = false;
 
-    public GuiContainerBase(Container container)
+    public GuiContainerBase(T container, PlayerInventory inv, ITextComponent titleIn)
     {
-        super(container);
+        super(container, inv, titleIn);
     }
 
     public abstract ResourceLocation getBackground();
 
     @Override
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
         this.buttonList.clear();
         this.components.clear();
     }
@@ -67,12 +67,12 @@ public abstract class GuiContainerBase extends ContainerScreen
 
     protected void drawString(String str, int x, int y, int color)
     {
-        Minecraft.getMinecraft().fontRenderer.drawString(str, x, y, color);
+        this.font.drawString(str, x, y, color);
     }
 
     protected void drawStringCentered(String str, int x, int y, int color)
     {
-        drawString(str, x - (Minecraft.getMinecraft().fontRenderer.getStringWidth(str) / 2), y, color);
+        drawString(str, x - (this.font.getStringWidth(str) / 2), y, color);
     }
 
     protected <T extends IGuiComponent> T addComponent(T field) {
@@ -192,65 +192,6 @@ public abstract class GuiContainerBase extends ContainerScreen
         }
     }
 
-    /**
-     * Draws a rectangle with an increased or decreased width value
-     * <p>
-     * This works by duplicating the middle (3, width - 3) of the rectangle
-     *
-     * @param x        - render pos
-     * @param y        - render pos
-     * @param u        - x pos of the texture in it's texture sheet
-     * @param v        - y pos of the texture in it's texture sheet
-     * @param width    - width of the texture
-     * @param height   - height of the texture
-     * @param newWidth - new width to render the rectangle, minimal size of 6
-     */
-    protected void drawRectWithScaledWidth(int x, int y, int u, int v, int width, int height, int newWidth)
-    {
-        if (width > 0)
-        {
-            //If both widths are the same redirect to original call
-            if (newWidth <= 0 || width == newWidth)
-            {
-                drawTexturedModalRect(x, y, u, v, width, height);
-            }
-
-            //Size of the middle section of the image
-            final int midWidth = width - 6;
-
-            //Start cap of image rect
-            drawTexturedModalRect(x, y, u, v, 3, height);
-            x += 3;
-
-            //only render middle if it is larger than 6
-            if (newWidth > 6)
-            {
-                //Loop over number of sections that need to be rendered
-                int loops = newWidth / width;
-                while (loops > 0)
-                {
-                    drawTexturedModalRect(x, y, u + 3, v, midWidth, height);
-                    x += midWidth;
-                    loops -= 1;
-                }
-
-                //Check if there is a remainder that still needs rendered
-                loops = newWidth % width;
-                if (loops != 0)
-                {
-                    drawTexturedModalRect(x, y, u + 3, v, loops, height);
-                    x += loops;
-                }
-            }
-
-            if (width > 3)
-            {
-                //End cap of image rect
-                drawTexturedModalRect(x, y, u + width - 3, v, 3, height);
-            }
-        }
-    }
-
     //TODO update and docs
     public void drawTooltip(int x, int y, Collection<String> toolTips)
     {
@@ -290,17 +231,17 @@ public abstract class GuiContainerBase extends ContainerScreen
 
             this.zLevel = 300;
             int var10 = -267386864;
-            this.drawGradientRect(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
-            this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
-            this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var10, var10);
-            this.drawGradientRect(backgroundX - 4, backgroundY - 3, backgroundX - 3, backgroundY + var9 + 3, var10, var10);
-            this.drawGradientRect(backgroundX + textMaxWidth + 3, backgroundY - 3, backgroundX + textMaxWidth + 4, backgroundY + var9 + 3, var10, var10);
+            this.blit(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
+            this.blit(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
+            this.blit(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var10, var10);
+            this.blit(backgroundX - 4, backgroundY - 3, backgroundX - 3, backgroundY + var9 + 3, var10, var10);
+            this.blit(backgroundX + textMaxWidth + 3, backgroundY - 3, backgroundX + textMaxWidth + 4, backgroundY + var9 + 3, var10, var10);
             int var11 = 1347420415;
             int var12 = (var11 & 16711422) >> 1 | var11 & -16777216;
-            this.drawGradientRect(backgroundX - 3, backgroundY - 3 + 1, backgroundX - 3 + 1, backgroundY + var9 + 3 - 1, var11, var12);
-            this.drawGradientRect(backgroundX + textMaxWidth + 2, backgroundY - 3 + 1, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3 - 1, var11, var12);
-            this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY - 3 + 1, var11, var11);
-            this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
+            this.blit(backgroundX - 3, backgroundY - 3 + 1, backgroundX - 3 + 1, backgroundY + var9 + 3 - 1, var11, var12);
+            this.blit(backgroundX + textMaxWidth + 2, backgroundY - 3 + 1, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3 - 1, var11, var12);
+            this.blit(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY - 3 + 1, var11, var11);
+            this.blit(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
 
             // Draw text shadows
             for (String line : toolTips)

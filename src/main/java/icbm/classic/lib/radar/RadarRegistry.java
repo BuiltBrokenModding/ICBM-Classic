@@ -4,12 +4,13 @@ import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.entity.Entity;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public final class RadarRegistry
      */
     public static boolean add(Entity entity)
     {
-        if (entity != null && !entity.isDead && entity.world != null && !entity.world.isRemote)
+        if (entity != null && entity.isAlive() && entity.world != null && !entity.world.isRemote)
         {
             RadarMap map = getRadarMapForWorld(entity.world);
             return map != null && getRadarMapForWorld(entity.world).add(entity);
@@ -53,7 +54,7 @@ public final class RadarRegistry
      */
     public static boolean remove(Entity entity)
     {
-        if (entity != null && !entity.isDead && entity.world != null)
+        if (entity != null && entity.world != null)
         {
             RadarMap map = getRadarMapForWorld(entity.world);
             return map != null ? getRadarMapForWorld(entity.world).remove(entity) : false;
@@ -67,11 +68,11 @@ public final class RadarRegistry
      * @param world - should be a valid world that is loaded and has a dim id
      * @return existing map, or new map if one does not exist
      */
-    public static RadarMap getRadarMapForWorld(World world)
+    public static RadarMap getRadarMapForWorld(IWorld world)
     {
-        if (world != null && world.provider != null)
+        if (world != null)
         {
-            if (world.isRemote)
+            if (world.isRemote())
             {
                 if (ICBMClassic.runningAsDev)
                 {
@@ -79,7 +80,7 @@ public final class RadarRegistry
                 }
                 return null;
             }
-            return getRadarMapForDim(world.provider.getDimension());
+            return getRadarMapForDim(world.getDimension().getType().getId());
         }
         //Only throw an error in dev mode, ignore in normal runtime
         else if (ICBMClassic.runningAsDev)
@@ -134,7 +135,7 @@ public final class RadarRegistry
         // TODO recode to use a consumer pattern, if so ignore filter and let consumer be the filter
 
         final List<Entity> list = Lists.<Entity>newArrayList();
-        if (RADAR_MAPS.containsKey(world.provider.getDimension()))
+        if (RADAR_MAPS.containsKey(world.getDimension().getType().getId()))
         {
             final RadarMap map = getRadarMapForWorld(world);
             if (map != null)
@@ -145,7 +146,7 @@ public final class RadarRegistry
                     if (object != null && object.isValid())
                     {
                         Entity entity = ((RadarEntity) object).entity;
-                        if (entity != null && !entity.isDead)
+                        if (entity != null && entity.isAlive())
                         {
                             list.add(entity);
                         }
@@ -163,9 +164,9 @@ public final class RadarRegistry
     @SubscribeEvent
     public void chunkUnload(ChunkEvent.Unload event)
     {
-        if (event.getChunk().getWorld() != null && event.getChunk().getWorld().provider != null)
+        if (event.getWorld() != null)
         {
-            int dim = event.getChunk().getWorld().provider.getDimension();
+            int dim = event.getWorld().getDimension().getType().getId();
             if (RADAR_MAPS.containsKey(dim))
             {
                 getRadarMapForDim(dim).remove(event.getChunk());
@@ -176,7 +177,7 @@ public final class RadarRegistry
     @SubscribeEvent
     public void worldUpdateTick(TickEvent.WorldTickEvent event)
     {
-        if (event.world.provider != null && event.side == Side.SERVER && event.phase == TickEvent.Phase.END)
+        if (event.world.provider != null && event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END)
         {
             int dim = event.world.provider.getDimension();
             if (RADAR_MAPS.containsKey(dim))

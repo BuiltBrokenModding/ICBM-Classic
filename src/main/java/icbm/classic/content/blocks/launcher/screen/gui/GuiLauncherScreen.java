@@ -10,6 +10,7 @@ import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -55,7 +56,7 @@ public class GuiLauncherScreen extends GuiContainerBase
             tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, (o) -> TileLauncherScreen.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
-        addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
+        addButton(new LaunchButton( guiLeft + 24, guiTop + 38)
             .doDrawDisabledGlass()
             .setTooltip(this.tileEntity::getStatusTranslation))
             .setAction(() -> TileLauncherScreen.PACKET_LAUNCH.sendToServer(tileEntity))
@@ -67,7 +68,7 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         // Radio tooltip
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
-        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
+        addComponent(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radioCap::isDisabled)
             .setAction(() -> TileLauncherScreen.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
 

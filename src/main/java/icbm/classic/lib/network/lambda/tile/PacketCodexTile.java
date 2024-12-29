@@ -15,26 +15,26 @@ import java.util.function.Function;
 /**
  * Codex for creating packets specific to TileEntity data
  *
- * @param <R> raw object, usually a TileEntity or Entity that may contain stuff
- * @param <T> target type for read/write
+ * @param <RAW> raw object, usually a TileEntity or Entity that may contain stuff
+ * @param <TARGET> target type for read/write
  */
-public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> {
+public class PacketCodexTile<RAW extends TileEntity, TARGET> extends PacketCodex<RAW, TARGET> {
 
-    public PacketCodexTile(ResourceLocation parent, String name, Function<R, T> converter) {
+    public PacketCodexTile(ResourceLocation parent, String name, Function<RAW, TARGET> converter) {
         this(parent, new ResourceLocation(ICBMConstants.DOMAIN, name), converter);
     }
-    public PacketCodexTile(ResourceLocation parent, ResourceLocation name, Function<R, T> converter) {
+    public PacketCodexTile(ResourceLocation parent, ResourceLocation name, Function<RAW, TARGET> converter) {
         super(parent, name, converter);
     }
 
     public PacketCodexTile(ResourceLocation parent, ResourceLocation name) {
-        this(parent, name, (tile) -> (T) tile);
+        this(parent, name, (tile) -> (TARGET) tile);
     }
     public PacketCodexTile(ResourceLocation parent, String name) {
         this(parent, new ResourceLocation(parent.getNamespace(), name));
     }
 
-    public void sendToAllAround(R tile){
+    public void sendToAllAround(RAW tile){
         double range = 64;
         // TODO consider getting player's chunk map instead
         if(tile.getWorld() instanceof ServerWorld) {
@@ -48,7 +48,7 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
         this.sendToAllAround(tile, range);
     }
 
-    public void sendToAllAround(R tile, double range){
+    public void sendToAllAround(RAW tile, double range){
         super.sendToAllAround(tile, new PacketDistributor.TargetPoint(
             null,
             tile.getPos().getX(),
@@ -64,7 +64,8 @@ public class PacketCodexTile<R extends TileEntity, T> extends PacketCodex<R, T> 
         return tile != null && !tile.isRemoved();
     }
 
-    public PacketLambdaTile<T> build(R tile) {
-        return new PacketLambdaTile<T>(this, tile, getConverter().apply(tile));
+    @Override
+    public PacketLambdaTile<TARGET> build(RAW tile) {
+        return new PacketLambdaTile<TARGET>(this, tile, getConverter().apply(tile));
     }
 }

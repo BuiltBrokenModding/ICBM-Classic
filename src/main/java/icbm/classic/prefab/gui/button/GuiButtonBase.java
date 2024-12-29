@@ -4,12 +4,14 @@ import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
+import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Supplier;
 
-public class GuiButtonBase<B extends GuiButtonBase> extends Button implements IGuiComponent, IToolTip {
+public class GuiButtonBase<B extends GuiButtonBase> extends AbstractButton implements IGuiComponent, IToolTip {
 
     private ActionTrigger action;
 
@@ -18,9 +20,16 @@ public class GuiButtonBase<B extends GuiButtonBase> extends Button implements IG
 
     private GuiContainerBase container;
 
-    public GuiButtonBase(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText) {
-        super(buttonId, x, y, widthIn, heightIn, buttonText);
+    public GuiButtonBase(int x, int y, int widthIn, int heightIn, String buttonText) {
+        super(x, y, widthIn, heightIn, buttonText);
         bounds = new Rectangle(x, y, x + widthIn, y + heightIn);
+    }
+
+    @Override
+    public void onPress() {
+        if(action != null) {
+            action.trigger();
+        }
     }
 
     @Override
@@ -36,12 +45,6 @@ public class GuiButtonBase<B extends GuiButtonBase> extends Button implements IG
     public B setTooltip(Supplier<ITextComponent> tooltip) {
         this.tooltip = tooltip;
         return (B) this;
-    }
-
-    public void triggerAction() {
-        if(action != null) {
-            action.trigger();
-        }
     }
 
     @Override

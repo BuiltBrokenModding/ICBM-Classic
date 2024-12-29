@@ -10,13 +10,15 @@ import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,10 +47,10 @@ public class MissileEventHandler
     @SubscribeEvent
     public static void chunkUnload(ChunkEvent.Unload event)
     {
-        final World world = event.getWorld();
-        if (!world.isRemote)
+        final IWorld world = event.getWorld();
+        if (!world.isRemote())
         {
-            final Chunk chunk = event.getChunk();
+            final IChunk chunk = event.getChunk();
             final RadarMap map = RadarRegistry.getRadarMapForWorld(world);
             if (map != null)
             {

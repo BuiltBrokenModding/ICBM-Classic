@@ -1,8 +1,8 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.prefab.gui.button.GuiButtonBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.function.Supplier;
 
@@ -12,8 +12,8 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
     private boolean doDrawGlass = false;
     private Supplier<Boolean> enabledCheck;
 
-    public LaunchButton(int buttonId, int x, int y) {
-        super(buttonId, x, y, 28, 29, "");
+    public LaunchButton(int x, int y) {
+        super(x, y, 28, 29, "");
     }
 
     public LaunchButton setEnabledCheck(Supplier<Boolean> supplier) {
@@ -24,48 +24,41 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        if(enabledCheck != null) {
-            this.enabled = enabledCheck.get();
+        if (enabledCheck != null) {
+            this.active = enabledCheck.get();
         }
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        if (this.visible) {
-            // Set color and texture
-            mc.getTextureManager().bindTexture(GuiCruiseLauncher.TEXTURE);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-            // Check if mouse is over button TODO check for circle
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+    public void renderButton(int mouseX, int mouseY, float partialTicks) {
+        // Set color and texture
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(GuiCruiseLauncher.TEXTURE);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 
-            final int UV_WIDTH = 182;
+        final int UV_WIDTH = 182;
 
-            // Disabled state
-            if(!this.enabled) {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 111, this.width, this.height);
-            }
-            // Pressed state
-            else if (this.wasPressed) {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 76, this.width, this.height);
-            }
-            // Hover state
-            else if (this.hovered) {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 41, this.width, this.height);
-            }
-            // Default state
-            else {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 6, this.width, this.height);
-            }
+        // Disabled state
+        if (!this.active) {
+            this.blit(this.x, this.y, UV_WIDTH, 111, this.width, this.height);
+        }
+        // Pressed state
+        else if (this.wasPressed) {
+            this.blit(this.x, this.y, UV_WIDTH, 76, this.width, this.height);
+        }
+        // Hover state
+        else if (this.isHovered) {
+            this.blit(this.x, this.y, UV_WIDTH, 41, this.width, this.height);
+        }
+        // Default state
+        else {
+            this.blit(this.x, this.y, UV_WIDTH, 6, this.width, this.height);
+        }
 
-            // Draw button cover
-            if(!enabled && doDrawGlass) {
-                this.drawTexturedModalRect(this.x - 4, this.y - 4, 220, 5, 36, 36);
-            }
-
-            // Not sure why this is here
-            this.mouseDragged(mc, mouseX, mouseY);
+        // Draw button cover
+        if (!active && doDrawGlass) {
+            this.blit(this.x - 4, this.y - 4, 220, 5, 36, 36);
         }
     }
 
@@ -75,16 +68,14 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
     }
 
     @Override
-    public void mouseReleased(int mouseX, int mouseY) {
+    public void onRelease(double p_onRelease_1_, double p_onRelease_3_) {
+        super.onRelease(p_onRelease_1_, p_onRelease_3_);
         this.wasPressed = false;
     }
 
     @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (super.mousePressed(mc, mouseX, mouseY)) {
-            this.wasPressed = true;
-            return true;
-        }
-        return false;
+    public void onClick(double p_onClick_1_, double p_onClick_3_) {
+        super.onClick(p_onClick_1_, p_onClick_3_);
+        this.wasPressed = true;
     }
 }

@@ -220,7 +220,7 @@ public abstract class PacketCodex<RAW, TARGET> {
 
     public abstract boolean isValid(RAW tile);
 
-    public abstract IPacket build(RAW tile);
+    public abstract Object build(RAW tile);
 
     public void sendToServer(RAW raw) {
         try {
@@ -232,7 +232,7 @@ public abstract class PacketCodex<RAW, TARGET> {
 
     public void sendPacketToGuiUsers(RAW raw, Collection<PlayerEntity> players) {
         try {
-            final IPacket packet = build(raw);
+            final Object packet = build(raw);
             players.stream().filter(player -> player instanceof ServerPlayerEntity).forEach((player) -> {
                 ICBMClassic.packetHandler.sendToPlayer(packet, (ServerPlayerEntity) player);
             });

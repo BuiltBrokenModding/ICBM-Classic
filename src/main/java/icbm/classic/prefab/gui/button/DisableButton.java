@@ -1,11 +1,10 @@
 package icbm.classic.prefab.gui.button;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.function.Supplier;
 
@@ -18,42 +17,33 @@ public class DisableButton extends GuiButtonBase<DisableButton> implements IGuiC
     private static final int UV_Y = 241;
     private static final int UV_X = 0;
 
-    /** Checks if disable status should render, not the same as #enabled or #visble. Even though this causes it to stop rendering is true */
+    /**
+     * Checks if disable status should render, not the same as #enabled or #visble. Even though this causes it to stop rendering is true
+     */
     private final Supplier<Boolean> shouldShowAsDisabled;
-    public DisableButton(int buttonId, int x, int y, Supplier<Boolean> shouldShowAsDisabled) {
-        super(buttonId, x, y, WIDTH, HEIGHT, "");
+
+    public DisableButton(int x, int y, String label, Supplier<Boolean> shouldShowAsDisabled) {
+        super(x, y, WIDTH, HEIGHT, label);
         this.shouldShowAsDisabled = shouldShowAsDisabled;
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        if (this.visible) {
-            // Set color and texture
-            mc.getTextureManager().bindTexture(GuiContainerBase.COMPONENTS_TEXTURE);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    public void renderButton(int mouseX, int mouseY, float partialTicks) {
 
-            // Check if mouse is over button TODO check for circle
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+        // Set color and texture
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bindTexture(GuiContainerBase.COMPONENTS_TEXTURE);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-            //TODO add disabled state
+        //TODO add disabled state
 
-            // Hover state
-            if (this.hovered && ContainerScreen.isAltKeyDown()) {
-                this.drawTexturedModalRect(this.x, this.y, UV_X + WIDTH, UV_Y, this.width, this.height);
-            }
-            // Default state
-            else if(shouldShowAsDisabled.get()) {
-                this.drawTexturedModalRect(this.x, this.y, UV_X, UV_Y, this.width, this.height);
-            }
-
-            // Not sure why this is here
-            this.mouseDragged(mc, mouseX, mouseY);
+        // Hover state
+        if (this.isHovered) {
+            this.blit(this.x, this.y, UV_X + WIDTH, UV_Y, this.width, this.height);
         }
-    }
-
-    @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
-    {
-        return super.mousePressed(mc, mouseX, mouseY) && ContainerScreen.isAltKeyDown();
+        // Default state
+        else if (shouldShowAsDisabled.get()) {
+            this.blit(this.x, this.y, UV_X, UV_Y, this.width, this.height);
+        }
     }
 }

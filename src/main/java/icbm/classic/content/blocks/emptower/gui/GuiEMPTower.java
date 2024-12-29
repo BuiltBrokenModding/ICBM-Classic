@@ -10,6 +10,7 @@ import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -43,21 +44,21 @@ public class GuiEMPTower extends GuiContainerBase {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.intField(componentID++, fontRenderer, 18, 17, 40, 12,
+        addComponent(TextInput.intField(componentID++, this.font, 18, 17, 40, 12,
             tileEntity::getRange, tileEntity::setRange, (r) -> TileEMPTower.PACKET_RADIUS.sendToServer(tileEntity)));
 
         // Frequency field
-        addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
+        addComponent(TextInput.textField(componentID++, this.font, 135, 17, 34, 12,
             tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, (r) -> TileEMPTower.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
-        addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
+        addButton(new LaunchButton(guiLeft + 24, guiTop + 38)
             .doDrawDisabledGlass()
             .setTooltip(() -> {
                 if (!tileEntity.isReady()) {
@@ -81,7 +82,7 @@ public class GuiEMPTower extends GuiContainerBase {
         );
 
         // Radio tooltip
-        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
+        addComponent(new DisableButton( guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radioCap::isDisabled)
             .setAction(() -> TileEMPTower.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
@@ -93,8 +94,8 @@ public class GuiEMPTower extends GuiContainerBase {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         // Draw text
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal(GUI_NAME), 52, 6, 4210752);
-        this.fontRenderer.drawString("/ " + tileEntity.getMaxRadius(), 62, 19, 4210752);
+        this.font.drawString("\u00a77" + LanguageUtility.getLocal(GUI_NAME), 52, 6, 4210752);
+        this.font.drawString("/ " + tileEntity.getMaxRadius(), 62, 19, 4210752);
 
         // Goes last so tooltips render above our UI elements
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);

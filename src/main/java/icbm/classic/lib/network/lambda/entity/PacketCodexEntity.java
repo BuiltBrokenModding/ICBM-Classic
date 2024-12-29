@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,12 +48,13 @@ public class PacketCodexEntity<R extends Entity, T> extends PacketCodex<R, T> {
     }
 
     public void sendToAllAround(R tile, double range){
-        super.sendToAllAround(tile, new NetworkRegistry.TargetPoint(
-            tile.world.provider.getDimension(),
+        super.sendToAllAround(tile, new PacketDistributor.TargetPoint(
+            null,
             tile.posX,
             tile.posY,
             tile.posZ,
-            range
+            range,
+            tile.world.dimension.getType()
         ));
     }
 
@@ -61,6 +63,7 @@ public class PacketCodexEntity<R extends Entity, T> extends PacketCodex<R, T> {
         return tile != null && tile.isAlive();
     }
 
+    @Override
     public PacketLambdaEntity<T> build(R tile) {
         return new PacketLambdaEntity<T>((PacketCodex<Entity, T>) this, tile, getConverter().apply(tile));
     }

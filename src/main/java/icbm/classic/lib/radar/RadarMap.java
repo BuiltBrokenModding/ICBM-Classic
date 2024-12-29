@@ -5,6 +5,7 @@ import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -184,7 +185,7 @@ public class RadarMap
      *
      * @param chunk - should never be null
      */
-    public void remove(Chunk chunk)
+    public void remove(IChunk chunk)
     {
         if(accessingData) {
             ICBMClassic.logger().warn("Attempted to add radar chunk mid access of entities", new RuntimeException());
