@@ -9,25 +9,29 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 
 /**
  * Recipe for adding cargo to cargo projectile item
  */
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@Data
-public class RecipeCargoData extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+//@EqualsAndHashCode(callSuper = true)
+//AllArgsConstructor
+//@Data
+public class RecipeCargoData { //implements ICraftingRecipe, net.minecraftforge.registries.IForgeRegistryEntry<IRecipe> {
 
-    private final ItemStack recipeOutput;
-    private final Supplier<CargoProjectileData> dataBuilder;
+    //private final ItemStack recipeOutput;
+    //private final Supplier<CargoProjectileData> dataBuilder;
 
-    @Override
+    /*@Override
     public boolean isDynamic()
     {
         return true;
@@ -123,4 +127,20 @@ public class RecipeCargoData extends net.minecraftforge.registries.IForgeRegistr
     public boolean canFit(int width, int height) {
         return width * height >= 2;
     }
+
+    @Override
+    public IRecipe setRegistryName(ResourceLocation name) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public ResourceLocation getRegistryName() {
+        return null;
+    }
+
+    @Override
+    public Class<IRecipe> getRegistryType() {
+        return null;
+    }*/
 }

@@ -20,12 +20,12 @@ import java.util.List;
 /**
  * Recipe for adding cargo to cargo projectile item
  */
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@Data
-public class RecipeCluster extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+//@EqualsAndHashCode(callSuper = true)
+//@AllArgsConstructor
+//@Data
+public class RecipeCluster { //extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
 
-    private final ItemStack recipeOutput;
+    /*private final ItemStack recipeOutput;
 
     @Override
     public boolean isDynamic() {
@@ -107,5 +107,5 @@ public class RecipeCluster extends IForgeRegistryEntry.Impl<IRecipe> implements 
     @Override
     public boolean canFit(int width, int height) {
         return width * height >= 2;
-    }
+    }*/
 }

@@ -6,7 +6,7 @@ import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.colors.ColorB;
 import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.EntityRenderer;

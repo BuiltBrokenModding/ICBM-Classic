@@ -46,13 +46,13 @@ public class ItemGrenade extends ItemBase
     }
 
     @Override
-    public UseAction getItemUseAction(ItemStack par1ItemStack)
+    public UseAction getUseAction(ItemStack par1ItemStack)
     {
         return UseAction.BOW;
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack par1ItemStack)
+    public int getUseDuration(ItemStack par1ItemStack)
     {
         return MAX_USE_DURATION;
     }

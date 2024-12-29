@@ -32,6 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,12 +62,12 @@ public class ItemThrowableProjectile extends ItemBase {
     }
 
     @Override
-    public UseAction getItemUseAction(@Nonnull ItemStack stack) {
+    public UseAction getUseAction(@Nonnull ItemStack stack) {
         return UseAction.BOW;
     }
 
     @Override
-    public int getMaxItemUseDuration(@Nonnull ItemStack stack) {
+    public int getUseDuration(@Nonnull ItemStack stack) {
         return MAX_USE_DURATION;
     }
 
@@ -88,15 +89,12 @@ public class ItemThrowableProjectile extends ItemBase {
     public static boolean throwProjectile(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull Entity thrower) {
         final boolean isCreative = thrower instanceof PlayerEntity && ((PlayerEntity) thrower).isCreative();
         final Hand hand = thrower instanceof LivingEntity ? ((LivingEntity) thrower).getActiveHand() : Hand.MAIN_HAND;
-        if (!stack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-            return false;
-        }
-        final IProjectileStack<Entity> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
-        if (projectileStack == null) {
+        final LazyOptional<IProjectileStack> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
+        if (!projectileStack.isPresent()) {
             return false;
         }
 
-        final IProjectileData<Entity> projectileData = projectileStack.getProjectileData();
+        final IProjectileData projectileData = projectileStack.map(IProjectileStack::getProjectileData).orElseThrow(IllegalStateException::new);
         if(projectileData == null) {
             return false;
         }
@@ -132,10 +130,10 @@ public class ItemThrowableProjectile extends ItemBase {
         }
 
         // Spawn
-        if (world.spawnEntity(parachute)) {
+        if (world.addEntity(parachute)) {
 
             // Run post spawn logic
-            projectileStack.getProjectileData().onEntitySpawned(parachute, thrower, hand);
+            projectileData.onEntitySpawned(parachute, thrower, hand);
 
             return true;
         }
@@ -143,41 +141,34 @@ public class ItemThrowableProjectile extends ItemBase {
     }
 
     @Override
-    public int getMetadata(int damage) {
-        return damage;
-    }
-
-    @Override
     public void addInformation(ItemStack stack, World world, List<ITextComponent> list, ITooltipFlag flag) {
-        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        final LazyOptional<IProjectileStack> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
 
         // Only show basic info if we have no projectile data
-        if(projectileStack == null || projectileStack.getProjectileData() == null) {
-            final String key = getUnlocalizedName(stack) + ".info";
+        if(!projectileStack.isPresent() || projectileStack.orElseThrow(IllegalStateException::new).getProjectileData() == null) {
+            final String key = getTranslationKey(stack) + ".info";
             final float gravity = -EntityParachute.GRAVITY * 20;
             final float air = (1 - EntityParachute.AIR_RESISTANCE) * 100;
             LanguageUtility.outputLines(new TranslationTextComponent(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
         }
 
         // Show projectile information
-        if(projectileStack != null && projectileStack.getProjectileData() != null) {
-            LanguageUtility.outputLines(projectileStack.getProjectileData().getTooltip(), list::add);
+        if(projectileStack.isPresent() && projectileStack.orElseThrow(IllegalStateException::new).getProjectileData() != null) {
+            LanguageUtility.outputLines(projectileStack.orElseThrow(IllegalStateException::new).getProjectileData().getTooltip(), list::add);
         }
     }
 
     @Override
-    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> items)
-    {
-        if (this.isInCreativeTab(tab))
-        {
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.isInGroup(group)) {
             items.add(new ItemStack(this));
 
-            if(this == ItemReg.itemParachute) {
+            if(this == ItemReg.PARACHUTE.get()) {
                 items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(net.minecraft.item.Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
                 items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(net.minecraft.block.Blocks.FURNACE)).setParachuteMode(ProjectileCargoMode.BLOCK)));
                 items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Blocks.TNT)).setParachuteMode(ProjectileCargoMode.BLOCK)));
             }
-            else if(this == ItemReg.itemBalloon) {
+            else if(this == ItemReg.BALLON.get()) {
                 items.add(parachuteWith(new BalloonProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
             }
         }
@@ -185,9 +176,9 @@ public class ItemThrowableProjectile extends ItemBase {
 
     private ItemStack parachuteWith(IProjectileData data) {
         final ItemStack stack = new ItemStack(this);
-        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
-        if(projectileStack instanceof ProjectileStack) {
-            ((ProjectileStack) projectileStack).setProjectileData(data);
+        final LazyOptional<IProjectileStack> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        if(projectileStack.isPresent() && projectileStack.orElseThrow(IllegalStateException::new) instanceof ProjectileStack) {
+            ((ProjectileStack) projectileStack.orElseThrow(IllegalStateException::new)).setProjectileData(data);
         }
         return stack;
     }

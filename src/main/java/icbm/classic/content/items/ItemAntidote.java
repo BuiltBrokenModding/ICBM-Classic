@@ -32,13 +32,13 @@ public class ItemAntidote extends Item
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack par1ItemStack)
+    public int getUseDuration(ItemStack par1ItemStack)
     {
-        return 32;
+        return 32; //TODO config
     }
 
     @Override
-    public UseAction getItemUseAction(ItemStack par1ItemStack)
+    public UseAction getUseAction(ItemStack par1ItemStack)
     {
         return UseAction.EAT;
     }

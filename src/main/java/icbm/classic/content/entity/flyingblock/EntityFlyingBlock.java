@@ -19,11 +19,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -76,33 +79,33 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
     @Nonnull
     @Override
-    public String getName()
+    public ITextComponent getName()
     {
-        return "Flying Block [" + getBlockData().getBlockState() + ", " + hashCode() + "]";
+       return new TranslationTextComponent(this.getType().getTranslationKey(), getBlockData().getBlockState(), hashCode());
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(PacketBuffer data)
     {
-        ByteBufUtils.writeTag(data, this.getBlockData().serializeNBT());
+        data.writeCompoundTag(this.getBlockData().serializeNBT());
         data.writeFloat(this.gravity);
         data.writeFloat(yawChange);
         data.writeFloat(pitchChange);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(PacketBuffer data)
     {
-        this.getBlockData().deserializeNBT(ByteBufUtils.readTag(data));
+        this.getBlockData().deserializeNBT(data.readCompoundTag() );
         gravity = data.readFloat();
         yawChange = data.readFloat();
         pitchChange = data.readFloat();
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
-        super.onUpdate();
+        super.tick();
 
         //Animation
         if (this.yawChange > 0)
@@ -125,8 +128,8 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
     @Override
     protected void destroy() {
-        this.placeBlockIntoWorld(this.getPos(), new RayTraceResult(this.getPositionVector(), Direction.UP));
-        this.setDead();
+        this.placeBlockIntoWorld(this.getPos(), new BlockRayTraceResult(this.getPositionVector(), Direction.UP, getPosition(), false));
+        this.remove();
     }
 
     @Override
@@ -139,8 +142,8 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         //Grace period to get away from the ground
         if(ticksInAir < 5) return;
 
-        if(impactLocation.entityHit == null) {
-            this.placeBlockIntoWorld(new BlockPos(impactLocation.hitVec), impactLocation);
+        if(impactLocation.getType() == RayTraceResult.Type.BLOCK) {
+            this.placeBlockIntoWorld(new BlockPos(impactLocation.getHitVec()), impactLocation);
         }
         else {
             // TODO spawn fragments based on block in some cases (wood material -> wood fragments)
@@ -151,7 +154,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
     public void placeBlockIntoWorld(BlockPos pos, RayTraceResult hit)
     {
-        this.setDead();
+        this.remove();
 
         if (!this.world.isRemote)
         {
@@ -196,7 +199,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
                 if (tileentity != null)
                 {
-                    final CompoundNBT currentSave = tileentity.writeToNBT(new CompoundNBT());
+                    final CompoundNBT currentSave = tileentity.write(new CompoundNBT());
 
                     // Ensure these are the same tile saves, otherwise we can corrupt a block badly
                     if(currentSave.getString("id").equals(this.getBlockData().getTileEntityData().getString("id"))) {
@@ -204,7 +207,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
                         currentSave.putInt("x", pos.getX());
                         currentSave.putInt("y", pos.getY());
                         currentSave.putInt("z", pos.getZ());
-                        tileentity.readFromNBT(currentSave);
+                        tileentity.read(currentSave);
                         tileentity.markDirty();
                     }
                 }
@@ -224,8 +227,8 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         if(itemStack != null && !itemStack.isEmpty()) {
             final ItemEntity entityItem = new ItemEntity(world, posX, posY, posZ);
             entityItem.setItem(itemStack);
-            if(!world.spawnEntity(entityItem)) {
-                ICBMClassic.logger().error("EntityFlyingBlock: Failed to drop source stack '{}' at dim[{}] pos[{}]", itemStack, this.world.provider.getDimension(), this.getPos());
+            if(!world.addEntity(entityItem)) {
+                ICBMClassic.logger().error("EntityFlyingBlock: Failed to drop source stack '{}' at dim[{}] pos[{}]", itemStack, this.world.getDimension().getType(), this.getPos());
             }
         }
     }
@@ -241,16 +244,16 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     }
 
     @Override
-    public void writeEntityToNBT(CompoundNBT save)
+    public void writeAdditional(CompoundNBT save)
     {
-        super.writeEntityToNBT(save);
+        super.writeAdditional(save);
         SAVE_LOGIC.save(this, save);
     }
 
     @Override
-    public void readEntityFromNBT(CompoundNBT save)
+    public void readAdditional(CompoundNBT save)
     {
-       super.readEntityFromNBT(save);
+       super.readAdditional(save);
        SAVE_LOGIC.load(this, save);
     }
 

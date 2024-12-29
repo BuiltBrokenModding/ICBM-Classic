@@ -1,12 +1,12 @@
 package icbm.classic.content.entity.flyingblock;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMClassic;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
@@ -33,15 +33,15 @@ public class RenderEntityBlock extends EntityRenderer<EntityFlyingBlock>
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
 
         BlockState blockState = entity.getBlockData().getBlockState();
-        final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x, (float) y + 0.5F, (float) z);
+        GlStateManager.translatef((float) x, (float) y + 0.5F, (float) z);
 
         // If we previously failed try to use another state
         if(failedBlocks.contains(blockState)) {
             if(blockState.getMaterial() == Material.LEAVES) {
-                blockState = net.minecraft.block.Blocks.LEAVES.getDefaultState();
+                blockState = Blocks.OAK_LEAVES.getDefaultState();
             }
             else {
                 blockState = Blocks.STONE.getDefaultState();
@@ -51,10 +51,10 @@ public class RenderEntityBlock extends EntityRenderer<EntityFlyingBlock>
         try {
             this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
-            GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(-0.5F, -0.5F, 0.5F);
+            GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
             blockrendererdispatcher.renderBlockBrightness(blockState, entity.getBrightness()); //TODO consider using item render instead?
-            GlStateManager.translate(0.0F, 0.0F, 1.0F);
+            GlStateManager.translatef(0.0F, 0.0F, 1.0F);
         }
         catch (Exception e) {
             if(!failedBlocks.contains(blockState)) {
