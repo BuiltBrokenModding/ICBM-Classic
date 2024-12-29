@@ -9,6 +9,7 @@ import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,10 +30,12 @@ import java.util.List;
 public class ItemBombCart extends ItemBase
 {
     private final IExplosiveData data;
-    public ItemBombCart(IExplosiveData data)
+    private final EntityType<EntityBombCart> entityType;
+    public ItemBombCart(IExplosiveData data, EntityType<EntityBombCart> entityType)
     {
         super(new Properties().maxStackSize(3));
         this.data = data;
+        this.entityType = entityType;
     }
 
     @Override
@@ -63,12 +66,14 @@ public class ItemBombCart extends ItemBase
                     d0 = 0.5D;
                 }
 
-                AbstractMinecartEntity abstractminecartentity = new EntityBombCart(world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D, itemstack);
+                final EntityBombCart cart = this.entityType.create(world);
+                cart.setPosition((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D);
+
                 if (itemstack.hasDisplayName()) {
-                    abstractminecartentity.setCustomName(itemstack.getDisplayName());
+                    cart.setCustomName(itemstack.getDisplayName());
                 }
 
-                world.addEntity(abstractminecartentity);
+                world.addEntity(cart);
             }
 
             itemstack.shrink(1);

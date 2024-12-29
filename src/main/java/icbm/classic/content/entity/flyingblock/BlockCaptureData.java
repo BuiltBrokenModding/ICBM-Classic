@@ -36,7 +36,7 @@ public class BlockCaptureData implements INBTSerializable<CompoundNBT> {
         final TileEntity tileEntity = world.getTileEntity(blockPos); //TODO add config to disable this for specific blocks
         if(tileEntity != null) {
             this.tileEntityData = new CompoundNBT();
-            tileEntity.writeToNBT(this.tileEntityData);
+            tileEntity.write(this.tileEntityData);
         }
     }
 

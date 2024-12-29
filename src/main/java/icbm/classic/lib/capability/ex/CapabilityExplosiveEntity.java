@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 public class CapabilityExplosiveEntity implements IExplosive
 {
     public final Entity entity;
-    private ItemStack stack = ItemStack.EMPTY;
 
     private boolean isExploding = false;
 

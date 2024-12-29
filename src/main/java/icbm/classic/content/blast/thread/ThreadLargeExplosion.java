@@ -102,7 +102,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
                         if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
                         {
                             //Consume power based on block
-                            power -= this.callBack.getResistance(world, position, blockPos, source, block);
+                            power -= this.callBack.getResistance(world, position, blockPos, source, state);
 
                             //If we still have power, break the block
                             if (power > 0f)

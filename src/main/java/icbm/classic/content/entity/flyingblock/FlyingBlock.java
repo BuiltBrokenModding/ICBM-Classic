@@ -1,9 +1,9 @@
 package icbm.classic.content.entity.flyingblock;
 
 import icbm.classic.config.ConfigFlyingBlocks;
-import icbm.classic.config.util.BlockStateConfigListOld;
-import net.minecraft.block.BlockLiquid;
+import icbm.classic.config.util.BlockStateConfigList;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -16,14 +16,14 @@ import java.util.function.Supplier;
 public class FlyingBlock {
 
     // Config list controlling if a block is allowed for spawning
-    static final BlockStateConfigListOld banAllowList = new BlockStateConfigListOld("[Flying Blocks][Ban/Allow Config]",
+    static final BlockStateConfigList.ContainsCheck banAllowList = new BlockStateConfigList.ContainsCheck("[Flying Blocks][Ban/Allow Config]",
         (blockStateConfigList) -> {
             // Mod blacklisted due to https://github.com/BuiltBrokenModding/ICBM-Classic/issues/420
-            blockStateConfigList.addMod("dynamictrees");//TODO remove when issue #420 is resolved
+            //TODO blockStateConfigList.addMod("dynamictrees");//TODO remove when issue #420 is resolved
 
 
             // Load configs
-            blockStateConfigList.loadBlockStates(ConfigFlyingBlocks.banAllow.blockStates);
+            blockStateConfigList.load("config", ConfigFlyingBlocks.banAllow.blockStates);
         }
     );
 
@@ -38,18 +38,18 @@ public class FlyingBlock {
             || state == null
             || state.getBlock().getMaterial(state) == Material.FIRE
             || state.getBlock() instanceof IFluidBlock
-            || state.getBlock() instanceof BlockLiquid
+            || state.getBlock() instanceof FlowingFluidBlock
         ) {
             return false;
         }
 
         // Ban List
         if (ConfigFlyingBlocks.banAllow.ban) {
-            return !banAllowList.contains(state);
+            return !banAllowList.isAllowed(state);
         }
 
         // Allow List
-        return  banAllowList.contains(state);
+        return  banAllowList.isAllowed(state);
     }
 
     /**
@@ -81,7 +81,7 @@ public class FlyingBlock {
             if (hardness >= 0)
             {
                 final BlockCaptureData blockCaptureData = new BlockCaptureData(world, pos);
-                return spawnFlyingBlock(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, blockCaptureData, preSpawnCallback, postSpawnCallback, () -> world.setBlockToAir(pos));
+                return spawnFlyingBlock(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, blockCaptureData, preSpawnCallback, postSpawnCallback, () -> world.removeBlock(pos, false));
             }
         }
         return false;
@@ -122,7 +122,7 @@ public class FlyingBlock {
         // Pre-spawn data set, needed for extra properties that should be exposed to spawn event
         Optional.ofNullable(preSpawnCallback).ifPresent(f -> f.accept(flyingBlock));
 
-        if (world.spawnEntity(flyingBlock)) {
+        if (world.addEntity(flyingBlock)) {
 
             // Post-spawn data set, needed for logic that can't run outside the world
             Optional.ofNullable(postSpawnCallback).ifPresent(f -> f.accept(flyingBlock));

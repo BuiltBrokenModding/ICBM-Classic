@@ -1,17 +1,15 @@
 package icbm.classic.content.blocks.radarstation;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.content.reg.TileReg;
-import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.util.Direction;
@@ -33,6 +31,7 @@ public class BlockRadarStation extends Block
 {
     public static final BooleanProperty REDSTONE_PROPERTY = BooleanProperty.create("redstone");
     public static final EnumProperty<EnumRadarState> RADAR_STATE = EnumProperty.create("type", EnumRadarState.class);
+    public static final EnumProperty<Direction> ROTATION_PROP = BlockStateProperties.FACING;
 
     public BlockRadarStation()
     {
@@ -50,9 +49,9 @@ public class BlockRadarStation extends Block
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        return new BlockStateContainer(this, ROTATION_PROP, REDSTONE_PROPERTY, RADAR_STATE);
+        builder.add(ROTATION_PROP, REDSTONE_PROPERTY, RADAR_STATE);
     }
 
     @Override

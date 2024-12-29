@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import icbm.classic.lib.ForgeRegistryHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -158,6 +159,52 @@ public abstract class BlockStateConfigList<VALUE> extends ResourceConfigList<Blo
             }
         }
         return null;
+    }
+
+
+    public static class ContainsCheck extends BlockStateConfigList<Boolean> {
+
+        public ContainsCheck(String name, Consumer<BlockStateConfigList<Boolean>> reloadCallback) {
+            super(name, reloadCallback);
+        }
+
+        public boolean isAllowed(BlockState stack) {
+            Boolean value = super.getValue(stack);
+            return value == null || value;
+        }
+
+        @Override
+        protected Function<BlockState, Boolean> getDomainValue(String domain, Boolean disable) {
+            if(Boolean.TRUE.equals(disable)) {
+                return null;
+            }
+            return super.getDomainValue(domain, true);
+        }
+
+        @Override
+        protected Function<BlockState, Boolean> getSimpleValue(ResourceLocation targetKey, Boolean disable) {
+            if(Boolean.TRUE.equals(disable)) {
+                return null;
+            }
+            return super.getSimpleValue(targetKey, true);
+        }
+
+        @Override
+        protected Boolean parseValue(String source, String entry, String value) {
+            return Boolean.parseBoolean(value);
+        }
+    }
+
+    public static class BlockOut extends BlockStateConfigList<BlockState> {
+
+        public BlockOut(String name, Consumer<BlockStateConfigList<BlockState>> reloadCallback) {
+            super(name, reloadCallback);
+        }
+
+        @Override
+        protected BlockState parseValue(String source, String entry, @Nullable String value) {
+            return super.parseBlockState(source, entry, value);
+        }
     }
 
     public static class BlockOut extends BlockStateConfigList<BlockState> {

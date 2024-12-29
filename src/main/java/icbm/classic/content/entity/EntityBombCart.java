@@ -1,64 +1,40 @@
 package icbm.classic.content.entity;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.content.blocks.explosive.BlockExplosive;
-import icbm.classic.content.missile.logic.source.ActionSource;
+import icbm.classic.api.actions.IActionData;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
-import icbm.classic.content.reg.BlockReg;
-import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.NBTConstants;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
-import icbm.classic.prefab.tile.BlockICBM;
-import io.netty.buffer.ByteBuf;
+import icbm.classic.lib.actions.PotentialAction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.TNTMinecartEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
-public class EntityBombCart extends TNTMinecartEntity implements IEntityAdditionalSpawnData
+public class EntityBombCart extends TNTMinecartEntity
 {
-    public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
+    private final PotentialAction explodeAction = new PotentialAction();  //TODO expose through capability
+    private final BlockState mimicBlock;
+    private final Supplier<ItemStack> cartStack;
 
-    public EntityBombCart(World par1World)
+    //TODO add custom fuse timers
+
+    public EntityBombCart(World par1World, IActionData triggerAction, BlockState mimicBlock, Supplier<ItemStack> cartStack)
     {
         super(par1World);
-    }
-
-    public EntityBombCart(World par1World, double x, double y, double z, ItemStack itemStack) //TODO change to pass in itemstack for capability
-    {
-        super(par1World, x, y, z);
-        this.explosive.setStack(itemStack);
-    }
-
-    @Override
-    public void writeSpawnData(ByteBuf data)
-    {
-        ByteBufUtils.writeItemStack(data, explosive.toStack());
-    }
-
-    @Override
-    public void readSpawnData(ByteBuf data)
-    {
-        explosive.setStack(ByteBufUtils.readItemStack(data));
+        explodeAction.setActionData(triggerAction);
+        this.mimicBlock = mimicBlock;
+        this.cartStack = cartStack;
     }
 
     @Override
     protected void explodeCart(double par1)
     {
-        explosive.doExplosion(this.posX, this.posY, this.posZ, new ActionSource(world, new Vec3d(posX, posY, posZ), new EntityCause(this))); //TODO handle output and include trigger source & player of the cart
-        this.setDead();
+        explodeAction.doAction(world, this.posX, this.posY, this.posZ, new EntityCause(this)); //TODO handle output and include trigger source & player of the cart
+        this.remove();
     }
 
     @Override
@@ -66,43 +42,15 @@ public class EntityBombCart extends TNTMinecartEntity implements IEntityAddition
     {
         if (!world.isRemote)
         {
-            this.setDead();
-            double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
-
-            if (!par1DamageSource.isExplosion())
-            {
-                this.entityDropItem(getCartItem(), 0.0F);
-            }
+            this.remove();
+            double d0 = this.getMotion().x * this.getMotion().x + this.getMotion().z * this.getMotion().z;
 
             if (par1DamageSource.isFireDamage() || par1DamageSource.isExplosion() || d0 >= 0.009999999776482582D)
             {
                 this.explodeCart(d0);
             }
-        }
-    }
-
-    @Override
-    public void onUpdate()
-    {
-        super.onUpdate();
-        if (isIgnited())
-        {
-            ICBMClassicAPI.EX_MINECART_REGISTRY.tickFuse(this, explosive.getExplosiveData(), minecartTNTFuse);
-        }
-    }
-
-    @Override
-    public void ignite()
-    {
-        this.minecartTNTFuse = ICBMClassicAPI.EX_MINECART_REGISTRY.getFuseTime(this, explosive.getExplosiveData());
-
-        if (!this.world.isRemote)
-        {
-            this.world.setEntityState(this, (byte) 10);
-
-            if (!this.isSilent())
-            {
-                this.world.playSound((PlayerEntity) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            else {
+                this.entityDropItem(getCartItem(), 0.0F);
             }
         }
     }
@@ -120,35 +68,12 @@ public class EntityBombCart extends TNTMinecartEntity implements IEntityAddition
     @Override
     public ItemStack getCartItem()
     {
-        return explosive.toStack();
-    }
-
-    @Override
-    protected void writeEntityToNBT(CompoundNBT nbt)
-    {
-        super.writeEntityToNBT(nbt);
-        nbt.setTag("explosive", explosive.serializeNBT());
-    }
-
-    @Override
-    protected void readEntityFromNBT(CompoundNBT nbt)
-    {
-        super.readEntityFromNBT(nbt);
-
-        //Legacy
-        if(nbt.hasKey(NBTConstants.EXPLOSIVE, 99)) {
-            explosive.setStack(new ItemStack(ItemReg.itemBombCart, 1, nbt.getInt(NBTConstants.EXPLOSIVE)));
-        }
-        else {
-            explosive.deserializeNBT(nbt.getCompoundTag("explosive"));
-        }
+        return cartStack.get();
     }
 
     @Override
     public BlockState getDefaultDisplayTile()
     {
-        return BlockReg.blockExplosive.getDefaultState()
-                .withProperty(BlockExplosive.EX_PROP, Optional.ofNullable(explosive.getExplosiveData()).orElse(ICBMExplosives.CONDENSED))
-                .withProperty(BlockICBM.ROTATION_PROP, Direction.UP);
+        return mimicBlock;
     }
 }
