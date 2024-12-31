@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -17,7 +18,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 @AllArgsConstructor
 public final class ActionSource implements IActionSource, INBTSerializable<CompoundNBT> {
 
-    private World world;
+    private ResourceLocation dimensionKey;
     private Vec3d position;
     private IActionCause cause;
 
@@ -33,7 +34,7 @@ public final class ActionSource implements IActionSource, INBTSerializable<Compo
 
     private static final NbtSaveHandler<ActionSource> SAVE_LOGIC = new NbtSaveHandler<ActionSource>()
         .mainRoot()
-        /* */.nodeWorldDim("dimension", ActionSource::getWorld, ActionSource::setWorld)
+        /* */.nodeResourceLocation("dimension", ActionSource::getDimensionKey, ActionSource::setDimensionKey)
         /* */.nodeVec3d("pos", ActionSource::getPosition, ActionSource::setPosition)
         /* */.nodeBuildableObject("cause", () -> ICBMClassicAPI.ACTION_CAUSE_REGISTRY, ActionSource::getCause, ActionSource::setCause)
         .base();

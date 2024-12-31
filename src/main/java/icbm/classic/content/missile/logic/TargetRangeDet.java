@@ -1,11 +1,8 @@
 package icbm.classic.content.missile.logic;
 
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
-import net.minecraft.util.math.Vec3d;
 
 public class TargetRangeDet {
     private final EntityExplosiveMissile missile;
@@ -24,9 +21,6 @@ public class TargetRangeDet {
         if (missile.getMissileCapability().getTargetData() instanceof BallisticTargetingData) {
             offset = ((BallisticTargetingData) missile.getMissileCapability().getTargetData() ).getImpactHeightOffset();
         }
-        else if(missile.explosive.getExplosiveData() == ICBMExplosives.CLUSTER) {
-            offset = 10; //TODO handle as fuse settings
-        }
 
         if(offset > 0)
         {
@@ -40,8 +34,8 @@ public class TargetRangeDet {
                 double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
                 if(distance <= offset)
                 {
-                    missile.explosive.doExplosion(missile.posX, missile.posY, missile.posZ, new ActionSource(missile.world, new Vec3d(missile.posX, missile.posY, missile.posZ), new EntityCause(missile))); //TODO make lambda driven, so we can reuse fuses on other entities
-                    missile.setDead();
+                    missile.getPotentialAction().doAction(missile.world, missile.posX, missile.posY, missile.posZ, new EntityCause(missile)); //TODO make lambda driven, so we can reuse fuses on other entities
+                    missile.remove();
                 }
             }
         }

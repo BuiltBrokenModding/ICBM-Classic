@@ -6,6 +6,7 @@ import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.TargetRangeDet;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.PotentialAction;
+import lombok.Getter;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
 
     //TODO public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
 
+    @Getter
     private final PotentialAction potentialAction = new PotentialAction();
     private final NonNullSupplier<Float> maxHealth;
     private final LazyOptional<ItemStack> itemstack;

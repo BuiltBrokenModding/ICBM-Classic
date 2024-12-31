@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -74,9 +75,9 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, Compoun
     {
         nodes.forEach(node -> {
             final INBT tag = node.save(objectToSave);
-            if (tag != null && !tag.hasNoTags())
+            if (tag != null && (!(tag instanceof CompoundNBT) || !((CompoundNBT) tag).isEmpty()))
             {
-                tagCompound.setTag(node.getSaveKey(), tag);
+                tagCompound.put(node.getSaveKey(), tag);
             }
         });
         return tagCompound;
@@ -85,12 +86,12 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, Compoun
     @Override
     public void load(SaveObject objectToLoad, CompoundNBT save)
     {
-        if (save != null && !save.hasNoTags())
+        if (save != null && save.isEmpty())
         {
             nodes.forEach(node -> {
-                if (save.hasKey(node.getSaveKey()))
+                if (save.contains(node.getSaveKey()))
                 {
-                    node.load(objectToLoad, save.getTag(node.getSaveKey()));
+                    node.load(objectToLoad, save.get(node.getSaveKey()));
                 }
             });
         }
@@ -157,25 +158,6 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, Compoun
     public NbtSaveRoot<SaveObject> nodeVec3d(final String name, Function<SaveObject, Vec3d> save, BiConsumer<SaveObject, Vec3d> load)
     {
         return node(new SaveNodeVec3d<SaveObject>(name, save, load));
-    }
-
-    public NbtSaveRoot<SaveObject> nodeWorldDim(final String name, Function<SaveObject, World> save, BiConsumer<SaveObject, World> load)
-    {
-        return node(new NbtSaveNode<SaveObject, IntNBT>(name,
-            (saveObject) -> {
-                final World world = save.apply(saveObject);
-                if (world != null && world.provider != null)
-                {
-                    return new IntNBT(world.provider.getDimension());
-                }
-                return null;
-            },
-            (saveObject, data) -> {
-                final int dim = data.getInt();
-                final World world = DimensionManager.getWorld(dim);
-                load.accept(saveObject, world);
-            }
-        ));
     }
 
     @Deprecated

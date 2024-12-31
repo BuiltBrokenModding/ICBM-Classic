@@ -21,17 +21,25 @@ public final class PotentialAction extends PotentialActionImp<PotentialAction> {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "basic");
 
     @Setter() @Getter @Accessors(chain = true)
+    private boolean saveActionData = true;
+
+    @Setter() @Getter @Accessors(chain = true)
     private IActionData actionData;
 
     @Override
     public CompoundNBT serializeNBT() {
+        if(!saveActionData) { //TODO create nodeWrapper for boolean on/off
+            return super.serializeNBT();
+        }
         return SAVE_LOGIC.save(this, super.serializeNBT());
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
-        SAVE_LOGIC.load(this, nbt);
+        if(saveActionData) { //TODO create nodeWrapper for boolean on/off
+            SAVE_LOGIC.load(this, nbt);
+        }
     }
 
     private static final NbtSaveHandler<PotentialAction> SAVE_LOGIC = new NbtSaveHandler<PotentialAction>()

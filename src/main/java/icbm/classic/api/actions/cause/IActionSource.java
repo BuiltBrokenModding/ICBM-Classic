@@ -1,9 +1,13 @@
 package icbm.classic.api.actions.cause;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.INBTSerializable;
+
+import javax.annotation.Nullable;
 
 /**
  * Information about the source (starting point) of an action
@@ -23,7 +27,12 @@ public interface IActionSource extends INBTSerializable<CompoundNBT>
      *
      * @return world
      */
-    World getWorld();
+    ResourceLocation getDimensionKey();
+
+    @Nullable
+    default DimensionType getDimensionType() {
+        return getDimensionKey() != null ? DimensionType.byName(getDimensionKey()): null;
+    }
 
     /**
      * Source position of the action. May not align

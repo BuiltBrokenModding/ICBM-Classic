@@ -7,23 +7,17 @@ import icbm.classic.api.refs.ICBMEntities;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
-import icbm.classic.content.blocks.BlockSpikes;
 import icbm.classic.content.cargo.balloon.EntityBalloon;
 import icbm.classic.content.cargo.parachute.EntityParachute;
 import icbm.classic.content.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
-import icbm.classic.content.items.ItemMissile;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.entity.explosive.EntityMissileActionable;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,7 +35,7 @@ public final class EntityReg
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = new DeferredRegister<>(ForgeRegistries.ENTITIES, ICBMConstants.DOMAIN);
 
-    // <editor-fold desc="missiles">
+    // <editor-fold desc="explosive missiles">
     // TODO make health per missile in the configs
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_CONDENSED = explosiveMissile(
         "missile_explosive_condensed", ICBMExplosives.CONDENSED,
@@ -139,6 +133,16 @@ public final class EntityReg
         () -> (float) ConfigMissile.TIER_4_HEALTH, () -> new ItemStack(ItemReg.MISSILE_REDMATTER.get()));
     // </editor-fold>
 
+    // <editor-fold desc="missiles">
+    // TODO make health per missile in the configs
+    public static final RegistryObject<EntityType<EntityMissileActionable>> MISSILE_CLUSTER = missile(
+        "missile_cluster", null, // action is set in spawn item
+        () -> ConfigMissile.CLUSTER_MISSILE.MAX_HEALTH, () -> new ItemStack(ItemReg.MISSILE_CLUSTER.get()));
+
+    // </editor-fold>
+
+    /** @deprecated replace with {@link #missile(String, IActionData, NonNullSupplier, NonNullSupplier)} */
+    @Deprecated
     private static RegistryObject<EntityType<EntityExplosiveMissile>> explosiveMissile(String name, IActionData action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityExplosiveMissile>create(
             (t, w) -> new EntityExplosiveMissile(t, w, action, maxHealth, itemstack), EntityClassification.MISC)
@@ -148,7 +152,17 @@ public final class EntityReg
             .immuneToFire()
             .build(ICBMConstants.PREFIX + name)
         );
+    }
 
+    private static RegistryObject<EntityType<EntityMissileActionable>> missile(String name, IActionData action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
+        return ENTITIES.register(name, () -> EntityType.Builder.<EntityMissileActionable>create(
+                (t, w) -> new EntityMissileActionable(t, w, action, maxHealth, itemstack), EntityClassification.MISC)
+            .setTrackingRange(500)
+            .setUpdateInterval(1)
+            .size(0.5f, 0.5f)
+            .immuneToFire()
+            .build(ICBMConstants.PREFIX + name)
+        );
     }
 
     @SubscribeEvent
@@ -158,7 +172,6 @@ public final class EntityReg
         event.getRegistry().register(buildEntityEntry(EntityFragments.class, ICBMEntities.BLOCK_FRAGMENT, 40, 1));
         event.getRegistry().register(buildEntityEntry(EntityExplosive.class, ICBMEntities.BLOCK_EXPLOSIVE, 50, 5));
 
-        event.getRegistry().register(buildEntityEntry(EntityMissileActionable.class, ICBMEntities.MISSILE_GENERIC, 500, 1));
         event.getRegistry().register(buildEntityEntry(EntitySurfaceToAirMissile.class, ICBMEntities.MISSILE_SAM, 500, 1));
 
         event.getRegistry().register(buildEntityEntry(EntityExplosion.class, ICBMEntities.EXPLOSION, 100, 5));

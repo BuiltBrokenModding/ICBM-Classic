@@ -3,7 +3,6 @@ package icbm.classic.content.cluster.missile;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.actions.conditionals.ConditionAnd;
 import icbm.classic.content.actions.conditionals.ConditionTargetDistance;
 import icbm.classic.content.cluster.action.ActionDataCluster;
@@ -11,20 +10,20 @@ import icbm.classic.content.actions.conditionals.ConditionalImpact;
 import icbm.classic.content.missile.entity.explosive.EntityMissileActionable;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
-import net.minecraft.item.ItemStack;
+import lombok.Value;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.NonNullSupplier;
 
+@Value
 public class CapabilityClusterMissileStack implements ICapabilityMissileStack, INBTSerializable<CompoundNBT> {
-    private final ItemStack stack;
 
     @Getter
-    private final ActionDataCluster actionDataCluster = new ActionDataCluster();
+    ActionDataCluster actionDataCluster = new ActionDataCluster(); // TODO abstract action and use field provider to pass in data from item
 
-    public CapabilityClusterMissileStack(ItemStack stack) {
-        this.stack = stack;
-    }
+    NonNullSupplier<EntityType<EntityMissileActionable>> entityType;
 
     @Override
     public String getMissileId() {
@@ -34,10 +33,8 @@ public class CapabilityClusterMissileStack implements ICapabilityMissileStack, I
     @Override
     public IMissile newMissile(World world)
     {
-        final EntityMissileActionable missile = new EntityMissileActionable(world)
-            .setOriginalStack(stack)
-            .setActionData(actionDataCluster)
-            .initHealth(ConfigMissile.CLUSTER_MISSILE.MAX_HEALTH);
+        final EntityMissileActionable missile = entityType.get().create(world);
+        missile.getMainAction().setActionData(actionDataCluster.copy());
 
         final ConditionAnd conditionAnd = new ConditionAnd();
 

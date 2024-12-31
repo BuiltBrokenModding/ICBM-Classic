@@ -64,20 +64,28 @@ public class ActionDataCluster implements IActionData, INBTSerializable<Compound
         final CompoundNBT save = new CompoundNBT();
         final ListNBT spawnEntries = new ListNBT(); //TODO convert to node
         for (ItemStack stack : clusterSpawnEntries) {
-            spawnEntries.appendTag(stack.serializeNBT());
+            spawnEntries.add(stack.serializeNBT());
         }
-        save.setTag("clusterSpawnEntries", spawnEntries);
+        save.put("clusterSpawnEntries", spawnEntries);
         return save;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        final ListNBT tagList = nbt.getTagList("clusterSpawnEntries", 10);
+        final ListNBT tagList = nbt.getList("clusterSpawnEntries", 10);
         clusterSpawnEntries.clear();
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            ItemStack stack = new ItemStack(tagList.getCompoundTagAt(i));
+        for (int i = 0; i < tagList.size(); i++) {
+            ItemStack stack = ItemStack.read(tagList.getCompound(i));
             clusterSpawnEntries.add(stack);
         }
+    }
+
+    /** @deprecated will be replaced by field provider to avoid mutable action instances */
+    @Deprecated
+    public ActionDataCluster copy() {
+        final ActionDataCluster clone = new ActionDataCluster();
+        clone.deserializeNBT(serializeNBT());
+        return clone;
     }
 
     @Override

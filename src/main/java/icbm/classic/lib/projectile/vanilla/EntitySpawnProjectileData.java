@@ -9,11 +9,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.UUID;
 
@@ -44,19 +45,19 @@ public class EntitySpawnProjectileData extends BuildableObject<EntitySpawnProjec
     @Override
     public Entity newEntity(World world, boolean allowItemPickup) {
         if(entityKey != null) {
-            final EntityEntry entry = ForgeRegistries.ENTITIES.getValue(entityKey);
+            final EntityType<?> entry = ForgeRegistries.ENTITIES.getValue(entityKey);
             if(entry != null) {
-                final Entity entity = entry.newInstance(world);
+                final Entity entity = entry.create(world);
                 if(entity != null) {
                     if(entityDisplayTag != null) {
-                        entity.setCustomNameTag(entityDisplayTag);
+                        entity.setCustomName(new StringTextComponent(entityDisplayTag));
                     }
                     if(entityData != null) {
-                        final CompoundNBT entityExistingSave = entity.writeToNBT(new CompoundNBT());
+                        final CompoundNBT entityExistingSave = entity.writeWithoutTypeId(new CompoundNBT());
                         final UUID uuid = entity.getUniqueID();
                         entityExistingSave.merge(entityData);
                         entity.setUniqueId(uuid);
-                        entity.readFromNBT(entityExistingSave);
+                        entity.read(entityExistingSave);
                     }
                 }
                 return entity;

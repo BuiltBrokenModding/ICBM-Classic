@@ -10,20 +10,17 @@ import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.PotentialAction;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 
@@ -35,6 +32,7 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     /** Explosive data and settings */
     @Getter
     private final PotentialAction mainAction = new PotentialAction()
+        .setSaveActionData(false) // Data is set on this::new
         .withProvider(new ActionFieldProvider()
             .field(ActionFields.IMPACTED, () -> hasImpacted)
             .field(ActionFields.HOST_ENTITY, () -> this)
@@ -42,23 +40,16 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
             .field(ActionFields.TARGET_POSITION, () -> this.getMissileCapability().getTargetData() != null ? this.getMissileCapability().getTargetData().getPosition(): null)
         );
 
+    private final LazyOptional<ItemStack> itemstack;
 
-    @Getter @Setter @Accessors(chain = true)
-    private ItemStack originalStack = ItemStack.EMPTY;
-
-
-    public EntityMissileActionable(World w)
+    public EntityMissileActionable(EntityType<EntityMissileActionable> entityType, World w, IActionData data, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack)
     {
-        super(w);
-        this.setSize(.5F, .5F);
-        this.inAirKillTime = 144000 /* 2 hours */;
-        this.isImmuneToFire = true;
+        super(entityType, w);
+        this.initHealth(maxHealth.get());
+        this.itemstack = LazyOptional.of(itemstack);
+        this.mainAction.setActionData(data);
+        this.inAirKillTime = 144_000 /* 2 hours */;
         this.ignoreFrustumCheck = true;
-    }
-
-    public EntityMissileActionable setActionData(IActionData actionData) {
-        mainAction.setActionData(actionData);
-        return this;
     }
 
     @Override
@@ -72,22 +63,6 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
                super.onDestroyedBy(source, damage);
            }
        }
-    }
-
-    @Override
-    public void writeSpawnData(PacketBuffer additionalMissileData)
-    {
-        final CompoundNBT saveData = SAVE_LOGIC.save(this, new CompoundNBT());
-        ByteBufUtils.writeTag(additionalMissileData, saveData);
-        super.writeSpawnData(additionalMissileData);
-    }
-
-    @Override
-    public void readSpawnData(PacketBuffer additionalMissileData)
-    {
-        final CompoundNBT saveData = ByteBufUtils.readTag(additionalMissileData);
-        SAVE_LOGIC.load(this, saveData);
-        super.readSpawnData(additionalMissileData);
     }
 
     @Override
@@ -117,7 +92,7 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     @Override
     protected void actionOnImpact(RayTraceResult impactLocation) {
         // TODO add impact cause
-        final IActionStatus status = mainAction.doAction(getEntityWorld(), impactLocation.hitVec.x, impactLocation.hitVec.y, impactLocation.hitVec.z, new EntityCause(this));
+        final IActionStatus status = mainAction.doAction(getEntityWorld(), impactLocation.getHitVec().x, impactLocation.getHitVec().y, impactLocation.getHitVec().z, new EntityCause(this));
         if(!status.isType(ActionStatusTypes.BLOCKING)) {
             super.actionOnImpact(impactLocation);
         }
@@ -125,26 +100,25 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
 
     @Override
     public ItemStack toStack() {
-        return originalStack;
+        return itemstack.orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public void readEntityFromNBT(CompoundNBT nbt)
+    public void readAdditional(CompoundNBT nbt)
     {
-        super.readEntityFromNBT(nbt);
+        super.readAdditional(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
     @Override
-    public void writeEntityToNBT(CompoundNBT nbt)
+    public void writeAdditional(CompoundNBT nbt)
     {
-        super.writeEntityToNBT(nbt);
+        super.writeAdditional(nbt);
         SAVE_LOGIC.save(this, nbt);
     }
 
     private static final NbtSaveHandler<EntityMissileActionable> SAVE_LOGIC = new NbtSaveHandler<EntityMissileActionable>()
         .mainRoot()
         /* */.nodeINBTSerializable("potential_action", EntityMissileActionable::getMainAction)
-        /* */.nodeItemStack("original_stack", EntityMissileActionable::getOriginalStack, EntityMissileActionable::setOriginalStack)
         .base();
 }
