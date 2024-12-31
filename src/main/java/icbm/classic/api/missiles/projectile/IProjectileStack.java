@@ -20,6 +20,7 @@ public interface IProjectileStack<E extends Entity>
      */
     @Nullable
     IProjectileData<E> getProjectileData();
+    //TODO IActionData getProjectileAction();
 
     /**
      * Called to consume the projectile from the

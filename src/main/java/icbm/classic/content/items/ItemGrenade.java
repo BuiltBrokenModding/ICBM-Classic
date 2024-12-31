@@ -71,10 +71,12 @@ public class ItemGrenade extends ItemBase
         if (!world.isRemote)
         {
             //Play throw sound
-            world.playSound(null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+            world.playSound(null,
+                entityLiving.posX, entityLiving.posY, entityLiving.posZ,
+                SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / world.rand.nextFloat() * 0.4F + 0.8F);
 
             //Calculate energy based on player hold time
-            final float throwEnergy = (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack);
+            final float throwEnergy = (float) (this.getUseDuration(itemStack) - timeLeft) / (float) this.getUseDuration(itemStack);
 
             //Create generate entity
             new EntityGrenade(world)
@@ -84,7 +86,7 @@ public class ItemGrenade extends ItemBase
             .setThrowMotion(throwEnergy).spawn();
 
             //Consume item
-            if (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).capabilities.isCreativeMode)
+            if (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).isCreative())
             {
                 itemStack.shrink(1);
             }
@@ -102,16 +104,4 @@ public class ItemGrenade extends ItemBase
     {
         ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
     }*/
-
-    @Override
-    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> list)
-    {
-        if (tab == getCreativeTab() || tab == ItemGroup.SEARCH)
-        {
-            for (int id : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosivesIDs())
-            {
-                list.add(new ItemStack(this, 1, id));
-            }
-        }
-    }
 }

@@ -38,6 +38,9 @@ import lombok.Setter;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -59,7 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiTile, IPlayerUsing
+public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiTile, IPlayerUsing, INamedContainerProvider
 {
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "radarstation");
 
@@ -379,6 +382,12 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     public CompoundNBT write(CompoundNBT nbt)
     {   SAVE_LOGIC.save(this, nbt);
         return super.write(nbt);
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int id, PlayerInventory inventory, PlayerEntity player) {
+        return new ContainerRadarStation(player, this);
     }
 
     private static final NbtSaveHandler<TileRadarStation> SAVE_LOGIC = new NbtSaveHandler<TileRadarStation>()

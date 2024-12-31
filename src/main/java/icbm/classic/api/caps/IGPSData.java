@@ -1,8 +1,11 @@
 package icbm.classic.api.caps;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
@@ -20,21 +23,15 @@ public interface IGPSData {
      */
     void setPosition(@Nullable Vec3d position);
 
-    /**
-     * Sets the dimension
-     *
-     * @param world to set, can be set to null to clear
-     */
-    default void setWorld(World world) {
-        setWorld(Optional.ofNullable(world).map(w -> w.provider).map(Dimension::getDimension).orElse(null));
+    default void setWorld(@Nullable World world) {
+        setDimension(world != null ? world.getDimension().getType() : null);
     }
 
-    /**
-     * Sets the world
-     *
-     * @param dimension to set, can be set to null to clear
-     */
-    void setWorld(@Nullable Integer dimension);
+    default void setDimension(@Nullable DimensionType dimension) {
+        setDimensionKey(dimension != null ? DimensionType.getKey(dimension) : null);
+    }
+
+    void setDimensionKey(@Nullable ResourceLocation dimension);
 
     /**
      * Gets the position component of the GPS data
@@ -45,24 +42,10 @@ public interface IGPSData {
     Vec3d getPosition();
 
     /**
-     * Gets the world instance, if client side use {@link #getWorldId()}
-     *
-     * @return world
-     */
-    @Nullable
-    default World getWorld() {
-        final Integer id = getWorldId();
-        if(id != null) {
-            return DimensionManager.getWorld(id);
-        }
-        return null;
-    }
-
-    /**
      * Gets the stored world id
      *
      * @return id
      */
     @Nullable
-    Integer getWorldId();
+    ResourceLocation getDimensionKey();
 }

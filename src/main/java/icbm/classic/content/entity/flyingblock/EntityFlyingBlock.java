@@ -19,7 +19,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -61,6 +63,11 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         this.isImmuneToFire = true;
         this.setSize(0.98F, 0.98F);
         this.inGroundKillTime = ICBMConstants.TICKS_SEC;
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return new SSpawnObjectPacket(this); //TODO figure out what this is
     }
 
     public void restoreGravity()

@@ -11,8 +11,11 @@ import net.minecraftforge.eventbus.api.Event;
  * the radar gun. Use this to change the block position
  * that gets saved to the radar, or cancel the event to
  * not have any data saved.
+ *
+ * @deprecated Will be replaced with action system
  */
 @Cancelable
+@Deprecated
 public class RadarGunTraceEvent extends Event
 {
     public final World world;

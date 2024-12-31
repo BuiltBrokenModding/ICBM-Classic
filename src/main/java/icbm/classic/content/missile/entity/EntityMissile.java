@@ -24,6 +24,7 @@ import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -67,9 +68,9 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
     protected boolean syncClient = false;
 
-    public EntityMissile(World world)
+    public EntityMissile(EntityType<?> type, World world)
     {
-        super(world);
+        super(type, world);
         this.hasHealth = true;
     }
 
@@ -94,8 +95,8 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void tick() {
+        super.tick();
 
         if(syncClient) {
             this.syncClient = false;
@@ -333,23 +334,17 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
         SAVE_LOGIC.load(this, saveData);
     }
 
-    /**
-     * (abstract) Protected helper method to read subclass entity additionalMissileData from NBT.
-     */
     @Override
-    public void readEntityFromNBT(CompoundNBT nbt)
+    public void readAdditional(CompoundNBT nbt)
     {
-        super.readEntityFromNBT(nbt);
+        super.readAdditional(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
-    /**
-     * (abstract) Protected helper method to write subclass entity additionalMissileData to NBT.
-     */
     @Override
-    public void writeEntityToNBT(CompoundNBT nbt)
+    public void writeAdditional(CompoundNBT nbt)
     {
-        super.writeEntityToNBT(nbt);
+        super.writeAdditional(nbt);
         SAVE_LOGIC.save(this, nbt);
     }
 

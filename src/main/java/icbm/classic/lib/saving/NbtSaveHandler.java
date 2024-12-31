@@ -81,8 +81,8 @@ public class NbtSaveHandler<E>
     {
         roots.forEach(root -> {
             final CompoundNBT saveData = root.save(objectToSave);
-            if(saveData != null && !saveData.hasNoTags()) {
-                save.setTag(root.getSaveKey(), saveData);
+            if(saveData != null && !saveData.isEmpty()) {
+                save.put(root.getSaveKey(), saveData);
             }
         });
         mainRoot.save(objectToSave, save);
@@ -97,12 +97,12 @@ public class NbtSaveHandler<E>
      */
     public void load(E objectToLoad, CompoundNBT save)
     {
-        if (save != null && !save.hasNoTags())
+        if (save != null && save.isEmpty())
         {
             roots.forEach(root -> {
-                if(save.hasKey(root.getSaveKey()))
+                if(save.contains(root.getSaveKey()))
                 {
-                    root.load(objectToLoad, save.getCompoundTag(root.getSaveKey()));
+                    root.load(objectToLoad, save.getCompound(root.getSaveKey()));
                 }
             });
             mainRoot.load(objectToLoad, save);

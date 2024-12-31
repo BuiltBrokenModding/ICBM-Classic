@@ -1,93 +1,34 @@
 package icbm.classic.content.cluster.bomblet;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.content.reg.BlockReg;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
+import icbm.classic.api.actions.IActionData;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
+//TODO merge down with missile into a class called AmmoItem(IActionData, Item.Properties)
+//  fully decoupling entity spawning from ammo concept and allowing creative uses of ammo later (raytraces, teleporting)
 public class ItemBombDroplet extends ItemBase {
 
-    public ItemBombDroplet()
+    private final NonNullSupplier<EntityType<EntityBombDroplet>> type;
+    public ItemBombDroplet(NonNullSupplier<EntityType<EntityBombDroplet>> type, Item.Properties properties)
     {
-        this.setMaxDamage(0);
-        this.setHasSubtypes(true);
-        this.setMaxStackSize(16);
+        super(properties);
+        this.type = type;
     }
 
     @Override
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundNBT nbt) {
-        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("explosive", ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
-        provider.add("projectile", ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, new BombletProjectileStack(stack::copy));
-        return provider;
-    }
-
-    @Override
-    public int getMetadata(int damage)
-    {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack itemstack)
-    {
-        if (itemstack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
-        {
-            final IExplosive explosive = itemstack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
-                final IExplosiveData data = explosive.getExplosiveData();
-                if (data != null)
-                {
-                    return "bomblet." + data.getRegistryKey();
-                }
-            }
-        }
-        return super.getUnlocalizedName();
-    }
-
-    @Override
-    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> items)
-    {
-        if (tab == getCreativeTab() || tab == ItemGroup.SEARCH)
-        {
-            for (int id : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosivesIDs())
-            {
-                items.add(new ItemStack(this, 1, id));
-            }
-        }
-    }
-
-    @Override
-    protected boolean hasDetailedInfo(ItemStack stack, PlayerEntity player)
-    {
-        return true;
-    }
-
-    @Override
-    protected void getDetailedInfo(ItemStack stack, PlayerEntity player, List list)
-    {
-        //TODO add hook
-        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
-        final IExplosive explosive = ICBMClassicHelpers.getExplosive(stack);
-        if(explosive != null) { //TODO make shift-key display?
-            explosive.collectInformation(list::add);
-        }
+        //TODO provider.add("explosive", ICBMClassicAPI.EXPLOSIVE_CAPABILITY, new CapabilityExplosiveStack(stack));
+        return new ItemStackCapProvider(stack)
+            .with(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, () -> new BombletProjectileStack(type));
     }
 }

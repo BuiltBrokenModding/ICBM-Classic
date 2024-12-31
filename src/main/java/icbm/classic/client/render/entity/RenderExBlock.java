@@ -42,12 +42,6 @@ public class RenderExBlock extends EntityRenderer<EntityExplosive>
 
     public void renderBlock(EntityExplosive entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        final Block block = entity.capabilityExplosive.toStack().getItem() instanceof ItemBlockExplosive
-            ? ((ItemBlockExplosive) entity.capabilityExplosive.toStack().getItem()).getBlock()
-            : BlockReg.EXPLOSIVE_CONDENSED.get();
-
-        final BlockState blockState = block.getDefaultState()
-            .with(BlockExplosive.FACING, Direction.UP);
 
         final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 

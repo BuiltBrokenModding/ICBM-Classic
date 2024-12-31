@@ -11,6 +11,7 @@ import icbm.classic.lib.radio.messages.TriggerActionTargetMessage;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemRadio;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,12 +20,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -52,20 +53,33 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
         if (world.isRemote && clientCooldownTicks <= 0)
         {
             clientCooldownTicks = COOLDOWN;
-            RayTraceResult objectMouseOver = player.rayTrace(RANGE, 1);
-            if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) // ignore failed raytraces
-            {
-                TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
-                if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
-                {
-                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.hitVec));
-                }
-            }// TODO else: add message stating that the raytrace failed
-            else {
-                player.sendStatusMessage(new TranslationTextComponent(getUnlocalizedName(stack) + ".laser.missed", RANGE), true);
-            }
+            this.rayTraceOnClient(world, player, stack);
+
         }
         return new ActionResult<ItemStack>(ActionResultType.SUCCESS, stack);
+    }
+
+
+    private void rayTraceOnClient(World world, PlayerEntity player, ItemStack stack) {
+        final BlockRayTraceResult objectMouseOver = world.rayTraceBlocks(new RayTraceContext(
+            player.getEyePosition(1.0F),
+            player.getLookVec().scale(RANGE).add(player.getEyePosition(1.0F)),
+            RayTraceContext.BlockMode.OUTLINE,
+            RayTraceContext.FluidMode.NONE, //TODO add a toggle to cycle between hitting fluids and not
+            player
+        ));
+
+        if (objectMouseOver.getType() == RayTraceResult.Type.BLOCK)
+        {
+            final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getPos());
+            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
+            {
+                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getHitVec()));
+            }
+        }
+        else {
+            player.sendStatusMessage(new TranslationTextComponent(getTranslationKey(stack) + ".laser.missed", RANGE), true);
+        }
     }
 
     @Override
@@ -77,11 +91,10 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
         if (world.isRemote && clientCooldownTicks > 0) // when holding the right mouse button, trigger item use every second
             clientCooldownTicks--;
-
-        super.onUpdate(stack, world, entity, itemSlot, isSelected);
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
     }
 
     @Override
@@ -96,12 +109,12 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
             final Vec3d target = new Vec3d(x, y, z);
 
             // Fire on main thread
-            ((ServerWorld) player.getEntityWorld()).addScheduledTask(() -> {
+            ((ServerWorld) player.getEntityWorld()).getServer().execute(() -> {
 
                 final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, target, player);
                 if (!MinecraftForge.EVENT_BUS.post(event)) {
                     player.sendStatusMessage(new TranslationTextComponent(
-                        getUnlocalizedName(stack) + ".target",
+                        getTranslationKey(stack) + ".target",
                         formatNumber(event.getPos().x),
                         formatNumber(event.getPos().y),
                         formatNumber(event.getPos().z)
@@ -113,7 +126,7 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
                     player.sendStatusMessage(new TranslationTextComponent(event.cancelReason), true);
                 }
                 else {
-                    player.sendStatusMessage(new TranslationTextComponent(getUnlocalizedName(stack) + ".laser.canceled"), false);
+                    player.sendStatusMessage(new TranslationTextComponent(getTranslationKey(stack) + ".laser.canceled"), false);
                 }
             });
         }
@@ -125,7 +138,7 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
     }
 
     @Override
-    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, PlayerEntity player)
+    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IWorldReader world, BlockPos pos, PlayerEntity player)
     {
         return true;
     }

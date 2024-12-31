@@ -56,9 +56,8 @@ public class ItemThrowableProjectile extends ItemBase {
     @Override
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable CompoundNBT nbt) {
-        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("projectile", ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, new ProjectileStack());
-        return provider;
+        return new ItemStackCapProvider(stack)
+            .with(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, ProjectileStack::new);
     }
 
     @Override
@@ -149,12 +148,12 @@ public class ItemThrowableProjectile extends ItemBase {
             final String key = getTranslationKey(stack) + ".info";
             final float gravity = -EntityParachute.GRAVITY * 20;
             final float air = (1 - EntityParachute.AIR_RESISTANCE) * 100;
-            LanguageUtility.outputLines(new TranslationTextComponent(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
+            LanguageUtility.outputComponents(new TranslationTextComponent(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
         }
 
         // Show projectile information
         if(projectileStack.isPresent() && projectileStack.orElseThrow(IllegalStateException::new).getProjectileData() != null) {
-            LanguageUtility.outputLines(projectileStack.orElseThrow(IllegalStateException::new).getProjectileData().getTooltip(), list::add);
+            LanguageUtility.outputComponents(projectileStack.orElseThrow(IllegalStateException::new).getProjectileData().getTooltip(), list::add);
         }
     }
 

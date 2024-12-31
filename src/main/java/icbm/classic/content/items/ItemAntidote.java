@@ -24,7 +24,7 @@ public class ItemAntidote extends Item
         {
             entityLiving.clearActivePotions();
         }
-        if (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).capabilities.isCreativeMode)
+        if (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).isCreative())
         {
             stack.shrink(1);
         }

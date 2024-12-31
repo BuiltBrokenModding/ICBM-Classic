@@ -55,7 +55,7 @@ public class ItemDefuser extends ItemICBMElectrical
 
                         explosive.onDefuse();
                     }
-                    entity.setDead();
+                    entity.remove();
                 }
             }
             else if (entity instanceof TNTEntity)
@@ -67,9 +67,9 @@ public class ItemDefuser extends ItemICBMElectrical
 
                 if (!entity.world.isRemote)
                 {
-                    entity.world.spawnEntity(new ItemEntity(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT)));
+                    entity.world.addEntity(new ItemEntity(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT)));
                 }
-                entity.setDead();
+                entity.remove();
             }
             else if (entity instanceof EntityBombCart)
             {

@@ -5,6 +5,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.translation.I18n;
 
@@ -246,6 +248,16 @@ public class LanguageUtility
     public static void outputLines(ITextComponent textComponent, Consumer<String> lines) {
         final String formatted = buildToolTipString(textComponent);
         splitByLine(formatted, toolTipLineLength, lines);
+    }
+
+    /**
+     * @deprecated  Temp solution to supplying text components while maintaining old format. Should be replaced with
+     * formatter or component that can better process translated text with extra rules.
+     */
+    @Deprecated
+    public static void outputComponents(ITextComponent textComponent, Consumer<ITextComponent> lines) {
+        final String formatted = buildToolTipString(textComponent);
+        splitByLine(formatted, toolTipLineLength, StringTextComponent::new);
     }
 
     public static String buildToolTipString(ITextComponent textComponent) {

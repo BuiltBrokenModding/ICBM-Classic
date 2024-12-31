@@ -2,9 +2,11 @@ package icbm.classic.lib.capability.gps;
 
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.lib.saving.NbtSaveHandler;
+import lombok.Data;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -12,32 +14,11 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
+@Data
 public class CapabilityGPSData implements IGPSData, INBTSerializable<CompoundNBT> {
 
     private Vec3d position;
-    private Integer dimension;
-
-    @Override
-    public void setPosition(@Nullable Vec3d position) {
-        this.position = position;
-    }
-
-    @Override
-    public void setWorld(@Nullable Integer dimension) {
-        this.dimension = dimension;
-    }
-
-    @Nullable
-    @Override
-    public Vec3d getPosition() {
-        return position;
-    }
-
-    @Nullable
-    @Override
-    public Integer getWorldId() {
-        return dimension;
-    }
+    private ResourceLocation dimensionKey;
 
     @Override
     public CompoundNBT serializeNBT() {
@@ -52,7 +33,7 @@ public class CapabilityGPSData implements IGPSData, INBTSerializable<CompoundNBT
     private static final NbtSaveHandler<IGPSData> SAVE_LOGIC = new NbtSaveHandler<IGPSData>()
         .mainRoot()
         /* */.nodeVec3d("pos", IGPSData::getPosition, IGPSData::setPosition)
-        /* */.nodeInteger("dim", IGPSData::getWorldId, IGPSData::setWorld)
+        /* */.nodeResourceLocation("dim", IGPSData::getDimensionKey, IGPSData::setDimensionKey)
         .base();
 
     public static void register()

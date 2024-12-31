@@ -17,6 +17,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.RayTraceResult;
@@ -74,18 +75,7 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     }
 
     @Override
-    public String getName()
-    {
-        final IActionData data = mainAction.getActionData();
-        if (data != null)
-        {
-            return I18n.translateToLocal("missile." + data.getRegistryKey().toString() + ".name");
-        }
-        return I18n.translateToLocal("missile.icbmclassic:generic.name");
-    }
-
-    @Override
-    public void writeSpawnData(ByteBuf additionalMissileData)
+    public void writeSpawnData(PacketBuffer additionalMissileData)
     {
         final CompoundNBT saveData = SAVE_LOGIC.save(this, new CompoundNBT());
         ByteBufUtils.writeTag(additionalMissileData, saveData);
@@ -93,7 +83,7 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     }
 
     @Override
-    public void readSpawnData(ByteBuf additionalMissileData)
+    public void readSpawnData(PacketBuffer additionalMissileData)
     {
         final CompoundNBT saveData = ByteBufUtils.readTag(additionalMissileData);
         SAVE_LOGIC.load(this, saveData);
@@ -101,9 +91,9 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
-        super.onUpdate();
+        super.tick();
         this.mainAction.update(ticksExisted, !this.getEntityWorld().isRemote);
 
         // Ticking trigger

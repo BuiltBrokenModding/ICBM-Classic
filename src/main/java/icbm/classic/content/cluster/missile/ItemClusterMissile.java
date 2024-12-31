@@ -33,7 +33,7 @@ public class ItemClusterMissile extends ItemBase {
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
         final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilityClusterMissileStack(stack));
+        provider.with("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilityClusterMissileStack(stack));
         return provider;
     }
 

@@ -2,10 +2,13 @@ package icbm.classic.prefab.item;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,47 +24,42 @@ import java.util.Map;
 public class ItemStackCapProvider implements ICapabilityProvider, INBTSerializable<CompoundNBT>
 {
     public final ItemStack host;
-    public HashMap<Capability, Object> capTypeToCap = new HashMap();
-    public HashMap<String, Object> keyToCap = new HashMap();
+    public HashMap<Capability, LazyOptional<Object>> capTypeToCap = new HashMap();
 
     public ItemStackCapProvider(ItemStack host)
     {
         this.host = host;
     }
 
-    public <T> void add(String key, Capability<T> capability, T cap)
+    public <T> ItemStackCapProvider with(Capability<T> capability, NonNullSupplier<T> cap)
     {
-        capTypeToCap.put(capability, cap);
-        keyToCap.put(key, cap);
+        capTypeToCap.put(capability, LazyOptional.of(cap).cast());
+        return this;
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing)
-    {
-        return capTypeToCap.containsKey(capability);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
+    public <T> LazyOptional<T> getCapability(@Nonnull final Capability<T> capability, final @Nullable Direction side)
     {
         if (capTypeToCap.containsKey(capability))
         {
-            return (T) capTypeToCap.get(capability);
+            return capTypeToCap.get(capability).cast();
         }
-        return null;
+        return LazyOptional.empty();
     }
 
     @Override
     public CompoundNBT serializeNBT()
     {
-        CompoundNBT tag = new CompoundNBT();
-        for (Map.Entry<String, Object> entry : keyToCap.entrySet())
+        final CompoundNBT tag = new CompoundNBT();
+        for (Map.Entry<Capability, LazyOptional<Object>> entry : capTypeToCap.entrySet())
         {
-            if (entry.getValue() instanceof INBTSerializable)
-            {
-                tag.setTag(entry.getKey(), ((INBTSerializable) entry.getValue()).serializeNBT());
-            }
+            entry.getValue().ifPresent((value) -> {
+                final INBT nbt = ((INBTSerializable) value).serializeNBT();
+                if(!(nbt instanceof CompoundNBT) || !((CompoundNBT) nbt).isEmpty()) {
+                    tag.put(entry.getKey().getName(), nbt);
+                }
+            });
         }
         return tag;
     }
@@ -69,12 +67,16 @@ public class ItemStackCapProvider implements ICapabilityProvider, INBTSerializab
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-        for (Map.Entry<String, Object> entry : keyToCap.entrySet())
+        for (Map.Entry<Capability, LazyOptional<Object>> entry : capTypeToCap.entrySet())
         {
-            if (entry.getValue() instanceof INBTSerializable)
-            {
-                ((INBTSerializable) entry.getValue()).deserializeNBT(nbt.getTag(entry.getKey()));
-            }
+            entry.getValue().ifPresent((value) -> {
+                if(nbt.contains(entry.getKey().getName())) {
+                    final INBT save = nbt.get(entry.getKey().getName());
+                    if(!(save instanceof CompoundNBT) || !((CompoundNBT) save).isEmpty()) {
+                        ((INBTSerializable) entry.getValue()).deserializeNBT(save);
+                    }
+                }
+            });
         }
     }
 }

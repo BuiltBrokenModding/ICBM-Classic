@@ -4,10 +4,12 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -46,6 +48,11 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.ignoreFrustumCheck = true;
         //this.height = 1;
         //this.width = 1;
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return new SSpawnObjectPacket(this); //TODO figure out what this is
     }
 
     @Override

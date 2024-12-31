@@ -2,7 +2,6 @@ package icbm.classic.content.missile.entity.anti.item;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.prefab.item.ItemBase;
-import icbm.classic.prefab.item.ItemICBMBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -24,7 +23,7 @@ public class ItemSurfaceToAirMissile extends ItemBase
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt)
     {
         final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilitySAMStack());
+        provider.with("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilitySAMStack());
         return provider;
     }
 }

@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.cargo.ItemThrowableProjectile;
+import icbm.classic.content.cluster.bomblet.ItemBombDroplet;
 import icbm.classic.content.cluster.missile.ItemClusterMissile;
 import icbm.classic.content.items.*;
 import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
@@ -65,7 +66,7 @@ public class ItemReg
 
     // <editor-fold desc="bomblets">
     public static final RegistryObject<Item> BOMBLET_EMPTY = ITEMS.register("bomblet_empty", () -> new Item(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed", () -> new Item(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed", () -> new ItemBombDroplet(ICBMExplosives.CONDENSED, new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     // TODO add other explosive types
     // </editor-fold>
 
@@ -73,29 +74,29 @@ public class ItemReg
     public static final RegistryObject<Item> MISSILE_SURFACE_TO_AIR = ITEMS.register("missile_surface_to_air", () -> new ItemSurfaceToAirMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> MISSILE_CLUSTER = ITEMS.register("missile_cluster", () -> new ItemClusterMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
 
-    public static final RegistryObject<Item> MISSILE_CONDENSED = ITEMS.register("missile_explosive_condensed", () -> new ItemMissile(ICBMExplosives.CONDENSED, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_SHRAPNEL = ITEMS.register("missile_explosive_shrapnel", () -> new ItemMissile(ICBMExplosives.SHRAPNEL, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_INCENDIARY = ITEMS.register("missile_explosive_incendiary", () -> new ItemMissile(ICBMExplosives.INCENDIARY, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_DEBILITATION = ITEMS.register("missile_explosive_debilitation", () -> new ItemMissile(ICBMExplosives.DEBILITATION, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_CHEMICAL = ITEMS.register("missile_explosive_chemical", () -> new ItemMissile(ICBMExplosives.CHEMICAL, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_ANVIL = ITEMS.register("missile_explosive_anvil", () -> new ItemMissile(ICBMExplosives.ANVIL, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_REPULSIVE = ITEMS.register("missile_explosive_repulsive", () -> new ItemMissile(ICBMExplosives.REPULSIVE, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_ATTRACTIVE = ITEMS.register("missile_explosive_attractive", () -> new ItemMissile(ICBMExplosives.ATTRACTIVE, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_COLOR = ITEMS.register("missile_explosive_color", () -> new ItemMissile(ICBMExplosives.COLOR, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_SMOKE = ITEMS.register("missile_explosive_smoke", () -> new ItemMissile(ICBMExplosives.SMOKE, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_FRAGMENTATION = ITEMS.register("missile_explosive_fragmentation", () -> new ItemMissile(ICBMExplosives.FRAGMENTATION, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_CONTAGIOUS = ITEMS.register("missile_explosive_contagious", () -> new ItemMissile(ICBMExplosives.CONTAGIOUS, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_SONIC = ITEMS.register("missile_explosive_sonic", () -> new ItemMissile(ICBMExplosives.SONIC, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_BREACHING = ITEMS.register("missile_explosive_breaching", () -> new ItemMissile(ICBMExplosives.BREACHING, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_THERMOBARIC = ITEMS.register("missile_explosive_thermobaric", () -> new ItemMissile(ICBMExplosives.THERMOBARIC, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_NUCLEAR = ITEMS.register("missile_explosive_nuclear", () -> new ItemMissile(ICBMExplosives.NUCLEAR, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_EMP = ITEMS.register("missile_explosive_emp", () -> new ItemMissile(ICBMExplosives.EMP, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_EXOTHERMIC = ITEMS.register("missile_explosive_exothermic", () -> new ItemMissile(ICBMExplosives.EXOTHERMIC, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_ENDOTHERMIC = ITEMS.register("missile_explosive_endothermic", () -> new ItemMissile(ICBMExplosives.ENDOTHERMIC, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_GRAVITY = ITEMS.register("missile_explosive_gravity", () -> new ItemMissile(ICBMExplosives.GRAVITY, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_ENDER = ITEMS.register("missile_explosive_ender", () -> new ItemMissile(ICBMExplosives.ENDER, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_ANTIMATTER = ITEMS.register("missile_explosive_antimatter", () -> new ItemMissile(ICBMExplosives.ANTIMATTER, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> MISSILE_REDMATTER = ITEMS.register("missile_explosive_redmatter", () -> new ItemMissile(ICBMExplosives.REDMATTER, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_CONDENSED = ITEMS.register("missile_explosive_condensed", () -> new ItemMissile(EntityReg.MISSILE_CONDENSED::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_SHRAPNEL = ITEMS.register("missile_explosive_shrapnel", () -> new ItemMissile(EntityReg.MISSILE_SHRAPNEL::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_INCENDIARY = ITEMS.register("missile_explosive_incendiary", () -> new ItemMissile(EntityReg.MISSILE_INCENDIARY::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_DEBILITATION = ITEMS.register("missile_explosive_debilitation", () -> new ItemMissile(EntityReg.MISSILE_DEBILITATION::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_CHEMICAL = ITEMS.register("missile_explosive_chemical", () -> new ItemMissile(EntityReg.MISSILE_CHEMICAL::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_ANVIL = ITEMS.register("missile_explosive_anvil", () -> new ItemMissile(EntityReg.MISSILE_ANVIL::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_REPULSIVE = ITEMS.register("missile_explosive_repulsive", () -> new ItemMissile(EntityReg.MISSILE_REPULSIVE::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_ATTRACTIVE = ITEMS.register("missile_explosive_attractive", () -> new ItemMissile(EntityReg.MISSILE_ATTRACTIVE::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_COLOR = ITEMS.register("missile_explosive_color", () -> new ItemMissile(EntityReg.MISSILE_COLOR::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_SMOKE = ITEMS.register("missile_explosive_smoke", () -> new ItemMissile(EntityReg.MISSILE_SMOKE::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_FRAGMENTATION = ITEMS.register("missile_explosive_fragmentation", () -> new ItemMissile(EntityReg.MISSILE_FRAGMENTATION::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_CONTAGIOUS = ITEMS.register("missile_explosive_contagious", () -> new ItemMissile(EntityReg.MISSILE_CONTAGIOUS::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_SONIC = ITEMS.register("missile_explosive_sonic", () -> new ItemMissile(EntityReg.MISSILE_SONIC::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_BREACHING = ITEMS.register("missile_explosive_breaching", () -> new ItemMissile(EntityReg.MISSILE_BREACHING::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_THERMOBARIC = ITEMS.register("missile_explosive_thermobaric", () -> new ItemMissile(EntityReg.MISSILE_THERMOBARIC::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_NUCLEAR = ITEMS.register("missile_explosive_nuclear", () -> new ItemMissile(EntityReg.MISSILE_NUCLEAR::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_EMP = ITEMS.register("missile_explosive_emp", () -> new ItemMissile(EntityReg.MISSILE_EMP::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_EXOTHERMIC = ITEMS.register("missile_explosive_exothermic", () -> new ItemMissile(EntityReg.MISSILE_EXOTHERMIC::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_ENDOTHERMIC = ITEMS.register("missile_explosive_endothermic", () -> new ItemMissile(EntityReg.MISSILE_ENDOTHERMIC::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_GRAVITY = ITEMS.register("missile_explosive_gravity", () -> new ItemMissile(EntityReg.MISSILE_GRAVITY::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_ENDER = ITEMS.register("missile_explosive_ender", () -> new ItemMissile(EntityReg.MISSILE_ENDER::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_ANTIMATTER = ITEMS.register("missile_explosive_antimatter", () -> new ItemMissile(EntityReg.MISSILE_ANTIMATTER::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_REDMATTER = ITEMS.register("missile_explosive_redmatter", () -> new ItemMissile(EntityReg.MISSILE_REDMATTER::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
     // <editor-fold desc="cargo">
