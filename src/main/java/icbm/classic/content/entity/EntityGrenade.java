@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.item.ItemStack;
@@ -35,12 +36,11 @@ public class EntityGrenade extends Entity
     private final LazyOptional<ItemStack> itemstack;
 
 
-    public EntityGrenade(World par1World, IActionData actionData, NonNullSupplier<ItemStack> itemstack)
+    public EntityGrenade(EntityType<EntityGrenade> type, World par1World, IActionData actionData, NonNullSupplier<ItemStack> itemstack)
     {
-        super(par1World);
+        super(type, par1World);
         this.explodeAction.setActionData(actionData);
         this.itemstack = LazyOptional.of(itemstack);
-        this.setSize(0.25F, 0.25F);
     }
     /**
      * Gets the itemStack meant to represent the render

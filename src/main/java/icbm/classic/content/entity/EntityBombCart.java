@@ -5,29 +5,32 @@ import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.PotentialAction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.TNTMinecartEntity;
 import net.minecraft.util.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import java.util.function.Supplier;
 
 public class EntityBombCart extends TNTMinecartEntity
 {
     private final PotentialAction explodeAction = new PotentialAction();  //TODO expose through capability
-    private final BlockState mimicBlock;
-    private final Supplier<ItemStack> cartStack;
+    private final LazyOptional<BlockState> mimicBlock;
+    private final LazyOptional<ItemStack> cartStack;
 
     //TODO add custom fuse timers
 
-    public EntityBombCart(World par1World, IActionData triggerAction, BlockState mimicBlock, Supplier<ItemStack> cartStack)
+    public EntityBombCart(EntityType<EntityBombCart> type, World par1World, IActionData triggerAction, NonNullSupplier<BlockState> mimicBlock, NonNullSupplier<ItemStack> cartStack)
     {
-        super(par1World);
+        super(type, par1World);
         explodeAction.setActionData(triggerAction);
-        this.mimicBlock = mimicBlock;
-        this.cartStack = cartStack;
+        this.mimicBlock = LazyOptional.of(mimicBlock);
+        this.cartStack = LazyOptional.of(cartStack);
     }
 
     @Override
@@ -68,12 +71,12 @@ public class EntityBombCart extends TNTMinecartEntity
     @Override
     public ItemStack getCartItem()
     {
-        return cartStack.get();
+        return cartStack.orElse(ItemStack.EMPTY);
     }
 
     @Override
     public BlockState getDefaultDisplayTile()
     {
-        return mimicBlock;
+        return mimicBlock.orElseThrow(IllegalStateException::new);
     }
 }
