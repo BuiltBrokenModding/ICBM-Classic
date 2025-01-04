@@ -96,9 +96,9 @@ public class BlastBreach extends BlastTNT
                     //Loop depth
                     for (int depthIndex = 0; depthIndex < this.depth && energyRemaining > 0; depthIndex++)
                     {
-                        int x = this.xi() + direction.getFrontOffsetX() * depthIndex;
-                        int y = this.yi() + direction.getFrontOffsetY() * depthIndex;
-                        int z = this.zi() + direction.getFrontOffsetZ() * depthIndex;
+                        int x = this.xi() + direction.getXOffset() * depthIndex;
+                        int y = this.yi() + direction.getYOffset() * depthIndex;
+                        int z = this.zi() + direction.getZOffset() * depthIndex;
 
                         if (direction == Direction.DOWN || direction == Direction.UP)
                         {
@@ -143,7 +143,7 @@ public class BlastBreach extends BlastTNT
                             //R = unbreakable(6M) -> fuck that
 
 
-                            final float cost = block.getExplosionResistance(world(), pos, this.exploder, this);
+                            final float cost = block.getExplosionResistance(state, world(), pos, this.exploder, this);
                             if (cost < energyRemaining)
                             {
                                 energyRemaining -= cost;
@@ -160,7 +160,7 @@ public class BlastBreach extends BlastTNT
             }
 
             //Play some audio
-            this.world().playSound(null, location.x(), location.y(), location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSound(null, x(), y(), z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 }

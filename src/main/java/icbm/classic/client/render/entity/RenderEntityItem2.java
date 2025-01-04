@@ -49,7 +49,7 @@ public class RenderEntityItem2 extends EntityRenderer<ItemEntity>
 
         if (this.bindEntityTexture(entity))
         {
-            this.renderManager.renderEngine.getTexture(this.getEntityTexture(entity)).setBlurMipmap(false, false);
+            this.renderManager.textureManager.getTexture(this.getEntityTexture(entity)).setBlurMipmap(false, false);
             hasTexture = true;
         }
 
@@ -64,7 +64,7 @@ public class RenderEntityItem2 extends EntityRenderer<ItemEntity>
         if (this.renderOutlines)
         {
             GlStateManager.enableColorMaterial();
-            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+            GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
         }
 
         GlStateManager.pushMatrix();
@@ -74,7 +74,7 @@ public class RenderEntityItem2 extends EntityRenderer<ItemEntity>
 
         if (this.renderOutlines)
         {
-            GlStateManager.disableOutlineMode();
+            GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
         }
 
@@ -85,7 +85,7 @@ public class RenderEntityItem2 extends EntityRenderer<ItemEntity>
 
         if (hasTexture)
         {
-            this.renderManager.renderEngine.getTexture(this.getEntityTexture(entity)).restoreLastBlurMipmap();
+            this.renderManager.textureManager.getTexture(this.getEntityTexture(entity)).restoreLastBlurMipmap();
         }
 
         super.doRender(entity, x, y, z, entityYaw, partialTicks);

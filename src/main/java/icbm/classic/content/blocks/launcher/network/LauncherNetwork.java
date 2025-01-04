@@ -9,6 +9,7 @@ import lombok.Getter;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -28,8 +29,8 @@ public class LauncherNetwork implements ICapabilityProvider {
     @Getter
     private final List<LauncherEntry> launchers = new LinkedList();
 
-    public final NetworkEnergyStorage energyStorage = new NetworkEnergyStorage(this);
-    public final NetworkInventory inventory = new NetworkInventory(this);
+    public final LazyOptional<NetworkEnergyStorage> energyStorage = LazyOptional.of(() -> new NetworkEnergyStorage(this));
+    public final LazyOptional<NetworkInventory> inventory = LazyOptional.of(() -> new NetworkInventory(this));
 
     public void invalidate(LauncherNode source) {
         final HashSet<LauncherNode> components = new HashSet(this.components);
@@ -82,34 +83,26 @@ public class LauncherNetwork implements ICapabilityProvider {
             node.setNetwork(this);
 
             // Adding if launcher
-            if (node.getSelf().hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null)) {
-                final IMissileLauncher launcher = node.getSelf().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null);
-                if(launcher != null) {
-                    launchers.add(new LauncherEntry(launcher, node.getSelf(), null));
-                    onNetworkUpdated();
-                }
+            if (node.getSelf().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY).isPresent()) {
+                final IMissileLauncher launcher = node.getSelf().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null).orElseThrow(IllegalStateException::new);
+                launchers.add(new LauncherEntry(launcher, node.getSelf(), null));
+                onNetworkUpdated();
             }
         }
     }
 
     public void onNetworkUpdated() {
-        inventory.buildInventory();
+        inventory.orElseThrow(IllegalStateException::new).buildInventory();
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing) {
-        return capability == CapabilityEnergy.ENERGY || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
         if(capability == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.cast(energyStorage);
+            return energyStorage.cast();
         }
         else if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
+            return inventory.cast();
         }
-        return null;
+        return LazyOptional.empty();
     }
 }

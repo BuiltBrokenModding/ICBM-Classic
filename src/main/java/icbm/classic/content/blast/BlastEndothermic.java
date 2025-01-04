@@ -5,11 +5,19 @@ import net.minecraft.block.*;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -30,9 +38,9 @@ public class BlastEndothermic extends BlastBeam
         final double radiusDecay = Math.max(1, radius * 0.3); //TODO config
         for (BlockPos targetPosition : edits)
         {
-            final double delta_x = location.xi() - targetPosition.getX();
-            final double delta_y = location.yi() - targetPosition.getY();
-            final double delta_z = location.zi() - targetPosition.getZ();
+            final double delta_x = xi() - targetPosition.getX();
+            final double delta_y = yi() - targetPosition.getY();
+            final double delta_z = zi() - targetPosition.getZ();
 
             final double distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
             final double distanceScale = 1 - (distance / radius);
@@ -50,19 +58,13 @@ public class BlastEndothermic extends BlastBeam
 
                 else if (blockState.getBlock() == net.minecraft.block.Blocks.FIRE)
                 {
-                    world.setBlockToAir(targetPosition);
+                    world.removeBlock(targetPosition, false);
                 }
                 else if (blockState.getBlock() == net.minecraft.block.Blocks.LAVA)
                 {
                     world.setBlockState(targetPosition, Blocks.OBSIDIAN.getDefaultState());
                 }
-                else if (blockState.getBlock() == net.minecraft.block.Blocks.FLOWING_LAVA)
-                {
-                    int level = Math.min(8, Math.max(1, blockState.getValue(BlockLiquid.LEVEL) / 2));
-                    world.setBlockState(targetPosition, net.minecraft.block.Blocks.SNOW_LAYER.getDefaultState()
-                            .withProperty(SnowBlock.LAYERS, level), 3);
-                }
-                else if (blockState.getBlock() == net.minecraft.block.Blocks.MAGMA)
+                else if (blockState.getBlock() == Blocks.MAGMA_BLOCK)
                 {
                     world.setBlockState(targetPosition, net.minecraft.block.Blocks.STONE.getDefaultState(), 3);
                 }
@@ -83,7 +85,7 @@ public class BlastEndothermic extends BlastBeam
                 }
 
                 //Ground replacement
-                else if (blockState.getMaterial() == Material.GROUND || blockState.getMaterial() == Material.GRASS)
+                else if (blockState.getMaterial() == Material.EARTH)
                 {
                     if (world.rand.nextBoolean())
                     {
@@ -106,17 +108,19 @@ public class BlastEndothermic extends BlastBeam
 
     private static void tryPlaceSnow(World world, BlockPos pos, boolean random)
     {
+
         if (!random || world.rand.nextBoolean())
         {
             //Place fire
             final BlockState blockState = world.getBlockState(pos);
-            final BlockState blockStateUnder = world.getBlockState(pos.down());
-            if (blockState.getBlock().isReplaceable(world, pos)
-                    && net.minecraft.block.Blocks.SNOW_LAYER.canPlaceBlockAt(world, pos)
-                    && blockStateUnder.isSideSolid(world, pos.down(), Direction.UP))
+
+            final BlockState snowState = Blocks.SNOW.getDefaultState()
+                .with(SnowBlock.LAYERS, 1 + world.rand.nextInt(7));
+
+            if (blockState.isReplaceable(new DirectionalPlaceContext(world, pos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
+                && Blocks.SNOW.isValidPosition(snowState, world, pos))
             {
-                world.setBlockState(pos, net.minecraft.block.Blocks.SNOW_LAYER.getDefaultState()
-                        .withProperty(SnowBlock.LAYERS, 1 + world.rand.nextInt(7)), 3);
+                world.setBlockState(pos, snowState, 3);
 
             }
         }
@@ -128,12 +132,14 @@ public class BlastEndothermic extends BlastBeam
         super.onBlastCompleted();
 
         //Freeze all nearby entities.
-        final List<MobEntity> livingEntities = world().getEntitiesWithinAABB(MobEntity.class, new AxisAlignedBB(location.x() - getBlastRadius(), location.y() - getBlastRadius(), location.z() - getBlastRadius(), location.x() + getBlastRadius(), location.y() + getBlastRadius(), location.z() + getBlastRadius()));
+        final List<MobEntity> livingEntities = world().getEntitiesWithinAABB(MobEntity.class, new AxisAlignedBB(
+            x() - getBlastRadius(), y() - getBlastRadius(), z() - getBlastRadius(),
+            x() + getBlastRadius(), y() + getBlastRadius(), z() + getBlastRadius()));
 
         if (livingEntities != null && !livingEntities.isEmpty())
         {
             for (MobEntity entity : livingEntities) {
-                if (entity != null && entity.isEntityAlive()) {
+                if (entity != null && entity.isAlive()) {
                     //entity.addPotionEffect(new CustomPotionEffect(PoisonFrostBite.INSTANCE, 60 * 20, 1, null));
                     entity.addPotionEffect(new EffectInstance(Effects.POISON, 10 * 20, 2));
                     entity.addPotionEffect(new EffectInstance(Effects.MINING_FATIGUE, 120 * 20, 2));
@@ -143,9 +149,9 @@ public class BlastEndothermic extends BlastBeam
         }
 
         //Change to time
-        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))
+        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE))
         {
-            this.world().setWorldTime(1200);
+            this.world().setDayTime(1200);
         }
     }
 }

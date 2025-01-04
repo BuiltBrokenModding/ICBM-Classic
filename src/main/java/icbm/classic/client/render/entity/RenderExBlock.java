@@ -61,7 +61,7 @@ public class RenderExBlock extends EntityRenderer<EntityExplosive>
 
         GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-        blockrendererdispatcher.renderBlockBrightness(blockState, entity.getBrightness());
+        blockrendererdispatcher.renderBlockBrightness(entity.getBlockRender(), entity.getBrightness());
         GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 
         //white flashing
@@ -74,7 +74,7 @@ public class RenderExBlock extends EntityRenderer<EntityExplosive>
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, (1.0F - ((float)entity.fuse - partialTicks + 1.0F) / 100.0F) * 0.8F);
             GlStateManager.polygonOffset(-3.0F, -3.0F);
             GlStateManager.enablePolygonOffset();
-            blockrendererdispatcher.renderBlockBrightness(blockState, 1.0F);
+            blockrendererdispatcher.renderBlockBrightness(entity.getBlockRender(), 1.0F);
             GlStateManager.polygonOffset(0.0F, 0.0F);
             GlStateManager.disablePolygonOffset();
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);

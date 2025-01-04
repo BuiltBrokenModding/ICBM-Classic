@@ -62,11 +62,6 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         this.getDataManager().register(BEAM_PROGRESS, -1f);
     }
 
-    public EntityLightBeam setPosition(IPos3D position)
-    {
-        this.setPosition(position.x(), position.y(), position.z());
-        return this;
-    }
 
     public EntityLightBeam setColor(float red, float green, float blue)
     {

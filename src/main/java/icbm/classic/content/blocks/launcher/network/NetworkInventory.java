@@ -40,11 +40,9 @@ public class NetworkInventory implements IItemHandler {
     }
 
     private IItemHandler getHandler(TileEntity tile) {
-        if(tile.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null) && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-            final IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            if(handler != null) {
-                return handler;
-            }
+        if(tile.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY).isPresent()
+            && tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+            return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(IllegalStateException::new);
         }
         return null;
     }

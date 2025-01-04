@@ -1,12 +1,20 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.content.reg.EntityReg;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.monster.ZombiePigmanEntity;
 import net.minecraft.entity.monster.ZombieVillagerEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
@@ -17,7 +25,9 @@ public class BlastMutation extends Blast
     {
         if (!this.world().isRemote)
         {
-            final AxisAlignedBB bounds = new AxisAlignedBB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
+            final AxisAlignedBB bounds = new AxisAlignedBB(
+                x() - this.getBlastRadius(), y() - this.getBlastRadius(), z() - this.getBlastRadius(),
+                x() + this.getBlastRadius(), y() + this.getBlastRadius(), z() + this.getBlastRadius());
             final List<MobEntity> entitiesNearby = world().getEntitiesWithinAABB(MobEntity.class, bounds);
 
             for (MobEntity entity : entitiesNearby)
@@ -32,21 +42,33 @@ public class BlastMutation extends Blast
     {
         if (entity instanceof PigEntity)
         {
-            final ZombiePigmanEntity newEntity = new ZombiePigmanEntity(entity.world);
+            final ZombiePigmanEntity newEntity = EntityType.ZOMBIE_PIGMAN.create(entity.world);
             newEntity.preventEntitySpawning = true;
             newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
-            entity.setDead();
-            entity.world.spawnEntity(newEntity);
+            entity.remove();
+            entity.world.addEntity(newEntity);
             return true;
         }
         else if (entity instanceof VillagerEntity)
         {
-            final ZombieVillagerEntity newEntity = new ZombieVillagerEntity(entity.world);
-            newEntity.preventEntitySpawning = true;
-            newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
-            newEntity.setForgeProfession(((VillagerEntity) entity).getProfessionForge());
-            entity.setDead();
-            entity.world.spawnEntity(newEntity);
+            VillagerEntity villagerentity = (VillagerEntity)entity;
+            ZombieVillagerEntity zombievillagerentity = EntityType.ZOMBIE_VILLAGER.create(entity.world);
+            zombievillagerentity.copyLocationAndAnglesFrom(villagerentity);
+            villagerentity.remove();
+            zombievillagerentity.onInitialSpawn(entity.world, entity.world.getDifficultyForLocation(new BlockPos(zombievillagerentity)), SpawnReason.CONVERSION, null, null);
+            zombievillagerentity.func_213792_a(villagerentity.getVillagerData());
+            zombievillagerentity.func_223727_a(villagerentity.func_223722_es().func_220914_a(NBTDynamicOps.INSTANCE).getValue());
+            zombievillagerentity.func_213790_g(villagerentity.getOffers().func_222199_a());
+            zombievillagerentity.func_213789_a(villagerentity.getXp());
+            zombievillagerentity.setChild(villagerentity.isChild());
+            zombievillagerentity.setNoAI(villagerentity.isAIDisabled());
+            if (villagerentity.hasCustomName()) {
+                zombievillagerentity.setCustomName(villagerentity.getCustomName());
+                zombievillagerentity.setCustomNameVisible(villagerentity.isCustomNameVisible());
+            }
+
+            entity.world.addEntity(zombievillagerentity);
+            entity.world.playEvent(null, 1026, entity.getPosition(), 0);
             return true;
         }
         return false;

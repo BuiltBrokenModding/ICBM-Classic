@@ -5,12 +5,14 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.entity.EntityLightBeam;
 import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,16 +62,16 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             hasDoneSetup = true;
 
             //Play audio
-            ICBMSounds.BEAM_CHARGING.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
+            ICBMSounds.BEAM_CHARGING.play(world, x(), y(), z(), 4.0F, 0.8F, true);
 
             //Basic explosion
             //TODO remove basic in favor of thread
-            this.world().createExplosion(this.exploder, location.x(), location.y(), location.z(), 4F, true);
+            this.world().createExplosion(this.exploder, x(), y(), z(), 4F, Mode.DESTROY);
 
             //Create beam
-            this.lightBeam = new EntityLightBeam(this.world())
-                    .setPosition(location)
+            this.lightBeam = EntityReg.LIGHT_BEAM.get().create(world)
                     .setColor(this.red, this.green, this.blue);
+            this.lightBeam.setPosition(x(), y(), z());
             this.lightBeam.beamSize = 1;
             this.lightBeam.beamGlowSize = 2;
             this.lightBeam.setTargetBeamProgress(0.1f);
@@ -196,7 +198,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
     @Override
     protected void onBlastCompleted()
     {
-        ICBMSounds.POWER_DOWN.play(world, location.x(), location.y(), location.z(), 4.0F, 0.8F, true);
+        ICBMSounds.POWER_DOWN.play(world, x(), y(), z(), 4.0F, 0.8F, true);
 
         if (this.lightBeam != null)
         {

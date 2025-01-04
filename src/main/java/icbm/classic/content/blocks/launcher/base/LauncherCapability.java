@@ -33,6 +33,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
@@ -113,8 +114,8 @@ public class LauncherCapability extends LauncherBaseCapability {
         final CausedByBlock selfCause = new CausedByBlock(host.getWorld(), host.getPos(), host.getBlockState()); // TODO add more information about launcher
         selfCause.setPreviousCause(cause);
 
-        final Vec3d spawnPosition = SPAWN_OFFSETS[host.getLaunchDirection().ordinal()].addVector(host.getPos().getX() + 0.5, host.getPos().getY() + 0.5, host.getPos().getZ() + 0.5);
-        final ActionSource source = new ActionSource(host.getWorld(), spawnPosition, selfCause);
+        final Vec3d spawnPosition = SPAWN_OFFSETS[host.getLaunchDirection().ordinal()].add(host.getPos().getX() + 0.5, host.getPos().getY() + 0.5, host.getPos().getZ() + 0.5);
+        final ActionSource source = new ActionSource(DimensionType.getKey(host.getWorld().getDimension().getType()), spawnPosition, selfCause);
 
         //Allow canceling missile launches
         final LauncherEvent.PreLaunch event = new LauncherEvent.PreLaunch(source, this, host.missileHolder, targetData, simulate);
@@ -127,41 +128,38 @@ public class LauncherCapability extends LauncherBaseCapability {
         }
 
         final ItemStack stack = host.missileHolder.getMissileStack();
-        if (stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null))
+        if (stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).isPresent())
         {
-            final ICapabilityMissileStack missileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-            if (missileStack != null)
-            {
-                // TODO we may need to walk cause history to get correct launcher count info
-                final Vec3d target = applyInaccuracy(targetData.getPosition(), Math.max(1, solution.getFiringCount()));
+            final ICapabilityMissileStack missileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null).orElseThrow(IllegalStateException::new);
+            // TODO we may need to walk cause history to get correct launcher count info
+            final Vec3d target = applyInaccuracy(targetData.getPosition(), Math.max(1, solution.getFiringCount()));
 
-                //TODO add distance check? --- something seems to be missing
+            //TODO add distance check? --- something seems to be missing
 
-                // Ignore delay if we are currently using a firing package
-                if(host.getFiringPackage() == null) {
-                    // Check if we have a delay before firing
-                    int delay = host.getFiringDelay();
-                    if(targetData instanceof IMissileTargetDelayed) {
-                        delay += ((IMissileTargetDelayed) targetData).getFiringDelay();
-                    }
-
-                    // If delay, store firing information and return
-                    if(delay > 0) {
-                        if(!simulate) {
-                            host.setFiringPackage(new FiringPackage(targetData, cause, delay));
-                        }
-                        return new FiringWithDelay(delay); //TODO provide callback for when missile finishes launching
-                    }
+            // Ignore delay if we are currently using a firing package
+            if(host.getFiringPackage() == null) {
+                // Check if we have a delay before firing
+                int delay = host.getFiringDelay();
+                if(targetData instanceof IMissileTargetDelayed) {
+                    delay += ((IMissileTargetDelayed) targetData).getFiringDelay();
                 }
 
-                // Return launched on client or if we are simulating
-                if(!getHost().isServer() || simulate) {
-                    return LauncherStatus.LAUNCHED;
+                // If delay, store firing information and return
+                if(delay > 0) {
+                    if(!simulate) {
+                        host.setFiringPackage(new FiringPackage(targetData, cause, delay));
+                    }
+                    return new FiringWithDelay(delay); //TODO provide callback for when missile finishes launching
                 }
-
-                final IMissile missile = missileStack.newMissile(host.getWorld());
-                return fireMissile(missile, source, target);
             }
+
+            // Return launched on client or if we are simulating
+            if(!getHost().isServer() || simulate) {
+                return LauncherStatus.LAUNCHED;
+            }
+
+            final IMissile missile = missileStack.newMissile(host.getWorld());
+            return fireMissile(missile, source, target);
         }
         return LauncherStatus.ERROR_INVALID_STACK;
     }
@@ -189,7 +187,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         missile.launch();
 
         //Spawn entity
-        if(!host.getWorld().spawnEntity(entity)) {
+        if(!host.getWorld().addEntity(entity)) {
             return LauncherStatus.ERROR_SPAWN;
         }
 
@@ -204,7 +202,7 @@ public class LauncherCapability extends LauncherBaseCapability {
         {
             final List<Entity> riders = host.seat.getPassengers();
             riders.forEach(r -> {
-                entity.dismountRidingEntity();
+                entity.stopRiding();
                 r.startRiding(entity);
             });
         }
@@ -317,7 +315,7 @@ public class LauncherCapability extends LauncherBaseCapability {
     @Override
     public float getPayloadVelocity() {
         // TODO find a way to get this from the missile stack
-        return host.missileHolder.getMissileStack().getItem() == ItemReg.itemSAM
+        return host.missileHolder.getMissileStack().getItem() == ItemReg.MISSILE_SURFACE_TO_AIR.get()
             ? ConfigMissile.SAM_MISSILE.FLIGHT_SPEED : ConfigMissile.DIRECT_FLIGHT_SPEED;
     }
 }

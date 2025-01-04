@@ -49,7 +49,7 @@ public class LauncherNode {
     }
 
     public void connectToTiles() {
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : Direction.values()) {
             final BlockPos nextPos = self.getPos().offset(side);
 
             // Only search for tiles in loaded chunks

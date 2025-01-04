@@ -38,9 +38,9 @@ public class NetworkEnergyStorage implements IEnergyStorage {
     private Stream<IEnergyStorage> powerNodes() {
         return network.getComponents().stream()
             .map(LauncherNode::getSelf)
-            .filter(tile -> tile.hasCapability(CapabilityEnergy.ENERGY, null))
-            .filter(tile -> tile.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null))
-            .map(tile -> tile.getCapability(CapabilityEnergy.ENERGY, null))
+            .filter(tile -> tile.getCapability(CapabilityEnergy.ENERGY).isPresent())
+            .filter(tile -> tile.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY).isPresent())
+            .map(tile -> tile.getCapability(CapabilityEnergy.ENERGY).orElseThrow(IllegalStateException::new))
             .filter(Objects::nonNull);
     }
 

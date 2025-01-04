@@ -3,6 +3,7 @@ package icbm.classic.config.util;
 import icbm.classic.ICBMClassic;
 import lombok.Getter;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ModList;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -381,7 +382,7 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
 
     protected boolean isDomainValid(String domain) {
         //TODO fuzzy domains?
-        return "minecraft".equalsIgnoreCase(domain) || Loader.isModLoaded(domain);
+        return "minecraft".equalsIgnoreCase(domain) || ModList.get().isLoaded(domain);
     }
 
     protected void error(String source, String entry, String error) {

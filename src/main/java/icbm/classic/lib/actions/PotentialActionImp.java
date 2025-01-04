@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
@@ -100,7 +101,7 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
             preCheck.reset();
         }
 
-        final IActionSource actionSource = new ActionSource(world, new Vec3d(x, y, z), causeToUse);
+        final IActionSource actionSource = new ActionSource(DimensionType.getKey(world.getDimension().getType()), new Vec3d(x, y, z), causeToUse);
         return ICBMClassicAPI.ACTION_LISTENER.runAction(actionData.create(world, x, y, z, actionSource, this.fieldProvider));
     }
 

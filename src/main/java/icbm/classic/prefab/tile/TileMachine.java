@@ -72,17 +72,6 @@ public class TileMachine extends TileEntity implements ITickable
         return world != null && world.isRemote;
     }
 
-    @Deprecated
-    public Direction getRotation()
-    {
-        BlockState state = getBlockState();
-        if (state.has(BlockICBM.ROTATION_PROP))
-        {
-            return state.get(BlockICBM.ROTATION_PROP);
-        }
-        return Direction.NORTH;
-    }
-
     public BlockState getBlockState()
     {
         return world.getBlockState(getPos());

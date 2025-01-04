@@ -7,6 +7,7 @@ import icbm.classic.lib.transform.vector.Pos;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.particles.ParticleTypes;
@@ -64,7 +65,9 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
         }
 
         int radius = (int) this.getBlastRadius();
-        AxisAlignedBB bounds = new AxisAlignedBB(location.x() - radius, location.y() - radius, location.z() - radius, location.x() + radius, location.y() + radius, location.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(
+            x() - radius, y() - radius, z() - radius,
+            x() + radius, y() + radius, z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
         boolean explosionCreated = false;
 
@@ -73,9 +76,9 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
             if (entity != this.controller)
             {
 
-                double xDifference = entity.posX - location.x();
-                double yDifference = entity.posY - location.y();
-                double zDifference = entity.posZ - location.z();
+                double xDifference = entity.posX - x();
+                double yDifference = entity.posY - y();
+                double zDifference = entity.posZ - z();
 
                 int r = (int) this.getBlastRadius();
                 if (xDifference < 0)
@@ -83,14 +86,14 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                     r = (int) -this.getBlastRadius();
                 }
 
-                entity.motionX -= (r - xDifference) * Math.abs(xDifference) * 0.0006;
+                entity.addVelocity(-(r - xDifference) * Math.abs(xDifference) * 0.0006, 0, 0);
 
                 r = (int) this.getBlastRadius();
-                if (entity.posY > location.y())
+                if (entity.posY > y())
                 {
                     r = (int) -this.getBlastRadius();
                 }
-                entity.motionY += (r - yDifference) * Math.abs(yDifference) * 0.0011;
+                entity.addVelocity(0, -(r - yDifference) * Math.abs(yDifference) * 0.0011, 0);
 
                 r = (int) this.getBlastRadius();
                 if (zDifference < 0)
@@ -98,13 +101,13 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                     r = (int) -this.getBlastRadius();
                 }
 
-                entity.motionZ -= (r - zDifference) * Math.abs(zDifference) * 0.0006;
+                entity.addVelocity(0, 0, -(r - zDifference) * Math.abs(zDifference) * 0.0006);
 
-                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < 4)
+                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(x(), y(), z()) < 4)
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {
-                        world().spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
+                        world().addParticle(ParticleTypes.EXPLOSION_EMITTER, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
                         explosionCreated = true;
                     }
 
@@ -131,7 +134,7 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                             this.teleportTarget = new Vec3d(checkX + 0.5, checkY + 0.5, checkZ + 0.5);
                         }
 
-                        this.world().playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.util.SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                        this.world().playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                         if (entity instanceof ServerPlayerEntity)
                         {
@@ -150,7 +153,7 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
             }
         }
 
-        this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F);
+        this.world().playSound(null, this.x(), this.y(), this.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F);
 
         return this.callCount > this.duration;
     }
@@ -164,9 +167,9 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
         {
             for (int i = 0; i < 8; i++) //TODO check for safe location to spawn
             {
-                EndermanEntity enderman = new EndermanEntity(world());
-                enderman.setPosition(this.location.x(), this.location.y(), this.location.z());
-                this.world().spawnEntity(enderman);
+                EndermanEntity enderman = EntityType.ENDERMAN.create(this.world());
+                enderman.setPosition(this.x(), this.y(), this.z());
+                this.world().addEntity(enderman);
             }
         }
     }

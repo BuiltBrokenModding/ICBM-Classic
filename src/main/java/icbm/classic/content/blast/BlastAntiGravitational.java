@@ -67,17 +67,20 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                         if (FlyingBlock.spawnFlyingBlock(world, targetPosition, (entity) -> {
                             entity.yawChange = 50 * world().rand.nextFloat();
                             entity.pitchChange = 100 * world().rand.nextFloat();
-                            entity.motionY += Math.max(1 * world().rand.nextFloat(), 1);
 
-                            double deltaX = targetPosition.getX() - this.location.getX();
-                            double deltaZ = targetPosition.getZ() - this.location.getZ();
+
+                            double deltaX = targetPosition.getX() - this.x();
+                            double deltaZ = targetPosition.getZ() - this.z();
                             double mag = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
 
                             deltaX /= mag;
                             deltaZ /= mag;
 
-                            entity.motionX += deltaX * (1 - world().rand.nextFloat());
-                            entity.motionZ += deltaZ * (1 - world().rand.nextFloat());
+                            entity.addVelocity(
+                                deltaX * (1 - world().rand.nextFloat()),
+                                Math.max(1 * world().rand.nextFloat(), 1),
+                                deltaZ * (1 - world().rand.nextFloat())
+                            );
 
 
                             entity.setGravity(0);
@@ -95,20 +98,20 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                         "\nThread = %s" +
                         "\nSize = %s" +
                         "\nPos = ",
-                    world, thread, size, location);
+                    world, thread, size, getPosition());
                 ICBMClassic.logger().error(msg);
             }
         }
 
         int radius = (int) this.getBlastRadius();
         final int affectHeight = Math.max(radius, 100); //TODO config affect height
-        AxisAlignedBB bounds = new AxisAlignedBB(location.x() - radius, location.y() - radius, location.z() - radius, location.y() + radius, location.y() + affectHeight, location.z() + radius);
+        AxisAlignedBB bounds = new AxisAlignedBB(x() - radius, y() - radius, z() - radius, x() + radius, y() + affectHeight, z() + radius);
         List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities) {
-            if (entity.posY < affectHeight + location.y()) {
-                if (entity.motionY < 0.4) {
-                    entity.motionY += 0.15;
+            if (entity.posY < affectHeight + y()) {
+                if (entity.getMotion().y < 0.4) {
+                    entity.addVelocity(0, 0.1f, 0);
                 }
             }
         }
