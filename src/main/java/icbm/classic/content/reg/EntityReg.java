@@ -368,7 +368,7 @@ public final class EntityReg {
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_BREACHING = bombcart(
         "minecraft_explosive_breaching", ICBMExplosives.BREACHING,
-        () -> new ItemStack(ItemReg.CART_SONIC.get()), () -> BlockReg.EXPLOSIVE_BREACHING.get().getDefaultState());
+        () -> new ItemStack(ItemReg.CART_BREACHING.get()), () -> BlockReg.EXPLOSIVE_BREACHING.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_THERMOBARIC = bombcart(
         "minecraft_explosive_thermobaric", ICBMExplosives.THERMOBARIC,

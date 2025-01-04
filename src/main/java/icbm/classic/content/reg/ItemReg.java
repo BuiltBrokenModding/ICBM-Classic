@@ -28,45 +28,45 @@ public class ItemReg
     public static final RegistryObject<Item> CLUMP_SALTPETER = ITEMS.register("clump_saltpeter", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
 
     // <editor-fold desc="grenades">
-    public static final RegistryObject<ItemGrenade> GRENADE_CONDENSED = ITEMS.register("grenade_condensed", () -> new ItemGrenade(ICBMExplosives.CONDENSED));
-    public static final RegistryObject<ItemGrenade> GRENADE_SHRAPNEL = ITEMS.register("grenade_shrapnel", () -> new ItemGrenade(ICBMExplosives.SHRAPNEL));
-    public static final RegistryObject<ItemGrenade> GRENADE_INCENDIARY = ITEMS.register("grenade_incendiary", () -> new ItemGrenade(ICBMExplosives.INCENDIARY));
-    public static final RegistryObject<ItemGrenade> GRENADE_DEBILITATION = ITEMS.register("grenade_debilitation", () -> new ItemGrenade(ICBMExplosives.DEBILITATION));
-    public static final RegistryObject<ItemGrenade> GRENADE_CHEMICAL = ITEMS.register("grenade_chemical", () -> new ItemGrenade(ICBMExplosives.CHEMICAL));
-    public static final RegistryObject<ItemGrenade> GRENADE_ANVIL = ITEMS.register("grenade_anvil", () -> new ItemGrenade(ICBMExplosives.ANVIL));
-    public static final RegistryObject<ItemGrenade> GRENADE_REPULSIVE = ITEMS.register("grenade_repulsive", () -> new ItemGrenade(ICBMExplosives.REPULSIVE));
-    public static final RegistryObject<ItemGrenade> GRENADE_ATTRACTIVE = ITEMS.register("grenade_attractive", () -> new ItemGrenade(ICBMExplosives.ATTRACTIVE));
+    public static final RegistryObject<ItemGrenade> GRENADE_CONDENSED = ITEMS.register("grenade_condensed", () -> new ItemGrenade(EntityReg.GRENADE_CONDENSED::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_SHRAPNEL = ITEMS.register("grenade_shrapnel", () -> new ItemGrenade(EntityReg.GRENADE_SHRAPNEL::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_INCENDIARY = ITEMS.register("grenade_incendiary", () -> new ItemGrenade(EntityReg.GRENADE_INCENDIARY::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_DEBILITATION = ITEMS.register("grenade_debilitation", () -> new ItemGrenade(EntityReg.GRENADE_DEBILITATION::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_CHEMICAL = ITEMS.register("grenade_chemical", () -> new ItemGrenade(EntityReg.GRENADE_CHEMICAL::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_ANVIL = ITEMS.register("grenade_anvil", () -> new ItemGrenade(EntityReg.GRENADE_ANVIL::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_REPULSIVE = ITEMS.register("grenade_repulsive", () -> new ItemGrenade(EntityReg.GRENADE_REPULSIVE::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_ATTRACTIVE = ITEMS.register("grenade_attractive", () -> new ItemGrenade(EntityReg.GRENADE_ATTRACTIVE::get, new Item.Properties().maxStackSize(16)));
     // </editor-fold>
 
     // <editor-fold desc="carts">
-    public static final RegistryObject<ItemBombCart> CART_CONDENSED = ITEMS.register("cart_explosive_condensed", () -> new ItemBombCart(ICBMExplosives.CONDENSED));
-    public static final RegistryObject<ItemBombCart> CART_SHRAPNEL = ITEMS.register("cart_explosive_shrapnel", () -> new ItemBombCart(ICBMExplosives.SHRAPNEL));
-    public static final RegistryObject<ItemBombCart> CART_INCENDIARY = ITEMS.register("cart_explosive_incendiary", () -> new ItemBombCart(ICBMExplosives.INCENDIARY));
-    public static final RegistryObject<ItemBombCart> CART_DEBILITATION = ITEMS.register("cart_explosive_debilitation", () -> new ItemBombCart(ICBMExplosives.DEBILITATION));
-    public static final RegistryObject<ItemBombCart> CART_CHEMICAL = ITEMS.register("cart_explosive_chemical", () -> new ItemBombCart(ICBMExplosives.CHEMICAL));
-    public static final RegistryObject<ItemBombCart> CART_ANVIL = ITEMS.register("cart_explosive_anvil", () -> new ItemBombCart(ICBMExplosives.ANVIL));
-    public static final RegistryObject<ItemBombCart> CART_REPULSIVE = ITEMS.register("cart_explosive_repulsive", () -> new ItemBombCart(ICBMExplosives.REPULSIVE));
-    public static final RegistryObject<ItemBombCart> CART_ATTRACTIVE = ITEMS.register("cart_explosive_attractive", () -> new ItemBombCart(ICBMExplosives.ATTRACTIVE));
-    public static final RegistryObject<ItemBombCart> CART_COLOR = ITEMS.register("cart_explosive_color", () -> new ItemBombCart(ICBMExplosives.COLOR));
-    public static final RegistryObject<ItemBombCart> CART_SMOKE = ITEMS.register("cart_explosive_smoke", () -> new ItemBombCart(ICBMExplosives.SMOKE));
-    public static final RegistryObject<ItemBombCart> CART_FRAGMENTATION = ITEMS.register("cart_explosive_fragmentation", () -> new ItemBombCart(ICBMExplosives.FRAGMENTATION));
-    public static final RegistryObject<ItemBombCart> CART_CONTAGIOUS = ITEMS.register("cart_explosive_contagious", () -> new ItemBombCart(ICBMExplosives.CONTAGIOUS));
-    public static final RegistryObject<ItemBombCart> CART_SONIC = ITEMS.register("cart_explosive_sonic", () -> new ItemBombCart(ICBMExplosives.SONIC));
-    public static final RegistryObject<ItemBombCart> CART_BREACHING = ITEMS.register("cart_explosive_breaching", () -> new ItemBombCart(ICBMExplosives.BREACHING));
-    public static final RegistryObject<ItemBombCart> CART_THERMOBARIC = ITEMS.register("cart_explosive_thermobaric", () -> new ItemBombCart(ICBMExplosives.THERMOBARIC));
-    public static final RegistryObject<ItemBombCart> CART_NUCLEAR = ITEMS.register("cart_explosive_nuclear", () -> new ItemBombCart(ICBMExplosives.NUCLEAR));
-    public static final RegistryObject<ItemBombCart> CART_EMP = ITEMS.register("cart_explosive_emp", () -> new ItemBombCart(ICBMExplosives.EMP));
-    public static final RegistryObject<ItemBombCart> CART_EXOTHERMIC = ITEMS.register("cart_explosive_exothermic", () -> new ItemBombCart(ICBMExplosives.EXOTHERMIC));
-    public static final RegistryObject<ItemBombCart> CART_ENDOTHERMIC = ITEMS.register("cart_explosive_endothermic", () -> new ItemBombCart(ICBMExplosives.ENDOTHERMIC));
-    public static final RegistryObject<ItemBombCart> CART_GRAVITY = ITEMS.register("cart_explosive_gravity", () -> new ItemBombCart(ICBMExplosives.GRAVITY));
-    public static final RegistryObject<ItemBombCart> CART_ENDER = ITEMS.register("cart_explosive_ender", () -> new ItemBombCart(ICBMExplosives.ENDER));
-    public static final RegistryObject<ItemBombCart> CART_ANTIMATTER = ITEMS.register("cart_explosive_antimatter", () -> new ItemBombCart(ICBMExplosives.ANTIMATTER));
-    public static final RegistryObject<ItemBombCart> CART_REDMATTER = ITEMS.register("cart_explosive_redmatter", () -> new ItemBombCart(ICBMExplosives.REDMATTER));
+    public static final RegistryObject<ItemBombCart> CART_CONDENSED = ITEMS.register("cart_explosive_condensed", () -> new ItemBombCart(EntityReg.BOMBCART_CONDENSED::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_SHRAPNEL = ITEMS.register("cart_explosive_shrapnel", () -> new ItemBombCart(EntityReg.BOMBCART_SHRAPNEL::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_INCENDIARY = ITEMS.register("cart_explosive_incendiary", () -> new ItemBombCart(EntityReg.BOMBCART_INCENDIARY::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_DEBILITATION = ITEMS.register("cart_explosive_debilitation", () -> new ItemBombCart(EntityReg.BOMBCART_DEBILITATION::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_CHEMICAL = ITEMS.register("cart_explosive_chemical", () -> new ItemBombCart(EntityReg.BOMBCART_CHEMICAL::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_ANVIL = ITEMS.register("cart_explosive_anvil", () -> new ItemBombCart(EntityReg.BOMBCART_ANVIL::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_REPULSIVE = ITEMS.register("cart_explosive_repulsive", () -> new ItemBombCart(EntityReg.BOMBCART_REPULSIVE::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_ATTRACTIVE = ITEMS.register("cart_explosive_attractive", () -> new ItemBombCart(EntityReg.BOMBCART_ATTRACTIVE::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_COLOR = ITEMS.register("cart_explosive_color", () -> new ItemBombCart(EntityReg.BOMBCART_COLOR::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_SMOKE = ITEMS.register("cart_explosive_smoke", () -> new ItemBombCart(EntityReg.BOMBCART_SMOKE::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_FRAGMENTATION = ITEMS.register("cart_explosive_fragmentation", () -> new ItemBombCart(EntityReg.BOMBCART_FRAGMENTATION::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_CONTAGIOUS = ITEMS.register("cart_explosive_contagious", () -> new ItemBombCart(EntityReg.BOMBCART_CONTAGIOUS::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_SONIC = ITEMS.register("cart_explosive_sonic", () -> new ItemBombCart(EntityReg.BOMBCART_SONIC::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_BREACHING = ITEMS.register("cart_explosive_breaching", () -> new ItemBombCart(EntityReg.BOMBCART_BREACHING::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_THERMOBARIC = ITEMS.register("cart_explosive_thermobaric", () -> new ItemBombCart(EntityReg.BOMBCART_THERMOBARIC::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_NUCLEAR = ITEMS.register("cart_explosive_nuclear", () -> new ItemBombCart(EntityReg.BOMBCART_NUCLEAR::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_EMP = ITEMS.register("cart_explosive_emp", () -> new ItemBombCart(EntityReg.BOMBCART_EMP::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_EXOTHERMIC = ITEMS.register("cart_explosive_exothermic", () -> new ItemBombCart(EntityReg.BOMBCART_EXOTHERMIC::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_ENDOTHERMIC = ITEMS.register("cart_explosive_endothermic", () -> new ItemBombCart(EntityReg.BOMBCART_ENDOTHERMIC::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_GRAVITY = ITEMS.register("cart_explosive_gravity", () -> new ItemBombCart(EntityReg.BOMBCART_GRAVITY::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_ENDER = ITEMS.register("cart_explosive_ender", () -> new ItemBombCart(EntityReg.BOMBCART_ENDER::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_ANTIMATTER = ITEMS.register("cart_explosive_antimatter", () -> new ItemBombCart(EntityReg.BOMBCART_ANTIMATTER::get, new Item.Properties().maxStackSize(3)));
+    public static final RegistryObject<ItemBombCart> CART_REDMATTER = ITEMS.register("cart_explosive_redmatter", () -> new ItemBombCart(EntityReg.BOMBCART_REDMATTER::get, new Item.Properties().maxStackSize(3)));
     // </editor-fold>
 
     // <editor-fold desc="bomblets">
     public static final RegistryObject<Item> BOMBLET_EMPTY = ITEMS.register("bomblet_empty", () -> new Item(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed", () -> new ItemBombDroplet(ICBMExplosives.CONDENSED, new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed", () -> new ItemBombDroplet(EntityReg.BOMBLET_CONDENSED::get, new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     // TODO add other explosive types
     // </editor-fold>
 
@@ -141,7 +141,7 @@ public class ItemReg
     // </editor-fold>
 
     // <editor-fold desc="base-building"> TODO split to another mod, as it doesn't match the core content
-    public static final RegistryObject<Item> GLASS_PRESSURE_PLATE = ITEMS.register("glass_reinforced", () -> new BlockItem(BlockReg.GLASS_REINFORCED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> GLASS_REINFORCED = ITEMS.register("glass_reinforced", () -> new BlockItem(BlockReg.GLASS_REINFORCED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     
     public static final RegistryObject<Item> SPIKE_NORMAL = ITEMS.register("spikes_normal", () -> new BlockItem(BlockReg.SPIKE_NORMAL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> SPIKE_FIRE = ITEMS.register("spikes_fire", () -> new BlockItem(BlockReg.SPIKE_FIRE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));

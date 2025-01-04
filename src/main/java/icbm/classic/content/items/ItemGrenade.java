@@ -7,6 +7,7 @@ import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBase;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -17,6 +18,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -25,24 +27,11 @@ public class ItemGrenade extends ItemBase
 {
     public static final int MAX_USE_DURATION = 3 * 20; //TODO config
 
-    private final IExplosiveData data;
-
-    public ItemGrenade(IExplosiveData data)
+    private final NonNullSupplier<EntityType<EntityGrenade>> entityType;
+    public ItemGrenade(NonNullSupplier<EntityType<EntityGrenade>> entityType, Item.Properties properties)
     {
-        super(new Properties().maxStackSize(16));
-        this.data = data;
-    }
-
-    @Override
-    @Nullable
-    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt)
-    {
-        final CapabilityExplosiveStack capabilityExplosive = new CapabilityExplosiveStack(stack);
-        if(nbt != null)
-        {
-            capabilityExplosive.deserializeNBT(nbt);
-        }
-        return capabilityExplosive;
+        super(properties);
+        this.entityType = entityType;
     }
 
     @Override
@@ -73,20 +62,19 @@ public class ItemGrenade extends ItemBase
             //Play throw sound
             world.playSound(null,
                 entityLiving.posX, entityLiving.posY, entityLiving.posZ,
-                SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / world.rand.nextFloat() * 0.4F + 0.8F);
+                SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / world.rand.nextFloat() * 0.4F + 0.8F); //TODO find a different audio?
 
             //Calculate energy based on player hold time
             final float throwEnergy = (float) (this.getUseDuration(itemStack) - timeLeft) / (float) this.getUseDuration(itemStack);
 
             //Create generate entity
-            new EntityGrenade(world)
-            .setItemStack(itemStack)
-            .setThrower(entityLiving)
-            .aimFromThrower()
-            .setThrowMotion(throwEnergy).spawn();
+            final EntityGrenade grenade = entityType.get().create(world);
+            grenade.setThrower(entityLiving);
+            grenade.aimFromThrower();
+            grenade.setThrowMotion(throwEnergy);
 
             //Consume item
-            if (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).isCreative())
+            if (world.addEntity(grenade) && (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).isCreative()))
             {
                 itemStack.shrink(1);
             }

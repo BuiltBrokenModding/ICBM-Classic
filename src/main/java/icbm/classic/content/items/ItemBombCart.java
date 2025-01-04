@@ -16,30 +16,17 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nullable;
 
 public class ItemBombCart extends ItemBase
 {
-    private final IExplosiveData data;
-    private final EntityType<EntityBombCart> entityType;
-    public ItemBombCart(IExplosiveData data, EntityType<EntityBombCart> entityType)
+    private final NonNullSupplier<EntityType<EntityBombCart>> entityType;
+    public ItemBombCart(NonNullSupplier<EntityType<EntityBombCart>> entityType, Properties properties)
     {
-        super(new Properties().maxStackSize(3));
-        this.data = data;
+        super(properties);
         this.entityType = entityType;
-    }
-
-    @Override
-    @Nullable
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt)
-    {
-        CapabilityExplosiveStack capabilityExplosive = new CapabilityExplosiveStack(stack);
-        if(nbt != null)
-        {
-            capabilityExplosive.deserializeNBT(nbt);
-        }
-        return capabilityExplosive;
     }
 
     @Override
@@ -58,7 +45,7 @@ public class ItemBombCart extends ItemBase
                     d0 = 0.5D;
                 }
 
-                final EntityBombCart cart = this.entityType.create(world);
+                final EntityBombCart cart = this.entityType.get().create(world);
                 cart.setPosition((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D);
 
                 if (itemstack.hasDisplayName()) {

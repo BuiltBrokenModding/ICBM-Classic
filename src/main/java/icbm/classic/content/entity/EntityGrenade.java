@@ -4,6 +4,7 @@ import icbm.classic.api.actions.IActionData;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.PotentialAction;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -26,7 +27,7 @@ public class EntityGrenade extends Entity
     private static final int FUSE_TIME = 100; //TODO config
 
     /** Entity that created the grenade and set it into motion */
-    @Getter
+    @Getter @Setter
     private LivingEntity thrower;
 
     /** Explosive capability */
@@ -67,17 +68,6 @@ public class EntityGrenade extends Entity
         this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * horizontalOffset;
         this.setPosition(this.posX, this.posY, this.posZ);
 
-        return this;
-    }
-
-    /**
-     * Spawns the grenade into the game world
-     *
-     * @return this
-     */
-    public EntityGrenade spawn()
-    {
-        world.addEntity(this);
         return this;
     }
 
