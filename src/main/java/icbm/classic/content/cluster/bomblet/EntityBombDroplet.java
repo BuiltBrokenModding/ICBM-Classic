@@ -1,15 +1,15 @@
 package icbm.classic.content.cluster.bomblet;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.api.actions.IActionData;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveEntity;
+import icbm.classic.lib.actions.PotentialAction;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
 import icbm.classic.lib.projectile.EntityProjectile;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -18,15 +18,13 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -34,9 +32,13 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
 
     public static final DamageSource DAMAGE_SOURCE = new DamageSource("icbmclassic:bomblet");
 
-    public final CapabilityExplosiveEntity explosive = new CapabilityExplosiveEntity(this);
-    public EntityBombDroplet(World world) {
-        super(world);
+    private final PotentialAction potentialAction = new PotentialAction();
+    private final LazyOptional<ItemStack> itemstack;
+
+    public EntityBombDroplet(EntityType<EntityBombDroplet> type, World world, IActionData data, NonNullSupplier<ItemStack> itemstack) {
+        super(type, world);
+        this.potentialAction.setActionData(data);
+        this.itemstack = LazyOptional.of(itemstack);
         //this.setSize(0.25f, 0.25f);
         this.hasHealth = false;
     }
@@ -54,7 +56,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     @Override
     protected void onImpact(RayTraceResult hit) {
        super.onImpact(hit);
-       explosive.doExplosion(hit.getHitVec().x, hit.getHitVec().y, hit.getHitVec().z, new ActionSource(world, new Vec3d(posX, posY, posZ), new EntityCause(this))); //TODO include impact cause info
+        potentialAction.doAction(world, posX, posY, posZ, new EntityCause(this)); //TODO include impact cause
     }
 
     @Override
@@ -66,7 +68,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     @Override
     public float getMaxHealth()
     {
-        return Math.max(1, ConfigMissile.bomblet.health);
+        return Math.max(1, ConfigMissile.bomblet.health); //TODO config per type
     }
 
     @Override
@@ -75,16 +77,16 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
         // TODO add config
         // TODO add random chance modifier
         if (source.isExplosion() || source.isFireDamage()) {
-            explosive.doExplosion(posX, posY, posZ, new ActionSource(world, new Vec3d(posX, posY, posZ), new EntityCause(this))); //TODO include source of damage
+            potentialAction.doAction(world, posX, posY, posZ, new EntityCause(this)); //TODO include source of damage
         }
     }
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing)
     {
-        if(capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY) {
-            return (LazyOptional<T>) LazyOptional.of(() -> explosive);
-        }
+        //if(capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY) {
+        // TODO    return (LazyOptional<T>) LazyOptional.of(() -> explosive);
+        //}
         return super.getCapability(capability, facing);
     }
 
@@ -103,45 +105,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
         return distance < d0 * d0;
     }
 
-    @Override
-    public void writeSpawnData(PacketBuffer additionalMissileData)
-    {
-        super.writeSpawnData(additionalMissileData);
-        final CompoundNBT saveData = SAVE_LOGIC.save(this, new CompoundNBT());
-        additionalMissileData.writeCompoundTag(saveData);
-    }
-
-    @Override
-    public void readSpawnData(PacketBuffer additionalMissileData)
-    {
-        super.readSpawnData(additionalMissileData);
-        final CompoundNBT saveData = additionalMissileData.readCompoundTag();
-        SAVE_LOGIC.load(this, saveData);
-    }
-
-    @Override
-    public void readEntityFromNBT(CompoundNBT nbt)
-    {
-        super.readEntityFromNBT(nbt);
-        SAVE_LOGIC.load(this, nbt);
-    }
-
-    @Override
-    public void writeEntityToNBT(CompoundNBT nbt)
-    {
-        super.writeEntityToNBT(nbt);
-        SAVE_LOGIC.save(this, nbt);
-    }
-
-    private static final NbtSaveHandler<EntityBombDroplet> SAVE_LOGIC = new NbtSaveHandler<EntityBombDroplet>()
-        .mainRoot()
-        /* */.node(new NbtSaveNode<EntityBombDroplet, CompoundNBT>("explosive",
-            (missile) -> missile.explosive.serializeNBT(),
-            (missile, data) -> missile.explosive.deserializeNBT(data))
-        )
-        .base();
-
     public ItemStack toStack() {
-        return explosive.toStack();
+        return this.itemstack.orElse(ItemStack.EMPTY);
     }
 }

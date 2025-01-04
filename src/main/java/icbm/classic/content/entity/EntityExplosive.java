@@ -14,6 +14,7 @@ import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -49,11 +50,10 @@ public class EntityExplosive extends Entity implements IEntityAdditionalSpawnDat
 
     private Direction renderFace = Direction.UP; //TODO entity data, combine with mimic block for render
 
-    public EntityExplosive(World par1World, IActionData actionData, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate)
+    public EntityExplosive(EntityType<EntityExplosive> type, World par1World, IActionData actionData, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate)
     {
-        super(par1World);
+        super(type, par1World);
         this.preventEntitySpawning = true;
-        this.setSize(0.98F, 0.98F);
         //this.yOffset = this.height / 2.0F;
         this.explodeAction.setActionData(actionData);
         this.itemstack = LazyOptional.of(itemstack);

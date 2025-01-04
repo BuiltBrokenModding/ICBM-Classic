@@ -6,17 +6,18 @@ import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.cargo.parachute.EntityParachute;
+import icbm.classic.content.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.entity.*;
 import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.entity.explosive.EntityMissileActionable;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -183,7 +184,98 @@ public final class EntityReg {
     // </editor-fold>
 
     // <editor-fold desc="explosive blocks">
-        //  event.getRegistry().register(buildEntityEntry(EntityExplosive.class, ICBMEntities.BLOCK_EXPLOSIVE, 50, 5));
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_CONDENSED = explosiveBlock(
+        "block_explosive_condensed", ICBMExplosives.CONDENSED,
+        () -> new ItemStack(ItemReg.MISSILE_CONDENSED.get()), () -> BlockReg.EXPLOSIVE_CONDENSED.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_SHRAPNEL = explosiveBlock(
+        "block_explosive_shrapnel", ICBMExplosives.SHRAPNEL,
+        () -> new ItemStack(ItemReg.MISSILE_SHRAPNEL.get()), () -> BlockReg.EXPLOSIVE_SHRAPNEL.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_INCENDIARY = explosiveBlock(
+        "block_explosive_incendiary", ICBMExplosives.INCENDIARY,
+        () -> new ItemStack(ItemReg.MISSILE_INCENDIARY.get()), () -> BlockReg.EXPLOSIVE_INCENDIARY.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_DEBILITATION = explosiveBlock(
+        "block_explosive_debilitation", ICBMExplosives.DEBILITATION,
+        () -> new ItemStack(ItemReg.MISSILE_DEBILITATION.get()), () -> BlockReg.EXPLOSIVE_DEBILITATION.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_CHEMICAL = explosiveBlock(
+        "block_explosive_chemical", ICBMExplosives.CHEMICAL,
+        () -> new ItemStack(ItemReg.MISSILE_CHEMICAL.get()), () -> BlockReg.EXPLOSIVE_CHEMICAL.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ANVIL = explosiveBlock(
+        "block_explosive_anvil", ICBMExplosives.ANVIL,
+        () -> new ItemStack(ItemReg.MISSILE_ANVIL.get()), () -> BlockReg.EXPLOSIVE_ANVIL.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_REPULSIVE = explosiveBlock(
+        "block_explosive_repulsive", ICBMExplosives.REPULSIVE,
+        () -> new ItemStack(ItemReg.MISSILE_REPULSIVE.get()), () -> BlockReg.EXPLOSIVE_REPULSIVE.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ATTRACTIVE = explosiveBlock(
+        "block_explosive_attractive", ICBMExplosives.ATTRACTIVE,
+        () -> new ItemStack(ItemReg.MISSILE_ATTRACTIVE.get()), () -> BlockReg.EXPLOSIVE_ATTRACTIVE.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_COLOR = explosiveBlock(
+        "block_explosive_color", ICBMExplosives.COLOR,
+        () -> new ItemStack(ItemReg.MISSILE_COLOR.get()), () -> BlockReg.EXPLOSIVE_COLOR.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_SMOKE = explosiveBlock(
+        "block_explosive_smoke", ICBMExplosives.SMOKE,
+        () -> new ItemStack(ItemReg.MISSILE_SMOKE.get()), () -> BlockReg.EXPLOSIVE_SMOKE.get().getDefaultState());
+
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_FRAGMENTATION = explosiveBlock(
+        "block_explosive_fragmentation", ICBMExplosives.FRAGMENTATION,
+        () -> new ItemStack(ItemReg.MISSILE_FRAGMENTATION.get()), () -> BlockReg.EXPLOSIVE_FRAGMENTATION.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_CONTAGIOUS = explosiveBlock(
+        "block_explosive_contagious", ICBMExplosives.CONTAGIOUS,
+        () -> new ItemStack(ItemReg.MISSILE_CONTAGIOUS.get()), () -> BlockReg.EXPLOSIVE_CONTAGIOUS.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_SONIC = explosiveBlock(
+        "block_explosive_sonic", ICBMExplosives.SONIC,
+        () -> new ItemStack(ItemReg.MISSILE_SONIC.get()), () -> BlockReg.EXPLOSIVE_SONIC.get().getDefaultState());
+
+    // breaching doesn't need an entity, its instant always
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_THERMOBARIC = explosiveBlock(
+        "block_explosive_thermobaric", ICBMExplosives.THERMOBARIC,
+        () -> new ItemStack(ItemReg.MISSILE_THERMOBARIC.get()), () -> BlockReg.EXPLOSIVE_THERMOBARIC.get().getDefaultState());
+
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_NUCLEAR = explosiveBlock(
+        "block_explosive_nuclear", ICBMExplosives.NUCLEAR,
+        () -> new ItemStack(ItemReg.MISSILE_NUCLEAR.get()), () -> BlockReg.EXPLOSIVE_NUCLEAR.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_EMP = explosiveBlock(
+        "block_explosive_emp", ICBMExplosives.EMP,
+        () -> new ItemStack(ItemReg.MISSILE_EMP.get()), () -> BlockReg.EXPLOSIVE_EMP.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_EXOTHERMIC = explosiveBlock(
+        "block_explosive_exothermic", ICBMExplosives.EXOTHERMIC,
+        () -> new ItemStack(ItemReg.MISSILE_EXOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_EXOTHERMIC.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ENDOTHERMIC = explosiveBlock(
+        "block_explosive_endothermic", ICBMExplosives.ENDOTHERMIC,
+        () -> new ItemStack(ItemReg.MISSILE_ENDOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_ENDOTHERMIC.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_GRAVITY = explosiveBlock(
+        "block_explosive_gravity", ICBMExplosives.GRAVITY,
+        () -> new ItemStack(ItemReg.MISSILE_GRAVITY.get()), () -> BlockReg.EXPLOSIVE_GRAVITY.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ENDER = explosiveBlock(
+        "block_explosive_ender", ICBMExplosives.ENDER,
+        () -> new ItemStack(ItemReg.MISSILE_ENDER.get()), () -> BlockReg.EXPLOSIVE_ENDER.get().getDefaultState());
+
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ANTIMATTER = explosiveBlock(
+        "block_explosive_antimatter", ICBMExplosives.ANTIMATTER,
+        () -> new ItemStack(ItemReg.MISSILE_ANTIMATTER.get()), () -> BlockReg.EXPLOSIVE_ANTIMATTER.get().getDefaultState());
+
+    public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_REDMATTER = explosiveBlock(
+        "block_explosive_redmatter", ICBMExplosives.REDMATTER,
+        () -> new ItemStack(ItemReg.MISSILE_REDMATTER.get()), () -> BlockReg.EXPLOSIVE_REDMATTER.get().getDefaultState());
     // </editor-fold>
 
     // <editor-fold desc="grenades">
@@ -196,8 +288,12 @@ public final class EntityReg {
 
     // <editor-fold desc="droplet">
     //  event.getRegistry().register(buildEntityEntry(EntityBombDroplet.class, ICBMEntities.BOMB_DROPLET, 500, 1));
+    public static final RegistryObject<EntityType<EntityBombDroplet>> BOMBLET_CONDENSED = bomblet(
+        "bomblet_explosive_condensed", ICBMExplosives.CONDENSED,
+        () -> new ItemStack(ItemReg.BOMBLET_CONDENSED.get()));
     // </editor-fold>
 
+    // <editor-fold desc="entities">
     /** @deprecated being removed as each explosive should spawn its own entityType */
     public static final RegistryObject<EntityType<EntityExplosion>> TICKING_EXPLOSION = ENTITIES.register("ticking_explosion", () -> EntityType.Builder.create(
             EntityExplosion::new, EntityClassification.MISC)
@@ -257,10 +353,12 @@ public final class EntityReg {
             (t, w) -> new EntityParachute(t, w, () -> new ItemStack(ItemReg.PARACHUTE::get), () -> new ItemStack(ItemReg.PARACHUTE::get)), EntityClassification.MISC)
         .setTrackingRange(500)
         .setUpdateInterval(1)
-        .size(0.5f, 0.5f)
+        .size(0.98f, 0.98f)
         .immuneToFire()
         .build(ICBMConstants.PREFIX + "cargo_parachute_size_2")
     );
+
+    // </editor-fold>
 
     /**
      * @deprecated replace with {@link #missile(String, IActionData, NonNullSupplier, NonNullSupplier)}
@@ -280,6 +378,28 @@ public final class EntityReg {
     private static RegistryObject<EntityType<EntityMissileActionable>> missile(String name, IActionData action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityMissileActionable>create(
                 (t, w) -> new EntityMissileActionable(t, w, action, maxHealth, itemstack), EntityClassification.MISC)
+            .setTrackingRange(500)
+            .setUpdateInterval(1)
+            .size(0.5f, 0.5f)
+            .immuneToFire()
+            .build(ICBMConstants.PREFIX + name)
+        );
+    }
+
+    private static RegistryObject<EntityType<EntityExplosive>> explosiveBlock(String name, IActionData action, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate) {
+        return ENTITIES.register(name, () -> EntityType.Builder.<EntityExplosive>create(
+                (t, w) -> new EntityExplosive(t, w, action, itemstack, blockstate), EntityClassification.MISC)
+            .setTrackingRange(500)
+            .setUpdateInterval(1)
+            .size(0.5f, 0.5f)
+            .immuneToFire()
+            .build(ICBMConstants.PREFIX + name)
+        );
+    }
+
+    private static RegistryObject<EntityType<EntityBombDroplet>> bomblet(String name, IActionData action, NonNullSupplier<ItemStack> itemstack) {
+        return ENTITIES.register(name, () -> EntityType.Builder.<EntityBombDroplet>create(
+                (t, w) -> new EntityBombDroplet(t, w, action, itemstack), EntityClassification.MISC)
             .setTrackingRange(500)
             .setUpdateInterval(1)
             .size(0.5f, 0.5f)
