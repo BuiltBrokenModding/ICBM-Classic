@@ -101,7 +101,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     // Debug
     public boolean freezeMotion = false;
 
-    public EntityProjectile(EntityType<?> entityTypeIn, World world) {
+    public EntityProjectile(EntityType<PROJECTILE> entityTypeIn, World world) {
         super(entityTypeIn, world);
         //this.setSize(0.5F, 0.5F);
     }
@@ -545,7 +545,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * better handling of impacts.
      */
     protected void onImpact(RayTraceResult hit) {
-        this.setDead();
+        this.remove();
     }
 
     protected void updateMotion() {

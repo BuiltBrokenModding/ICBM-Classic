@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 /**
  * Handles switching out blocks for dead version or with radioactive versions
  */
-public class BlastRadioactiveBlockSwaps extends BlastThreaded implements IBlastTickable
+public class BlastRadioactiveBlockSwaps extends BlastThreaded
 {
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits)

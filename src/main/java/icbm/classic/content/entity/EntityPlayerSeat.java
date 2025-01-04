@@ -2,24 +2,24 @@ package icbm.classic.content.entity;
 
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nullable;
@@ -32,6 +32,9 @@ import javax.annotation.Nullable;
  */
 public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnData
 {
+    private static final EntitySize VERT_SIZE = new EntitySize(0.5f, 2.5f, true);
+    private static final EntitySize HORT_SIZE = new EntitySize(2.5f, 0.5f, true);
+
     private TileLauncherBase host; //TODO save host position so we can restore from save
     private BlockPos hostPos;
 
@@ -41,9 +44,14 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     public Direction prevFace;
     public Direction prevRotation;
 
-    public EntityPlayerSeat(World world)
+    public EntityPlayerSeat(EntityType<EntityPlayerSeat> type, World world)
     {
-        super(world);
+        super(type, world);
+    }
+
+    @Override
+    protected float getEyeHeight(Pose p_213316_1_, EntitySize p_213316_2_) {
+        return 0;
     }
 
     @Override
@@ -62,12 +70,6 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    public float getEyeHeight()
-    {
-        return 0;
-    }
-
-    @Override
     protected void registerData()
     {
     }
@@ -81,6 +83,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     public void removePassengers()
     {
+        super.removePassengers();
         for (int i = this.getPassengers().size() - 1; i >= 0; --i)
         {
             final Entity entity = this.getPassengers().get(i);
@@ -88,7 +91,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double prevY = entity.posY;
             double prevZ = entity.posZ;
 
-            entity.dismountRidingEntity();
+            entity.stopRiding();
 
             // Player will sometimes warp to bottom of map when dismounting
             if(Math.abs(prevX - entity.posX) > 2 || Math.abs(prevY - entity.posZ) > 2 || Math.abs(prevZ - entity.posZ) > 2) {
@@ -98,7 +101,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    public void onEntityUpdate()
+    public void tick()
     {
         if(host == null && hostPos != null) {
             final TileEntity tile = world.getTileEntity(hostPos);
@@ -108,10 +111,10 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             }
         }
 
-        if (!world.isRemote && (host == null || host.isInvalid() || this.posY < -64.0D))
+        if (!world.isRemote && (host == null || host.isRemoved() || this.posY < -64.0D))
         {
             this.removePassengers();
-            this.setDead();
+            this.remove();
         }
 
         if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide())) {
@@ -125,44 +128,55 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     protected void updatePosition(Direction face, Direction rotation) {
 
         // Rotation relative to block face
-        offsetX = rotation.getFrontOffsetX() * 0.2f; //TODO customize to match missile visuals
-        offsetY = rotation.getFrontOffsetY() * 0.2f;
-        offsetZ = rotation.getFrontOffsetZ() * 0.2f;
+        offsetX = rotation.getXOffset() * 0.2f; //TODO customize to match missile visuals
+        offsetY = rotation.getYOffset() * 0.2f;
+        offsetZ = rotation.getZOffset() * 0.2f;
 
         // Height relative to block rotation
-        offsetX += face.getFrontOffsetX() * 0.5f;
-        offsetY += face.getFrontOffsetY() * 0.5f;
-        offsetZ += face.getFrontOffsetZ() * 0.5f;
+        offsetX += face.getXOffset() * 0.5f;
+        offsetY += face.getYOffset() * 0.5f;
+        offsetZ += face.getZOffset() * 0.5f;
 
         if(face == Direction.DOWN) {
-            offsetY -= height;
+            offsetY -= getWidth();
         }
         else if(face == Direction.EAST) {
-            offsetX += width / 2;
+            offsetX += getWidth() / 2;
             offsetY -= 0.6f;
         }
         else if(face == Direction.WEST) {
-            offsetX -= width / 2;
+            offsetX -= getWidth() / 2;
             offsetY -= 0.6f;
         }
         else if(face == Direction.NORTH) {
-            offsetZ -= width / 2;
+            offsetZ -= getWidth() / 2;
             offsetY -= 0.6f;
         }
         else if(face == Direction.SOUTH) {
-            offsetZ += width / 2;
+            offsetZ += getWidth() / 2;
             offsetY -= 0.6f;
         }
 
         // Position
-        double posX = host.getPos().getX() + 0.5 + face.getFrontOffsetX() * 0.5;
-        double posY = host.getPos().getY() + 0.5 + face.getFrontOffsetY() * 0.5;
-        double posZ = host.getPos().getZ() + 0.5 + face.getFrontOffsetZ() * 0.5;
+        double posX = host.getPos().getX() + 0.5 + face.getXOffset() * 0.5;
+        double posY = host.getPos().getY() + 0.5 + face.getYOffset() * 0.5;
+        double posZ = host.getPos().getZ() + 0.5 + face.getZOffset() * 0.5;
         setPosition(posX, posY, posZ);
 
         final EulerAngle angle = new EulerAngle(rotation);
         this.rotationYaw = this.prevRotationYaw = (float) angle.yaw();
         this.rotationPitch = this.prevRotationPitch = (float) angle.pitch();
+    }
+
+
+
+    @Override
+    public EntitySize getSize(Pose poseIn) {
+        final Direction face = host.getLaunchDirection();
+        if(face == Direction.UP || face == Direction.DOWN) {
+           return VERT_SIZE;
+        }
+        return HORT_SIZE;
     }
 
     protected void updateBox(Direction face, Direction rotation) {
@@ -171,14 +185,12 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         final float dimB;
         // Size
         if(face == Direction.UP || face == Direction.DOWN) {
-            setSize(0.5f, 2.5f);
-            dimA = this.width / 2;
-            dimB = this.height;
+            dimA = this.getWidth() / 2;
+            dimB = this.getHeight();
         }
         else {
-            setSize(2.5f, 0.5f);
-            dimA = this.height / 2;
-            dimB = this.width;
+            dimA = this.getHeight() / 2;
+            dimB = this.getWidth();
         }
 
         // bounding box
@@ -190,7 +202,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double maxX = posX + dimA;
             double maxY = posY + dimB;
             double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+            setBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
         }
         else if(face == Direction.DOWN) {
             double minX = posX - dimA;
@@ -200,7 +212,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double maxX = posX + dimA;
             double maxY = posY;
             double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+            setBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
         }
         else if(face == Direction.EAST) {
             double minX = posX;
@@ -210,7 +222,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double maxX = posX + dimB;
             double maxY = posY + dimA;
             double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+            setBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
         }
         else if(face == Direction.WEST) {
             double minX = posX - dimB;
@@ -220,7 +232,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double maxX = posX;
             double maxY = posY + dimA;
             double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+            setBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
         }
         else if(face == Direction.NORTH) {
             double minX = posX - dimA;
@@ -230,7 +242,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double maxX = posX + dimA;
             double maxY = posY + dimA;
             double maxZ = posZ;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+            setBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
         }
 
         else if(face == Direction.SOUTH) {
@@ -241,7 +253,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             double maxX = posX + dimA;
             double maxY = posY + dimA;
             double maxZ = posZ + dimB;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+            setBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
         }
     }
 
@@ -251,11 +263,14 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
         this.posX = x;
         this.posY = y;
         this.posZ = z;
-        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
+        if (this.isAddedToWorld() && !this.world.isRemote && world instanceof ServerWorld) {
+            ((ServerWorld)this.world).chunkCheck(this); // Forge - Process chunk registration after moving.
+        }
+        // Copied from super to remove bounding box changes
     }
 
     @Override
-    public void move(MoverType type, double x, double y, double z)
+    public void move(MoverType type, Vec3d pos)
     {
         // Can't move
     }
@@ -279,9 +294,9 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
                 if(player.isCreative()) {
                     final ItemStack itemStack = player.getHeldItem(hand);
                     if (itemStack.getItem() == Items.MINECART) {
-                        final AbstractMinecartEntity cart = new MinecartEntity(world);
+                        final AbstractMinecartEntity cart = EntityType.MINECART.create(world);
                         cart.setPosition(posX, posY, posZ);
-                        world.spawnEntity(cart);
+                        world.addEntity(cart);
 
                         cart.startRiding(this);
                         return true;
@@ -297,14 +312,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Override
     public boolean canBeCollidedWith()
     {
-        return !this.isDead;
-    }
-
-    @Override //make method public
-    public void setSize(float width, float height)
-    {
-        this.width = width;
-        this.height = height;
+        return this.isAlive();
     }
 
     @Override
@@ -317,7 +325,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
-        return super.getEntityBoundingBox(); //TODO might be needed for interaction
+        return super.getBoundingBox(); //TODO might be needed for interaction
     }
 
     @Override
@@ -325,9 +333,9 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     {
         if (this.isPassenger(passenger) && host != null)
         {
-            double x = this.posX + offsetX + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetX() : 0);
-            double y = this.posY + offsetY + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetY() : 0);
-            double z = this.posZ + offsetZ + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetZ() : 0);
+            double x = this.posX + offsetX + passenger.getYOffset() * (prevFace != null ? prevFace.getXOffset() : 0);
+            double y = this.posY + offsetY + passenger.getYOffset() * (prevFace != null ? prevFace.getYOffset() : 0);
+            double z = this.posZ + offsetZ + passenger.getYOffset() * (prevFace != null ? prevFace.getZOffset() : 0);
             passenger.setPosition(x, y, z);
         }
     }
@@ -345,24 +353,24 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    protected void readEntityFromNBT(CompoundNBT save)
+    protected void readAdditional(CompoundNBT save)
     {
-        if(save.hasKey("pos")) {
-            this.hostPos = NBTUtil.getPosFromTag(save.getCompoundTag("pos"));
+        if(save.contains("pos")) {
+            this.hostPos = NBTUtil.readBlockPos(save.getCompound("pos"));
         }
 
     }
 
     @Override
-    protected void writeEntityToNBT(CompoundNBT save)
+    protected void writeAdditional(CompoundNBT save)
     {
         if(hostPos != null) {
-            save.setTag("pos", NBTUtil.createPosTag(hostPos));
+            save.put("pos", NBTUtil.writeBlockPos(hostPos));
         }
     }
 
     @Override
-    public void writeSpawnData(ByteBuf buffer)
+    public void writeSpawnData(PacketBuffer buffer)
     {
         buffer.writeBoolean(host != null);
         if(host != null) {
@@ -373,7 +381,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    public void readSpawnData(ByteBuf additionalData)
+    public void readSpawnData(PacketBuffer additionalData)
     {
         if(additionalData.readBoolean()) {
             final TileEntity tile = world.getTileEntity(new BlockPos(additionalData.readInt(), additionalData.readInt(), additionalData.readInt()));

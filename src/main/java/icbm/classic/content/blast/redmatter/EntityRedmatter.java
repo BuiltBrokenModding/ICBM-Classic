@@ -7,16 +7,21 @@ import icbm.classic.content.blast.redmatter.caps.CapRedmatterPull;
 import icbm.classic.content.blast.redmatter.logic.RedmatterLogic;
 import icbm.classic.content.blast.redmatter.render.RedmatterClientLogic;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -32,8 +37,8 @@ public class EntityRedmatter extends Entity
     public static final float SPEED_REDUCTION = 0.98f;
 
     //Acts as an API wrapper for the entity
-    public final BlastRedmatterWrapper blastData = new BlastRedmatterWrapper(this);
-    public final CapRedmatterPull capRedmatterPull = new CapRedmatterPull(this);
+    public final LazyOptional<BlastRedmatterWrapper> blastData = LazyOptional.of(() -> new BlastRedmatterWrapper(this));
+    public final LazyOptional<CapRedmatterPull> capRedmatterPull = LazyOptional.of(() -> new CapRedmatterPull(this));
 
     //Handlers
     public final RedmatterClientLogic clientLogic = new RedmatterClientLogic(this);
@@ -44,10 +49,9 @@ public class EntityRedmatter extends Entity
     /** Largest possible size of the redmatter */
     private static final DataParameter<Float> MAX_SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
 
-    public EntityRedmatter(World world)
+    public EntityRedmatter(EntityType<EntityRedmatter> type, World world)
     {
-        super(world);
-        this.setSize(0.98F, 0.98F);
+        super(type, world);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
         this.ticksExisted = 0;
@@ -62,16 +66,16 @@ public class EntityRedmatter extends Entity
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
-        super.onUpdate();
+        super.tick();
 
         //Update motion until we hit zero
-        if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) //TODO replace zero with range check to prevent rounding issues
+        if (this.getMotion().lengthSquared() > 0) //TODO replace zero with range check to prevent rounding issues
         {
             reduceMotion();
             correctMotion();
-            move(MoverType.SELF, motionX, motionY, motionZ);
+            move(MoverType.SELF, this.getMotion());
         }
 
         //Run only if server
@@ -84,9 +88,7 @@ public class EntityRedmatter extends Entity
     //<editor-fold desc="motion handling">
     private void reduceMotion()
     {
-        this.motionX *= SPEED_REDUCTION;
-        this.motionY *= SPEED_REDUCTION;
-        this.motionZ *= SPEED_REDUCTION;
+        this.setMotion(this.getMotion().mul(SPEED_REDUCTION, SPEED_REDUCTION, SPEED_REDUCTION)); //TODO reduce memory churn
     }
 
     private void correctMotion()
@@ -94,35 +96,30 @@ public class EntityRedmatter extends Entity
         //TODO see if we can remove the sqrt and if the limit should be in an if-statement
 
         //Normalize motion as a speed value
-        final float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
-        this.motionX /= speed;
-        this.motionY /= speed;
-        this.motionZ /= speed;
+        this.setMotion(this.getMotion().normalize()); //TODO reduce memory churn
 
         //Limit our velocity vector by the updated speed
-        final float limitedSpeed = Math.min(speed, MAX_SPEED);
-        this.motionX *= limitedSpeed;
-        this.motionY *= limitedSpeed;
-        this.motionZ *= limitedSpeed;
+        final float limitedSpeed = (float)Math.min(this.getMotion().length(), MAX_SPEED);
+        this.setMotion(this.getMotion().scale(limitedSpeed));
     }
     //</editor-fold>
 
     //<editor-fold desc="saving">
     @Override
-    protected void readEntityFromNBT(CompoundNBT nbt)
+    protected void readAdditional(CompoundNBT nbt)
     {
-        if(nbt.hasKey(NBT_BLAST_SIZE))
+        if(nbt.contains(NBT_BLAST_SIZE))
         {
             setBlastSize(nbt.getFloat(NBT_BLAST_SIZE));
         }
-        if(nbt.hasKey(NBT_BLAST_SIZE_MAX))
+        if(nbt.contains(NBT_BLAST_SIZE_MAX))
         {
             setBlastSize(nbt.getFloat(NBT_BLAST_SIZE_MAX));
         }
     }
 
     @Override
-    protected void writeEntityToNBT(CompoundNBT nbt)
+    protected void writeAdditional(CompoundNBT nbt)
     {
         nbt.putFloat(NBT_BLAST_SIZE, getBlastSize());
         nbt.putFloat(NBT_BLAST_SIZE_MAX, getBlastMaxSize());
@@ -143,30 +140,25 @@ public class EntityRedmatter extends Entity
     }
     //</editor-fold>
 
-    //<editor-fold desc="cap-system">
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing)
-    {
-        return capability == ICBMClassicAPI.BLAST_CAPABILITY
-                || capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY
-                || super.hasCapability(capability, facing);
+    public IPacket<?> createSpawnPacket() {
+        return new SSpawnObjectPacket(this);
     }
 
+    @Nonnull
     @Override
-    @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing)
+    public <T> LazyOptional<T> getCapability(@Nonnull final Capability<T> capability, final @Nullable Direction side)
     {
         if (capability == ICBMClassicAPI.BLAST_CAPABILITY)
         {
-            return ICBMClassicAPI.BLAST_CAPABILITY.cast(blastData);
+            return blastData.cast();
         }
         else if (capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY)
         {
-            return ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY.cast(capRedmatterPull);
+            return capRedmatterPull.cast();
         }
-        return super.getCapability(capability, facing);
+        return super.getCapability(capability, side);
     }
-    //</editor-fold>
 
     public float getBlastSize()
     {

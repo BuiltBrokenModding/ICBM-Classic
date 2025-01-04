@@ -4,20 +4,26 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.content.cargo.CargoProjectileData;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.Value;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nonnull;
 
 @EqualsAndHashCode(callSuper = false)
 @ToString
+@Value
 public class ParachuteProjectileData extends CargoProjectileData<ParachuteProjectileData, EntityParachute> {
 
     public final static ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "holder.parachute");
 
+    NonNullSupplier<EntityType<EntityParachute>> entityType;
+
     @Override
     public EntityParachute newEntity(World world, boolean allowItemPicku) {
-        return new EntityParachute(world); //.setRenderItemStack(parachute);
+        return entityType.get().create(world);
     }
 
     @Nonnull

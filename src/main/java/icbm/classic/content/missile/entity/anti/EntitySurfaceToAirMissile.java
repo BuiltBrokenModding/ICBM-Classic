@@ -5,12 +5,18 @@ import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.logic.flight.FollowTargetLogic;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.Direction;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
+import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -23,14 +29,17 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
 
     private boolean hasStartedFollowing = false;
 
-    public EntitySurfaceToAirMissile(World world) {
-        super(world);
+    private final LazyOptional<ItemStack> itemstack;
+
+    public EntitySurfaceToAirMissile(EntityType<EntitySurfaceToAirMissile> type, World world, NonNullSupplier<ItemStack> itemstack) {
+        super(type, world);
+        this.itemstack = LazyOptional.of(itemstack);
         this.getMissileCapability().setTargetData(scanLogic); //TODO create custom missileCap to force getTarget()
         this.setMaxHealth(ConfigMissile.TIER_2_HEALTH);
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
 
         if(!world.isRemote) {
 
@@ -61,35 +70,23 @@ public class EntitySurfaceToAirMissile extends EntityMissile<EntitySurfaceToAirM
                     //TODO add custom damage source that reflects owner of the AB missile, damage is impact-blunt
                     currentTarget.attackEntityFrom(new EntityDamageSource("missile", this), ConfigMissile.SAM_MISSILE.ATTACK_DAMAGE);
                     //TODO play sound effect of missile exploding
-                    this.setDead();
+                    this.remove();
                 }
             }
         }
 
         //Normal update logic
-        super.onUpdate();
+        super.tick();
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
         //TODO add AB capability so radars can redirect targets
         return super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing) {
-        //TODO add AB capability so radars can redirect targets
-        return super.hasCapability(capability, facing);
-    }
-
-    @Override
     public ItemStack toStack() {
-        if(world.isRemote) {
-            if(renderStackCache == null) {
-                renderStackCache = new ItemStack(ItemReg.itemSAM);
-            }
-            return renderStackCache;
-        }
-        return new ItemStack(ItemReg.itemSAM);
+        return this.itemstack.orElse(ItemStack.EMPTY);
     }
 }

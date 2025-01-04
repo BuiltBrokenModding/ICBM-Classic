@@ -13,12 +13,17 @@ import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -34,43 +39,31 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     private IAction blast;
     private double blastYOffset = 0;
 
-    public EntityExplosion(World world)
+    public EntityExplosion(EntityType<EntityExplosion> type, World world)
     {
-        super(world);
+        super(type, world);
         this.preventEntitySpawning = true;
         this.noClip = true;
-        this.setSize(0.98F, 0.98F);
         this.ignoreFrustumCheck = true;
         this.ticksExisted = 0;
     }
 
-    public EntityExplosion(Blast blast)
-    {
-        this(blast.world());
-        this.setBlast(blast);
-        if (ConfigDebug.DEBUG_EXPLOSIVES)
-        {
-            ICBMClassic.logger().info("EntityExplosion#new({}) Created new blast controller entity", blast);
-        }
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return new SSpawnObjectPacket(this);
     }
 
     @Override
-    public String getName()
+    public void writeSpawnData(PacketBuffer data)
     {
-        return "Explosion[" + blast + "]";
-    }
-
-    @Override
-    public void writeSpawnData(ByteBuf data)
-    {
-        ByteBufUtils.writeUTF8String(data, blast.getActionData().getRegistryKey().toString());
+        data.writeResourceLocation(blast.getActionData().getRegistryKey());
         data.writeDouble(blastYOffset);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(PacketBuffer data)
     {
-        constructBlast(ByteBufUtils.readUTF8String(data), data.readDouble());
+        constructBlast(data.readResourceLocation(), data.readDouble());
     }
 
     @Override
@@ -97,75 +90,44 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
 
     /** Called to update the entity's position/logic. */
     @Override
-    public void onUpdate()
+    public void tick()
     {
         if (!(this.getBlast() instanceof IBlastTickable) || ((IBlastTickable)this.getBlast()).getEntity() != this || ((IBlastTickable)this.getBlast()).isCompleted())
         {
-            this.setDead();
+            this.tick();
             return;
-        }
-
-        if (this.getBlast() instanceof IBlastMovable && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
-        {
-            //Slow entity down
-            this.motionX *= .98;
-            this.motionY *= .98;
-            this.motionZ *= .98;
-
-            //Normalize
-            float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
-            this.motionX /= (double) speed;
-            this.motionY /= (double) speed;
-            this.motionZ /= (double) speed;
-
-            //Apply Speed
-            speed = Math.min(speed, 0.5f);
-            this.motionX *= (double) speed;
-            this.motionY *= (double) speed;
-            this.motionZ *= (double) speed;
-
-            //Move box
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(motionX, motionY, motionZ));
-
-            //Reset position based on box
-            this.posX = (this.getEntityBoundingBox().minX + this.getEntityBoundingBox().maxX) / 2.0D;
-            this.posY = (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D;
-            this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
-
-            //Update blast
-            ((IBlastMovable) getBlast()).onPositionUpdate(posX, posY + blastYOffset, posZ);
         }
 
         if (blast instanceof IBlastTickable && ((IBlastTickable) blast).onBlastTick(ticksExisted))
         {
-            setDead();
+            remove();
         }
     }
 
     @Override
-    public void move(MoverType type, double p_70091_1_, double p_70091_3_, double p_70091_5_)
+    public void move(MoverType typeIn, Vec3d pos)
     {
         //Remove default movement
     }
 
     /** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
-    protected void readEntityFromNBT(CompoundNBT nbt)
+    protected void readAdditional(CompoundNBT nbt)
     {
         try
         {
-            CompoundNBT blastSave = nbt.getCompoundTag(NBTConstants.BLAST);
+            CompoundNBT blastSave = nbt.getCompound(NBTConstants.BLAST);
             this.blastYOffset = nbt.getDouble(NBTConstants.BLAST_POS_Y);
             if (getBlast() == null)
             {
-                if (blastSave.hasKey(NBTConstants.EX_ID))
+                if (blastSave.contains(NBTConstants.EX_ID))
                 {
-                    constructBlast(blastSave.getString(NBTConstants.EX_ID), blastYOffset);
+                    constructBlast(new ResourceLocation(blastSave.getString(NBTConstants.EX_ID)), blastYOffset);
                 }
                 else
                 {
                     ICBMClassic.logger().error("EntityExplosion: Failed to read save state for explosion!");
-                    setDead();
+                    remove();
                 }
             }
 
@@ -182,12 +144,12 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
 
     /** (abstract) Protected helper method to write subclass entity data to NBT. */
     @Override
-    protected void writeEntityToNBT(CompoundNBT nbt)
+    protected void writeAdditional(CompoundNBT nbt)
     {
         if (getBlast() != null) //TODO add save/load mechanic to bypass need for ex data
         {
             //Save position
-            nbt.setDouble(NBTConstants.BLAST_POS_Y, blastYOffset);
+            nbt.putDouble(NBTConstants.BLAST_POS_Y, blastYOffset);
 
             //Save explosive data
             CompoundNBT blastSave = new CompoundNBT();
@@ -198,7 +160,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
             blastSave.putString(NBTConstants.EX_ID, getBlast().getActionData().getRegistryKey().toString());
 
             //Encode into NBT
-            nbt.setTag(NBTConstants.BLAST, blastSave);
+            nbt.put(NBTConstants.BLAST, blastSave);
         }
     }
 
@@ -208,7 +170,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (blast != null)
         {
             ((Blast) this.blast).setEntityController(this);
-            this.setPosition(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
+            this.setPosition(blast.x(), !blast.isMovable() ? -1 : blast.y(), blast.y());
             blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
         }
     }
@@ -216,18 +178,17 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     /**
      * Constructs a blast based on the parameters and sets the blast field to that value
      */
-    private void constructBlast(String exId, double yOffset)
+    private void constructBlast(ResourceLocation id, double yOffset)
     {
-        ResourceLocation id = new ResourceLocation(exId);
         IExplosiveData exData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id, true);
 
         if(exData == null) {
             ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '{}'!", id);
-            this.setDead();
+            this.remove();
             return;
         }
 
-        ActionSource actionSource = new ActionSource(world, new Vec3d(posX, posY + yOffset, posZ), new EntityCause(this)); //TODO provide additional cause information such as fire, lighter, player, etc
+        ActionSource actionSource = new ActionSource(DimensionType.getKey(world.dimension.getType()), new Vec3d(posX, posY + yOffset, posZ), new EntityCause(this)); //TODO provide additional cause information such as fire, lighter, player, etc
         blast = exData.create(world, posX, posY + yOffset, posZ, actionSource, null);
 
         if(blast instanceof IBlastInit) {

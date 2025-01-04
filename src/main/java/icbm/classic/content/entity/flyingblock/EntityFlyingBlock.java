@@ -12,6 +12,7 @@ import lombok.Setter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -55,13 +56,11 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     @Setter
     private float gravity = DEFAULT_GRAVITY;
 
-    public EntityFlyingBlock(World world)
+    public EntityFlyingBlock(EntityType<EntityFlyingBlock> type, World world)
     {
-        super(world);
+        super(type, world);
         this.ticksExisted = 0;
         this.preventEntitySpawning = true;
-        this.isImmuneToFire = true;
-        this.setSize(0.98F, 0.98F);
         this.inGroundKillTime = ICBMConstants.TICKS_SEC;
     }
 

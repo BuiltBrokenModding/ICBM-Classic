@@ -12,6 +12,7 @@ import icbm.classic.lib.actions.status.ActionResponses;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,20 +42,20 @@ public class BlastRedmatterWrapper implements IBlast
     @Nonnull
     @Override
     public IActionSource getSource() {
-        return new ActionSource(host.world, new Vec3d(host.posX, host.posY, host.posZ), new EntityCause(host));
+        return new ActionSource(DimensionType.getKey(host.dimension), new Vec3d(host.posX, host.posY, host.posZ), new EntityCause(host));
     }
 
     @Override
     public void clearBlast()
     {
-        host.setDead();
+        host.remove();
     }
 
     //<editor-fold desc="properties">
     @Override
     public boolean isCompleted()
     {
-        return host.isDead;
+        return !host.isAlive();
     }
 
     @Nonnull

@@ -3,6 +3,7 @@ package icbm.classic.content.entity;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -22,14 +23,11 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
     public float blue = 0;
     public int ticksToLive = 100;
 
-    public EntitySmoke(World world)
+    public EntitySmoke(EntityType<EntitySmoke> entityType, World world)
     {
-        super(world);
-        //this.setSize(1F, 1F);
+        super(entityType, world);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
-        //this.height = 0.1f;
-        //this.width = 0.1f;
     }
 
     @Override

@@ -10,11 +10,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -28,8 +32,6 @@ import java.util.function.Supplier;
  */
 public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IEntityAdditionalSpawnData
 {
-    private final static Supplier<ItemStack> DEFAULT_RENDER = new LazyBuilder<>(() -> new ItemStack(ItemReg.itemBalloon, 1, 1));
-
     public static final float GRAVITY = 0.005f; // TODO config
     public static final float AIR_RESISTANCE = 0.90f; // TODO config
 
@@ -43,14 +45,13 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     private int liftTicks = FLOATING_DURATION;
 
     /** Stack to render */
-    @Nonnull
-    @Setter @Getter @Accessors(chain = true)
-    private ItemStack renderItemStack = DEFAULT_RENDER.get();
+    @Getter @Accessors(chain = true)
+    private final LazyOptional<ItemStack> renderStack;
 
-    public EntityBalloon(World world)
+    public EntityBalloon(EntityType<EntityBalloon> type, World world, NonNullSupplier<ItemStack> renderStack)
     {
-        super(world);
-        this.setSize(0.5f, 0.5f);
+        super(type, world);
+        this.renderStack = LazyOptional.of(renderStack);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
     }
@@ -61,17 +62,15 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(PacketBuffer data)
     {
         data.writeInt(this.liftTicks);
-        ByteBufUtils.writeItemStack(data, renderItemStack);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(PacketBuffer data)
     {
         this.liftTicks = data.readInt();
-        renderItemStack = ByteBufUtils.readItemStack(data);
     }
 
     @Override
@@ -96,14 +95,14 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
             }
             else
             {
-                passenger.setPosition(this.posX, this.posY + passenger.height - 0.55, this.posZ);
+                passenger.setPosition(this.posX, this.posY + passenger.getHeight() - 0.55, this.posZ);
             }
         }
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void tick() {
+        super.tick();
 
         // Balloon pop chance
         if(isServer() && liftTicks <= 0 && world.rand.nextFloat() <= BREAK_CHANCE) {
@@ -141,7 +140,7 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     @Override
     protected boolean ignoreImpact(RayTraceResult hit) {
         // Ignore entity impacts, as we only care about the ground
-        return hit.entityHit != null;
+        return hit.getType() != RayTraceResult.Type.ENTITY;
     }
 
     @Override
@@ -163,27 +162,26 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
         if(!this.getPassengers().isEmpty()) {
             this.removePassengers();
         }
-        this.setDead();
+        this.remove();
         // TODO release balloon fragment particles as a "pop" affect
     }
 
     @Override
-    public void readEntityFromNBT(CompoundNBT tag)
+    public void readAdditional(CompoundNBT tag)
     {
-        super.readEntityFromNBT(tag);
+        super.readAdditional(tag);
         SAVE_LOGIC.load(this, tag);
     }
 
     @Override
-    public void writeEntityToNBT(CompoundNBT tag)
+    public void writeAdditional(CompoundNBT tag)
     {
-        super.writeEntityToNBT(tag);
+        super.writeAdditional(tag);
         SAVE_LOGIC.save(this, tag);
     }
 
     private static final NbtSaveHandler<EntityBalloon> SAVE_LOGIC = new NbtSaveHandler<EntityBalloon>()
         .mainRoot()
         .nodeInteger("lift_ticks", EntityBalloon::getLiftTicks, EntityBalloon::setLiftTicks)
-        .nodeItemStack("render_stack", EntityBalloon::getRenderItemStack, EntityBalloon::setRenderItemStack)
         .base();
 }

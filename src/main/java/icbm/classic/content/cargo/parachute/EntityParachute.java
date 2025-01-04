@@ -9,12 +9,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
@@ -28,35 +33,20 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     public static final float GRAVITY = 0.01f; // TODO config
     public static final float AIR_RESISTANCE = 0.95f; // TODO config
-    public static final float ENTITY_SIZE = 0.5f;
 
-    /** Stack to render */
-    @Nonnull @Setter @Getter @Accessors(chain = true)
-    private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
 
-    /** Stack to drop on impact with ground */
-    @Nonnull @Setter @Getter @Accessors(chain = true)
-    private ItemStack dropItemStack = new ItemStack(ItemReg.itemParachute); // TODO consider used parachute item
-
+    private final LazyOptional<ItemStack> dropItemStack;
     @Getter
-    private float renderScale = 1;
-    private float prevRenderScale = 1;
+    private final LazyOptional<ItemStack> renderItemStack;
 
 
-    public EntityParachute(World world)
+    public EntityParachute(EntityType<EntityParachute> type, World world, NonNullSupplier<ItemStack> dropStack, NonNullSupplier<ItemStack> renderStack)
     {
-        super(world);
-        this.setSize(ENTITY_SIZE, ENTITY_SIZE);
+        super(type, world);
+        this.dropItemStack = LazyOptional.of(dropStack);
+        this.renderItemStack = LazyOptional.of(renderStack);
         this.preventEntitySpawning = true;
         this.ignoreFrustumCheck = true;
-    }
-
-    protected void setRenderScale(float scale) {
-        this.renderScale = scale;
-        if(Math.abs(prevRenderScale - scale) > 0.01) {
-            this.prevRenderScale = this.renderScale;
-            this.setSize(ENTITY_SIZE * scale, ENTITY_SIZE * scale);
-        }
     }
 
     @Override
@@ -65,18 +55,15 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(PacketBuffer data)
     {
         data.writeInt(this.ticksInAir);
-        ByteBufUtils.writeItemStack(data, renderItemStack);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(PacketBuffer data)
     {
         this.ticksInAir = data.readInt();
-        renderItemStack = ByteBufUtils.readItemStack(data);
-        // TODO pull iBakedModel and cache
     }
 
     @Override
@@ -94,29 +81,6 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     protected boolean canFitPassenger(Entity passenger)
     {
         return this.getPassengers().isEmpty();
-    }
-
-    @Override
-    protected void removePassenger(Entity passenger) {
-        super.removePassenger(passenger);
-        this.setRenderScale(1);
-    }
-
-    @Override
-    public void addPassenger(Entity passenger) {
-        super.addPassenger(passenger);
-        if(passenger instanceof ItemEntity)
-        {
-            this.setRenderScale(1);
-        }
-        else if(passenger instanceof EntityFlyingBlock)
-        {
-            this.setRenderScale(2);
-        }
-        else
-        {
-            this.setRenderScale(2);
-        }
     }
 
     @Override
@@ -141,7 +105,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
             }
             else
             {
-                passenger.setPosition(this.posX, this.posY + passenger.height -0.25, this.posZ);
+                passenger.setPosition(this.posX, this.posY + passenger.getHeight() -0.25, this.posZ);
             }
         }
     }
@@ -165,7 +129,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     @Override
     protected boolean ignoreImpact(RayTraceResult hit) {
         // Ignore entity impacts, as we only care about the ground
-        return hit.entityHit != null;
+        return hit.getType() != RayTraceResult.Type.ENTITY;
     }
 
     @Override
@@ -185,36 +149,16 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     protected void releaseParachute() {
         this.removePassengers();
-        this.setDead(); //TODO have parachute drift away and then despawn with particles
+        this.remove(); //TODO have parachute drift away and then despawn with particles
 
-        if(isServer() && this.dropItemStack != null && !this.dropItemStack.isEmpty()) {
-            final ItemEntity entityitem = new ItemEntity(this.world, this.posX, this.posY, this.posZ, this.dropItemStack.copy());
+        if(isServer() && this.dropItemStack.isPresent()) {
+            final ItemEntity entityitem = new ItemEntity(this.world, this.posX, this.posY, this.posZ, this.dropItemStack.orElseThrow(IllegalStateException::new).copy());
             entityitem.setDefaultPickupDelay();
-            world.spawnEntity(entityitem);
+            world.addEntity(entityitem);
         }
 
         //TODO add event, idea would be to use it non-projectile items and entities to handle additional logic
         //      though this is not meant to act as a replacement for other solutions. Such as spawn eggs using a deployer item.
         //      example, adding a parachute backpack to entities, or adding to player inventory
     }
-
-    @Override
-    public void readEntityFromNBT(CompoundNBT tag)
-    {
-        super.readEntityFromNBT(tag);
-        SAVE_LOGIC.load(this, tag);
-    }
-
-    @Override
-    public void writeEntityToNBT(CompoundNBT tag)
-    {
-        super.writeEntityToNBT(tag);
-        SAVE_LOGIC.save(this, tag);
-    }
-
-    private static final NbtSaveHandler<EntityParachute> SAVE_LOGIC = new NbtSaveHandler<EntityParachute>()
-        .mainRoot()
-        .nodeItemStack("renderItem", (e) -> e.renderItemStack, (e, i) -> e.renderItemStack = i)
-        .nodeItemStack("dropItem", (e) -> e.dropItemStack, (e, i) -> e.dropItemStack = i)
-        .base();
 }

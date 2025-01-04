@@ -68,7 +68,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
     protected boolean syncClient = false;
 
-    public EntityMissile(EntityType<?> type, World world)
+    public EntityMissile(EntityType<E> type, World world)
     {
         super(type, world);
         this.hasHealth = true;
@@ -79,11 +79,11 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     {
         if (cap == CapabilityEMP.EMP)
         {
-            return (LazyOptional<T>) LazyOptional.of(this::getEmpCapability);
+            return LazyOptional.of(this::getEmpCapability).cast();
         }
         else if (cap == ICBMClassicAPI.MISSILE_CAPABILITY)
         {
-            return (LazyOptional<T>) LazyOptional.of(this::getMissileCapability);
+            return LazyOptional.of(this::getMissileCapability).cast();
         }
         return super.getCapability(cap, side);
     }

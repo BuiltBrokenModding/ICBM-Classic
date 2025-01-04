@@ -19,8 +19,7 @@ import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.missile.logic.flight.move.MoveByVec3Logic;
 import icbm.classic.content.radioactive.RadioactiveHandler;
-import icbm.classic.content.reg.BlockReg;
-import icbm.classic.content.reg.TileReg;
+import icbm.classic.content.reg.*;
 import icbm.classic.lib.actions.ActionSystem;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
@@ -40,8 +39,6 @@ import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.content.cargo.parachute.ParachuteProjectileData;
 import icbm.classic.content.potion.ContagiousPoison;
-import icbm.classic.content.reg.ExplosiveInit;
-import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.ex.CapabilityExplosive;
@@ -112,7 +109,8 @@ public class ICBMClassic
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         BlockReg.BLOCKS.register(modBus);
         ItemReg.ITEMS.register(modBus);
-        TileReg.TYPES.register(modBus);
+        TileReg.TILES.register(modBus);
+        EntityReg.ENTITIES.register(modBus);
     }
 
     /*@SubscribeEvent TODO likely moved to JSON
