@@ -1,18 +1,13 @@
 package icbm.classic.config.util;
 
 
-import icbm.classic.ICBMClassic;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Answers;
-import org.mockito.Mockito;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -251,102 +246,6 @@ class ResourceConfigListTest {
         }
 
         @Test
-        void metadataRegex() {
-            // Arrange
-            final String entry = "minecraft:stone@1";
-            final Function fun = (v) -> true;
-            final ResourceLocation key = new ResourceLocation("minecraft", "stone");
-
-            final boolean[] wasCalled = {false};
-            final ResourceConfigList configList = new StubbedList("stub", (c) -> {}) {
-                @Override
-                protected Function getMetaValue(ResourceLocation k, int metadata, @Nullable Object o) {
-                    wasCalled[0] = true;
-                    Assertions.assertEquals(key, k);
-                    Assertions.assertEquals(1, metadata);
-                    Assertions.assertNull(o);
-                    return fun;
-                }
-            };
-
-            // Act
-            final boolean result = configList.handleEntry("test", entry, 0);
-
-            // Assert
-            Assertions.assertTrue(wasCalled[0]);
-            Assertions.assertTrue(result);
-            final Map<ResourceLocation, List<ResourceConfigEntry>> expected = new HashMap();
-            expected.put(key, Collections.singletonList(new ResourceConfigEntry("resource_metadata",0, fun).setKey(key)));
-
-            Assertions.assertEquals(expected, configList.contentMatchers);
-        }
-
-        @Test
-        void metadataRegex_withValue() {
-            // Arrange
-            final String entry = "minecraft:stone@1=10";
-            final Function fun = (v) -> true;
-            final ResourceLocation key = new ResourceLocation("minecraft", "stone");
-
-            final boolean[] wasCalled = {false};
-            final ResourceConfigList configList = new StubbedList("stub", (c) -> {}) {
-                @Override
-                protected Function getMetaValue(ResourceLocation k, int metadata, @Nullable Object o) {
-                    wasCalled[0] = true;
-                    Assertions.assertEquals(key, k);
-                    Assertions.assertEquals(1, metadata);
-                    Assertions.assertEquals(10, o);
-                    return fun;
-                }
-
-                @Override
-                protected Object parseValue(String source, String entry, @Nullable String value) {
-                    assert value != null;
-                    return Integer.parseInt(value);
-                }
-            };
-
-            // Act
-            final boolean result = configList.handleEntry("test", entry, 0);
-
-            // Assert
-            Assertions.assertTrue(wasCalled[0]);
-            Assertions.assertTrue(result);
-            final Map<ResourceLocation, List<ResourceConfigEntry>> expected = new HashMap();
-            expected.put(key, Collections.singletonList(new ResourceConfigEntry("resource_metadata",0, fun).setKey(key)));
-
-            Assertions.assertEquals(expected, configList.contentMatchers);
-        }
-
-        @Test
-        void metadataRegex_rejected() {
-            // Arrange
-            final String entry = "minecraft:stone@1";
-            final ResourceLocation key = new ResourceLocation("minecraft", "stone");
-
-            final boolean[] wasCalled = {false};
-            final ResourceConfigList configList = new StubbedList("stub", (c) -> {}) {
-                @Override
-                protected Function getMetaValue(ResourceLocation k, int metadata, @Nullable Object o) {
-                    wasCalled[0] = true;
-                    Assertions.assertEquals(key, k);
-                    Assertions.assertEquals(1, metadata);
-                    Assertions.assertNull(o);
-                    return null;
-                }
-            };
-
-            // Act
-            final boolean result = configList.handleEntry("test", entry, 0);
-
-            // Assert
-            Assertions.assertTrue(wasCalled[0]);
-            Assertions.assertTrue(result);
-            final Map<ResourceLocation, List<ResourceConfigEntry>> expected = new HashMap();
-            Assertions.assertEquals(expected, configList.contentMatchers);
-        }
-
-        @Test
         void sortingRegex() {
             // Arrange
             final String entry = "@sort(3,minecraft:stone)";
@@ -432,7 +331,6 @@ class ResourceConfigListTest {
 
         public StubbedList(String name, Consumer reloadCallback) {
             super(name, "www.config.url", reloadCallback);
-            addMatcher(META_KEY_REGEX, this::handleMeta);
             addMatcher(KEY_VALUE_REGEX, this::handleSimple);
         }
 

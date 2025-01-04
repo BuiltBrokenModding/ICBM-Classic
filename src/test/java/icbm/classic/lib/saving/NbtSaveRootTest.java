@@ -46,7 +46,7 @@ public class NbtSaveRootTest
 
             final CompoundNBT save = root.save(thing);
 
-            Assertions.assertTrue(save.hasNoTags());
+            Assertions.assertTrue(save.isEmpty());
         }
 
         @Test
@@ -111,8 +111,8 @@ public class NbtSaveRootTest
             final CompoundNBT expectedSave = new CompoundNBT();
             expectedSave.putInt("i", 4567);
             final CompoundNBT dave = new CompoundNBT();
-            dave.setBoolean("b", true);
-            expectedSave.setTag("dave", dave);
+            dave.putBoolean("b", true);
+            expectedSave.put("dave", dave);
 
             final CompoundNBT save = root.save(thing);
 
@@ -223,7 +223,7 @@ public class NbtSaveRootTest
 
             final CompoundNBT jim = new CompoundNBT();
             jim.putInt("j", 789);
-            saveToLoad.setTag("jim", jim);
+            saveToLoad.put("jim", jim);
 
             root.load(thing, saveToLoad);
 

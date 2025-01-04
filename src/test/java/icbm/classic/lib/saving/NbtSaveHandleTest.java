@@ -38,7 +38,7 @@ public class NbtSaveHandleTest
             final CompoundNBT originalSave = new CompoundNBT();
             final CompoundNBT save = saveHandler.save(new RandomSaveThing(), originalSave);
 
-            Assertions.assertTrue(save.hasNoTags());
+            Assertions.assertTrue(save.isEmpty());
         }
 
         @Test
@@ -49,7 +49,7 @@ public class NbtSaveHandleTest
                 .addRoot("dave")
                 .base();
             final CompoundNBT expectedSave = new CompoundNBT();
-            expectedSave.setTag("dave", new CompoundNBT());
+            expectedSave.put("dave", new CompoundNBT());
 
             //Invoke
             final CompoundNBT save = saveHandler.save(new RandomSaveThing(), new CompoundNBT());
@@ -70,7 +70,7 @@ public class NbtSaveHandleTest
             final CompoundNBT expectedSave = new CompoundNBT();
             final CompoundNBT dave = new CompoundNBT();
             dave.putInt("i", 23);
-            expectedSave.setTag("dave", dave);
+            expectedSave.put("dave", dave);
 
             final RandomSaveThing saveThing = new RandomSaveThing();
             saveThing.field1 = 23;
@@ -246,7 +246,7 @@ public class NbtSaveHandleTest
             final CompoundNBT saveToLoad = new CompoundNBT();
             final CompoundNBT bob = new CompoundNBT();
             bob.putInt("i", 3);
-            saveToLoad.setTag("bob", bob);
+            saveToLoad.put("bob", bob);
             saveToLoad.putString("f", "dave");
 
             final RandomSaveThing saveThing = new RandomSaveThing();

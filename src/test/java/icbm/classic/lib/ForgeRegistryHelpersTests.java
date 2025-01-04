@@ -29,7 +29,7 @@ public class ForgeRegistryHelpersTests {
         });
         Mockito.when(forgeRegistry.getValue(Mockito.any())).thenAnswer(invocation -> {
             final ResourceLocation in = invocation.getArgument(0);
-            if(!resourceLocations.contains(in) || in.getResourceDomain().equalsIgnoreCase("nil")) {
+            if(!resourceLocations.contains(in) || in.getPath().equalsIgnoreCase("nil")) {
                 return null;
             }
             final IForgeRegistryEntry entry = Mockito.mock(IForgeRegistryEntry.class);
