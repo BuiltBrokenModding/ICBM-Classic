@@ -1,12 +1,9 @@
 package icbm.classic.content.blocks.launcher.screen;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.caps.IGPSData;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
-import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -14,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -50,8 +46,8 @@ public class BlockLaunchScreen extends Block
             {
                 final TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
                 final ItemStack stack = player.getHeldItem(hand);
-                final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
-                if (GPSDataHelpers.handlePlayerInteraction(gpsData, player, screen::setTarget))
+                if (stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).isPresent()
+                    && GPSDataHelpers.handlePlayerInteraction(stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).orElseThrow(IllegalStateException::new), player, screen::setTarget))
                 {
                     return true;
                 }
@@ -62,7 +58,7 @@ public class BlockLaunchScreen extends Block
                 }
                 else
                 {
-                    player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
+                    //TODO player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
                 }
             }
         }

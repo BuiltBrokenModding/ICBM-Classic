@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
@@ -62,10 +61,11 @@ public class BlockCruiseLauncher extends Block
             {
                 final TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
                 final ItemStack stack = player.getHeldItem(hand);
-                final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
-                if (!GPSDataHelpers.handlePlayerInteraction(gpsData, player, launcher::setTarget))
-                {
-                    player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
+                if(stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).isPresent()) {
+                    final IGPSData gpsData = stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).orElseThrow(IllegalStateException::new);
+                    if (!GPSDataHelpers.handlePlayerInteraction(gpsData, player, launcher::setTarget)) {
+                        // TODO player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
+                    }
                 }
             }
         }

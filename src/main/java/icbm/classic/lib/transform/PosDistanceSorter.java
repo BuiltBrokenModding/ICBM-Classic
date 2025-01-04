@@ -2,6 +2,7 @@ package icbm.classic.lib.transform;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Comparator;
 
@@ -11,11 +12,11 @@ import java.util.Comparator;
  */
 public class PosDistanceSorter implements Comparator<BlockPos>
 {
-    final IPos3D center;
+    final BlockPos center;
     final boolean sortY;
     final Sort method;
 
-    public PosDistanceSorter(IPos3D center, boolean sortY, Sort method)
+    public PosDistanceSorter(BlockPos center, boolean sortY, Sort method)
     {
         this.center = center;
         this.sortY = sortY;
@@ -33,9 +34,9 @@ public class PosDistanceSorter implements Comparator<BlockPos>
     }
 
     private int distance(BlockPos point) {
-        final int deltaX = Math.abs(center.xi() - point.getX());
-        final int deltaY = Math.abs(center.yi() - point.getY());
-        final int deltaZ = Math.abs(center.zi() - point.getZ());
+        final int deltaX = Math.abs(center.getX() - point.getX());
+        final int deltaY = Math.abs(center.getY() - point.getY());
+        final int deltaZ = Math.abs(center.getZ() - point.getZ());
 
         if(method == Sort.MANHATTEN) {
             return deltaX + deltaY + deltaZ;

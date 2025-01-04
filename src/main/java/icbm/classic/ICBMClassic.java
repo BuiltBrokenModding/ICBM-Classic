@@ -7,8 +7,6 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.events.*;
 import icbm.classic.client.ICBMCreativeTab;
-import icbm.classic.command.ICBMCommands;
-import icbm.classic.command.system.CommandEntryPoint;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;

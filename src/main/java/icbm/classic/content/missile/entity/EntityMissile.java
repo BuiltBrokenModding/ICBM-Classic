@@ -32,10 +32,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -119,7 +116,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
             });
 
             //Trigger events
-            ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(getMissileCapability());
+            //ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerFlightUpdate(getMissileCapability());
         }
 
         super.updateMotion();
@@ -135,21 +132,21 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
+    protected void handleEntityCollision(EntityRayTraceResult hit)
     {
-        if(entityHit instanceof ChickenEntity) { //TODO baby zombie for lolz?
+        if(hit.getEntity() instanceof ChickenEntity) { //TODO baby zombie for lolz?
             if(getRidingEntity() == null) {
-                ICBMSounds.MEEP.play(entityHit, 2, 1, true);
-                entityHit.startRiding(this, true);
+                ICBMSounds.MEEP.play(hit.getEntity(), 2, 1, true);
+                hit.getEntity().startRiding(this, true);
 
-                entityHit.getCapability(CapSpaceChicken.INSTANCE).ifPresent((cap) -> {
+                hit.getEntity().getCapability(CapSpaceChicken.INSTANCE).ifPresent((cap) -> {
                     cap.setSpace(true);
                 });
             }
         }
         else
         {
-            onImpactEntity(entityHit, (float) getMotion().length(), hit);
+            onImpactEntity(hit.getEntity(), (float) getMotion().length(), hit);
         }
     }
 

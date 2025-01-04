@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ import java.util.List;
 public class RadioMap
 {
     /** DIM ID, never change */
-    protected final int dimID;
+    protected final DimensionType dimID;
 
     /** Map of chunk positions to receive, mainly used by short range radio gear */
     protected HashMap<ChunkPos, List<IRadioReceiver>> chunk_to_entities = new HashMap();
@@ -44,7 +45,7 @@ public class RadioMap
      *
      * @param dimID - unique dimension that is not already tracked
      */
-    public RadioMap(int dimID)
+    public RadioMap(DimensionType dimID)
     {
         this.dimID = dimID;
     }

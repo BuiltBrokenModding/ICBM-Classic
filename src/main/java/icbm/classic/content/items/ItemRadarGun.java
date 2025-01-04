@@ -2,7 +2,6 @@ package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.events.RadarGunTraceEvent;
 import icbm.classic.lib.LanguageUtility;
@@ -29,6 +28,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -55,10 +55,10 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
         // Stored data
-        final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
-        if (gpsData != null && gpsData.getPosition() != null) {
-            final Vec3d pos = gpsData.getPosition();
-            final DimensionType dimensionType = Optional.ofNullable(gpsData.getDimensionKey()).map(DimensionType::byName).orElse(null);
+        final LazyOptional<IGPSData> gpsData = stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY, null);
+        if (gpsData.isPresent() && gpsData.orElseThrow(IllegalStateException::new).getPosition() != null) {
+            final Vec3d pos = gpsData.orElseThrow(IllegalStateException::new).getPosition();
+            final DimensionType dimensionType = Optional.ofNullable(gpsData.orElseThrow(IllegalStateException::new).getDimensionKey()).map(DimensionType::byName).orElse(null);
 
             final String x = String.format("%.1f", pos.x);
             final String y = String.format("%.1f", pos.y);
@@ -166,10 +166,10 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver {
                 return false; // TODO give user feedback
             }
 
-            final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
-            if (gpsData != null) {
-                gpsData.setPosition(posIn);
-                gpsData.setWorld(player.world);
+            final LazyOptional<IGPSData> gpsData = stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY);
+            if (gpsData.isPresent()) {
+                gpsData.orElseThrow(IllegalStateException::new).setPosition(posIn);
+                gpsData.orElseThrow(IllegalStateException::new).setWorld(player.world);
                 LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
             }
             // TODO give user feedback that something broke

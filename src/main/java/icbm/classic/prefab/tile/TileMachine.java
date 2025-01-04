@@ -24,8 +24,8 @@ public class TileMachine extends TileEntity implements ITickable
 
     protected final List<ITick> tickActions = new ArrayList();
 
-    public TileMachine(TileEntityType<?> p_i48289_1_) {
-        super(p_i48289_1_);
+    public TileMachine(TileEntityType<?> type) {
+        super(type);
     }
 
     @Override

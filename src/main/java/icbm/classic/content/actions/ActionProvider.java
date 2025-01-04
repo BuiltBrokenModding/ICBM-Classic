@@ -39,22 +39,22 @@ public final class ActionProvider implements IActionProvider, INBTSerializable<C
         actions.forEach((tag, action) -> {
             final CompoundNBT entry = new CompoundNBT();
             entry.putString("key", tag.getKey());
-            entry.setTag("value", ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY.save(action));
-            list.appendTag(entry);
+            entry.put("value", ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY.save(action));
+            list.add(entry);
         });
-        compound.setTag("actions", list);
+        compound.put("actions", list);
         return compound;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        if(nbt.hasKey("actions")) {
-            ListNBT list = nbt.getTagList("actions", 10);
+        if(nbt.contains("actions")) {
+            ListNBT list = nbt.getList("actions", 10);
             actions.clear();
-            for (int i = 0; i < list.tagCount(); i++) {
-                CompoundNBT entry = list.getCompoundTagAt(i);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundNBT entry = list.getCompound(i);
                 String keyString = entry.getString("key");
-                CompoundNBT valueTag = entry.getCompoundTag("value");
+                CompoundNBT valueTag = entry.getCompound("value");
                 MetaTag key = MetaTag.find(keyString);
                 IPotentialAction value = ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY.load(valueTag);
                 actions.put(key, value);

@@ -1,10 +1,5 @@
 package icbm.classic.client;
 
-import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -39,7 +34,7 @@ public class ICBMCreativeTab extends ItemGroup
     {
         definedTabItemsInOrder.clear();
         //define items in order
-        orderItem(BlockReg.blockLaunchBase);
+        /*orderItem(BlockReg.blockLaunchBase);
         orderItem(BlockReg.blockLaunchScreen);
         orderItem(BlockReg.blockLaunchSupport);
         orderItem(BlockReg.blockLaunchConnector);
@@ -64,7 +59,7 @@ public class ICBMCreativeTab extends ItemGroup
         orderItem(ItemReg.itemSAM);
         orderItem(ItemReg.itemGrenade);
         orderItem(BlockReg.blockExplosive);
-        orderItem(ItemReg.itemBombCart);
+        orderItem(ItemReg.itemBombCart);*/
 
         //Collect any non-defined items
         for (Item item : ForgeRegistries.ITEMS) //registries are frozen during FMLInitializationEvent, can safely iterate

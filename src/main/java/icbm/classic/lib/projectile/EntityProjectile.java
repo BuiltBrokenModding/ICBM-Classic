@@ -28,6 +28,7 @@ import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,6 +38,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -250,47 +252,43 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
             // Portal block will always return as collision even though it lacks a bounding box
             Vec3d rayStart = new Vec3d(this.posX, this.posY, this.posZ);
             Vec3d rayEnd = new Vec3d(this.posX + rayEndVecX, this.posY + rayEndVecY, this.posZ + rayEndVecZ);
-            RayTraceResult rayHit = this.world.rayTraceBlocks(rayStart, rayEnd, false, true, false);
+            BlockRayTraceResult rayHit = this.world.rayTraceBlocks(new RayTraceContext(rayStart, rayEnd, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
 
             //Reset data to do entity ray trace
             rayStart = new Vec3d(this.posX, this.posY, this.posZ);
-            rayEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            if (rayHit != null) {
-                rayEnd = new Vec3d(rayHit.hitVec.x, rayHit.hitVec.y, rayHit.hitVec.z);
+            rayEnd = new Vec3d(this.posX + this.getMotion().x, this.posY + this.getMotion().y, this.posZ + this.getMotion().z);
+            if (rayHit.getType() != RayTraceResult.Type.MISS) {
+                rayEnd = rayHit.getHitVec();
             }
 
             //Handle entity collision boxes
-            Entity entity = null;
-            final List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().offset(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
+            EntityRayTraceResult entityHit = null;
+            final List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox().offset(this.getMotion()).expand(1.0D, 1.0D, 1.0D));
             double distanceToHit = 0.0D;
 
             // TODO see if we can parallel stream this? As it might be thread safe assuming we .map first
             for (Entity checkEntity : list) {
                 if (shouldCollideWith(checkEntity) && (checkEntity != this.shootingEntity || this.ticksInAir >= 5)) { //TODO why 5 ticks specifically? Why not 'has collider left shooter'
-                    final AxisAlignedBB hitBox = checkEntity.getEntityBoundingBox().expand(0.3F, 0.3F, 0.3F);
-                    final RayTraceResult entityRayHit = hitBox.calculateIntercept(rayStart, rayEnd);
+                    final AxisAlignedBB hitBox = checkEntity.getBoundingBox().expand(0.3F, 0.3F, 0.3F);
+                    final Optional<Vec3d> entityRayHit = hitBox.rayTrace(rayStart, rayEnd);
 
-                    if (entityRayHit != null) {
-                        double distance = rayStart.distanceTo(entityRayHit.hitVec);
+                    if (entityRayHit.isPresent()) {
+                        double distance = rayStart.distanceTo(entityRayHit.get());
 
                         if (distance < distanceToHit || distanceToHit == 0.0D) {
-                            entity = checkEntity;
+                            entityHit = new EntityRayTraceResult(checkEntity, entityRayHit.get());
                             distanceToHit = distance;
                         }
                     }
                 }
             }
 
-            //If we collided with an entity, set hit to entity
-            if (entity != null) {
-                rayHit = new RayTraceResult(entity);
-            }
 
 
-            if (rayHit != null && rayHit.typeOfHit != RayTraceResult.Type.MISS && !ignoreImpact(rayHit)) {
+            if (rayHit.getType() == RayTraceResult.Type.BLOCK || entityHit != null) {
                 //Handle entity hit
-                if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY) {
-                    handleEntityCollision(rayHit, rayHit.entityHit);
+                if (entityHit != null) {
+                    handleEntityCollision(entityHit);
                 } else //Handle block hit
                 {
                     handleBlockCollision(rayHit);
@@ -321,10 +319,15 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
             if (!state.getBlock().isAir(state, world, tilePos)) {
                 //Check if what we hit can be collided with
-                final AxisAlignedBB axisalignedbb = state.getCollisionBoundingBox(this.world, tilePos);
-                if (axisalignedbb != null && axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
-                    final Direction side = Direction.UP; //TODO calculate side based on position
-                    this.inGroundData = new InGroundData(tilePos, side, state);
+                final VoxelShape voxelshape = state.getCollisionShape(this.world, tilePos);
+                if (!voxelshape.isEmpty()) {
+                    for(AxisAlignedBB axisalignedbb : voxelshape.toBoundingBoxList()) {
+                        if (axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
+                            final Direction side = Direction.UP; //TODO calculate side based on position
+                            this.inGroundData = new InGroundData(tilePos, side, state);
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -332,9 +335,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
         // We are no longer in the ground
         if (prevInGround != null && this.inGroundData == null) {
             //TODO change to apply gravity instead of random
-            this.motionX *= (double) (this.rand.nextFloat() * 0.2F);
-            this.motionY *= (double) (this.rand.nextFloat() * 0.2F);
-            this.motionZ *= (double) (this.rand.nextFloat() * 0.2F);
+            this.setMotion(this.getMotion().mul(this.rand.nextFloat() * 0.2F, this.rand.nextFloat() * 0.2F, this.rand.nextFloat() * 0.2F));
             this.ticksInGround = 0;
             this.ticksInAir = 0;
         }
@@ -353,8 +354,8 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
     @Override
     protected void destroy() {
-        dismountRidingEntity();
-        removePassengers();
+        this.stopRiding();
+        this.removePassengers();
         super.destroy();
     }
 
@@ -377,30 +378,28 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
         return entity.canBeCollidedWith() && !(entity instanceof EntityPlayerSeat);
     }
 
-    protected void handleBlockCollision(RayTraceResult hit) {
+    protected void handleBlockCollision(BlockRayTraceResult hit) {
         this.inGroundData = new InGroundData(world, hit);
 
         // Special handling for ender gateways TODO move to a registry of Block -> lambda
         final IProjectileBlockInteraction.EnumHitReactions reaction =
-            ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.hitVec, this.inGroundData.getSide(), this.inGroundData.getState(), this);
+            ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.getHitVec(), this.inGroundData.getSide(), this.inGroundData.getState(), this);
         if (reaction.stop) {
             return;
         }
 
         // Move entity to collision location
-        moveTowards(hit.hitVec, width / 2f);
+        moveTowards(hit.getHitVec(), getWidth() / 2f);
 
         //TODO this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 
         if (this.inGroundData.getMaterial() != Material.AIR) {
-            this.inGroundData.getState().getBlock().onEntityCollidedWithBlock(this.world, this.inGroundData.getPos(), this.inGroundData.getState(), this);
+            this.inGroundData.getState().getBlock().onEntityCollision(this.inGroundData.getState(), this.world, this.inGroundData.getPos(), this);
         }
 
-        if (!changingDimensions && !isDead && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
+        if (!changingDimensions && isAlive() && !inPortal && reaction != IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT) {
             onImpactTile(hit);
-            this.motionX = 0;
-            this.motionY = 0;
-            this.motionZ = 0;
+            this.setMotion(0, 0, 0);
         }
     }
 
@@ -454,10 +453,9 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * Handles entity being impacted by the projectile
      *
      * @param hit
-     * @param entityHit
      */
-    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit) {
-        onImpactEntity(entityHit, (float) getMotion().length(), hit);
+    protected void handleEntityCollision(EntityRayTraceResult hit) {
+        onImpactEntity(hit.getEntity(), (float) getMotion().length(), hit);
     }
 
     /**
@@ -471,7 +469,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * @param hit       trace used to calculate the impact, use this for projectile position
      */
 
-    protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
+    protected void onImpactEntity(Entity entityHit, float velocity, EntityRayTraceResult hit) {
         if (!world.isRemote) {
             final float damage = getImpactDamage(entityHit, velocity, hit);
             final DamageSource damageSource = getImpactDamageSource(entityHit, velocity, hit);
@@ -496,12 +494,12 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
         // TODO rework to use projectile motionY so knockback is in motion direction, add random offset to mimic deflection
         // TODO see if we can drop sqrt, 1 projectile it is fine... 1000s it is slow
-        final float vel_horizontal = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        final float vel_horizontal = MathHelper.sqrt(this.getMotion().x * this.getMotion().x + this.getMotion().z * this.getMotion().z);
         if (vel_horizontal > 0.0F) {
             entity.addVelocity(
-                this.motionX * vertKnock / (double) vel_horizontal,
+                this.getMotion().x * vertKnock / (double) vel_horizontal,
                 hortKnock,
-                this.motionZ * vertKnock / (double) vel_horizontal
+                this.getMotion().z * vertKnock / (double) vel_horizontal
             );
         }
     }
@@ -541,7 +539,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * Generalized impact callback, used to do cleanup
      * steps regardless of impact reason.
      * <p>
-     * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
+     * Use {@link #onImpactEntity(Entity, float, EntityRayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
      * better handling of impacts.
      */
     protected void onImpact(RayTraceResult hit) {
@@ -551,9 +549,9 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     protected void updateMotion() {
         if (!freezeMotion && isServer()) {
             //Update motion
-            this.posX += this.motionX;
-            this.posY += this.motionY;
-            this.posZ += this.motionZ;
+            this.posX += this.getMotion().x;
+            this.posY += this.getMotion().y;
+            this.posZ += this.getMotion().z;
 
             if (shouldAlignWithMotion()) {
                 rotateTowardsMotion(0.05f);
@@ -576,9 +574,9 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
     public void rotateTowardsMotion(float delta) {
         //Get rotation from motion
-        float speed = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI); //TODO update to catch atan for better performance on repeat calls
-        this.rotationPitch = (float) (Math.atan2(this.motionY, (double) speed) * 180.0D / Math.PI);
+        float speed = MathHelper.sqrt(this.getMotion().x * this.getMotion().x + this.getMotion().z * this.getMotion().z);
+        this.rotationYaw = (float) (Math.atan2(this.getMotion().x, this.getMotion().z) * 180.0D / Math.PI); //TODO update to catch atan for better performance on repeat calls
+        this.rotationPitch = (float) (Math.atan2(this.getMotion().y, (double) speed) * 180.0D / Math.PI);
 
         //-------------------------------------
         //Fix rotation
@@ -611,11 +609,9 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      */
     protected void decreaseMotion() {
         final float airResistance = getAirResistance();
-        this.motionX *= airResistance;
-        this.motionY *= airResistance;
-        this.motionZ *= airResistance;
+        this.setMotion(this.getMotion().mul(airResistance, airResistance, airResistance));
         //Add gravity so the projectile will fall
-        this.motionY -= getGravity();
+        this.setMotion(this.getMotion().add(0, -getGravity(), 0));
     }
 
     /**

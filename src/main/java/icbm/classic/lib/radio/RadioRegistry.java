@@ -8,8 +8,9 @@ import icbm.classic.api.radio.IRadioSender;
 import icbm.classic.lib.data.BoundBlockPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
 
@@ -28,7 +29,7 @@ public final class RadioRegistry
     public static final IBoundBox<BlockPos> INFINITE = new BoundBlockPos(-Integer.MAX_VALUE, -Integer.MAX_VALUE, -Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     /** World id to radio maps */
-    private static final HashMap<Integer, RadioMap> RADIO_MAPS = new HashMap();
+    private static final HashMap<DimensionType, RadioMap> RADIO_MAPS = new HashMap();
 
     public static String EMPTY_HZ = "";
 
@@ -45,14 +46,14 @@ public final class RadioRegistry
         {
             return false;
         }
-        return getRadarMapForDim(receiver.getWorld().provider.getDimension()).add(receiver);
+        return getRadarMapForDim(receiver.getWorld().getDimension().getType()).add(receiver);
     }
 
     public static boolean addOrUpdate(IRadioReceiver receiver)
     {
         if (!add(receiver))
         {
-            RadioMap map = getRadarMapForDim(receiver.getWorld().provider.getDimension());
+            RadioMap map = getRadarMapForDim(receiver.getWorld().getDimension().getType());
             if (map.receive_to_chunks.containsKey(receiver))
             {
                 map.update(receiver);
@@ -75,9 +76,9 @@ public final class RadioRegistry
         {
             return false;
         }
-        if (RADIO_MAPS.containsKey(tile.getWorld().provider.getDimension()))
+        if (RADIO_MAPS.containsKey(tile.getWorld().getDimension().getType()))
         {
-            RadioMap map = getRadarMapForDim(tile.getWorld().provider.getDimension());
+            RadioMap map = getRadarMapForDim(tile.getWorld().getDimension().getType());
             return map.remove(tile);
         }
         return false;
@@ -91,13 +92,13 @@ public final class RadioRegistry
      */
     public static void popMessage(World world, IRadioSender sender, IRadioMessage packet)
     {
-        if(world == null || world.provider == null || world.isRemote) {
+        if(world == null || world.isRemote) {
             ICBMClassic.logger().error("RadarRegistry: Invalid world : " + world, new RuntimeException());
             return;
         }
-        if (RADIO_MAPS.containsKey(world.provider.getDimension()))
+        if (RADIO_MAPS.containsKey(world.getDimension().getType()))
         {
-            RadioMap map = getRadarMapForDim(world.provider.getDimension());
+            RadioMap map = getRadarMapForDim(world.getDimension().getType());
             map.popMessage(sender, packet);
         }
     }
@@ -110,7 +111,7 @@ public final class RadioRegistry
      */
     public static RadioMap getRadioMapForWorld(World world)
     {
-        if (world != null && world.provider != null)
+        if (world != null)
         {
             if (world.isRemote)
             {
@@ -120,7 +121,7 @@ public final class RadioRegistry
                 }
                 return null;
             }
-            return getRadarMapForDim(world.provider.getDimension());
+            return getRadarMapForDim(world.getDimension().getType());
         }
         //Only throw an error in dev mode, ignore in normal runtime
         else if (ICBMClassic.runningAsDev)
@@ -136,7 +137,7 @@ public final class RadioRegistry
      * @param dimID - unique dim id
      * @return existing mpa, or new map if one does not exist
      */
-    public static RadioMap getRadarMapForDim(int dimID)
+    public static RadioMap getRadarMapForDim(DimensionType dimID)
     {
         if (!RADIO_MAPS.containsKey(dimID))
         {
@@ -150,14 +151,11 @@ public final class RadioRegistry
     @SubscribeEvent
     public void worldUnload(WorldEvent.Unload event)
     {
-        if (event.getWorld().provider != null)
+        DimensionType dim = event.getWorld().getDimension().getType();
+        if (RADIO_MAPS.containsKey(dim))
         {
-            int dim = event.getWorld().provider.getDimension();
-            if (RADIO_MAPS.containsKey(dim))
-            {
-                getRadarMapForDim(dim).unloadAll();
-                RADIO_MAPS.remove(dim);
-            }
+            getRadarMapForDim(dim).unloadAll();
+            RADIO_MAPS.remove(dim);
         }
     }
 }

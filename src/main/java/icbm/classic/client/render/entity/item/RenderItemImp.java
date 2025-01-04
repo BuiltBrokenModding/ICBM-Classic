@@ -18,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,7 +40,7 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
     private final ItemRenderer itemRenderer;
     private final Random random = new Random();
 
-    private static final Supplier<ItemStack> BACKUP_RENDER_STACK = new LazyBuilder<>(() -> new ItemStack(Blocks.FIRE));
+    private static final LazyBuilder<ItemStack> BACKUP_RENDER_STACK = new LazyBuilder<ItemStack>(() -> new ItemStack(Items.EGG));
 
     @Setter @Getter
     @Accessors(chain = true)

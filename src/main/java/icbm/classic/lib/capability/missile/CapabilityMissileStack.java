@@ -1,11 +1,8 @@
 package icbm.classic.lib.capability.missile;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.ICBMClassicHelpers;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.EntityReg;
 import lombok.Value;
@@ -19,7 +16,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * Applied to {@link ItemStack} that are missiles

@@ -31,7 +31,7 @@ public interface IMissileHolder //TODO refactor to be a list
      * @return true if missile
      */
     default boolean hasMissile() {
-        return getMissileStack().hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        return getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).isPresent();
     }
 
     /**

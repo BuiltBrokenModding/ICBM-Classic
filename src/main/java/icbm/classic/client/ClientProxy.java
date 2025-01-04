@@ -2,13 +2,11 @@ package icbm.classic.client;
 
 import icbm.classic.CommonProxy;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
-import icbm.classic.client.fx.ParticleAirICBM;
-import icbm.classic.client.fx.ParticleLauncherSmoke;
-import icbm.classic.client.fx.ParticleSmokeICBM;
 import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
 import icbm.classic.config.ConfigClient;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ChickenRenderer;
 import net.minecraft.entity.Entity;
@@ -40,10 +38,13 @@ public class ClientProxy extends CommonProxy
     {
         if (world != null)
         {
-            ParticleSmokeICBM particleSmokeICBM = new ParticleSmokeICBM(world, position, v, v1, v2, scale);
-            particleSmokeICBM.setColor(red, green, blue, true);
-            particleSmokeICBM.setAge(ticksToLive);
-            Minecraft.getInstance().particles.addEffect(particleSmokeICBM);
+
+            Particle particle = Minecraft.getInstance().particles.addParticle(ParticleTypes.SMOKE, position.x(), position.y(), position.z(), v, v1, v2);
+            particle.setMaxAge(ticksToLive);
+
+            float colorVariant = (float) (Math.random() * 0.90000001192092896D);
+            particle.setColor(red * colorVariant, green * colorVariant, blue * colorVariant);
+            particle.multipleParticleScaleBy(scale);
         }
     }
 
@@ -52,10 +53,12 @@ public class ClientProxy extends CommonProxy
     {
         if (world != null)
         {
-            ParticleAirICBM particleAirParticleICBM = new ParticleAirICBM(world, x, y, z, v, v1, v2, scale);
-            particleAirParticleICBM.setColor(red, green, blue, true);
-            particleAirParticleICBM.setAge(ticksToLive);
-            Minecraft.getInstance().particles.addEffect(particleAirParticleICBM);
+            Particle particle = Minecraft.getInstance().particles.addParticle(ParticleTypes.SMOKE, x, y, z, v, v1, v2);
+            particle.setMaxAge(ticksToLive);
+
+            float colorVariant = (float) (Math.random() * 0.90000001192092896D);
+            particle.setColor(red * colorVariant, green * colorVariant, blue * colorVariant);
+            particle.multipleParticleScaleBy(scale);
         }
     }
 
@@ -143,14 +146,12 @@ public class ClientProxy extends CommonProxy
                 final double velZ = (random.nextFloat() - random.nextFloat()) * 0.3;
 
                 //spawn smoke
-                final ParticleLauncherSmoke particleAirParticleICBM = new ParticleLauncherSmoke(world,
-                    posX, posY, posZ,
-                    velX, -velY, velZ,
-                    1 + 2 * random.nextFloat()
-                );
-                particleAirParticleICBM.setColor(1, 1, 1, true);
-                particleAirParticleICBM.setAge(180);
-                Minecraft.getInstance().particles.addEffect(particleAirParticleICBM);
+                Particle particle = Minecraft.getInstance().particles.addParticle(ParticleTypes.SMOKE, posX, posY, posZ, velX, velY, velZ);
+                particle.setMaxAge(180); //TODO config
+
+                float colorVariant = (float) (Math.random() * 0.90000001192092896D);
+                particle.setColor(colorVariant, colorVariant, colorVariant);
+                particle.multipleParticleScaleBy(2 * random.nextFloat());
             }
         }
     }

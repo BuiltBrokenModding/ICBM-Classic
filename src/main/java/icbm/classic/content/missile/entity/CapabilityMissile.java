@@ -116,7 +116,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<CompoundNBT
 
         //Trigger events
         //TODO add generic event
-        ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(this);
+        //ICBMClassicAPI.EX_MISSILE_REGISTRY.triggerLaunch(this);
 
         //Trigger events
         // TODO add an event system here

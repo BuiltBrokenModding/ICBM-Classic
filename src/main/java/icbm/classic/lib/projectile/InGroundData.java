@@ -9,6 +9,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -35,9 +36,9 @@ public class InGroundData implements INBTSerializable<CompoundNBT> {
      */
     private BlockState state;
 
-    public InGroundData(World world, RayTraceResult hit) {
-        this.pos = hit.getBlockPos();
-        this.side = hit.sideHit;
+    public InGroundData(World world, BlockRayTraceResult hit) {
+        this.pos = hit.getPos();
+        this.side = hit.getFace();
         this.state = world.getBlockState(pos);
     }
 

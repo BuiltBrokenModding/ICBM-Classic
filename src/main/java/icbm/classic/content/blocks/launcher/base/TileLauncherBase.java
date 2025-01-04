@@ -2,8 +2,8 @@ package icbm.classic.content.blocks.launcher.base;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IMissileHolder;
+import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.FiringPackage;
@@ -13,6 +13,7 @@ import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.missile.entity.EntityMissile;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
@@ -35,15 +36,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -91,6 +96,12 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
 
     private final LauncherNode launcherNode = new LauncherNode(this, true);
 
+
+    private LazyOptional<IEnergyStorage> lazyEnergy = LazyOptional.of(() -> energyStorage);
+    private LazyOptional<IMissileHolder> lazyMissileHolder = LazyOptional.of(() -> missileHolder);
+    private LazyOptional<IMissileLauncher> lazyMissileLauncher = LazyOptional.of(() -> missileLauncher);
+    private LazyOptional<IItemHandler> lazyInventory = LazyOptional.of(() -> inventory);
+
     /** User defined: Time in ticks to wait before firing a missile */
     @Getter @Setter
     private int firingDelay = 0;
@@ -115,7 +126,8 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
-    public TileLauncherBase() {
+    public TileLauncherBase(TileEntityType<TileLauncherBase> type) {
+        super(type);
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {
@@ -153,9 +165,9 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
      */
     public Direction getLaunchDirection() {
         BlockState state = getBlockState();
-        if (state.getProperties().containsKey(BlockLauncherBase.FACING))
+        if (state.getProperties().contains(BlockLauncherBase.FACING))
         {
-            return state.getValue(BlockLauncherBase.FACING);
+            return state.get(BlockLauncherBase.FACING);
         }
         return Direction.UP;
     }
@@ -219,10 +231,10 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     }
 
     @Override
-    public void invalidate()
+    public void remove()
     {
         getNetworkNode().onTileRemoved();
-        super.invalidate();
+        super.remove();
     }
 
     @Override
@@ -244,46 +256,36 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         //Create seat if missile
         if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
         {
-            seat = new EntityPlayerSeat(world);
+            seat = EntityReg.HOLDER_SEAT.get().create(world);
             seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
             seat.setHost(this);
-            world.spawnEntity(seat);
+            world.addEntity(seat);
         }
         //Destroy seat if no missile
         else if (getMissileStack().isEmpty() && seat != null)
         {
             Optional.ofNullable(seat.getRidingEntity()).ifPresent(Entity::removePassengers);
-            seat.setDead();
+            seat.remove();
             seat = null;
         }
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing)
-    {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
-            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER
-            || super.hasCapability(capability, facing);
-    }
-
-    @Override
     @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing)
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing)
     {
         if(capability == CapabilityEnergy.ENERGY) {
-            return (T) energyStorage;
+            return lazyEnergy.cast();
         }
         else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (T) inventory;
+            return lazyInventory.cast();
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
         {
-            return (T) missileHolder;
+            return lazyMissileHolder.cast();
         }
         else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
-            return (T) missileLauncher;
+            return lazyMissileLauncher.cast();
         }
         return super.getCapability(capability, facing);
     }
@@ -303,11 +305,11 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         return hasMissileCollision;
     }
 
-    @Override
+    /*@Override
     public ITextComponent getDisplayName()
     {
         return new TranslationTextComponent("gui.icbmclassic:launcherbase.name");
-    }
+    }*/
 
     public ItemStack getMissileStack()
     {
@@ -326,10 +328,10 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
             if (isServer())
             {
                 final ItemStack stackLeft = inventory.insertItem(0, heldItem, false);
-                if (!player.capabilities.isCreativeMode)
+                if (!player.isCreative())
                 {
                     player.setItemStackToSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stackLeft);
-                    player.inventoryContainer.detectAndSendChanges();
+                    player.container.detectAndSendChanges();
                 }
             }
             return true;
@@ -342,7 +344,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
 
                 player.setItemStackToSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, this.getMissileStack());
                 inventory.extractItem(0, 1, false);
-                player.inventoryContainer.detectAndSendChanges();
+                player.container.detectAndSendChanges();
             }
             return true;
         }
@@ -368,17 +370,17 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     }
 
     @Override
-    public void readFromNBT(CompoundNBT nbt)
+    public void read(CompoundNBT nbt)
     {
-        super.readFromNBT(nbt);
+        super.read(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT nbt)
+    public CompoundNBT write(CompoundNBT nbt)
     {
         SAVE_LOGIC.save(this, nbt);
-        return super.writeToNBT(nbt);
+        return super.write(nbt);
     }
 
     private static final NbtSaveHandler<TileLauncherBase> SAVE_LOGIC = new NbtSaveHandler<TileLauncherBase>()

@@ -1,6 +1,5 @@
 package icbm.classic.content.actions.emp;
 
-import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.data.ActionField;
