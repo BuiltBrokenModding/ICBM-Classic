@@ -527,9 +527,9 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
 
     public CompoundNBT writeNBT(CompoundNBT nbt)
     {
-        nbt.setDouble(NBTConstants.YAW, yaw);
-        nbt.setDouble(NBTConstants.PITCH, pitch);
-        nbt.setDouble(NBTConstants.ROLL, roll);
+        nbt.putDouble(NBTConstants.YAW, yaw);
+        nbt.putDouble(NBTConstants.PITCH, pitch);
+        nbt.putDouble(NBTConstants.ROLL, roll);
         return nbt;
     }
 

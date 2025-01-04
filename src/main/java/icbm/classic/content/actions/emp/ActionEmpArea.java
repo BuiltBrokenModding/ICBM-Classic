@@ -99,32 +99,28 @@ public class ActionEmpArea extends ActionBase {
 
                                 //Fire event to allow canceling action on entity
                                 if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState))) {
-                                    if (ICBMClassicHelpers.hasEmpHandler(iBlockState)) {
-                                        //TODO implement
-                                    } else {
-                                        TileEntity tileEntity = getWorld().getTileEntity(blockPos);
-                                        if (tileEntity != null) {
-                                            boolean doInventory = true;
-                                            final LazyOptional<IEMPReceiver> empCap = tileEntity.getCapability(CapabilityEMP.EMP);
-                                            if (empCap.isPresent()) {
-                                                final IEMPReceiver receiver = empCap.orElseThrow(IllegalStateException::new);
-                                                powerEntity = empEntity(tileEntity, powerEntity, receiver);
-                                                doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
+                                    TileEntity tileEntity = getWorld().getTileEntity(blockPos);
+                                    if (tileEntity != null) {
+                                        boolean doInventory = true;
+                                        final LazyOptional<IEMPReceiver> empCap = tileEntity.getCapability(CapabilityEMP.EMP);
+                                        if (empCap.isPresent()) {
+                                            final IEMPReceiver receiver = empCap.orElseThrow(IllegalStateException::new);
+                                            powerEntity = empEntity(tileEntity, powerEntity, receiver);
+                                            doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
 
-                                            } else if (ConfigEMP.DRAIN_ENERGY_TILES) {
-                                                IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
-                                                if (energySystem.canSetEnergyDirectly(tileEntity, null)) {
-                                                    energySystem.setEnergy(tileEntity, null, 0, false);
-                                                } else {
-                                                    //TODO Spawn tick based effect to drain as much energy as possible over several ticks
-                                                }
+                                        } else if (ConfigEMP.DRAIN_ENERGY_TILES) {
+                                            IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
+                                            if (energySystem.canSetEnergyDirectly(tileEntity, null)) {
+                                                energySystem.setEnergy(tileEntity, null, 0, false);
+                                            } else {
+                                                //TODO Spawn tick based effect to drain as much energy as possible over several ticks
                                             }
+                                        }
 
-                                            if (doInventory) {
-                                                final LazyOptional<IItemHandler> inv = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-                                                if (inv.isPresent()) {
-                                                    powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
-                                                }
+                                        if (doInventory) {
+                                            final LazyOptional<IItemHandler> inv = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+                                            if (inv.isPresent()) {
+                                                powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
                                             }
                                         }
                                     }

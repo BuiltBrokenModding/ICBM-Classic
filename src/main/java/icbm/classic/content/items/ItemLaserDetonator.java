@@ -1,6 +1,7 @@
 package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
@@ -72,7 +73,7 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
         if (objectMouseOver.getType() == RayTraceResult.Type.BLOCK)
         {
             final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getPos());
-            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
+            if (tileEntity == null || !tileEntity.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, objectMouseOver.getFace()).isPresent())
             {
                 ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getHitVec()));
             }

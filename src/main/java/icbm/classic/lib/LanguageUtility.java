@@ -6,9 +6,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.ForgeI18n;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class LanguageUtility
         }
 
         //Get translation
-        String translation = I18n.translateToLocal(key);
+        String translation = ForgeI18n.parseMessage(key);
         if (translation == null || translation.isEmpty())
         {
             if (ICBMClassic.runningAsDev)
@@ -80,7 +79,7 @@ public class LanguageUtility
         }
 
         //Get translation
-        String translation = I18n.translateToLocal(key);
+        String translation = ForgeI18n.parseMessage(key);
         if (translation == null || translation.isEmpty())
         {
             if (ICBMClassic.runningAsDev)

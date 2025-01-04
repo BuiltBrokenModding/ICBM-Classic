@@ -207,18 +207,6 @@ public abstract class BlockStateConfigList<VALUE> extends ResourceConfigList<Blo
         }
     }
 
-    public static class BlockOut extends BlockStateConfigList<BlockState> {
-
-        public BlockOut(String name, Consumer<BlockStateConfigList<BlockState>> reloadCallback) {
-            super(name, reloadCallback);
-        }
-
-        @Override
-        protected BlockState parseValue(String source, String entry, @Nullable String value) {
-            return super.parseBlockState(source, entry, value);
-        }
-    }
-
     public static class BlockChanceOut extends BlockStateConfigList<Pair<BlockState, Float>> {
 
         public BlockChanceOut(String name, Consumer<BlockStateConfigList<Pair<BlockState, Float>>> reloadCallback) {

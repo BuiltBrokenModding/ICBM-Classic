@@ -197,16 +197,9 @@ public class ICBMClassic
         MinecraftForge.EVENT_BUS.post(new ProjectileDataRegistryEvent(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY));
         ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).lock();
 
-        /** Dispenser Handler */
-        if (ItemReg.itemGrenade != null)
-        {
-            DispenserBlock.registerDispenseBehavior(ItemReg.itemGrenade, new GrenadeDispenseBehavior());
-        }
 
-        if (ItemReg.itemBombCart != null)
-        {
-            DispenserBlock.registerDispenseBehavior(ItemReg.itemBombCart, new BombCartDispenseBehavior());
-        }
+        // DispenserBlock.registerDispenseBehavior(ItemReg.GRENADE_ANVIL::get, new GrenadeDispenseBehavior()); TODO
+        // DispenserBlock.registerDispenseBehavior(ItemReg.itemBombCart, new BombCartDispenseBehavior()); TODO
 
         // Generate defaults
         FlyingBlock.loadFromConfig();
@@ -295,17 +288,6 @@ public class ICBMClassic
         //Init registry
         final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
         ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
-
-        ICBMClassicAPI.EX_BLOCK_REGISTRY = new ExBlockContentReg();
-        ICBMClassicAPI.EX_GRENADE_REGISTRY = new ExGrenadeContentReg();
-        ICBMClassicAPI.EX_MINECART_REGISTRY = new ExMinecartContentReg();
-        ICBMClassicAPI.EX_MISSILE_REGISTRY = new ExMissileContentReg();
-
-        //Register default content types
-        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_BLOCK_REGISTRY);
-        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_GRENADE_REGISTRY);
-        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_MISSILE_REGISTRY);
-        explosiveRegistry.registerContentRegistry(ICBMClassicAPI.EX_MINECART_REGISTRY);
 
         //Fire registry events for content types
         MinecraftForge.EVENT_BUS.post(new ExplosiveContentRegistryEvent(explosiveRegistry));

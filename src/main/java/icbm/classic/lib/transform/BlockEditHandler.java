@@ -3,10 +3,11 @@ package icbm.classic.lib.transform;
 import icbm.classic.ICBMConstants;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,14 +21,14 @@ import java.util.function.Consumer;
 @Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class BlockEditHandler
 {
-    public static final HashMap<Integer, Queue<EditQueue>> worldToRemoveQueue = new HashMap<>();
+    public static final HashMap<DimensionType, Queue<EditQueue>> worldToRemoveQueue = new HashMap<>();
     public static float maxTickTimePercentage = 0.7f; // fraction of ticktime we are allowed to use.
     // (0.5 = 50% means that up to 50% of the 50ms that a tick may take, will be used at most)
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event)
     {
-        final int dim = event.getWorld().provider.getDimension();
+        final DimensionType dim = event.getWorld().getDimension().getType();
         if (worldToRemoveQueue.containsKey(dim))
         {
             worldToRemoveQueue.remove(dim);
@@ -37,7 +38,7 @@ public class BlockEditHandler
     @SubscribeEvent
     public static void onWorldTick(TickEvent.WorldTickEvent event)
     {
-        final int dim = event.world.provider.getDimension();
+        final DimensionType dim = event.world.getDimension().getType();
         if (worldToRemoveQueue.containsKey(dim))
         {
             long startTime = System.currentTimeMillis();
@@ -82,7 +83,7 @@ public class BlockEditHandler
 
     public static void queue(World world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock, Runnable onCompleteCallback)
     {
-        final int dim = world.provider.getDimension();
+        final DimensionType dim = world.getDimension().getType();
         if (!worldToRemoveQueue.containsKey(dim))
         {
             worldToRemoveQueue.put(dim, new LinkedList<>());

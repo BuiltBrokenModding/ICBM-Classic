@@ -14,8 +14,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,24 +61,6 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         this(new Pos(bb.minX, bb.minY, bb.minZ), new Pos(bb.maxX, bb.maxY, bb.maxZ));
     }
 
-    public Cube(CompoundNBT nbt)
-    {
-        super(nbt);
-        if (nbt.hasKey(NBTConstants.POINT_ONE))
-        {
-            pointOne = new Pos(nbt.getCompoundTag(NBTConstants.POINT_ONE));
-        }
-        if (nbt.hasKey(NBTConstants.POINT_TWO))
-        {
-            pointTwo = new Pos(nbt.getCompoundTag(NBTConstants.POINT_TWO));
-        }
-        recalc();
-    }
-
-    public Cube(ByteBuf buf)
-    {
-        this(new Pos(buf), new Pos(buf));
-    }
 
     public Cube enableEdits()
     {
@@ -118,30 +100,6 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     {
         return new AxisAlignedBB(min().x(), min().y(), min().z(), max().x(), max().y(), max().z());
     }
-
-    public Rectangle toRectangle()
-    {
-        return isValid() ? new Rectangle(new Point(min()), new Point(max())) : null;
-    }
-
-    public CompoundNBT toNBT()
-    {
-        return save(new CompoundNBT());
-    }
-
-    public CompoundNBT save(CompoundNBT tag)
-    {
-        if (pointOne != null)
-        {
-            tag.setTag(NBTConstants.POINT_ONE, new Pos(pointOne).writeNBT(new CompoundNBT()));
-        }
-        if (pointTwo != null)
-        {
-            tag.setTag(NBTConstants.POINT_TWO, new Pos(pointTwo).writeNBT(new CompoundNBT()));
-        }
-        return tag;
-    }
-
 
     //////////////////////
     ///Math methods
@@ -567,7 +525,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         {
             for (Object object : chunk.getTileEntityMap().values())
             {
-                if (object instanceof TileEntity && ((TileEntity) object).isInvalid() && ((TileEntity) object).getWorld() != null && isWithin(((TileEntity) object).getPos()))
+                if (object instanceof TileEntity && !((TileEntity) object).isRemoved() && ((TileEntity) object).getWorld() != null && isWithin(((TileEntity) object).getPos()))
                 {
                     tilesInArea.add((TileEntity) object);
                 }
@@ -603,7 +561,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
             {
                 if (loaded || (!(world instanceof ServerWorld) || ((ServerWorld) world).getChunkProvider().chunkExists(chunkX, chunkZ)))
                 {
-                    Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+                    Chunk chunk = world.getChunk(chunkX, chunkZ);
                     if (chunk != null)
                     {
                         chunks.add(chunk);

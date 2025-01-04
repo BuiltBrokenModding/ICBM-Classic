@@ -6,8 +6,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -16,7 +17,7 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     /*
     Id of the dimension that this particle should be placed in.
      */
-    private int dimId;
+    private ResourceLocation dimId;
 
     // x y and z positions
     private double posX;
@@ -44,7 +45,7 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
         //Needed for forge to construct the packet
     }
 
-    public PacketSpawnAirParticle(int dimId, double posX, double posY, double posZ, double v, double v1, double v2,
+    public PacketSpawnAirParticle(ResourceLocation dimId, double posX, double posY, double posZ, double v, double v1, double v2,
                                   float red, float green, float blue, float scale, int ticksToLive)
     {
         this.dimId = dimId;
@@ -99,7 +100,7 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     @OnlyIn(Dist.CLIENT)
     public void handleClientSide(Minecraft minecraft, PlayerEntity player)
     {
-        if (minecraft.world != null && player.world.provider.getDimension() == dimId)
+        if (minecraft.world != null && DimensionType.getKey(player.world.getDimension().getType()) == dimId)
         {
             ICBMClassic.proxy.spawnAirParticle(player.world, posX, posY, posZ, v, v1, v2, red, green, blue, scale, ticksToLive);
         }

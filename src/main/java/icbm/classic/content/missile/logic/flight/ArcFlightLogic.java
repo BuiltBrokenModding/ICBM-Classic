@@ -17,14 +17,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.ServerWorld;
-import net.minecraft.world.chunk.ServerChunkProvider;
+import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraft.world.server.ServerWorld;
 
 /**
  * Flight path that moves in a ballistic arc from start position to target position
  */
-public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegistry<IMissileFlightLogic>> implements IMissileFlightLogic
-{
+public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegistry<IMissileFlightLogic>> implements IMissileFlightLogic {
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "path.arc");
 
 
@@ -56,15 +55,13 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
     }
 
     @Override
-    public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
-    {
+    public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData) {
         //Record start and end position
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
 
-        if(targetData != null)
-        {
+        if (targetData != null) {
             this.endX = targetData.getX();
             this.endY = targetData.getY();
             this.endZ = targetData.getZ();
@@ -79,8 +76,7 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
     //TODO wire IMissile to connect to ILauncher so we can get launcher source and let the launcher know when we are clear
     //TODO code launcher to not reload until clear, use the all clear flag from the missile combined with collision checks and dead checks
 
-    protected void calculatePath()
-    {
+    protected void calculatePath() {
         //TODO rebuild to calculate arc up to maxHeight and move at a fixed speed instead of speed of sound+++++
         //TODO once it reaches maxHeight have it fly flat to make for a smoother player riding experience
         //TODO at end of arc if we can't fix the target offset have the missile fly at an angle strait at the target to fix accuracy issues
@@ -93,9 +89,9 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
         // TODO: Calculate parabola and relative out the targetHeight.
         // Calculate the power required to reach the target co-ordinates
         // Ground Displacement
-        final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
+        final float flatDistance = (float) Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
 
-        if(flatDistance < ConfigMissile.ARC_DISTANCE_LIMIT) {
+        if (flatDistance < ConfigMissile.ARC_DISTANCE_LIMIT) {
 
             //Path constants
             final float ticksPerMeterFlat = 2f;
@@ -115,15 +111,13 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
             double heightToTime = arcHeightMax / missileFlightTime;
             double timeToDistance = missileFlightTime / flatDistance;
             this.acceleration = (float) (((arcHeightMax - heightToDistance) * heightToDistance) / (missileFlightTime / timeToDistance) / (heightToTime * flatDistance));
-        }
-        else {
+        } else {
             flightUpAlways = true;
         }
     }
 
     @Override
-    public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
-    {
+    public void onEntityTick(Entity entity, IMissile missile, int ticksInAir) {
         //Starts the missile into normal flight
         if (!hasStartedFlight) {
 
@@ -135,20 +129,21 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
 
             calculatePath();
 
-            if(!flightUpAlways) {
+            if (!flightUpAlways) {
 
-                entity.motionY = this.acceleration * ((float) missileFlightTime / 2f);
 
-                entity.motionX = this.deltaPathX / missileFlightTime;
-                entity.motionZ = this.deltaPathZ / missileFlightTime;
-            }
-            else {
-                final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
+                entity.setMotion(
+                    this.deltaPathX / missileFlightTime,
+                    this.acceleration * ((float) missileFlightTime / 2f),
+                    this.deltaPathZ / missileFlightTime);
+            } else {
+                final float flatDistance = (float) Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
                 final float hortSpeed = 0.05f;
                 final float vertSpeed = 2f;
-                entity.motionX = (this.deltaPathX / flatDistance) * hortSpeed;
-                entity.motionZ = (this.deltaPathZ / flatDistance) * hortSpeed;
-                entity.motionY = vertSpeed;
+                entity.setMotion((this.deltaPathX / flatDistance) * hortSpeed,
+                    vertSpeed, (this.deltaPathZ / flatDistance) * hortSpeed
+                );
+
             }
         }
         //Normal path logic
@@ -157,39 +152,25 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
         }
     }
 
-    protected void runFlightLogic(Entity entity, int ticksInAir)
-    {
+    protected void runFlightLogic(Entity entity, int ticksInAir) {
         ticksFlight++;
 
-        if (!entity.world.isRemote)
-        {
+        if (!entity.world.isRemote) {
             // Apply gravity
-            if(!flightUpAlways) {
-                if(entity instanceof EntityProjectile) {
-                    ((EntityProjectile<?>) entity).setMotionVector(entity.motionX, entity.motionY - this.acceleration, entity.motionZ);
-                }
-                else {
-                    entity.motionY -= this.acceleration;
-                }
+            if (!flightUpAlways) {
+                entity.setMotion(entity.getMotion().x, entity.getMotion().y - this.acceleration, entity.getMotion().z);
             }
 
             // Cut off x-z motion to prevent missing target
-            if(Math.abs(entity.posX - endX) <= 0.1f && Math.abs(entity.posZ - endZ) <= 0.1f) {
-                if(entity instanceof EntityProjectile) {
-                    ((EntityProjectile<?>) entity).setMotionVector(0, entity.motionY, 0);
-                }
-                else {
-                   entity.motionX = 0;
-                   entity.motionZ = 0;
-                }
+            if (Math.abs(entity.posX - endX) <= 0.1f && Math.abs(entity.posZ - endZ) <= 0.1f) {
+                entity.setMotion(0, entity.getMotion().y, 0);
             }
 
             // Update animate rotations
             alignWithMotion(entity);
 
             // Sim system
-            if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity))
-            {
+            if (entity instanceof EntityExplosiveMissile && shouldSimulate(entity)) {
                 wasSimulationBlocked = !MissileTrackerHandler.simulateMissile((EntityExplosiveMissile) entity); //TODO add ability to simulate any entity
             }
         }
@@ -200,11 +181,10 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
         return hasStartedFlight;
     }
 
-    protected void alignWithMotion(Entity entity)
-    {
-        entity.rotationPitch = (float) (Math.atan(entity.motionY / (Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ))) * 180 / Math.PI);
+    protected void alignWithMotion(Entity entity) {
+        entity.rotationPitch = (float) (Math.atan(entity.getMotion().y / (Math.sqrt(entity.getMotion().x * entity.getMotion().x + entity.getMotion().z * entity.getMotion().z))) * 180 / Math.PI);
         // Look at the next point
-        entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180 / Math.PI);
+        entity.rotationYaw = (float) (Math.atan2(entity.getMotion().x, entity.getMotion().z) * 180 / Math.PI);
     }
 
     @Override
@@ -212,14 +192,10 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
         return hasStartedFlight;
     }
 
-    protected boolean shouldSimulate(Entity entity)
-    {
-        if (wasSimulationBlocked || EntityMissile.hasPlayerRiding(entity))
-        {
+    protected boolean shouldSimulate(Entity entity) {
+        if (wasSimulationBlocked || EntityMissile.hasPlayerRiding(entity)) {
             return false;
-        }
-        else if (entity.posY >= ConfigMissile.SIMULATION_EXIT_HEIGHT)
-        {
+        } else if (entity.posY >= ConfigMissile.SIMULATION_EXIT_HEIGHT) {
             return true;
         }
 
@@ -227,7 +203,7 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
 
         final BlockPos futurePos = predictPosition(entity, BlockPos::new, 2);
 
-        if(entity.world instanceof ServerWorld) {
+        if (entity.world instanceof ServerWorld) {
 
             int xStart = (int) Math.floor(entity.posX) >> 4;
             int zStart = (int) Math.floor(entity.posZ) >> 4;
@@ -248,29 +224,26 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
     }
 
     @Override
-    public <V> V predictPosition(Entity entity, VecBuilderFunc<V> builder, int ticks)
-    {
+    public <V> V predictPosition(Entity entity, VecBuilderFunc<V> builder, int ticks) {
         double x = entity.posX;
         double y = entity.posY;
         double z = entity.posZ;
 
-        double motionY = entity.motionY;
+        double motionY = entity.getMotion().y;
 
-        while (ticks-- > 0)
-        {
+        while (ticks-- > 0) {
             motionY -= this.acceleration;
 
-            x += entity.motionX;
+            x += entity.getMotion().x;
             y += motionY;
-            z += entity.motionZ;
+            z += entity.getMotion().z;
         }
 
         return builder.apply(x, y, z);
     }
 
     @Override
-    public boolean shouldDecreaseMotion(Entity entity)
-    {
+    public boolean shouldDecreaseMotion(Entity entity) {
         //Disable gravity and friction
         return false;
     }

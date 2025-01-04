@@ -1,5 +1,6 @@
 package icbm.classic.content.items;
 
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.events.ExplosiveDefuseEvent;
@@ -41,20 +42,17 @@ public class ItemDefuser extends ItemICBMElectrical
     {
         if (this.getEnergy(itemStack) >= ENERGY_COST)
         {
-            if (ICBMClassicHelpers.isExplosive(entity))
+            if (entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null).isPresent())
             {
                 if (!entity.world.isRemote)
                 {
-                    final IExplosive explosive = ICBMClassicHelpers.getExplosive(entity);
-                    if (explosive != null)
+                    final IExplosive explosive = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null).orElseThrow(IllegalStateException::new);
+                    if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive)))
                     {
-                        if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive)))
-                        {
-                            return false;
-                        }
-
-                        explosive.onDefuse();
+                        return false;
                     }
+
+                    explosive.onDefuse();
                     entity.remove();
                 }
             }

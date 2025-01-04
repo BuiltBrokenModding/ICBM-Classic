@@ -45,7 +45,7 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
         for(Part part : parts) {
             final CompoundNBT save = save(part);
             if(save != null) {
-                list.appendTag(save);
+                list.add(save);
             }
         }
         return list;
@@ -67,8 +67,8 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
         if(part instanceof INBTSerializable) {
             // Data is optional, only id is required as some objects are constants and need no save info
             final INBT additionalData = ((INBTSerializable<INBT>)part).serializeNBT();
-            if (additionalData != null && (!additionalData.hasNoTags() || additionalData instanceof NumberNBT)) {
-                save.setTag("data", additionalData);
+            if (additionalData != null && (!(additionalData instanceof CompoundNBT) || !((CompoundNBT) additionalData).isEmpty())) {
+                save.put("data", additionalData);
             }
         }
 
@@ -76,7 +76,7 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
     }
 
     default <C extends Collection<Part>> C load(@Nonnull ListNBT save, @Nonnull C list) {
-        for(int i = 0; i < save.tagCount(); i++) {
+        for(int i = 0; i < save.size(); i++) {
             final Part part = load((CompoundNBT) save.get(i));
             if(part != null) {
                 list.add(part);
@@ -86,11 +86,11 @@ public interface IBuilderRegistry<Part extends IBuildableObject> {
     }
 
     default Part load(@Nullable CompoundNBT save) {
-        if(save != null && !save.hasNoTags() && save.hasKey("id")) {
+        if(save != null && !save.isEmpty() && save.contains("id")) {
             final ResourceLocation id = new ResourceLocation(save.getString("id"));
             final Part part = getOrBuild(id);
-            if(part instanceof INBTSerializable && save.hasKey("data")) {
-                final INBT additionalData = save.getTag("data");
+            if(part instanceof INBTSerializable && save.contains("data")) {
+                final INBT additionalData = save.get("data");
                 ((INBTSerializable<INBT>)part).deserializeNBT(additionalData);
             }
             return part;

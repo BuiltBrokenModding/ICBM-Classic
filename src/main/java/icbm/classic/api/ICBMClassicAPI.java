@@ -120,15 +120,6 @@ public final class ICBMClassicAPI
     @Deprecated
     public static IExplosiveRegistry EXPLOSIVE_REGISTRY;
 
-    @Deprecated
-    public static IExMissileRegistry EX_MISSILE_REGISTRY;
-    @Deprecated
-    public static IExGrenadeRegistry EX_GRENADE_REGISTRY;
-    @Deprecated
-    public static IExBlockRegistry EX_BLOCK_REGISTRY;
-    @Deprecated
-    public static IExMinecartRegistry EX_MINECART_REGISTRY;
-
     /** Registry for explosive customizations
      * @deprecated replaced with {@link icbm.classic.api.actions.data.IActionFieldProvider}
      * */

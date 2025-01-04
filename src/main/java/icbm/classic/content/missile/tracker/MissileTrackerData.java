@@ -1,7 +1,6 @@
 package icbm.classic.content.missile.tracker;
 
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import icbm.classic.datafix.EntityMissileDataFixer;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,8 +25,8 @@ public class MissileTrackerData
     {
         targetPos = new Pos(missile.getMissileCapability().getTargetData().getPosition()); //TODO switch to storing targeting data
         missileData = new CompoundNBT();
-        missile.writeToNBTAtomically(missileData);
-        missileData.removeTag("Pos");
+        missile.writeWithoutTypeId(missileData);
+        missileData.remove("Pos");
     }
 
     public MissileTrackerData(CompoundNBT tagCompound)
@@ -39,22 +38,16 @@ public class MissileTrackerData
     public void readFromNBT(CompoundNBT nbt)
     {
         ticksLeftToTarget = nbt.getInt(NBTConstants.TICKS);
-        targetPos = new Pos(nbt.getCompoundTag(NBTConstants.TARGET));
+        targetPos = new Pos(nbt.getCompound(NBTConstants.TARGET));
 
-        missileData = nbt.getCompoundTag(NBTConstants.DATA);
-
-        // Fix old saves, [< 4.2.0] didn't include id and is using the pre-missile rewrite data
-        if(!missileData.hasKey("id")) {
-            missileData.putString("id", "icbmclassic:missile");
-            missileData = EntityMissileDataFixer.INSTANCE.fixTagCompound(missileData);
-        }
+        missileData = nbt.getCompound(NBTConstants.DATA);
     }
 
     public CompoundNBT writeToNBT(CompoundNBT nbt)
     {
         nbt.putInt(NBTConstants.TICKS, ticksLeftToTarget);
-        nbt.setTag(NBTConstants.TARGET, targetPos.writeNBT(new CompoundNBT()));
-        nbt.setTag(NBTConstants.DATA, missileData);
+        nbt.put(NBTConstants.TARGET, targetPos.writeNBT(new CompoundNBT()));
+        nbt.put(NBTConstants.DATA, missileData);
         return nbt;
     }
 }

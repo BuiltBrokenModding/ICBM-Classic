@@ -1,33 +1,20 @@
 package icbm.classic.content.radioactive;
 
-import com.google.common.collect.Lists;
-import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 

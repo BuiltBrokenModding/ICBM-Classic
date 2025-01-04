@@ -111,42 +111,13 @@ public class ICBMCreativeTab extends ItemGroup
         final NonNullList<ItemStack> collectedItemStacks = NonNullList.create();
         item.fillItemGroup(this, collectedItemStacks);
 
-        //Sort explosive types, if not explosive it will leave it alone
-        collectedItemStacks.sort(this::compareExplosives);
-
         //Merge into list with null check
         masterList.addAll(collectedItemStacks);
-    }
-
-    private int compareExplosives(ItemStack itemA, ItemStack itemB)
-    {
-        final IExplosive explosiveA = ICBMClassicHelpers.getExplosive(itemA);
-        final IExplosive explosiveB = ICBMClassicHelpers.getExplosive(itemB);
-        if (explosiveA != null && explosiveB != null)
-        {
-            return compareExplosives(explosiveA, explosiveB);
-        }
-        return 0;
-    }
-
-    private int compareExplosives(IExplosive explosiveA, IExplosive explosiveB)
-    {
-        final IExplosiveData dataA = Optional.ofNullable(explosiveA.getExplosiveData()).orElse(ICBMExplosives.CONDENSED);
-        final IExplosiveData dataB = Optional.ofNullable(explosiveB.getExplosiveData()).orElse(ICBMExplosives.CONDENSED);
-        final int tierA = dataA.getTier().ordinal();
-        final int tierB = dataB.getTier().ordinal();
-
-        //If tiers are the same move to sorting by explosive registry index
-        if (tierA == tierB)
-        {
-            return dataA.getRegistryID() - dataB.getRegistryID();
-        }
-        return tierA - tierB;
     }
 
     @Override
     public ItemStack createIcon()
     {
-        return new ItemStack(ItemReg.itemExplosiveMissile);
+        return new ItemStack(ItemReg.MISSILE_CONDENSED::get);
     }
 }

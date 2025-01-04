@@ -230,15 +230,16 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         {
             if (isThreat(entity))
             {
-                final IMissile newMissile = ICBMClassicHelpers.getMissile(entity);
-                if (newMissile != null && newMissile.getTicksInAir() > 1)
+                final LazyOptional<IMissile> newMissileOp = entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY);
+                if (newMissileOp.isPresent())
                 {
-                    if (this.isMissileGoingToHit(newMissile))
-                    {
-                        this.incomingThreats.add(newMissile);
-                    }
-                    else {
-                        this.detectedThreats.add(entity);
+                    final IMissile newMissile = newMissileOp.orElseThrow(IllegalStateException::new);
+                    if(newMissile.getTicksInAir() > 1) {
+                        if (this.isMissileGoingToHit(newMissile)) {
+                            this.incomingThreats.add(newMissile);
+                        } else {
+                            this.detectedThreats.add(entity);
+                        }
                     }
                 }
             }

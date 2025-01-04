@@ -11,11 +11,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Method;
 
@@ -25,20 +26,17 @@ import java.lang.reflect.Method;
  */
 public class MekProxy extends ModProxy
 {
-    public static final MekProxy INSTANCE = new MekProxy();
-
     private boolean isLoaded = false;
 
-    @GameRegistry.ObjectHolder("mekanism:MachineBlock")
     public static Block machineBlock;
 
-    @GameRegistry.ObjectHolder("mekanism:BasicBlock")
     public static Block basicBlock;
 
     @Override
-    @Optional.Method(modid = "mekanism")
     public void init()
     {
+        machineBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation("mekanism:MachineBlock"));
+        basicBlock = ForgeRegistries.BLOCKS.getValue(new ResourceLocation("mekanism:BasicBlock"));
         this.isLoaded = true;
 
         ICBMClassic.logger().info("Mekanism interaction: " + machineBlock + " " + basicBlock);
@@ -104,7 +102,7 @@ public class MekProxy extends ModProxy
                 method.invoke(tile);
 
                 // Cross dim sets it dead
-                if(entity.isEntityAlive() && entity.world == world) {
+                if(entity.isAlive() && entity.world == world) {
                     final BlockPos possiblePortal = entity.getPosition();
                     final BlockPos teleporter = findTeleporter(world, possiblePortal);
                     if(teleporter != null) {
@@ -114,19 +112,17 @@ public class MekProxy extends ModProxy
                         if(openSide != null) {
 
                             // Move to outside portal
-                            entity.setPosition(entity.posX + openSide.getFrontOffsetX(), entity.posY + yOffset, entity.posZ + openSide.getFrontOffsetZ());
+                            entity.setPosition(entity.posX + openSide.getXOffset(), entity.posY + yOffset, entity.posZ + openSide.getZOffset());
 
                             // Update motion vector
-                            double motionX = entity.motionX;
-                            double motionZ = entity.motionZ;
+                            double motionX = entity.getMotion().x;
+                            double motionZ = entity.getMotion().z;
 
-                            if(facingDirection.getAxis() == Axis.X && openSide.getAxis() != Axis.X) {
-                                entity.motionX = openSide.getFrontOffsetX() * motionZ;
-                                entity.motionZ = motionX;
+                            if(facingDirection.getAxis() == Direction.Axis.X && openSide.getAxis() != Direction.Axis.X) {
+                                entity.setMotion(openSide.getXOffset() * motionZ, entity.getMotion().y, motionX);
                             }
-                            else if(facingDirection.getAxis() == Axis.Z && openSide.getAxis() != Axis.Z) {
-                                entity.motionX = motionZ;
-                                entity.motionZ = openSide.getFrontOffsetZ() * motionX;
+                            else if(facingDirection.getAxis() == Direction.Axis.Z && openSide.getAxis() != Direction.Axis.Z) {
+                                entity.setMotion(motionZ, entity.getMotion().y, openSide.getZOffset() * motionX);
                             }
 
                             if(entity instanceof EntityProjectile) {
@@ -168,7 +164,7 @@ public class MekProxy extends ModProxy
     }
 
     protected Direction getSide(World world, BlockPos pos) {
-        for (Direction side : Direction.HORIZONTALS) {
+        for (Direction side : Direction.Plane.HORIZONTAL) {
             final BlockPos sidePos = pos.offset(side);
             if (world.isAirBlock(sidePos)) {
                return side;

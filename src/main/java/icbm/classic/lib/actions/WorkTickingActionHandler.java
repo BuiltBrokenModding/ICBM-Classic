@@ -5,9 +5,10 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +38,11 @@ public class WorkTickingActionHandler //TODO create interface that is related to
     @SubscribeEvent
     public static void worldUnload(WorldEvent.Unload event)
     {
-        if (!event.getWorld().isRemote)
+        if (!event.getWorld().isRemote())
         {
-            final int dim = event.getWorld().provider.getDimension();
+            final DimensionType dim = event.getWorld().getDimension().getType();
             activeBlasts.stream()
-                    .filter(blast -> !blast.hasWorld() || blast.world().provider.getDimension() == dim)
+                    .filter(blast -> !blast.hasWorld() || blast.world().getDimension().getType() == dim)
                     .forEach(IBlast::clearBlast);
         }
     }

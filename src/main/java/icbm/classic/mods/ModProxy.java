@@ -22,14 +22,4 @@ public class ModProxy
     {
 
     }
-
-    public void onTileValidate(TileEntity tile)
-    {
-
-    }
-
-    public void onTileInvalidate(TileEntity tile)
-    {
-
-    }
 }

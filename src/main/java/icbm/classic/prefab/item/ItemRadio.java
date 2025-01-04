@@ -8,13 +8,16 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.radio.RadioRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 
+@Deprecated /** @deprecated replace with capability */
 public class ItemRadio extends ItemBase {
 
     public ItemRadio(Properties p_i48487_1_) {
@@ -22,17 +25,17 @@ public class ItemRadio extends ItemBase {
     }
 
     @Override
-    public ActionResultType onItemUseFirst(PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ, Hand hand)
+    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context)
     {
-        final ItemStack heldItem = player.getHeldItem(hand);
-        final TileEntity tile = world.getTileEntity(pos);
-        if(tile != null && tile.hasCapability(ICBMClassicAPI.RADIO_CAPABILITY, side)) {
-            if(!world.isRemote) {
-                final IRadio radio = tile.getCapability(ICBMClassicAPI.RADIO_CAPABILITY, side);
+        final ItemStack heldItem = context.getPlayer().getHeldItem(context.getHand());
+        final TileEntity tile = context.getWorld().getTileEntity(context.getPos());
+        if(tile != null && tile.getCapability(ICBMClassicAPI.RADIO_CAPABILITY, context.getFace()).isPresent()) {
+            if(!context.getWorld().isRemote) {
+                final IRadio radio = tile.getCapability(ICBMClassicAPI.RADIO_CAPABILITY, context.getFace()).orElseThrow(IllegalStateException::new);
                 if(radio instanceof IRadioChannelAccess) {
                     final String channel = ((IRadioChannelAccess) radio).getChannel();
                     setRadioChannel(heldItem, channel);
-                    player.sendMessage(new StringTextComponent(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", "" + channel)));
+                    context.getPlayer().sendMessage(new StringTextComponent(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", channel)));
                 }
             }
             return ActionResultType.SUCCESS;
@@ -46,15 +49,12 @@ public class ItemRadio extends ItemBase {
      * @param stack - this item
      * @return frequency
      */
-    public String getRadioChannel(ItemStack stack) //TODO move to capability item
+    public String getRadioChannel(ItemStack stack)
     {
-        if (stack.getTagCompound() != null)
+        if (stack.getTag() != null)
         {
-            if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
-                return Integer.toString((int)Math.floor(stack.getTagCompound().getFloat(NBTConstants.HZ)));
-            }
-            else if(stack.getTagCompound().hasKey("radio_channel")) {
-                return stack.getTagCompound().getString("radio_channel");
+            if(stack.getTag().contains("radio_channel")) {
+                return stack.getTag().getString("radio_channel");
             }
         }
         return RadioRegistry.EMPTY_HZ;
@@ -68,13 +68,6 @@ public class ItemRadio extends ItemBase {
      */
     public void setRadioChannel(ItemStack stack, String channel)
     {
-        if (stack.getTagCompound() == null)
-        {
-            stack.setTagCompound(new CompoundNBT());
-        }
-        if(stack.getTagCompound().hasKey(NBTConstants.HZ)) {
-            stack.getTagCompound().removeTag(NBTConstants.HZ);
-        }
-        stack.getTagCompound().putString("radio_channel", channel);
+        stack.getOrCreateTag().putString("radio_channel", channel);
     }
 }

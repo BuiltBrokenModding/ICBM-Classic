@@ -113,7 +113,7 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver {
         ));
         if (objectMouseOver.getType() == RayTraceResult.Type.BLOCK) { // TODO add message saying that the gps target is out of range.
             final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getPos());
-            if (!(ICBMClassicHelpers.isLauncher(tileEntity, null))) {
+            if (tileEntity == null || !tileEntity.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, objectMouseOver.getFace()).isPresent()) {
                 sendToServer(player, handIn, objectMouseOver.getHitVec());
             }
         } else {

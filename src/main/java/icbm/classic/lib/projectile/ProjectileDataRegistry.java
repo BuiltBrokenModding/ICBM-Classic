@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
@@ -64,16 +63,16 @@ public class ProjectileDataRegistry extends BuildableObjectRegistry<IProjectileD
             registerItemStackConversation(new ItemStack(net.minecraft.item.Items.EGG), new CachedProjectileData(() -> new EntitySpawnProjectileData("minecraft:egg")));
 
             // Spawn eggs
-            registerItemStackConversation(new ItemStack(net.minecraft.item.Items.SPAWN_EGG), (itemStack) -> {
+            /*registerItemStackConversation(new ItemStack(net.minecraft.item.Items.SPAWN_EGG), (itemStack) -> {
                 final EntitySpawnProjectileData projectileData = new EntitySpawnProjectileData(ItemMonsterPlacer.getNamedIdFrom(itemStack));
                 if(itemStack.hasDisplayName()) {
                     projectileData.setEntityDisplayTag(itemStack.getDisplayName());
                 }
-                if(itemStack.getTagCompound() != null && itemStack.getTagCompound().hasKey("EntityTag", 10)) {
-                    projectileData.setEntityData(itemStack.getTagCompound().getCompoundTag("EntityTag"));
+                if(itemStack.getTag() != null && itemStack.getTag().contains("EntityTag", 10)) {
+                    projectileData.setEntityData(itemStack.getTag().getCompound("EntityTag"));
                 }
                 return projectileData;
-            });
+            });*/
             //TODO tools as projectiles... because diggy diggy dwarf
 
             // TODO implement simple block renders as EntityFallingBlock
@@ -90,11 +89,8 @@ public class ProjectileDataRegistry extends BuildableObjectRegistry<IProjectileD
                 }
             }
         }
-        if(itemStack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-            final IProjectileStack data = itemStack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
-            if(data != null) {
-                return data.getProjectileData();
-            }
+        if(itemStack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY).isPresent()) {
+            return itemStack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY).orElseThrow(IllegalStateException::new).getProjectileData();
         }
         return new ItemProjectileData().setItemStack(itemStack.copy());
     }
@@ -132,7 +128,7 @@ public class ProjectileDataRegistry extends BuildableObjectRegistry<IProjectileD
         if (preSpawnCallback != null) {
             preSpawnCallback.accept(entity);
         }
-        if (world.spawnEntity(entity)) {
+        if (world.addEntity(entity)) {
             data.onEntitySpawned(entity, source, Hand.MAIN_HAND);
             return entity;
         }

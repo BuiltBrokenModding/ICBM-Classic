@@ -75,7 +75,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
 
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
         .withChangeCallback((s, i) -> markDirty())
-        .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
+        .withSlot(new InventorySlot(0, (stack) -> stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).isPresent())
             .withInsertCheck((s) -> !this.checkForMissileInBounds())
             .withChangeCallback((stack) -> this.markDirty())
         )

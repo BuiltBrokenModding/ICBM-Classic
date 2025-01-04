@@ -16,10 +16,11 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,16 +36,17 @@ public class CapSpaceChicken implements ICapabilityProvider, INBTSerializable<By
     private static final DataParameter<Boolean> SPACE = EntityDataManager.<Boolean>createKey(AgeableEntity.class, DataSerializers.BOOLEAN);
 
     private final ChickenEntity chicken;
+    private LazyOptional<CapSpaceChicken> capOfSelf = LazyOptional.of(() -> this);
 
     public CapSpaceChicken(ChickenEntity chicken) {
         this.chicken = chicken;
     }
 
     public static boolean isSpace(ChickenEntity chicken) {
-        if(chicken.hasCapability(CapSpaceChicken.INSTANCE, null)) {
-            final CapSpaceChicken cap = chicken.getCapability(CapSpaceChicken.INSTANCE, null);
-            if(cap != null) {
-                return cap.isSpace();
+        if(chicken.getCapability(CapSpaceChicken.INSTANCE, null).isPresent()) {
+            final LazyOptional<CapSpaceChicken> cap = chicken.getCapability(CapSpaceChicken.INSTANCE, null);
+            if(cap.isPresent()) {
+                return cap.orElseThrow(IllegalStateException::new).isSpace();
             }
         }
         return false;
@@ -64,16 +66,11 @@ public class CapSpaceChicken implements ICapabilityProvider, INBTSerializable<By
         }
     }
 
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing) {
-        return capability == INSTANCE;
-    }
-
     @Nullable
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
         if(capability == INSTANCE) {
-            return (T) this;
+            return capOfSelf.cast();
         }
         return null;
     }

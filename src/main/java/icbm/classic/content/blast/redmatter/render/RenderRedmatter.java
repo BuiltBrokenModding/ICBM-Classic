@@ -16,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Sphere;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -45,13 +44,13 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         final float visualSize = redmatter.clientLogic.getVisualSize();
 
         renderDisk(redmatter, x, y, z, visualSize);
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         renderSphere(redmatter, x, y, z, visualSize);
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         renderBeams(redmatter, x, y, z, visualSize);
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         //Update size with a smooth transition
         redmatter.clientLogic.lerpSize(partialTicks);
@@ -69,16 +68,16 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         //GlStateManager.disableLighting();
 
         //Translate
-        GlStateManager.translate((float) x, (float) y, (float) z);
+        GlStateManager.translatef((float) x, (float) y, (float) z);
 
         //Assign texture
         bindTexture(GREY_TEXTURE);
 
         //Assign color
-        GlStateManager.color(0.0F, 0.0F, 0.0F, 1);
+        GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1);
 
         //Render outer sphere
-        new Sphere().draw(radius * 0.8f, 32, 32);
+        // TODO new Sphere().draw(radius * 0.8f, 32, 32);
 
         //Reset
         //GlStateManager.enableLighting();
@@ -98,13 +97,13 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         GlStateManager.disableLighting();
 
         //Translate
-        GlStateManager.translate((float) x, (float) y, (float) z);
+        GlStateManager.translatef((float) x, (float) y, (float) z);
 
         //Assign texture
         bindTexture(GREY_TEXTURE);
 
         //Assign color
-        GlStateManager.color(0.0F, 0.0F, 0.2F, 0.8f);
+        GlStateManager.color4f(0.0F, 0.0F, 0.2F, 0.8f);
 
         //Render outer sphere
         final float scaleSize = 0.0005f;
@@ -118,7 +117,7 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         {
             scaleDelta = radius * scaleSize * ticks;
         }
-        new Sphere().draw(radius + scaleDelta, 32, 32);
+        // TODO new Sphere().draw(radius + scaleDelta, 32, 32);
 
         //Reset
         GlStateManager.enableLighting();
@@ -139,12 +138,12 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         GlStateManager.disableLighting();
 
         //Translate
-        GlStateManager.translate(x, y, z);
-        GlStateManager.rotate(-redmatter.ticksExisted, 0, 1, 0);
+        GlStateManager.translated(x, y, z);
+        GlStateManager.rotatef(-redmatter.ticksExisted, 0, 1, 0);
 
         //Assign texture
         this.bindTexture(TEXTURE_FILE);
-        GlStateManager.color(1, 0, 0, 1); // TODO pick color randomly and pulse the color using sin(angle)
+        GlStateManager.color4f(1, 0, 0, 1); // TODO pick color randomly and pulse the color using sin(angle)
 
         //top render
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -155,7 +154,7 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         Tessellator.getInstance().draw();
 
         //bottom render
-        GlStateManager.rotate(180, 1, 0, 0);
+        GlStateManager.rotatef(180, 1, 0, 0);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
         bufferbuilder.pos(-size, 0, -size).tex(1, 1).endVertex();
         bufferbuilder.pos(-size, 0, +size).tex(1, 0).endVertex();
@@ -203,14 +202,14 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
 
         //Start
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x, (float) y, (float) z);
+        GlStateManager.translatef((float) x, (float) y, (float) z);
 
         //Setup
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GlStateManager.disableAlpha();
+        GlStateManager.disableAlphaTest();
         GlStateManager.enableCull();
 
         Random redmatterBeamRandom = new Random(432L);
@@ -227,12 +226,12 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
             float beamWidth = (float)Math.max(0.1, redmatterBeamRandom.nextFloat()) * visualSize / 10;
 
             //Random rotations TODO see if we need to rotate so much
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F + rotationScale * 360.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotatef(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotatef(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotatef(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotatef(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotatef(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotatef(redmatterBeamRandom.nextFloat() * 360.0F + rotationScale * 360.0F, 0.0F, 0.0F, 1.0F);
 
             //Get color based on state
             ColorB colorOut = this.colorOut;
@@ -288,9 +287,9 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         GlStateManager.disableCull();
         GlStateManager.disableBlend();
         GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableAlpha();
+        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager.enableTexture();
+        GlStateManager.enableAlphaTest();
         RenderHelper.enableStandardItemLighting();
 
         //End
