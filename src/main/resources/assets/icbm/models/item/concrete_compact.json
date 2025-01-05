@@ -1,6 +1,3 @@
 {
-  "parent": "icbm:block/concrete",
-  "textures": {
-    "all": "icbm:blocks/concrete_compact"
-  }
+  "parent": "icbm:block/concrete_compact"
 }

@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbm:silo_screen"
+    "model": "icbm:block/launcher_screen"
   },
   "variants": {
     "inventory": {
-      "model": "icbm:silo_screen"
+      "model": "icbm:block/launcher_screen"
     },
     "rotation": {
       "up": {},

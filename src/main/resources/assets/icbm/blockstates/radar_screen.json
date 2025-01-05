@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbm:radar_screen"
+    "model": "icbm:block/radar_screen"
   },
   "variants": {
     "inventory": {
-      "model": "icbm:radar_screen"
+      "model": "icbm:block/radar_screen"
     },
     "type": {
       "off": {
