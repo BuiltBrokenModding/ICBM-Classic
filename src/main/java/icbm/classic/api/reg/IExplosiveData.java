@@ -13,15 +13,6 @@ import javax.annotation.Nonnull;
  *
  * @deprecated will be replaced by {@link IActionData}
  */
-public interface IExplosiveData extends Comparable<IExplosiveData>, IActionData
+public interface IExplosiveData extends IActionData
 {
-    /**
-     * Assigned ID of the explosive. Is
-     * saved to config file and automatically
-     * assigned for new explosives.
-     *
-     * @return ID
-     * @deprecated will be removed in MC 1.13 and replaced with {@link #getRegistryKey()}
-     */
-    int getRegistryID();
 }

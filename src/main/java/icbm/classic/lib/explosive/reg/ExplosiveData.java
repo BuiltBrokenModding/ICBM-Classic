@@ -1,6 +1,5 @@
 package icbm.classic.lib.explosive.reg;
 
-import icbm.classic.api.EnumTier;
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.data.ActionFields;
@@ -9,9 +8,9 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.actions.ActionDataBase;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.Value;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -22,32 +21,15 @@ import javax.annotation.Nullable;
  * Handles storing data about an explosive in the {@link ExplosiveRegistry}
  * @deprecated
  */
-@ToString(of={"regName", "id"})
-@RequiredArgsConstructor
-@Data
+@ToString(of={"registryKey"})
+@Value
 public class ExplosiveData extends ActionDataBase implements IExplosiveData
 {
     @Nonnull
-    public final ResourceLocation regName;
-
-    /** Will be removed in 1.13 */
-    @Deprecated
-    private final int id;
+    ResourceLocation registryKey;
 
     @Nonnull
-    private final IBlastFactory blastCreationFactory;
-
-    @Override
-    public ResourceLocation getRegistryKey()
-    {
-        return regName;
-    }
-
-    @Override
-    public int getRegistryID()
-    {
-        return id;
-    }
+    IBlastFactory blastCreationFactory;
 
     @Override
     @Nonnull
@@ -74,14 +56,8 @@ public class ExplosiveData extends ActionDataBase implements IExplosiveData
     {
         if(object instanceof ExplosiveData)
         {
-            return ((ExplosiveData) object).id == id;
+            return ((ExplosiveData) object).registryKey.equals(this.registryKey);
         }
         return false;
-    }
-
-    @Override
-    public int compareTo(IExplosiveData o)
-    {
-        return Integer.compare(getRegistryID(), o.getRegistryID());
     }
 }

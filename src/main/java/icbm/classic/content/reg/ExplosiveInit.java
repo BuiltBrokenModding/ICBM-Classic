@@ -156,9 +156,6 @@ public class ExplosiveInit
             actionSpawnEntity.setValue(ActionFields.ENTITY_REG_NAME, EntityReg.MARKING_SMOKE.getId());
             return actionSpawnEntity;
         });
-
-
-        ((ExplosiveRegistry) ICBMClassicAPI.EXPLOSIVE_REGISTRY).lockForce();
     }
 
     private static IExplosiveData newEx(String name, IBlastFactory factory)
