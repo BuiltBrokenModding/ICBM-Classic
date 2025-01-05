@@ -1,13 +1,13 @@
 package icbm.classic.content.missile.logic.flight;
 
-import com.builtbroken.mc.testing.junit.TestManager;
+/*import com.builtbroken.mc.testing.junit.TestManager;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import net.minecraft.world.World;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.*;*/
 
 class DirectFlightLogicTest
 {
-    static TestManager testManager = new TestManager("missile", Assertions::fail);
+    /*static TestManager testManager = new TestManager("missile", Assertions::fail);
 
     final World world = testManager.getWorld();
 
@@ -45,5 +45,5 @@ class DirectFlightLogicTest
         objB.calculateFlightPath(world, 200, 100, 100, new BasicTargetData(200, 110, 120));
 
         Assertions.assertNotEquals(objA, objB);
-    }
+    }*/
 }

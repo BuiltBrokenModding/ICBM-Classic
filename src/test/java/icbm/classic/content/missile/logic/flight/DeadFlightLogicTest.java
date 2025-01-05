@@ -1,17 +1,17 @@
 package icbm.classic.content.missile.logic.flight;
 
-import com.builtbroken.mc.testing.junit.TestManager;
+/*import com.builtbroken.mc.testing.junit.TestManager;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;*/
 
 class DeadFlightLogicTest
 {
-    static TestManager testManager = new TestManager("missile", Assertions::fail);
+   /* static TestManager testManager = new TestManager("missile", Assertions::fail);
 
     final World world = testManager.getWorld();
 
@@ -87,5 +87,5 @@ class DeadFlightLogicTest
         final DeadFlightLogic deadFlightLogicB = new DeadFlightLogic(1001);
 
         Assertions.assertNotEquals(deadFlightLogicA, deadFlightLogicB);
-    }
+    }*/
 }

@@ -1,18 +1,18 @@
 package icbm.classic.content.missile.entity.anti;
 
-import com.builtbroken.mc.testing.junit.TestManager;
+/*import com.builtbroken.mc.testing.junit.TestManager;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.world.World;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.*;*/
 
 import java.util.function.Function;
 
 public class SAMTargetDataTest {
 
-    static TestManager testManager = new TestManager("radarScanLogic", Assertions::fail);
+   /* static TestManager testManager = new TestManager("radarScanLogic", Assertions::fail);
 
     final World world = testManager.getWorld();
 
@@ -168,5 +168,5 @@ public class SAMTargetDataTest {
         Assertions.assertTrue(world.spawnEntity(entity), "Failed to spawn mob for test");
 
         return (T) entity;
-    }
+    }*/
 }

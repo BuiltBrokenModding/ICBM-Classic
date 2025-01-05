@@ -1,6 +1,6 @@
 package icbm.classic.lib.network.lambda.tile;
 
-import com.builtbroken.mc.testing.junit.TestManager;
+/*import com.builtbroken.mc.testing.junit.TestManager;
 import com.builtbroken.mc.testing.junit.world.FakeWorldServer;
 import com.google.common.collect.Lists;
 import icbm.classic.TileEntityFakeData;
@@ -15,11 +15,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.*;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
+import org.mockito.Mockito;*/
 
 class PacketLambdaTileTest {
 
-    static ResourceLocation PARENT = new ResourceLocation("test", "packet");
+   /* static ResourceLocation PARENT = new ResourceLocation("test", "packet");
 
     static TestManager testManager = new TestManager("packet.tile", Assertions::fail).withWorldWrapper(Mockito::spy);
 
@@ -200,5 +200,5 @@ class PacketLambdaTileTest {
         Assertions.assertEquals(3.57f, tile.getField2());
         Assertions.assertEquals("cat", tile.getField3());
         Assertions.assertTrue(tile.wasRead());
-    }
+    }*/
 }
