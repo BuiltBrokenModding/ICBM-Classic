@@ -1,26 +1,26 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:item/generated",
+    "model": "icbm:item/generated",
     "textures": {
-      "layer0": "icbmclassic:items/circuit_basic"
+      "layer0": "icbm:items/circuit_basic"
     }
   },
   "variants": {
     "name": {
       "basic": {
         "textures": {
-          "layer0": "icbmclassic:items/circuit_basic"
+          "layer0": "icbm:items/circuit_basic"
         }
       },
       "advanced": {
         "textures": {
-          "layer0": "icbmclassic:items/circuit_advanced"
+          "layer0": "icbm:items/circuit_advanced"
         }
       },
       "elite": {
         "textures": {
-          "layer0": "icbmclassic:items/circuit_elite"
+          "layer0": "icbm:items/circuit_elite"
         }
       }
     }

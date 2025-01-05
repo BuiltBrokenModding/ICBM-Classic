@@ -2,8 +2,8 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/missiles/cluster",
-		"particle": "icbmclassic:items/missiles/cluster"
+		"0": "icbm:items/missiles/cluster",
+		"particle": "icbm:items/missiles/cluster"
 	},
 	"elements": [
 		{

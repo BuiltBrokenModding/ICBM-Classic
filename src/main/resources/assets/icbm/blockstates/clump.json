@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:item/generated",
+    "model": "icbm:item/generated",
     "textures": {
       "layer0": "items/clump_steel"
     }
@@ -10,12 +10,12 @@
     "name": {
       "steel": {
         "textures": {
-          "layer0": "icbmclassic:items/clump_steel"
+          "layer0": "icbm:items/clump_steel"
         }
       },
       "bronze": {
         "textures": {
-          "layer0": "icbmclassic:items/clump_bronze"
+          "layer0": "icbm:items/clump_bronze"
         }
       }
     }

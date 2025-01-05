@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:debilitation",
-    "device": "icbmclassic:grenade",
+    "explosive": "icbm:debilitation",
+    "device": "icbm:grenade",
     "count": 1
   },
   "pattern": [
@@ -15,8 +15,8 @@
       "ore": "string"
     },
     "x": {
-      "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:debilitation"
+      "type": "icbm:explosive",
+      "explosive": "icbm:debilitation"
     }
   }
 }

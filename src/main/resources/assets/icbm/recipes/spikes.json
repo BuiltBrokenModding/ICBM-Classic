@@ -1,10 +1,10 @@
 {
   "result": {
-    "item": "icbmclassic:spikes",
+    "item": "icbm:spikes",
     "data": 0,
     "count": 6
   },
-  "group": "icbmclassic:spikes",
+  "group": "icbm:spikes",
   "pattern": [
     "ccc",
     "iii"

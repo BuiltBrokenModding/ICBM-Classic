@@ -2,9 +2,9 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/missiles/tier2",
-		"2": "icbmclassic:items/missiles/fragmentation",
-		"particle": "icbmclassic:items/missiles/tier2"
+		"0": "icbm:items/missiles/tier2",
+		"2": "icbm:items/missiles/fragmentation",
+		"particle": "icbm:items/missiles/tier2"
 	},
 	"elements": [
 		{

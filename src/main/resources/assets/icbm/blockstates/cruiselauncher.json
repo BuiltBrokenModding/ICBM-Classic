@@ -1,11 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:cruise_launcher"
+    "model": "icbm:cruise_launcher"
   },
   "variants": {
     "inventory": {
-      "model": "icbmclassic:cruise_launcher"
+      "model": "icbm:cruise_launcher"
     },
     "rotation": {
       "up": {},

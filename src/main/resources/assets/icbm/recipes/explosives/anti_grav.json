@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:antigravitational",
+    "explosive": "icbm:antigravitational",
     "count": 1
   },
   "pattern": [
@@ -8,11 +8,11 @@
     "ere",
     "eee"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "r": {
-      "type" : "icbmclassic:explosive",
-      "explosive": "icbmclassic:shrapnel"
+      "type" : "icbm:explosive",
+      "explosive": "icbm:shrapnel"
     },
     "e": {
       "item": "minecraft:ender_eye",

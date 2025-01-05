@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:smoke",
-    "device": "icbmclassic:missile",
+    "explosive": "icbm:smoke",
+    "device": "icbm:missile",
     "count": 1
   },
   "pattern": [
@@ -10,13 +10,13 @@
   ],
   "key": {
     "m": {
-      "type": "icbmclassic:explosive",
-      "device": "icbmclassic:missile.module"
+      "type": "icbm:explosive",
+      "device": "icbm:missile.module"
     },
     "x": {
-      "type": "icbmclassic:explosive",
-      "device": "icbmclassic:block",
-      "explosive": "icbmclassic:smoke"
+      "type": "icbm:explosive",
+      "device": "icbm:block",
+      "explosive": "icbm:smoke"
     }
   }
 }

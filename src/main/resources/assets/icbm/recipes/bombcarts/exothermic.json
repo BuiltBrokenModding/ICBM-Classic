@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:exothermic",
-    "device": "icbmclassic:minecart",
+    "explosive": "icbm:exothermic",
+    "device": "icbm:minecart",
     "count": 1
   },
   "pattern": [
@@ -14,8 +14,8 @@
       "item": "minecraft:minecart"
     },
     "a": {
-      "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:exothermic"
+      "type": "icbm:explosive",
+      "explosive": "icbm:exothermic"
     }
   }
 }

@@ -10,7 +10,7 @@
     "normal": {
       "model": "pressure_plate_up",
       "textures": {
-        "texture": "icbmclassic:blocks/glass_pressure_plate"
+        "texture": "icbm:blocks/glass_pressure_plate"
       }
     },
     "inventory": {
@@ -24,13 +24,13 @@
       "false": {
         "model": "pressure_plate_up",
         "textures": {
-          "texture": "icbmclassic:blocks/glass_pressure_plate"
+          "texture": "icbm:blocks/glass_pressure_plate"
         }
       },
       "true": {
         "model": "pressure_plate_down",
         "textures": {
-          "texture": "icbmclassic:blocks/glass_pressure_plate"
+          "texture": "icbm:blocks/glass_pressure_plate"
         }
       }
     }

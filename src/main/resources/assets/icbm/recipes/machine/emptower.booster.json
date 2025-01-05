@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:emptower",
+    "item": "icbm:emptower",
     "data": 1,
     "count": 1
   },
@@ -24,7 +24,7 @@
       "data": 0
     },
     "e": {
-      "item": "icbmclassic:battery",
+      "item": "icbm:battery",
       "data": 0
     }
   }

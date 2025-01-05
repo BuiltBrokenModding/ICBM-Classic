@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbmclassic:items/battery"
+    "layer0": "icbm:items/battery"
   }
 }

@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:cruiselauncher",
+    "item": "icbm:cruiselauncher",
     "data": 0,
     "count": 1
   },
@@ -11,10 +11,10 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "L": {
-      "item": "icbmclassic:launcherbase"
+      "item": "icbm:launcherbase"
     },
     "B": {
-      "item": "icbmclassic:launcherscreen",
+      "item": "icbm:launcherscreen",
       "data": 0
     },
     "S": {

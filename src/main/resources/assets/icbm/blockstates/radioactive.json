@@ -1,15 +1,15 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:radioactive_dirt"
+    "model": "icbm:radioactive_dirt"
   },
   "variants": {
     "type": {
       "dirt": {
-        "model": "icbmclassic:radioactive_dirt"
+        "model": "icbm:radioactive_dirt"
       },
       "stone": {
-        "model": "icbmclassic:radioactive_stone"
+        "model": "icbm:radioactive_stone"
       }
     }
   }

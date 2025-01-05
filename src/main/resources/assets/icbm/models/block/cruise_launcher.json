@@ -2,8 +2,8 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:blocks/cruise_launcher",
-		"particle": "icbmclassic:blocks/cruise_launcher"
+		"0": "icbm:blocks/cruise_launcher",
+		"particle": "icbm:blocks/cruise_launcher"
 	},
 	"elements": [
 		{

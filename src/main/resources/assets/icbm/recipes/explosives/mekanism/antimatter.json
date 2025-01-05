@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:antimatter",
+    "explosive": "icbm:antimatter",
     "count": 1
   },
   "pattern": [
@@ -8,11 +8,11 @@
     "nrn",
     "nnn"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "r": {
-      "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:nuclear"
+      "type": "icbm:explosive",
+      "explosive": "icbm:nuclear"
     },
     "n": {
       "item": "mekanism:atomicalloy"

@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:concrete",
+    "item": "icbm:concrete",
     "data": 1,
     "count": 8
   },
@@ -12,7 +12,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "c": {
-      "item": "icbmclassic:concrete",
+      "item": "icbm:concrete",
       "data": 0
     },
     "o": {

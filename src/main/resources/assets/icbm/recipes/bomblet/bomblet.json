@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:empty_bomblet",
+    "item": "icbm:empty_bomblet",
     "count": 16
   },
   "pattern": [
@@ -28,12 +28,12 @@
       "type": "forge:and",
       "values": [
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "true",
           "value": "circuitBasic"
         },
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "true",
           "value": "ingotSteel"
         }

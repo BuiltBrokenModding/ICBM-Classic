@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/debilitation",
-      "down": "icbmclassic:blocks/explosive/bottom_1",
-      "up": "icbmclassic:blocks/explosive/bottom_1",
-      "north": "icbmclassic:blocks/explosive/debilitation",
-      "east": "icbmclassic:blocks/explosive/debilitation",
-      "south": "icbmclassic:blocks/explosive/debilitation",
-      "west": "icbmclassic:blocks/explosive/debilitation"
+      "particle": "icbm:blocks/explosive/debilitation",
+      "down": "icbm:blocks/explosive/bottom_1",
+      "up": "icbm:blocks/explosive/bottom_1",
+      "north": "icbm:blocks/explosive/debilitation",
+      "east": "icbm:blocks/explosive/debilitation",
+      "south": "icbm:blocks/explosive/debilitation",
+      "west": "icbm:blocks/explosive/debilitation"
     }
   },
   "variants": {

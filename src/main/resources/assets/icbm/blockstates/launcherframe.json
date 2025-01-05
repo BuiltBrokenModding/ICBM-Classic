@@ -1,24 +1,24 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:frame_middle"
+    "model": "icbm:frame_middle"
   },
   "variants": {
     "inventory": {
-      "model": "icbmclassic:frame_middle"
+      "model": "icbm:frame_middle"
     },
     "type": {
       "top" :
       {
-        "model": "icbmclassic:frame_top"
+        "model": "icbm:frame_top"
       },
       "middle" :
       {
-        "model": "icbmclassic:frame_middle"
+        "model": "icbm:frame_middle"
       },
       "bottom" :
       {
-        "model": "icbmclassic:frame_bottom"
+        "model": "icbm:frame_bottom"
       }
     },
     "rotation": {

@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:chemical",
+    "explosive": "icbm:chemical",
     "count": 1
   },
   "pattern": [
@@ -8,15 +8,15 @@
     "prp",
     "ppp"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "p": {
-      "item": "icbmclassic:poisonpowder",
+      "item": "icbm:poisonpowder",
       "data": 0
     },
     "r": {
-      "type" : "icbmclassic:explosive",
-      "explosive": "icbmclassic:debilitation"
+      "type" : "icbm:explosive",
+      "explosive": "icbm:debilitation"
     }
   }
 }

@@ -1,17 +1,17 @@
 {
   "result": {
-    "item": "icbmclassic:ballisticLauncher",
+    "item": "icbm:ballisticLauncher",
     "data": 0,
     "count": 1
   },
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
       {
-        "item": "icbmclassic:rocketlauncher",
+        "item": "icbm:rocketlauncher",
         "data": 0
       },
     {
-      "item": "icbmclassic:launcherscreen",
+      "item": "icbm:launcherscreen",
       "data": 0
     }
   ]

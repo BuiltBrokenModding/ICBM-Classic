@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:condensed",
-    "device": "icbmclassic:explosive_bomblet",
+    "explosive": "icbm:condensed",
+    "device": "icbm:explosive_bomblet",
     "count": 1
   },
   "pattern": [
@@ -10,13 +10,13 @@
   ],
   "key": {
     "m": {
-      "item": "icbmclassic:empty_bomblet",
+      "item": "icbm:empty_bomblet",
       "damage": 0
     },
     "x": {
-      "type": "icbmclassic:explosive",
-      "device": "icbmclassic:block",
-      "explosive": "icbmclassic:condensed"
+      "type": "icbm:explosive",
+      "device": "icbm:block",
+      "explosive": "icbm:condensed"
     }
   }
 }

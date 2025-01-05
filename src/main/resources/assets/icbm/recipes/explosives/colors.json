@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:colors",
+    "explosive": "icbm:colors",
     "count": 1
   },
   "pattern": [
@@ -8,15 +8,15 @@
     "CrC",
     "CCC"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "C": {
       "item": "minecraft:dye",
       "data": 32767
     },
     "r": {
-      "type" : "icbmclassic:explosive",
-      "explosive": "icbmclassic:repulsive"
+      "type" : "icbm:explosive",
+      "explosive": "icbm:repulsive"
     }
   }
 }

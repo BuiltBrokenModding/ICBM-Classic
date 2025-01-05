@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:colors",
-    "device": "icbmclassic:grenade",
+    "explosive": "icbm:colors",
+    "device": "icbm:grenade",
     "count": 1
   },
   "pattern": [
@@ -15,8 +15,8 @@
       "ore": "string"
     },
     "x": {
-      "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:colors"
+      "type": "icbm:explosive",
+      "explosive": "icbm:colors"
     }
   }
 }

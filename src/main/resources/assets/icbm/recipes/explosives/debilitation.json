@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:debilitation",
+    "explosive": "icbm:debilitation",
     "count": 3
   },
     "pattern": [
@@ -8,7 +8,7 @@
     "wrw",
     "sss"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "s": {
       "type": "forge:ore_dict",
@@ -19,8 +19,8 @@
       "data": 0
     },
     "r": {
-      "type" : "icbmclassic:explosive",
-      "explosive": "icbmclassic:shrapnel"
+      "type" : "icbm:explosive",
+      "explosive": "icbm:shrapnel"
     }
   }
 }

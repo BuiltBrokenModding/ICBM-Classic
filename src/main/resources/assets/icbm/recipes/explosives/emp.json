@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:emp",
+    "explosive": "icbm:emp",
     "count": 1
   },
   "pattern": [
@@ -8,14 +8,14 @@
     "sas",
     "sss"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "a": {
-      "type" : "icbmclassic:explosive",
-      "explosive": "icbmclassic:repulsive"
+      "type" : "icbm:explosive",
+      "explosive": "icbm:repulsive"
     },
     "e": {
-      "item": "icbmclassic:battery",
+      "item": "icbm:battery",
       "data": 0
     },
     "r": {
@@ -23,7 +23,7 @@
       "data": 0
     },
     "s": {
-      "item": "icbmclassic:wire",
+      "item": "icbm:wire",
       "data": 0
     }
   }

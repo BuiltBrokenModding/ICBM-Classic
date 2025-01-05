@@ -2,8 +2,8 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/rpg",
-		"particle": "icbmclassic:items/rpg"
+		"0": "icbm:items/rpg",
+		"particle": "icbm:items/rpg"
 	},
 	"elements": [
 		{

@@ -1,9 +1,9 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:item/generated",
+    "model": "icbm:item/generated",
     "textures": {
-      "layer0": "icbmclassic:items/balloon_craft"
+      "layer0": "icbm:items/balloon_craft"
     }
   },
   "variants": {
@@ -11,10 +11,10 @@
       "2d": {
       },
       "3d": {
-        "model": "icbmclassic:item/balloon",
+        "model": "icbm:item/balloon",
         "textures": {
-          "0": "icbmclassic:items/balloon",
-          "particle": "icbmclassic:items/balloon"
+          "0": "icbm:items/balloon",
+          "particle": "icbm:items/balloon"
         }
       }
     }

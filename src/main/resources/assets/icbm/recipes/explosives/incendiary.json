@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
+    "item": "icbm:explosives",
     "data": 2,
     "count": 1
   },
@@ -20,7 +20,7 @@
       "data": 0
     },
     "r": {
-      "item": "icbmclassic:explosives",
+      "item": "icbm:explosives",
       "data": 1
     }
   }

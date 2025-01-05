@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:attractive",
-    "device": "icbmclassic:grenade",
+    "explosive": "icbm:attractive",
+    "device": "icbm:grenade",
     "count": 1
   },
   "pattern": [
@@ -15,8 +15,8 @@
       "ore": "string"
     },
     "x": {
-      "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:attractive"
+      "type": "icbm:explosive",
+      "explosive": "icbm:attractive"
     }
   }
 }

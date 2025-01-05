@@ -1,8 +1,8 @@
 {
 	"credit": "QueenOfMissiles",
 	"textures": {
-		"0": "icbmclassic:blocks/silo_frame/frame",
-		"particle": "icbmclassic:blocks/silo_frame/frame"
+		"0": "icbm:blocks/silo_frame/frame",
+		"particle": "icbm:blocks/silo_frame/frame"
 	},
 	"elements": [
 		{

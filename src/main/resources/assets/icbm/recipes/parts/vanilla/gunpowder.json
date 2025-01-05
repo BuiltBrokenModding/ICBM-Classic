@@ -30,17 +30,17 @@
       "type": "forge:and",
       "values": [
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "false",
           "value": "dustCarbon"
         },
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "false",
           "value": "dustCharcoal"
         },
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "false",
           "value": "dustCoal"
         }

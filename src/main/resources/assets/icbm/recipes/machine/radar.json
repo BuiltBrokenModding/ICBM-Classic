@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:radarstation",
+    "item": "icbm:radarstation",
     "data": 0,
     "count": 1
   },
@@ -11,7 +11,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "s": {
-      "item": "icbmclassic:launcherscreen",
+      "item": "icbm:launcherscreen",
       "data": 0
     },
     "g": {

@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:laserdetonator",
+    "item": "icbm:laserdetonator",
     "data": 0,
     "count": 1
   },
@@ -12,11 +12,11 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "r": {
-      "item": "icbmclassic:radargun",
+      "item": "icbm:radargun",
       "data": 0
     },
     "h": {
-      "item": "icbmclassic:remotedetonator",
+      "item": "icbm:remotedetonator",
       "data": 0
     },
     "c": {

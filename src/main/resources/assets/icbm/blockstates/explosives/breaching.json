@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/breaching_top",
-      "down": "icbmclassic:blocks/explosive/bottom_2",
-      "up": "icbmclassic:blocks/explosive/breaching_top",
-      "north": "icbmclassic:blocks/explosive/breaching_side",
-      "east": "icbmclassic:blocks/explosive/breaching_side",
-      "south": "icbmclassic:blocks/explosive/breaching_side",
-      "west": "icbmclassic:blocks/explosive/breaching_side"
+      "particle": "icbm:blocks/explosive/breaching_top",
+      "down": "icbm:blocks/explosive/bottom_2",
+      "up": "icbm:blocks/explosive/breaching_top",
+      "north": "icbm:blocks/explosive/breaching_side",
+      "east": "icbm:blocks/explosive/breaching_side",
+      "south": "icbm:blocks/explosive/breaching_side",
+      "west": "icbm:blocks/explosive/breaching_side"
     }
   },
   "variants": {

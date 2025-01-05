@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbmclassic:items/laser_designator"
+    "layer0": "icbm:items/laser_designator"
   },
   "display": {
     "thirdperson_righthand": {

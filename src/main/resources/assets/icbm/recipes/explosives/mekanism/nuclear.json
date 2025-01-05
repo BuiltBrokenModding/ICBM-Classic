@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
+    "item": "icbm:explosives",
     "data": 15,
     "count": 1
   },
@@ -12,7 +12,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "t": {
-      "item": "icbmclassic:explosives",
+      "item": "icbm:explosives",
       "data": 13
     },
     "i": {
@@ -27,12 +27,12 @@
           "type": "forge:and",
           "values": [
             {
-              "type": "icbmclassic:ore_value",
+              "type": "icbm:ore_value",
               "condition": "false",
               "value": "ingotUranium"
             },
             {
-              "type": "icbmclassic:ore_value",
+              "type": "icbm:ore_value",
               "condition": "false",
               "value": "pelletUranium235"
             }

@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/contagious",
-      "down": "icbmclassic:blocks/explosive/bottom_2",
-      "up": "icbmclassic:blocks/explosive/bottom_2",
-      "north": "icbmclassic:blocks/explosive/contagious",
-      "east": "icbmclassic:blocks/explosive/contagious",
-      "south": "icbmclassic:blocks/explosive/contagious",
-      "west": "icbmclassic:blocks/explosive/contagious"
+      "particle": "icbm:blocks/explosive/contagious",
+      "down": "icbm:blocks/explosive/bottom_2",
+      "up": "icbm:blocks/explosive/bottom_2",
+      "north": "icbm:blocks/explosive/contagious",
+      "east": "icbm:blocks/explosive/contagious",
+      "south": "icbm:blocks/explosive/contagious",
+      "west": "icbm:blocks/explosive/contagious"
     }
   },
   "variants": {

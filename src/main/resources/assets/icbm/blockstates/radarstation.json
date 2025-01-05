@@ -1,31 +1,31 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:radar_screen"
+    "model": "icbm:radar_screen"
   },
   "variants": {
     "inventory": {
-      "model": "icbmclassic:radar_screen"
+      "model": "icbm:radar_screen"
     },
     "type": {
       "off": {
         "textures": {
-          "north": "icbmclassic:blocks/screen/radar_off"
+          "north": "icbm:blocks/screen/radar_off"
         }
       },
       "on": {
         "textures": {
-          "north": "icbmclassic:blocks/screen/radar"
+          "north": "icbm:blocks/screen/radar"
         }
       },
       "warning": {
         "textures": {
-          "north": "icbmclassic:blocks/screen/radar_warning"
+          "north": "icbm:blocks/screen/radar_warning"
         }
       },
       "danger": {
         "textures": {
-          "north": "icbmclassic:blocks/screen/radar_danger"
+          "north": "icbm:blocks/screen/radar_danger"
         }
       }
     },

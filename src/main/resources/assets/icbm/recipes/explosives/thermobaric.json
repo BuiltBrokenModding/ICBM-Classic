@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosives",
+    "item": "icbm:explosives",
     "data": 13,
     "count": 1
   },
@@ -12,15 +12,15 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "i": {
-      "item": "icbmclassic:explosives",
+      "item": "icbm:explosives",
       "data": 2
     },
     "c": {
-      "item": "icbmclassic:explosives",
+      "item": "icbm:explosives",
       "data": 4
     },
     "r": {
-      "item": "icbmclassic:explosives",
+      "item": "icbm:explosives",
       "data": 6
     }
   }

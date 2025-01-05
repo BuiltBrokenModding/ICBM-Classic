@@ -1,6 +1,6 @@
 {
   "parent": "block/tinted_cross",
   "textures": {
-    "cross": "icbmclassic:blocks/spikes"
+    "cross": "icbm:blocks/spikes"
   }
 }

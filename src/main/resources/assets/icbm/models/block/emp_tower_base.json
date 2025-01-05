@@ -1,8 +1,8 @@
 {
 	"credit": "QueenOfMissiles",
 	"textures": {
-		"0": "icbmclassic:blocks/emp_tower/base",
-		"particle": "icbmclassic:blocks/emp_tower/base"
+		"0": "icbm:blocks/emp_tower/base",
+		"particle": "icbm:blocks/emp_tower/base"
 	},
 	"elements": [
 		{

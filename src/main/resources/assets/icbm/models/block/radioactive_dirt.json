@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "icbmclassic:blocks/radioactive/dirt/side"
+    "all": "icbm:blocks/radioactive/dirt/side"
   }
 }

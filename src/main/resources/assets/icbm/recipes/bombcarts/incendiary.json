@@ -1,8 +1,8 @@
 {
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "result": {
-    "explosive": "icbmclassic:incendiary",
-    "device": "icbmclassic:minecart",
+    "explosive": "icbm:incendiary",
+    "device": "icbm:minecart",
     "count": 1
   },
   "pattern": [
@@ -14,8 +14,8 @@
       "item": "minecraft:minecart"
     },
     "a": {
-      "type": "icbmclassic:explosive",
-      "explosive": "icbmclassic:incendiary"
+      "type": "icbm:explosive",
+      "explosive": "icbm:incendiary"
     }
   }
 }

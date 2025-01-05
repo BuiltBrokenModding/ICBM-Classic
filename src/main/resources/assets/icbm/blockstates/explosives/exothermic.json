@@ -3,13 +3,13 @@
   "defaults": {
     "model": "cube_all",
     "textures": {
-      "particle": "icbmclassic:blocks/explosive/exothermic",
-      "down": "icbmclassic:blocks/explosive/bottom_3",
-      "up": "icbmclassic:blocks/explosive/bottom_3",
-      "north": "icbmclassic:blocks/explosive/exothermic",
-      "east": "icbmclassic:blocks/explosive/exothermic",
-      "south": "icbmclassic:blocks/explosive/exothermic",
-      "west": "icbmclassic:blocks/explosive/exothermic"
+      "particle": "icbm:blocks/explosive/exothermic",
+      "down": "icbm:blocks/explosive/bottom_3",
+      "up": "icbm:blocks/explosive/bottom_3",
+      "north": "icbm:blocks/explosive/exothermic",
+      "east": "icbm:blocks/explosive/exothermic",
+      "south": "icbm:blocks/explosive/exothermic",
+      "west": "icbm:blocks/explosive/exothermic"
     }
   },
   "variants": {

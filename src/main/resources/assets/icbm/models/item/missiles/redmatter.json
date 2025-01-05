@@ -2,9 +2,9 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/missiles/redmatter_body",
-		"3": "icbmclassic:blocks/redmatter_flow",
-		"particle": "icbmclassic:items/missiles/redmatter_body"
+		"0": "icbm:items/missiles/redmatter_body",
+		"3": "icbm:blocks/redmatter_flow",
+		"particle": "icbm:items/missiles/redmatter_body"
 	},
 	"elements": [
 		{

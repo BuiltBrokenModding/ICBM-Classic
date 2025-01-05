@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbmclassic:items/defuser"
+    "layer0": "icbm:items/defuser"
   },
   "display": {
     "thirdperson_righthand": {

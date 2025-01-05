@@ -1,8 +1,8 @@
 {
 	"credit": "QueenOfMissiles",
 	"textures": {
-		"0": "icbmclassic:items/bomblet",
-		"particle": "icbmclassic:items/bomblet"
+		"0": "icbm:items/bomblet",
+		"particle": "icbm:items/bomblet"
 	},
 	"elements": [
 		{

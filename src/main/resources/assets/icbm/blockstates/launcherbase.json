@@ -1,14 +1,14 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "icbmclassic:silo_pad"
+    "model": "icbm:silo_pad"
   },
   "variants": {
     "normal": {
-      "model": "icbmclassic:silo_pad"
+      "model": "icbm:silo_pad"
     },
     "inventory": {
-      "model": "icbmclassic:silo_pad"
+      "model": "icbm:silo_pad"
     },
     "facing": {
       "up": {

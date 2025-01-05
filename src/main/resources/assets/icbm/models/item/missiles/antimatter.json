@@ -2,9 +2,9 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/missiles/antimatter",
-		"3": "icbmclassic:blocks/antimatter",
-		"particle": "icbmclassic:items/missiles/antimatter"
+		"0": "icbm:items/missiles/antimatter",
+		"3": "icbm:blocks/antimatter",
+		"particle": "icbm:items/missiles/antimatter"
 	},
 	"elements": [
 		{

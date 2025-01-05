@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbmclassic:items/grenade/condensed"
+    "layer0": "icbm:items/grenade/condensed"
   },
   "display": {
     "thirdperson_righthand": {

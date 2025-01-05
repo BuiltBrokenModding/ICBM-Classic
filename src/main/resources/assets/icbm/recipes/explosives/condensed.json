@@ -1,6 +1,6 @@
 {
   "result": {
-    "explosive": "icbmclassic:condensed",
+    "explosive": "icbm:condensed",
     "count": 3
   },
   "pattern": [
@@ -8,7 +8,7 @@
     "rtr",
     "trt"
   ],
-  "type": "icbmclassic:explosive",
+  "type": "icbm:explosive",
   "key": {
     "r": {
       "item": "minecraft:redstone",

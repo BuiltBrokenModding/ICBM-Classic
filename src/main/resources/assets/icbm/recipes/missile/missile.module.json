@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:explosive_missile",
+    "item": "icbm:explosive_missile",
     "data": 24,
     "count": 1
   },
@@ -29,12 +29,12 @@
       "type": "forge:and",
       "values": [
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "true",
           "value": "circuitBasic"
         },
         {
-          "type": "icbmclassic:ore_value",
+          "type": "icbm:ore_value",
           "condition": "true",
           "value": "ingotSteel"
         }

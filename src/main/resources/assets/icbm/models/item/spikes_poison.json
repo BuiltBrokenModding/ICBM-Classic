@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbmclassic:blocks/spikes_poison"
+    "layer0": "icbm:blocks/spikes_poison"
   }
 }

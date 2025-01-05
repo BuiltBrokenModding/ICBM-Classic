@@ -1,6 +1,6 @@
 {
-  "parent": "icbmclassic:item/grenades/grenade",
+  "parent": "icbm:item/grenades/grenade",
   "textures": {
-    "layer0": "icbmclassic:items/grenade/attractive"
+    "layer0": "icbm:items/grenade/attractive"
   }
 }

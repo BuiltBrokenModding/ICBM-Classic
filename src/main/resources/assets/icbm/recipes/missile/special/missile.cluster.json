@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "icbmclassic:cluster_missile",
+    "item": "icbm:cluster_missile",
     "count": 1
   },
   "pattern": [
@@ -11,7 +11,7 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "m": {
-      "item": "icbmclassic:explosive_missile",
+      "item": "icbm:explosive_missile",
       "data": 24
     },
     "e": {
@@ -25,7 +25,7 @@
   },
   "conditions": [
     {
-      "type": "icbmclassic:ore_value",
+      "type": "icbm:ore_value",
       "condition": "true",
       "value": "circuitBasic"
     }
