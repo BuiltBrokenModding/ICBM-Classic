@@ -155,7 +155,7 @@ public class ItemThrowableProjectile extends ItemBase {
 
         // Show projectile information
         if(projectileStack.isPresent() && projectileStack.orElseThrow(IllegalStateException::new).getProjectileData() != null) {
-            LanguageUtility.outputComponents(projectileStack.orElseThrow(IllegalStateException::new).getProjectileData().getTooltip(), list::add);
+            //TODO LanguageUtility.outputComponents(projectileStack.orElseThrow(IllegalStateException::new).getProjectileData().getTooltip(), list::add);
         }
     }
 
